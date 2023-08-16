@@ -85,26 +85,39 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public void LoadLicenseAndFeatures() => Log.Do(l =>
         {
-            var globalApp = _appStates.GetPresetOrNull();
-            var licEntities = globalApp.List
-                .OfType(LicenseEntity.TypeNameId)
-                .Select(e => new LicenseEntity(e))
-                .ToList();
+            try
+            {
+                var presetApp = _appStates.GetPresetApp();
+                l.A($"presetApp:{presetApp != null}");
 
-            // Check all licenses and show extra message
-            var enterpriseLicenses = licEntities
-                .Select(lic =>
-                {
-                    var entFp = lic.AsEnterprise();
-                    l.A(entFp.ValidityMessage);
-                    return entFp;
-                })
-                .ToList();
+                var licEntities = presetApp.List
+                    .OfType(LicenseEntity.TypeNameId)
+                    .Select(e => new LicenseEntity(e))
+                    .ToList();
+                l.A($"licEnt:{licEntities?.Count}");
 
-            _licenseLoader.Init(enterpriseLicenses).LoadLicenses();
+                // Check all licenses and show extra message
+                var enterpriseLicenses = licEntities
+                    .Select(lic =>
+                    {
+                        var entFp = lic.AsEnterprise();
+                        l.A(entFp.ValidityMessage);
+                        return entFp;
+                    })
+                    .ToList();
+                l.A($"entLic:{enterpriseLicenses?.Count}");
+
+                _licenseLoader.Init(enterpriseLicenses).LoadLicenses();
+            }
+            catch (Exception e)
+            {
+                l.Ex(e);
+                return "error";
+            }
 
             // Now do a normal reload of configuration and features
             ReloadFeatures();
+            return "ok";
         });
         private bool _startupAlreadyRan;
 

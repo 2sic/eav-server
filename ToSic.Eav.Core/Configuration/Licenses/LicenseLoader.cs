@@ -70,9 +70,13 @@ namespace ToSic.Eav.Configuration.Licenses
         internal void LoadLicenses() => Log.Do(timer: true, action: l=>
         {
             var fingerprint = _fingerprint.GetFingerprint();
+            l.A($"fingerprint:{fingerprint?.Length}");
+
             var validEntFps = _fingerprint.EnterpriseFingerprintsWIP
                 .Where(e => e.Valid)
                 .ToList();
+            l.A($"validEntFps:{validEntFps?.Count}");
+
             try
             {
                 var licensesStored = LoadLicensesInConfigFolder();
