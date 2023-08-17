@@ -121,7 +121,7 @@ namespace ToSic.Eav.Configuration
                 if (inConfig != null)
                 {
                     enabled = licenseEnabled && inConfig.Enabled;
-                    expiry = inConfig.Expires;
+                    if (expiry == DateTime.MinValue) expiry = inConfig.Expires; // set expiry by configuration (when is not set by license)
                     msgShort = licenseEnabled ? "configuration" : "unlicensed";
                     message = licenseEnabled ? " by configuration" : " - requires license";
                 }
