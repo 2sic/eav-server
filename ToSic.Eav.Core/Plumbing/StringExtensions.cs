@@ -14,6 +14,11 @@ namespace ToSic.Eav.Plumbing
         public static bool IsEmpty(this string value) => string.IsNullOrEmpty(value);
         public static bool IsEmptyOrWs(this string value) => string.IsNullOrWhiteSpace(value);
 
+        /// <summary>
+        /// Has real value, so neither null, empty or white space.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool HasValue(this string value) => !string.IsNullOrWhiteSpace(value);
 
         public static string UseFallbackIfNoValue(this string value, string fallback) => value.HasValue() ? value : fallback;
