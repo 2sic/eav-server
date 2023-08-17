@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Code.InfoSystem;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
-using ToSic.Eav.Code.InfoSystem;
 
 namespace ToSic.Eav.WebApi.Zone
 {
@@ -63,8 +63,11 @@ namespace ToSic.Eav.WebApi.Zone
             };
 
             var licenses = _licenseService.Value;
-            var owner = string.Join(",", licenses.Enabled
-                .Select(s => s.Value.Owner)
+
+            // owner is coma separated list of all owners from enabled licenses 
+            var owner = string.Join(", ", licenses.All
+                .Where(l => l.Enabled)
+                .Select(l => l.Owner)
                 .Where(o => o.HasValue())
                 .Distinct());
             var license = new LicenseInfoDto
