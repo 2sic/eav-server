@@ -7,8 +7,10 @@ namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal
     {
-        internal string Help() => Log.Func(() =>
+        internal string Help()
         {
+            var l = Log.Fn<string>();
+            
             const string typeattribs = "typeattributes?appid=&type=";
             const string typeMeta = "typemetadata?appid=&type=";
             const string typePerms = "typepermissions?appid=&type=";
@@ -65,8 +67,8 @@ namespace ToSic.Eav.WebApi.Sys
                            DemoLink($"{nameof(EntityPermissions)}?appid=&entity="))
                     )
                 ;
-            return result.ToString();
-        });
+            return l.ReturnAsOk(result.ToString());
+        }
 
         internal A DemoLink(string labelAndLink) => HtmlTableBuilder.DemoLink(labelAndLink);
         

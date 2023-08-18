@@ -108,10 +108,11 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <param name="uploadInfo"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public LicenseFileResultDto Upload(HttpUploadedFile uploadInfo) => Log.Func(() =>
+        public LicenseFileResultDto Upload(HttpUploadedFile uploadInfo)
         {
+            var l = Log.Fn<LicenseFileResultDto>();
             if (!uploadInfo.HasFiles())
-                return (new LicenseFileResultDto { Success = false, Message = "no file in upload" },
+                return l.ReturnAndLog(new LicenseFileResultDto { Success = false, Message = "no file in upload" },
                     "no file in upload");
 
             var files = new List<FileUploadDto>();
@@ -126,17 +127,18 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             // reload license and features
             _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-            return (new LicenseFileResultDto { Success = true, Message = "ok" }, "ok");
-        });
+            return l.ReturnAndLog(new LicenseFileResultDto { Success = true, Message = "ok" }, "ok");
+        }
 
 
 
         /// <inheritdoc />
-        public LicenseFileResultDto Retrieve() => Log.Func(() =>
+        public LicenseFileResultDto Retrieve()
         {
+            var l = Log.Fn<LicenseFileResultDto>();
             var fingerprint = _fingerprint.GetFingerprint();
             var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
-            Log.A($"retrieve license from url:{url}");
+            l.A($"retrieve license from url:{url}");
 
             string content;
 
@@ -145,10 +147,10 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                 var initialProtocol = ServicePointManager.SecurityProtocol;
                 try
                 {
-                    Log.A("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
+                    l.A("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-                    Log.A($"try to download:{url}");
+                    l.A($"try to download:{url}");
                     content = client.DownloadString(url);
 
                     // verify it's json etc.
@@ -158,7 +160,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                     // check for error
                     var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.UnsafeJsonWithoutEncodingHtml);
                     if (!licenseFileResultDto.Success) 
-                        return (licenseFileResultDto, licenseFileResultDto.Message);
+                        return l.ReturnAndLog(licenseFileResultDto, licenseFileResultDto.Message);
                 }
                 catch (WebException e)
                 {
@@ -176,13 +178,14 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             // reload license and features
             _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-            return (new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
-        });
+            return l.ReturnAndLog(new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
+        }
 
         private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);
 
-        private bool SaveLicenseFile(string fileName, string content) => Log.Func(() =>
+        private bool SaveLicenseFile(string fileName, string content)
         {
+            var l = Log.Fn<bool>();
             var filePath = Path.Combine(ConfigurationsPath, fileName);
 
             try
@@ -199,12 +202,12 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             }
             catch (Exception e)
             {
-                Log.Ex(e);
+                l.Ex(e);
                 throw;
             }
 
-            return (true, $"ok, save license:{filePath}");
-        });
+            return l.ReturnAndLog(true, $"ok, save license:{filePath}");
+        }
 
         private static void RenameOldFile(string filePath)
         {

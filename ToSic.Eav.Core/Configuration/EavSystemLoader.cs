@@ -58,7 +58,7 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Do things needed at application start
         /// </summary>
-        public void StartUp() => Log.Do(l =>
+        public void StartUp()
         {
             // Prevent multiple Inits
             if (_startupAlreadyRan) throw new Exception("Startup should never be called twice.");
@@ -67,24 +67,25 @@ namespace ToSic.Eav.Configuration
             // Pre-Load the Assembly list into memory to log separately
             var assemblyLoadLog = new Log(EavLogs.Eav + "AssLdr", null, "Load Assemblies");
             _logStore.Add(LogNames.LogStoreStartUp, assemblyLoadLog);
-            l.Do(timer: true, action: ldo =>
-            {
-                AssemblyHandling.GetTypes(assemblyLoadLog);
 
-                // Build the cache of all system-types. Must happen before everything else
-                ldo.A("Try to load global app-state");
-                var presetApp = _appStateLoader.LoadFullAppState();
-                _appsCache.Value.Add(presetApp);
+            var ldo = Log.Fn(timer: true);
+            AssemblyHandling.GetTypes(assemblyLoadLog);
 
-                LoadLicenseAndFeatures();
-            });
-        });
+            // Build the cache of all system-types. Must happen before everything else
+            ldo.A("Try to load global app-state");
+            var presetApp = _appStateLoader.LoadFullAppState();
+            _appsCache.Value.Add(presetApp);
+
+            LoadLicenseAndFeatures();
+            ldo.Done("ok");
+        }
 
         /// <summary>
         /// Standalone Features loading - to make the features API available in tests
         /// </summary>
-        public void LoadLicenseAndFeatures() => Log.Do(l =>
+        public void LoadLicenseAndFeatures()
         {
+            var l = Log.Fn();
             try
             {
                 var presetApp = _appStates.GetPresetApp();
@@ -112,13 +113,14 @@ namespace ToSic.Eav.Configuration
             catch (Exception e)
             {
                 l.Ex(e);
-                return "error";
+                l.Done("error");
+                return;
             }
 
             // Now do a normal reload of configuration and features
             ReloadFeatures();
-            return "ok";
-        });
+            l.Done("ok");
+        }
         private bool _startupAlreadyRan;
 
         /// <summary>
@@ -137,41 +139,42 @@ namespace ToSic.Eav.Configuration
         /// When old format is detected, it is converted to new format.
         /// </summary>
         /// <returns></returns>
-        private FeatureListStored LoadFeaturesStored() => Log.Func(l =>
+        private FeatureListStored LoadFeaturesStored()
         {
+            var l = Log.Fn<FeatureListStored>();
             try
             {
                 var (filePath, fileContent) = _featureConfigManager.LoadFeaturesFile();
                 if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
-                    return (null, "ok, but 'features.json' is missing");
+                    return l.ReturnNull("ok, but 'features.json' is missing");
 
                 // handle old 'features.json' format
                 var stored = _featureConfigManager.ConvertOldFeaturesFile(filePath, fileContent);
                 if (stored != null) 
-                    return (stored, "converted to new features.json");
+                    return l.ReturnAndLog(stored, "converted to new features.json");
 
                 // return features stored
-                return (JsonSerializer.Deserialize<FeatureListStored>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml), "ok, features loaded");
+                return l.ReturnAndLog(JsonSerializer.Deserialize<FeatureListStored>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml), "ok, features loaded");
             }
             catch (Exception e)
             {
                 l.Ex(e);
-                return (null, "load feature failed:" + e.Message);
+                return l.ReturnNull("load feature failed:" + e.Message);
             }
-        });
+        }
 
 
         /// <summary>
         /// Update existing features config in "features.json". 
         /// </summary>
         [PrivateApi]
-        public bool UpdateFeatures(List<FeatureManagementChange> changes) => Log.Func($"c:{changes?.Count ?? -1}", () =>
+        public bool UpdateFeatures(List<FeatureManagementChange> changes)
         {
+            var l = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
             var saved = _featureConfigManager.SaveFeaturesUpdate(changes);
             SetFeaturesStored(FeatureListStoredBuilder(changes));
-            return (saved, "ok, updated");
-        });
-
+            return l.ReturnAndLog(saved, "ok, updated");
+        }
 
         private FeatureListStored FeatureListStoredBuilder(List<FeatureManagementChange> changes)
         {

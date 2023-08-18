@@ -40,16 +40,16 @@ namespace ToSic.Eav.Persistence.File
         }
 
 
-        public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource
-        ) => Log.Func($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}", () =>
+        public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource)
         {
+            var l = Log.Fn<FileSystemLoader>($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}");
             AppId = appId;
             Path = path + (path.EndsWith("\\") ? "" : "\\");
             RepoType = repoType;
             IgnoreMissingStuff = ignoreMissing;
             EntitiesSource = entitiesSource;
-            return this;
-        });
+            return l.ReturnAsOk(this);
+        }
 
         private string Path { get; set; }
 
@@ -89,12 +89,14 @@ namespace ToSic.Eav.Persistence.File
 
         #region Queries & Configuration
 
-        public IList<IEntity> Entities(string folder, int idSeed, DirectEntitiesSource relationships) => Log.Func(l =>
+        public IList<IEntity> Entities(string folder, int idSeed, DirectEntitiesSource relationships)
         {
+            var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{idSeed}");
+            
             // #1. check that folder exists
             var subPath = System.IO.Path.Combine(Path, folder);
             if (!CheckPathExists(Path) || !CheckPathExists(subPath))
-                return (new List<IEntity>(), "Path doesn't exist, return none");
+                return l.Return(new List<IEntity>(), "Path doesn't exist, return none");
 
             // #2. WIP - Allow relationships between loaded items
             // If we are loading from a larger context, then we have a reference to a list
@@ -115,7 +117,7 @@ namespace ToSic.Eav.Persistence.File
                 //if (hasOwnRelationshipList)
                 //    relationships.AddRange(entitiesInBundle);
 
-                return (entitiesInBundle, $"{entitiesInBundle.Count}");
+                return l.Return(entitiesInBundle, $"{entitiesInBundle.Count}");
             }
 
             // #3. older case with single entities
@@ -137,8 +139,8 @@ namespace ToSic.Eav.Persistence.File
             //if (hasOwnRelationshipList)
             //    relationships.AddRange(entities);
 
-            return (entities, $"{entities.Count}");
-        });
+            return l.Return(entities, $"{entities.Count}");
+        }
 
         #endregion
 
@@ -154,8 +156,10 @@ namespace ToSic.Eav.Persistence.File
         /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
         /// <param name="source">this is not used ATM - just for interface compatibility</param>
         /// <returns></returns>
-        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) => Log.Func<IList<IContentType>>(l =>
+        public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
         {
+            var l = Log.Fn<IList<IContentType>>($"ContentTypes in {appId}");
+            
             // #1. check that folder exists
             var pathCt = ContentTypePath;
             var contentTypes = new List<IContentType>();
@@ -182,8 +186,8 @@ namespace ToSic.Eav.Persistence.File
                 .ToList();
             contentTypes.AddRange(bundleCtsWithoutDuplicates);
             l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; after remove duplicates {bundleCtsWithoutDuplicates.Count}; total {contentTypes.Count}");
-            return (contentTypes, $"{contentTypes.Count}");
-        });
+            return l.Return(contentTypes, $"{contentTypes.Count}");
+        }
 
         private string ContentTypePath => System.IO.Path.Combine(Path, FsDataConstants.TypesFolder);
 
@@ -191,8 +195,9 @@ namespace ToSic.Eav.Persistence.File
         /// Try to load a content-type file, but if anything fails, just return a null
         /// </summary>
         /// <returns></returns>
-        private IContentType LoadAndBuildCt(JsonSerializer ser, string path) => Log.Func($"Path: {path}", l =>
+        private IContentType LoadAndBuildCt(JsonSerializer ser, string path)
         {
+            var l = Log.Fn<IContentType>($"Path: {path}");
             var infoIfError = "couldn't read type-file";
             try
             {
@@ -203,19 +208,19 @@ namespace ToSic.Eav.Persistence.File
 
                 infoIfError = "couldn't set source/parent";
                 ct = _dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
-                return ct;
+                return l.ReturnAsOk(ct);
             }
             catch (IOException e)
             {
                 l.Ex("Failed loading type - couldn't import type-file, IO exception", e);
-                return null;
+                return l.ReturnNull();
             }
             catch (Exception e)
             {
                 l.Ex($"Failed loading type - {infoIfError}", e);
-                return null;
+                return l.ReturnNull();
             }
-        });
+        }
         #endregion
 
         #region Bundle
@@ -252,8 +257,9 @@ namespace ToSic.Eav.Persistence.File
         });
         private readonly GetOnce<Dictionary<string, JsonFormat>> _jsonBundles = new GetOnce<Dictionary<string, JsonFormat>>();
 
-        public List<IContentType> ContentTypesInBundles() => Log.Func(l =>
+        public List<IContentType> ContentTypesInBundles()
         {
+            var l = Log.Fn<List<IContentType>>($"ContentTypes in bundles");
             if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes.SafeAny()) != true))
                 return new List<IContentType>();
 
@@ -263,23 +269,22 @@ namespace ToSic.Eav.Persistence.File
 
             l.A("ContentTypes in bundles: " + contentTypes.Count);
 
-            return contentTypes;
-        });
+            return l.ReturnAsOk(contentTypes);
+        }
 
-        public List<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource) => Log.Func(l =>
+        public List<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource)
         {
+            var l = Log.Fn<List<IEntity>>($"Entities in bundles");
             if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities.SafeAny()) != true))
-                return (new List<IEntity>(), "no bundles have entities, return none");
+                return l.Return(new List<IEntity>(), "no bundles have entities, return none");
 
             var entities = JsonBundleBundles
                 .SelectMany(json =>
                     BuildEntitiesInBundles(Serializer, json.Key, json.Value, relationshipSource))
                 .Where(entity => entity != null).ToList();
 
-            l.A("Entities in bundles: " + entities.Count);
-
-            return (entities, $"{entities.Count}");
-        });
+            return l.Return(entities, $"Entities in bundles: {entities.Count}");
+        }
         
         private string BundlesPath => System.IO.Path.Combine(Path, FsDataConstants.BundlesFolder);
 
@@ -287,9 +292,9 @@ namespace ToSic.Eav.Persistence.File
         /// Build contentTypes from bundle json
         /// </summary>
         /// <returns></returns>
-        private List<IContentType> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson
-        ) => Log.Func($"path: {path}", l =>
+        private List<IContentType> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
         {
+            var l = Log.Fn<List<IContentType>>($"path: {path}");
             try
             {
                 var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
@@ -303,23 +308,22 @@ namespace ToSic.Eav.Persistence.File
                     )
                     .ToList();
 
-                return newContentTypes;
+                return l.ReturnAsOk(newContentTypes);
             }
             catch (Exception e)
             {
                 l.Ex($"Failed building content types from bundle json", e);
-                return new List<IContentType>();
+                return l.Return(new List<IContentType>(), "error");
             }
-        });
+        }
 
         /// <summary>
         /// Build entities from bundle json
         /// </summary>
         /// <returns></returns>
-        private List<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource
-        ) => Log.Func($"path: {path}", l =>
+        private List<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
         {
-            l.A($"Build entities from bundle json: {path}.");
+            var l = Log.Fn<List<IEntity>>($"Build entities from bundle json: {path}.");
             try
             {
                 // WIP - Allow relationships between loaded items
@@ -334,14 +338,14 @@ namespace ToSic.Eav.Persistence.File
                     })
                     .ToList();
                 //entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));
-                return (entities, $"{entities.Count}");
+                return l.Return(entities, $"{entities.Count}");
             }
             catch (Exception e)
             {
                 l.Ex("Failed building entities from bundle json", e);
-                return (new List<IEntity>(), "error return none");
+                return l.Return(new List<IEntity>(), "error return none");
             }
-        });
+        }
 
         #endregion
 
@@ -354,26 +358,26 @@ namespace ToSic.Eav.Persistence.File
         /// If anything fails, just return a null
         /// </summary>
         /// <returns></returns>
-        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource relationshipSource = null) => Log.Func(l =>
+        private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource relationshipSource = null)
         {
-            l.A("Loading " + path);
+            var l = Log.Fn<IEntity>($"Loading {path}");
             try
             {
                 var json = System.IO.File.ReadAllText(path);
                 var entity = ser.DeserializeWithRelsWip(json, id, allowDynamic: true, skipUnknownType: false, relationshipSource);
-                return entity;
+                return l.ReturnAsOk(entity);
             }
             catch (IOException e)
             {
                 l.Ex($"Failed loading type - couldn't read file on '{path}'", e);
-                return null;
+                return l.ReturnNull();
             }
             catch (Exception e)
             {
                 l.Ex($"Failed loading type - couldn't deserialize '{path}' for unknown reason.", e);
-                return null;
+                return l.ReturnNull();
             }
-        });
+        }
 
         #endregion
 
@@ -382,14 +386,15 @@ namespace ToSic.Eav.Persistence.File
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        private bool CheckPathExists(string path) => Log.Func($"path: check exists '{path}'", l =>
+        private bool CheckPathExists(string path)
         {
-            if (Directory.Exists(path)) return (true, "ok");
+            var l = Log.Fn<bool>($"Check path exists: {path}");
+            if (Directory.Exists(path)) return l.ReturnTrue("ok");
             if (!IgnoreMissingStuff)
                 throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");
             l.A("path: doesn't exist, but ignore");
-            return (false, "not found");
-        });
+            return l.ReturnFalse("not found");
+        }
 
     }
 }

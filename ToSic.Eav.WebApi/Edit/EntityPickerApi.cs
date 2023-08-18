@@ -34,9 +34,9 @@ namespace ToSic.Eav.WebApi
         /// Returns a list of entities, optionally filtered by contentType.
         /// </summary>
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-        public IEnumerable<EntityForPickerDto> GetForEntityPicker(int appId, string[] items, string contentTypeName, bool withDrafts) => Log.Func(l =>
+        public IEnumerable<EntityForPickerDto> GetForEntityPicker(int appId, string[] items, string contentTypeName, bool withDrafts)
         {
-            l.A($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
+            var l = Log.Fn<IEnumerable<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
             AppRuntime.Init(appId, withDrafts);
             IContentType contentType = null;
@@ -45,10 +45,8 @@ namespace ToSic.Eav.WebApi
                 contentType = AppRuntime.AppState.GetContentType(contentTypeName);
                 l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
                 if (contentType == null)
-                {
-                    l.A("A type was specified but not found, will return empty list");
-                    return new List<EntityForPickerDto>();
-                }
+                    return l.Return(new List<EntityForPickerDto>(),
+                        "A type was specified but not found, will return empty list");
             }
 
             IEnumerable<IEntity> list;
@@ -87,9 +85,8 @@ namespace ToSic.Eav.WebApi
                 .OrderBy(set => set.Text.ToString())
                 .ToList();
 
-            l.A($"found⋮{entities.Count}");
-            return entities;
-        });
+            return l.Return(entities, $"found⋮{entities.Count}");
+        }
 
         private static string GetTitle(IEntity l, string[] dimensions)
         {

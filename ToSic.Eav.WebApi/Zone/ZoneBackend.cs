@@ -41,8 +41,10 @@ namespace ToSic.Eav.WebApi.Zone
         private readonly LazySvc<ILicenseService> _licenseService;
         private readonly ILogStoreLive _logStore;
 
-        public SystemInfoSetDto GetSystemInfo() => Log.Func($"{_site.Id}", () =>
+        public SystemInfoSetDto GetSystemInfo()
         {
+            var l = Log.Fn<SystemInfoSetDto>($"{_site.Id}");
+
             var zoneId = _site.ZoneId;
 
             var siteStats = new SiteStatsDto
@@ -66,8 +68,8 @@ namespace ToSic.Eav.WebApi.Zone
 
             // owner is coma separated list of all owners from enabled licenses 
             var owner = string.Join(", ", licenses.All
-                .Where(l => l.Enabled)
-                .Select(l => l.Owner)
+                .Where(ls => ls.Enabled)
+                .Select(ls => ls.Owner)
                 .Where(o => o.HasValue())
                 .Distinct());
             var license = new LicenseInfoDto
@@ -94,8 +96,8 @@ namespace ToSic.Eav.WebApi.Zone
                 Messages = warningsDto
             };
 
-            return info;
-        });
+            return l.ReturnAsOk(info);
+        }
 
         private int CountInsightsMessages(string prefix)
         {

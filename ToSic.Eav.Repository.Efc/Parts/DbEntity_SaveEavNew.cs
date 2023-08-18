@@ -10,9 +10,9 @@ namespace ToSic.Eav.Repository.Efc.Parts
     public partial class DbEntity
     {
 
-        private ToSicEavEntities CreateDbRecord(IEntity newEnt, int changeId, int contentTypeId
-        ) => Log.Func($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}", () =>
+        private ToSicEavEntities CreateDbRecord(IEntity newEnt, int changeId, int contentTypeId)
         {
+            var l = Log.Fn<ToSicEavEntities>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
             var dbEnt = new ToSicEavEntities
             {
                 AppId = DbContext.AppId,
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Repository.Efc.Parts
             };
 
             DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(dbEnt), "save new");
-            return (dbEnt, "ok");
-        });
+            return l.ReturnAsOk(dbEnt);
+        }
     }
 }

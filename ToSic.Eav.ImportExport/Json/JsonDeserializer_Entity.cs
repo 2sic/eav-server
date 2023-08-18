@@ -28,8 +28,9 @@ namespace ToSic.Eav.ImportExport.Json
             return entity;
         }
 
-        public JsonFormat UnpackAndTestGenericJsonV1(string serialized) => Log.Func(l =>
+        public JsonFormat UnpackAndTestGenericJsonV1(string serialized)
         {
+            var l = Log.Fn<JsonFormat>();
             JsonFormat jsonObj;
             try
             {
@@ -42,15 +43,15 @@ namespace ToSic.Eav.ImportExport.Json
 
             if (jsonObj._.V != 1)
                 throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
-            return (jsonObj, "ok");
-        });
+            return l.ReturnAsOk(jsonObj);
+        }
 
         public IEntity Deserialize(JsonEntity jEnt,
             bool allowDynamic,
             bool skipUnknownType,
-            IEntitiesSource dynRelationshipsSource = default
-        ) => Log.Func($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", l =>
+            IEntitiesSource dynRelationshipsSource = default)
         {
+            var l = Log.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
             // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
             var contentType = GetContentType(jEnt.Type.Id)
                               ?? (allowDynamic || skipUnknownType
@@ -109,12 +110,13 @@ namespace ToSic.Eav.ImportExport.Json
                 version: jEnt.Version);
 
 
-            return (newEntity, l.Try(() => $"'{newEntity?.GetBestTitle()}'", "can't get title"));
-        });
+            return l.Return(newEntity, l.Try(() => $"'{newEntity?.GetBestTitle()}'", "can't get title"));
+        }
 
-        private Target DeserializeEntityTarget(JsonEntity jEnt) => Log.Func(() =>
+        private Target DeserializeEntityTarget(JsonEntity jEnt)
         {
-            if (jEnt.For == null) return (new Target(), "no for found");
+            var l = Log.Fn<Target>();
+            if (jEnt.For == null) return l.Return(new Target(), "no for found");
 
             var mdFor = jEnt.For;
             var target = new Target(
@@ -127,11 +129,12 @@ namespace ToSic.Eav.ImportExport.Json
                 keyGuid: mdFor.Guid
             );
 
-            return (target, $"this is metadata; will construct 'For' object. Type: {mdFor.Target} ({mdFor.TargetType})");
-        });
+            return l.Return(target, $"this is metadata; will construct 'For' object. Type: {mdFor.Target} ({mdFor.TargetType})");
+        }
 
-        private IImmutableDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null) => Log.Func(() =>
+        private IImmutableDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
         {
+            var wrapLog = Log.Fn<IImmutableDictionary<string, IAttribute>>();
             var bld = Services.DataBuilder.Value;
             var attribs = new Dictionary<string, IAttribute>[]
             {
@@ -149,8 +152,8 @@ namespace ToSic.Eav.ImportExport.Json
                 .SelectMany(pair => pair)
                 .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
 
-            return final;
-        });
+            return wrapLog.ReturnAsOk(final);
+        }
 
         private Dictionary<string, IAttribute> BuildAttrib<T>(
             Dictionary<string, Dictionary<string, T>> list,
@@ -172,15 +175,18 @@ namespace ToSic.Eav.ImportExport.Json
             return newAttributes;
         }
 
-        private IImmutableDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource relationshipsSource = null
-        ) => Log.Func(() => contentType.Attributes.ToImmutableDictionary(
-            a => a.Name, 
-            a => 
-            {
-                var values = GetValues(a, jAtts, relationshipsSource);
-                return Services.DataBuilder.Attribute.Create(a.Name, a.Type, values);
-            },
-            InvariantCultureIgnoreCase));
+        private IImmutableDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource relationshipsSource = null)
+        {
+            var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
+            return l.ReturnAsOk(contentType.Attributes.ToImmutableDictionary(
+                a => a.Name,
+                a =>
+                {
+                    var values = GetValues(a, jAtts, relationshipsSource);
+                    return Services.DataBuilder.Attribute.Create(a.Name, a.Type, values);
+                },
+                InvariantCultureIgnoreCase));
+        }
 
         private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAtts, IEntitiesSource relationshipsSource = null)
         {
@@ -240,9 +246,9 @@ namespace ToSic.Eav.ImportExport.Json
                 .ToImmutableList();
 
 
-        private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid
-        ) => Log.Func(l =>
+        private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid)
         {
+            var l = Log.Fn<Dictionary<string, Dictionary<string, string>>>();
             try
             {
                 var converter = ((MyServices)Services).ValueConverter.Value;
@@ -253,18 +259,19 @@ namespace ToSic.Eav.ImportExport.Json
                         val => converter.ToValue(val.Value, entityGuid)
                     )
                 );
-                return (converted, "ok");
+                return l.ReturnAsOk(converted);
             }
             catch (Exception ex)
             {
                 l.A("Ran into an error. Will log bug ignore and return original");
                 l.Ex(ex);
-                return (links, "error/ignored");
+                return l.Return(links, "error/ignored");
             }
-        });
+        }
 
-        private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs) => Log.Func(l =>
+        private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs)
         {
+            var l = Log.Fn<Dictionary<string, Dictionary<string, T>>>();
             var result = new Dictionary<string, Dictionary<string, T>>();
             attribs.Cast<IAttribute<T>>().ToList().ForEach(a =>
             {
@@ -295,8 +302,8 @@ namespace ToSic.Eav.ImportExport.Json
                     throw l.Done(ex);
                 }
             });
-            return result;
-        });
+            return l.ReturnAsOk(result);
+        }
 
         public List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false) 
             => serialized.Select(s => Deserialize(s, allowDynamic)).ToList();

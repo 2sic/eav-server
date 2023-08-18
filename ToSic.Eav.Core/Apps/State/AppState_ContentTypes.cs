@@ -23,9 +23,10 @@ namespace ToSic.Eav.Apps
         /// </summary>
         /// <param name="contentTypes"></param>
         [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
-        public void InitContentTypes(IList<IContentType> contentTypes
-        ) => Log.Do($"contentTypes count: {contentTypes?.Count}", timer: true, action: () =>
+        public void InitContentTypes(IList<IContentType> contentTypes)
         {
+            var l = Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
+
             if (!Loading)
                 throw new Exception("trying to set content-types, but not in loading state. set that first!");
 
@@ -44,12 +45,15 @@ namespace ToSic.Eav.Apps
             // build types by name
             BuildCacheForTypesByName(_appContentTypesFromRepository);
             //ContentTypesShouldBeReloaded = false;
-        });
+
+            l.Done();
+        }
 
 
-        private void BuildCacheForTypesByName(IImmutableList<IContentType> allTypes
-        ) => Log.Do(message: $"build cache for type names for {allTypes.Count} items", timer: true, action: () =>
+        private void BuildCacheForTypesByName(IImmutableList<IContentType> allTypes)
         {
+            var l = Log.Fn(message: $"build cache for type names for {allTypes.Count} items", timer: true);
+
             _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
             var keepTypes = allTypes;
@@ -63,7 +67,9 @@ namespace ToSic.Eav.Apps
             foreach (var type in keepTypes)
                 if (!_appTypesByName.ContainsKey(type.Name))
                     _appTypesByName.Add(type.Name, type);
-        });
+
+            l.Done();
+        }
 
 	    private IImmutableList<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)
         {

@@ -23,9 +23,10 @@ namespace ToSic.Eav.ImportExport.Json
                 WriteIndented = indentation != 0
             });
 
-        public List<IContentType> GetContentTypesFromBundles(JsonFormat package) => Log.Func(l =>
+        public List<IContentType> GetContentTypesFromBundles(JsonFormat package)
         {
-            if (package.Bundles.SafeNone()) return (new List<IContentType>(), "none found");
+            var l = Log.Fn<List<IContentType>>();
+            if (package.Bundles.SafeNone()) return l.Return(new List<IContentType>(), "none found");
 
             // Prepare step-by-step for better logs
             var bundlesWithTypes = package.Bundles
@@ -40,12 +41,13 @@ namespace ToSic.Eav.ImportExport.Json
                 .Select(ConvertContentType)
                 .ToList();
 
-            return (result, $"{result.Count}");
-        });
+            return l.Return(result, $"{result.Count}");
+        }
 
-        public List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null) => Log.Func(l =>
+        public List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null)
         {
-            if (package.Bundles.SafeNone()) return (new List<IEntity>(), "none found");
+            var l = Log.Fn<List<IEntity>>();
+            if (package.Bundles.SafeNone()) return l.Return(new List<IEntity>(), "none found");
 
             // Prepare step-by-step for better logs
             var bundlesWithEntities = package.Bundles
@@ -60,7 +62,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .Select(e => Deserialize(e, true, false, relationshipSource))
                 .ToList();
 
-            return (result, $"{result.Count}");
-        });
+            return l.Return(result, $"{result.Count}");
+        }
     }
 }

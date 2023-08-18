@@ -22,9 +22,10 @@ namespace ToSic.Eav.Apps
         public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target)
             => GetStack(target, null);
 
-        public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity viewPart
-        ) => Log.Func($"target: {target.Target}, Has View: {viewPart != null}", l =>
+        public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity viewPart)
         {
+            var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(
+                $"target: {target.Target}, Has View: {viewPart != null}");
             // "View" Settings/Resources - always add, no matter if null, so the key always exists
             var sources = new List<KeyValuePair<string, IPropertyLookup>>
             {
@@ -33,17 +34,20 @@ namespace ToSic.Eav.Apps
 
             // All in the App and below
             sources.AddRange(GetOrGenerate(target).FullStack(Log));
-            return (sources, $"Has {sources.Count}");
-        });
+            return l.ReturnAndLog(sources, $"Has {sources.Count}");
+        }
 
         public const string PiggyBackId = "app-stack-";
 
-        private AppStateStackCache GetOrGenerate(AppThingsIdentifiers target) => Log.Func(target.Target.ToString(),
-            () => Owner.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target))
-        );
-
-        private AppStateStackCache Get(AppThingsIdentifiers target) => Log.Func(l =>
+        private AppStateStackCache GetOrGenerate(AppThingsIdentifiers target)
         {
+            var l = Log.Fn<AppStateStackCache>(target.Target.ToString());
+            return l.ReturnAndLog(Owner.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target)));
+        }
+
+        private AppStateStackCache Get(AppThingsIdentifiers target)
+        {
+            var l = Log.Fn<AppStateStackCache>(target.Target.ToString());
             // Site should be skipped on the global zone
             l.A($"Owner: {Owner.Show()}");
             var site = Owner.ZoneId == Constants.DefaultZoneId ? null : _appStates.GetPrimaryApp(Owner.ZoneId, Log);
@@ -60,7 +64,7 @@ namespace ToSic.Eav.Apps
 
             var stackCache = new AppStateStackCache(Owner, ancestorIfNotPreset, site, global, preset, target);
 
-            return (stackCache, "created");
-        });
+            return l.ReturnAndLog(stackCache, "created");
+        }
     }
 }

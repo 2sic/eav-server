@@ -95,11 +95,12 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// <summary>
         /// Get a Pipeline with DataSources
         /// </summary>
-        public QueryDefinitionDto Get(int appId, int? id = null) => Log.Func($"a#{appId}, id:{id}", l2 =>
+        public QueryDefinitionDto Get(int appId, int? id = null)
         {
+            var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
             var query = new QueryDefinitionDto();
 
-            if (!id.HasValue) return (query, "no id, empty");
+            if (!id.HasValue) return l.Return(query, "no id, empty");
 
             var reader = Services.AppReaderLazy.Value.Init(appId);
             var qDef = reader.Queries.Get(id.Value);
@@ -124,14 +125,15 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             #endregion
 
-            return (query, "ok");
-        });
+            return l.ReturnAsOk(query);
+        }
 
         /// <summary>
         /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
         /// </summary>
-        public IEnumerable<DataSourceDto> DataSources() => Log.Func(() =>
+        public IEnumerable<DataSourceDto> DataSources()
         {
+            var l = Log.Fn<IEnumerable<DataSourceDto>>($"a#{_appId}");
             var dsCat = Services.DataSourceCatalogLazy.Value;
             var installedDataSources = Services.DataSourceCatalogLazy.Value.GetAll(true, _appId);
 
@@ -139,8 +141,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 .Select(ds => new DataSourceDto(ds, ds.VisualQuery?.DynamicOut == true ? null : dsCat.GetOutStreamNames(ds)))
                 .ToList();
 
-            return (result, result.Count.ToString());
-        });
+            return l.Return(result, result.Count.ToString());
+        }
 
         /// <summary>
         /// Save Pipeline
@@ -148,8 +150,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// <param name="data">JSON object { pipeline: pipeline, dataSources: dataSources }</param>
         /// <param name="appId">AppId this Pipeline belongs to</param>
         /// <param name="id">PipelineEntityId</param>
-        public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id) => Log.Func($"save pipe: a#{appId}, id#{id}", l =>
+        public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id)
         {
+            var l = Log.Fn<QueryDefinitionDto>($"save pipe: a#{appId}, id#{id}");
             // assemble list of all new data-source guids, for later re-mapping when saving
             var newDsGuids = data.DataSources.Where(d => d.ContainsKey("EntityGuid"))
                 .Select(d => d["EntityGuid"].ToString())
@@ -165,8 +168,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
-            return Get(appId, id);
-        });
+            return l.ReturnAsOk(Get(appId, id));
+        }
 
         /// <summary>
         /// Query the Result of a Pipeline using Test-Parameters
@@ -196,9 +199,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
         }
 
         protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top,
-            Func<(IDataSource Main, Dictionary<string, IDataSource> DataSources), IDataSource> partLookup
-        ) => Log.Func($"a#{appId}, {nameof(id)}:{id}, top: {top}", () =>
+            Func<(IDataSource Main, Dictionary<string, IDataSource> DataSources), IDataSource> partLookup) 
         {
+            var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
             // Get the query, run it and track how much time this took
             var qDef = QueryBuilder.GetQueryDefinition(appId, id);
             var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
@@ -239,8 +242,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
                     Ticks = timer.ElapsedTicks
                 }
             };
-            return (result, "ok");
-        });
+            return l.ReturnAsOk(result);
+        }
 
 
         /// <summary>
@@ -255,8 +258,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
 		public bool Delete(int id) => _appManager.Queries.Delete(id);
 
 
-        public bool Import(EntityImportDto args) => Log.Func(args.DebugInfo, l =>
+        public bool Import(EntityImportDto args)
         {
+            var l = Log.Fn<bool>(args.DebugInfo);
             try
             {
                 var deser = Services.JsonSerializer.New().SetApp(_appManager.AppState);
@@ -264,14 +268,14 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 var qdef = QueryBuilder.Create(ents, args.AppId);
                 _appManager.Queries.SaveCopy(qdef);
 
-                return true;
+                return l.ReturnTrue();
             }
             catch (Exception ex)
             {
                 l.Ex(ex);
                 throw new Exception($"Couldn't import - {ex?.Message ?? "probably bad file format"}.", ex);
             }
-        });
+        }
 
     }
 }

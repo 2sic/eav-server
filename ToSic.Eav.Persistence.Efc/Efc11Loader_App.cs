@@ -162,31 +162,32 @@ namespace ToSic.Eav.Persistence.Efc
         /// </summary>
         /// <param name="appId"></param>
         /// <returns></returns>
-        private (string Name, string Path) PreLoadAppPath(int appId) => Log.Func(l =>
+        private (string Name, string Path) PreLoadAppPath(int appId)
         {
+            var l = Log.Fn<(string Name, string Path)>(appId.ToString());
             var nullTuple = (null as string, null as string);
             try
             {
                 // Get all Entities in the 2SexyContent-App scope
                 var dbEntity = GetRawEntities(Array.Empty<int>(), appId, false, AppLoadConstants.TypeAppConfig);
-                if (!dbEntity.Any()) return (nullTuple, "not in db");
+                if (!dbEntity.Any()) return l.Return(nullTuple, "not in db");
 
                 // Get the first one as it should be the one containing the App-Configuration
                 // WARNING: This looks a bit fishy, I think it shouldn't just assume the first one is the right one
                 var json = dbEntity.FirstOrDefault()?.Json;
-                if (string.IsNullOrEmpty(json)) return (nullTuple, "no json");
+                if (string.IsNullOrEmpty(json)) return l.Return(nullTuple, "no json");
 
                 l.A("app Entity found - this json: " + json);
                 var serializer = _dataDeserializer.New(); // ServiceProvider.Build<IDataDeserializer>();
                 serializer.Initialize(appId, new List<IContentType>(), null);
                 if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
-                    return (nullTuple, "can't deserialize");
+                    return l.Return(nullTuple, "can't deserialize");
                 var path = appEntity.Value<string>(AppLoadConstants.FieldFolder);
                 var name = appEntity.Value<string>(AppLoadConstants.FieldName);
 
                 return string.IsNullOrWhiteSpace(path)
-                    ? ((name, path), "no folder")
-                    : ((name, path), path);
+                    ? l.Return((name, path), "no folder")
+                    : l.Return((name, path), path);
             }
             catch (Exception ex)
             {
@@ -194,8 +195,8 @@ namespace ToSic.Eav.Persistence.Efc
                 l.Ex(ex);
             }
 
-            return (nullTuple, "error");
-        });
+            return l.Return(nullTuple, "error");
+        }
 
         #endregion
 

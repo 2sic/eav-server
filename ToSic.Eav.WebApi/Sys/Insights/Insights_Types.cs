@@ -12,8 +12,9 @@ namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal
     {
-        private string Types(int? appId = null) => Log.Func(l =>
+        private string Types(int? appId = null)
         {
+            var l = Log.Fn<string>();
             if (appId == null)
                 return "please add appid to the url parameters";
 
@@ -23,11 +24,13 @@ namespace ToSic.Eav.WebApi.Sys
 
             var msg = TypesTable(appId.Value, pkg.ContentTypes, pkg.List);
 
-            return msg;
-        });
+            return l.ReturnAsOk(msg);
+        }
 
-        private string TypesTable(int appId, IEnumerable<IContentType> typesA, IReadOnlyCollection<IEntity> items) => Log.Func(l =>
+        private string TypesTable(int appId, IEnumerable<IContentType> typesA, IReadOnlyCollection<IEntity> items)
         {
+            var l = Log.Fn<string>($"appId:{appId}");
+
             var msg = H1($"App types for {appId}\n").ToString();
             try
             {
@@ -88,8 +91,8 @@ namespace ToSic.Eav.WebApi.Sys
                 l.Ex(ex);
             }
 
-            return msg;
-        });
+            return l.ReturnAsOk(msg);
+        }
 
         private string GlobalTypes()
         {
@@ -106,8 +109,10 @@ namespace ToSic.Eav.WebApi.Sys
                 : _logHtml.DumpTree("Log for Global Types loading", log));
         }
 
-        private string TypeMetadata(int? appId = null, string type = null) => Log.Func(l =>
+        private string TypeMetadata(int? appId = null, string type = null)
         {
+            var l = Log.Fn<string>($"appId:{appId}");
+            
             if (UrlParamsIncomplete(appId, type, out var message))
                 return message;
 
@@ -117,11 +122,13 @@ namespace ToSic.Eav.WebApi.Sys
             var msg = H1($"Metadata for {typ.Name} ({typ.NameId}) in {appId}\n").ToString();
             var metadata = typ.Metadata.ToList();
 
-            return MetadataTable(msg, metadata);
-        });
+            return l.ReturnAsOk(MetadataTable(msg, metadata));
+        }
 
-        private string TypePermissions(int? appId = null, string type = null) => Log.Func(l =>
+        private string TypePermissions(int? appId = null, string type = null)
         {
+            var l = Log.Fn<string>($"appId:{appId}");
+            
             if (UrlParamsIncomplete(appId, type, out var message))
                 return message;
 
@@ -131,8 +138,8 @@ namespace ToSic.Eav.WebApi.Sys
             var msg = H1($"Permissions for {typ.Name} ({typ.NameId}) in {appId}\n").ToString();
             var metadata = typ.Metadata.Permissions.Select(p => p.Entity).ToList();
 
-            return MetadataTable(msg, metadata);
-        });
+            return l.ReturnAsOk(MetadataTable(msg, metadata));
+        }
 
     }
 }

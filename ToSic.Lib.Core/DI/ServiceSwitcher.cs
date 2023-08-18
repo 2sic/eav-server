@@ -23,8 +23,10 @@ namespace ToSic.Lib.DI
         public T Value => _preferredService.Get(FindServiceInSwitcher);
         private readonly GetOnce<T> _preferredService = new GetOnce<T>();
 
-        private T FindServiceInSwitcher() => Log.Func(l =>
+        private T FindServiceInSwitcher()
         {
+            var l = Log.Fn<T>();
+            
             var all = AllServices;
             if (all == null || !all.Any())
                 throw new ArgumentException(
@@ -32,11 +34,11 @@ namespace ToSic.Lib.DI
 
             foreach (var svc in all.OrderByDescending(s => s.Priority))
                 if (svc.IsViable())
-                    return (svc, $"Will keep '{svc.NameId}'");
+                    return l.ReturnAndLog(svc, $"Will keep '{svc.NameId}'");
                 else l.A($"Service '{svc.NameId}' not viable");
 
             throw new ArgumentException($"No viable services found for type '{typeof(T).FullName}'");
-        });
+        }
 
 
         public bool IsValueCreated => _preferredService.IsValueCreated;

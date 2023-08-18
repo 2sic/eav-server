@@ -11,8 +11,9 @@ namespace ToSic.Eav.Persistence.File
 {
     public partial class Runtime
     {
-        private List<IEntity> LoadGlobalEntities(AppState appState) => Log.Func(l =>
+        private List<IEntity> LoadGlobalEntities(AppState appState)
         {
+            var l = Log.Fn<List<IEntity>>($"appId:{appState.AppId}");
             // Set TypeID seed for loader so each loaded type has a unique ID
             var loaderIndex = 1;
             Loaders.ForEach(ldr => ldr.EntityIdSeed = FsDataConstants.GlobalEntityIdMin + FsDataConstants.GlobalEntitySourceSkip * loaderIndex++);
@@ -61,14 +62,15 @@ namespace ToSic.Eav.Persistence.File
                 return (entitiesDeduplicated);
             });
 
-            return (final, "ok");
-        });
+            return l.ReturnAsOk(final);
+        }
 
         private List<IEntity> LoadGlobalEntitiesFromAllLoaders(
             string groupIdentifier,
             DirectEntitiesSource relationshipSource,
-            AppState appState) => Log.Func(groupIdentifier, l =>
+            AppState appState) 
         {
+            var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}");
             if (!FsDataConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
                 throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
                     "atm we can only load items of type " + string.Join("/", FsDataConstants.EntityItemFolders));
@@ -81,9 +83,8 @@ namespace ToSic.Eav.Persistence.File
                 entities.AddRange(loader.Entities(groupIdentifier, loader.EntityIdSeed, relationshipSource));
             }
 
-            l.A($"{entities.Count} items of type {groupIdentifier}");
-            return (entities, $"{entities.Count}");
-        });
+            return l.Return(entities, $"{entities.Count} items of type {groupIdentifier}");
+        }
 
         
         internal class EntitySetsToLoad
