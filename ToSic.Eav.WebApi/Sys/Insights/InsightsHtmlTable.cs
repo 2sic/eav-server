@@ -6,7 +6,18 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 {
     internal class InsightsHtmlTable: InsightsHtmlBase
     {
+        internal static IHtmlTag HeadFieldsLeft(params object[] fields) 
+            => HeadFieldsImplementation(fields.Select(f => f is SpecialField fs ? fs : SpecialField.Left(f)).ToArray());
+
         internal static IHtmlTag HeadFields(params object[] fields)
+            => HeadFieldsImplementation(fields);
+            //    Thead(
+            //    Tr(
+            //        fields
+            //            .Where(f => f != null)
+            //            .Select(fresh => DataToCell(fresh, true, true)))
+            //);
+        private static IHtmlTag HeadFieldsImplementation(object[] fields)
             => Thead(
                 Tr(
                     fields

@@ -69,23 +69,30 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         public IEnumerable<LicenseDto> Summary()
         {
             var licSer = _licenseServiceLazy.Value;
-            var licenses = _licenseCatalog.Value.List.OrderBy(l => l.Priority);
+            var licenses = _licenseCatalog.Value.List
+                .Where(l => !l.FeatureLicense)
+                .OrderBy(l => l.Priority);
 
             var features = _featuresLazy.Value.All;
 
             return licenses
-                .Select(l => new LicenseDto
+                .Select(l =>
                 {
-                    Name = l.Name,
-                    Priority = l.Priority,
-                    Guid = l.Guid,
-                    Description = l.Description,
-                    AutoEnable = l.AutoEnable,
-                    IsEnabled = licSer.IsEnabled(l),
-                    Features = features
-                        .Where(f => f.License?.Name == l.Name)
-                        .OrderBy(f => f.NameId)
-                        .ToList()
+                    var state = licSer.State(l);
+                    return new LicenseDto
+                    {
+                        Name = l.Name,
+                        Priority = l.Priority,
+                        Guid = l.Guid,
+                        Description = l.Description,
+                        AutoEnable = l.AutoEnable,
+                        IsEnabled = licSer.IsEnabled(l),
+                        Expires = state?.Expiration,
+                        Features = features
+                            .Where(f => f.License?.Name == l.Name)
+                            .OrderBy(f => f.NameId)
+                            .ToList()
+                    };
                 });
         }
 

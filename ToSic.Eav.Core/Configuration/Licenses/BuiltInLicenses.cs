@@ -20,6 +20,8 @@ namespace ToSic.Eav.Configuration.Licenses
 {
     public class BuiltInLicenses
     {
+        public const int TestLicensesBaseId = 9000;
+        public const int FeatureLicensesBaseId = 9900;
 
         // IMPORTANT
         // The guids of these licenses must match the ones in the 2sxc.org license management list
@@ -66,7 +68,7 @@ namespace ToSic.Eav.Configuration.Licenses
         };
 
         public static readonly LicenseDefinition PatronAdvancedCms = new LicenseDefinition(102,
-            "Patron Advanced",
+            "Patron Advanced CMS",
             new Guid("e23ef849-f50c-47a5-81dd-33fb17727305"),
             "Patrons with advanced needs in advanced CMS features."
         );
@@ -102,7 +104,7 @@ namespace ToSic.Eav.Configuration.Licenses
         );
 
 #if DEBUG
-        public static readonly LicenseDefinition CoreTesting = new LicenseDefinition(9999,
+        public static readonly LicenseDefinition CoreTesting = new LicenseDefinition(TestLicensesBaseId,
             "Testing",
             new Guid("5c7b019d-3289-4d6e-bda1-6c165d3fa1e0"),
             "This is just for testing - it doesn't do anything."

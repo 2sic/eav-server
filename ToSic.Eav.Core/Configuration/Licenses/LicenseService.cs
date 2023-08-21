@@ -37,6 +37,8 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <inheritdoc />
         public bool IsEnabled(LicenseDefinition license) => EnabledCache.ContainsKey(license.Guid);
 
+        public LicenseState State(LicenseDefinition license) => EnabledCache.TryGetValue(license.Guid, out var result) ? result : null;
+
         #endregion
 
         #region Internal stuff, caching, static

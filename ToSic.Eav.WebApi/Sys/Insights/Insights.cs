@@ -15,6 +15,7 @@ namespace ToSic.Eav.WebApi.Sys
 {
     public partial class InsightsControllerReal: ServiceBase
     {
+        private readonly LazySvc<LicenseCatalog> _licenseCatalog;
         private readonly LazySvc<SystemFingerprint> _fingerprint;
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly Generator<AppRuntime> _appRuntimeGenerator;
@@ -27,6 +28,7 @@ namespace ToSic.Eav.WebApi.Sys
             ILogStoreLive logStore, 
             LazySvc<ILicenseService> licenseServiceLazy, 
             LazySvc<SystemFingerprint> fingerprint,
+            LazySvc<LicenseCatalog> licenseCatalog,
             IUser user, 
             LightSpeedStats lightSpeedStats,
             Generator<AppRuntime> appRuntimeGenerator,
@@ -38,6 +40,7 @@ namespace ToSic.Eav.WebApi.Sys
                 _logStore = logStore,
                 _licenseServiceLazy = licenseServiceLazy,
                 _fingerprint = fingerprint,
+                _licenseCatalog = licenseCatalog,
                 _user = user,
                 _lightSpeedStats = lightSpeedStats,
                 _appRuntimeGenerator = appRuntimeGenerator,

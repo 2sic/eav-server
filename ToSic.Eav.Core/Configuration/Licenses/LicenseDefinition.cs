@@ -15,7 +15,6 @@
  *
  */
 using System;
-using ToSic.Eav.Data;
 using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Configuration.Licenses
@@ -27,25 +26,28 @@ namespace ToSic.Eav.Configuration.Licenses
     {
         public const string ConditionIsLicense = "license";
 
-        public LicenseDefinition(int priority, string name, Guid guid, string description)
+        public LicenseDefinition(int priority, string name, Guid guid, string description, bool featureLicense = false)
         {
             Priority = priority;
             Name = name;
             Guid = guid;
             Description = description ?? "";
             Condition = new Condition(ConditionIsLicense, guid.ToString());
+            FeatureLicense = featureLicense;
         }
 
-        public readonly int Priority;
+        public int Priority { get; }
 
         public string Name { get; }
 
         public string NameId => Guid.ToString();
 
-        public readonly Guid Guid;
-        public bool AutoEnable = false;
-        public string Description;
+        public Guid Guid { get; }
+        public bool AutoEnable { get; set; } = false;
+        public string Description { get; }
         public LicenseDefinition[] AlsoInheritEnabledFrom = Array.Empty<LicenseDefinition>();
+
+        public bool FeatureLicense { get; }
 
         public Condition Condition { get; }
     }
