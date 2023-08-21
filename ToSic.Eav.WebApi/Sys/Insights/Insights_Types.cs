@@ -7,6 +7,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using static ToSic.Razor.Blade.Tag;
 using ToSic.Eav.WebApi.Sys.Insights;
+using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 
 namespace ToSic.Eav.WebApi.Sys
 {
@@ -68,7 +69,8 @@ namespace ToSic.Eav.WebApi.Sys
                         ++count,
                         type.Scope,
                         type.NameId,
-                        type.Name,
+                        HtmlEncode(type.Name),
+                        //type.Name,
                         LinkTo($"{type.Attributes.Count()}", nameof(Attributes), appId, type: type.NameId),
                         LinkTo($"{type.Metadata.Count()}", nameof(TypeMetadata), appId, type: type.NameId),
                         LinkTo($"{type.Metadata.Permissions.Count()}", nameof(TypePermissions), appId, type: type.NameId),
