@@ -79,7 +79,7 @@ namespace ToSic.Eav.DataSource
             public IImmutableDictionary<string, string> ValuesFromAnonymous(object original)
             {
                 if (original == null || !original.IsAnonymous()) return null;
-                return ValuesFromDictionary(original.ObjectToDictionaryInvariant());
+                return ValuesFromDictionary(original.ToDicInvariantInsensitive());
             }
 
             public IImmutableDictionary<string, string> ValuesFromDictionary(IDictionary<string, string> original)

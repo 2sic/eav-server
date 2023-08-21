@@ -62,8 +62,10 @@ namespace ToSic.Eav.WebApi.SaveHelpers
         /// Generate pairs of guid/id of the newly added items
         /// </summary>
         /// <returns></returns>
-        public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items, AppState appState) => Log.Func(l =>
+        public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items, AppState appState)
         {
+            var l = Log.Fn<Dictionary<Guid, int>>();
+            
             var idList = items.Select(e =>
                 {
                     var foundEntity = appEntities.Get(e.Header.Guid);
@@ -74,8 +76,8 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 })
                 .Where(e => e != null)
                 .ToDictionary(f => f.EntityGuid, f => f.EntityId);
-            return idList;
-        });
+            return l.ReturnAsOk(idList);
+        }
 
     }
 }

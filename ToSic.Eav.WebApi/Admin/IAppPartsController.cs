@@ -1,8 +1,13 @@
 ﻿using ToSic.Eav.WebApi.Dto;
+#if NETFRAMEWORK
+using THttpResponseType = System.Net.Http.HttpResponseMessage;
+#else
+using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
+#endif
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public interface IAppPartsController<THttpResponseType>
+    public interface IAppPartsController
     {
         /// <summary>
         /// Used to be GET ImportExport/ExportContent

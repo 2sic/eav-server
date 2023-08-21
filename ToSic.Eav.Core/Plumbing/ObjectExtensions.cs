@@ -50,6 +50,9 @@ namespace ToSic.Eav.Plumbing
         public static (bool Success, T Value) TryConvert<T>(this object value, bool numeric = false, bool truthy = false)
         {
             if (value is null) return (false, default);
+            // 2023-08-18 2dm: Added minor optimization; remove comment by EOY if no problems
+            if (value is T alreadyTyped) return (true, alreadyTyped);
+
             var t = typeof(T);
             var unboxedT = t.UnboxIfNullable();
 

@@ -9,11 +9,11 @@ namespace ToSic.Eav.Repository.Efc.Parts
 {
     public partial class DbEntity
     {
-        private (int ContentTypeId, List<ToSicEavAttributes> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails
-        ) => Log.Func($"json: {saveJson}", l =>
+        private (int ContentTypeId, List<ToSicEavAttributes> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
         {
+            var l = Log.Fn<(int, List<ToSicEavAttributes>)>($"json: {saveJson}");
             if (saveJson)
-                return ((RepoIdForJsonEntities, null), $"json - no attributes, CT: {RepoIdForJsonEntities}");
+                return l.Return((RepoIdForJsonEntities, null), $"json - no attributes, CT: {RepoIdForJsonEntities}");
 
             // 2023-02-28 2dm now #immutable, so the ID is not updated when a type was just imported
             // So if the TypeId is 0 (or anything invalid) it's a new type, and must be retrieved first
@@ -37,8 +37,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
                 l.A(l.Try(() =>
                     $"attribs: [{string.Join(",", attributes.Select(a => $"{a.AttributeId}:{a.StaticName}"))}]"));
 
-            return ((contentTypeId, attributes), $"{contentTypeId} / attribDefs⋮{attributes.Count}");
-        });
+            return l.Return((contentTypeId, attributes), $"{contentTypeId} / attribDefs⋮{attributes.Count}");
+        }
 
         private readonly Dictionary<string, int> _ctNameIdCache = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
         private readonly Dictionary<int, List<ToSicEavAttributes>> _ctCache = new Dictionary<int, List<ToSicEavAttributes>>();

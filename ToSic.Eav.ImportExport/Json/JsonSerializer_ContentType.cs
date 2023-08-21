@@ -19,8 +19,9 @@ namespace ToSic.Eav.ImportExport.Json
             return simple;
         }
 
-        public JsonFormat ToPackage(IContentType contentType, bool includeSharedTypes) => Log.Func(contentType.Name, l =>
+        public JsonFormat ToPackage(IContentType contentType, bool includeSharedTypes)
         {
+            var l = Log.Fn<JsonFormat>(contentType.Name);
             var package = new JsonFormat { ContentType = ToJson(contentType, includeSharedTypes) };
 
             // now v12 - try to include metadata items
@@ -47,8 +48,8 @@ namespace ToSic.Eav.ImportExport.Json
                 l.Ex(ex);
             }
 
-            return package;
-        });
+            return l.ReturnAsOk(package);
+        }
 
         public JsonContentType ToJson(IContentType contentType)
             => ToJson(contentType, false);

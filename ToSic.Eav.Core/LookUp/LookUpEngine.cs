@@ -69,68 +69,71 @@ namespace ToSic.Eav.LookUp
 
         public void Link(ILookUpEngine downstream) => Downstream = downstream;
         
-        public DicString LookUp(DicString values, int depth = 4) => Log.Func($"values: {values.Count}, depth: {depth}", () =>
+        public DicString LookUp(DicString values, int depth = 4)
         {
+            var l = Log.Fn<DicString>($"values: {values.Count}, depth: {depth}");
             // start by creating a copy of the dictionary
             values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
 
             if (values.Count == 0)
-                return (values, "no values");
+                return l.Return(values, "no values");
 
-            #region Loop through all config-items and token-replace them
+            // Loop through all config-items and token-replace them
             foreach (var o in values.ToList())
             {
                 // check if the string contains a token or not
                 if (!TokenReplace.ContainsTokens(o.Value))
                 {
-                    if (LogDetailed) Log.A($"token '{o.Key}={o.Value}' has no sub-tokens");
+                    l.A(LogDetailed, $"token '{o.Key}={o.Value}' has no sub-tokens");
                     continue;
                 }
 
                 var result = _reusableTokenReplace.ReplaceTokens(o.Value, depth); // with 2 further recurrences
-                if (LogDetailed) Log.A($"token '{o.Key}={o.Value}' is now '{result}'");
+                l.A(LogDetailed, $"token '{o.Key}={o.Value}' is now '{result}'");
                 values[o.Key] = result;
             }
-            #endregion
 
-            return (values, "ok");
-        });
+            return l.ReturnAsOk(values);
+        }
 
-        public DicString LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4
-        ) => Log.Func($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}", l =>
+        public DicString LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4)
         {
+            var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
             // start by creating a copy of the dictionary
             values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
 
             if (values.Count == 0)
-                return (values, "no values");
+                return l.Return(values, "no values");
 
             // if there are instance-specific additional Property-Access objects, add them to the sources-list
             // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
             if (overrides == null || overrides.Count <= 0)
-                return (LookUp(values, depth), "ok");
+                return l.ReturnAsOk(LookUp(values, depth));
 
             var innerLookup = new LookUpEngine(this, Log);
             foreach (var pa in overrides)
                 innerLookup.Sources.Add(pa.Key, pa.Value);
-            return (innerLookup.LookUp(values, depth), "ok");
-        });
+            return l.ReturnAsOk(innerLookup.LookUp(values, depth));
+        }
 
 
         /// <inheritdoc />
         public void Add(ILookUp lookUp)
         {
-            if (LogDetailed) Log.A($"Add source: '{lookUp.Name}'");
+            Log.A(LogDetailed, $"Add/replace source: '{lookUp.Name}'");
             Sources[lookUp.Name] = lookUp;
+        }
+
+        public void Add(IEnumerable<ILookUp> lookUps)
+        {
+            foreach (var lookUp in lookUps) Add(lookUp);
         }
 
         /// <inheritdoc />
         public void AddOverride(ILookUp lookUp) => Log.Do(() =>
         {
             if (Sources.ContainsKey(lookUp.Name))
-                Sources[lookUp.Name] =
-                    new LookUpInLookUps(lookUp.Name, lookUp,
-                        Sources[lookUp.Name]);
+                Sources[lookUp.Name] = new LookUpInLookUps(lookUp.Name, lookUp, Sources[lookUp.Name]);
             else
                 Sources.Add(lookUp.Name, lookUp);
         }, enabled: LogDetailed);

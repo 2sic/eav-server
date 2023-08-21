@@ -70,9 +70,13 @@ namespace ToSic.Eav.Configuration.Licenses
         internal void LoadLicenses() => Log.Do(timer: true, action: l=>
         {
             var fingerprint = _fingerprint.GetFingerprint();
+            l.A($"fingerprint:{fingerprint?.Length}");
+
             var validEntFps = _fingerprint.EnterpriseFingerprintsWIP
                 .Where(e => e.Valid)
                 .ToList();
+            l.A($"validEntFps:{validEntFps?.Count}");
+
             try
             {
                 var licensesStored = LoadLicensesInConfigFolder();
@@ -173,9 +177,9 @@ namespace ToSic.Eav.Configuration.Licenses
                         Title = licenseStored.Title,
                         License = licDef,
                         EntityGuid = licenseStored.GuidSalt,
-                        LicenseKey = licenseStored.Key,
+                        LicenseKey = licenseStored.Key ?? LicenseKeyDescription,
                         Expiration = storedDetails.Expires ?? licenseStored.Expires,
-                        ExpirationIsValid = validDate,
+                        ExpirationIsValid = DateTime.Now.CompareTo(storedDetails.Expires ?? licenseStored.Expires) <= 0,
                         FingerprintIsValid = validFp,
                         SignatureIsValid = validSig,
                         VersionIsValid = validVersion,
@@ -186,7 +190,10 @@ namespace ToSic.Eav.Configuration.Licenses
 
             return (licenseStates, licenseStates.Count.ToString());
         });
-        
+
+        // license key description on this system
+        private const string LicenseKeyDescription = "system license";
+
         /// <summary>
         /// Get list of licenses which are always auto-enabled
         /// </summary>

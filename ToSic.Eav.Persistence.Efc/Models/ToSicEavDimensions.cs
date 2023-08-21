@@ -7,6 +7,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public ToSicEavDimensions()
         {
             ToSicEavValuesDimensions = new HashSet<ToSicEavValuesDimensions>();
+            Active = true;
         }
 
         //public int DimensionId { get; set; }

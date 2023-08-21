@@ -41,9 +41,8 @@ namespace ToSic.Eav.Data
 
                 if (dynEntityWithTitle == null) return (null, "no matching child");
 
-                var result = new PropReqResult(new List<IEntity> { dynEntityWithTitle }, path)
+                var result = new PropReqResult(result: new List<IEntity> { dynEntityWithTitle }, fieldType: DataTypes.Entity, path: path)
                 {
-                    FieldType = DataTypes.Entity,
                     Name = field,
                     Source = parentDynEntity,
                     SourceIndex = 0,

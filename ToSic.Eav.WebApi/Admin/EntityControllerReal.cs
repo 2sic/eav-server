@@ -7,22 +7,27 @@ using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.ImportExport;
-using ToSic.Eav.WebApi.Plumbing;
+using ToSic.Eav.WebApi.Infrastructure;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
+#if NETFRAMEWORK
+using THttpResponseType = System.Net.Http.HttpResponseMessage;
+#else
+using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
+#endif
 
 namespace ToSic.Eav.WebApi.Admin
 {
-    public class EntityControllerReal<THttpResponseType> : ServiceBase, IEntityController<THttpResponseType> 
+    public class EntityControllerReal : ServiceBase, IEntityController 
     {
         public const string LogSuffix = "Entity";
         public EntityControllerReal(
             LazySvc<IContextOfSite> context, 
             LazySvc<IAppStates> appStates, 
             LazySvc<EntityApi> entityApi, 
-            LazySvc<ContentExportApi<THttpResponseType>> contentExport, 
+            LazySvc<ContentExportApi> contentExport, 
             LazySvc<ContentImportApi> contentImport, 
             LazySvc<IUser> user,
-            ResponseMaker<THttpResponseType> responseMaker)
+            IResponseMaker responseMaker)
             : base("Api.EntityRl") =>
             ConnectServices(
                 _context = context,
@@ -37,10 +42,10 @@ namespace ToSic.Eav.WebApi.Admin
         private readonly LazySvc<IContextOfSite> _context;
         private readonly LazySvc<IAppStates> _appStates;
         private readonly LazySvc<EntityApi> _entityApi;
-        private readonly LazySvc<ContentExportApi<THttpResponseType>> _contentExport;
+        private readonly LazySvc<ContentExportApi> _contentExport;
         private readonly LazySvc<ContentImportApi> _contentImport;
         private readonly LazySvc<IUser> _user;
-        private readonly ResponseMaker<THttpResponseType> _responseMaker;
+        private readonly IResponseMaker _responseMaker;
 
 
         /// <inheritdoc/>

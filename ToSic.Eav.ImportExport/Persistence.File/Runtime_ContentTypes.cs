@@ -8,8 +8,9 @@ namespace ToSic.Eav.Persistence.File
 {
     public partial class Runtime
     {
-        public List<IContentType> LoadGlobalContentTypes() => Log.Func(() =>
+        public List<IContentType> LoadGlobalContentTypes()
         {
+            var l = Log.Fn<List<IContentType>>();
             // Set TypeID seed for loader so each loaded type has a unique ID
             var loaderIndex = 1;
             Loaders.ForEach(ldr => ldr.TypeIdSeed = FsDataConstants.GlobalContentTypeMin + FsDataConstants.GlobalContentTypeSourceSkip * loaderIndex++);
@@ -31,8 +32,8 @@ namespace ToSic.Eav.Persistence.File
             //types = SetTypesOfContentTypeParts(types);
             var types = delayedContentTypeProvider.ProcessSubEntitiesOnTypes();
 
-            return (types, $"found {types.Count} types");
-        });
+            return l.Return(types, $"found {types.Count} types");
+        }
 
         
         //private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> typesDistinct) => Log.Func(timer: true, func: l =>

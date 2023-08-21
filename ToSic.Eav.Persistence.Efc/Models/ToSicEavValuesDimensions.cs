@@ -2,6 +2,11 @@
 {
     public partial class ToSicEavValuesDimensions
     {
+        public ToSicEavValuesDimensions()
+        {
+            ReadOnly = false;
+        }
+
         public int ValueId { get; set; }
         public int DimensionId { get; set; }
         public bool ReadOnly { get; set; }

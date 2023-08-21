@@ -10,9 +10,10 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public class PropReqResult
     {
-        public PropReqResult(object result, PropertyLookupPath path)
+        public PropReqResult(object result, string fieldType, PropertyLookupPath path)
         {
             Result = result;
+            FieldType = fieldType;
             Path = path;
         }
 
@@ -57,7 +58,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static PropReqResult Null(PropertyLookupPath path) => new PropReqResult(null, path);
+        public static PropReqResult Null(PropertyLookupPath path) => new PropReqResult(result: null, fieldType: null, path: path);
         public static PropReqResult NullFinal(PropertyLookupPath path) => Null(path).AsFinal(0);
 
         public PropReqResult AsFinal(int sourceIndex)

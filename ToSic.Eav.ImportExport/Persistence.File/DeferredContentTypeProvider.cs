@@ -58,8 +58,10 @@ namespace ToSic.Eav.Persistence.File
         public List<IContentType> ProcessSubEntitiesOnTypes() => SetTypesOfContentTypeParts(Source);
 
 
-        private List<IContentType> EliminateDuplicateTypes(List<IContentType> types) => Log.Func(l =>
+        private List<IContentType> EliminateDuplicateTypes(List<IContentType> types)
         {
+            var l = Log.Fn<List<IContentType>>();
+
             // In rare cases there can be a mistake and the same type may be duplicate!
             var typesGrouped = types
                 .GroupBy(t => t.NameId.ToLowerInvariant())
@@ -77,11 +79,12 @@ namespace ToSic.Eav.Persistence.File
             var final = typesGrouped
                 .Select(g => g.First())
                 .ToList();
-            return final;
-        });
+            return l.ReturnAsOk(final);
+        }
 
-        private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> typesDistinct) => Log.Func(timer: true, func: l =>
+        private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> typesDistinct)
         {
+            var l = Log.Fn<List<IContentType>>(timer: true);
             var changeCount = 0;
             try
             {
@@ -102,11 +105,12 @@ namespace ToSic.Eav.Persistence.File
                 l.Ex(ex);
             }
 
-            return (typesDistinct, $"{changeCount}");
-        });
+            return l.Return(typesDistinct, $"{changeCount}");
+        }
 
-        private int UpdateTypes(string name, List<IEntity> entitiesToRetype) => Log.Func($"For {name}", timer: true, func: l =>
+        private int UpdateTypes(string name, List<IEntity> entitiesToRetype)
         {
+            var l = Log.Fn<int>($"For {name}", timer: true);
             var changeCount = 0;
             var sameChanged = entitiesToRetype
                 .Select(entity =>
@@ -123,7 +127,7 @@ namespace ToSic.Eav.Persistence.File
                 })
                 .ToList();
 
-            return changeCount;
-        });
+            return l.ReturnAsOk(changeCount);
+        }
     }
 }

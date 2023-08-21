@@ -9,9 +9,14 @@ using System.Text.Json;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.WebApi.Plumbing
+
+
+namespace ToSic.Eav.WebApi.Infrastructure
 {
-    public class ResponseMakerNetFramework: ResponseMaker<HttpResponseMessage>
+    /// <summary>
+    /// Net Framework implementation of the ResponseMaker
+    /// </summary>
+    internal class ResponseMaker: IResponseMaker
     {
         public void Init(System.Web.Http.ApiController apiController) => _apiController = apiController;
 
@@ -19,25 +24,39 @@ namespace ToSic.Eav.WebApi.Plumbing
 
         private System.Web.Http.ApiController ApiController
             => _apiController ?? throw new Exception(
-                $"Accessing the {nameof(ApiController)} in the {nameof(ResponseMakerNetFramework)} requires it to be Init first.");
+                $"Accessing the {nameof(ApiController)} in the {nameof(ResponseMaker)} requires it to be Init first.");
 
-        public override HttpResponseMessage Error(int statusCode, string message) 
+        public virtual HttpResponseMessage InternalServerError(string message)
+            => Error((int)HttpStatusCode.InternalServerError, message);
+
+        public virtual HttpResponseMessage InternalServerError(Exception exception)
+            => Error((int)HttpStatusCode.InternalServerError, exception);
+
+
+        public HttpResponseMessage Error(int statusCode, string message) 
             => ApiController.Request.CreateErrorResponse((HttpStatusCode)statusCode, message);
 
-        public override HttpResponseMessage Error(int statusCode, Exception exception)
+        public HttpResponseMessage Error(int statusCode, Exception exception)
             => ApiController.Request.CreateErrorResponse((HttpStatusCode)statusCode, exception);
 
-        public override HttpResponseMessage Json(object json)
+        public HttpResponseMessage Json(object json)
         {
             var responseMessage = ApiController.Request.CreateResponse(HttpStatusCode.OK);
             responseMessage.Content = new StringContent(JsonSerializer.Serialize(json, JsonOptions.SafeJsonForHtmlAttributes), Encoding.UTF8, MimeHelper.Json);
             return responseMessage;
         }
 
-        public override HttpResponseMessage Ok() 
+        public HttpResponseMessage Ok() 
             => ApiController.Request.CreateResponse(HttpStatusCode.OK);
 
-        public override HttpResponseMessage File(Stream fileContent, string fileName, string fileType)
+        public HttpResponseMessage File(string fileContent, string fileName, string fileType)
+        {
+            var fileBytes = Encoding.UTF8.GetBytes(fileContent);
+            return File(new MemoryStream(fileBytes), fileName, fileType);
+        }
+
+
+        public HttpResponseMessage File(Stream fileContent, string fileName, string fileType)
         {
             var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(fileContent) };
             response.Content.Headers.ContentLength = fileContent.Length;
@@ -49,7 +68,7 @@ namespace ToSic.Eav.WebApi.Plumbing
             return response;
         }
 
-        public override HttpResponseMessage File(string fileContent, string fileName)
+        public HttpResponseMessage File(string fileContent, string fileName)
         {
             var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(fileContent) };
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")

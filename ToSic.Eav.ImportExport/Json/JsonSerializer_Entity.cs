@@ -20,11 +20,12 @@ namespace ToSic.Eav.ImportExport.Json
             Entity = ToJson(entity, metadataDepth)
         }, JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
-        public JsonEntity ToJson(IEntity entity, int metadataDepth = 0) => Log.Func($"id:{entity?.EntityId}, meta-depth:{metadataDepth}", l =>
+        public JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
         {
+            var l = Log.Fn<JsonEntity>($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
             // do a null-check, because sometimes code could ask to serialize not-yet existing entities
             if (entity == null)
-                return (null, "is null");
+                return l.ReturnNull("is null");
 
             JsonMetadataFor jsonFor = null;
             if (entity.MetadataFor.IsMetadata)
@@ -99,8 +100,8 @@ namespace ToSic.Eav.ImportExport.Json
                 For = jsonFor,
                 Metadata = itemMeta
             };
-            return (jEnt, "ok");
-        });
+            return l.ReturnAsOk(jEnt);
+        }
 
         /// <summary>
         /// this is a special helper to create typed entities-dictionaries

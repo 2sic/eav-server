@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps
     {
         public static AppState GetPresetOrNull(this IAppStates states) =>
             (states as AppStates)?.AppsCacheSwitch.Value.Has(PresetIdentity) ?? false
-                ? states.Get(PresetIdentity)
+                ? states.GetPresetApp()
                 : null;
 
         public static AppState GetPresetApp(this IAppStates states) => states.Get(PresetIdentity);

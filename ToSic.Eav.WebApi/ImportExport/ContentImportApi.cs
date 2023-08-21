@@ -67,8 +67,10 @@ namespace ToSic.Eav.WebApi.ImportExport
         }
 
         [HttpPost]
-        public ContentImportResultDto XmlImport(ContentImportArgsDto args) => Log.Func(args.DebugInfo, () =>
+        public ContentImportResultDto XmlImport(ContentImportArgsDto args)
         {
+            var l = Log.Fn<ContentImportResultDto>(args.DebugInfo);
+            
             var import = GetXmlImport(args);
             if (!import.ErrorLog.HasErrors)
             {
@@ -76,8 +78,8 @@ namespace ToSic.Eav.WebApi.ImportExport
                 _systemManager.PurgeApp(args.AppId);
             }
 
-            return (new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
-        });
+            return l.Return(new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
+        }
 
         private ImportListXml GetXmlImport(ContentImportArgsDto args)
         {
@@ -93,8 +95,9 @@ namespace ToSic.Eav.WebApi.ImportExport
         }
 
         [HttpPost]
-        public bool Import(EntityImportDto args) => Log.Func(message: "import json item" + args.DebugInfo, func: () =>
+        public bool Import(EntityImportDto args)
         {
+            var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
             try
             {
                 var deserializer = _jsonSerializerLazy.Value.SetApp(_appManager.AppState);
@@ -102,7 +105,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 deserializer.PreferLocalAppTypes = true;
 
                 _appManager.Entities.Import(new List<IEntity> { deserializer.Deserialize(args.GetContentString()) });
-                return true;
+                return l.ReturnTrue();
             }
             catch (ArgumentException)
             {
@@ -110,9 +113,10 @@ namespace ToSic.Eav.WebApi.ImportExport
             }
             catch (Exception ex)
             {
+                l.Ex(ex);
                 throw new Exception("Couldn't import - probably bad file format", ex);
             }
-        });
+        }
     }
 
 

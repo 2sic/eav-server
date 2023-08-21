@@ -14,24 +14,27 @@ namespace ToSic.Eav.ImportExport.Json
     {
         public bool AssumeUnknownTypesAreDynamic { get; set; } = false;
 
-        public IContentType DeserializeContentType(string serialized) => Log.Func($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...", l =>
+        public IContentType DeserializeContentType(string serialized)
         {
+            var l = Log.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
             try
             {
                 var jsonPackage = UnpackAndTestGenericJsonV1(serialized);
                 var type = ConvertContentType(jsonPackage);
 
                 // new in 1.2 2sxc v12 - build relation relationships manager
-                return (type, $"deserialized {type.Name}");
+                return l.Return(type, $"deserialized {type.Name}");
             }
             catch (Exception e)
             {
                 throw l.Done(e);
             }
-        });
+        }
 
-        public IContentType ConvertContentType(JsonContentTypeSet json) => Log.Func(l =>
-            DirectEntitiesSource.Using(relationships =>
+        public IContentType ConvertContentType(JsonContentTypeSet json)
+        {
+            var l = Log.Fn<IContentType>();
+            var contentType = DirectEntitiesSource.Using(relationships =>
             {
                 var relationshipsSource = AppPackageOrNull as IEntitiesSource ?? relationships.Source;
 
@@ -82,13 +85,14 @@ namespace ToSic.Eav.ImportExport.Json
                     );
 
                     // new in 1.2 2sxc v12 - build relation relationships manager
-                    return (type, $"converted {type.Name} with {attribs.Count} attributes");
+                    return l.Return(type, $"converted {type.Name} with {attribs.Count} attributes");
                 }
                 catch (Exception e)
                 {
                     throw l.Done(e);
                 }
-            }));
-
+            });
+            return l.ReturnAsOk(contentType);
+        }
     }
 }

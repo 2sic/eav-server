@@ -9,5 +9,9 @@
 
         public const string ItemFolderMask = "[AdamRoot]/[Guid22]/[FieldName]/[SubFolder]";
         public static string AdamFolderMask = $"{AdamRootFolder}/{AppConstants.AppFolderPlaceholder}/";
+
+        public const int MaxSameFileRetries = 1000;
+        public const int MaxUploadKbDefault = 25000;
+
     }
 }

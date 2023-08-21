@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using ToSic.Eav.Configuration;
 #if NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -14,8 +15,14 @@ namespace ToSic.Eav.Persistence.Efc.Models
             var connectionString = _dbConfig.ConnectionString;
             if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
                 connectionString += ";MultipleActiveResultSets=True";
-
+#if NETFRAMEWORK
             optionsBuilder.UseSqlServer(connectionString);
+#else
+            // https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries
+            optionsBuilder
+                .UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
+                .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
+#endif
         }
 
         //public bool DebugMode = false;
@@ -53,9 +60,11 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.ToTable("ToSIC_EAV_Apps");
 
+#pragma warning disable CS0618 // Type or member is obsolete
                 entity.HasIndex(e => new { e.Name, e.ZoneId })
                     .HasName("ToSIC_EAV_Apps_PreventDuplicates")
                     .IsUnique();
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 entity.Property(e => e.AppId).HasColumnName("AppID");
 
@@ -79,8 +88,10 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.ToTable("ToSIC_EAV_AssignmentObjectTypes");
 
+#pragma warning disable CS0618 // Type or member is obsolete
                 entity.HasIndex(e => e.Name)
                     .HasName("IX_ToSIC_EAV_AssignmentObjectTypes");
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 entity.Property(e => e.AssignmentObjectTypeId).HasColumnName("AssignmentObjectTypeID");
 
@@ -122,7 +133,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
 
-                entity.Property(e => e.AlwaysShareConfiguration).HasDefaultValueSql("0");
+                entity.Property(e => e.AlwaysShareConfiguration)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
                 entity.Property(e => e.AppId).HasColumnName("AppID");
 
@@ -216,7 +227,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.Property(e => e.AttributeGroupId).HasColumnName("AttributeGroupID");
 
-                entity.Property(e => e.IsTitle).HasDefaultValueSql("0");
+                entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
                 entity.HasOne(d => d.AttributeGroup)
                     .WithMany(p => p.ToSicEavAttributesInSets)
@@ -285,7 +296,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.Property(e => e.DimensionId).HasColumnName("DimensionID");
 
-                entity.Property(e => e.Active).HasDefaultValueSql("1");
+                entity.Property(e => e.Active)/*.HasDefaultValueSql("1")*/.ValueGeneratedNever();
 
                 entity.Property(e => e.EnvironmentKey).HasColumnName("ExternalKey").HasMaxLength(100);
 
@@ -316,8 +327,10 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.ToTable("ToSIC_EAV_Entities");
 
+#pragma warning disable CS0618 // Type or member is obsolete
                 entity.HasIndex(e => e.KeyNumber)
                     .HasName("IX_KeyNumber");
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 entity.Property(e => e.EntityId).HasColumnName("EntityID");
 
@@ -421,12 +434,16 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.ToTable("ToSIC_EAV_Values");
 
+#pragma warning disable CS0618 // Type or member is obsolete
                 entity.HasIndex(e => new { e.AttributeId, e.EntityId, e.ChangeLogDeleted })
                     .HasName("IX_EAV_Values1");
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 // 2017-04-28 disabled e.Value in this index - on one hand it's useless, but it also seems to affect sql queries to 450 chars on that field!
+#pragma warning disable CS0618 // Type or member is obsolete
                 entity.HasIndex(e => new { /*e.Value,*/ e.ChangeLogCreated, e.EntityId, e.ChangeLogDeleted, e.AttributeId, e.ValueId })
                     .HasName("IX_EAV_Values2");
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 entity.Property(e => e.ValueId).HasColumnName("ValueID");
 
@@ -476,7 +493,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
                 entity.Property(e => e.DimensionId).HasColumnName("DimensionID");
 
-                entity.Property(e => e.ReadOnly).HasDefaultValueSql("0");
+                entity.Property(e => e.ReadOnly)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
                 entity.HasOne(d => d.Dimension)
                     .WithMany(p => p.ToSicEavValuesDimensions)

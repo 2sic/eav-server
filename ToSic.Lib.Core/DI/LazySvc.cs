@@ -41,6 +41,7 @@ namespace ToSic.Lib.DI
             _initCall = newInitCall;
             return this;
         }
+        private Action<TService> _initCall;
 
         public TService Value => _valueGet.Get(() =>
         {
@@ -52,8 +53,15 @@ namespace ToSic.Lib.DI
 
         public bool IsValueCreated => _valueGet.IsValueCreated;
 
-        private Action<TService> _initCall;
-        
+        /// <summary>
+        /// EXPERIMENTAL - replace a service with an already prepared one, to bypass the default factory in edge cases
+        /// </summary>
+        /// <param name="replacement"></param>
+        public void Inject(TService replacement)
+        {
+            _valueGet.Reset(replacement);
+        }
+
         /// <summary>
         /// Initializer to attach the log to the generator.
         /// The log is later given to generated objects.

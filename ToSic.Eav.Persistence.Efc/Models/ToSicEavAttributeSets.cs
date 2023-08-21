@@ -10,6 +10,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
             ToSicEavAttributesInSets = new HashSet<ToSicEavAttributesInSets>();
             //ToSicEavAttributesInSharedSets = new HashSet<ToSicEavAttributesInSets>();
             ToSicEavEntities = new HashSet<ToSicEavEntities>();
+            AlwaysShareConfiguration = false;
         }
 
         public int AttributeSetId { get; set; }

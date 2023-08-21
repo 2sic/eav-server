@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Code.InfoSystem;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
-using ToSic.Eav.Code.InfoSystem;
 
 namespace ToSic.Eav.WebApi.Zone
 {
@@ -41,8 +41,10 @@ namespace ToSic.Eav.WebApi.Zone
         private readonly LazySvc<ILicenseService> _licenseService;
         private readonly ILogStoreLive _logStore;
 
-        public SystemInfoSetDto GetSystemInfo() => Log.Func($"{_site.Id}", () =>
+        public SystemInfoSetDto GetSystemInfo()
         {
+            var l = Log.Fn<SystemInfoSetDto>($"{_site.Id}");
+
             var zoneId = _site.ZoneId;
 
             var siteStats = new SiteStatsDto
@@ -63,8 +65,11 @@ namespace ToSic.Eav.WebApi.Zone
             };
 
             var licenses = _licenseService.Value;
-            var owner = string.Join(",", licenses.Enabled
-                .Select(s => s.Value.Owner)
+
+            // owner is coma separated list of all owners from enabled licenses 
+            var owner = string.Join(", ", licenses.All
+                .Where(ls => ls.Enabled)
+                .Select(ls => ls.Owner)
                 .Where(o => o.HasValue())
                 .Distinct());
             var license = new LicenseInfoDto
@@ -91,8 +96,8 @@ namespace ToSic.Eav.WebApi.Zone
                 Messages = warningsDto
             };
 
-            return info;
-        });
+            return l.ReturnAsOk(info);
+        }
 
         private int CountInsightsMessages(string prefix)
         {

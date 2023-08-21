@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data
+﻿using ToSic.Lib.Documentation;
+
+namespace ToSic.Eav.Data
 {
     /// <summary>
     /// WIP interface to mark anything that is an entity or is based on an entity
@@ -6,6 +8,7 @@
     ///
     /// 2022-06-29 2dm - started this idea, but not completed. ATM doesn't serve a purpose yet
     /// </summary>
+    [PrivateApi]
     public interface ICanBeEntity
     {
         IEntity Entity { get; }

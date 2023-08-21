@@ -18,9 +18,10 @@ namespace ToSic.Eav.Repository.Efc.Parts
         private List<DimensionDefinition> _zoneLangs;
 
 
-        private int SaveEntity(IEntity newEnt, SaveOptions so, bool logDetails
-        ) => Log.Func($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}", l =>
+        private int SaveEntity(IEntity newEnt, SaveOptions so, bool logDetails)
         {
+            var l = Log.Fn<int>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}");
+
             #region Step 1: Do some initial error checking and preparations
 
             if (newEnt == null) throw new ArgumentNullException(nameof(newEnt));
@@ -223,8 +224,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
 
             }); // end of transaction
 
-            return (dbEnt.EntityId, "done id:" + dbEnt?.EntityId);
-        });
+            return l.Return(dbEnt.EntityId, "done id:" + dbEnt?.EntityId);
+        }
 
 
 

@@ -131,6 +131,15 @@ namespace ToSic.Lib.Helpers
         public void Reset() => IsValueCreated = false;
 
         /// <summary>
+        /// Reset the state and value so it will be re-generated next time it's needed.
+        /// </summary>
+        public void Reset(TResult newValue)
+        {
+            _value = newValue;;
+            IsValueCreated = true;
+        }
+
+        /// <summary>
         /// Determines if value has been created.
         /// The name `IsValueCreated` is the same as in a Lazy() object
         /// </summary>

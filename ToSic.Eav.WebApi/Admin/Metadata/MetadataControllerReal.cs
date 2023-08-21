@@ -46,9 +46,9 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
         /// <summary>
         /// Get Entities with specified AssignmentObjectTypeId and Key
         /// </summary>
-        public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null
-        ) => Log.Func($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}", l =>
+        public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
         {
+            var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
             var appState = _appStates.Get(appId);
 
             var (entityList, mdFor) = GetEntityListAndMd(targetType, keyType, key, contentType, appState);
@@ -104,18 +104,17 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
                         item[Attributes.TitleNiceName] = typeDic.Name;
                 }
 
-            return result;
-        });
+            return l.ReturnAsOk(result);
+        }
 
         /// <summary>
         /// Get a stable Metadata-Header and the entities which are for this target
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private (List<IEntity> entityList, JsonMetadataFor mdFor)
-            GetEntityListAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource appState
-            ) => Log.Func(l =>
+        private (List<IEntity> entityList, JsonMetadataFor mdFor) GetEntityListAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource appState)
         {
+            var l = Log.Fn<(List<IEntity> entityList, JsonMetadataFor mdFor)>($"targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
             var mdFor = new JsonMetadataFor
             {
                 // #TargetTypeIdInsteadOfTarget
@@ -127,23 +126,23 @@ namespace ToSic.Eav.WebApi.Admin.Metadata
             switch (keyType)
             {
                 case "guid":
-                    if (!Guid.TryParse(key, out var guidKey)) return ((null, mdFor), $"error: invalid guid:{key}");
+                    if (!Guid.TryParse(key, out var guidKey)) return l.Return((null, mdFor), $"error: invalid guid:{key}");
                     mdFor.Guid = guidKey;
                     var md = appState.GetMetadata(targetType, guidKey, contentType).ToList();
-                    return ((md, mdFor), $"guid:{guidKey}; count:{md.Count}");
+                    return l.Return((md, mdFor), $"guid:{guidKey}; count:{md.Count}");
                 case "string":
                     mdFor.String = key;
                     md = appState.GetMetadata(targetType, key, contentType).ToList();
-                    return ((md, mdFor), $"string:{key}; count:{md.Count}");
+                    return l.Return((md, mdFor), $"string:{key}; count:{md.Count}");
                 case "number":
-                    if (!int.TryParse(key, out var keyInt)) return ((null, mdFor), $"error: invalid number:{key}");
+                    if (!int.TryParse(key, out var keyInt)) return l.Return((null, mdFor), $"error: invalid number:{key}");
                     mdFor.Number = keyInt;
                     md = appState.GetMetadata(targetType, keyInt, contentType).ToList();
-                    return ((md, mdFor), $"number:{keyInt}; count:{md.Count}");
+                    return l.Return((md, mdFor), $"number:{keyInt}; count:{md.Count}");
                 default:
                     throw l.Done(new Exception("key type unknown:" + keyType));
             }
-        });
+        }
 
     }
 }

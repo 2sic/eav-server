@@ -8,8 +8,8 @@ using ToSic.Eav.WebApi.Admin.Query;
 using ToSic.Eav.WebApi.ApiExplorer;
 using ToSic.Eav.WebApi.Cms;
 using ToSic.Eav.WebApi.ImportExport;
+using ToSic.Eav.WebApi.Infrastructure;
 using ToSic.Eav.WebApi.Languages;
-using ToSic.Eav.WebApi.Plumbing;
 using ToSic.Eav.WebApi.SaveHelpers;
 using ToSic.Eav.WebApi.Serialization;
 using ToSic.Eav.WebApi.Sys;
@@ -29,7 +29,7 @@ namespace ToSic.Eav.WebApi
             // Real Controller Implementations https://go.2sxc.org/proxy-controllers
             services.TryAddTransient<FeatureControllerReal>();
             services.TryAddTransient<MetadataControllerReal>();
-            services.TryAddTransient(typeof(EntityControllerReal<>));
+            services.TryAddTransient<EntityControllerReal>();
             services.TryAddTransient<FieldControllerReal>();
             services.TryAddTransient<ZoneControllerReal>();
             services.TryAddTransient<LogControllerReal>();
@@ -44,7 +44,7 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<EntityPickerApi>();
             services.TryAddTransient<ContentTypeApi>();
             services.TryAddTransient(typeof(QueryControllerBase<>.MyServices));
-            services.TryAddTransient(typeof(ContentExportApi<>));
+            services.TryAddTransient<ContentExportApi>();
             services.TryAddTransient<ContentImportApi>();
 
             // Internal API helpers
@@ -62,10 +62,11 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<EavCollectionJsonConverter>();
             services.TryAddTransient<EavJsonConverterFactory>();
 
-#if NETFRAMEWORK
             // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
-            services.TryAddScoped<ResponseMaker<System.Net.Http.HttpResponseMessage>, ResponseMakerNetFramework>();
-#endif
+            // This ensures that generic backends (.net framework/core) can create a response object
+            services.TryAddScoped<IResponseMaker, ResponseMaker>();
+
+            services.AddNetInfrastructure();
 
             return services;
         }
@@ -74,17 +75,32 @@ namespace ToSic.Eav.WebApi
         /// Add typed EAV WebApi objects.
         /// Make sure it's called AFTER adding the normal EAV. Otherwise the ResponseMaker will be the unknown even in
         /// </summary>
-        /// <typeparam name="THttpResponseType"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddEavWebApiTypedAfterEav<THttpResponseType>(this IServiceCollection services)
+        public static IServiceCollection AddEavWebApiTypedAfterEav(this IServiceCollection services)
         {
             // APIs
-            services.TryAddTransient<ApiExplorerControllerReal<THttpResponseType>>();
+            services.TryAddTransient<ApiExplorerControllerReal>();
             services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
             // The ResponseMaker must be registered as generic, so that any specific registration will have priority
-            services.TryAddScoped(typeof(ResponseMaker<>), typeof(ResponseMakerUnknown<>));
+            services.TryAddScoped<IResponseMaker, ResponseMakerUnknown>();
             return services;
         }
+
+#if NETFRAMEWORK
+        public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
+        {
+            return services;
+        }
+#else
+        public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
+        {
+            // Helper to get header, query string and route information from current request
+            services.TryAddScoped<RequestHelper>();
+
+            return services;
+        }
+#endif
+
     }
 }

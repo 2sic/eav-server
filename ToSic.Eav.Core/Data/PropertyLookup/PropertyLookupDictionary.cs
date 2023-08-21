@@ -27,17 +27,13 @@ namespace ToSic.Eav.Data.PropertyLookup
         public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
         {
             path = path?.Add(SourceTypeId, NameId, specs.Field);
-            if (Values.TryGetValue(specs.Field, out var result))
-            {
-                return new PropReqResult(result, path)
+            return Values.TryGetValue(specs.Field, out var result)
+                ? new PropReqResult(result: result, fieldType: Attributes.FieldIsDynamic /* I believe this would only be used for certain follow up work */, path: path)
                 {
                     Value = null,
                     Source = this,
-                    FieldType = Attributes.FieldIsVirtual,  // I believe this would only be used for certain follow up work
-                };
-            }
-
-            return PropReqResult.Null(path);
+                }
+                : PropReqResult.Null(path);
         }
 
         public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
