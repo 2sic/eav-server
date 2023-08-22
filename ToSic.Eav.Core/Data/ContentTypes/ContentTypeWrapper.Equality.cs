@@ -15,22 +15,22 @@ namespace ToSic.Eav.Data
         });
         private readonly GetOnce<IContentType> _rootContentsForEqualityCheck = new GetOnce<IContentType>();
 
-        public static bool operator ==(ContentTypeWrapper d1, ContentTypeWrapper d2) => WrapperEquality.IsEqual(d1, d2);
+        public static bool operator ==(ContentTypeWrapper d1, ContentTypeWrapper d2) => MultiWrapperEquality.IsEqual(d1, d2);
 
-        public static bool operator !=(ContentTypeWrapper d1, ContentTypeWrapper d2) => !WrapperEquality.IsEqual(d1, d2);
+        public static bool operator !=(ContentTypeWrapper d1, ContentTypeWrapper d2) => !MultiWrapperEquality.IsEqual(d1, d2);
 
-        public static bool operator ==(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => WrapperEquality.IsEqual(d1, d2);
+        public static bool operator ==(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => MultiWrapperEquality.IsEqual(d1, d2);
 
-        public static bool operator !=(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => !WrapperEquality.IsEqual(d1, d2);
+        public static bool operator !=(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => !MultiWrapperEquality.IsEqual(d1, d2);
 
 
-        public bool Equals(ContentTypeWrapper other) => WrapperEquality.EqualsObj(this, other);
+        public bool Equals(ContentTypeWrapper other) => MultiWrapperEquality.EqualsObj(this, other);
 
-        public bool Equals(IMultiWrapper<IContentType> other) => WrapperEquality.IsEqual(this, other);
+        public bool Equals(IMultiWrapper<IContentType> other) => MultiWrapperEquality.IsEqual(this, other);
 
-        public override bool Equals(object other) => WrapperEquality.EqualsObj(this, other);
+        public override bool Equals(object other) => MultiWrapperEquality.EqualsObj(this, other);
 
-        public override int GetHashCode() => WrapperEquality.GetHashCode(this);
+        public override int GetHashCode() => MultiWrapperEquality.GetHashCode(this);
 
     }
 }
