@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.Shared
         /// This is used for a fast-compare if objects might be the same.
         /// It's usually just an initial check, followed by Equals checks
         /// </summary>
-        public static int GetHashCode<T>(IWrapper<T> parent) => parent.GetContents()?.GetHashCode() ?? 0;
+        public static int GetWrappedHashCode<T>(IWrapper<T> parent) => parent.GetContents()?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Check if two wrappers are holding the same entity

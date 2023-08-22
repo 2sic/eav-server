@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data
         /// This is used for a fast-compare if objects might be the same.
         /// It's usually just an initial check, followed by Equals checks
         /// </summary>
-        public static int GetHashCode<T>(IMultiWrapper<T> parent) => parent.RootContentsForEqualityCheck?.GetHashCode() ?? 0;
+        public static int GetWrappedHashCode<T>(IMultiWrapper<T> parent) => parent.RootContentsForEqualityCheck?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Check if two wrappers are holding the same entity

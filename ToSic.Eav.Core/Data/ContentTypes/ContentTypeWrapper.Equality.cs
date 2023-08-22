@@ -30,7 +30,7 @@ namespace ToSic.Eav.Data
 
         public override bool Equals(object other) => MultiWrapperEquality.EqualsObj(this, other);
 
-        public override int GetHashCode() => MultiWrapperEquality.GetHashCode(this);
+        public override int GetHashCode() => MultiWrapperEquality.GetWrappedHashCode(this);
 
     }
 }
