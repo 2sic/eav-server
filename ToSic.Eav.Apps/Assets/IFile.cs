@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps.Assets
     /// <summary>
     /// Describes a file asset as provided by the underlying environment (like DNN)
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
+    [PublicApi]
     public interface IFile: IAsset
     {
         /// <summary>
@@ -14,14 +14,14 @@ namespace ToSic.Eav.Apps.Assets
         /// <returns>
         /// The extension, like "pdf" or "jpg"
         /// </returns>
-        string Extension { get; set; }
+        string Extension { get; }
 
         /// <summary>
         /// The folder of the file
         /// </summary>
         /// <returns>The folder name </returns>
         // ReSharper disable once UnusedMemberInSuper.Global
-        string Folder { get; set; }
+        string Folder { get; }
 
         /// <summary>
         /// The folder ID of the file, if the underlying environment uses int IDs
@@ -34,14 +34,14 @@ namespace ToSic.Eav.Apps.Assets
         /// The full file name of the original file
         /// </summary>
         /// <returns>The full file name with extension.</returns>
-        string FullName { get; set; }
+        string FullName { get; }
 
         /// <summary>
         /// The file size of the file, IF the underlying environment provides this.
         /// </summary>
         /// <returns>the size in bytes</returns>
         // ReSharper disable once UnusedMemberInSuper.Global
-        int Size { get; set; }
+        int Size { get; }
 
         /// <summary>
         /// Size information for files
