@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Assets
         /// The creation date of the item, as reported by the environment. 
         /// </summary>
         /// <returns>The date-time when the file was created.</returns>
-        DateTime Created { get; set; }
+        DateTime Created { get; /*set;*/ }
 
         /// <summary>
         /// The ID of the item, if the underlying environment uses int IDs
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps.Assets
         /// The modified date of the file, as reported by the environment.
         /// </summary>
         /// <returns>The date-time when the file was modified last.</returns>
-        DateTime Modified { get; set; }
+        DateTime Modified { get; /*set;*/ }
 
         /// <summary>
         /// The asset name
@@ -45,7 +45,7 @@ namespace ToSic.Eav.Apps.Assets
         /// The path of the item in the file system of the environment.
         /// </summary>
         /// <returns>The full path of this item</returns>
-        string Path { get; set; }
+        string Path { get; /*set;*/ }
 
         /// <summary>
         /// The full physical path to folder or file to access them on the local server.
