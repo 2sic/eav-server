@@ -25,7 +25,6 @@
         #region App Configuration Fields
 
         public const string FieldName = AppLoadConstants.FieldName;
-        public const string FieldFolder = AppLoadConstants.FieldName;
         public const string FieldHidden = "Hidden";
 
         #endregion
