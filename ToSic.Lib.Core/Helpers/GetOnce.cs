@@ -128,7 +128,11 @@ namespace ToSic.Lib.Helpers
         /// <summary>
         /// Reset the state and value so it will be re-generated next time it's needed.
         /// </summary>
-        public void Reset() => IsValueCreated = false;
+        public void Reset(ILog log = default)
+        {
+            log.A(nameof(Reset));
+            IsValueCreated = false;
+        }
 
         /// <summary>
         /// Reset the state and value so it will be re-generated next time it's needed.
