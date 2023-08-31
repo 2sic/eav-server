@@ -59,18 +59,14 @@ namespace ToSic.Eav.Context
                     nameof(resolver));
 
             var priorities = new List<string>();
-            // First priority: current culture
+            // 1. First priority: current culture
             ListBuildAddCodeIfNew(priorities, SafeCurrentCultureCode(resolver));
-            //if (!string.IsNullOrWhiteSpace(resolver.CurrentCultureCode)) 
-            //    priorities.Add(SafeCurrentCultureCode(resolver));
-            // Second priority: Fallback culture
+            // 2. Second priority: Fallback culture
             ListBuildAddCodeIfNew(priorities, resolver.DefaultCultureCode);
-            //if (!string.IsNullOrWhiteSpace(resolver.DefaultCultureCode))
-            //    priorities.Add(resolver.DefaultCultureCode.ToLowerInvariant());
 
-            // last priority: the null-entry, meaning that it should just pick anything
-            // will be handled by upstream
+            // 9. last priority: will be handled by upstream
 
+            // return list
             return priorities;
         }
 

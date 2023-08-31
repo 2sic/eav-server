@@ -30,6 +30,7 @@ namespace ToSic.Eav.Configuration
 
                 // Features for Patrons Advanced CMS
                 EditUiTranslateWithGoogle,  // v15
+                LanguagesAdvancedFallback,  // v16.04
 
                 // Patron SuperAdmin
                 AppSyncWithSiteFiles,       // v15

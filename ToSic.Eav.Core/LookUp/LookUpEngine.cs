@@ -124,9 +124,12 @@ namespace ToSic.Eav.LookUp
             Sources[lookUp.Name] = lookUp;
         }
 
-        public void Add(IEnumerable<ILookUp> lookUps)
+        public void Add(IList<ILookUp> lookUps)
         {
-            foreach (var lookUp in lookUps) Add(lookUp);
+            var sourceNames = Log.Try(() => string.Join(", ", lookUps.Select(l => $"'{l.Name ?? "unknown"}'")));
+            Log.A(Log.Try(() => $"Add/replace sources: {sourceNames}"));
+            foreach (var lookUp in lookUps) 
+                Sources[lookUp.Name] = lookUp;
         }
 
         /// <inheritdoc />
