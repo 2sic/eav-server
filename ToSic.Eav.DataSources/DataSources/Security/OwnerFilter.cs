@@ -52,18 +52,19 @@ namespace ToSic.Eav.DataSources
             ProvideOut(GetList);
         }
 
-        private IImmutableList<IEntity> GetList() => Log.Func($"get for identity:{Identity}", () =>
+        private IImmutableList<IEntity> GetList()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>($"get for identity:{Identity}");
             Configuration.Parse();
 
             if (string.IsNullOrWhiteSpace(Identity))
-                return (EmptyList, "no identity");
+                return l.ReturnAsError(EmptyList, "no identity");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
-            return (source.Where(e => e.Owner == Identity).ToImmutableList(), "ok");
-        });
+            return l.ReturnAsOk(source.Where(e => e.Owner == Identity).ToImmutableList());
+        }
 
     }
 }

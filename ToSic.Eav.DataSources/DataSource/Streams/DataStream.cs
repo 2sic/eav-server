@@ -12,7 +12,6 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Streams
 {
-    /// <inheritdoc />
     /// <summary>
     /// A DataStream to get Entities when needed
     /// </summary>
@@ -126,35 +125,33 @@ namespace ToSic.Eav.DataSource.Streams
         /// Assemble the list - from the initially configured ListDelegate
         /// </summary>
         /// <returns></returns>
-        IImmutableList<IEntity> ReadUnderlyingList() => Log.Func<IImmutableList<IEntity>>(() =>
+        private IImmutableList<IEntity> ReadUnderlyingList()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
+
+            IImmutableList<IEntity> CreateErr(string title, string message, Exception ex = default)
+                => Source.Error.Create(source: Source, title: title, message: message, exception: ex).ToImmutableList();
+
             if (_listDelegate == null)
-                return (Source.Error.Create(source: Source,
-                        title: "Error loading Stream",
-                        message: "Can't load stream - no delegate found to supply it").ToImmutableList(),
-                    "error");
+                return l.ReturnAsError(CreateErr("Error loading Stream",
+                    "Can't load stream - no delegate found to supply it"));
 
             try
             {
                 var resultList = ImmutableSmartList.Wrap(_listDelegate());
-                return (resultList, "ok");
+                return l.ReturnAsOk(resultList);
             }
             catch (InvalidOperationException invEx) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
-                return (
-                    Source.Error.Create(source: Source, title: "InvalidOperationException",
-                        message: "See details", exception: invEx).ToImmutableList(),
-                    "error");
+                return l.ReturnAsError(CreateErr("InvalidOperationException", "See details", invEx));
             }
             catch (Exception ex)
             {
-                return (Source.Error.Create(source: Source, exception: ex,
-                        title: "Error getting Stream / reading underlying list",
-                        message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}").ToImmutableList(),
-                    "error");
+                return l.ReturnAsError(CreateErr("Error getting Stream / reading underlying list",
+                    $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}", ex));
             }
-        });
+        }
         #endregion
 
 

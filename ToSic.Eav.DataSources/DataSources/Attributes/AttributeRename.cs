@@ -87,8 +87,9 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetList() => Log.Func(() =>
+        private IImmutableList<IEntity> GetList()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var mapRaw = AttributeMap;
@@ -143,7 +144,7 @@ namespace ToSic.Eav.DataSources
                 newType = _dataBuilder.ContentType.Transient(AppId, typeName, typeName);
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var result = source
                 .Select(entity =>
@@ -153,8 +154,8 @@ namespace ToSic.Eav.DataSources
                 })
                 .ToImmutableList();
 
-            return (result, $"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
-        });
+            return l.Return(result, $"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
+        }
 
 
 

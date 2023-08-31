@@ -89,29 +89,30 @@ namespace ToSic.Eav.DataSources
 		}
 
 
-        private IImmutableList<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
             var itemsToSkip = (PageNumber - 1) * PageSize;
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var result = source
                 .Skip(itemsToSkip)
                 .Take(PageSize)
                 .ToImmutableList();
-            l.A($"get page:{PageNumber} with size{PageSize} found:{result.Count}");
-            return (result, "ok");
-        });
+            return l.Return(result, $"page:{PageNumber}; size{PageSize}; found:{result.Count}");
+        }
 
-        private IImmutableList<IEntity> GetPaging() => Log.Func(() =>
+        private IImmutableList<IEntity> GetPaging()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             // Calculate any additional stuff
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var itemCount = source.Count;
             var pageCount = Math.Ceiling((decimal)itemCount / PageSize);
@@ -130,8 +131,8 @@ namespace ToSic.Eav.DataSources
 
             // Assemble list of this for the stream
             var list = new List<IEntity> { entity };
-            return (list.ToImmutableList(), "ok");
-        });
+            return l.ReturnAsOk(list.ToImmutableList());
+        }
 
     }
 }

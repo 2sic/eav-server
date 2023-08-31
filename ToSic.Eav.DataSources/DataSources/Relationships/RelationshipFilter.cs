@@ -165,8 +165,9 @@ namespace ToSic.Eav.DataSources
             return (res, "ok");
         });
 
-        private IImmutableList<IEntity> GetEntities() => Log.Func(l =>
+        private IImmutableList<IEntity> GetEntities()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             // todo: maybe do something about languages on properties?
             Configuration.Parse();
 
@@ -181,14 +182,14 @@ namespace ToSic.Eav.DataSources
                 strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
 
             if (!AllCompareModes.Contains(strMode))
-                return (Error.Create(title: "CompareMode unknown", message: $"CompareMode other '{strMode}' is unknown."), "error");
+                return l.ReturnAsError(Error.Create(title: "CompareMode unknown", message: $"CompareMode other '{strMode}' is unknown."));
 
             //if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
             //    return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
 
             var childParent = ChildOrParent;
             if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
-                return (Error.Create(title: "Can only compare Children", message: $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"), "error");
+                return l.ReturnAsError(Error.Create(title: "Can only compare Children", message: $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"));
 
             //var lang = Languages.ToLowerInvariant();
             //if (lang != "default")
@@ -199,7 +200,7 @@ namespace ToSic.Eav.DataSources
             l.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var compType = lowAttribName == Attributes.EntityFieldAutoSelect
                 ? CompareType.Auto
@@ -214,16 +215,16 @@ namespace ToSic.Eav.DataSources
             if (compType == CompareType.Auto)
             {
                 var getId = GetFieldValue(CompareType.Id, null);
-                if (getId.IsError) return (getId.Errors, "error");
+                if (getId.IsError) return l.ReturnAsError(getId.Errors);
                 var getTitle = GetFieldValue(CompareType.Title, null);
-                if (getTitle.IsError) return (getTitle.Errors, "error");
+                if (getTitle.IsError) return l.ReturnAsError(getTitle.Errors);
                 comparisonOnRelatedItem = CompareTwo(getId.Result, getTitle.Result);
 
             }
             else
             {
                 var getValue = GetFieldValue(compType, compAttr);
-                if (getValue.IsError) return (getValue.Errors, "error");
+                if (getValue.IsError) return l.ReturnAsError(getValue.Errors);
                 comparisonOnRelatedItem = CompareOne(getValue.Result);
             }
 
@@ -236,7 +237,7 @@ namespace ToSic.Eav.DataSources
 
             // pick the correct list-comparison - atm ca. 6 options
             var modeCompareOrError = PickMode(strMode, relationship, comparisonOnRelatedItem, filterList);
-            if (modeCompareOrError.IsError) return (modeCompareOrError.Errors, "error");
+            if (modeCompareOrError.IsError) return l.ReturnAsError(modeCompareOrError.Errors);
             var modeCompare = modeCompareOrError.Result;
 
             var finalCompare = useNot
@@ -247,13 +248,13 @@ namespace ToSic.Eav.DataSources
             {
                 var results = source.Where(finalCompare).ToImmutableList();
 
-                return (results, $"{results.Count}");
+                return l.Return(results, $"{results.Count}");
             }
             catch (Exception ex)
             {
-                return (Error.Create(title: "Error comparing Relationships", message: "Unknown error, check details in Insights logs", exception: ex), "error");
+                return l.ReturnAsError(Error.Create(title: "Error comparing Relationships", message: "Unknown error, check details in Insights logs", exception: ex));
             }
-        });
+        }
 
 
         /// <summary>

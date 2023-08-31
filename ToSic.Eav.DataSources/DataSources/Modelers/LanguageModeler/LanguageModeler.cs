@@ -65,8 +65,9 @@ namespace ToSic.Eav.DataSources
         /// Internal helper that returns the entities
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> MapLanguagesIntoValues() => Log.Func(l =>
+        private IImmutableList<IEntity> MapLanguagesIntoValues()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             #region Load configuration and verify everything is ok - or return an error-stream
@@ -83,14 +84,14 @@ namespace ToSic.Eav.DataSources
 
             var fieldMapErrors = string.Join(";", mapErrors);
             if (!string.IsNullOrWhiteSpace(fieldMapErrors))
-                return (Error.Create(title: "Field Map Error", message: fieldMapErrors), "error");
+                return l.ReturnAsError(Error.Create(title: "Field Map Error", message: fieldMapErrors));
 
             #endregion
 
             l.A($"Field Map created - has {fieldMap.Length} parts");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var result = new List<IEntity>();
             foreach (var entity in source)
@@ -154,8 +155,8 @@ namespace ToSic.Eav.DataSources
             }
 
             var immutableResults = result.ToImmutableList();
-            return (immutableResults, $"{immutableResults.Count}");
-        });
+            return l.Return(immutableResults, $"{immutableResults.Count}");
+        }
     }
 
 

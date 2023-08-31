@@ -35,6 +35,16 @@
         public static T ReturnAsOk<T>(this ILogCall<T> logCall, T result) => logCall.Return(result, "ok");
 
         /// <summary>
+        /// Return a value with the standard message "error"
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="logCall">The log call or null</param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static T ReturnAsError<T>(this ILogCall<T> logCall, T result, string message = default)
+            => logCall.Return(result, $"error {message}");
+
+        /// <summary>
         /// Return a value and log the result as well.
         /// Note that if the object supports <see cref="ICanDump"/> it will use that dump to log it's value.
         /// </summary>

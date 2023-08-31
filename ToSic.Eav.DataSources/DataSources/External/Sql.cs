@@ -238,16 +238,17 @@ namespace ToSic.Eav.DataSources
         }
 
 
-	    private IImmutableList<IEntity> GetList() => Log.Func(l =>
+	    private IImmutableList<IEntity> GetList()
 		{
+            var l = Log.Fn<IImmutableList<IEntity>>();
             CustomConfigurationParse();
 
             l.A($"get from sql:{SelectCommand}");
 
             // Check if SQL contains forbidden terms
             if (ForbiddenTermsInSelect.IsMatch(SelectCommand))
-                return (Error.Create(source: this, title: ErrorTitleForbiddenSql,
-                    message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue."), "error");
+                return l.ReturnAsError(Error.Create(source: this, title: ErrorTitleForbiddenSql,
+                    message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue."));
 
 
             // Load ConnectionString by Name (if specified)
@@ -263,15 +264,15 @@ namespace ToSic.Eav.DataSources
                 }
 			    catch(Exception ex)
                 {
-                    return (Error.Create(source: this, exception: ex,
+                    return l.ReturnAsError(Error.Create(source: this, exception: ex,
                         title: "Can't find Connection String Name",
-                        message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message."), "error");
+                        message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message."));
 			    }
 
             // make sure we have one - often it's empty, if the query hasn't been configured yet
             if (string.IsNullOrWhiteSpace(ConnectionString))
-                return (Error.Create(source: this, title: "Connection Problem",
-                    message: "The ConnectionString property is empty / has not been initialized"), "error");
+                return l.ReturnAsError(Error.Create(source: this, title: "Connection Problem",
+                    message: "The ConnectionString property is empty / has not been initialized"));
 
 			var list = new List<IEntity>();
             using (var connection = new SqlConnection(ConnectionString))
@@ -293,9 +294,9 @@ namespace ToSic.Eav.DataSources
                     }
                     catch(Exception ex)
                     {
-                        return (Error.Create(source: this, exception: ex,
+                        return l.ReturnAsError(Error.Create(source: this, exception: ex,
                             title: "Can't read from Database",
-                            message: "Something failed trying to read from the Database."), "error");
+                            message: "Something failed trying to read from the Database."));
                     }
 
                     var casedTitle = TitleField;
@@ -353,7 +354,7 @@ namespace ToSic.Eav.DataSources
 			    }
 			}
 
-			return (list.ToImmutableList(), $"found:{list.Count}");
-		});
+			return l.Return(list.ToImmutableList(), $"found:{list.Count}");
+		}
 	}
 }

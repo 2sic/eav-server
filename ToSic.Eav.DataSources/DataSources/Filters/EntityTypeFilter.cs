@@ -61,14 +61,15 @@ namespace ToSic.Eav.DataSources
         private readonly IAppStates _appStates;
 
 
-        private IImmutableList<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList() 
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
             l.A($"get list with type:{TypeName}");
 
             // Get original from In-Stream
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             try
             {
@@ -77,7 +78,7 @@ namespace ToSic.Eav.DataSources
                 if (foundType != null) // maybe it doesn't find it!
                 {
                     var result = source.OfType(foundType).ToList();
-                    return (result.ToImmutableList(), "fast");
+                    return l.Return(result.ToImmutableList(), "fast");
                 }
             }
             catch (Exception ex)
@@ -92,8 +93,8 @@ namespace ToSic.Eav.DataSources
             //if (!GetRequiredInList(out var originals2))
             //    return (originals2, "error");
 
-            return (source.OfType(TypeName).ToImmutableList(), "slower");
-        });
+            return l.Return(source.OfType(TypeName).ToImmutableList(), "slower");
+        }
 
     }
 }

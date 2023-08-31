@@ -88,12 +88,13 @@ namespace ToSic.Eav.DataSources
         private const char FieldCreate = 'c';
         private const char FieldNormal = 'x';
 
-		private IImmutableList<IEntity> GetValueSort() => Log.Func(l =>
+		private IImmutableList<IEntity> GetValueSort()
         {
-			// todo: maybe do something about languages?
-			// todo: test decimal / number types
+            // todo: maybe do something about languages?
+            // todo: test decimal / number types
 
-			Configuration.Parse();
+            var l = Log.Fn<IImmutableList<IEntity>>();
+            Configuration.Parse();
 
             l.A("will apply value-sort");
 			var sortAttributes = Attributes.Split(',').Select(s => s.Trim()).ToArray();
@@ -104,15 +105,15 @@ namespace ToSic.Eav.DataSources
             LanguageList = _valLanguages.PrepareLanguageList(Languages);
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             // check if no list parameters specified
             if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
-		        return (source, "no params");
+		        return l.Return(source, "no params");
 
             // if list is blank, then it didn't find the attribute to sort by - so just return unsorted
 			// note 2020-10-07 this may have been a bug previously, returning an empty list instead
-            if (!source.Any()) return (source, "sort-attribute not found in data");
+            if (!source.Any()) return l.Return(source, "sort-attribute not found in data");
 
             // Keep entities which cannot sort by the required values (removed previously from results)
             //var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
@@ -149,11 +150,11 @@ namespace ToSic.Eav.DataSources
             }
 			catch (Exception e)
             {
-				return (Error.Create(title: "Error sorting", message: "Sorting failed - see exception in insights", exception: e), "error");
+				return l.ReturnAsError(Error.Create(title: "Error sorting", message: "Sorting failed - see exception in insights", exception: e));
             }
 
-            return (final, "ok");
-		});
+            return l.ReturnAsOk(final);
+		}
 
         private Func<IEntity, object> GetPropertyToSortFunc(char propertyCode, string fieldName, string[] languages)
         {
