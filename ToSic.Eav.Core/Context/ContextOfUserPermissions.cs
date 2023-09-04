@@ -17,7 +17,7 @@ namespace ToSic.Eav.Context
             User = user;
         }
 
-        public bool UserMayEdit => _userMayEditWip.Get(() => Log.Getter(() =>
+        public bool UserMayEdit => _userMayEditWip.Get(() => Log.GetterM(() =>
         {
             var u = User;
             if (u == null) return (false, "user unknown, false");

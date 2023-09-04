@@ -7,7 +7,6 @@ using ToSic.Eav.DataSource.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Streams
@@ -90,36 +89,22 @@ namespace ToSic.Eav.DataSource.Streams
 
         #region Get Dictionary and Get List
 
-        /// <summary>
-        /// A temporary result list - must be a List, because otherwise
-        /// there's a high risk of IEnumerable signatures with functions being stored inside
-        /// </summary>
-        /// <remarks>
-        /// Note that were possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
-        /// </remarks>
-	    private IImmutableList<IEntity> _list;
-
-        private bool _listLoaded;
-
-        public IEnumerable<IEntity> List => Log.Getter(timer: true, message: $"{nameof(Name)}:{Name}", getter: l =>
+        public IEnumerable<IEntity> List => _list.GetM(Log, parameters: $"{nameof(Name)}:{Name}", timer: true, generator: _ =>
         {
-            // If already retrieved return last result to be faster
-            if (_listLoaded) return (_list, "reuse previous");
-
             // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
-            if (AutoCaching)
-            {
-                l.A($"{nameof(AutoCaching)}:{AutoCaching}");
-                var cacheItem = new ListCache(Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
-                _list = cacheItem.List;
-            }
-            else
-                _list = ReadUnderlyingList();
+            if (!AutoCaching) return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
 
-            _listLoaded = true;
-            return (_list, "ok");
+            var cacheItem = new ListCache(Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+            return (cacheItem.List, $"with {nameof(AutoCaching)}");
         });
 
+        /// <summary>
+        /// A temporary result list - must be a List, because otherwise
+        /// there's a high risk of IEnumerable signatures with functions being stored inside.
+        /// 
+        /// Note that were possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
+        /// </summary>
+        private readonly GetOnce<IImmutableList<IEntity>> _list = new GetOnce<IImmutableList<IEntity>>();
 
         /// <summary>
         /// Assemble the list - from the initially configured ListDelegate
@@ -159,15 +144,12 @@ namespace ToSic.Eav.DataSource.Streams
         public void PurgeList(bool cascade = false) => Log.Do(message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}", action: l =>
         {
             l.A("kill the very local temp cache");
-            _list = EmptyList;
-            _listLoaded = false;
+            _list.Reset();
             l.A("kill in list-cache");
             new ListCache(Log).Remove(this);
-            if (cascade)
-            {
-                l.A("tell upstream source to flush as well");
-                Source.PurgeList(true);
-            }
+            if (!cascade) return;
+            l.A("tell upstream source to flush as well");
+            Source.PurgeList(true);
         });
 
         /// <inheritdoc />

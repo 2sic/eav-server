@@ -12,6 +12,8 @@ namespace ToSic.Lib.Logging
     // ReSharper disable once InconsistentNaming
     public static class ILog_Properties
     {
+        internal const string GetPrefix = "get:";
+        internal const string SetPrefix = "set:";
 
         /// <summary>
         /// Short wrapper for PropertyGet calls which only return the value.
@@ -24,51 +26,54 @@ namespace ToSic.Lib.Logging
             bool timer = default,
             bool enabled = true,
             string message = default,
+            string parameters = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, message, timer) : null;
+            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, $"{GetPrefix}{cName}", cLine), true, parameters, message, timer) : null;
             var result = getter();
             return !enabled ? result : l.ReturnAndLog(result);
         }
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-        public static TProperty Getter<TProperty>(this ILog log,
+        public static TProperty GetterL<TProperty>(this ILog log,
             Func<ILogCall, TProperty> getter,
             bool timer = default,
             bool enabled = true,
+            string parameters = default,
             string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, message, timer) : null;
+            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, $"{GetPrefix}{cName}", cLine), true, parameters, message, timer) : null;
             var result = getter(l);
             return !enabled ? result : l.ReturnAndLog(result);
         }
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-        public static TProperty Getter<TProperty>(this ILog log,
+        public static TProperty GetterM<TProperty>(this ILog log,
             Func<ILogCall, (TProperty Result, string Message)> getter,
             bool timer = default,
             bool enabled = true,
+            string parameters = default,
             string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, message, timer) : null;
+            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, $"{GetPrefix}{cName}", cLine), true, parameters, message, timer) : null;
             var result = getter(l);
             return !enabled ? result.Result : l.Return(result.Result, result.Message);
         }
 
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-        public static TProperty Getter<TProperty>(this ILog log,
+        public static TProperty GetterM<TProperty>(this ILog log,
             Func<(TProperty Result, string FinalMessage)> getter,
             bool timer = default,
             bool enabled = true,
@@ -78,7 +83,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, "get:" + cName, cLine), true, null, message, timer) : null;
+            var l = enabled ? new LogCall<TProperty>(log, Create(cPath, $"{GetPrefix}{cName}", cLine), true, null, message, timer) : null;
             var (result, finalMsg) = getter();
             return !enabled ? result : l.Return(result, finalMsg);
         }
@@ -94,7 +99,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = enabled ? new LogCall(log, Create(cPath, "set:" + cName, cLine), true, null, message, timer) : null;
+            var l = enabled ? new LogCall(log, Create(cPath, $"{SetPrefix}{cName}", cLine), true, null, message, timer) : null;
             setter();
             if (!enabled) return;
             l.Done();
@@ -111,7 +116,7 @@ namespace ToSic.Lib.Logging
             [CallerLineNumber] int cLine = default
         )
         {
-            var l = new LogCall<TProperty>(log, Create(cPath, "set:" + cName + "=", cLine), true, null, message, timer);
+            var l = new LogCall<TProperty>(log, Create(cPath, $"{SetPrefix}{cName}=", cLine), true, null, message, timer);
             var result = setter();
             if (!enabled) return;
             l.ReturnAndLog(result);
