@@ -86,5 +86,21 @@ namespace ToSic.Eav.Plumbing
                         return i;
             return -1;
         }
+
+        /// <summary>
+        /// Replace all characters in a string.
+        /// https://stackoverflow.com/questions/7265315/replace-multiple-characters-in-a-c-sharp-string
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="separators"></param>
+        /// <param name="newVal"></param>
+        /// <returns></returns>
+        public static string RemoveAll(this string s, params char[] separators)
+        {
+            // 2dm: took
+            var temp = s.Split(separators /*StringSplitOptions.RemoveEmptyEntries*/);
+            return string.Join("", temp);
+        }
+
     }
 }

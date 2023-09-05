@@ -225,7 +225,7 @@ namespace ToSic.Eav.Persistence.File
 
         #region Bundle
 
-        public Dictionary<string, JsonFormat> JsonBundleBundles => _jsonBundles.Get(Log, l =>
+        public Dictionary<string, JsonFormat> JsonBundleBundles => _jsonBundles.GetM(Log, l =>
         {
             // #1. check that folder exists
             if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))

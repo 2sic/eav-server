@@ -25,13 +25,14 @@ namespace ToSic.Eav.DataSources
             ProvideOut(GetMetadata);
         }
 
-        private IImmutableList<IEntity> GetMetadata() => Log.Func(l =>
+        private IImmutableList<IEntity> GetMetadata()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var typeName = ContentTypeName;
             if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
@@ -39,8 +40,8 @@ namespace ToSic.Eav.DataSources
 
             var relationships = SpecificGet(source, typeName);
 
-            return (relationships.ToImmutableList(), "ok");
-        });
+            return l.ReturnAsOk(relationships.ToImmutableList());
+        }
 
         protected abstract IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName);
     }

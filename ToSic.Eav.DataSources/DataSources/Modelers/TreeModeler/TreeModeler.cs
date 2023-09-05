@@ -82,12 +82,13 @@ namespace ToSic.Eav.DataSources
         /// Internal helper that returns the entities
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetList() => Log.Func(() =>
+        private IImmutableList<IEntity> GetList()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var tm = (TreeMapper)_treeMapper;
             switch (Identifier)
@@ -96,20 +97,19 @@ namespace ToSic.Eav.DataSources
                     var resultGuid = tm.AddParentChild(
                         source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
-                    return (resultGuid, $"Guid: {resultGuid.Count}");
+                    return l.Return(resultGuid, $"Guid: {resultGuid.Count}");
                 case "EntityId":
                     var resultInt = tm.AddParentChild(
                         source, Identifier, ParentReferenceField,
                         NewChildrenField, NewParentField);
-                    return (resultInt, $"int: {resultInt.Count}");
+                    return l.Return(resultInt, $"int: {resultInt.Count}");
                 default:
-                    return (Error.Create(
+                    return l.ReturnAsError(Error.Create(
                             title: "Invalid Identifier",
                             message:
-                            "TreeBuilder only supports EntityGuid or EntityId as parent identifier attribute."),
-                        "error");
+                            "TreeBuilder only supports EntityGuid or EntityId as parent identifier attribute."));
             }
-        });
+        }
 
     }
 }

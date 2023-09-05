@@ -59,15 +59,16 @@ namespace ToSic.Eav.DataSources
         }
 
 
-        private IImmutableList<IEntity> GetShuffle() => Log.Func($"Take: {Take}", () =>
+        private IImmutableList<IEntity> GetShuffle()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>($"Take: {Take}");
             Configuration.Parse();
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
-            return (ShuffleInternal(source.ToList(), Take), "ok");
-        });
+            return l.ReturnAsOk(ShuffleInternal(source.ToList(), Take));
+        }
 
         #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
         static readonly Random Generator = new Random();

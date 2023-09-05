@@ -88,7 +88,7 @@ namespace ToSic.Eav.Context
         }
         private IAppIdentity _appIdentity;
 
-        public override bool UserMayEdit => _userMayEditGet.Get(() => Log.Getter(() =>
+        public override bool UserMayEdit => _userMayEditGet.Get(() => Log.GetterM(() =>
         {
             // Case 1: Superuser always may
             if (User.IsSystemAdmin) return (true, "super");

@@ -7,12 +7,10 @@ using ToSic.Eav.DataSource.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Streams
 {
-    /// <inheritdoc />
     /// <summary>
     /// A DataStream to get Entities when needed
     /// </summary>
@@ -91,70 +89,54 @@ namespace ToSic.Eav.DataSource.Streams
 
         #region Get Dictionary and Get List
 
-        /// <summary>
-        /// A temporary result list - must be a List, because otherwise
-        /// there's a high risk of IEnumerable signatures with functions being stored inside
-        /// </summary>
-        /// <remarks>
-        /// Note that were possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
-        /// </remarks>
-	    private IImmutableList<IEntity> _list;
-
-        private bool _listLoaded;
-
-        public IEnumerable<IEntity> List => Log.Getter(timer: true, message: $"{nameof(Name)}:{Name}", getter: l =>
+        public IEnumerable<IEntity> List => _list.GetM(Log, parameters: $"{nameof(Name)}:{Name}", timer: true, generator: _ =>
         {
-            // If already retrieved return last result to be faster
-            if (_listLoaded) return (_list, "reuse previous");
-
             // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
-            if (AutoCaching)
-            {
-                l.A($"{nameof(AutoCaching)}:{AutoCaching}");
-                var cacheItem = new ListCache(Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
-                _list = cacheItem.List;
-            }
-            else
-                _list = ReadUnderlyingList();
+            if (!AutoCaching) return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
 
-            _listLoaded = true;
-            return (_list, "ok");
+            var cacheItem = new ListCache(Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+            return (cacheItem.List, $"with {nameof(AutoCaching)}");
         });
 
+        /// <summary>
+        /// A temporary result list - must be a List, because otherwise
+        /// there's a high risk of IEnumerable signatures with functions being stored inside.
+        /// 
+        /// Note that were possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
+        /// </summary>
+        private readonly GetOnce<IImmutableList<IEntity>> _list = new GetOnce<IImmutableList<IEntity>>();
 
         /// <summary>
         /// Assemble the list - from the initially configured ListDelegate
         /// </summary>
         /// <returns></returns>
-        IImmutableList<IEntity> ReadUnderlyingList() => Log.Func<IImmutableList<IEntity>>(() =>
+        private IImmutableList<IEntity> ReadUnderlyingList()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
+
+            IImmutableList<IEntity> CreateErr(string title, string message, Exception ex = default)
+                => Source.Error.Create(source: Source, title: title, message: message, exception: ex).ToImmutableList();
+
             if (_listDelegate == null)
-                return (Source.Error.Create(source: Source,
-                        title: "Error loading Stream",
-                        message: "Can't load stream - no delegate found to supply it").ToImmutableList(),
-                    "error");
+                return l.ReturnAsError(CreateErr("Error loading Stream",
+                    "Can't load stream - no delegate found to supply it"));
 
             try
             {
                 var resultList = ImmutableSmartList.Wrap(_listDelegate());
-                return (resultList, "ok");
+                return l.ReturnAsOk(resultList);
             }
             catch (InvalidOperationException invEx) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
             {
-                return (
-                    Source.Error.Create(source: Source, title: "InvalidOperationException",
-                        message: "See details", exception: invEx).ToImmutableList(),
-                    "error");
+                return l.ReturnAsError(CreateErr("InvalidOperationException", "See details", invEx));
             }
             catch (Exception ex)
             {
-                return (Source.Error.Create(source: Source, exception: ex,
-                        title: "Error getting Stream / reading underlying list",
-                        message: $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}").ToImmutableList(),
-                    "error");
+                return l.ReturnAsError(CreateErr("Error getting Stream / reading underlying list",
+                    $"Error getting List of Stream.\nStream Name: {Name}\nDataSource Name: {Source.Name}", ex));
             }
-        });
+        }
         #endregion
 
 
@@ -162,15 +144,12 @@ namespace ToSic.Eav.DataSource.Streams
         public void PurgeList(bool cascade = false) => Log.Do(message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}", action: l =>
         {
             l.A("kill the very local temp cache");
-            _list = EmptyList;
-            _listLoaded = false;
+            _list.Reset();
             l.A("kill in list-cache");
             new ListCache(Log).Remove(this);
-            if (cascade)
-            {
-                l.A("tell upstream source to flush as well");
-                Source.PurgeList(true);
-            }
+            if (!cascade) return;
+            l.A("tell upstream source to flush as well");
+            Source.PurgeList(true);
         });
 
         /// <inheritdoc />

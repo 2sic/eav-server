@@ -23,20 +23,22 @@ namespace ToSic.Eav.DataSource
 
         public static ConcurrentDictionary<Type, List<ConfigMaskInfo>> Cache = new ConcurrentDictionary<Type, List<ConfigMaskInfo>>();
 
-        public List<ConfigMaskInfo> GetTokens(Type type) => Log.Func(() =>
+        public List<ConfigMaskInfo> GetTokens(Type type)
         {
+            var l = Log.Fn<List<ConfigMaskInfo>>();
             if (Cache.TryGetValue(type, out var cachedResult))
-                return (cachedResult, "cached");
+                return l.Return(cachedResult, "cached");
 
             var generateTokens = GenerateTokens(type);
             Cache[type] = generateTokens; // use indirection to make sure it's thread-safe, because Cache[type] could throw exception 'The given key was not present in dictionary'
-            return (generateTokens, "generated");
-        });
+            return l.Return(generateTokens, "generated");
+        }
 
         #endregion
 
-        public List<ConfigMaskInfo> GenerateTokens(Type type) => Log.Func(() =>
+        public List<ConfigMaskInfo> GenerateTokens(Type type)
         {
+            var l = Log.Fn<List<ConfigMaskInfo>>();
             var configProps = type
                 .GetProperties()
                 .Where(p => Attribute.IsDefined(p, typeof(ConfigurationAttribute), true))
@@ -77,7 +79,7 @@ namespace ToSic.Eav.DataSource
                 });
             }
 
-            return result;
-        });
+            return l.ReturnAsOk(result);
+        }
     }
 }

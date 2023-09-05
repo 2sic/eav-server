@@ -38,5 +38,7 @@ namespace ToSic.Eav.Code.Help
         public string LinkMessage => LinkCode.HasValue() ? string.Format(ErrLinkMessage, Link) : "";
 
         public string ErrorMessage => $"{ErrHelpPre} {UiMessage} {LinkMessage} {(DetailsHtml != null ? ErrHasDetails : "")} {ErrHelpSuf}";
+
+        public override string ToString() => $"CodeHelp: {Name}";
     }
 }

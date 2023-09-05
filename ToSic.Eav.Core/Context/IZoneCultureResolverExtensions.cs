@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using ToSic.Lib.Documentation;
@@ -38,20 +39,46 @@ namespace ToSic.Eav.Context
 
         public static string[] SafeLanguagePriorityCodes(this IZoneCultureResolver resolver)
         {
-            if (resolver == null) return new[] {SafeCurrentCultureCode(null), null};
+            if (resolver == null) return new[] { SafeCurrentCultureCode(null), null };
+
+            var list = (resolver as IZoneCultureResolverProWIP)?.CultureCodesWithFallbacks
+                ?? UnsafeLanguagePriorityCodesWithoutProWIP(resolver);
+
+            if (list == null) return new[] { SafeCurrentCultureCode(null), null };
+
+            ListBuildAddFinalFallback(list);
+            return list.ToArray();
+        }
+
+
+        private static List<string> UnsafeLanguagePriorityCodesWithoutProWIP(this IZoneCultureResolver resolver)
+        {
+            if (resolver == null)
+                throw new ArgumentNullException(
+                    "this method is very internal and should never be called with non-existing resolvers",
+                    nameof(resolver));
 
             var priorities = new List<string>();
-            // First priority: current culture
-            if (!string.IsNullOrWhiteSpace(resolver.CurrentCultureCode)) 
-                priorities.Add(SafeCurrentCultureCode(resolver));
-            // Second priority: Fallback culture
-            if (!string.IsNullOrWhiteSpace(resolver.DefaultCultureCode))
-                priorities.Add(resolver.DefaultCultureCode.ToLowerInvariant());
-            // last priority: the null-entry, meaning that it should just pick anything
-            priorities.Add(null);
+            // 1. First priority: current culture
+            ListBuildAddCodeIfNew(priorities, SafeCurrentCultureCode(resolver));
+            // 2. Second priority: Fallback culture
+            ListBuildAddCodeIfNew(priorities, resolver.DefaultCultureCode);
 
-            return priorities.ToArray();
+            // 9. last priority: will be handled by upstream
+
+            // return list
+            return priorities;
         }
+
+        public static void ListBuildAddCodeIfNew(List<string> list, string code)
+        {
+            if (code == null) return;
+            code = code.ToLowerInvariant();
+            if (!list.Contains(code)) list.Add(code);
+        }
+
+        public static void ListBuildAddFinalFallback(List<string> list)
+            => list.Add(null);
 
         #endregion
     }

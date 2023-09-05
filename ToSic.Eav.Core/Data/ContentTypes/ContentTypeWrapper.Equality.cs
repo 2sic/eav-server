@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Net.Mime;
 using ToSic.Lib.Helpers;
+using static ToSic.Eav.Data.MultiWrapperEquality;
 
 namespace ToSic.Eav.Data
 {
@@ -15,22 +15,22 @@ namespace ToSic.Eav.Data
         });
         private readonly GetOnce<IContentType> _rootContentsForEqualityCheck = new GetOnce<IContentType>();
 
-        public static bool operator ==(ContentTypeWrapper d1, ContentTypeWrapper d2) => WrapperEquality.IsEqual(d1, d2);
+        public static bool operator ==(ContentTypeWrapper d1, ContentTypeWrapper d2) => IsEqual(d1, d2);
 
-        public static bool operator !=(ContentTypeWrapper d1, ContentTypeWrapper d2) => !WrapperEquality.IsEqual(d1, d2);
+        public static bool operator !=(ContentTypeWrapper d1, ContentTypeWrapper d2) => !IsEqual(d1, d2);
 
-        public static bool operator ==(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => WrapperEquality.IsEqual(d1, d2);
+        public static bool operator ==(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => IsEqual(d1, d2);
 
-        public static bool operator !=(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => !WrapperEquality.IsEqual(d1, d2);
+        public static bool operator !=(ContentTypeWrapper d1, IMultiWrapper<IContentType> d2) => !IsEqual(d1, d2);
 
 
-        public bool Equals(ContentTypeWrapper other) => WrapperEquality.EqualsObj(this, other);
+        public bool Equals(ContentTypeWrapper other) => EqualsObj(this, other);
 
-        public bool Equals(IMultiWrapper<IContentType> other) => WrapperEquality.IsEqual(this, other);
+        public bool Equals(IMultiWrapper<IContentType> other) => IsEqual(this, other);
 
-        public override bool Equals(object other) => WrapperEquality.EqualsObj(this, other);
+        public override bool Equals(object other) => EqualsObj(this, other);
 
-        public override int GetHashCode() => WrapperEquality.GetHashCode(this);
+        public override int GetHashCode() => GetWrappedHashCode(this);
 
     }
 }

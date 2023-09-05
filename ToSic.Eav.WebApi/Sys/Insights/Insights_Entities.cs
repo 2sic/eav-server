@@ -7,6 +7,7 @@ using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
+using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys
@@ -24,7 +25,7 @@ namespace ToSic.Eav.WebApi.Sys
 
             var typ = appRead.ContentTypes.Get(type);
 
-            var msg = "" + H1($"Entities for {type} ({typ?.Name}/{typ?.NameId}) in {appId}\n");
+            var msg = "" + H1($"Entities of {type} ({HtmlEncode(typ?.Name)}/{typ?.NameId}) in {appId}\n");
             try
             {
                 Log.A("getting content-type stats");
@@ -41,9 +42,9 @@ namespace ToSic.Eav.WebApi.Sys
                     msg += InsightsHtmlTable.RowFields(
                         (++count).ToString(),
                         LinkTo($"{ent.EntityId}", nameof(Entity), appId, nameId: ent.EntityId.ToString()),
-                        LinkTo($"{ent.EntityGuid}", nameof(Entity), appId, nameId: ent.EntityGuid.ToString()), 
+                        LinkTo($"{ent.EntityGuid}", nameof(Entity), appId, nameId: ent.EntityGuid.ToString()),
                         ent.GetBestTitle(),
-                        ent.Type.Name,
+                        HtmlEncode(ent.Type.Name),
                         ent.Modified.ToString(CultureInfo.InvariantCulture),
                         ent.Owner,
                         $"{ent.Version}",
@@ -102,7 +103,7 @@ namespace ToSic.Eav.WebApi.Sys
             var appRead = AppRt(appId);
 
             IEntity ent;
-            if (Int32.TryParse(nameId, out var entityId))
+            if (int.TryParse(nameId, out var entityId))
                 ent = appRead.Entities.Get(entityId);
             else if (Guid.TryParse(nameId, out var entityGuid))
                 ent = appRead.Entities.Get(entityGuid);
@@ -114,7 +115,7 @@ namespace ToSic.Eav.WebApi.Sys
 
             var msg = H1($"Entity Debug for {nameId} in {appId}\n")
                       + Tags.Nl2Br("\n\n\n")
-                      + Textarea(json).Rows("20").Cols("100");
+                      + Textarea(HtmlEncode(json)).Rows("20").Cols("100");
 
             return msg;
         }

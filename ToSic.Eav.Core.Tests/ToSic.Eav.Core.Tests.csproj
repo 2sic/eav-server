@@ -99,6 +99,7 @@
     <Compile Include="Data\Entity_Test.cs" />
     <Compile Include="Data\DynamicValue_Test.cs" />
     <Compile Include="IdentityTests\MapperTest.cs" />
+    <Compile Include="LookUp\LookupEngineTestExtensions.cs" />
     <Compile Include="LookUp\LookUpTestData.cs" />
     <Compile Include="LookUp\Tokens\TokenReplaceTst.cs" />
     <Compile Include="LookUp\LookUpEngineTests.cs" />

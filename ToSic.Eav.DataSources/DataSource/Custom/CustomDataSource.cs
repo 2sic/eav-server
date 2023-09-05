@@ -130,7 +130,7 @@ namespace ToSic.Eav.DataSource
                 l.Ex(ex);
                 var runErr = Error.Create(title: $"Error calling source generator of {nameof(ProvideOut)}. " +
                                                  "Error details can be found in Insights.", exception: ex);
-                return l.Return(runErr, "error");
+                return l.ReturnAsError(runErr);
             }
             if (funcResult is null) l.Return(EmptyList, "null, no data returned");
 
@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSource
                 l.Ex(ex);
                 var runErr = Error.Create(title: $"Error handling result of source generator of {nameof(ProvideOut)}. " +
                                                  "Error details can be found in Insights.", exception: ex);
-                return l.Return(runErr, "error");
+                return l.ReturnAsError(runErr);
             }
 
             // Handle empty list
@@ -186,7 +186,7 @@ namespace ToSic.Eav.DataSource
                 message: "The list received was tested against all possible data types but non matched. " +
                          $"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)}, {nameof(IHasRawEntity<IRawEntity>)}. " +
                          "Note that all items must be of the same type. ");
-            return l.Return(err, "error");
+            return l.ReturnAsError(err);
         }
 
         private DataFactoryOptions GetBest(Func<DataFactoryOptions> options) => options?.Invoke() ?? Options;

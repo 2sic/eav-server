@@ -116,25 +116,26 @@ namespace ToSic.Eav.DataSources
         });
 
 
-        private IImmutableList<IEntity> GetValueFilter() => Log.Func(() =>
+        private IImmutableList<IEntity> GetValueFilter()
         {
-            Log.A("applying value filter...");
+            var l = Log.Fn<IImmutableList<IEntity>>();
+            l.A("applying value filter...");
             var fieldName = Attribute;
 
             var languages = _valueLanguageService.PrepareLanguageList(Languages);
 
             // Get the In-list and stop if error or empty
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
-            if (!source.Any()) return (source, "empty");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+            if (!source.Any()) return l.Return(source, "empty");
 
             var op = Operator.ToLowerInvariant();
 
             // Case 1/2: Handle basic "none" and "all" operators
             if (op == CompareOperators.OpNone)
-                return (EmptyList, CompareOperators.OpNone);
+                return l.Return(EmptyList, CompareOperators.OpNone);
             if (op == CompareOperators.OpAll)
-                return (ApplyTake(source).ToImmutableList(), CompareOperators.OpAll);
+                return l.Return(ApplyTake(source).ToImmutableList(), CompareOperators.OpAll);
 
             // Case 3: Real filter
             // Find first Entity which has this property being not null to detect type
@@ -147,7 +148,7 @@ namespace ToSic.Eav.DataSources
 
             // if I can't find any, return empty list
             if (firstEntity == null)
-                return (EmptyList, "empty");
+                return l.Return(EmptyList, "empty");
 
             // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
             // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
@@ -168,31 +169,32 @@ namespace ToSic.Eav.DataSources
             var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
 
             return innerErrors.SafeAny()
-                ? (innerErrors, "error") 
-                : (GetFilteredWithLinq(source, compare), "ok");
+                ? l.ReturnAsError(innerErrors)
+                : l.ReturnAsOk(GetFilteredWithLinq(source, compare));
 
             // Note: the alternate GetFilteredWithLoop has more logging, activate in serious cases
             // Note that the code might not be 100% identical, but it should help find issues
-        });
+        }
 
 
-        private IImmutableList<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare) => Log.Func(() =>
+        private IImmutableList<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             try
             {
                 var results = originals.Where(compare);
                 results = ApplyTake(results);
-                return (results.ToImmutableList(), "ok");
+                return l.ReturnAsOk(results.ToImmutableList());
             }
             catch (Exception ex)
             {
-                return (Error.Create(title: "Unexpected Error",
+                return l.ReturnAsError(Error.Create(title: "Unexpected Error",
                     message: "Experienced error while executing the filter LINQ. " +
                              "Probably something with type-mismatch or the same field using different types or null. " +
                              "The exception was logged to Insights.",
-                    exception: ex), "error");
+                    exception: ex));
             }
-        });
+        }
 
         private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results) => Log.Func(() => int.TryParse(Take, out var tk)
             ? (results.Take(tk), $"take {tk}")

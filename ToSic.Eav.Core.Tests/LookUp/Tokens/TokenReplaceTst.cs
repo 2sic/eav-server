@@ -261,10 +261,10 @@ Now try a token which returns a token: Daniel";
             var tok = new LookUpInDictionary("token");
             tok.Properties.Add("key", "What a Token!");
             var engine = LookUpTestData.EmptyLookupEngine;
-            engine.Add(qs);
-            engine.Add(mod);
-            engine.Add(appS);
-            engine.Add(tok);
+            engine.TestAdd(qs);
+            engine.TestAdd(mod);
+            engine.TestAdd(appS);
+            engine.TestAdd(tok);
 
             var tr = new TokenReplace(engine);
             var resultNoRecurrance = tr.ReplaceTokens(original);

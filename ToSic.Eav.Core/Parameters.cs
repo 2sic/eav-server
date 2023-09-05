@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using ToSic.Eav.Code;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav
@@ -18,6 +17,12 @@ namespace ToSic.Eav
         /// It must be a const, otherwise it couldn't be used in method signatures :(
         /// </remarks>
         public const string Protector = "Params must be named (" + HelpLink + ")";
+
+        /// <summary>
+        /// We found that some external code had used the constant with the old value,
+        /// so we must check that too if things look bad.
+        /// </summary>
+        private const string OldProtector = "Params must be named (https://r.2sxc.org/named-params)";
 
         /// <summary>
         /// Parameter checker which should be called on all protected methods. It will help you generate a proper error message if the parameters were not named. 
@@ -40,7 +45,7 @@ namespace ToSic.Eav
             string message = default)
         {
             // Note: this is duplicate code, but we don't want the call stack to become more confusing
-            if (criticalParameter != Protector)
+            if (criticalParameter != Protector && criticalParameter != OldProtector)
                 throw CreateException(methodName, paramNames, message);
         }
 

@@ -59,6 +59,8 @@ namespace ToSic.Lib.Helpers
         public TResult Get(ILog log, Func<TResult> generator,
             bool timer = default,
             bool enabled = true,
+            string parameters = default,
+            string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
@@ -66,7 +68,7 @@ namespace ToSic.Lib.Helpers
         {
             if (IsValueCreated) return _value;
             IsValueCreated = true;
-            return _value = log.Getter(generator, timer: timer, enabled: enabled, cPath: cPath, cName: cName, cLine: cLine);
+            return _value = log.Getter(generator, timer: timer, enabled: enabled, parameters: parameters, message: message, cPath: cPath, cName: cName, cLine: cLine);
         }
 
         /// <summary>
@@ -84,9 +86,11 @@ namespace ToSic.Lib.Helpers
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         /// <returns></returns>
-        public TResult Get(ILog log, Func<ILog, TResult> generator,
+        public TResult GetL(ILog log, Func<ILog, TResult> generator,
             bool timer = default,
             bool enabled = true,
+            string parameters = default,
+            string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
@@ -94,7 +98,7 @@ namespace ToSic.Lib.Helpers
         {
             if (IsValueCreated) return _value;
             IsValueCreated = true;
-            return _value = log.Getter(generator, timer: timer, enabled: enabled, cPath: cPath, cName: cName, cLine: cLine);
+            return _value = log.GetterL(generator, timer: timer, enabled: enabled, parameters: parameters, message: message, cPath: cPath, cName: cName, cLine: cLine);
         }
 
         /// <summary>
@@ -112,9 +116,11 @@ namespace ToSic.Lib.Helpers
         /// <param name="cName">auto pre filled by the compiler - the method name</param>
         /// <param name="cLine">auto pre filled by the compiler - the code line</param>
         /// <returns></returns>
-        public TResult Get(ILog log, Func<ILog, (TResult Result, string Message)> generator,
+        public TResult GetM(ILog log, Func<ILog, (TResult Result, string Message)> generator,
             bool timer = default,
             bool enabled = true,
+            string parameters = default,
+            string message = default,
             [CallerFilePath] string cPath = default,
             [CallerMemberName] string cName = default,
             [CallerLineNumber] int cLine = default
@@ -122,13 +128,17 @@ namespace ToSic.Lib.Helpers
         {
             if (IsValueCreated) return _value;
             IsValueCreated = true;
-            return _value = log.Getter(generator, timer: timer, enabled: enabled, cPath: cPath, cName: cName, cLine: cLine);
+            return _value = log.GetterM(generator, timer: timer, enabled: enabled, cPath: cPath, cName: cName, cLine: cLine);
         }
 
         /// <summary>
         /// Reset the state and value so it will be re-generated next time it's needed.
         /// </summary>
-        public void Reset() => IsValueCreated = false;
+        public void Reset(ILog log = default)
+        {
+            log.A(nameof(Reset));
+            IsValueCreated = false;
+        }
 
         /// <summary>
         /// Reset the state and value so it will be re-generated next time it's needed.

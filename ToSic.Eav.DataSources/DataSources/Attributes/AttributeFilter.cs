@@ -79,12 +79,13 @@ namespace ToSic.Eav.DataSources
         /// Get the list of all items with reduced attributes-list
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetList() => Log.Func(l =>
+        private IImmutableList<IEntity> GetList()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var raw = AttributeNames;
             // note: since 2sxc 11.13 we have lines for attributes
@@ -106,7 +107,7 @@ namespace ToSic.Eav.DataSources
 
             // Case #1 if we don't change anything, short-circuit and return original
             if (noFieldNames && !modeIsKeepAttributes)
-                return (source, $"keep original {source.Count}");
+                return l.Return(source, $"keep original {source.Count}");
 
             var result = source
                 .Select(e =>
@@ -123,8 +124,8 @@ namespace ToSic.Eav.DataSources
                 })
                 .ToImmutableList();
 
-            return (result, $"modified {result.Count}");
-        });
+            return l.Return(result, $"modified {result.Count}");
+        }
 
     }
 }

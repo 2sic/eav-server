@@ -4,7 +4,7 @@ namespace ToSic.Eav.Identity
 {
     public static class Mapper
     {
-        public static string GuidCompress(Guid newGuid)
+        public static string GuidCompress(this Guid newGuid)
         {
             var modifiedBase64 = Convert.ToBase64String(newGuid.ToByteArray())
                 .Replace('+', '-').Replace('/', '_')    // avoid invalid URL characters

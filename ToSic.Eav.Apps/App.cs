@@ -27,10 +27,10 @@ namespace ToSic.Eav.Apps
         {
             public Generator<Query> QueryGenerator { get; }
             public LazySvc<QueryManager> QueryManager { get; }
-            internal readonly IZoneMapper ZoneMapper;
-            internal readonly ISite Site;
-            internal readonly IAppStates AppStates;
-            internal readonly IDataSourcesService DataSourceFactory;
+            internal IZoneMapper ZoneMapper { get; } 
+            internal ISite Site { get; }
+            internal IAppStates AppStates { get; }
+            internal IDataSourcesService DataSourceFactory { get; }
 
             public MyServices(IZoneMapper zoneMapper,
                 ISite site,
@@ -57,12 +57,8 @@ namespace ToSic.Eav.Apps
         /// <param name="logName">must be null by default, because of DI</param>
         public App(MyServices services, string logName = null): base(services, logName ?? "Eav.App")
         {
-            _dsFactory = services.DataSourceFactory;
-            
             Site = services.Site;
         }
-        private readonly IDataSourcesService _dsFactory;
-
 
         #endregion
 

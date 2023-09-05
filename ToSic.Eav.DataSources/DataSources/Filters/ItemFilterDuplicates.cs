@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Streams;
@@ -26,7 +25,7 @@ namespace ToSic.Eav.DataSources
         In = new[] { StreamDefaultName },
 	    HelpLink = "https://go.2sxc.org/DsFilterDuplicates")]
 
-    public sealed class ItemFilterDuplicates: Eav.DataSource.DataSourceBase
+    public sealed class ItemFilterDuplicates: DataSourceBase
 	{
 	    internal const string DuplicatesStreamName = "Duplicates";
 
@@ -46,33 +45,35 @@ namespace ToSic.Eav.DataSources
         /// Find and return the unique items in the list
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetUnique() => Log.Func(() =>
+        private IImmutableList<IEntity> GetUnique()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             if (!In.HasStreamWithItems(StreamDefaultName)) 
-                return (EmptyList, "no in stream with name");
+                return l.Return(EmptyList, "no in stream with name");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var result = source
                 .Distinct()
                 .ToImmutableList();
 
-            return (result, "ok");
-        });
+            return l.Return(result, $"{result.Count}");
+        }
 
 
         /// <summary>
         /// Find and return only the duplicate items in the list
         /// </summary>
         /// <returns></returns>
-        private IImmutableList<IEntity> GetDuplicates() => Log.Func(() =>
+        private IImmutableList<IEntity> GetDuplicates()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             if (!In.HasStreamWithItems(StreamDefaultName)) 
-                return (EmptyList, "no in-stream with name");
+                return l.ReturnAsError(EmptyList, "no in-stream with name");
 
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var result = source
                 .GroupBy(s => s)
@@ -80,7 +81,7 @@ namespace ToSic.Eav.DataSources
                 .Select(g => g.Key)
                 .ToImmutableList();
 
-            return (result, "ok");
-        });
+            return l.Return(result, $"{result.Count}");
+        }
     }
 }

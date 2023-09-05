@@ -24,8 +24,8 @@ namespace ToSic.Eav.Core.Tests.LookUp
         public LookUpEngine AppSetAndRes(int appId = AppIdX)
         {
             var vc = EmptyLookupEngine;
-            vc.Add(AppSettings(appId));
-            vc.Add(AppResources(appId));
+            vc.TestAdd(AppSettings(appId));
+            vc.TestAdd(AppResources(appId));
 
             return vc;
         }

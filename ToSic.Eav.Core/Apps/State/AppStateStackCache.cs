@@ -42,24 +42,25 @@ namespace ToSic.Eav.Apps
         /// Get the stack of Settings which applies to this app
         /// </summary>
         /// <returns></returns>
-        internal List<KeyValuePair<string, IPropertyLookup>> FullStack(ILog buildLog) => buildLog.Func(l =>
+        internal List<KeyValuePair<string, IPropertyLookup>> FullStack(ILog buildLog)
         {
+            var l = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
             if (_fullStackSynched != null)
             {
-                if (_fullStackSynched.CacheChanged())
-                    l.A("Cache changed, will rebuild");
-                else
-                    return (_fullStackSynched.Value, "existing");
+                if (!_fullStackSynched.CacheChanged())
+                    return l.Return(_fullStackSynched.Value, "existing");
+                l.A("Cache changed, will rebuild");
             }
 
             _fullStackSynched = BuildCachedStack(buildLog);
-            return (_fullStackSynched.Value, "created");
-        });
+            return l.Return(_fullStackSynched.Value, "created");
+        }
 
         private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> _fullStackSynched;
 
-        private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(ILog buildLog) => buildLog.Func(()=>
+        private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(ILog buildLog)
         {
+            var l = buildLog.Fn<SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>>();
             var cacheExpiry = GetMultiSourceCacheExpiry();
             // 2022-03-11 2dm - we're currently including the build log
             // we assume it won't remain in memory, but there is a small risk of a memory leak here
@@ -68,8 +69,8 @@ namespace ToSic.Eav.Apps
             var cachedStack = new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(cacheExpiry, 
                 () => RebuildStack(buildLog));
 
-            return (cachedStack, "built");
-        });
+            return l.Return(cachedStack, "built");
+        }
 
         private CacheExpiringMultiSource GetMultiSourceCacheExpiry()
         {
@@ -81,8 +82,9 @@ namespace ToSic.Eav.Apps
         }
 
 
-        private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(ILog buildLog = null) => buildLog.Func(l =>
+        private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(ILog buildLog = null)
         {
+            var l = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
             void LogSource(string name, AppStateMetadata state)
                 => l.A($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
 
@@ -103,39 +105,42 @@ namespace ToSic.Eav.Apps
             LogSource("Preset", preset);
             //log.SafeAdd($"Preset: {preset != null}");
 
+
             // Current App level
-            var sources = new List<KeyValuePair<string, IPropertyLookup>>
-            {
-                new KeyValuePair<string, IPropertyLookup>(PartApp, appStack.MetadataItem),
-                new KeyValuePair<string, IPropertyLookup>(PartAppSystem, appStack.SystemItem),
-            };
+            var sources = new List<KeyValuePair<string, IPropertyLookup>>();
+            void AddSource(string name, IPropertyLookup value)
+                => sources.Add(new KeyValuePair<string, IPropertyLookup>(name, value));
+
+            AddSource(PartApp, appStack.MetadataItem);
+            AddSource(PartAppSystem, appStack.SystemItem);
+
 
             // Ancestor Level (only for inherited apps, v13)
             if (ancestorOrNull != null)
             {
-                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartAncestor, ancestorOrNull.MetadataItem));
-                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartAncestorSystem, ancestorOrNull.SystemItem));
+                AddSource(PartAncestor, ancestorOrNull.MetadataItem);
+                AddSource(PartAncestorSystem, ancestorOrNull.SystemItem);
             }
 
             // Site level
             if (siteOrNull != null)
             {
-                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartSite, siteOrNull.CustomItem));
-                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartSiteSystem, siteOrNull.SystemItem));
+                AddSource(PartSite, siteOrNull.CustomItem);
+                AddSource(PartSiteSystem, siteOrNull.SystemItem);
             }
 
 
             // Global
             if (global != null)
             {
-                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartGlobal, global.CustomItem));
-                sources.Add(new KeyValuePair<string, IPropertyLookup>(PartGlobalSystem, global.SystemItem));
+                AddSource(PartGlobal, global.CustomItem);
+                AddSource(PartGlobalSystem, global.SystemItem);
             }
 
             // System Presets
-            sources.Add(new KeyValuePair<string, IPropertyLookup>(PartPresetSystem, preset.SystemItem));
-            return (sources, "ok");
-        });
+            AddSource(PartPresetSystem, preset.SystemItem);
+            return l.Return(sources, "ok");
+        }
 
         #endregion
     }

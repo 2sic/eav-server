@@ -12,8 +12,8 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// An App in memory - for quickly getting things done with the app data, queries etc.
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
-    public interface IApp : IAppIdentity, /*IAppIdentityWithPublishingState,*/ IHasMetadata
+    [PublicApi]
+    public interface IApp : IAppIdentity, IHasMetadata
     {
         /// <summary>
         /// App Name
@@ -32,6 +32,7 @@ namespace ToSic.Eav.Apps
         /// Important to configure apps once and then hide from normal users. 
         /// </summary>
         /// <returns>The hidden-state as configured in the app configuration.</returns>
+        [PrivateApi("Made private in 16.04, previously public, but don't think that's how it should be.")]
         bool Hidden { get; }
 
         /// <summary>

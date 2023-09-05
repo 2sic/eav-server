@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using ToSic.Lib.Documentation;
 
@@ -114,5 +115,8 @@ namespace ToSic.Eav.Plumbing
                 return fallback;
             }
         }
+
+        public static bool IsDefault<T>(this T value) => EqualityComparer<T>.Default.Equals(value, default);
+        public static bool IsNotDefault<T>(this T value) => !EqualityComparer<T>.Default.Equals(value, default);
     }
 }

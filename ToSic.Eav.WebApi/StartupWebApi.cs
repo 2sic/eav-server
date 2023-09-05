@@ -24,7 +24,6 @@ namespace ToSic.Eav.WebApi
         {
             // Insights, the most important core backend
             services.TryAddTransient<InsightsControllerReal>();
-            services.TryAddSingleton<DummyControllerReal>();
 
             // Real Controller Implementations https://go.2sxc.org/proxy-controllers
             services.TryAddTransient<FeatureControllerReal>();

@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps
 
             // All in the App and below
             sources.AddRange(GetOrGenerate(target).FullStack(Log));
-            return l.ReturnAndLog(sources, $"Has {sources.Count}");
+            return l.Return(sources, $"Has {sources.Count}");
         }
 
         public const string PiggyBackId = "app-stack-";

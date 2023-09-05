@@ -114,7 +114,7 @@ namespace ToSic.Eav.Configuration.Licenses
 
             return licensesStored;
         });
-        
+
         private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint,
             List<EnterpriseFingerprint> validEntFps) => Log.Func(l =>
         {
@@ -155,9 +155,10 @@ namespace ToSic.Eav.Configuration.Licenses
             var licenses = licenseStored?.Licenses ?? new List<LicenseStoredDetails>();
             l.A($"Licenses: {licenses.Count}");
 
+
             var licenseStates = licenses
                 .Where(storedDetails => !string.IsNullOrEmpty(storedDetails.Id))
-                .Select(storedDetails =>
+                .Select((storedDetails, index) =>
                 {
                     var licDef = _licenseCatalog.TryGet(storedDetails.Id);
 
@@ -165,9 +166,9 @@ namespace ToSic.Eav.Configuration.Licenses
                     // For this we must add a virtual license for this feature only
                     if (licDef == null)
                     {
-                        licDef = new LicenseDefinition(0, storedDetails.Comments ?? "Feature (unknown)",
+                        licDef = new LicenseDefinition(BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
                             Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
-                            $"Feature: {storedDetails.Comments} ({storedDetails.Id})");
+                            $"Feature: {storedDetails.Comments} ({storedDetails.Id})", featureLicense: true);
                         l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId}");
                         _licenseCatalog.Register(licDef);
                     }

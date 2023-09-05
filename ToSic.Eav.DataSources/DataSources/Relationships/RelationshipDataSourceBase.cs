@@ -41,13 +41,14 @@ namespace ToSic.Eav.DataSources
             ProvideOut(GetRelated);
         }
 
-        private IImmutableList<IEntity> GetRelated() => Log.Func(() =>
+        private IImmutableList<IEntity> GetRelated()
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             // Make sure we have an In - otherwise error
             var source = TryGetIn();
-            if (source is null) return (Error.TryGetInFailed(), "error");
+            if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
             var fieldName = FieldName;
             if (string.IsNullOrWhiteSpace(fieldName)) fieldName = null;
@@ -65,8 +66,8 @@ namespace ToSic.Eav.DataSources
             if (FilterDuplicates)
                 relationships = relationships.Distinct();
 
-            return (relationships.ToImmutableList(), "ok");
-        });
+            return l.ReturnAsOk(relationships.ToImmutableList());
+        }
 
         /// <summary>
         /// Construct function for the get of the related items
