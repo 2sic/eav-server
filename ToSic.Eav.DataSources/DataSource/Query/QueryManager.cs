@@ -99,7 +99,7 @@ namespace ToSic.Eav.DataSource.Query
             if (qEntity == null)
                 return l.ReturnNull("not found");
             var delayedQuery = _queryGenerator.New().Init(appIdentity.ZoneId, appIdentity.AppId, qEntity, lookUps);
-            return delayedQuery;
+            return l.Return(delayedQuery, "found");
         }
 
         internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid, int recurseParents = 0) 
