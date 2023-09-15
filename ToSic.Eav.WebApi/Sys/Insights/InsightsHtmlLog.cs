@@ -215,10 +215,15 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 
             #region find perfect Label
 
-            var label = e.Source;
-            if (!string.IsNullOrEmpty(parentName) && !string.IsNullOrEmpty(e.Source))
+            var label = e.Source ?? "";
+            // If it has more than one segment, shorten it to last
+            if (label.Count(c => c == ']') > 1)
             {
-                var foundParent = e.Source?.IndexOf(parentName) ?? 0;
+                label = label.Substring(0, label.Length - 2).AfterLast("[");
+            }
+            if (parentName.HasValue() && e.Source.HasValue())
+            {
+                var foundParent = e.Source.IndexOf(parentName);
                 if (foundParent > 0)
                 {
                     var cut = foundParent + parentName.Length;
@@ -226,6 +231,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                         cut = foundParent;
                     label = e.Source.Substring(cut);
                 }
+
+                if (label.Length > 20) label = "..." + e.Source;
             }
 
             #endregion

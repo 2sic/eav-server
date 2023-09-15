@@ -12,6 +12,8 @@ namespace ToSic.Eav.Plumbing
 
     public static class SubstringExtensions
     {
+        // Todo
+
         /// <summary>
         /// Get string value after the (first occurrence) key.
         /// Case insensitive by default. 
@@ -25,18 +27,19 @@ namespace ToSic.Eav.Plumbing
         public static string After(this string value, string key, bool caseSensitive = false)
             => value.AfterInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase);
 
-        /// <summary>
-        /// Get string value after the last occurrence of a key.
-        /// Will return null in various cases which don't make sense or if not found.
-        /// Case insensitive by default. 
-        /// Very safe and robust, fully tested.
-        /// </summary>
-        /// <param name="value">The initial string. If null, will always return null or the specified fallback.</param>
-        /// <param name="key">The key to find. If null, will always return null or the specified fallback</param>
-        /// <param name="caseSensitive">Set to true if you need case-sensitive compare</param>
-        /// <returns></returns>
-        public static string AfterLast(this string value, string key, bool caseSensitive = false)
-            => value.AfterInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase, true);
+        // 2023-09-15 2dm removing, as it's now used from RazorBlade...
+        ///// <summary>
+        ///// Get string value after the last occurrence of a key.
+        ///// Will return null in various cases which don't make sense or if not found.
+        ///// Case insensitive by default. 
+        ///// Very safe and robust, fully tested.
+        ///// </summary>
+        ///// <param name="value">The initial string. If null, will always return null or the specified fallback.</param>
+        ///// <param name="key">The key to find. If null, will always return null or the specified fallback</param>
+        ///// <param name="caseSensitive">Set to true if you need case-sensitive compare</param>
+        ///// <returns></returns>
+        //public static string AfterLast(this string value, string key, bool caseSensitive = false)
+        //    => value.AfterInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase, true);
 
         private static string AfterInternal(this string value,
             string key, 
@@ -53,31 +56,33 @@ namespace ToSic.Eav.Plumbing
             return value.Substring(adjustedPosA);
         }
 
-        /// <summary>
-        /// Get string value before the key.
-        /// Case insensitive by default. 
-        /// Will return null in various cases which don't make sense or if not found.
-        /// Very safe and robust, fully tested.
-        /// </summary>
-        /// <param name="value">The initial string. If null, will always return null or the specified fallback.</param>
-        /// <param name="key">The key to find. If null, will always return null or the specified fallback</param>
-        /// <param name="caseSensitive">Set to true if you need case-sensitive compare</param>
-        /// <returns></returns>
-        public static string Before(this string value, string key, bool caseSensitive = false)
-            => value.BeforeInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase);
+        // 2023-09-15 2dm removing, as it's now used from RazorBlade...
+        ///// <summary>
+        ///// Get string value before the key.
+        ///// Case insensitive by default. 
+        ///// Will return null in various cases which don't make sense or if not found.
+        ///// Very safe and robust, fully tested.
+        ///// </summary>
+        ///// <param name="value">The initial string. If null, will always return null or the specified fallback.</param>
+        ///// <param name="key">The key to find. If null, will always return null or the specified fallback</param>
+        ///// <param name="caseSensitive">Set to true if you need case-sensitive compare</param>
+        ///// <returns></returns>
+        //public static string Before(this string value, string key, bool caseSensitive = false)
+        //    => value.BeforeInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase);
 
-        /// <summary>
-        /// Get string value before the last occurrence of a key.
-        /// Case insensitive by default. 
-        /// Will return null in various cases which don't make sense or if not found.
-        /// Very safe and robust, fully tested.
-        /// </summary>
-        /// <param name="value">The initial string. If null, will always return null or the specified fallback.</param>
-        /// <param name="key">The key to find. If null, will always return null or the specified fallback</param>
-        /// <param name="caseSensitive">Set to true if you need case-sensitive compare</param>
-        /// <returns></returns>
-        public static string BeforeLast(this string value, string key, bool caseSensitive = false)
-            => value.BeforeInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase, true);
+        // 2023-09-15 2dm removing, as it's now used from RazorBlade...
+        ///// <summary>
+        ///// Get string value before the last occurrence of a key.
+        ///// Case insensitive by default. 
+        ///// Will return null in various cases which don't make sense or if not found.
+        ///// Very safe and robust, fully tested.
+        ///// </summary>
+        ///// <param name="value">The initial string. If null, will always return null or the specified fallback.</param>
+        ///// <param name="key">The key to find. If null, will always return null or the specified fallback</param>
+        ///// <param name="caseSensitive">Set to true if you need case-sensitive compare</param>
+        ///// <returns></returns>
+        //public static string BeforeLast(this string value, string key, bool caseSensitive = false)
+        //    => value.BeforeInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase, true);
         
         private static string BeforeInternal(this string value, string key, StringComparison comparison, bool findLast = false, string fallback = null)
         {
