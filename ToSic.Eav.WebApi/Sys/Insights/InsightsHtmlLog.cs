@@ -188,7 +188,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 {
                     // Create an entry
                     lg.AppendLine("<li>");
-                    lg.AppendLine(TreeDumpOneLine(e, breadcrumb.Count > 0 ? breadcrumb.Peek() : "", times.Count > 0 ? times.Peek() : default, time));
+                    var prevBreadcrumb = breadcrumb.Count > 0 ? breadcrumb.Peek() : "";
+                    lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0 ? times.Peek() : default, time));
                     // 
                     if (e.WrapOpen)
                     {
@@ -207,7 +208,18 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             return lg.ToString();
         }
 
-        private static string TreeDumpOneLine(Entry e, string parentName, TimeSpan parentTime, InsightsTime time)
+        /// <summary>
+        /// If it has more than one segment, shorten it to last
+        /// eg. Eav.Xyz[A7]Dyn.DnnCdr[62]Sxc.RzrHlp[93] => Sxc.RzrHlp[93]
+        /// </summary>
+        /// <param name="label"></param>
+        /// <returns></returns>
+        private static string KeepOnlyLastSegmentOfPath(string label) 
+            => label.Count(c => c == '[') > 1 
+                ? label.Substring(0, label.Length - 2).AfterLast("]") + "]" 
+                : label;
+
+        private string TreeDumpOneLine(Entry e, string parentBreadcrumb, TimeSpan parentTime, InsightsTime time)
         {
             // if it's just a close, only repeat the result
             if (e.WrapClose)
@@ -215,32 +227,42 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 
             #region find perfect Label
 
-            var label = e.Source ?? "";
-            // If it has more than one segment, shorten it to last
-            if (label.Count(c => c == ']') > 1)
-            {
-                label = label.Substring(0, label.Length - 2).AfterLast("[");
-            }
-            if (parentName.HasValue() && e.Source.HasValue())
-            {
-                var foundParent = e.Source.IndexOf(parentName);
-                if (foundParent > 0)
-                {
-                    var cut = foundParent + parentName.Length;
-                    if (!(label.Length > cut))
-                        cut = foundParent;
-                    label = e.Source.Substring(cut);
-                }
+            var logChainPath = e.Source ?? "";
+            var label = KeepOnlyLastSegmentOfPath(logChainPath);
 
-                if (label.Length > 20) label = "..." + e.Source;
+            // If we have a previous breadcrumb...
+            try
+            {
+                if (parentBreadcrumb.HasValue())
+                {
+                    if (logChainPath.HasValue())
+                    {
+                        var prevIndex = logChainPath.IndexOf(parentBreadcrumb, StringComparison.Ordinal);
+                        if (prevIndex > 0)
+                        {
+                            var cut = prevIndex + parentBreadcrumb.Length;
+                            if (label.Length <= cut) cut = prevIndex;
+                            var rest = logChainPath.Substring(cut);
+                            label = KeepOnlyLastSegmentOfPath(logChainPath.Substring(cut));
+                            if (rest != label) label = '…' + label;
+                        }
+                    }
+                    //else
+                    //    label = '…' + label;
+                }
             }
+            catch { /* ignore */ }
+
+            // Shorten display if it's the same as the previous line
+            if (label.Trim('…') == _lastLogLabel) label = "[=]";
+            else _lastLogLabel = label;
 
             #endregion
 
             var message = HtmlEncode(e.Message.NeverNull());
             if (e.Options?.ShowNewLines == true) message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
             return Span(
-                    HoverLabel(label, e.Source, "logIds")
+                    HoverLabel(HtmlEncode(label), logChainPath, "logIds")
                     + " - "
                     + message
                     + (e.Result != null
@@ -257,6 +279,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
         private const string ResStart = "<span style='color: green'>= ";
         private const string ResEnd = "</span>";
 
+        private string _lastLogLabel;
 
     }
 }
