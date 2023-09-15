@@ -4,14 +4,13 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Eav.Security.Fingerprint;
-using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Errors;
-using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
-namespace ToSic.Eav.WebApi.Sys
+namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal: ServiceBase
     {

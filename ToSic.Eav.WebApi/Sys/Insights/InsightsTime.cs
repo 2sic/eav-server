@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.Logging;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys
+namespace ToSic.Eav.WebApi.Sys.Insights
 {
     internal class InsightsTime: InsightsHtmlBase
     {

@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Lib.Logging;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys
+namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal
     {

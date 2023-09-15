@@ -6,10 +6,9 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using static ToSic.Razor.Blade.Tag;
-using ToSic.Eav.WebApi.Sys.Insights;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 
-namespace ToSic.Eav.WebApi.Sys
+namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal
     {
