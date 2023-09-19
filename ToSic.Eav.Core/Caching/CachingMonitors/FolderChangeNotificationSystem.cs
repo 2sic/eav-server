@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
-using System.Linq;
 using System.Runtime.Caching;
 using System.Runtime.Caching.Hosting;
 
@@ -70,8 +69,8 @@ namespace ToSic.Eav.Caching.CachingMonitors
         
         public void StartMonitoring(string dirPath, OnChangedCallback onChangedCallback, out object state, out DateTimeOffset lastWriteTime, out long fileSize)
         {
-            if (dirPath == null) throw new ArgumentNullException("dirPath");
-            if (onChangedCallback == null) throw new ArgumentNullException("onChangedCallback");
+            if (dirPath == null) throw new ArgumentNullException(nameof(dirPath));
+            if (onChangedCallback == null) throw new ArgumentNullException(nameof(onChangedCallback));
             
             var directoryInfo = new DirectoryInfo(dirPath);
             if (!(_dirMonitors[dirPath] is DirectoryMonitor dirMon))
@@ -107,16 +106,17 @@ namespace ToSic.Eav.Caching.CachingMonitors
 
             state = target;
             lastWriteTime = directoryInfo.LastWriteTime;
-            fileSize = (directoryInfo.Exists) ? GetDirectorySize(directoryInfo) : -1;
+            fileSize = (directoryInfo.Exists) ? /*GetDirectorySize(directoryInfo)*/ 0 : -1;
         }
 
-        private static long GetDirectorySize(DirectoryInfo directoryInfo) => 
-            directoryInfo.GetFiles("*.*",SearchOption.AllDirectories).Sum(f => f.Length);
+        // this is very slow in case of many subfolders and files, so we will not use it.
+        //private static long GetDirectorySize(DirectoryInfo directoryInfo) => 
+        //    directoryInfo.GetFiles("*.*",SearchOption.AllDirectories).Sum(f => f.Length);
 
         public void StopMonitoring(string dirPath, object state)
         {
-            if (dirPath == null) throw new ArgumentNullException("dirPath");
-            if (state == null) throw new ArgumentNullException("state");
+            if (dirPath == null) throw new ArgumentNullException(nameof(dirPath));
+            if (state == null) throw new ArgumentNullException(nameof(state));
             if (!(state is FolderChangeEventTarget target)) throw new ArgumentException("target is null");
             if (!(_dirMonitors[dirPath] is DirectoryMonitor dirMon)) return;
             lock (dirMon)
