@@ -62,6 +62,15 @@ namespace ToSic.Eav.Data
                     continue;
                 }
 
+                // 2023-09-04 new case with json/anonymous objects: Result is a object with HasPropertyLookup
+                if (result.Result is IHasPropLookup hasPropLookup)
+                {
+                    currentSource = hasPropLookup.PropertyLookup;
+                    if (currentSource == null)
+                        return (PropReqResult.NullFinal(result.Path), "found sub-object without more lookups; will stop");
+                    continue;
+                }
+
                 // If we got any other value, but would still have fields to check, we must stop now
                 // and report there was nothing to find
                 if (i < fields.Length - 1)

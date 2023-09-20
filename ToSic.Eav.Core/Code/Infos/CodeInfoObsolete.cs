@@ -19,7 +19,7 @@ namespace ToSic.Eav.Code.Infos
             new CodeInfoObsolete(nameId, new Version(13, 0), new Version(17, 0), link, message);
 
         public static ICodeInfo V16To18(string nameId, string link = default, string message = default) =>
-            new CodeInfoObsolete(nameId, new Version(16, 0), new Version(17, 0), link, message);
+            new CodeInfoObsolete(nameId, new Version(16, 0), new Version(18, 0), link, message);
 
 
     }

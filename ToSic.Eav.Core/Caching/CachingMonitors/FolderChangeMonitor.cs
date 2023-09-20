@@ -31,7 +31,7 @@ namespace ToSic.Eav.Caching.CachingMonitors
         {
             if (folderPaths == null || folderPaths.Count == 0) throw new ArgumentException("Empty collection: folderPaths");
 
-            _folderPaths = folderPaths.ToList().AsReadOnly();
+            _folderPaths = folderPaths.Distinct().ToList().AsReadOnly();
             InitFcn();
             InitDisposableMembers();
         }

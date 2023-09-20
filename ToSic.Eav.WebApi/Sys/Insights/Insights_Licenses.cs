@@ -4,7 +4,7 @@ using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys
+namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal
     {

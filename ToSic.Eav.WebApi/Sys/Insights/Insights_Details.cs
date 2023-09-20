@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Plumbing;
-using static System.StringComparison;
 
-namespace ToSic.Eav.WebApi.Sys
+namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal
     {

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys
+﻿namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal
     {

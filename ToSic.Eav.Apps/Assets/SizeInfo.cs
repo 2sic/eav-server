@@ -15,6 +15,7 @@ namespace ToSic.Eav.Apps.Assets
     {
         private const int Factor = 1024;
 
+        [PrivateApi]
         public SizeInfo(int bytes) => Bytes = bytes;
 
         /// <summary>
