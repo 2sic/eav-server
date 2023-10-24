@@ -24,10 +24,10 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// Probably mark this field as allowing share in the same app
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public AttributeShareLevel ShareLevel { get; set; }
+        public int ShareLevel { get; set; }
 
         public ContentTypeAttributeSysSettings ToSysSettings() 
-            => new ContentTypeAttributeSysSettings(sourceGuid: SourceGuid, inheritName: InheritName, inheritMetadata: InheritMetadata, shareLevel: ShareLevel);
+            => new ContentTypeAttributeSysSettings(sourceGuid: SourceGuid, inheritName: InheritName, inheritMetadata: InheritMetadata, shareLevel: (AttributeShareLevel)ShareLevel);
 
         public static JsonAttributeSysSettings FromSysSettings(ContentTypeAttributeSysSettings sysSettings) =>
             sysSettings == null
@@ -36,7 +36,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
                 {
                     SourceGuid = sysSettings.SourceGuid,
                     InheritName = sysSettings.InheritName,
-                    ShareLevel = sysSettings.ShareLevel,
+                    ShareLevel = (int)sysSettings.ShareLevel,
                     InheritMetadata = sysSettings.InheritMetadata,
                 };
     }
