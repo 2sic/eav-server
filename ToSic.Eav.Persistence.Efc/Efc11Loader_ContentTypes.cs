@@ -2,11 +2,13 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -90,6 +92,9 @@ namespace ToSic.Eav.Persistence.Efc
             var query = _dbContext.ToSicEavAttributeSets
                 .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
 
+            var serializer = _dataDeserializer.New();
+            serializer.Initialize(appId, new List<IContentType>(), null);
+
             var contentTypes = query
                 .Include(set => set.ToSicEavAttributesInSets)
                 .ThenInclude(attrs => attrs.Attribute)
@@ -112,7 +117,9 @@ namespace ToSic.Eav.Persistence.Efc
                                 isTitle: a.IsTitle,
                                 id: a.AttributeId,
                                 sortOrder: a.SortOrder,
-                                metaSourceFinder: () => source)),
+                                metaSourceFinder: () => source,
+                                guid: a.Attribute.Guid,
+                                sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings))),
                     IsGhost = set.UsesConfigurationOfAttributeSet,
                     SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                     AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -142,7 +149,8 @@ namespace ToSic.Eav.Persistence.Efc
                             id: a.AttributeId,
                             sortOrder: a.SortOrder,
                             // Must get own MetaSourceFinder since they come from other apps
-                            metaSourceFinder: () => _appStates.Get(s.AppId)))
+                            metaSourceFinder: () => _appStates.Get(s.AppId),
+                            sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)))
                 );
             sqlTime.Stop();
 
@@ -177,6 +185,5 @@ namespace ToSic.Eav.Persistence.Efc
 
             return wrapLog.Return(newTypes.ToImmutableList());
         }
-
     }
 }

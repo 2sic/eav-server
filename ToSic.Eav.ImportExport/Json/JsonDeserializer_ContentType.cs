@@ -4,6 +4,8 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.Plumbing;
+using ToSic.Eav.Serialization;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -99,6 +101,21 @@ namespace ToSic.Eav.ImportExport.Json
                 }
             });
             return lMain.ReturnAsOk(contentType);
+        }
+
+        public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized)
+        {
+            var l = Log.Fn<ContentTypeAttributeSysSettings>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
+            if (serialized.IsEmpty()) return l.Return(null, "empty serialized");
+            try
+            {
+                var json = System.Text.Json.JsonSerializer.Deserialize<JsonAttributeSysSettings>(serialized, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+                return l.Return(json.ToSysSettings(), $"deserialized sysSettings");
+            }
+            catch (Exception e)
+            {
+                throw l.Done(e);
+            }
         }
     }
 }

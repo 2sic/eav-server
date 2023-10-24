@@ -167,6 +167,9 @@ namespace ToSic.Eav.Persistence.Efc.Models
                     .HasForeignKey(d => d.UsesConfigurationOfAttributeSet)
                     .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets");
 
+                entity.Property(e => e.SysSettings)
+                    .HasColumnName("SysSettings")
+                    .HasColumnType("nvarchar(MAX)");
             });
 
             modelBuilder.Entity<ToSicEavAttributeTypes>(entity =>
@@ -212,6 +215,14 @@ namespace ToSic.Eav.Persistence.Efc.Models
                     .HasForeignKey(d => d.Type)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types");
+
+                entity.Property(e => e.Guid)
+                    .HasColumnName("Guid")
+                    .HasColumnType("uniqueidentifier");
+
+                entity.Property(e => e.SysSettings)
+                    .HasColumnName("SysSettings")
+                    .HasColumnType("nvarchar(MAX)");
             });
 
             modelBuilder.Entity<ToSicEavAttributesInSets>(entity =>

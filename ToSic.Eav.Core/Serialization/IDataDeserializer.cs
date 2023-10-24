@@ -55,5 +55,13 @@ namespace ToSic.Eav.Serialization
         /// </param>
         /// <returns>A list of entity objects</returns>
         List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false);
+
+
+        /// <summary>
+        /// De-serialize ContentTypeAttributeSysSettings from SysSettings string field in ToSicEavAttributes and ToSicEavAttributeSets (EF/DB)
+        /// </summary>
+        /// <param name="serialized"></param>
+        /// <returns>ContentTypeAttributeSysSettings or null</returns>
+        ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized);
     }
 }

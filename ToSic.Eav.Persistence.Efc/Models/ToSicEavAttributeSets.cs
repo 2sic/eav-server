@@ -22,6 +22,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public int AppId { get; set; }
         public int? UsesConfigurationOfAttributeSet { get; set; }
         public bool AlwaysShareConfiguration { get; set; }
+        public string SysSettings { get; set; }
 
         public virtual ICollection<ToSicEavAttributeGroups> ToSicEavAttributeGroups { get; set; }
         public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }

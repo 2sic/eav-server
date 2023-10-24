@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ToSic.Eav.Persistence.Efc.Models
 {
@@ -16,6 +17,8 @@ namespace ToSic.Eav.Persistence.Efc.Models
         public string Type { get; set; }
         public int ChangeLogCreated { get; set; }
         public int? ChangeLogDeleted { get; set; }
+        public Guid? Guid { get; set; }
+        public string SysSettings { get; set; }
 
         public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
         public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
