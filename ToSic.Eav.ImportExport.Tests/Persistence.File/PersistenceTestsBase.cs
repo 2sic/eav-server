@@ -1,10 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Persistence.Efc.Tests;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
     [DeploymentItem("..\\..\\" + PathWith3Types, TestingPath3)]
-    public class PersistenceTestsBase : TestBaseDiEavFullAndDb
+    public class PersistenceTestsBase : Efc11TestBase
     {
         public TestContext TestContext { get; set; }
 

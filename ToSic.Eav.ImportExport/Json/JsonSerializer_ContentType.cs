@@ -68,7 +68,11 @@ namespace ToSic.Eav.ImportExport.Json
                     IsTitle = a.IsTitle,
                     Metadata = a.Metadata
                         ?.Select(md => ToJson(md)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
-                        .ToList()
+                        .ToList(),
+
+                    // #SharedFieldDefinition
+                    Guid = a.Guid,
+                    SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
                 })
                 .ToList();
 
@@ -79,16 +83,13 @@ namespace ToSic.Eav.ImportExport.Json
                 .ForEach(e => e.For = null);
 
             var sharableCt = contentType as IContentTypeShared;
-            //var typeIsShared = sharableCt != null && (sharableCt.AlwaysShareConfiguration ||
-            //                                          sharableCt.ParentId.HasValue && sharableCt.ParentId !=
-            //                                          Constants.PresetContentTypeFakeParent);
 
             var ancestorDecorator = contentType.GetDecorator<IAncestor>();
             var isSharedNew = ancestorDecorator != null &&
                               ancestorDecorator.Id != Constants.PresetContentTypeFakeParent;
 
             // Note 2021-11-22 2dm - AFAIK this is skipped when creating a JSON for edit-UI
-            if (isSharedNew /*typeIsShared*/ && !includeSharedTypes)
+            if (isSharedNew && !includeSharedTypes)
             {
                 // if it's a shared type, flush definition as we won't include it
                 if (ancestorDecorator.Id != 0) attribs = null;

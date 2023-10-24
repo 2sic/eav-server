@@ -95,11 +95,13 @@
     <Compile Include="FeatureTests\IFeaturesInternalTests.cs" />
     <Compile Include="ImportExport\BundleLoaderTest.cs" />
     <Compile Include="Json\JsonCtDeSerialization.cs" />
+    <Compile Include="Persistence.File\FileLoaderCtBase.cs" />
     <Compile Include="Json\JsonReSerialization.cs" />
     <Compile Include="Json\JsonCtSerialization.cs" />
     <Compile Include="Json\JsonEntitySerialization.cs" />
     <Compile Include="Json\JsonDynamic.cs" />
     <Compile Include="Json\JsonTestBase.cs" />
+    <Compile Include="Persistence.File\FileLoaderCtAttrGuid.cs" />
     <Compile Include="Persistence.File\Tst_FileLoader_Query.cs" />
     <Compile Include="Persistence.File\Tst_FileLoader_Ct.cs" />
     <Compile Include="Persistence.File\PersistenceTestsBase.cs" />

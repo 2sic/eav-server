@@ -21,6 +21,8 @@ namespace ToSic.Eav.Data.Build
             bool isTitle,
             int id = default,
             int sortOrder = default,
+            Guid? guid = default,   // #SharedFieldDefinition
+            ContentTypeAttributeSysSettings sysSettings = default, // #SharedFieldDefinition
             IMetadataOf metadata = default,
             List<IEntity> metadataItems = default,
             Func<IHasMetadataSource> metaSourceFinder = null)
@@ -29,7 +31,7 @@ namespace ToSic.Eav.Data.Build
                     title: $"{name} ({type})", items: metadataItems,  deferredSource: metaSourceFinder);
 
             return new ContentTypeAttribute(appId: appId, name: name, type: type, isTitle: isTitle,
-                attributeId: id, sortOrder: sortOrder, metadata: metadata);
+                attributeId: id, sortOrder: sortOrder, guid: guid, sysSettings: sysSettings, metadata: metadata);
         }
 
 

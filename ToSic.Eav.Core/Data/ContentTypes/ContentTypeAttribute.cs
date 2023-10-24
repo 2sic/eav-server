@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -27,6 +28,12 @@ namespace ToSic.Eav.Data
         /// <inheritdoc />
         public bool IsTitle { get; }
 
+        [PrivateApi] // #SharedFieldDefinition
+        public Guid? Guid { get; }
+
+        [PrivateApi] // #SharedFieldDefinition
+        public ContentTypeAttributeSysSettings SysSettings { get; }
+
         /// <inheritdoc />
         /// <summary>
         /// Extended constructor when also storing the persistence Id
@@ -38,12 +45,16 @@ namespace ToSic.Eav.Data
             bool isTitle,
             int attributeId,
             int sortOrder,
+            Guid? guid,
+            ContentTypeAttributeSysSettings sysSettings = default,
             IMetadataOf metadata = default) : base(name, type)
         {
             AppId = appId;
             IsTitle = isTitle;
             AttributeId = attributeId;
             SortOrder = sortOrder;
+            Guid = guid;
+            SysSettings = sysSettings;
             Metadata = metadata;
         }
 

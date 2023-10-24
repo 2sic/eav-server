@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps;
+﻿using System;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Lib.Documentation;
@@ -25,5 +26,11 @@ namespace ToSic.Eav.Data
         /// tells us if this attribute is the title
         /// </summary>
         bool IsTitle { get; }
+
+        [PrivateApi] // #SharedFieldDefinition
+        Guid? Guid { get; }
+
+        [PrivateApi] // #SharedFieldDefinition
+        ContentTypeAttributeSysSettings SysSettings { get; }
     }
 }
