@@ -97,6 +97,10 @@
                 "Type": "String",
                 "InputType": "string-url-path",
                 "IsTitle": false,
+                "Guid": "4e7164a1-72f2-4dee-97ea-55362e55e635",
+                "SysSettings": {
+                  "ShareLevel": 1
+                },
                 "Metadata": [
                   {
                     "Id": 6413,
@@ -201,6 +205,18 @@
                     "Owner": "dnn:userid=1"
                   }
                 ]
+              },
+              {
+                "Name": "KeyInherited",
+                "Type": "String",
+                "InputType": "string-url-path",
+                "IsTitle": false,
+                "Guid": "bd131f50-891b-4123-83ec-b099f1cbcac8",
+                "SysSettings": {
+                  "SourceGuid": "4e7164a1-72f2-4dee-97ea-55362e55e635",
+                  "InheritName": false,
+                  "InheritMetadata": true
+                }
               },
               {
                 "Name": "Image",
