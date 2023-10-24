@@ -1,12 +1,32 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json.V1
 {
     public class JsonType
     {
-        public string Name;
-        public string Id;
+        /// <summary>
+        /// Main static identifier, usually a guid, in rare cases a string such as "@string-dropdown"
+        /// </summary>
+        /// <remarks>
+        /// Should kind of be NameId, but was created a long time ago, and a rename would cause too much trouble.
+        /// </remarks>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Nice name, string
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Map for attribute name to long-term-guid (if given)
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IDictionary<string, Guid> AttributeMap { get; set; }
 
         // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
         /// <summary>
@@ -31,15 +51,25 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// </summary>
         public JsonType() { }
 
-        public JsonType(IEntity entity, bool withDescription = false)
+        public JsonType(IEntity entity, bool withDescription = false, bool withMap = false)
         {
-            Name = entity.Type.Name;
-            Id = entity.Type.NameId;
+            var type = entity.Type;
+            Name = type.Name;
+            Id = type.NameId;
             if (withDescription)
             {
-                var description = entity.Type.Metadata.DetailsOrNull;
-                Title = description?.Title ?? entity.Type.NameId;
+                var description = type.Metadata.DetailsOrNull;
+                Title = description?.Title ?? type.NameId;
                 Description = description?.Description ?? "";
+            }
+
+            if (withMap)
+            {
+                var withGuid = type.Attributes
+                    .Where(a => a.Guid != null && a.Guid != Guid.Empty)
+                    .ToDictionary(a => a.Name, a => a.Guid ?? Guid.Empty);
+                if (withGuid.Any())
+                    AttributeMap = withGuid;
             }
         }
     }

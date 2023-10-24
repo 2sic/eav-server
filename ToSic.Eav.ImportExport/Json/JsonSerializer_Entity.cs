@@ -94,7 +94,7 @@ namespace ToSic.Eav.ImportExport.Json
                 Id = entity.EntityId,
                 Guid = entity.EntityGuid,
                 Version = entity.Version,
-                Type = new JsonType(entity),
+                Type = new JsonType(entity, withMap: true),
                 Attributes = attribs,
                 Owner = entity.Owner,
                 For = jsonFor,
