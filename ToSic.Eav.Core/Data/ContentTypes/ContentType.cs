@@ -114,6 +114,9 @@ namespace ToSic.Eav.Data
         [JsonIgnore]
         [PrivateApi("new 15.04")]
         public string TitleFieldName => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
+
+        [PrivateApi] // #SharedFieldDefinition
+        public ContentTypeSysSettings SysSettings { get; }
         private readonly GetOnce<string> _titleFieldName = new GetOnce<string>();
 
         /// <inheritdoc />

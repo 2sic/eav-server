@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Data;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data
@@ -75,6 +76,9 @@ namespace ToSic.Eav.Data
 
 
         public string TitleFieldName => GetContents().TitleFieldName;
+
+        [PrivateApi] // #SharedFieldDefinition
+        public ContentTypeSysSettings SysSettings => GetContents().SysSettings;
 
         public string DynamicChildrenField => GetContents().DynamicChildrenField;
 

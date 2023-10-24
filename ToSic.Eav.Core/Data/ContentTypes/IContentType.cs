@@ -123,5 +123,8 @@ namespace ToSic.Eav.Data
         [PrivateApi("new 15.04")]
         string TitleFieldName { get; }
 
+
+        [PrivateApi] // #SharedFieldDefinition
+        ContentTypeSysSettings SysSettings { get; }
     }
 }
