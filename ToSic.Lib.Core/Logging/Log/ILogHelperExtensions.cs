@@ -24,14 +24,21 @@ namespace ToSic.Lib.Logging
         )
         {
             var dump = new StringBuilder(start);
-            (log.GetRealLog() as Log)?.Entries.ForEach(e => dump.AppendLine(e.Source
-                                               + separator
-                                               + new string('~', e.Depth * 2)
-                                               + e.Message
-                                               + (e.Result != null ? resultStart + e.Result + resultEnd: string.Empty)
-                                               + EntryTime(e)
-                                               + (withCaller && e.Code != null ? $"{callStart}{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}{callEnd}" : "")
-            ));
+            var i = 0;
+            (log.GetRealLog() as Log)?.Entries.ForEach(e =>
+            {
+                dump.AppendLine(e.Source
+                                + separator
+                                + new string('~', e.Depth * 2)
+                                + e.Message
+                                + (e.Result != null ? resultStart + e.Result + resultEnd : string.Empty)
+                                + EntryTime(e)
+                                + (withCaller && e.Code != null
+                                    ? $"{callStart}{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}{callEnd}"
+                                    : "")
+                );
+                ++i;
+            });
             dump.Append(end);
             return dump.ToString();
         }

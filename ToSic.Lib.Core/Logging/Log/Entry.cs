@@ -29,6 +29,16 @@ namespace ToSic.Lib.Logging
             Depth = depth;
             Options = options;
             Code = code;
+#if DEBUG
+            // Do depth check, as < 0 should never be possible
+            // but only on debug, as we would rather ignore this during production since the effect is minimal
+            // it's more of an indication that some log wraps incorrectly
+            if (depth < 0)
+            {
+                // attach debugger here
+                var x = 0;
+            }
+#endif
         }
 
         public void AppendResult(string message)

@@ -33,7 +33,7 @@ namespace ToSic.Eav.ImportExport.Json
 
         public IContentType ConvertContentType(JsonContentTypeSet json)
         {
-            var l = Log.Fn<IContentType>();
+            var lMain = Log.Fn<IContentType>();
             var contentType = DirectEntitiesSource.Using(relationships =>
             {
                 var relationshipsSource = AppPackageOrNull as IEntitiesSource ?? relationships.Source;
@@ -41,6 +41,7 @@ namespace ToSic.Eav.ImportExport.Json
                 IEntity ConvertPart(JsonEntity e) =>
                     Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
 
+                var l = Log.Fn<IContentType>();
                 try
                 {
                     var directEntities = json.Entities?.Select(ConvertPart).ToList() ?? new List<IEntity>();
@@ -89,10 +90,11 @@ namespace ToSic.Eav.ImportExport.Json
                 }
                 catch (Exception e)
                 {
-                    throw l.Done(e);
+                    l.Done(e);
+                    throw;
                 }
             });
-            return l.ReturnAsOk(contentType);
+            return lMain.ReturnAsOk(contentType);
         }
     }
 }
