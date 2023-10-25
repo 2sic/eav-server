@@ -29,7 +29,8 @@ namespace ToSic.Eav.ImportExport.Json
             }
             catch (Exception e)
             {
-                throw l.Done(e);
+                l.Done(e);
+                throw;
             }
         }
 

@@ -289,7 +289,8 @@ namespace ToSic.Eav.ImportExport.Json
                     }
                     catch { /* ignore */ }
                     l.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
-                    throw l.Done(ex);
+                    l.Done(ex);
+                    throw;
                 }
 
                 try
@@ -299,7 +300,8 @@ namespace ToSic.Eav.ImportExport.Json
                 catch (Exception ex)
                 {
                     l.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
-                    throw l.Done(ex);
+                    l.Done(ex);
+                    throw;
                 }
             });
             return l.ReturnAsOk(result);
