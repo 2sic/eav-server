@@ -230,7 +230,7 @@ namespace ToSic.Eav.WebApi
                     HasFormulas = HasCalculations(a),
 
                     // Read-Only new in v13
-                    EditInfo = new EditInfoDto(type),
+                    EditInfo = new EditInfoAttributeDto(type, a),
                 };
             });
         }

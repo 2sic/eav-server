@@ -35,6 +35,6 @@ namespace ToSic.Eav.WebApi.Dto
         /// </remarks>
         public bool HasFormulas { get; set; }
 
-        public EditInfoDto EditInfo { get; set; }
+        public EditInfoAttributeDto EditInfo { get; set; }
     }
 }
