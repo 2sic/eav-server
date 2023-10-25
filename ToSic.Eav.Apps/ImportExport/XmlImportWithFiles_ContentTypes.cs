@@ -17,16 +17,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private List<IContentType> GetImportContentTypes(IReadOnlyCollection<XElement> list) => Log.Func($"items: {list.Count}", () =>
         {
-            //var list = xmlContentTypes.ToList();
-            //Log.A($"items: {list.Count}");
-            //var importTypes = new List<IContentType>();
-            //foreach (var contentType in list)
-            //{
-            //    var ct = BuildContentTypeFromXml(contentType);
-            //    if (ct != null)
-            //        importTypes.Add(ct);
-            //}
-
             // Loop through AttributeSets
             var importTypes = list
                 .Select(BuildContentTypeFromXml)
@@ -67,19 +57,11 @@ namespace ToSic.Eav.Apps.ImportExport
                     set = set.Select((s, i) => i == 0 ? new { s.XmlElement, IsTitle = true } : s).ToList();
 
 
-                foreach (var s in set) // ctElement.Elements(XmlConstants.Attribute))
+                foreach (var s in set)
                 {
                     var xmlField = s.XmlElement;
                     var name = xmlField.Attribute(XmlConstants.Static).Value;
                     var fieldTypeName = xmlField.Attribute(XmlConstants.EntityTypeAttribute).Value;
-
-                    //// Set Title Attribute
-                    //var isTitle = false;
-                    //if (bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value))
-                    //{
-                    //    Log.A("set title on this attribute");
-                    //    isTitle = true;
-                    //}
 
                     var xmlMetadata = xmlField.Elements(XmlConstants.Entity).ToList();
                     var attributeMetadata = BuildEntities(xmlMetadata, (int)TargetTypes.Attribute);
@@ -89,25 +71,12 @@ namespace ToSic.Eav.Apps.ImportExport
                         type: ValueTypeHelpers.Get(fieldTypeName),
                         isTitle: s.IsTitle,
                         metadataItems: attributeMetadata
-                        // 2023-02-27 2dm - pretty sure this had no effect, as the follow-up "Use" call flushed this again
-                        // Keep till ca. #2023q3 just in case we have surprises and need to undo something
-                        //new List<IEntity>
-                        //{
-
-                        //    base.Services.CtAttribBuilder.Value.GenerateAttributeMetadata(AppId, null, null, null,
-                        //        string.Empty, null)
-                        //}
                     );
-                    //((IMetadataInternals)attribute.Metadata).Use(attributeMetadata);
                     attributes.Add(attribute);
 
                     l.A($"Attribute: {name} ({fieldTypeName}) with {xmlMetadata.Count} metadata items");
 
                 }
-
-                //// check if it's normal (not a ghost) but still missing a title
-                //if (attributes.Any() && !attributes.Any(a => a.IsTitle))
-                //    (attributes.First() as ContentTypeAttribute).IsTitle = true;
             }
 
 
