@@ -81,7 +81,7 @@ namespace ToSic.Eav.Metadata
         /// <summary>
         /// The key which identifies the item we're enriching with metadata
         /// </summary>
-        protected T Key { get; }
+        protected virtual T Key { get; }
 
         #region Target
 

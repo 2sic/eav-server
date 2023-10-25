@@ -2,13 +2,11 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -95,13 +93,15 @@ namespace ToSic.Eav.Persistence.Efc
             var serializer = _dataDeserializer.New();
             serializer.Initialize(appId, new List<IContentType>(), null);
 
-            var contentTypes = query
+            var contentTypesSql = query
                 .Include(set => set.ToSicEavAttributesInSets)
                 .ThenInclude(attrs => attrs.Attribute)
                 .Include(set => set.App)
                 .Include(set => set.UsesConfigurationOfAttributeSetNavigation)
                 .ThenInclude(master => master.App)
-                .ToList()
+                .ToList();
+
+            var contentTypes = contentTypesSql
                 .Select(set => new
                 {
                     set.AttributeSetId,
@@ -110,16 +110,21 @@ namespace ToSic.Eav.Persistence.Efc
                     set.Scope,
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                        .Select(a => _dataBuilder.TypeAttributeBuilder
-                            .Create(appId: appId,
-                                name: a.Attribute.StaticName,
-                                type: ValueTypeHelpers.Get(a.Attribute.Type),
-                                isTitle: a.IsTitle,
-                                id: a.AttributeId,
-                                sortOrder: a.SortOrder,
-                                metaSourceFinder: () => source,
-                                guid: a.Attribute.Guid,
-                                sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings))),
+                        .Select(a =>
+                        {
+                            var nameId = a.Attribute.StaticName;
+                            var valType = ValueTypeHelpers.Get(a.Attribute.Type);
+                            var attributeId = a.AttributeId;
+
+                            // #SharedFieldDefinition
+                            var sysSettings = serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings);
+                            var attrMetadata = new ContentTypeAttributeMetadata(attributeId, nameId, valType, deferredSource: () => source, sourceGuid: sysSettings?.SourceGuid);
+
+                            return _dataBuilder.TypeAttributeBuilder
+                                .Create(appId: appId, name: nameId, type: valType, isTitle: a.IsTitle, id: attributeId, sortOrder: a.SortOrder,
+                                    // #SharedFieldDefinition
+                                    metadata: attrMetadata, guid: a.Attribute.Guid, sysSettings: sysSettings);
+                        }),
                     IsGhost = set.UsesConfigurationOfAttributeSet,
                     SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                     AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -150,6 +155,8 @@ namespace ToSic.Eav.Persistence.Efc
                             sortOrder: a.SortOrder,
                             // Must get own MetaSourceFinder since they come from other apps
                             metaSourceFinder: () => _appStates.Get(s.AppId),
+                            // #SharedFieldDefinition
+                            //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
                             sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)))
                 );
             sqlTime.Stop();
