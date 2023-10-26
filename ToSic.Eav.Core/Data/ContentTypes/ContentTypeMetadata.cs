@@ -44,7 +44,7 @@ namespace ToSic.Eav.Data
         /// Load / initialize - needed when building the cache.
         /// Must usually be called a bit later, because the data is initialized from a cache, which in case of ghosts may be loaded a bit later.
         /// </summary>
-        protected override void LoadFromProviderInsideLock(IList<IEntity> additions = default)
+        protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
         {
             // add the guid metadata on entity if it has a real guid
             // this is kind of wrong, because it should use the type MetadataForContentType
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Data
                     .ToList();
 
             // get the string based metadata
-            base.LoadFromProviderInsideLock(mdUsingGuid);
+            return base.LoadFromProviderInsideLock(mdUsingGuid);
         }
 
     }

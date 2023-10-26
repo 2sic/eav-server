@@ -37,8 +37,9 @@ namespace ToSic.Eav.Metadata
         /// Load the metadata from the provider
         /// Must be virtual, because the inheriting <see cref="ContentTypeMetadata"/> needs to overwrite this. 
         /// </summary>
+        /// <returns>The cached final list, for overloads which need to verify that something arrived.</returns>
         [PrivateApi]
-        protected virtual void LoadFromProviderInsideLock(IList<IEntity> additions = default)
+        protected virtual List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
         {
             //_debugLoadFromProvider++;
             var mdProvider = GetMetadataSource();
@@ -51,6 +52,7 @@ namespace ToSic.Eav.Metadata
             _permissions = null;
             if (mdProvider != null)
                 CacheTimestamp = mdProvider.CacheTimestamp;
+            return _allCached;
         }
 
         /// <summary>
