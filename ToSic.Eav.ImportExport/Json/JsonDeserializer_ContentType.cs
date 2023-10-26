@@ -62,17 +62,14 @@ namespace ToSic.Eav.ImportExport.Json
                             var valType = ValueTypeHelpers.Get(jsonAttr.Type);
 
                             // #SharedFieldDefinition
-                            bool hasSourceGuid = jsonAttr.SysSettings?.SourceGuid != null;
-                            var mdEntities = hasSourceGuid
+                            var inheritMetadata = jsonAttr.SysSettings?.SourceGuid != null && jsonAttr.SysSettings?.InheritMetadata == true;
+                            var sourceGuid = inheritMetadata ? jsonAttr.SysSettings?.SourceGuid : null;
+                            var mdEntities = inheritMetadata
                                 ? null
                                 : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
-                            // Only provide deferred source if App really exists, must use AppOrNull
-                            // Note that we can't use a ? : syntax, because it would require C# 9
-                            //Func<Metadata.IHasMetadataSource> deferredSource = () => AppOrNull;
-                            //if (AppOrNull == null) deferredSource = null;
 
                             var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
-                                name: jsonAttr.Name, sourceGuid: jsonAttr.SysSettings?.SourceGuid, items: mdEntities, appSource: AppOrNull /*, deferredSource: deferredSource */);
+                                name: jsonAttr.Name, sourceGuid: sourceGuid, items: mdEntities, appSource: AppOrNull);
 
                             var attDef = Services.DataBuilder.TypeAttributeBuilder
                                 .Create(
