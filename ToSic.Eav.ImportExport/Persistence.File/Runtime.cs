@@ -94,7 +94,7 @@ namespace ToSic.Eav.Persistence.File
 
                 l.Do(timer: true, action: () =>
                 {
-                    var types = LoadGlobalContentTypes();
+                    var types = LoadGlobalContentTypes(appState);
                     // Just attach all global content-types to this app, as they belong here
                     appState.InitContentTypes(types);
                     return "types loaded";

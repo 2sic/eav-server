@@ -68,8 +68,10 @@ namespace ToSic.Eav.ImportExport.Json
                                 ? null
                                 : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
 
+                            var appSourceForMd = DeserializationSettings?.CtAttributeMetadataAppState ?? AppOrNull;
+
                             var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
-                                name: jsonAttr.Name, sourceGuid: sourceGuid, items: mdEntities, appSource: AppOrNull);
+                                name: jsonAttr.Name, sourceGuid: sourceGuid, items: mdEntities, appSource: appSourceForMd);
 
                             var attDef = Services.DataBuilder.TypeAttributeBuilder
                                 .Create(

@@ -8,6 +8,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Source;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -114,13 +115,19 @@ namespace ToSic.Eav.Serialization
         protected IContentType GetTransientContentType(string name, string nameId)
         {
             var defaultTransient = Services.DataBuilder.ContentType.Transient(AppId, name, nameId);
-            return ContentTypeProvider?.LazyTypeGenerator(AppId, name, nameId, defaultTransient)
+            return DeserializationSettings?.EntityContentTypeProvider?.LazyTypeGenerator(AppId, name, nameId, defaultTransient)
                    ?? defaultTransient;
         }
+        ///// <summary>
+        ///// Ability to inject a different TransientContentTypeGenerator
+        ///// </summary>
+        //public IDeferredContentTypeProvider ContentTypeProvider { get; set; } = null;
+
         /// <summary>
-        /// Ability to inject a different TransientContentTypeGenerator
+        /// Ability to inject a different TransientContentTypeGenerator and other parameters
+        /// just for deserialization
         /// </summary>
-        public IDeferredContentTypeProvider ContentTypeProvider { get; set; } = null;
+        public JsonDeSerializationSettings DeserializationSettings { get; set; } = null;
 
         protected IEntity Lookup(int entityId) => App.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 
