@@ -54,6 +54,6 @@ namespace ToSic.Eav.ImportExport.Json
 
     internal static class StringHelpers
     {
-        public static string EmptyAlternative(this string s, string alternative) => string.IsNullOrEmpty(s) ? alternative : s;
+        public static string EmptyFallback(this string s, string alternative) => string.IsNullOrEmpty(s) ? alternative : s;
     }
 }

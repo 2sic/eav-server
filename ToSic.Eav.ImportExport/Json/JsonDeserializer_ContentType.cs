@@ -39,7 +39,7 @@ namespace ToSic.Eav.ImportExport.Json
             var lMain = Log.Fn<IContentType>();
             var contentType = DirectEntitiesSource.Using(relationships =>
             {
-                var relationshipsSource = AppPackageOrNull as IEntitiesSource ?? relationships.Source;
+                var relationshipsSource = AppOrNull as IEntitiesSource ?? relationships.Source;
 
                 IEntity ConvertPart(JsonEntity e) =>
                     Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
@@ -59,16 +59,38 @@ namespace ToSic.Eav.ImportExport.Json
                     var attribs = jsonType.Attributes
                         .Select((jsonAttr, pos) =>
                         {
-                            var mdEntities = jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
+                            var valType = ValueTypeHelpers.Get(jsonAttr.Type);
+
+                            // #SharedFieldDefinition
+                            bool hasSourceGuid = jsonAttr.SysSettings?.SourceGuid != null;
+                            var mdEntities = hasSourceGuid
+                                ? null
+                                : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
+                            // Only provide deferred source if App really exists, must use AppOrNull
+                            // Note that we can't use a ? : syntax, because it would require C# 9
+                            //Func<Metadata.IHasMetadataSource> deferredSource = () => AppOrNull;
+                            //if (AppOrNull == null) deferredSource = null;
+
+                            var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
+                                name: jsonAttr.Name, sourceGuid: jsonAttr.SysSettings?.SourceGuid, items: mdEntities, appSource: AppOrNull /*, deferredSource: deferredSource */);
+
                             var attDef = Services.DataBuilder.TypeAttributeBuilder
-                                .Create(appId: AppId, name: jsonAttr.Name, type: ValueTypeHelpers.Get(jsonAttr.Type),
-                                    isTitle: jsonAttr.IsTitle, sortOrder: pos,
+                                .Create(
+                                    appId: AppId,
+                                    name: jsonAttr.Name,
+                                    type: valType,
+                                    isTitle: jsonAttr.IsTitle,
+                                    sortOrder: pos,
                                     // #SharedFieldDefinition
                                     guid: jsonAttr.Guid,
                                     sysSettings: jsonAttr.SysSettings?.ToSysSettings(),
+                                    // metadataItems: mdEntities,
+                                    metadata: attrMetadata
+                                );
 
-                                    metadataItems: mdEntities);
-                            relationships.List?.AddRange(mdEntities);
+                            // #SharedFieldDefinition
+                            if (mdEntities != null)
+                                relationships.List?.AddRange(mdEntities);
                             return (IContentTypeAttribute)attDef;
                         })
                         .ToList();

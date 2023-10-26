@@ -66,6 +66,9 @@ namespace ToSic.Eav.Persistence.File
             {
                 if (_ser != null) return _ser;
                 _ser = _jsonSerializerGenerator.New();
+                // #SharedFieldDefinition
+                // Also provide AppState if possible, for new #SharedFieldDefinition
+                if (EntitiesSource is AppState withAppState) _ser.Initialize(withAppState);
                 _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;

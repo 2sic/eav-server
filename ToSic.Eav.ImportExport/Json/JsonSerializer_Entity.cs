@@ -127,6 +127,6 @@ namespace ToSic.Eav.ImportExport.Json
                     .OrderBy(l => l.ReadOnly)
                     .Select(l => (l.ReadOnly ? ReadOnlyMarker : "") + l.Key)
                     .ToArray())
-                .EmptyAlternative(NoLanguage);
+                .EmptyFallback(NoLanguage);
     }
 }

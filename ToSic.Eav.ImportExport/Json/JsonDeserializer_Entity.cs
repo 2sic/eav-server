@@ -91,7 +91,7 @@ namespace ToSic.Eav.ImportExport.Json
 
 
             l.A("build entity");
-            var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: AppPackageOrNull, metadata: mdItems);
+            var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: AppOrNull, metadata: mdItems);
             var newEntity = Services.DataBuilder.Entity.Create(
                 appId: AppId,
                 guid: jEnt.Guid,
@@ -101,7 +101,7 @@ namespace ToSic.Eav.ImportExport.Json
                 metadataFor: target,
                 contentType: contentType,
                 isPublished: true,
-                //source: AppPackageOrNull,
+                //source: AppOrNull,
                 //metadataItems: mdItems,
                 partsBuilder: partsBuilder,
                 created: DateTime.MinValue,

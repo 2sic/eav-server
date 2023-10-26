@@ -69,10 +69,10 @@ namespace ToSic.Eav.Serialization
 
         public AppState App
         {
-            get => AppPackageOrNull ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
-            set => AppPackageOrNull = value;
+            get => AppOrNull ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+            set => AppOrNull = value;
         }
-        protected AppState AppPackageOrNull { get; private set; }
+        protected AppState AppOrNull { get; private set; }
 
         public bool PreferLocalAppTypes = false;
 
