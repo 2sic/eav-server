@@ -27,24 +27,15 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Replace the key if we have a guid pointing to another Attribute
         /// </summary>
-        protected override int Key => _key.Get(() =>
-        {
-            return SourceGuid == null 
-                ? base.Key 
-                : SourceAttribute?.AttributeId ?? base.Key;
-            //// Try to check source if it has the referred guid
-            //if (Source.MainSource is AppState app)
-            //{
-            //    var attributes = app.ContentTypes.SelectMany(ct => ct.Attributes);
-            //    var SourceAttribute = attributes.FirstOrDefault(a => a.Guid == SourceGuid.Value);
-            //    if (SourceAttribute != null) return SourceAttribute.AttributeId;
-            //}
-            //// Use base key as default
-            //return base.Key;
-        });
-
+        protected override int Key => _key.Get(() => SourceGuid == null
+            ? base.Key
+            : SourceAttribute?.AttributeId ?? base.Key
+        );
         private readonly GetOnce<int> _key = new GetOnce<int>();
 
+        /// <summary>
+        /// The Source Attribute (if any) which would provide the real metadata
+        /// </summary>
         private IContentTypeAttribute SourceAttribute => _sourceAttribute.Get(() =>
         {
             if (SourceGuid == null) return null;
@@ -54,18 +45,23 @@ namespace ToSic.Eav.Data
         });
         private readonly GetOnce<IContentTypeAttribute> _sourceAttribute = new GetOnce<IContentTypeAttribute>();
 
+        /// <summary>
+        /// Override data loading.
+        /// In some cases, the source Attribute has directly attached metadata (eg. loaded from JSON)
+        /// so this handles that case.
+        /// </summary>
         protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
         {
             // Most common case - just behave as if this didn't do anything special
             // Note that we'll ignore additions, as these are only used in ContentTypeMetadata and not here
-            var cached = base.LoadFromProviderInsideLock();
-            if (cached.Any() || SourceAttribute == null) return cached;
+            var result = base.LoadFromProviderInsideLock();
+            if (result.Any() || SourceAttribute == null) return result;
 
-            // AllWithHidden is still empty, but we have a SourceAttribute
+            // Original result is still empty, but we have a SourceAttribute
             // Common reason is that the SourceAttribute has directly attached metadata, so we'll try that
-            if (!(SourceAttribute.Metadata is ContentTypeAttributeMetadata sourceMd)) return cached;
+            if (!(SourceAttribute.Metadata is ContentTypeAttributeMetadata sourceMd)) return result;
             return sourceMd.Source.SourceDirect?.List == null 
-                ? cached 
+                ? result 
                 : base.LoadFromProviderInsideLock(sourceMd.Source.SourceDirect.List?.ToList());
         }
     }
