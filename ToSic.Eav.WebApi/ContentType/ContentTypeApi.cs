@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Serialization;
@@ -231,6 +232,10 @@ namespace ToSic.Eav.WebApi
 
                     // Read-Only new in v13
                     EditInfo = new EditInfoAttributeDto(type, a),
+
+                    // #SharedFieldDefinition
+                    Guid = a.Guid,
+                    SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
                 };
             });
         }

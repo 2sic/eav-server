@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto
@@ -36,5 +39,10 @@ namespace ToSic.Eav.WebApi.Dto
         public bool HasFormulas { get; set; }
 
         public EditInfoAttributeDto EditInfo { get; set; }
+
+        // #SharedFieldDefinition
+        public Guid? Guid { get; set; }
+
+        public JsonAttributeSysSettings SysSettings { get; set; }
     }
 }
