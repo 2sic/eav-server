@@ -28,7 +28,7 @@ namespace ToSic.Eav.Data.Build
             Func<IHasMetadataSource> metaSourceFinder = null)
         {
             metadata = metadata ?? new ContentTypeAttributeMetadata(key: id, name: name, type: type,
-                sourceGuid: null, items: metadataItems, deferredSource: metaSourceFinder);
+                sourceGuid: sysSettings?.SourceGuid, items: metadataItems, deferredSource: metaSourceFinder);
 
             return new ContentTypeAttribute(appId: appId, name: name, type: type, isTitle: isTitle,
                 attributeId: id, sortOrder: sortOrder, guid: guid, sysSettings: sysSettings, metadata: metadata);

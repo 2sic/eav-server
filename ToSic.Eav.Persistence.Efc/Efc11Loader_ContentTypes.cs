@@ -110,21 +110,19 @@ namespace ToSic.Eav.Persistence.Efc
                     set.Scope,
                     Attributes = set.ToSicEavAttributesInSets
                         .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                        .Select(a =>
-                        {
-                            var nameId = a.Attribute.StaticName;
-                            var valType = ValueTypeHelpers.Get(a.Attribute.Type);
-                            var attributeId = a.AttributeId;
-
-                            // #SharedFieldDefinition
-                            var sysSettings = serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings);
-                            var attrMetadata = new ContentTypeAttributeMetadata(attributeId, nameId, valType, deferredSource: () => source, sourceGuid: sysSettings?.SourceGuid);
-
-                            return _dataBuilder.TypeAttributeBuilder
-                                .Create(appId: appId, name: nameId, type: valType, isTitle: a.IsTitle, id: attributeId, sortOrder: a.SortOrder,
-                                    // #SharedFieldDefinition
-                                    metadata: attrMetadata, guid: a.Attribute.Guid, sysSettings: sysSettings);
-                        }),
+                        .Select(a => _dataBuilder.TypeAttributeBuilder
+                            .Create(appId: appId,
+                                name: a.Attribute.StaticName,
+                                type: ValueTypeHelpers.Get(a.Attribute.Type), 
+                                isTitle: a.IsTitle,
+                                id: a.AttributeId,
+                                sortOrder: a.SortOrder,
+                                // #SharedFieldDefinition
+                                // metadata: attrMetadata,
+                                metaSourceFinder: () => source,
+                                guid: a.Attribute.Guid,
+                                sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)
+                            )),
                     IsGhost = set.UsesConfigurationOfAttributeSet,
                     SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                     AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
