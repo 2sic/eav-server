@@ -35,11 +35,9 @@ namespace ToSic.Eav.Persistence.File
 
             var newTypes = Loaders.SelectMany(ldr =>
             {
-                //ldr.Serializer.ContentTypeProvider = delayedContentTypeProvider;
                 ldr.Serializer.DeserializationSettings = deSerializeSettings;
                 var result = ldr.ContentTypes();
                 ldr.Serializer.DeserializationSettings = null;
-                //ldr.Serializer.ContentTypeProvider = null;
                 return result;
             }).ToList();
 

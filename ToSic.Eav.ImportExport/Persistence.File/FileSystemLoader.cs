@@ -8,17 +8,14 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
-using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using static ToSic.Eav.ImportExport.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Persistence.File
 {
@@ -68,7 +65,12 @@ namespace ToSic.Eav.Persistence.File
                 _ser = _jsonSerializerGenerator.New();
                 // #SharedFieldDefinition
                 // Also provide AppState if possible, for new #SharedFieldDefinition
-                if (EntitiesSource is AppState withAppState) _ser.Initialize(withAppState);
+                
+                if (EntitiesSource is AppState withAppState)
+                    _ser.DeserializationSettings = new JsonDeSerializationSettings
+                    {
+                        CtAttributeMetadataAppState = withAppState
+                    };
                 _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource);
                 _ser.AssumeUnknownTypesAreDynamic = true;
                 return _ser;
@@ -169,10 +171,10 @@ namespace ToSic.Eav.Persistence.File
             if (CheckPathExists(Path) && CheckPathExists(pathCt))
             {
                 // #2 find all content-type files in folder
-                var jsons = Directory.GetFiles(pathCt, "*" + Extension(Files.json)).OrderBy(f => f);
+                var jsonFiles = Directory.GetFiles(pathCt, "*" + Extension(Files.json)).OrderBy(f => f);
 
                 // #3 load content-types from folder
-                contentTypes = jsons
+                contentTypes = jsonFiles
                     .Select(json => LoadAndBuildCt(Serializer, json))
                     .Where(ct => ct != null)
                     .ToList();
@@ -225,133 +227,6 @@ namespace ToSic.Eav.Persistence.File
             }
         }
         #endregion
-
-        #region Bundle
-
-        public Dictionary<string, JsonFormat> JsonBundleBundles => _jsonBundles.GetM(Log, l =>
-        {
-            // #1. check that folder exists
-            if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
-                return (new Dictionary<string, JsonFormat>(), "path doesn't exist");
-
-            const string infoIfError = "couldn't read bundle-file";
-            try
-            {
-                // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
-                var jsonBundles = new Dictionary<string, JsonFormat>();
-                Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
-                    .ForEach(p =>
-                    {
-                        l.A("Loading json bundle" + p);
-                        jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p));
-                    });
-                return (jsonBundles, $"found {jsonBundles.Count}");
-            }
-            catch (IOException e)
-            {
-                l.Ex("Failed loading type - couldn't import bundle-file, IO exception", e);
-                return (new Dictionary<string, JsonFormat>(), "IOException");
-            }
-            catch (Exception e)
-            {
-                l.Ex($"Failed loading bundle - {infoIfError}", e);
-                return (new Dictionary<string, JsonFormat>(), "error");
-            }
-        });
-        private readonly GetOnce<Dictionary<string, JsonFormat>> _jsonBundles = new GetOnce<Dictionary<string, JsonFormat>>();
-
-        public List<IContentType> ContentTypesInBundles()
-        {
-            var l = Log.Fn<List<IContentType>>($"ContentTypes in bundles");
-            if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes.SafeAny()) != true))
-                return new List<IContentType>();
-
-            var contentTypes = JsonBundleBundles
-                .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value /*, relationshipsList*/))
-                .Where(ct => ct != null).ToList();
-
-            l.A("ContentTypes in bundles: " + contentTypes.Count);
-
-            return l.ReturnAsOk(contentTypes);
-        }
-
-        public List<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource)
-        {
-            var l = Log.Fn<List<IEntity>>($"Entities in bundles");
-            if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities.SafeAny()) != true))
-                return l.Return(new List<IEntity>(), "no bundles have entities, return none");
-
-            var entities = JsonBundleBundles
-                .SelectMany(json =>
-                    BuildEntitiesInBundles(Serializer, json.Key, json.Value, relationshipSource))
-                .Where(entity => entity != null).ToList();
-
-            return l.Return(entities, $"Entities in bundles: {entities.Count}");
-        }
-        
-        private string BundlesPath => System.IO.Path.Combine(Path, FsDataConstants.BundlesFolder);
-
-        /// <summary>
-        /// Build contentTypes from bundle json
-        /// </summary>
-        /// <returns></returns>
-        private List<IContentType> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
-        {
-            var l = Log.Fn<List<IContentType>>($"path: {path}");
-            try
-            {
-                var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
-
-                var newContentTypes = contentTypes
-                    .Select(ct => _dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed,
-                        repoType: RepoType, repoAddress: path,
-                        parentTypeId: Constants.PresetContentTypeFakeParent,
-                        configZoneId: Constants.PresetZoneId,
-                        configAppId: Constants.PresetAppId)
-                    )
-                    .ToList();
-
-                return l.ReturnAsOk(newContentTypes);
-            }
-            catch (Exception e)
-            {
-                l.Ex($"Failed building content types from bundle json", e);
-                return l.Return(new List<IContentType>(), "error");
-            }
-        }
-
-        /// <summary>
-        /// Build entities from bundle json
-        /// </summary>
-        /// <returns></returns>
-        private List<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
-        {
-            var l = Log.Fn<List<IEntity>>($"Build entities from bundle json: {path}.");
-            try
-            {
-                // WIP - Allow relationships between loaded items
-                // If we are loading from a larger context, then we have a reference to a list
-                // which will be repopulated later, so only create a new one if there is none
-                var entities = ser.GetEntitiesFromBundles(bundleJson, relationshipSource);
-                entities = entities
-                    .Select(e =>
-                    {
-                        var newId = ++EntityIdSeed;
-                        return _dataBuilder.Entity.CreateFrom(e, id: newId, repositoryId: newId);
-                    })
-                    .ToList();
-                //entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));
-                return l.Return(entities, $"{entities.Count}");
-            }
-            catch (Exception e)
-            {
-                l.Ex("Failed building entities from bundle json", e);
-                return l.Return(new List<IEntity>(), "error return none");
-            }
-        }
-
-        #endregion
-
 
 
         #region todo someday items
