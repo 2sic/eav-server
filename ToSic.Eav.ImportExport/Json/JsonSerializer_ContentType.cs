@@ -7,22 +7,30 @@ using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json
 {
     public partial class JsonSerializer
     {
-        public string Serialize(IContentType contentType)
+        public string Serialize(IContentType contentType, JsonSerializationSettings settings = default)
         {
-            var package = ToPackage(contentType, false);
+            var package = ToPackage(contentType, /*false,*/ settings ?? new JsonSerializationSettings
+            {
+                CtIncludeInherited = false,
+                CtAttributeIncludeInheritedMetadata = true
+            });
 
             var simple = System.Text.Json.JsonSerializer.Serialize(package, JsonOptions.UnsafeJsonWithoutEncodingHtml);
             return simple;
         }
 
-        public JsonFormat ToPackage(IContentType contentType, bool includeSharedTypes)
+        public JsonFormat ToPackage(IContentType contentType, JsonSerializationSettings settings)
         {
             var l = Log.Fn<JsonFormat>(contentType.Name);
-            var package = new JsonFormat { ContentType = ToJson(contentType, includeSharedTypes) };
+            var package = new JsonFormat
+            {
+                ContentType = ToJson(contentType, settings)
+            };
 
             // now v12 - try to include metadata items
             try
@@ -51,28 +59,35 @@ namespace ToSic.Eav.ImportExport.Json
             return l.ReturnAsOk(package);
         }
 
+        // Note: only seems to be used in a test...
         public JsonContentType ToJson(IContentType contentType)
-            => ToJson(contentType, false);
+            => ToJson(contentType, /*false,*/ new JsonSerializationSettings { CtIncludeInherited = false, CtAttributeIncludeInheritedMetadata = true });
 
-        private JsonContentType ToJson(IContentType contentType, bool includeSharedTypes)
+        private JsonContentType ToJson(IContentType contentType, JsonSerializationSettings settings)
         {
             JsonContentTypeShareable jctShare = null;
 
             var attribs = contentType.Attributes
                 .OrderBy(a => a.SortOrder)
-                .Select(a => new JsonAttributeDefinition
+                .Select(a =>
                 {
-                    Name = a.Name,
-                    Type = a.Type.ToString(),
-                    InputType = a.InputType(),
-                    IsTitle = a.IsTitle,
-                    Metadata = a.Metadata
-                        ?.Select(md => ToJson(md)) /* important: must write the method with params, otherwise default param metadata = 1 instead of 0*/
-                        .ToList(),
-
                     // #SharedFieldDefinition
-                    Guid = a.Guid,
-                    SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
+                    var inheritsMetadata = a.SysSettings?.SourceGuid != null && a.SysSettings.InheritMetadata;
+                    var metadata = inheritsMetadata && !settings.CtAttributeIncludeInheritedMetadata
+                        ? null 
+                        : a.Metadata?.Select(md => ToJson(md)).ToList(); /* important: must call with params, otherwise default param metadata = 1 instead of 0*/
+                    return new JsonAttributeDefinition
+                    {
+                        Name = a.Name,
+                        Type = a.Type.ToString(),
+                        InputType = a.InputType(),
+                        IsTitle = a.IsTitle,
+                        Metadata = metadata,
+
+                        // #SharedFieldDefinition
+                        Guid = a.Guid,
+                        SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
+                    };
                 })
                 .ToList();
 
@@ -89,7 +104,7 @@ namespace ToSic.Eav.ImportExport.Json
                               ancestorDecorator.Id != Constants.PresetContentTypeFakeParent;
 
             // Note 2021-11-22 2dm - AFAIK this is skipped when creating a JSON for edit-UI
-            if (isSharedNew && !includeSharedTypes)
+            if (isSharedNew && !settings.CtIncludeInherited)
             {
                 // if it's a shared type, flush definition as we won't include it
                 if (ancestorDecorator.Id != 0) attribs = null;

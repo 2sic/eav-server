@@ -118,7 +118,12 @@ namespace ToSic.Eav.WebApi.ImportExport
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters();
 
-            return l.ReturnAsOk(_responseMaker.File(serializer.Serialize(type), fileName, MimeHelper.Json));
+            var typeJson = serializer.Serialize(type, new JsonSerializationSettings
+            {
+                CtIncludeInherited = false,
+                CtAttributeIncludeInheritedMetadata = false
+            });
+            return l.ReturnAsOk(_responseMaker.File(typeJson, fileName, MimeHelper.Json));
         }
 
         [HttpGet]
@@ -191,12 +196,17 @@ namespace ToSic.Eav.WebApi.ImportExport
 
             // loop through content types and add them to the bundlelist
             l.A($"count export content types:{export.ContentTypes.Count}");
+            var serSettings = new JsonSerializationSettings
+            {
+                CtIncludeInherited = true,
+                CtAttributeIncludeInheritedMetadata = false
+            };
             foreach (var contentTypeName in export.ContentTypes)
             {
                 if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
 
                 var contentType = _appManager.Read.ContentTypes.Get(contentTypeName);
-                var jsonType = serializer.ToPackage(contentType, true);
+                var jsonType = serializer.ToPackage(contentType, /*true,*/ serSettings);
                 bundleList.ContentTypes.Add(new JsonContentTypeSet
                 {
                     ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType),
