@@ -12,6 +12,7 @@ using ToSic.Eav.Serialization;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json
 {
     public partial class JsonSerializer
@@ -56,7 +57,6 @@ namespace ToSic.Eav.ImportExport.Json
             var contentType = GetContentType(jEnt.Type.Id)
                               ?? (allowDynamic || skipUnknownType
                                   ? GetTransientContentType(jEnt.Type.Name, jEnt.Type.Id) 
-                                  // Services.DataBuilder.ContentType.Transient(AppId, jEnt.Type.Name, jEnt.Type.Id)
                                   : throw new FormatException(
                                       "type not found for deserialization and dynamic not allowed " +
                                       $"- cannot continue with {jEnt.Type.Id}")

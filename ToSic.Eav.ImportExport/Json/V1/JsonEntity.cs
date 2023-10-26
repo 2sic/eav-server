@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json.V1
 {
     public class JsonEntity: IJsonWithAssets

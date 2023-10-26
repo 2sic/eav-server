@@ -15,17 +15,20 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// <remarks>
         /// Should kind of be NameId, but was created a long time ago, and a rename would cause too much trouble.
         /// </remarks>
+        [JsonPropertyOrder(1)]
         public string Id { get; set; }
 
         /// <summary>
         /// Nice name, string
         /// </summary>
+        [JsonPropertyOrder(2)]
         public string Name { get; set; }
 
         /// <summary>
         /// Map for attribute name to long-term-guid (if given)
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonPropertyOrder(100)]
         public IDictionary<string, Guid> AttributeMap { get; set; }
 
         // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works

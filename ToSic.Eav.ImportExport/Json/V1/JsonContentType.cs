@@ -6,12 +6,15 @@ namespace ToSic.Eav.ImportExport.Json.V1
     public class JsonContentType: IJsonWithAssets
     {
         /// <remarks>V 1.0</remarks>
+        [JsonPropertyOrder(1)]
         public string Id;
 
         /// <remarks>V 1.0</remarks>
+        [JsonPropertyOrder(2)]
         public string Name;
 
         /// <remarks>V 1.0</remarks>
+        [JsonPropertyOrder(3)]
         public string Scope;
 
         // TODO: Don't just remove, it's possible that we're using it in the admin-UI...
