@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json.V1
 {
     public class JsonFormat: JsonContentTypeSet
@@ -8,11 +9,21 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// <summary>
         /// V1 - header information
         /// </summary>
+        [JsonPropertyOrder(-1000)] // make sure it's always on top for clarity
         public JsonHeader _ = new JsonHeader();
         
         /// <summary>
+        /// Bundles in this package.
+        /// Added ca. v15
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonPropertyOrder(10)]
+        public List<JsonBundle> Bundles { get; set; }
+
+        /// <summary>
         /// V1 - a single Entity
         /// </summary>
+        [JsonPropertyOrder(20)]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
         public JsonEntity Entity;
 
@@ -29,9 +40,6 @@ namespace ToSic.Eav.ImportExport.Json.V1
         //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         //public IEnumerable<JsonEntity> Entities;
 
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public List<JsonBundle> Bundles { get; set; }
 
     }
 }

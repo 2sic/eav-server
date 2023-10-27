@@ -72,7 +72,7 @@ namespace ToSic.Eav.ImportExport.Json
                 .Select(a =>
                 {
                     // #SharedFieldDefinition
-                    var inheritsMetadata = a.SysSettings?.SourceGuid != null && a.SysSettings.InheritMetadata;
+                    var inheritsMetadata = a.SysSettings?.InheritsMetadata() == true; // a.SysSettings?.Inherit != null && a.SysSettings.InheritMetadata;
                     var metadata = inheritsMetadata && !settings.CtAttributeIncludeInheritedMetadata
                         ? null 
                         : a.Metadata?.Select(md => ToJson(md)).ToList(); /* important: must call with params, otherwise default param metadata = 1 instead of 0*/
