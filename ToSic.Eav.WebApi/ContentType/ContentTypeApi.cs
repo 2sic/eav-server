@@ -337,6 +337,28 @@ namespace ToSic.Eav.WebApi
 
         #endregion
 
+        #region New Sharing Features
+
+        public void FieldShare(int attributeId, bool share, bool hide = false)
+        {
+            // TODO: @STV
+            // - Ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
+            // - get the fields current SysSettings and update with the Share = share (hide we'll ignore for now, it's for future needs)
+            // - Update DB
+            // - Then flush the app-cache as necessary, same as any other attribute change
+        }
+
+        public void FieldInherit(int attributeId, Guid inheritMetadataOf)
+        {
+            // TODO: @STV
+            // - Get field attributeId and it's sys-settings
+            // - set InheritMetadataOf to the guid above (as string)
+            // - save
+            // - flush app-cache as necessary, same as any other attribute change
+        }
+
+        #endregion
+
         private DbDataController GetDb() => _db ?? (_db = _dbLazy.Value.Init(null, _appId));
         private DbDataController _db;
     }

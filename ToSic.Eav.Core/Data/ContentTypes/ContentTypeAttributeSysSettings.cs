@@ -30,6 +30,12 @@ namespace ToSic.Eav.Data
         /// </summary>
         public bool Share { get; }
 
+        ///// <summary>
+        ///// Tell the system that despite being shared, it won't be available for picking up in any UI.
+        ///// This is for definitions that have sharing enabled to use once or twice, but then should not be available in UIs any more...?
+        ///// </summary>
+        //public bool ShareHidden { get; }
+
         #endregion
 
         /// <summary>

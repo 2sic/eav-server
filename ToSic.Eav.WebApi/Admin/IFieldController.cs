@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.WebApi.Dto;
 
@@ -87,5 +88,23 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="inputType"></param>
         /// <returns></returns>
         bool InputType(int appId, int attributeId, string inputType);
+
+        /// <summary>
+        /// Configure field sharing settings WIP #SharedFieldDefinition
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="attributeId"></param>
+        /// <param name="share"></param>
+        /// <param name="hide"></param>
+        void Share(int appId, int attributeId, bool share, bool hide = false);
+
+        /// <summary>
+        /// Configure field inherit settings WIP #SharedFieldDefinition
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="attributeId"></param>
+        /// <param name="inheritMetadataOf"></param>
+        void Inherit(int appId, int attributeId, Guid inheritMetadataOf);
+
     }
 }

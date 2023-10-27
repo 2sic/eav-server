@@ -41,6 +41,8 @@ namespace ToSic.Eav.ImportExport.Json.V1
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Share { get; set; }
 
+        // future
+        //public bool ShareHidden { get; set; }
 
         public static JsonAttributeSysSettings FromSysSettings(ContentTypeAttributeSysSettings sysSettings) =>
             sysSettings == null 
