@@ -14,6 +14,7 @@ using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Security;
 using ToSic.Lib.DI;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi
@@ -73,7 +74,7 @@ namespace ToSic.Eav.WebApi
         // todo: rename to "List" to match external name, once feature/oqtane2 branch isn't used any more
         public IEnumerable<ContentTypeDto> Get(string scope = null, bool withStatistics = false)
         {
-            var wrapLog = Log.Fn<IEnumerable<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
+            var l = Log.Fn<IEnumerable<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
 
             // 2020-01-15 2sxc 10.27.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
             // this is important on "Content" apps, because these don't auto-initialize when loading from the DB
@@ -81,7 +82,7 @@ namespace ToSic.Eav.WebApi
             // are editing the resources etc. 
             if (scope == Data.Scopes.App)
             {
-                Log.A($"is scope {scope}, will do extra processing");
+                l.A($"is scope {scope}, will do extra processing");
                 var appState = _appStates.Get(AppManager);
                 // make sure additional settings etc. exist
                 _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log); 
@@ -95,12 +96,12 @@ namespace ToSic.Eav.WebApi
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
                 .Select(t => ContentTypeAsDto(t, appMan.Read.Entities.Get(t.Name).Count()));
-            return wrapLog.ReturnAsOk(filteredType);
+            return l.ReturnAsOk(filteredType);
 	    }
 
         private ContentTypeDto ContentTypeAsDto(IContentType t, int count = -1)
 	    {
-	        Log.A($"for json a:{t.AppId}, type:{t.Name}");
+	        var l = Log.Fn<ContentTypeDto>($"for json a:{t.AppId}, type:{t.Name}");
 	        var details = t.Metadata.DetailsOrNull;
 
             var nameOverride = details?.Title;
@@ -130,48 +131,44 @@ namespace ToSic.Eav.WebApi
                 Properties = properties,
                 Permissions = new HasPermissionsDto { Count = t.Metadata.Permissions.Count() },
             };
-	        return jsonReady;
+	        return l.ReturnAsOk(jsonReady);
 	    }
 
 	    public ContentTypeDto GetSingle(string contentTypeStaticName, string scope = null)
 	    {
-	        var wrapLog = Log.Fn<ContentTypeDto>($"a#{_appId}, type:{contentTypeStaticName}, scope:{scope}");
+	        var l = Log.Fn<ContentTypeDto>($"a#{_appId}, type:{contentTypeStaticName}, scope:{scope}");
             var appState = _appStates.Get(_appId);
-
             var ct = appState.GetContentType(contentTypeStaticName);
-            return wrapLog.Return(ContentTypeAsDto(ct));
+            return l.Return(ContentTypeAsDto(ct));
 	    }
 
 	    public bool Delete(string staticName)
 	    {
-	        Log.A($"delete a#{_appId}, name:{staticName}");
+	        var l = Log.Fn<bool>($"delete a#{_appId}, name:{staticName}");
             GetDb().ContentType.Delete(staticName);
-	        return true;
+	        return l.ReturnTrue();
 	    }
 
 	    public bool Save(Dictionary<string, string> item)
 	    {
-	        Log.A($"save a#{_appId}, item count:{item?.Count}");
+	        var l = Log.Fn<bool>($"save a#{_appId}, item count:{item?.Count}");
 	        if (item == null)
-	        {
-	            Log.A("item was null, will cancel");
-	            return false;
-	        }
+                return l.ReturnFalse("item was null, will cancel");
 
-	        GetDb().ContentType.AddOrUpdate(
+            GetDb().ContentType.AddOrUpdate(
                 item["StaticName"], 
                 item["Scope"], 
                 item["Name"],
                 null, false);
-	        return true;
-	    }
+            return l.ReturnTrue();
+        }
         #endregion
 
         public bool CreateGhost(string sourceStaticName)
 	    {
-	        Log.A($"create ghost a#{_appId}, type:{sourceStaticName}");
+	        var l = Log.Fn<bool>($"create ghost a#{_appId}, type:{sourceStaticName}");
 	        GetDb().ContentType.CreateGhost(sourceStaticName);
-            return true;
+            return l.ReturnTrue();
 	    }
 
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
@@ -181,63 +178,86 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         public IEnumerable<ContentTypeFieldDto> GetFields(string staticName)
         {
-            Log.A($"get fields a#{_appId}, type:{staticName}");
+            var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>($"get fields a#{_appId}, type:{staticName}");
             var appState = _appStates.Get(_appId);
 
             if (!(appState.GetContentType(staticName) is IContentType type))
-            {
-                //throw new Exception("type should be a ContentType - something broke");
-                Log.A($"error, type:{staticName} is null, it is missing or it is not a ContentType - something broke");
-                return new List<ContentTypeFieldDto>();
-            }
+                return l.Return(new List<ContentTypeFieldDto>(),
+                    $"error, type:{staticName} is null, it is missing or it is not a ContentType - something broke");
 
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
-            var hasAncestor = type.HasAncestor();
+            return l.Return(fields.Select(a => FieldAsDto(a, type, false)));
+        }
+
+        /// <summary>
+        /// TODO: implemented, but never tested yet, WIP with @SDV
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ContentTypeFieldDto> GetSharedFields()
+        {
+            var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>($"get shared fields a#{_appId}");
+            var appState = _appStates.Get(_appId);
+            var typesWithSharedField = appState.ContentTypes
+                .Where(
+                    ct => ct.GetDecorator<IAncestor>() == null
+                          && ct.Attributes.Any(a => a.Guid != null && a.SysSettings?.Share == true)
+                );
+            var fields = typesWithSharedField
+                .SelectMany(ct => ct.Attributes
+                    .Where(a => a.SysSettings.Share)
+                    .Select(a => new { Type = ct, Field = a}))
+                .OrderBy(set => set.Type.Name)
+                .ThenBy(set => set.Field.Name)
+                .ToList();
+
+            return l.Return(fields.Select(a => FieldAsDto(a.Field, a.Type, true)));
+        }
+
+        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appRuntimeLazy.Value.Init(_appId).ContentTypes.GetInputTypes());
+        private readonly GetOnce<List<InputTypeInfo>> _appInputTypes = new GetOnce<List<InputTypeInfo>>();
+
+        private ContentTypeFieldDto FieldAsDto(IContentTypeAttribute a, IContentType type, bool withContentType)
+        {
             var ancestorDecorator = type.GetDecorator<IAncestor>();
-
-            var appInputTypes = _appRuntimeLazy.Value.Init(_appId/*, true*/).ContentTypes.GetInputTypes();
-
+            var inputType = FindInputType(a);
             var ser = _convertToEavLight.Value;
-            return fields.Select(a =>
+            return new ContentTypeFieldDto
             {
-                var inputType = FindInputType(a);
-                return new ContentTypeFieldDto
-                {
-                    Id = a.AttributeId,
-                    SortOrder = a.SortOrder,
-                    Type = a.Type.ToString(),
-                    InputType = inputType,
-                    StaticName = a.Name,
-                    IsTitle = a.IsTitle,
-                    AttributeId = a.AttributeId,
-                    Metadata = a.Metadata
-                        .ToDictionary(
-                            e =>
-                            {
-                                // if the static name is a GUID, then use the normal name as name-giver
-                                var name = Guid.TryParse(e.Type.NameId, out _)
-                                    ? e.Type.Name
-                                    : e.Type.NameId;
-                                return name.TrimStart('@');
-                            },
-                            e => InputMetadata(type, a, e, ancestorDecorator, ser)),
-                    InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
-                    Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
+                Id = a.AttributeId,
+                SortOrder = a.SortOrder,
+                Type = a.Type.ToString(),
+                InputType = inputType,
+                StaticName = a.Name,
+                IsTitle = a.IsTitle,
+                AttributeId = a.AttributeId,
+                Metadata = a.Metadata
+                    .ToDictionary(
+                        e =>
+                        {
+                            // if the static name is a GUID, then use the normal name as name-giver
+                            var name = Guid.TryParse(e.Type.NameId, out _)
+                                ? e.Type.Name
+                                : e.Type.NameId;
+                            return name.TrimStart('@');
+                        },
+                        e => InputMetadata(type, a, e, ancestorDecorator, ser)),
+                InputTypeConfig = AppInputTypes.FirstOrDefault(it => it.Type == inputType),
+                Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
 
-                    // new in 12.01
-                    IsEphemeral = a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral,
-                        AttributeMetadata.TypeGeneral),
-                    HasFormulas = HasCalculations(a),
+                // new in 12.01
+                IsEphemeral = a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral,
+                    AttributeMetadata.TypeGeneral),
+                HasFormulas = HasCalculations(a),
 
-                    // Read-Only new in v13
-                    EditInfo = new EditInfoAttributeDto(type, a),
+                // Read-Only new in v13
+                EditInfo = new EditInfoAttributeDto(type, a),
 
-                    // #SharedFieldDefinition
-                    Guid = a.Guid,
-                    SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
-                };
-            });
+                // #SharedFieldDefinition
+                Guid = a.Guid,
+                SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
+                ContentType = withContentType ? new JsonType(type, false, false) : null,
+            };
         }
 
         private EavLightEntity InputMetadata(IContentType contentType, IContentTypeAttribute a, IEntity e, IAncestor ancestor, IConvertToEavLight ser)
@@ -274,25 +294,24 @@ namespace ToSic.Eav.WebApi
 
         private bool HasCalculations(IContentTypeAttribute attribute)
         {
-            var wrapLog = Log.Fn<bool>(attribute.Name);
+            var l = Log.Fn<bool>(attribute.Name);
             var allMd = attribute.Metadata.FirstOrDefaultOfType(AttributeMetadata.TypeGeneral);
-            if (allMd == null) return wrapLog.ReturnFalse("no @All");
+            if (allMd == null) return l.ReturnFalse("no @All");
 
             var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == AttributeMetadata.MetadataFieldAllFormulas);
-            if (calculationsAttr == null) return wrapLog.ReturnFalse("no calc property");
+            if (calculationsAttr == null) return l.ReturnFalse("no calc property");
 
             var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;
-            return wrapLog.Return(calculations?.Any() ?? false);
+            return l.Return(calculations?.Any() ?? false);
         }
 
 
         public bool Reorder(int contentTypeId, string newSortOrder)
         {
-            Log.A($"reorder type#{contentTypeId}, order:{newSortOrder}");
-
+            var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{newSortOrder}");
             var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
             GetDb().ContentType.SortAttributes(contentTypeId, sortOrderList);
-            return true;
+            return l.ReturnTrue();
         }
 
 	    public string[] DataTypes()
@@ -318,21 +337,22 @@ namespace ToSic.Eav.WebApi
 
 	    public bool DeleteField(int contentTypeId, int attributeId)
 	    {
-	        Log.A($"delete field type#{contentTypeId}, attrib:{attributeId}");
-            return GetDb().Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
+	        var l = Log.Fn<bool>($"delete field type#{contentTypeId}, attrib:{attributeId}");
+            return l.Return(GetDb().Attributes.RemoveAttributeAndAllValuesAndSave(attributeId));
 	    }
 
 	    public void SetTitle(int contentTypeId, int attributeId)
 	    {
-	        Log.A($"set title type#{contentTypeId}, attrib:{attributeId}");
+	        var l = Log.Fn($"set title type#{contentTypeId}, attrib:{attributeId}");
 	        GetDb().Attributes.SetTitleAttribute(attributeId, contentTypeId);
-	    }
+            l.Done();
+        }
 
         public bool Rename(int contentTypeId, int attributeId, string newName)
         {
-            Log.A($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
+            var l = Log.Fn<bool>($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
             GetDb().Attributes.RenameAttribute(attributeId, contentTypeId, newName);
-            return true;
+            return l.ReturnTrue();
         }
 
         #endregion

@@ -55,8 +55,29 @@ namespace ToSic.Eav.ImportExport.Json.V1
         public JsonType() { }
 
         public JsonType(IEntity entity, bool withDescription = false, bool withMap = false)
+            : this(entity.Type, withDescription, withMap) { }
+        //{
+        //    var type = entity.Type;
+        //    Name = type.Name;
+        //    Id = type.NameId;
+        //    if (withDescription)
+        //    {
+        //        var description = type.Metadata.DetailsOrNull;
+        //        Title = description?.Title ?? type.NameId;
+        //        Description = description?.Description ?? "";
+        //    }
+        //    if (withMap)
+        //    {
+        //        var withGuid = type.Attributes
+        //            .Where(a => a.Guid != null && a.Guid != Guid.Empty)
+        //            .ToDictionary(a => a.Name, a => a.Guid ?? Guid.Empty);
+        //        if (withGuid.Any())
+        //            AttributeMap = withGuid;
+        //    }
+        //}
+
+        public JsonType(IContentType type, bool withDescription = false, bool withMap = false)
         {
-            var type = entity.Type;
             Name = type.Name;
             Id = type.NameId;
             if (withDescription)

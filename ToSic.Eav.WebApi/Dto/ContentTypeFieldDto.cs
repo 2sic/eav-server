@@ -44,5 +44,10 @@ namespace ToSic.Eav.WebApi.Dto
         public Guid? Guid { get; set; }
 
         public JsonAttributeSysSettings SysSettings { get; set; }
+
+        /// <summary>
+        /// Short info for the case where we get the fields of many types to show
+        /// </summary>
+        public JsonType ContentType { get; set; }
     }
 }

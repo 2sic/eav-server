@@ -89,6 +89,10 @@ namespace ToSic.Eav.WebApi.Admin
         /// <returns></returns>
         bool InputType(int appId, int attributeId, string inputType);
 
+        #region Shared Field Definitions
+
+        IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId);
+
         /// <summary>
         /// Configure field sharing settings WIP #SharedFieldDefinition
         /// </summary>
@@ -106,5 +110,6 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="inheritMetadataOf"></param>
         void Inherit(int appId, int attributeId, Guid inheritMetadataOf);
 
+        #endregion
     }
 }

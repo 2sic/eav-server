@@ -57,10 +57,18 @@ namespace ToSic.Eav.WebApi.Admin
         public void Rename(int appId, int contentTypeId, int attributeId, string newName)
             => _ctApiLazy.Value.Init(appId).Rename(contentTypeId, attributeId, newName);
 
+        #region Shared Fields
+
+        public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId) 
+            => _ctApiLazy.Value.Init(appId).GetSharedFields();
+
+
         public void Share(int appId, int attributeId, bool share, bool hide = false)
             => _ctApiLazy.Value.Init(appId).FieldShare(attributeId, share, hide);
 
         public void Inherit(int appId, int attributeId, Guid inheritMetadataOf)
             => _ctApiLazy.Value.Init(appId).FieldInherit(attributeId, inheritMetadataOf);
+
+        #endregion
     }
 }
