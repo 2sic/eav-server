@@ -62,8 +62,9 @@ namespace ToSic.Eav.ImportExport.Json
                             var valType = ValueTypeHelpers.Get(jsonAttr.Type);
 
                             // #SharedFieldDefinition
-                            var inheritMetadata = jsonAttr.SysSettings?.SourceGuid != null && jsonAttr.SysSettings?.InheritMetadata == true;
-                            var sourceGuid = inheritMetadata ? jsonAttr.SysSettings?.SourceGuid : null;
+                            var attrSysSettings = jsonAttr.SysSettings?.ToSysSettings();
+                            var inheritMetadata = attrSysSettings?.InheritMetadata == true;
+                            var sourceGuid = inheritMetadata ? attrSysSettings.InheritMetadataMainGuid : null;
                             var mdEntities = inheritMetadata
                                 ? null
                                 : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
@@ -82,7 +83,7 @@ namespace ToSic.Eav.ImportExport.Json
                                     sortOrder: pos,
                                     // #SharedFieldDefinition
                                     guid: jsonAttr.Guid,
-                                    sysSettings: jsonAttr.SysSettings?.ToSysSettings(),
+                                    sysSettings: attrSysSettings,
                                     // metadataItems: mdEntities,
                                     metadata: attrMetadata
                                 );

@@ -21,15 +21,15 @@ namespace ToSic.Eav.WebApi.Dto
             // Check if the attribute is inherited from elsewhere #SharedFieldDefinition
             var sysSettings = attribute.SysSettings;
             if (sysSettings == null) return;
-            ReadOnly = sysSettings.SourceGuid != null;
+            ReadOnly = sysSettings.Inherit != null || sysSettings.InheritMetadataMainGuid != null;
             if (!ReadOnly) return;
 
             ReadOnlyMessage = "this attribute inherits from another attribute";
             EnableInherit = true;
             DisableSort = false;
             DisableDelete = false;
-            DisableRename = sysSettings.InheritName;
-            DisableMetadata = sysSettings.InheritMetadata;
+            DisableRename = sysSettings.InheritNameOfPrimary;
+            DisableMetadata = sysSettings.InheritMetadataOfPrimary;
             DisableEdit = DisableMetadata;
         }
 

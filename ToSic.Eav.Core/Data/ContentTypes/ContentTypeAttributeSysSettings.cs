@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data
@@ -12,30 +14,47 @@ namespace ToSic.Eav.Data
 	{
         public ContentTypeAttributeSysSettings() { }
 
-        public ContentTypeAttributeSysSettings(Guid? sourceGuid, bool inheritName, bool inheritMetadata, AttributeShareLevel shareLevel)
+        public ContentTypeAttributeSysSettings(bool share, Guid? inherit, bool inheritName, bool inheritMetadata, Dictionary<Guid, string> inheritMetadataOf)
         {
-            SourceGuid = sourceGuid;
-            InheritName = inheritName;
-            InheritMetadata = inheritMetadata;
-            ShareLevel = shareLevel;
+            Share = share;
+            Inherit = inherit;
+            InheritNameOfPrimary = inheritName;
+            InheritMetadataOfPrimary = inheritMetadata;
+            InheritMetadataOf = inheritMetadataOf;
         }
 
-        public Guid? SourceGuid { get; }
-
-        public bool InheritName { get; }
-
-        public bool InheritMetadata { get; }
+        #region Sharing / Source
 
         /// <summary>
-        /// Probably mark this field as allowing share in the same app
+        /// Mark this Attribute that it shares itself / its properties
         /// </summary>
-        public AttributeShareLevel ShareLevel { get; }
+        public bool Share { get; }
+
+        #endregion
+
+        /// <summary>
+        /// Inherits-reference, ATM no purpose yet
+        /// </summary>
+        public Guid? Inherit { get; }
+
+        /// <summary>
+        /// Stored value - should usually NOT be used; ATM no purpose yet
+        /// </summary>
+        public bool InheritNameOfPrimary { get; }
+
+        /// <summary>
+        /// Stored value - should usually NOT be used, instead use InheritMetadata
+        /// </summary>
+        public bool InheritMetadataOfPrimary { get; }
+
+        public Dictionary<Guid, string> InheritMetadataOf { get; set; }
+
+        public bool InheritMetadata => InheritMetadataOf?.Any() == true || (Inherit != null && InheritMetadataOfPrimary);
+
+        public Guid? InheritMetadataMainGuid => InheritMetadataOf?.Any() == true 
+            ? InheritMetadataOf.FirstOrDefault().Key 
+            : InheritMetadataOfPrimary ? Inherit : null;
+
     }
     
-    public enum AttributeShareLevel
-    {
-        None = 0,
-        SameApp = 1,
-        // SameSite = 2,
-    }
 }

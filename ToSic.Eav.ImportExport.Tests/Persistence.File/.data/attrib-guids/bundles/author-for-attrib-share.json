@@ -1,0 +1,815 @@
+{
+  "Bundles": [
+    {
+      "Name": "default",
+      "ContentTypes": [
+        {
+          "ContentType": {
+            "Id": "d25b6e4b-a80b-43a3-a14d-0b47289e0795",
+            "Name": "AuthorWithSharedAttributes",
+            "Scope": "Default",
+            "Description": null,
+            "Attributes": [
+              {
+                "Name": "FullName",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": true,
+                "Metadata": [
+                  {
+                    "Id": 6411,
+                    "Version": 1,
+                    "Guid": "6c27965a-7d0b-4cff-9f0b-52b083631ec8",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Author's name"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6412,
+                    "Version": 1,
+                    "Guid": "40a20963-1428-45a5-8a24-4938f5d18730",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Key",
+                "Type": "String",
+                "InputType": "string-url-path",
+                "IsTitle": false,
+                "Guid": "4e7164a1-72f2-4dee-97ea-55362e55e635",
+                "SysSettings": {
+                  "ShareLevel": 1,
+                  "Share": true
+                },
+                "Metadata": [
+                  {
+                    "Id": 6413,
+                    "Version": 1,
+                    "Guid": "ac8b82b9-c592-4dc4-9e49-0bac5041f06b",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "string-url-path"
+                        },
+                        "Name": {
+                          "*": "Key for use in Links"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "Placeholder": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "DisableTranslation": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6414,
+                    "Version": 1,
+                    "Guid": "6b30acf7-96aa-4ca1-8748-bf27a15759f1",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6415,
+                    "Version": 1,
+                    "Guid": "74285907-126f-4a79-8c1b-1d9cae4695ed",
+                    "Type": {
+                      "Name": "@string-url-path",
+                      "Id": "@string-url-path"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "AutoGenerateMask": {
+                          "*": "[FullName]"
+                        }
+                      },
+                      "Boolean": {
+                        "AllowSlashes": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "KeyInherited",
+                "Type": "String",
+                "InputType": "string-url-path",
+                "IsTitle": false,
+                "Guid": "bd131f50-891b-4123-83ec-b099f1cbcac8",
+                "SysSettings": {
+                  "inheritMetadataOf": "4e7164a1-72f2-4dee-97ea-55362e55e635"
+                }
+              },
+              {
+                "Name": "Image",
+                "Type": "Hyperlink",
+                "InputType": "hyperlink-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6416,
+                    "Version": 1,
+                    "Guid": "231a98c1-c6e3-42fc-a8ed-c99b898d0d4f",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Picture"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6417,
+                    "Version": 1,
+                    "Guid": "0f4e7341-8e77-42e4-9db4-1c16c215da43",
+                    "Type": {
+                      "Name": "@Hyperlink",
+                      "Id": "@Hyperlink"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "Buttons": {
+                          "*": "adam,more"
+                        },
+                        "DefaultDialog": {
+                          "*": "ImageManager"
+                        },
+                        "FileFilter": {
+                          "*": ""
+                        },
+                        "Paths": {
+                          "*": "Blog/Authors"
+                        },
+                        "ServerResourceMapping": {
+                          "*": ""
+                        }
+                      },
+                      "Boolean": {
+                        "ShowAdam": {
+                          "*": true
+                        },
+                        "ShowFileManager": {
+                          "*": false
+                        },
+                        "ShowImageManager": {
+                          "*": true
+                        },
+                        "ShowPagePicker": {
+                          "*": false
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "ShortBio",
+                "Type": "String",
+                "InputType": "string-wysiwyg",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6418,
+                    "Version": 1,
+                    "Guid": "bc68aa4d-e32f-4c28-8aa1-ae0272715145",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Short biography"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6419,
+                    "Version": 1,
+                    "Guid": "5ede5e0d-1c36-4bd8-84e9-aaed5ab02569",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": "wysiwyg"
+                        }
+                      },
+                      "Number": {
+                        "RowCount": {
+                          "*": 1.0
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              }
+            ],
+            "Metadata": [
+              {
+                "Id": 6646,
+                "Version": 1,
+                "Guid": "28f3a1c7-d5b8-4473-8ce0-2e67951564c0",
+                "Type": {
+                  "Name": "ContentType",
+                  "Id": "ContentType"
+                },
+                "Attributes": {
+                  "String": {
+                    "Description": {
+                      "*": "People writing blogs"
+                    },
+                    "DynamicChildrenField": {
+                      "*": ""
+                    },
+                    "EditInstructions": {
+                      "*": ""
+                    },
+                    "Label": {
+                      "*": "Author"
+                    },
+                    "ListInstructions": {
+                      "*": ""
+                    },
+                    "Notes": {
+                      "*": ""
+                    }
+                  },
+                  "Hyperlink": {
+                    "Icon": {
+                      "*": ""
+                    },
+                    "Link": {
+                      "*": ""
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "3d5500b3-8d0c-4ff2-8114-fb839f4ec869"
+                }
+              },
+              {
+                "Id": 203789,
+                "Version": 1,
+                "Guid": "87a1bd39-7a1b-402e-9af1-36e7538cac45",
+                "Type": {
+                  "Name": "SystemExportDecorator",
+                  "Id": "32698880-1c2e-41ab-bcfc-420091d3263f"
+                },
+                "Attributes": {
+                  "Entity": {
+                    "Configuration": {
+                      "*": [
+                        "22db39d7-8a59-43be-be68-ea0f28880c10"
+                      ]
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "3d5500b3-8d0c-4ff2-8114-fb839f4ec869"
+                }
+              }
+            ]
+          },
+          "Entities": []
+        },
+        {
+          "ContentType": {
+            "Id": "ff5ce21b-e26c-4142-9e5a-a054fe3855df",
+            "Name": "Tag",
+            "Scope": "Default",
+            "Description": null,
+            "Attributes": [
+              {
+                "Name": "Tag",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": true,
+                "Metadata": [
+                  {
+                    "Id": 6490,
+                    "Version": 1,
+                    "Guid": "c567cafa-7e49-403d-a681-1b39d20fa89a",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Tag"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6491,
+                    "Version": 1,
+                    "Guid": "d35a3443-81d2-4ce2-b127-66567d6012ed",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "Name",
+                "Type": "String",
+                "InputType": "string-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6492,
+                    "Version": 1,
+                    "Guid": "8c471e88-d80e-4d21-b94b-7cf88299349f",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Name"
+                        },
+                        "Notes": {
+                          "*": ""
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": true
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6493,
+                    "Version": 1,
+                    "Guid": "cee61942-2eb4-43fe-a801-a0a3a93005ed",
+                    "Type": {
+                      "Name": "@String",
+                      "Id": "@String"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "DropdownValues": {
+                          "*": ""
+                        },
+                        "InputType": {
+                          "*": ""
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              },
+              {
+                "Name": "ManualWeight",
+                "Type": "Number",
+                "InputType": "number-default",
+                "IsTitle": false,
+                "Metadata": [
+                  {
+                    "Id": 6494,
+                    "Version": 1,
+                    "Guid": "79f30937-6cb4-4baa-8807-d5ce111719b0",
+                    "Type": {
+                      "Name": "@All",
+                      "Id": "@All"
+                    },
+                    "Attributes": {
+                      "String": {
+                        "CustomJavaScript": {
+                          "*": ""
+                        },
+                        "DefaultValue": {
+                          "*": "1"
+                        },
+                        "InputType": {
+                          "*": ""
+                        },
+                        "Name": {
+                          "*": "Manual weighting"
+                        },
+                        "Notes": {
+                          "*": "<p>Use this function to weight a tag higher, e.g. to display it larger in a tag cloud. 1 is less important than 10.</p>"
+                        },
+                        "ValidationRegExJavaScript": {
+                          "*": ""
+                        }
+                      },
+                      "Entity": {
+                        "Errors": {
+                          "*": []
+                        },
+                        "Formulas": {
+                          "*": []
+                        },
+                        "Warnings": {
+                          "*": []
+                        }
+                      },
+                      "Boolean": {
+                        "Disabled": {
+                          "*": false
+                        },
+                        "Required": {
+                          "*": false
+                        },
+                        "VisibleInEditUI": {
+                          "*": true
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  },
+                  {
+                    "Id": 6495,
+                    "Version": 1,
+                    "Guid": "074142f9-fd3b-4cf0-a1c5-dccc4f0649f3",
+                    "Type": {
+                      "Name": "@Number",
+                      "Id": "@Number"
+                    },
+                    "Attributes": {
+                      "Number": {
+                        "Decimals": {
+                          "*": 0.0
+                        }
+                      }
+                    },
+                    "Owner": "dnn:userid=1"
+                  }
+                ]
+              }
+            ],
+            "Metadata": [
+              {
+                "Id": 6647,
+                "Version": 1,
+                "Guid": "259b3d1c-ca83-4513-9f91-dc807b5ca8ff",
+                "Type": {
+                  "Name": "ContentType",
+                  "Id": "ContentType"
+                },
+                "Attributes": {
+                  "String": {
+                    "Description": {
+                      "*": "Tags for tagging everything"
+                    },
+                    "EditInstructions": {
+                      "*": ""
+                    },
+                    "Label": {
+                      "*": "Tag"
+                    },
+                    "ListInstructions": {
+                      "*": ""
+                    },
+                    "Notes": {
+                      "*": ""
+                    }
+                  },
+                  "Hyperlink": {
+                    "Icon": {
+                      "*": ""
+                    },
+                    "Link": {
+                      "*": ""
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "64108884-5611-4edc-a766-269385b2ecd2"
+                }
+              },
+              {
+                "Id": 203794,
+                "Version": 1,
+                "Guid": "eeb88c5d-686c-441c-9d2c-b5edbdbe6806",
+                "Type": {
+                  "Name": "SystemExportDecorator",
+                  "Id": "32698880-1c2e-41ab-bcfc-420091d3263f"
+                },
+                "Attributes": {
+                  "Entity": {
+                    "Configuration": {
+                      "*": [
+                        "22db39d7-8a59-43be-be68-ea0f28880c10"
+                      ]
+                    }
+                  }
+                },
+                "Owner": "dnn:userid=1",
+                "For": {
+                  "Target": "ContentType",
+                  "TargetType": 5,
+                  "String": "64108884-5611-4edc-a766-269385b2ecd2"
+                }
+              }
+            ]
+          },
+          "Entities": []
+        }
+      ]
+    }
+  ],
+  "_": {
+    "V": 1
+  }
+}
