@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -25,10 +26,12 @@ namespace ToSic.Eav.WebApi
 	/// </summary>
 	public partial class ContentTypeApi : ServiceBase
     {
+        private readonly LazySvc<AppWork> _appSys;
 
         #region Constructor / DI
 
         public ContentTypeApi(
+            LazySvc<AppWork> appSys,
             LazySvc<AppRuntime> appRuntimeLazy, 
             LazySvc<AppManager> appManagerLazy, 
             LazySvc<DbDataController> dbLazy, 
@@ -38,6 +41,7 @@ namespace ToSic.Eav.WebApi
             IAppStates appStates) : base("Api.EavCTC")
         {
             ConnectServices(
+                _appSys = appSys,
                 _appRuntimeLazy = appRuntimeLazy,
                 _appManagerLazy = appManagerLazy,
                 _dbLazy = dbLazy,
@@ -61,18 +65,19 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<ContentTypeApi>($"{appId}");
             _appId = appId;
+            AppCtx = _appSys.Value.Context(appId);
             AppManager = _appManagerLazy.Value.Init(appId);
             return l.Return(this);
         }
 
         private int _appId;
+        private IAppWorkCtx AppCtx;
 
         #endregion
 
         #region Content-Type Get, Delete, Save
 
-        // todo: rename to "List" to match external name, once feature/oqtane2 branch isn't used any more
-        public IEnumerable<ContentTypeDto> Get(string scope = null, bool withStatistics = false)
+        public IEnumerable<ContentTypeDto> List(string scope = null, bool withStatistics = false)
         {
             var l = Log.Fn<IEnumerable<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
 
@@ -83,19 +88,18 @@ namespace ToSic.Eav.WebApi
             if (scope == Data.Scopes.App)
             {
                 l.A($"is scope {scope}, will do extra processing");
-                var appState = _appStates.Get(AppManager);
                 // make sure additional settings etc. exist
-                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log); 
+                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(AppCtx.AppState, null, Log); 
             }
             // should use app-manager and return each type 1x only
-            var appMan = AppManager;
+            var appEntities = _appSys.Value.Entities;
 
             // get all types
-            var allTypes = appMan.Read.ContentTypes.All.OfScope(scope, true);
+            var allTypes = _appSys.Value.ContentTypes.All(AppCtx).OfScope(scope, true);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
-                .Select(t => ContentTypeAsDto(t, appMan.Read.Entities.Get(t.Name).Count()));
+                .Select(t => ContentTypeAsDto(t, appEntities.Get(AppCtx, t.Name).Count()));
             return l.ReturnAsOk(filteredType);
 	    }
 
@@ -213,7 +217,7 @@ namespace ToSic.Eav.WebApi
             return l.Return(fields.Select(a => FieldAsDto(a.Field, a.Type, true)));
         }
 
-        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appRuntimeLazy.Value.Init(_appId).ContentTypes.GetInputTypes());
+        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appSys.Value.InputTypes.GetInputTypes(AppCtx));
         private readonly GetOnce<List<InputTypeInfo>> _appInputTypes = new GetOnce<List<InputTypeInfo>>();
 
         private ContentTypeFieldDto FieldAsDto(IContentTypeAttribute a, IContentType type, bool withContentType)

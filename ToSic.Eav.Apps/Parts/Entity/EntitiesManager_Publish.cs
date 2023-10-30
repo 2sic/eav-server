@@ -1,15 +1,16 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Apps.AppSys;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
     public partial class EntitiesManager
     {
-        private void PublishWithoutPurge(int entityId) => Log.Do(l =>
+        private void PublishWithoutPurge(IAppWorkCtx appCtx, int entityId) => Log.Do(l =>
         {
             l.A($"PublishWithoutPurge({entityId})");
 
             // 1. make sure we're publishing the draft, because the entityId might be the published one...
-            var contEntity = Parent.Read.Entities.Get(entityId);
+            var contEntity = _appWork.Entities.Get(appCtx, entityId);
             if (contEntity == null)
                 l.A($"Will skip, couldn't find the entity {entityId}");
             else
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Apps.Parts
                       $"rid: {contEntity.RepositoryId}, isPublished: {contEntity.IsPublished}");
 
                 var maybeDraft = contEntity.IsPublished
-                    ? Parent.Read.AppState.GetDraft(contEntity) ?? contEntity // if no draft exists, use current
+                    ? appCtx.AppState.GetDraft(contEntity) ?? contEntity // if no draft exists, use current
                     : contEntity; // if it isn't published, use current
 
                 var repoId = maybeDraft.RepositoryId;
@@ -39,10 +40,11 @@ namespace ToSic.Eav.Apps.Parts
         public void Publish(int[] entityIds)
         {
             Log.A(Log.Try(() => "Publish(" + entityIds.Length + " items [" + string.Join(",", entityIds) + "])"));
+            var appCtx = Parent.GetContextWip();
             foreach (var eid in entityIds)
                 try
                 {
-                    PublishWithoutPurge(eid);
+                    PublishWithoutPurge(appCtx, eid);
                 }
                 catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
             // Tell the cache to do a partial update

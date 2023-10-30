@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
@@ -14,10 +15,10 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal: ServiceBase
     {
+        private readonly AppWork _appWork;
         private readonly LazySvc<LicenseCatalog> _licenseCatalog;
         private readonly LazySvc<SystemFingerprint> _fingerprint;
         private readonly Generator<JsonSerializer> _jsonSerializer;
-        private readonly Generator<AppRuntime> _appRuntimeGenerator;
         public const string LogSuffix = "Insight";
         #region Constructor / DI
 
@@ -30,7 +31,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             LazySvc<LicenseCatalog> licenseCatalog,
             IUser user, 
             LightSpeedStats lightSpeedStats,
-            Generator<AppRuntime> appRuntimeGenerator,
+            AppWork appWork,
             Generator<JsonSerializer> jsonSerializer)
             : base("Api.SysIns")
         {
@@ -42,7 +43,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 _licenseCatalog = licenseCatalog,
                 _user = user,
                 _lightSpeedStats = lightSpeedStats,
-                _appRuntimeGenerator = appRuntimeGenerator,
+                _appWork = appWork,
                 _jsonSerializer = jsonSerializer,
                 SystemManager = systemManager
             );
@@ -67,11 +68,6 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             if(!_user.IsSystemAdmin) throw HttpException.PermissionDenied("requires Superuser permissions");
         }
 
-
-        private AppRuntime AppRt(int? appId) => _appRuntimeGenerator.New().Init(appId.Value);
-
         private AppState AppState(int? appId) => _appStates.Get(appId.Value);
-
-
     }
 }

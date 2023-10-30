@@ -16,7 +16,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app-load {appId}");
-            return InsightsHtmlParts.PageStyles() + _logHtml.DumpTree($"2sxc load log for app {appId}", AppRt(appId).AppState.Log);
+            return InsightsHtmlParts.PageStyles() + _logHtml.DumpTree($"2sxc load log for app {appId}",
+                _appStates.Get(appId.Value).Log);
         }
 
         private string Cache()
@@ -90,8 +91,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app-internals for {appId}");
-            var appRead = AppRt(appId);
-            var pkg = appRead.AppState;
+            //var appRead = AppRt(appId);
+            var pkg = _appWork.Context(appId.Value).AppState; // appRead.AppState;
 
             var msg = H1($"App internals for {appId}").ToString();
             try

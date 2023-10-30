@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 
@@ -26,11 +27,12 @@ namespace ToSic.Eav.Apps.Parts
         ) => Log.Func($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true, func: () =>
         {
             // do optional type-check and if necessary, throw error
-            BatchCheckTypesMatch(ids, contentType);
+            var appCtx = Parent.GetContextWip();
+            BatchCheckTypesMatch(appCtx, ids, contentType);
 
             // get related metadata ids
             var metaDataIds = new List<int>();
-            foreach (var id in ids) CollectMetaDataIdsRecursively(id, ref metaDataIds);
+            foreach (var id in ids) CollectMetaDataIdsRecursively(appCtx, id, ref metaDataIds);
 
             var deleteIds = ids.ToList();
             if (metaDataIds.Any()) deleteIds.AddRange(metaDataIds);
@@ -42,26 +44,23 @@ namespace ToSic.Eav.Apps.Parts
             var repositoryIds = deleteIds.ToArray();
             var ok = false;
             var dc = Parent.DataController;
-            dc.DoButSkipAppCachePurge(() => ok = Parent.DataController.Entities.DeleteEntity(repositoryIds, true, true));
+            dc.DoButSkipAppCachePurge(() => ok = dc.Entities.DeleteEntity(repositoryIds, true, true));
 
             // remove entity from cache
             // introduced in v15.05 to reduce work on entity delete
             // in past we PurgeApp in whole on each entity delete
             // this should be much faster, but side effects are possible.
             Parent.AppState.Remove(repositoryIds, true);
-            //SystemManager.PurgeApp(Parent.AppId);
 
             return ok;
         });
 
-        private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
+        private void CollectMetaDataIdsRecursively(IAppWorkCtx appCtx, int id, ref List<int> metaDataIds)
         {
-            var childrenMetaDataIds = Parent.Read.Entities.Get(id).Metadata.Select(metdata => metdata.EntityId);
+            var childrenMetaDataIds = _appWork.Entities.Get(appCtx, id).Metadata.Select(md => md.EntityId).ToList();
             if (!childrenMetaDataIds.Any()) return;
             foreach (var childrenMetadataId in childrenMetaDataIds)
-            {
-                CollectMetaDataIdsRecursively(childrenMetadataId, ref metaDataIds);
-            }
+                CollectMetaDataIdsRecursively(appCtx, childrenMetadataId, ref metaDataIds);
             metaDataIds.AddRange(childrenMetaDataIds);
         }
 
@@ -80,11 +79,11 @@ namespace ToSic.Eav.Apps.Parts
             return canDeleteList;
         }
 
-        private void BatchCheckTypesMatch(int[] ids, string contentType)
+        private void BatchCheckTypesMatch(IAppWorkCtx appCtx, int[] ids, string contentType)
         {
             foreach (var id in ids)
             {
-                var found = Parent.Read.Entities.Get(id);
+                var found = _appWork.Entities.Get(appCtx, id); // Parent.Read.Entities.Get(id);
                 if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
                     throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
             }
@@ -97,7 +96,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
-            var relationships = Parent.Read.AppState.Relationships;
+            var relationships = Parent.GetContextWip().AppState.Relationships;
 
             foreach (var entityId in ids)
             {

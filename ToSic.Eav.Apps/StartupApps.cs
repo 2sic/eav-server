@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Api.Api01;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
@@ -37,12 +38,16 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppFinder>();
 
             // Runtime parts
-            services.TryAddTransient<ContentTypeRuntime>();
             services.TryAddTransient<MetadataRuntime>();
             services.TryAddTransient<MdRecommendations>(); // new v13
             services.TryAddTransient<MdRequirements>(); // new v13
-            services.TryAddTransient<EntityRuntime>();
             services.TryAddTransient<EntitiesManager>();
+
+            // New part v16 with better architecture
+            services.TryAddTransient<AppWork>();
+            services.TryAddTransient<AppEntityRead>();
+            services.TryAddTransient<AppContentTypes>();
+            services.TryAddTransient<AppInputTypes>();
 
             services.TryAddTransient<Import>();
 

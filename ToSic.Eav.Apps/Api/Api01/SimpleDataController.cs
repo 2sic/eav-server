@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Data;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
@@ -35,6 +35,7 @@ namespace ToSic.Eav.Api.Api01
     /// </summary>
     public partial class SimpleDataController: ServiceBase
     {
+
         #region Constructor / DI
 
         /// <summary>
@@ -42,6 +43,7 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         public SimpleDataController(
             DataBuilder builder,
+            LazySvc<AppWork> appSys,
             LazySvc<AppManager> appManagerLazy,
             LazySvc<DbDataController> dbDataLazy,
             IZoneMapper zoneMapper,
@@ -49,6 +51,7 @@ namespace ToSic.Eav.Api.Api01
             Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             ConnectServices(
+                _appSys = appSys,
                 _appManagerLazy = appManagerLazy,
                 _dbDataLazy = dbDataLazy,
                 _zoneMapper = zoneMapper,
@@ -57,6 +60,7 @@ namespace ToSic.Eav.Api.Api01
                 _appPermissionCheckGenerator = appPermissionCheckGenerator
             );
         }
+        private readonly LazySvc<AppWork> _appSys;
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<DbDataController> _dbDataLazy;
         private readonly IZoneMapper _zoneMapper;
@@ -83,12 +87,16 @@ namespace ToSic.Eav.Api.Api01
             if (_ctx.Site.ZoneId != zoneId) _ctx.Site = _zoneMapper.SiteOfZone(zoneId);
 
             _defaultLanguageCode = GetDefaultLanguage(zoneId);
+            var appIdentity = new AppIdentity(zoneId, appId);
+            AppSysCtx = _appSys.Value.Context(appIdentity);
             _context = _dbDataLazy.Value.Init(zoneId, appId);
-            _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId));
+            _appManager = _appManagerLazy.Value.Init(appIdentity);
             _checkWritePermissions = checkWritePermissions;
             l.A($"Default language:{_defaultLanguageCode}");
             return this;
         });
+
+        private IAppWorkCtx AppSysCtx;
 
         private string GetDefaultLanguage(int zoneId) => Log.Func($"{zoneId}", () =>
         {
@@ -118,7 +126,7 @@ namespace ToSic.Eav.Api.Api01
             if (multiValues == null) return (null, "attributes were null");
 
             // ensure the type really exists
-            var type = _appManager.Read.ContentTypes.Get(contentTypeName);
+            var type = _appSys.Value.ContentTypes.Get(AppSysCtx, contentTypeName); // _appManager.Read.ContentTypes.Get(contentTypeName);
             if (type == null)
                 throw l.Done(new ArgumentException("Error: Content type '" + contentTypeName + "' does not exist."));
 

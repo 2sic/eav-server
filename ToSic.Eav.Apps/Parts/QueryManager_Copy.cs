@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps.Parts
 
             var newWiringValues = new List<IValue>
             {
-                _valueBuilder.Value.String(newWiring)
+                _builder.Value.Value.String(newWiring)
             };
             var queryAttributes = query.Entity.Attributes.ToEditable();
             var newWiringAttribute =

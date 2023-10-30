@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
@@ -14,17 +14,18 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityPickerApi : ServiceBase
     {
+
         #region DI Constructor
 
-        public EntityPickerApi(AppRuntime appRuntime, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
+        public EntityPickerApi(AppWork appWork, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
         {
             ConnectServices(
                 _cultureResolver = cultureResolver,
                 _user = user,
-                AppRuntime = appRuntime
+                _appWork = appWork
             );
         }
-        public AppRuntime AppRuntime { get; }
+        private readonly AppWork _appWork;
         private readonly IZoneCultureResolver _cultureResolver;
         private readonly IUser _user;
 
@@ -38,11 +39,12 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<IEnumerable<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
-            AppRuntime.Init(appId, withDrafts);
+            //AppRuntime.Init(appId, withDrafts);
+            var appCtx = _appWork.Context(appId, showDrafts: withDrafts);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {
-                contentType = AppRuntime.AppState.GetContentType(contentTypeName);
+                contentType = _appWork.ContentTypeRead().Get(appCtx, contentTypeName);
                 l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
                 if (contentType == null)
                     return l.Return(new List<EntityForPickerDto>(),
@@ -50,18 +52,19 @@ namespace ToSic.Eav.WebApi
             }
 
             IEnumerable<IEntity> list;
+            var appEnts = _appWork.EntityRead();
 
             // optionally filter by type
             if (contentType != null)
             {
                 l.A($"filter by type:{contentType.Name}");
-                list = AppRuntime.Entities.Get(contentTypeName);
+                list = appEnts.Get(appCtx, contentTypeName);
             }
             else
             {
                 l.A("won't filter by type because it's null");
                 l.A($"Will restrict by scope if user is not system admin: {_user.IsSystemAdmin}");
-                list = AppRuntime.Entities.OnlyContent(_user.IsSystemAdmin); // only super user should also get Configuration
+                list = appEnts.OnlyContent(appCtx, _user.IsSystemAdmin); // only super user should also get Configuration
             }
 
             // optionally filter by IDs

@@ -12,10 +12,9 @@ namespace ToSic.Eav.Apps.Parts
         ) => Log.Func($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}", () =>
         {
             var newEnt = Builder.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(),
-                contentType: Parent.Read.ContentTypes.Get(typeName),
+                contentType: _appWork.ContentTypes.Get(Parent.GetContextWip(), /*Parent.Read.ContentTypes.Get(*/typeName),
                 attributes: Builder.Attribute.Create(values),
                 metadataFor: metadataFor);
-            //if (metadataFor != null) newEnt.SetMetadata(metadataFor as Metadata.Target);
             var eid = Save(newEnt);
             var guid = Parent.DataController.Entities.TempLastSaveGuid;
             return ((eid, guid), $"id:{eid}, guid:{guid}");
@@ -44,7 +43,7 @@ namespace ToSic.Eav.Apps.Parts
             }
 
             var newE = Builder.Entity.Create(appId: Parent.AppId, guid: newGuid,
-                contentType: Parent.Read.ContentTypes.Get(typeName),
+                contentType: _appWork.ContentTypes.Get(Parent.GetContextWip(), /*Parent.Read.ContentTypes.Get(*/typeName),
                 attributes: Builder.Attribute.Create(values));
             return Save(newE);
         }

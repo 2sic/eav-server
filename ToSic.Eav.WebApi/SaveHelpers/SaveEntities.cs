@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data.Build;
 using ToSic.Lib.Logging;
@@ -52,25 +53,19 @@ namespace ToSic.Eav.WebApi.SaveHelpers
             initializedAppMan.Entities.Save(entitiesToImport);
         });
 
-        //private void EnforceDraft(Entity currEntity) => Log.Do($"will set published/isbranch on {currEntity.EntityGuid}", () =>
-        //{
-        //    currEntity.IsPublished = false;
-        //    currEntity.PlaceDraftInBranch = true;
-        //});
-
         /// <summary>
         /// Generate pairs of guid/id of the newly added items
         /// </summary>
         /// <returns></returns>
-        public Dictionary<Guid, int> GenerateIdList(EntityRuntime appEntities, IEnumerable<BundleWithHeader> items, AppState appState)
+        public Dictionary<Guid, int> GenerateIdList(IAppWorkCtx appCtx, AppEntityRead appEntities, IEnumerable<BundleWithHeader> items)
         {
             var l = Log.Fn<Dictionary<Guid, int>>();
             
             var idList = items.Select(e =>
                 {
-                    var foundEntity = appEntities.Get(e.Header.Guid);
+                    var foundEntity = appEntities.Get(appCtx, e.Header.Guid);
                     var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
-                    var draft = foundEntity  == null ? null : appState.GetDraft(foundEntity);
+                    var draft = foundEntity  == null ? null : appCtx.AppState.GetDraft(foundEntity);
                     l.A($"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
                     return draft ?? foundEntity; // return the draft (that would be the latest), or the found, or null if not found
                 })

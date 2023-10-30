@@ -28,6 +28,7 @@ namespace ToSic.Eav.Apps.Parts
         #region Constructor / DI
 
         public EntitiesManager(
+            AppSys.AppWork appWork,
             LazySvc<ImportListXml> lazyImportListXml,
             LazySvc<Import> importLazy,
             LazySvc<IImportExportEnvironment> environmentLazy, 
@@ -36,11 +37,11 @@ namespace ToSic.Eav.Apps.Parts
             LazySvc<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
             LazySvc<JsonSerializer> jsonSerializer,
-            LazySvc<DataBuilder> multiBuilder,
-            Generator<ExportListXml> exportListXmlGenerator
+            LazySvc<DataBuilder> multiBuilder
             ) : base("App.EntMan")
         {
             ConnectServices(
+                _appWork = appWork,
                 _lazyImportListXml = lazyImportListXml,
                 _importLazy = importLazy,
                 _environmentLazy = environmentLazy,
@@ -48,18 +49,17 @@ namespace ToSic.Eav.Apps.Parts
                 _appLoaderTools = appLoaderTools,
                 _entitySaverLazy = entitySaverLazy,
                 _appsCache = appsCache,
-                _exportListXmGenerator = exportListXmlGenerator,
                 _multiBuilder = multiBuilder,
                 Serializer = jsonSerializer.SetInit(j => j.SetApp(Parent.AppState))
             );
         }
+        private readonly AppSys.AppWork _appWork;
         private readonly LazySvc<ImportListXml> _lazyImportListXml;
         private readonly LazySvc<Import> _importLazy;
         private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
         private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
         private readonly LazySvc<EntitySaver> _entitySaverLazy;
         private readonly AppsCacheSwitch _appsCache;
-        private readonly Generator<ExportListXml> _exportListXmGenerator;
         protected readonly SystemManager SystemManager;
         private LazySvc<JsonSerializer> Serializer { get; }
 
@@ -74,7 +74,8 @@ namespace ToSic.Eav.Apps.Parts
 
         public void Import(List<IEntity> newEntities)
         {
-            foreach (var e in newEntities.Where(e => Parent.Read.Entities.Get(e.EntityGuid) != null))
+            var appCtx = Parent.GetContextWip();
+            foreach (var e in newEntities.Where(e => _appWork.Entities.Get(appCtx, e.EntityGuid) /*Parent.Read.Entities.Get(e.EntityGuid)*/ != null))
                 throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
             newEntities = newEntities
@@ -107,7 +108,7 @@ namespace ToSic.Eav.Apps.Parts
                     // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
                     if (!(entity is Entity e2) || e2.Type.IsDynamic || e2.Type.Attributes != null)
                         return entity;
-                    var newType = Parent.Read.ContentTypes.Get(entity.Type.Name);
+                    var newType = _appWork.ContentTypes.Get(Parent.GetContextWip(), entity.Type.Name); // Parent.Read.ContentTypes.Get(entity.Type.Name);
                     if (newType == null) return entity;
 
                     return Builder.Entity.CreateFrom(entity, type: newType);

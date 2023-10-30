@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps
         /// App identity containing zone/app combination
         /// </summary>
         /// <param name="app">the identity</param>
-        protected AppBase<TServices> Init(IAppIdentity app) => Log.Func(() =>
+        protected AppBase<TServices> InitAppBaseIds(IAppIdentity app) => Log.Func(() =>
         {
             ZoneId = app.ZoneId;
             AppId = app.AppId;

@@ -16,14 +16,12 @@ namespace ToSic.Eav.Apps
 
         public new class MyServices: MyServicesBase<AppRuntimeBase.MyServices>
         {
-            public LazySvc<AppRuntime> AppRuntime { get; }
             public LazySvc<DbDataController> DbDataController { get; }
             public LazySvc<EntitiesManager> EntitiesManager { get; }
             public LazySvc<QueryManager> QueryManager { get; }
             public LazySvc<ContentTypeManager> ContentTypeManager { get; }
 
             public MyServices(AppRuntimeBase.MyServices parentServices,
-                LazySvc<AppRuntime> appRuntime,
                 LazySvc<DbDataController> dbDataController,
                 LazySvc<EntitiesManager> entitiesManager,
                 LazySvc<QueryManager> queryManager,
@@ -31,7 +29,6 @@ namespace ToSic.Eav.Apps
             ) : base(parentServices)
             {
                 ConnectServices(
-                    AppRuntime = appRuntime,
                     DbDataController = dbDataController,
                     EntitiesManager = entitiesManager,
                     QueryManager = queryManager,
@@ -43,7 +40,6 @@ namespace ToSic.Eav.Apps
         protected AppManager(MyServices services, string logName) : base(services, logName)
         {
             _services = services;
-            _services.AppRuntime.SetInit(r => r.InitWithState(AppState, ShowDrafts));
             _services.DbDataController.SetInit(c =>
             {
                 // TODO: STV this is a bit of a hack, but it's the only way to get the app-state into the DbDataController
@@ -76,15 +72,6 @@ namespace ToSic.Eav.Apps
             AppState = appState;
             return this.InitQ(appState, showDrafts);
         }
-
-        #endregion
-
-        #region Access the Runtime
-
-        /// <summary>
-        /// Read / Runtime system of the AppManager, to read data
-        /// </summary>
-        public AppRuntime Read => _services.AppRuntime.Value;
 
         #endregion
 

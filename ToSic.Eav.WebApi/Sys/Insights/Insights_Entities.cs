@@ -20,17 +20,18 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app attributes for {appId} and {type}");
-            var appRead = AppRt(appId);
+            var appCtx = _appWork.Context(appId ?? 0);
+            var appEntities = _appWork.EntityRead();
 
-            var typ = appRead.ContentTypes.Get(type);
+            var typ = _appWork.ContentTypeRead().Get(appCtx, type);
 
             var msg = "" + H1($"Entities of {type} ({HtmlEncode(typ?.Name)}/{typ?.NameId}) in {appId}\n");
             try
             {
                 Log.A("getting content-type stats");
                 var entities = type == "all"
-                    ? appRead.Entities.All.ToImmutableList()
-                    : appRead.Entities.Get(type).ToImmutableList();
+                    ? appEntities.All(appCtx).ToImmutableList()
+                    : appEntities.Get(appCtx, type).ToImmutableList();
                 msg += P($"entities: {entities.Count}\n");
                 msg += "<table id='table'>"
                     + InsightsHtmlTable.HeadFields("#", "Id", Eav.Data.Attributes.GuidNiceName, Eav.Data.Attributes.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
@@ -69,8 +70,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app entity metadata for {appId} and entity {entity}");
-            var appRead = AppRt(appId);
-            var ent = appRead.Entities.Get(entity.Value);
+            var appCtx = _appWork.Context(appId.Value);
+            var ent = _appWork.EntityRead().Get(appCtx, entity.Value);
 
             var msg = H1($"Entity Metadata for {entity} in {appId}\n").ToString();
             var metadata = ent.Metadata.ToList();
@@ -84,8 +85,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app entity permissions for {appId} and entity {entity}");
-            var appRead = AppRt(appId);
-            var ent = appRead.Entities.Get(entity.Value);
+            var appCtx = _appWork.Context(appId.Value);
+            var ent = _appWork.EntityRead().Get(appCtx, entity.Value);
 
             var msg = H1($"Entity Permissions for {entity} in {appId}\n").ToString();
             var permissions = ent.Metadata.Permissions.Select(p => p.Entity).ToList();
@@ -99,17 +100,17 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app entity metadata for {appId} and entity {nameId}");
-            var appRead = AppRt(appId);
+            var appCtx = _appWork.Context(appId.Value);
 
             IEntity ent;
             if (int.TryParse(nameId, out var entityId))
-                ent = appRead.Entities.Get(entityId);
+                ent = _appWork.EntityRead().Get(appCtx, entityId);
             else if (Guid.TryParse(nameId, out var entityGuid))
-                ent = appRead.Entities.Get(entityGuid);
+                ent = _appWork.EntityRead().Get(appCtx, entityGuid);
             else
                 throw CreateBadRequest("can't use entityid - must be number or guid");
 
-            var ser = _jsonSerializer.New().SetApp(appRead.AppState);
+            var ser = _jsonSerializer.New().SetApp(appCtx.AppState);
             var json = ser.Serialize(ent);
 
             var msg = H1($"Entity Debug for {nameId} in {appId}\n")

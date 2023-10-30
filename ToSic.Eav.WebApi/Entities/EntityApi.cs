@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
@@ -20,15 +21,19 @@ namespace ToSic.Eav.WebApi
 {
     public class EntityApi: ServiceBase
     {
+
         #region DI Constructor & Init
 
-        public EntityApi(AppRuntime appRuntime, 
+        public EntityApi(
+            AppWork appWork,
+            AppRuntime appRuntime, 
             LazySvc<AppManager> appManagerLazy, 
             LazySvc<IConvertToEavLight> entitiesToDicLazy, 
             EntityBuilder entityBuilder, 
             Generator<MultiPermissionsTypes> multiPermissionsTypes) : base("Api.Entity")
         {
             ConnectServices(
+                _appWork = appWork,
                 _appRuntime = appRuntime,
                 _appManagerLazy = appManagerLazy,
                 _entitiesToDicLazy = entitiesToDicLazy,
@@ -36,22 +41,20 @@ namespace ToSic.Eav.WebApi
                 _multiPermissionsTypes = multiPermissionsTypes
             );
         }
+        private readonly AppWork _appWork;
         private readonly AppRuntime _appRuntime;
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<IConvertToEavLight> _entitiesToDicLazy;
         private readonly EntityBuilder _entityBuilder;
         private readonly Generator<MultiPermissionsTypes> _multiPermissionsTypes;
         public AppRuntime AppRead;
+        public IAppWorkCtx AppCtx;
 
 
-        public EntityApi Init(int appId, bool? showDrafts)
+        public EntityApi Init(int appId, bool? showDrafts = default)
         {
             AppRead = _appRuntime.Init(appId, showDrafts);
-            return this;
-        }
-        public EntityApi Init(int appId)
-        {
-            AppRead = _appRuntime.Init(appId);
+            AppCtx = _appWork.Context(appId, showDrafts: showDrafts);
             return this;
         }
 
@@ -79,8 +82,8 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Get all Entities of specified Type
         /// </summary>
-        public IEnumerable<IDictionary<string, object>> GetEntities(string contentType) 
-            => EntityToDic.Convert(AppRead.Entities.Get(contentType));
+        public IEnumerable<IDictionary<string, object>> GetEntities(string contentType)
+            => EntityToDic.Convert(_appWork.Entities.Get(AppCtx, contentType));
 
         public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
         {
@@ -151,24 +154,25 @@ namespace ToSic.Eav.WebApi
         /// <param name="contentType"></param>
         /// <param name="id">Entity ID</param>
         /// <param name="force">try to force-delete</param>
+        /// <param name="parentId">parent entity containing this item in a field/list</param>
+        /// <param name="parentField">parent field containing this item</param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null)
-        {
-            _appManagerLazy.Value.Init(AppRead).Entities
-                .Delete(id, contentType, force, false, parentId, parentField);
-        }
+            => _appManagerLazy.Value.Init(AppRead).Entities.Delete(id, contentType, force, false, parentId, parentField);
 
         /// <summary>
         /// Delete the entity specified by GUID.
         /// </summary>
         /// <param name="contentType"></param>
         /// <param name="entityGuid">Entity GUID</param>
+        /// <param name="parentId">parent entity containing this item in a field/list</param>
+        /// <param name="parentField">parent field containing this item</param>
         /// <param name="force"></param>
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string parentField = null) 
-            => Delete(contentType, AppRead.Entities.Get(entityGuid).EntityId, force, parentId, parentField);
+            => Delete(contentType, _appWork.Entities.Get(AppCtx, entityGuid).EntityId, force, parentId, parentField);
 
 
         /// <summary>
@@ -179,7 +183,7 @@ namespace ToSic.Eav.WebApi
         {
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
-                var ct = AppRead.ContentTypes.Get(itm.ContentTypeName);
+                var ct = _appWork.ContentTypes.Get(AppCtx, itm.ContentTypeName);
                 if (ct == null)
                 {
                     if (!itm.ContentTypeName.StartsWith("@"))
@@ -198,14 +202,14 @@ namespace ToSic.Eav.WebApi
             var permCheck = _multiPermissionsTypes.New().Init(context, app, contentType);
             if (!permCheck.EnsureAll(requiredGrants, out var error))
                 throw HttpException.PermissionDenied(error);
-            return Init(app.AppId/*, true*/);
+            return Init(app.AppId);
         }
 
         public List<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)
         {
             var wrapLog = Log.Fn<List<Dictionary<string, object>>>(timer: true);
             EntityToDic.ConfigureForAdminUse();
-            var originals = AppRead.Entities.Get(contentType).ToList();
+            var originals = _appWork.Entities.Get(AppCtx, contentType).ToList();
 
             // in the successor app, we can get an additional AppConfiguration, AppSettings or AppResources from the ancestor app
             // that we can optionally exclude from the results
@@ -215,7 +219,7 @@ namespace ToSic.Eav.WebApi
             var list = EntityToDic.Convert(originals).ToList();
 
             var result = Log.Func(null, message: "truncate dictionary", timer: true, func: () => list
-                .Select(li => li.ToDictionary(x1 => x1.Key, x2 => Truncate(x2.Value, 50)))
+                .Select(eLight => eLight.ToDictionary(pair => pair.Key, pair => Truncate(pair.Value, 50)))
                 .ToList());
             return wrapLog.Return(result, result.Count.ToString());
         }

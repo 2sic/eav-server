@@ -1,6 +1,5 @@
-﻿using ToSic.Eav.Configuration;
+﻿using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 using ToSic.Lib.Services;
 
@@ -44,7 +43,7 @@ namespace ToSic.Eav.Apps.Parts
 
         internal void InitInternal(IAppIdentity app, bool? showDrafts)
         {
-            Init(app);
+            InitAppBaseIds(app);
             // re-use data of parent if it's constructed from an app-manager
             if (app is AppManager parentIsAppManager) _data = parentIsAppManager.Data;
             ShowDrafts = showDrafts;
@@ -73,6 +72,8 @@ namespace ToSic.Eav.Apps.Parts
 
         #endregion
 
+
+        internal IDataSourcesService DsfWip => Services.DataSourceFactory;
     }
 
     public static class AppRuntimeExtensions
@@ -86,6 +87,11 @@ namespace ToSic.Eav.Apps.Parts
         {
             parent.InitInternal(app, null);
             return parent;
+        }
+
+        public static IAppWorkCtx GetContextWip<T>(this T appRuntime) where T : AppRuntimeBase
+        {
+            return new AppWorkCtx(appRuntime.DsfWip, appRuntime.AppState, appRuntime.ShowDrafts);
         }
     }
 }

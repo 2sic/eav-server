@@ -11,12 +11,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
     [TestClass]
     public class ExportImportDataTest: TestBaseDiEavFullAndDb
     {
-        private readonly AppRuntime _appRuntime;
         private readonly XmlExporter _xmlExporter;
 
         public ExportImportDataTest()
         {
-            _appRuntime = GetService<AppRuntime>();
             _xmlExporter = GetService<XmlExporter>();
         }
         [TestMethod]
@@ -26,9 +24,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var Log = new Log("TstExp");
             var zoneId = 2;
             var appId = 2;
-            var appRuntime = _appRuntime.Init(appId/*, true*/);
+            var appState = GetService<IAppStates>().Get(new AppIdentity(zoneId, appId));
 
-            var fileXml = _xmlExporter.Init(zoneId, appId, appRuntime, false,
+            var fileXml = _xmlExporter.Init(zoneId, appId, appState, false,
                 /*contentTypeIdsString?.Split(';') ?? */Array.Empty<string>(),
                 /*entityIdsString?.Split(';') ?? */Array.Empty<string>()
             ).GenerateNiceXml();

@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps.Parts
             else
             {
                 var saveEnt = Builder.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(),
-                    contentType: Parent.Read.ContentTypes.Get(typeName),
+                    contentType: _appWork.ContentTypes.Get(Parent.GetContextWip(), /*Parent.Read.ContentTypes.Get(*/typeName),
                     attributes: Builder.Attribute.Create(values),
                     metadataFor: target);
                 //saveEnt.SetMetadata(target);

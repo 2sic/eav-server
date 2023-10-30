@@ -182,7 +182,7 @@ namespace ToSic.Eav.Apps.Parts
             // this is probably not so important any more, but I would leave it forever for now
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
-                ? AppManager.Read.ContentTypes.Get(setName)
+                ? AppState.GetContentType(setName)
                 : _appStates.GetPresetApp().GetContentType(setName);
             return ct;
         }

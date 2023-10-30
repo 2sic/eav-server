@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Lib.Logging;
-
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Services;
@@ -40,13 +39,16 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region DI Constructor
 
-        public ZipExport(AppRuntime appRuntime,
+        public ZipExport(
+            AppSys.AppWork appWork,
+            AppRuntime appRuntime,
             IDataSourcesService dataSourceFactory,
             XmlExporter xmlExporter,
             Generator<FileManager> fileManagerGenerator,
             IGlobalConfiguration globalConfiguration): base(EavLogs.Eav + ".ZipExp")
         {
             ConnectServices(
+                _appWork = appWork,
                 _xmlExporter = xmlExporter,
                 _globalConfiguration = globalConfiguration,
                 AppRuntime = appRuntime,
@@ -55,6 +57,7 @@ namespace ToSic.Eav.Apps.ImportExport
             );
         }
 
+        private readonly AppSys.AppWork _appWork;
         private readonly XmlExporter _xmlExporter;
         private readonly IGlobalConfiguration _globalConfiguration;
         private AppRuntime AppRuntime { get; }
@@ -71,9 +74,13 @@ namespace ToSic.Eav.Apps.ImportExport
                 FileManager = _fileManagerGenerator.New().SetFolder(_physicalAppPath),
                 FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal)
             );
-            AppRuntime.InitQ(new AppIdentity(_zoneId, _appId)/*, true*/);
+            var appIdentity = new AppIdentity(_zoneId, _appId);
+            AppRuntime.InitQ(appIdentity);
+            AppSysCtx = _appWork.Context(appIdentity);
             return this;
         }
+
+        private IAppWorkCtx AppSysCtx { get; set; }
         #endregion
 
         public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool withSiteFiles = false)
@@ -224,8 +231,9 @@ namespace ToSic.Eav.Apps.ImportExport
         private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
         {
             // Get Export XML
-            var runtime = AppRuntime.InitQ(new AppIdentity(_zoneId, _appId)/*, true*/);
-            var attributeSets = runtime.ContentTypes.All.OfScope(includeAttributeTypes: true);
+            var appIdentity = new AppIdentity(_zoneId, _appId);
+            var runtime = AppRuntime; //.InitQ(appIdentity);
+            var attributeSets = _appWork.ContentTypes.All(AppSysCtx)/* runtime.ContentTypes.All*/.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             // Exclude ParentApp attributeSets
@@ -247,7 +255,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // 2022-01-04 2dm - new code, simplified
             // Get all entities except Attribute/Field Metadata, which is exported in a different way
             var entities = DataSourceFactory
-                .CreateDefault(new DataSourceOptions(appIdentity: runtime, showDrafts: false))
+                .CreateDefault(new DataSourceOptions(appIdentity: appIdentity, showDrafts: false))
                 .List
                 .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
@@ -261,7 +269,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var entityIds = entities
                 .Select(e => e.EntityId.ToString()).ToArray();
 
-            var xmlExport = _xmlExporter.Init(_zoneId, _appId, runtime, true, contentTypeNames, entityIds);
+            var xmlExport = _xmlExporter.Init(_zoneId, _appId, AppSysCtx.AppState, true, contentTypeNames, entityIds);
 
             #region reset App Guid if necessary
 

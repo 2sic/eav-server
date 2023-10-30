@@ -1,42 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.AppSys
 {
-    /// <summary>
-    /// Manager for entities in an app
-    /// </summary>
-    public class ContentTypeRuntime : PartOf<AppRuntime>
+    public class AppInputTypes: ServiceBase
     {
-
-        public ContentTypeRuntime(LazySvc<AppRuntime> lazyMetadataAppRuntime, LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy, IAppStates appStates) : base("RT.ConTyp") =>
-            ConnectServices(
-                _lazyMetadataAppRuntime = lazyMetadataAppRuntime,
-                _appFileSystemLoaderLazy = appFileSystemLoaderLazy,
-                _appStates = appStates
-            );
-        private readonly LazySvc<AppRuntime> _lazyMetadataAppRuntime;
+        private readonly AppWork _appWork;
         private readonly LazySvc<IAppFileSystemLoader> _appFileSystemLoaderLazy;
         private readonly IAppStates _appStates;
+        private readonly AppEntityRead _appEntities;
 
-        public IEnumerable<IContentType> All => Parent.AppState.ContentTypes;
+        public AppInputTypes(AppEntityRead appEntities, IAppStates appStates, LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy, AppWork appWork) : base("ApS.InpGet")
+        {
+            ConnectServices(
+                _appEntities = appEntities,
+                _appStates = appStates,
+                _appFileSystemLoaderLazy = appFileSystemLoaderLazy,
+                _appWork = appWork
+            );
+        }
 
-        /// <summary>
-        /// Gets a ContentType by Name
-        /// </summary>
-        /// <returns>a content-type or null if not found</returns>
-        public IContentType Get(string name) => Parent.AppState.GetContentType(name);
 
         /// <summary>
         /// Retrieve a list of all input types known to the current system
         /// </summary>
         /// <returns></returns>
-        public List<InputTypeInfo> GetInputTypes() => Log.Func(() =>
+        public List<InputTypeInfo> GetInputTypes(IAppWorkCtx appCtx) => Log.Func(() =>
         {
             // Inner helper to log each intermediate state
             void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog) =>
@@ -57,11 +53,11 @@ namespace ToSic.Eav.Apps.Parts
             LogListOfInputTypes("Global", globalDef);
 
             // Merge input types registered in this app
-            var appTypes = GetAppRegisteredInputTypes();
+            var appTypes = GetAppRegisteredInputTypes(appCtx);
             LogListOfInputTypes("In App", appTypes);
 
             // Load input types which are stored as app-extension files
-            var extensionTypes = GetAppExtensionInputTypes();
+            var extensionTypes = GetAppExtensionInputTypes(appCtx);
 
             var inputTypes = extensionTypes;
             if (inputTypes.Count > 0)
@@ -73,8 +69,9 @@ namespace ToSic.Eav.Apps.Parts
             LogListOfInputTypes("Combined", inputTypes);
 
             // Merge input types registered in global metadata-app
-            var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId/*, true*/);
-            var systemAppInputTypes = systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
+            var systemAppCtx = _appWork.Context(Constants.MetaDataAppId);
+            // var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId/*, true*/);
+            var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx); // systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
             systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
             LogListOfInputTypes("System", systemAppInputTypes);
             AddMissingTypes(inputTypes, systemAppInputTypes);
@@ -114,12 +111,13 @@ namespace ToSic.Eav.Apps.Parts
             }).ToList();
         }
 
+
         /// <summary>
         /// Get a list of input-types registered to the current app
         /// </summary>
         /// <returns></returns>
-        private List<InputTypeInfo> GetAppRegisteredInputTypes()
-            => Parent.Entities.Get(InputTypes.TypeForInputTypeDefinition)
+        private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtx appCtx)
+            => _appEntities.Get(appCtx, InputTypes.TypeForInputTypeDefinition)
                 .Select(e => new InputTypeInfo(
                     e.Value<string>(InputTypes.InputTypeType),
                     e.Value<string>(InputTypes.InputTypeLabel),
@@ -132,16 +130,18 @@ namespace ToSic.Eav.Apps.Parts
                 ))
                 .ToList();
 
+
+
         /// <summary>
         /// Experimental v11 - load input types based on folder
         /// </summary>
         /// <returns></returns>
-        private List<InputTypeInfo> GetAppExtensionInputTypes() => Log.Func(l =>
+        private List<InputTypeInfo> GetAppExtensionInputTypes(IAppWorkCtx appCtx) => Log.Func(l =>
         {
             try
             {
-                var appState = Parent.AppState;
-                var appLoader = _appFileSystemLoaderLazy.Value.Init(appState);
+                //var appState = Parent.AppState;
+                var appLoader = _appFileSystemLoaderLazy.Value.Init(appCtx.AppState /*appState*/);
                 var inputTypes = appLoader.InputTypes();
                 return (inputTypes, $"{inputTypes.Count}");
             }
@@ -180,4 +180,6 @@ namespace ToSic.Eav.Apps.Parts
             return retyped;
         }
     }
+
+
 }
