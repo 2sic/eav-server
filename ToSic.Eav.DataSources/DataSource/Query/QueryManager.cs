@@ -6,7 +6,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -24,28 +23,46 @@ namespace ToSic.Eav.DataSource.Query
 	{
         private readonly LazySvc<IAppStates> _appStates;
         private readonly Generator<Query> _queryGenerator;
-        public IDataSourcesService DataSourceFactory { get; }
+        private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
 
-        public QueryManager(IDataSourcesService dataSourceFactory, Generator<Query> queryGenerator, LazySvc<IAppStates> appStates) : base($"{LogPrefix}.QryMan")
+        public QueryManager(
+            Generator<Query> queryGenerator, 
+            LazySvc<IAppStates> appStates,
+            LazySvc<QueryDefinitionBuilder> queryDefBuilder
+            ) : base($"{LogPrefix}.QryMan")
         {
             ConnectServices(
-                DataSourceFactory = dataSourceFactory,
                 _queryGenerator = queryGenerator,
-                _appStates = appStates
+                _appStates = appStates,
+                _queryDefBuilder = queryDefBuilder
             );
         }
+
+        /// <summary>
+        /// Get a query definition from the current app
+        /// </summary>
+        public QueryDefinition Get(IAppIdentity appState, int queryId)
+        {
+            var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
+            var app = _appStates.KeepOrGet(appState);
+            var qEntity = GetQueryEntity(queryId, app);
+            var qDef = _queryDefBuilder.Value.Create(qEntity, app.AppId);
+            return l.Return(qDef);
+        }
+
 
         /// <summary>
         /// Get an Entity Describing a Query
         /// </summary>
         /// <param name="entityId">EntityId</param>
-        /// <param name="dataSource">DataSource to load Entity from</param>
-        internal IEntity GetQueryEntity(int entityId, AppState dataSource) => Log.Func($"{entityId}", l =>
+        /// <param name="appIdentity">DataSource to load Entity from</param>
+        internal IEntity GetQueryEntity(int entityId, IAppIdentity appIdentity) => Log.Func($"{entityId}", l =>
         {
             var wrapLog = Log.Fn<IEntity>($"{entityId}");
+            var app = _appStates.KeepOrGet(appIdentity);
             try
             {
-                var queryEntity = dataSource.List.FindRepoId(entityId);
+                var queryEntity = app.List.FindRepoId(entityId);
                 if (queryEntity.Type.NameId != QueryConstants.QueryTypeName)
                     throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
                 return wrapLog.Return(queryEntity);
@@ -56,7 +73,6 @@ namespace ToSic.Eav.DataSource.Query
                 l.Ex(ex);
                 throw;
             }
-
         });
 
         /// <summary>
@@ -81,8 +97,7 @@ namespace ToSic.Eav.DataSource.Query
 
         internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app, int recurseParents = 0) => Log.Func($"App: {app.AppId}, recurse: {recurseParents}", l =>
         {
-            // TODO
-            var appState = app as AppState ?? _appStates.Value.Get(app);
+            var appState = _appStates.KeepOrGet(app);
             var result = QueryEntities(appState);
             if (recurseParents <= 0) return (result, "ok, no recursions");
             l.A($"Try to recurse parents {recurseParents}");

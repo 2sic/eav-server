@@ -15,21 +15,18 @@ namespace ToSic.Eav.Apps
         private readonly LazySvc<EntityRuntime> _entityRuntime;
         private readonly LazySvc<MetadataRuntime> _metadataRuntime;
         private readonly LazySvc<ContentTypeRuntime> _contentTypeRuntime;
-        private readonly LazySvc<QueryRuntime> _queryRuntime;
 
         public AppRuntime(MyServices services,
             LazySvc<EntityRuntime> entityRuntime,
             LazySvc<MetadataRuntime> metadataRuntime,
             LazySvc<ContentTypeRuntime> contentTypeRuntime,
-            LazySvc<QueryRuntime> queryRuntime,
             string logName = null) : base(services,
             logName ?? "Eav.AppRt")
         {
             ConnectServices(
                 _entityRuntime = entityRuntime.SetInit(r => r.ConnectTo(this)),
                 _metadataRuntime = metadataRuntime.SetInit(r => r.ConnectTo(this)),
-                _contentTypeRuntime = contentTypeRuntime.SetInit(r => r.ConnectTo(this)),
-                _queryRuntime = queryRuntime.SetInit(r => r.ConnectTo(this))
+                _contentTypeRuntime = contentTypeRuntime.SetInit(r => r.ConnectTo(this))
             );
         }
 
@@ -66,18 +63,6 @@ namespace ToSic.Eav.Apps
         /// ContentTypes runtime to get content types from this app
         /// </summary>
         public ContentTypeRuntime ContentTypes => _contentTypeRuntime.Value;
-
-        /// <summary>
-        /// Queries runtime to get queries of this app
-        /// </summary>
-        public QueryRuntime Queries => _queryRuntime.Value;
-
-
-        ///// <summary>
-        ///// Zone runtime to get the zone of this app
-        ///// </summary>
-        //public ZoneRuntime Zone => _zone ?? (_zone = new ZoneRuntime(Dependencies.AppStates).Init(ZoneId, Log));
-        //private ZoneRuntime _zone;
 
     }
 }

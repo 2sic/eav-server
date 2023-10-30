@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Query;
-using ToSic.Eav.DataSources;
 using ToSic.Lib.DI;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
@@ -80,6 +78,8 @@ namespace ToSic.Eav.Apps.Parts
             return true;
         }
 
+        private QueryDefinition Get(int queryId)
+            => _queryManager.Value.Get(Parent.AppState, queryId);
 
         /// <summary>
         /// Update an existing query in this app
@@ -92,15 +92,13 @@ namespace ToSic.Eav.Apps.Parts
         public void Update(int queryId, List<Dictionary<string, object>> partDefs, List<Guid> newDsGuids, Dictionary<string, object> headerValues, List<Connection> wirings)
         {
             // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
-            var qdef = Parent.Read.Queries.Get(queryId);
+            var qdef = Get(queryId);
 
-            // todo: maybe create a GetBestValue<typed> ?
             const string AllowEdit = "AllowEdit";
             if (qdef.Entity.GetBestValue<bool>(AllowEdit, Array.Empty<string>()) == false)
                 throw new InvalidOperationException($"Query has {AllowEdit} set to false");
 
-            Dictionary<string, Guid> addedSources = SavePartsAndGenerateRenameMap(
-                partDefs, qdef.Entity.EntityGuid);
+            var addedSources = SavePartsAndGenerateRenameMap(partDefs, qdef.Entity.EntityGuid);
 
             DeletedRemovedParts(newDsGuids, addedSources.Values, qdef);
 
@@ -126,7 +124,7 @@ namespace ToSic.Eav.Apps.Parts
                 var dataSource = new Dictionary<string, object>(ds, StringComparer.InvariantCultureIgnoreCase);
                 // Skip Out-DataSource
                 var originalIdentity = dataSource[Attributes.EntityFieldGuid].ToString();
-                dataSource.TryGetValue(Attributes.EntityFieldId, out object entityId);
+                dataSource.TryGetValue(Attributes.EntityFieldId, out var entityId);
 
                 // remove key-fields, as we cannot save them (would cause error)
                 RemoveIdAndGuidFromValues(dataSource);
@@ -220,10 +218,10 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var wireInfo in wirings)
             {
                 var newWireInfo = wireInfo;
-                if (renamedDataSources.ContainsKey(wireInfo.From))
-                    newWireInfo.From = renamedDataSources[wireInfo.From].ToString();
-                if (renamedDataSources.ContainsKey(wireInfo.To))
-                    newWireInfo.To = renamedDataSources[wireInfo.To].ToString();
+                if (renamedDataSources.TryGetValue(wireInfo.From, out var wFrom))
+                    newWireInfo.From = wFrom.ToString();
+                if (renamedDataSources.TryGetValue(wireInfo.To, out var wTo))
+                    newWireInfo.To = wTo.ToString();
                 wiringsNew.Add(newWireInfo);
             }
             return wiringsNew;

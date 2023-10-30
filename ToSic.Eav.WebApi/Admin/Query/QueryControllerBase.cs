@@ -34,12 +34,14 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
         public class MyServices : MyServicesBase
         {
-            public LazySvc<AppManager> AppManagerLazy { get; }
+            public LazySvc<QueryManager> QueryManager { get; }
             /// <summary>
-            /// The lazy reader should only be used in the Definition - it's important that it's a new object
-            /// when used, to ensure it has the changes previously saved
+            /// The AppStates Generator should only be used in the Definition.
+            /// It's important that it will always generate new objects.
+            /// This is to ensure it has the changes previously saved
             /// </summary>
-            public LazySvc<AppRuntime> AppReaderLazy { get; }
+            public Generator<AppStates> AppStates { get; }
+            public LazySvc<AppManager> AppManagerLazy { get; }
             public QueryBuilder QueryBuilder { get; }
             public LazySvc<ConvertToEavLight> EntToDicLazy { get; }
             public LazySvc<QueryInfo> QueryInfoLazy { get; }
@@ -48,23 +50,26 @@ namespace ToSic.Eav.WebApi.Admin.Query
             public Generator<PassThrough> PassThrough { get; }
 
             public MyServices(LazySvc<AppManager> appManagerLazy,
-                LazySvc<AppRuntime> appReaderLazy,
                 QueryBuilder queryBuilder,
                 LazySvc<ConvertToEavLight> entToDicLazy,
                 LazySvc<QueryInfo> queryInfoLazy,
                 LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
                 Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
-                Generator<PassThrough> passThrough)
+                Generator<PassThrough> passThrough,
+                LazySvc<DataSource.Query.QueryManager> queryManager,
+                Generator<AppStates> appStates
+                )
             {
                 ConnectServices(
                     AppManagerLazy = appManagerLazy,
-                    AppReaderLazy = appReaderLazy,
                     QueryBuilder = queryBuilder,
                     EntToDicLazy = entToDicLazy,
                     QueryInfoLazy = queryInfoLazy,
                     DataSourceCatalogLazy = dataSourceCatalogLazy,
                     JsonSerializer = jsonSerializer,
-                    PassThrough = passThrough
+                    PassThrough = passThrough,
+                    QueryManager = queryManager,
+                    AppStates = appStates
                 );
             }
         }
@@ -102,8 +107,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             if (!id.HasValue) return l.Return(query, "no id, empty");
 
-            var reader = Services.AppReaderLazy.Value.Init(appId);
-            var qDef = reader.Queries.Get(id.Value);
+            var appState = Services.AppStates.New().Get(appId);
+            var qDef = Services.QueryManager.Value.Get(appState, id.Value);
 
             #region Deserialize some Entity-Values
 
@@ -118,7 +123,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
             foreach (var part in qDef.Parts)
             {
                 var partDto = part.AsDictionary();
-                var metadata = reader.AppState.GetMetadata(TargetTypes.Entity, part.Guid);
+                var metadata = appState.GetMetadata(TargetTypes.Entity, part.Guid);
                 partDto.Add("Metadata", converter.Convert(metadata));
                 query.DataSources.Add(partDto);
             }

@@ -10,7 +10,6 @@ using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
@@ -39,7 +38,6 @@ namespace ToSic.Eav.Apps
 
             // Runtime parts
             services.TryAddTransient<ContentTypeRuntime>();
-            services.TryAddTransient<QueryRuntime>();
             services.TryAddTransient<MetadataRuntime>();
             services.TryAddTransient<MdRecommendations>(); // new v13
             services.TryAddTransient<MdRequirements>(); // new v13

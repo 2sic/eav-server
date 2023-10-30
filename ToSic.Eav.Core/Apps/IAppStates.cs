@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps
@@ -52,5 +54,13 @@ namespace ToSic.Eav.Apps
         #endregion
 
         bool IsCached(IAppIdentity appId);
+    }
+
+    public static class IAppStatesExtensions
+    {
+        public static AppState KeepOrGet(this IAppStates appStates, IAppIdentity app) => app as AppState ?? appStates.Get(app);
+
+        public static AppState KeepOrGet(this LazySvc<IAppStates> appStates, IAppIdentity app) =>
+            app as AppState ?? appStates.Value.Get(app);
     }
 }

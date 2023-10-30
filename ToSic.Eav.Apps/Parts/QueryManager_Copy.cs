@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Query;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Logging;
@@ -18,7 +15,7 @@ namespace ToSic.Eav.Apps.Parts
     public partial class QueryManager
     {
 
-        public void SaveCopy(int id) => SaveCopy(Parent.Read.Queries.Get(id));
+        public void SaveCopy(int id) => SaveCopy(Get(id));
 
         public void SaveCopy(QueryDefinition query) => Log.Do(() =>
         {
@@ -53,10 +50,6 @@ namespace ToSic.Eav.Apps.Parts
 
             var newQuery = _builder.Value.Entity.CreateFrom(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));
 
-            //var newQuery = CopyAndResetIds(query.Entity, Guid.NewGuid());
-
-            //newQuery.Attributes[Constants.QueryStreamWiringAttributeName].Values = newWiringValues;
-
             var saveList = newParts.Select(p => p.Value).Concat(newMetadata).ToList();
             saveList.Add(newQuery);
             Parent.Entities.Save(saveList);
@@ -66,28 +59,27 @@ namespace ToSic.Eav.Apps.Parts
 
         private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
         {
-            var wiringsSource = origWiring;
             var wiringsClone = new List<Connection>();
-            if (wiringsSource != null)
-                foreach (var wireInfo in wiringsSource)
-                {
-                    var wireInfoClone = wireInfo; // creates a clone of the Struct
-                    if (keyMap.ContainsKey(wireInfo.From))
-                        wireInfoClone.From = keyMap[wireInfo.From];
-                    if (keyMap.ContainsKey(wireInfo.To))
-                        wireInfoClone.To = keyMap[wireInfo.To];
+            if (origWiring == null) return Connections.Serialize(wiringsClone);
 
-                    wiringsClone.Add(wireInfoClone);
-                }
+            foreach (var wireInfo in origWiring)
+            {
+                var wireInfoClone = wireInfo; // creates a clone of the Struct
+                if (keyMap.TryGetValue(wireInfo.From, out var wFrom))
+                    wireInfoClone.From = wFrom;
+                if (keyMap.TryGetValue(wireInfo.To, out var wTo))
+                    wireInfoClone.To = wTo;
+
+                wiringsClone.Add(wireInfoClone);
+            }
             var newWiring = Connections.Serialize(wiringsClone);
             return newWiring;
         }
 
-        private IEntity CopyAndResetIds(IEntity original,
-            Guid newGuid,
-            Guid? newMetadataTarget = null) => Log.Func(() =>
+        private IEntity CopyAndResetIds(IEntity original, Guid newGuid, Guid? newMetadataTarget = null)
         {
-            // todo: probaly replace with clone as that should be reliable now...
+            var l = Log.Fn<IEntity>();
+            // todo: probably replace with clone as that should be reliable now...
             var newSer = Serializer.Value.Serialize(original);
             var newEnt = Serializer.Value.Deserialize(newSer);
 
@@ -96,7 +88,7 @@ namespace ToSic.Eav.Apps.Parts
                     ? null
                     : new Target(original.MetadataFor, keyGuid: newMetadataTarget.Value)
             );
-            return newEnt;
-        });
+            return l.Return(newEnt);
+        }
     }
 }
