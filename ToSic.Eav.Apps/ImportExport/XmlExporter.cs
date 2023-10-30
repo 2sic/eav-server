@@ -182,8 +182,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     : AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
 
                 // skip system/code-types
-                if (set.HasPresetAncestor()) // ((set.ParentId ?? 0) == Constants.PresetContentTypeFakeParent)
-                    continue;
+                if (set.HasPresetAncestor()) continue;
 
                 var attributes = new XElement(XmlConstants.Attributes);
 
@@ -293,28 +292,6 @@ namespace ToSic.Eav.Apps.ImportExport
                 var valueKey = value.Attribute(XmlConstants.KeyAttr)?.Value;
 
                 if (string.IsNullOrEmpty(valueString)) continue;
-
-                // 2022-01-04 2dm Disabled this, as it's for super-old way of storing template information
-                // I'm pretty sure nothing in use has this in a way that would ever need exporting again, 
-                // And nothing in use could handle an upgrade to the current version
-                // Keep this commented till End of June 2022 #cleanUp #oldTemplates #2631
-                //// Special cases for Template ContentTypes
-                //if (contentTypeName == XmlConstants.CtTemplate)
-                //{
-                //    switch (valueKey)
-                //    {
-                //        case XmlConstants.TemplateContentTypeId:
-                //            var eid = int.Parse(valueString);
-                //            var attributeSet = AppState.GetContentType(eid);
-                //            value.Attribute(XmlConstants.ValueAttr)?.SetValue(attributeSet != null ? attributeSet.StaticName : string.Empty);
-                //            break;
-                //        case XmlConstants.TemplateDemoItemId:
-                //            eid = int.Parse(valueString);
-                //            var demoEntity = AppState.List.FindRepoId(eid);
-                //            value.Attribute(XmlConstants.ValueAttr)?.SetValue(demoEntity?.EntityGuid.ToString() ?? string.Empty);
-                //            break;
-                //    }
-                //}
 
                 // Collect all referenced files for adding a file list to the xml later
                 if (valueType == XmlConstants.ValueTypeLink)
