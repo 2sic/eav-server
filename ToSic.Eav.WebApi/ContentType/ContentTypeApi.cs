@@ -198,14 +198,13 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>($"get shared fields a#{_appId}");
             var appState = _appStates.Get(_appId);
-            var typesWithSharedField = appState.ContentTypes
-                .Where(
-                    ct => ct.GetDecorator<IAncestor>() == null
-                          && ct.Attributes.Any(a => a.Guid != null && a.SysSettings?.Share == true)
-                );
-            var fields = typesWithSharedField
+            var localTypes = appState.ContentTypes
+                .Where(ct => !ct.HasAncestor())
+                .ToList();
+
+            var fields = localTypes
                 .SelectMany(ct => ct.Attributes
-                    .Where(a => a.SysSettings.Share)
+                    .Where(a => a.Guid != null && a.SysSettings?.Share == true)
                     .Select(a => new { Type = ct, Field = a}))
                 .OrderBy(set => set.Type.Name)
                 .ThenBy(set => set.Field.Name)
