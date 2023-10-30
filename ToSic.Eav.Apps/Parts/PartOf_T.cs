@@ -2,14 +2,6 @@
 
 namespace ToSic.Eav.Apps.Parts
 {
-    //public abstract class PartOfTemp<TParent> : ServiceWithLog
-    //{
-    //    public abstract TParent Parent { get; set; }
-    //    protected PartOfTemp(string logName) : base(logName)
-    //    {
-    //    }
-    //}
-
     /// <summary>
     /// Base class for any kind of read/runtime operations
     /// </summary>

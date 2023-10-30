@@ -36,7 +36,9 @@ namespace ToSic.Lib.Logging
             if (depth < 0)
             {
                 // attach debugger here
+#pragma warning disable CS0219
                 var x = 0;
+#pragma warning restore CS0219
             }
 #endif
         }
