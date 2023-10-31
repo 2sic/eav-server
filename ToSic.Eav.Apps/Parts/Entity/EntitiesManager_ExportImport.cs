@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps.Parts
             ImportDeleteUnmentionedItems deleteSetting,
             ImportResolveReferenceMode resolveReferenceMode)
         {
-            var ct = _appWork.ContentTypes.Get(Parent.GetContextWip(), /*Parent.Read.ContentTypes.Get(*/contentTypeName);
+            var ct = Parent.AppState.GetContentType(contentTypeName);
             return _lazyImportListXml.Value.Init(Parent, ct,
                 dataStream, languages, documentLanguageFallback,
                 deleteSetting, resolveReferenceMode);

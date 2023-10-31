@@ -108,7 +108,7 @@ namespace ToSic.Eav.Apps.Parts
                     // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
                     if (!(entity is Entity e2) || e2.Type.IsDynamic || e2.Type.Attributes != null)
                         return entity;
-                    var newType = _appWork.ContentTypes.Get(Parent.GetContextWip(), entity.Type.Name); // Parent.Read.ContentTypes.Get(entity.Type.Name);
+                    var newType = appState.GetContentType(entity.Type.Name);
                     if (newType == null) return entity;
 
                     return Builder.Entity.CreateFrom(entity, type: newType);

@@ -44,7 +44,7 @@ namespace ToSic.Eav.WebApi
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {
-                contentType = _appWork.ContentTypeRead().Get(appCtx, contentTypeName);
+                contentType = appCtx.AppState.GetContentType(contentTypeName);
                 l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
                 if (contentType == null)
                     return l.Return(new List<EntityForPickerDto>(),

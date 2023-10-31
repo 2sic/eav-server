@@ -23,7 +23,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             var appCtx = _appWork.Context(appId ?? 0);
             var appEntities = _appWork.EntityRead();
 
-            var typ = _appWork.ContentTypeRead().Get(appCtx, type);
+            var typ = appCtx.AppState.GetContentType(type);
 
             var msg = "" + H1($"Entities of {type} ({HtmlEncode(typ?.Name)}/{typ?.NameId}) in {appId}\n");
             try

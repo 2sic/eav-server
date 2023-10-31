@@ -25,8 +25,7 @@ namespace ToSic.Eav.WebApi
         #region DI Constructor & Init
 
         public EntityApi(
-            AppWork appWork,
-            AppRuntime appRuntime, 
+            AppWork appWork, 
             LazySvc<AppManager> appManagerLazy, 
             LazySvc<IConvertToEavLight> entitiesToDicLazy, 
             EntityBuilder entityBuilder, 
@@ -34,7 +33,6 @@ namespace ToSic.Eav.WebApi
         {
             ConnectServices(
                 _appWork = appWork,
-                _appRuntime = appRuntime,
                 _appManagerLazy = appManagerLazy,
                 _entitiesToDicLazy = entitiesToDicLazy,
                 _entityBuilder = entityBuilder,
@@ -42,18 +40,15 @@ namespace ToSic.Eav.WebApi
             );
         }
         private readonly AppWork _appWork;
-        private readonly AppRuntime _appRuntime;
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<IConvertToEavLight> _entitiesToDicLazy;
         private readonly EntityBuilder _entityBuilder;
         private readonly Generator<MultiPermissionsTypes> _multiPermissionsTypes;
-        public AppRuntime AppRead;
-        public IAppWorkCtx AppCtx;
+        public IAppWorkCtx AppCtx { get; private set; }
 
 
         public EntityApi Init(int appId, bool? showDrafts = default)
         {
-            AppRead = _appRuntime.Init(appId, showDrafts);
             AppCtx = _appWork.Context(appId, showDrafts: showDrafts);
             return this;
         }
@@ -69,13 +64,13 @@ namespace ToSic.Eav.WebApi
         {
             get
             {
-                if (_entitiesToDictionary != null) return _entitiesToDictionary;
-                _entitiesToDictionary = _entitiesToDicLazy.Value;
-                _entitiesToDictionary.WithGuid = true;
-                return _entitiesToDictionary;
+                if (_entToDic != null) return _entToDic;
+                _entToDic = _entitiesToDicLazy.Value;
+                _entToDic.WithGuid = true;
+                return _entToDic;
             }
         }
-        private IConvertToEavLight _entitiesToDictionary;
+        private IConvertToEavLight _entToDic;
 
         #endregion
 
@@ -84,6 +79,15 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         public IEnumerable<IDictionary<string, object>> GetEntities(string contentType)
             => EntityToDic.Convert(_appWork.Entities.Get(AppCtx, contentType));
+
+        /// <summary>
+        /// Get all Entities of specified Type
+        /// </summary>
+        public IEnumerable<IDictionary<string, object>> GetEntities(AppState appState, string contentType, bool showDrafts)
+        {
+            var appWorkCtx = _appWork.Context(appState, showDrafts: showDrafts);
+            return EntityToDic.Convert(_appWork.Entities.Get(appWorkCtx, contentType));
+        }
 
         public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
         {
@@ -134,9 +138,10 @@ namespace ToSic.Eav.WebApi
 
         private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
         {
-            var found = AppRead.AppState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
+            var appState = AppCtx.AppState;
+            var found = appState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
             // if there is a draft, use that for editing - not the original
-            found = AppRead.AppState.GetDraft(found) ?? found;
+            found = appState.GetDraft(found) ?? found;
 
             // If we want the original (not a copy for new) then stop here
             if (!p.DuplicateEntity.HasValue) return found;
@@ -159,7 +164,7 @@ namespace ToSic.Eav.WebApi
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null)
-            => _appManagerLazy.Value.Init(AppRead).Entities.Delete(id, contentType, force, false, parentId, parentField);
+            => _appManagerLazy.Value.Init(AppCtx.AppState /* only used for the identity */).Entities.Delete(id, contentType, force, false, parentId, parentField);
 
         /// <summary>
         /// Delete the entity specified by GUID.
@@ -183,7 +188,7 @@ namespace ToSic.Eav.WebApi
         {
             foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
             {
-                var ct = _appWork.ContentTypes.Get(AppCtx, itm.ContentTypeName);
+                var ct = AppCtx.AppState.GetContentType(itm.ContentTypeName);
                 if (ct == null)
                 {
                     if (!itm.ContentTypeName.StartsWith("@"))

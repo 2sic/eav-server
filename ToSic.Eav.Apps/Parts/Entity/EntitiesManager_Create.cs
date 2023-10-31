@@ -11,8 +11,9 @@ namespace ToSic.Eav.Apps.Parts
         public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null
         ) => Log.Func($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}", () =>
         {
+            var appState = Parent.AppState;
             var newEnt = Builder.Entity.Create(appId: Parent.AppId, guid: Guid.NewGuid(),
-                contentType: _appWork.ContentTypes.Get(Parent.GetContextWip(), /*Parent.Read.ContentTypes.Get(*/typeName),
+                contentType: appState.GetContentType(typeName),
                 attributes: Builder.Attribute.Create(values),
                 metadataFor: metadataFor);
             var eid = Save(newEnt);
@@ -42,8 +43,9 @@ namespace ToSic.Eav.Apps.Parts
                 return existingEnt.EntityId;
             }
 
+            var appState = Parent.AppState;
             var newE = Builder.Entity.Create(appId: Parent.AppId, guid: newGuid,
-                contentType: _appWork.ContentTypes.Get(Parent.GetContextWip(), /*Parent.Read.ContentTypes.Get(*/typeName),
+                contentType: appState.GetContentType(typeName),
                 attributes: Builder.Attribute.Create(values));
             return Save(newE);
         }

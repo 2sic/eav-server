@@ -96,7 +96,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
-            var relationships = Parent.GetContextWip().AppState.Relationships;
+            var relationships = Parent.AppState.Relationships;
 
             foreach (var entityId in ids)
             {

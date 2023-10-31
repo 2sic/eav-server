@@ -79,7 +79,7 @@ namespace ToSic.Eav.Apps.AppSys
         private readonly GetOnce<AppInputTypes> _inputTypes = new GetOnce<AppInputTypes>();
 
         public ExportListXml EntityXmlExporter(IAppWorkCtx appCtx, string contentType)
-            => _exportListXmlGenerator.New().Init(appCtx.AppState, ContentTypes.Get(appCtx, contentType));
+            => _exportListXmlGenerator.New().Init(appCtx.AppState, appCtx.AppState.GetContentType(contentType));
 
         public AppEntityRead EntityRead() => _genEntity.New();
 

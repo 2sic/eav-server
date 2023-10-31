@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.AppSys;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.Services;
 using ToSic.Lib.Services;
 
@@ -17,16 +16,13 @@ namespace ToSic.Eav.Apps.Parts
         {
             public IDataSourcesService DataSourceFactory { get; }
             public IAppStates AppStates { get; }
-            public ZoneRuntime ZoneRuntime { get; }
 
             public MyServices(
                 IDataSourcesService dataSourceFactory,
-                IAppStates appStates,
-                ZoneRuntime zoneRuntime
+                IAppStates appStates
             ) => ConnectServices(
                 DataSourceFactory = dataSourceFactory,
-                AppStates = appStates,
-                ZoneRuntime = zoneRuntime
+                AppStates = appStates
             );
         }
 
@@ -36,7 +32,7 @@ namespace ToSic.Eav.Apps.Parts
         protected AppRuntimeBase(MyServices services, string logName): base(services, logName)
         {
         }
-        //protected readonly AppRuntimeServices Deps;
+
         protected AppRuntimeBase(MyServicesBase<MyServices> services, string logName): base(services, logName)
         {
         }
@@ -44,8 +40,6 @@ namespace ToSic.Eav.Apps.Parts
         internal void InitInternal(IAppIdentity app, bool? showDrafts)
         {
             InitAppBaseIds(app);
-            // re-use data of parent if it's constructed from an app-manager
-            if (app is AppManager parentIsAppManager) _data = parentIsAppManager.Data;
             ShowDrafts = showDrafts;
         }
 
@@ -54,10 +48,6 @@ namespace ToSic.Eav.Apps.Parts
 
 
         #region Data & Cache
-
-        public IDataSource Data => _data ?? (_data = Services.DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: this, showDrafts: ShowDrafts)));
-        private IDataSource _data;
-        
 
         /// <summary>
         /// The cache-package if needed (mainly for export/import, where the full data is necessary)

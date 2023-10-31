@@ -13,11 +13,7 @@ namespace ToSic.Eav.Apps
 
         public AppRuntime(MyServices services, string logName = null) : base(services, logName ?? "Eav.AppRt")
         {
-            ConnectServices();
         }
-
-        public AppRuntime Init(int appId, bool? showDrafts) 
-            => this.InitQ(Services.AppStates.IdentityOfApp(appId), showDrafts);
 
         #endregion
     }

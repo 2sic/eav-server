@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Apps.AppSys;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
@@ -40,8 +39,7 @@ namespace ToSic.Eav.Apps.ImportExport
         #region DI Constructor
 
         public ZipExport(
-            AppSys.AppWork appWork,
-            AppRuntime appRuntime,
+            AppWork appWork,
             IDataSourcesService dataSourceFactory,
             XmlExporter xmlExporter,
             Generator<FileManager> fileManagerGenerator,
@@ -51,7 +49,6 @@ namespace ToSic.Eav.Apps.ImportExport
                 _appWork = appWork,
                 _xmlExporter = xmlExporter,
                 _globalConfiguration = globalConfiguration,
-                AppRuntime = appRuntime,
                 DataSourceFactory = dataSourceFactory,
                 _fileManagerGenerator = fileManagerGenerator
             );
@@ -60,7 +57,6 @@ namespace ToSic.Eav.Apps.ImportExport
         private readonly AppSys.AppWork _appWork;
         private readonly XmlExporter _xmlExporter;
         private readonly IGlobalConfiguration _globalConfiguration;
-        private AppRuntime AppRuntime { get; }
         public IDataSourcesService DataSourceFactory { get; }
 
         public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal)
@@ -75,7 +71,6 @@ namespace ToSic.Eav.Apps.ImportExport
                 FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal)
             );
             var appIdentity = new AppIdentity(_zoneId, _appId);
-            AppRuntime.InitQ(appIdentity);
             AppSysCtx = _appWork.Context(appIdentity);
             return this;
         }

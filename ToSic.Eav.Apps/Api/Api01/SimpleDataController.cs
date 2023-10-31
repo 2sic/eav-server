@@ -126,7 +126,7 @@ namespace ToSic.Eav.Api.Api01
             if (multiValues == null) return (null, "attributes were null");
 
             // ensure the type really exists
-            var type = _appSys.Value.ContentTypes.Get(AppSysCtx, contentTypeName); // _appManager.Read.ContentTypes.Get(contentTypeName);
+            var type = AppSysCtx.AppState.GetContentType(contentTypeName);
             if (type == null)
                 throw l.Done(new ArgumentException("Error: Content type '" + contentTypeName + "' does not exist."));
 

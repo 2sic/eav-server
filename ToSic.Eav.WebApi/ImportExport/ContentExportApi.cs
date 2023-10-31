@@ -113,7 +113,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         {
             var l = Log.Fn<THttpResponseType>($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
-            var type = _appWork.ContentTypes.Get(_appCtx, name);
+            var type = _appCtx.AppState.GetContentType(name);
             var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters();
@@ -205,7 +205,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             {
                 if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
 
-                var contentType = _appWork.ContentTypes.Get(_appCtx, contentTypeName);
+                var contentType = _appCtx.AppState.GetContentType(contentTypeName);
                 var jsonType = serializer.ToPackage(contentType, serSettings);
                 bundleList.ContentTypes.Add(new JsonContentTypeSet
                 {

@@ -31,8 +31,7 @@ namespace ToSic.Eav.WebApi
         #region Constructor / DI
 
         public ContentTypeApi(
-            LazySvc<AppWork> appSys,
-            LazySvc<AppRuntime> appRuntimeLazy, 
+            LazySvc<AppWork> appSys, 
             LazySvc<AppManager> appManagerLazy, 
             LazySvc<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
@@ -42,7 +41,6 @@ namespace ToSic.Eav.WebApi
         {
             ConnectServices(
                 _appSys = appSys,
-                _appRuntimeLazy = appRuntimeLazy,
                 _appManagerLazy = appManagerLazy,
                 _dbLazy = dbLazy,
                 _appInitializedChecker = appInitializedChecker,
@@ -53,7 +51,6 @@ namespace ToSic.Eav.WebApi
         }
 
         private readonly LazySvc<DataBuilder> _multiBuilder;
-        private readonly LazySvc<AppRuntime> _appRuntimeLazy;
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
