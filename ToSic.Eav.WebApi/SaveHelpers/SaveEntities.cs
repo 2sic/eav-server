@@ -14,19 +14,22 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 {
     public class SaveEntities: ServiceBase
     {
+        private readonly AppWork _appWork;
         private readonly EntityBuilder _entityBuilder;
-        public SaveEntities(EntityBuilder entityBuilder) : base("Eav.SavHlp")
+        public SaveEntities(EntityBuilder entityBuilder, AppWork appWork) : base("Eav.SavHlp")
         {
             ConnectServices(
-                _entityBuilder = entityBuilder
+                _entityBuilder = entityBuilder,
+                _appWork = appWork
+
             );
         }
 
+        private bool UseOldSave = true;
 
-        public void UpdateGuidAndPublishedAndSaveMany(AppManager initializedAppMan, List<BundleWithHeader<IEntity>> itemsToImport,
-            bool enforceDraft
-        ) => Log.Do(l =>
+        public void UpdateGuidAndPublishedAndSaveMany(AppManager initializedAppMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
         {
+            var l = Log.Fn();
             //foreach (var bundle in itemsToImport)
             //{
             //    var curEntity = (Entity)bundle.Entity;
@@ -50,8 +53,16 @@ namespace ToSic.Eav.WebApi.SaveHelpers
                 .ToList();
 
             l.A($"will save {entitiesToImport.Count} items");
-            initializedAppMan.Entities.Save(entitiesToImport);
-        });
+            // #ExtractEntitySave - verified
+            //if (UseOldSave)
+            //    initializedAppMan.Entities.Save(entitiesToImport);
+            //else
+            {
+                var saver = _appWork.EntitySave(initializedAppMan.AppState);
+                saver.Save(entitiesToImport);
+            }
+            l.Done();
+        }
 
         /// <summary>
         /// Generate pairs of guid/id of the newly added items

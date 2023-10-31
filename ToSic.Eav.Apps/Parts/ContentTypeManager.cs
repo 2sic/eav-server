@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
@@ -7,7 +8,16 @@ namespace ToSic.Eav.Apps.Parts
 {
     public class ContentTypeManager : PartOf<AppManager>
     {
-        public ContentTypeManager() : base("App.TypMng") { }
+        private readonly AppWork _appWork;
+        public ContentTypeManager(AppWork appWork) : base("App.TypMng")
+        {
+            ConnectServices(
+                _appWork = appWork
+            );
+        }
+
+        private IAppWorkCtxWithDb AppCtxWithDb => _appCtx ?? (_appCtx = _appWork.CtxWithDb(Parent.AppState, Parent.DataController));
+        private IAppWorkCtxWithDb _appCtx;
 
         public void Create(string nameId, string scope)
         {
@@ -41,7 +51,8 @@ namespace ToSic.Eav.Apps.Parts
                 { AttributeMetadata.GeneralFieldInputType, inputType }
             };
             var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-            Parent.Entities.SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+            // #ExtractEntitySave - verified
+            _appWork.EntityMetadata(AppCtxWithDb).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
             l.Done();
         }
 
@@ -51,7 +62,8 @@ namespace ToSic.Eav.Apps.Parts
             var newValues = new Dictionary<string, object> { { AttributeMetadata.GeneralFieldInputType, inputType } };
 
             var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-            Parent.Entities.SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+            // #ExtractEntitySave - verified
+            _appWork.EntityMetadata(AppCtxWithDb).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
             return l.ReturnTrue();
         }
     }

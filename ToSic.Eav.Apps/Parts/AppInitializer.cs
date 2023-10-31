@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Lib.Logging;
@@ -27,11 +28,13 @@ namespace ToSic.Eav.Apps.Parts
         public AppInitializer(
             LazySvc<DataBuilder> builder,
             Generator<IRepositoryLoader> repositoryLoaderGenerator,
+            AppWork appWork,
             Generator<AppManager> appManagerGenerator,
             SystemManager systemManager,
             IAppStates appStates) : base("Eav.AppBld")
         {
             ConnectServices(
+                _appWork = appWork,
                 _builder = builder,
                 SystemManager = systemManager,
                 _repositoryLoaderGenerator = repositoryLoaderGenerator,
@@ -40,6 +43,7 @@ namespace ToSic.Eav.Apps.Parts
             );
         }
 
+        private readonly AppWork _appWork;
         private readonly LazySvc<DataBuilder> _builder;
         private readonly Generator<AppManager> _appManagerGenerator;
         private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
@@ -47,21 +51,21 @@ namespace ToSic.Eav.Apps.Parts
         protected readonly SystemManager SystemManager;
 
 
-        public AppInitializer Init(AppState appState)
-        {
-            AppState = appState;
-            return this;
-        }
+        //public AppInitializer Init(AppState appState)
+        //{
+        //    AppState = appState;
+        //    return this;
+        //}
 
-        private AppState AppState { get; set; }
+        //private AppState AppState { get; set; }
 
-        /// <summary>
-        /// The App Manager must be re-created during initialization
-        /// So we don't inject into into this class, but instead create it on demand
-        /// </summary>
-        private AppManager AppManager =>
-            _appManager ?? (_appManager = _appManagerGenerator.New().InitWithState(AppState, true));
-        private AppManager _appManager;
+        ///// <summary>
+        ///// The App Manager must be re-created during initialization
+        ///// So we don't inject into into this class, but instead create it on demand
+        ///// </summary>
+        //private AppManager AppManager =>
+        //    _appManager ?? (_appManager = _appManagerGenerator.New().InitWithState(AppState, true));
+        //private AppManager _appManager;
 
 
         #endregion
@@ -69,26 +73,19 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// Create app-describing entity for configuration and add Settings and Resources Content Type
         /// </summary>
+        /// <param name="appState">The app State</param>
         /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
-        public bool InitializeApp(string newAppName = null) => Log.Func($"{nameof(newAppName)}: {newAppName}", () =>
+        public bool InitializeApp(AppState appState, string newAppName = null) => Log.Func($"{nameof(newAppName)}: {newAppName}", () =>
         {
-            if (AppInitializedChecker.CheckIfAllPartsExist(AppState, out var appConfig, out var appResources,
+            if (AppInitializedChecker.CheckIfAllPartsExist(appState, out var appConfig, out var appResources,
                     out var appSettings, Log))
                 return (true, "ok");
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = AppState.NameId;
+            var eavAppName = appState.NameId;
 
             // v10.25 from now on the DefaultApp can also have settings and resources
-            string folder;
-            if (eavAppName == Constants.DefaultAppGuid)
-                folder = Constants.ContentAppFolder;
-            else if (eavAppName == Constants.PrimaryAppGuid || eavAppName == Constants.PrimaryAppName)
-                folder = Constants.PrimaryAppName;
-            else
-                folder = string.IsNullOrEmpty(newAppName)
-                    ? eavAppName
-                    : RemoveIllegalCharsFromPath(newAppName);
+            var folder = PickCorrectFolderName(newAppName, eavAppName);
 
             var addList = new List<AddContentTypeAndOrEntityTask>();
             if (appConfig == null)
@@ -115,34 +112,45 @@ namespace ToSic.Eav.Apps.Parts
             if (appResources == null)
                 addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppResources));
 
-            if (CreateAllMissingContentTypes(addList))
+            if (CreateAllMissingContentTypes(appState, addList))
             {
-                SystemManager.Purge(AppState);
+                SystemManager.Purge(appState);
                 // get the latest app-state, but not-initialized so we can make changes
                 var repoLoader = _repositoryLoaderGenerator.New();
-                AppState = repoLoader.AppState(AppState.AppId, false);
-                _appManager = null; // reset, because afterwards we need a clean AppManager
+                appState = repoLoader.AppState(appState.AppId, false);
+                //_appManager = null; // reset, because afterwards we need a clean AppManager
             }
 
-            addList.ForEach(MetadataEnsureTypeAndSingleEntity);
+            addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
 
             // Reset App-State to ensure it's reloaded with the added configuration
-            SystemManager.Purge(AppState);
+            SystemManager.Purge(appState);
 
             return (false, "ok");
         });
 
-
-
-        private bool CreateAllMissingContentTypes(List<AddContentTypeAndOrEntityTask> newItems) => Log.Func($"Check for {newItems.Count}", l =>
+        private static string PickCorrectFolderName(string newAppName, string eavAppName)
         {
+            if (eavAppName == Constants.DefaultAppGuid)
+                return Constants.ContentAppFolder;
+            if (eavAppName == Constants.PrimaryAppGuid || eavAppName == Constants.PrimaryAppName)
+                return Constants.PrimaryAppName;
+            return string.IsNullOrEmpty(newAppName)
+                ? eavAppName
+                : RemoveIllegalCharsFromPath(newAppName);
+        }
+
+
+        private bool CreateAllMissingContentTypes(AppState appState, List<AddContentTypeAndOrEntityTask> newItems) => Log.Func($"Check for {newItems.Count}", l =>
+        {
+            var appManager = _appManagerGenerator.New().InitWithState(appState, true);
             var addedTypes = false;
             foreach (var item in newItems)
-                if (item.InAppType && FindContentType(item.SetName, item.InAppType) == null)
+                if (item.InAppType && FindContentType(appState, item.SetName, item.InAppType) == null)
                 {
                     l.A("couldn't find type, will create");
                     // create App-Man if not created yet
-                    AppManager.ContentTypes.Create(item.SetName, Scopes.App);
+                    appManager.ContentTypes.Create(item.SetName, Scopes.App);
                     addedTypes = true;
                 }
                 else
@@ -151,10 +159,10 @@ namespace ToSic.Eav.Apps.Parts
             return addedTypes;
         });
         
-        private void MetadataEnsureTypeAndSingleEntity(AddContentTypeAndOrEntityTask cTypeAndOrEntity
-        ) => Log.Do($"{cTypeAndOrEntity.SetName} for app {AppState.AppId} - inApp: {cTypeAndOrEntity.InAppType}", l =>
+        private void MetadataEnsureTypeAndSingleEntity(AppState appState,
+            AddContentTypeAndOrEntityTask cTypeAndOrEntity) => Log.Do($"{cTypeAndOrEntity.SetName} for app {appState.AppId} - inApp: {cTypeAndOrEntity.InAppType}", l =>
         {
-            var ct = FindContentType(cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
+            var ct = FindContentType(appState, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
 
             // if it's still null, we have a problem...
             if (ct == null)
@@ -164,15 +172,19 @@ namespace ToSic.Eav.Apps.Parts
             }
 
             var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
-            var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: AppState.AppId);
-            var newEnt = _builder.Value.Entity.Create(appId: AppState.AppId, guid: Guid.NewGuid(),
+            var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appState.AppId);
+            var newEnt = _builder.Value.Entity.Create(appId: appState.AppId, guid: Guid.NewGuid(),
                 contentType: ct,
                 attributes: _builder.Value.Attribute.Create(values), metadataFor: mdTarget);
             //newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
-            AppManager.Entities.Save(newEnt);
+
+            // #ExtractEntitySave - verified
+            //var appManager = _appManagerGenerator.New().InitWithState(appState, true);
+            //appManager.Entities.Save(newEnt);
+            _appWork.EntitySave(appState).Save(newEnt);
         });
 
-        private IContentType FindContentType(string setName, bool inAppType)
+        private IContentType FindContentType(AppState appState, string setName, bool inAppType)
         {
             // if it's an in-app type, it should check the app, otherwise it should check the global type
             // we're NOT asking the app for all types (which would be the normal way)
@@ -182,7 +194,7 @@ namespace ToSic.Eav.Apps.Parts
             // this is probably not so important any more, but I would leave it forever for now
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
-                ? AppState.GetContentType(setName)
+                ? appState.GetContentType(setName)
                 : _appStates.GetPresetApp().GetContentType(setName);
             return ct;
         }

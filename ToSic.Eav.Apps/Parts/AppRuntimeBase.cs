@@ -19,12 +19,7 @@ namespace ToSic.Eav.Apps.Parts
             );
         }
 
-
         public bool? ShowDrafts { get; private set; }
-
-        protected AppRuntimeBase(MyServices services, string logName): base(services, logName)
-        {
-        }
 
         protected AppRuntimeBase(MyServicesBase<MyServices> services, string logName): base(services, logName)
         {

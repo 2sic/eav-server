@@ -22,18 +22,18 @@ namespace ToSic.Eav.Apps.Parts
         #endregion
 
         /// <inheritdoc />
-        public bool EnsureAppConfiguredAndInformIfRefreshNeeded(AppState appIdentity, string appName, ILog parentLog)
+        public bool EnsureAppConfiguredAndInformIfRefreshNeeded(AppState appState, string appName, ILog parentLog)
         {
             var log = new Log("Eav.AppChk", parentLog);
 
             var callLog = log.Fn<bool>($"..., {appName}");
-            if (CheckIfAllPartsExist(appIdentity, out _, out _, out _, log))
+            if (CheckIfAllPartsExist(appState, out _, out _, out _, log))
                 return callLog.ReturnFalse("ok");
 
             // something is missing, so we must build them
             _appInitGenerator.New()
-                .Init(appIdentity)
-                .InitializeApp(appName);
+                //.Init(appState)
+                .InitializeApp(appState, appName);
             return callLog.ReturnTrue();
         }
 

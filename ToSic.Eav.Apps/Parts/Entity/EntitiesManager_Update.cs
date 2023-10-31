@@ -10,24 +10,6 @@ namespace ToSic.Eav.Apps.Parts
         /// <summary>
         /// Update an entity
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="values"></param>
-        /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, UpdateList values, (bool published, bool branch)? draftAndBranch = null) => 
-            Log.Do($"id:{id}", () => UpdatePartsFromValues(Parent.AppState.List.FindRepoId(id), values, draftAndBranch));
-
-        /// <summary>
-        /// Update an entity
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="values"></param>
-        /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        public void UpdateParts(int id, Entity values, (bool published, bool branch)? draftAndBranch = null) =>
-            Log.Do($"id:{id}", () => UpdatePartFromEntity(Parent.AppState.List.FindRepoId(id), values, draftAndBranch));
-
-        /// <summary>
-        /// Update an entity
-        /// </summary>
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="values">Dictionary of values to update</param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>

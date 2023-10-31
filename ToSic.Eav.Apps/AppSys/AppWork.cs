@@ -1,6 +1,8 @@
 ﻿using System;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
@@ -10,6 +12,11 @@ namespace ToSic.Eav.Apps.AppSys
 {
     public class AppWork: ServiceBase
     {
+        private readonly Generator<EntityWorkMetadata> _genEntityMetadata;
+        private readonly Generator<EntityWorkUpdate> _genEntityUpdate;
+        private readonly Generator<EntityWorkCreate> _genEntityCreate;
+        private readonly Generator<EntityWorkSave> _genEntitySave;
+        private readonly Generator<LazySvc<DbDataController>> _dbDataController;
         private readonly Generator<AppInputTypes> _genInputType;
         private readonly Generator<ExportListXml> _exportListXmlGenerator;
         private readonly Generator<AppEntityRead> _genEntity;
@@ -23,10 +30,12 @@ namespace ToSic.Eav.Apps.AppSys
             Generator<AppEntityRead> genEntity,
             Generator<AppContentTypes> genType,
             Generator<AppInputTypes> genInputType,
-            Generator<ExportListXml> exportListXmlGenerator
-
-
-            ) : base("App.SysCtF")
+            Generator<ExportListXml> exportListXmlGenerator,
+            Generator<LazySvc<DbDataController>> dbDataController,
+            Generator<EntityWorkSave> genEntitySave,
+            Generator<EntityWorkCreate> genEntityCreate,
+            Generator<EntityWorkUpdate> genEntityUpdate,
+            Generator<EntityWorkMetadata> genEntityMetadata) : base("App.SysCtF")
         {
             ConnectServices(
                 _dataSourcesService = dataSourcesService,
@@ -34,7 +43,12 @@ namespace ToSic.Eav.Apps.AppSys
                 _genEntity = genEntity,
                 _genType = genType,
                 _genInputType = genInputType,
-                _exportListXmlGenerator = exportListXmlGenerator
+                _exportListXmlGenerator = exportListXmlGenerator,
+                _dbDataController = dbDataController,
+                _genEntitySave = genEntitySave,
+                _genEntityCreate = genEntityCreate,
+                _genEntityUpdate = genEntityUpdate,
+                _genEntityMetadata = genEntityMetadata
             );
         }
 
@@ -46,14 +60,14 @@ namespace ToSic.Eav.Apps.AppSys
 
         #region Context
 
-        public IAppWorkCtx Ctx(IAppWorkCtx ctx = default, IAppIdentity identity = default, AppState state = default, int? appId = default)
-        {
-            if (ctx != null) return ctx;
-            if (state != null) return Context(state);
-            if (identity != null) return Context(identity);
-            if (appId != null) return Context(appId.Value);
-            throw new ArgumentException("Some of the identity arguments must be provided.");
-        }
+        //public IAppWorkCtx Ctx(IAppWorkCtx ctx = default, IAppIdentity identity = default, AppState state = default, int? appId = default)
+        //{
+        //    if (ctx != null) return ctx;
+        //    if (state != null) return Context(state);
+        //    if (identity != null) return Context(identity);
+        //    if (appId != null) return Context(appId.Value);
+        //    throw new ArgumentException("Some of the identity arguments must be provided.");
+        //}
 
         public IAppWorkCtxPlus CtxPlus(IAppWorkCtx ctx = default, IAppIdentity identity = default, AppState state = default, int? appId = default)
         {
@@ -80,6 +94,11 @@ namespace ToSic.Eav.Apps.AppSys
         public IAppWorkCtxPlus ToCtxPlus(IAppWorkCtx appCtx, bool? showDrafts = default, IDataSource data = default)
             => new AppWorkCtxPlus(appCtx, _dataSourcesService, appCtx.AppState, showDrafts, data);
 
+        public IAppWorkCtxWithDb CtxWithDb(AppState appState, DbDataController existingDb = default)
+            => existingDb == null
+                ? new AppWorkCtxWithDb(_dbDataController.New().SetInit(dc => dc.Init(appState)), appState)
+                : new AppWorkCtxWithDb(existingDb, appState);
+
         #endregion
 
         #region Sys Parts Factories
@@ -100,6 +119,21 @@ namespace ToSic.Eav.Apps.AppSys
 
         public AppContentTypes ContentTypeRead() => _genType.New();
 
+
+        public EntityWorkCreate EntityCreate(IAppWorkCtxWithDb appCtx) => _genEntityCreate.New().InitContext(appCtx);
+
+        public EntityWorkSave EntitySave(IAppWorkCtxWithDb appCtx) => _genEntitySave.New().InitContext(appCtx);
+
+        public EntityWorkSave EntitySave(AppState appState) => _genEntitySave.New().InitContext(CtxWithDb(appState));
+
+        public EntityWorkSave EntitySave(AppState appState, DbDataController existingController) 
+            => _genEntitySave.New().InitContext(CtxWithDb(appState, existingController));
+
+        public EntityWorkUpdate EntityUpdate(IAppWorkCtxWithDb ctx, AppState appState = default) 
+            => _genEntityUpdate.New().InitContext(ctx ?? CtxWithDb(appState));
+
+        public EntityWorkMetadata EntityMetadata(IAppWorkCtxWithDb ctx, AppState appState = default) 
+            => _genEntityMetadata.New().InitContext(ctx ?? CtxWithDb(appState));
         #endregion
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json;
@@ -11,6 +12,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+
 #if NETFRAMEWORK
 using System.Web.Http;
 #else
@@ -22,15 +24,18 @@ namespace ToSic.Eav.WebApi.ImportExport
     /// <inheritdoc />
     public class ContentImportApi : ServiceBase
     {
-        public ContentImportApi(LazySvc<AppManager> appManagerLazy, LazySvc<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
+
+        public ContentImportApi(LazySvc<AppManager> appManagerLazy, AppWork appWork, LazySvc<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
         {
             ConnectServices(
+                _appWork = appWork,
                 _appManagerLazy = appManagerLazy,
                 _jsonSerializerLazy = jsonSerializerLazy,
                 _systemManager = systemManager,
                 _appStates = appStates
             );
         }
+        private readonly AppWork _appWork;
         private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<JsonSerializer> _jsonSerializerLazy;
         private readonly SystemManager _systemManager;
@@ -104,7 +109,13 @@ namespace ToSic.Eav.WebApi.ImportExport
                 // Since we're importing directly into this app, we prefer local content-types
                 deserializer.PreferLocalAppTypes = true;
 
-                _appManager.Entities.Import(new List<IEntity> { deserializer.Deserialize(args.GetContentString()) });
+                var listToImport = new List<IEntity> { deserializer.Deserialize(args.GetContentString()) };
+
+                // #ExtractEntitySave - verified
+                //_appManager.Entities.Import(listToImport);
+
+                _appWork.EntitySave(_appManager.AppState).Import(listToImport);
+
                 return l.ReturnTrue();
             }
             catch (ArgumentException)

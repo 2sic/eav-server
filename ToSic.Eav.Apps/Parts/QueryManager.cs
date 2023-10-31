@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Query;
@@ -9,6 +10,7 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
+using static System.StringComparer;
 using Connection = ToSic.Eav.DataSource.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Query.Connections;
 
@@ -25,6 +27,7 @@ namespace ToSic.Eav.Apps.Parts
             LazySvc<SystemManager> systemManagerLazy,
             LazySvc<DataBuilder> builder,
             LazySvc<JsonSerializer> jsonSerializer,
+            LazySvc<AppWork> appWork,
             LazySvc<DataSource.Query.QueryManager> queryManager,
             LazySvc<QueryDefinitionBuilder> queryDefBuilder) : base("App.QryMng")
         {
@@ -32,16 +35,20 @@ namespace ToSic.Eav.Apps.Parts
                 _systemManagerLazy = systemManagerLazy,
                 _builder = builder,
                 Serializer = jsonSerializer.SetInit(j => j.SetApp(Parent.AppState)),
+                _appWork = appWork,
                 _queryManager = queryManager,
                 _queryDefBuilder = queryDefBuilder
             );
         }
+        private readonly LazySvc<AppWork> _appWork;
         private readonly LazySvc<SystemManager> _systemManagerLazy;
         private LazySvc<JsonSerializer> Serializer { get; }
         private readonly LazySvc<DataSource.Query.QueryManager> _queryManager;
         private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
         private readonly LazySvc<DataBuilder> _builder;
 
+        private IAppWorkCtxWithDb AppWorkCtx => _appCtxWDb ?? (_appCtxWDb = _appWork.Value.CtxWithDb(Parent.AppState));
+        private IAppWorkCtxWithDb _appCtxWDb;
 
         public bool Delete(int id)
         {
@@ -99,7 +106,7 @@ namespace ToSic.Eav.Apps.Parts
 
             DeletedRemovedParts(newDsGuids, addedSources.Values, qdef);
 
-            headerValues = new Dictionary<string, object>(headerValues, StringComparer.InvariantCultureIgnoreCase);
+            headerValues = new Dictionary<string, object>(headerValues, InvariantCultureIgnoreCase);
             RemoveIdAndGuidFromValues(headerValues);
             SaveHeader(queryId, headerValues, wirings, addedSources);
         }
@@ -109,8 +116,7 @@ namespace ToSic.Eav.Apps.Parts
         /// </summary>
         /// <param name="partsDefinitions"></param>
         /// <param name="queryEntityGuid">EntityGuid of the Pipeline-Entity</param>
-        private Dictionary<string, Guid> SavePartsAndGenerateRenameMap(List<Dictionary<string, object>> partsDefinitions,
-            Guid queryEntityGuid)
+        private Dictionary<string, Guid> SavePartsAndGenerateRenameMap(List<Dictionary<string, object>> partsDefinitions, Guid queryEntityGuid)
         {
             Log.A($"save parts guid:{queryEntityGuid}");
             var newDataSources = new Dictionary<string, Guid>();
@@ -118,7 +124,7 @@ namespace ToSic.Eav.Apps.Parts
             foreach (var ds in partsDefinitions)
             {
                 // go case insensitive...
-                var dataSource = new Dictionary<string, object>(ds, StringComparer.InvariantCultureIgnoreCase);
+                var dataSource = new Dictionary<string, object>(ds, InvariantCultureIgnoreCase);
                 // Skip Out-DataSource
                 var originalIdentity = dataSource[Attributes.EntityFieldGuid].ToString();
                 dataSource.TryGetValue(Attributes.EntityFieldId, out var entityId);
@@ -133,11 +139,18 @@ namespace ToSic.Eav.Apps.Parts
                     dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
 
                 if (entityId != null)
-                    Parent.Entities.UpdateParts(System.Convert.ToInt32(entityId), dataSource);
+                {
+                    // #ExtractEntitySave - ???
+                    _appWork.Value.EntityUpdate(AppWorkCtx)
+                    /*Parent.Entities*/.UpdateParts(System.Convert.ToInt32(entityId), dataSource);
+                }
                 // Add new DataSource
                 else
                 {
-                    var newSpecs = Parent.Entities.Create(QueryConstants.QueryPartTypeName, dataSource,
+                    // #ExtractEntitySave - ???
+                    //var newSpecs = Parent.Entities.Create(QueryConstants.QueryPartTypeName, dataSource,
+                    //    new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
+                    var newSpecs = _appWork.Value.EntityCreate(AppWorkCtx).Create(QueryConstants.QueryPartTypeName, dataSource,
                         new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                     newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
                 }
@@ -188,7 +201,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
         private void SaveHeader(int id, Dictionary<string, object> values, List<Connection> wirings, IDictionary<string, Guid> renamedDataSources)
         {
-            Log.A($"save pipe a#{Parent.AppId}, pipe:{id}");
+            var l = Log.Fn($"save pipe a#{Parent.AppId}, pipe:{id}");
             wirings = RenameWiring(wirings, renamedDataSources);
 
             // Validate Stream Wirings, as we should never save bad wirings
@@ -198,7 +211,10 @@ namespace ToSic.Eav.Apps.Parts
 
             // add to new object...then send to save/update
             values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
-            Parent.Entities.UpdateParts(id, values);
+            // #ExtractEntitySave
+            _appWork.Value.EntityUpdate(AppWorkCtx)
+            /*Parent.Entities*/.UpdateParts(id, values);
+            l.Done();
         }
 
         /// <summary>

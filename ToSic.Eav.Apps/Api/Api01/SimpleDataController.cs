@@ -43,7 +43,7 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         public SimpleDataController(
             DataBuilder builder,
-            LazySvc<AppWork> appSys,
+            LazySvc<AppWork> appWork,
             LazySvc<AppManager> appManagerLazy,
             LazySvc<DbDataController> dbDataLazy,
             IZoneMapper zoneMapper,
@@ -51,7 +51,7 @@ namespace ToSic.Eav.Api.Api01
             Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             ConnectServices(
-                _appSys = appSys,
+                _appWork = appWork,
                 _appManagerLazy = appManagerLazy,
                 _dbDataLazy = dbDataLazy,
                 _zoneMapper = zoneMapper,
@@ -60,8 +60,8 @@ namespace ToSic.Eav.Api.Api01
                 _appPermissionCheckGenerator = appPermissionCheckGenerator
             );
         }
-        private readonly LazySvc<AppWork> _appSys;
-        private readonly LazySvc<AppManager> _appManagerLazy;
+        private readonly LazySvc<AppWork> _appWork;
+        private LazySvc<AppManager> _appManagerLazy { get; }
         private readonly LazySvc<DbDataController> _dbDataLazy;
         private readonly IZoneMapper _zoneMapper;
         private readonly IContextOfSite _ctx;
@@ -88,7 +88,7 @@ namespace ToSic.Eav.Api.Api01
 
             _defaultLanguageCode = GetDefaultLanguage(zoneId);
             var appIdentity = new AppIdentity(zoneId, appId);
-            AppSysCtx = _appSys.Value.Context(appIdentity);
+            AppSysCtx = _appWork.Value.Context(appIdentity);
             _context = _dbDataLazy.Value.Init(zoneId, appId);
             _appManager = _appManagerLazy.Value.Init(appIdentity);
             _checkWritePermissions = checkWritePermissions;
@@ -134,7 +134,10 @@ namespace ToSic.Eav.Api.Api01
 
             var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
 
-            var ids = _appManager.Entities.Save(importEntity);
+            // #ExtractEntitySave - verified
+            //var ids = _appManager.Entities.Save(importEntity);
+            var ids = _appWork.Value.EntitySave(AppSysCtx.AppState).Save(importEntity);
+
             return (ids, "ok");
         });
 
@@ -200,7 +203,9 @@ namespace ToSic.Eav.Api.Api01
         {
             var original = _appManager.AppState.List.FindRepoId(entityId);
             var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
-            _appManager.Entities.UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
+            // #ExtractEntitySave - ???
+            _appWork.Value.EntityUpdate(null, appState: _appManager.AppState)
+            /*_appManager.Entities*/.UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
         });
 
 

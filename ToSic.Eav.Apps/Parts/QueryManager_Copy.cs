@@ -17,8 +17,9 @@ namespace ToSic.Eav.Apps.Parts
 
         public void SaveCopy(int id) => SaveCopy(Get(id));
 
-        public void SaveCopy(QueryDefinition query) => Log.Do(() =>
+        public void SaveCopy(QueryDefinition query)
         {
+            var l = Log.Fn();
             // Guid of the new query, which we'll need early on as target for the part-copies
             var newQueryGuid = Guid.NewGuid();
 
@@ -52,8 +53,12 @@ namespace ToSic.Eav.Apps.Parts
 
             var saveList = newParts.Select(p => p.Value).Concat(newMetadata).ToList();
             saveList.Add(newQuery);
-            Parent.Entities.Save(saveList);
-        });
+
+            // #ExtractEntitySave - verified
+            //Parent.Entities.Save(saveList);
+            _appWork.Value.EntitySave(Parent.AppState).Save(saveList);
+            l.Done();
+        }
 
 
 

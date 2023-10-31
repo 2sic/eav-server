@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps.AppSys;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Plumbing;
@@ -17,74 +15,63 @@ using ToSic.Lib.Logging;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
+
 namespace ToSic.Eav.Apps.Parts
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Manager for entities in an app
-    /// </summary>
-    public partial class EntitiesManager: PartOf<AppManager>
+    public class EntityWorkSave: AppWorkBase<IAppWorkCtxWithDb>
     {
-        #region Constructor / DI
+        private readonly AppWork _appWork;
+        private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
+        private readonly AppsCacheSwitch _appsCache;
+        private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
 
-        public EntitiesManager(
+        public EntityWorkSave(
             AppWork appWork,
-            LazySvc<ImportListXml> lazyImportListXml,
-            LazySvc<Import> importLazy,
-            LazySvc<IImportExportEnvironment> environmentLazy, 
-            SystemManager systemManager,
+            LazySvc<DataBuilder> multiBuilder,
             LazySvc<IAppLoaderTools> appLoaderTools,
-            LazySvc<EntitySaver> entitySaverLazy,
             AppsCacheSwitch appsCache, // Note: Singleton
-            LazySvc<JsonSerializer> jsonSerializer,
-            LazySvc<DataBuilder> multiBuilder
-            ) : base("App.EntMan")
+            LazySvc<IImportExportEnvironment> environmentLazy
+        ) : base("Wrk.EntSav")
         {
             ConnectServices(
                 _appWork = appWork,
-                _lazyImportListXml = lazyImportListXml,
-                _importLazy = importLazy,
-                _environmentLazy = environmentLazy,
-                SystemManager = systemManager,
-                _appLoaderTools = appLoaderTools,
-                _entitySaverLazy = entitySaverLazy,
-                _appsCache = appsCache,
                 _multiBuilder = multiBuilder,
-                Serializer = jsonSerializer.SetInit(j => j.SetApp(Parent.AppState))
+                _appLoaderTools = appLoaderTools,
+                _appsCache = appsCache,
+                _environmentLazy = environmentLazy
             );
         }
-        private readonly AppWork _appWork;
-        private readonly LazySvc<ImportListXml> _lazyImportListXml;
-        private readonly LazySvc<Import> _importLazy;
-        private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
-        private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
-        private readonly LazySvc<EntitySaver> _entitySaverLazy;
-        private readonly AppsCacheSwitch _appsCache;
-        protected readonly SystemManager SystemManager;
-        private LazySvc<JsonSerializer> Serializer { get; }
-
-        private Import DbImporter => _import ?? (_import = _importLazy.Value.Init(Parent.ZoneId, Parent.AppId, false, false));
-        private Import _import;
 
         private readonly LazySvc<DataBuilder> _multiBuilder;
         private DataBuilder Builder => _multiBuilder.Value;
 
-        #endregion
+
+        public void Import(List<IEntity> newEntities)
+        {
+            foreach (var e in newEntities.Where(e => _appWork.Entities.Get(AppWorkCtx, e.EntityGuid) != null))
+                throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
+
+            newEntities = newEntities
+                .Select(e => Builder.Entity.CreateFrom(e, id: 0, repositoryId: 0))
+                .ToList();
+            Save(newEntities);
+        }
 
 
         public int Save(IEntity entity, SaveOptions saveOptions = null)
             => Save(new List<IEntity> { entity }, saveOptions).FirstOrDefault();
 
-        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null
-        ) => Log.Func(message: "save count:" + entities.Count + ", with Options:" + (saveOptions != null), func: () =>
+
+        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null) 
         {
+            var l = Log.Fn<List<int>>("save count:" + entities.Count + ", with Options:" + (saveOptions != null));
             // Run the change in a lock/transaction
             // This is to avoid parallel creation of new entities
             // because sometimes the save may be executed twice before the state knows that the entity exists
             // in which case it would add it twice
-            var appState = Parent.AppState;
+            var appState = AppWorkCtx.AppState;
 
-            saveOptions = saveOptions ?? _environmentLazy.Value.SaveOptions(Parent.ZoneId);
+            saveOptions = saveOptions ?? _environmentLazy.Value.SaveOptions(appState.ZoneId);
 
             // Inner call which will be executed with the Lock of the AppState
             List<int> InnerSaveInLock()
@@ -113,11 +100,11 @@ namespace ToSic.Eav.Apps.Parts
                 entities = AttachRelationshipResolver(entities, appState);
 
                 List<int> intIds = null;
-                var dc = Parent.DataController;
+                var dc = AppWorkCtx.DataController;
                 dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
 
                 // Tell the cache to do a partial update
-                _appsCache.Value.Update(Parent, intIds, Log, _appLoaderTools.Value);
+                _appsCache.Value.Update(appState, intIds, Log, _appLoaderTools.Value);
                 return intIds;
             }
 
@@ -125,8 +112,9 @@ namespace ToSic.Eav.Apps.Parts
             List<int> ids = null;
             appState.DoInLock(Log, () => ids = InnerSaveInLock());
 
-            return (ids, $"ids:{ids.Count}");
-        });
+            return l.Return(ids, $"ids:{ids.Count}");
+        }
+
 
         [PrivateApi]
         public List<IEntity> AttachRelationshipResolver(List<IEntity> entities, AppState appState)
@@ -194,5 +182,6 @@ namespace ToSic.Eav.Apps.Parts
 
             return (result, "temp");
         });
+
     }
 }

@@ -28,7 +28,6 @@ namespace ToSic.Eav.Apps
 
             // Runtimes and Managers
             services.TryAddTransient<AppRuntimeBase.MyServices>();
-            services.TryAddTransient<AppRuntime>();
             services.TryAddTransient<AppManager>();
             services.TryAddTransient<AppManager.MyServices>();
             services.TryAddTransient<ZoneRuntime>();
@@ -38,7 +37,6 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppFinder>();
 
             // Runtime parts
-            services.TryAddTransient<MetadataRuntime>();
             services.TryAddTransient<MdRecommendations>(); // new v13
             services.TryAddTransient<MdRequirements>(); // new v13
             services.TryAddTransient<EntitiesManager>();
@@ -48,6 +46,10 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppEntityRead>();
             services.TryAddTransient<AppContentTypes>();
             services.TryAddTransient<AppInputTypes>();
+            services.TryAddTransient<EntityWorkSave>();
+            services.TryAddTransient<EntityWorkCreate>();
+            services.TryAddTransient<EntityWorkUpdate>();
+            services.TryAddTransient<EntityWorkMetadata>();
 
             services.TryAddTransient<Import>();
 

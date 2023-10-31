@@ -57,8 +57,8 @@ namespace ToSic.Eav.Apps.Parts
             var appState = RepositoryLoader.AppState(appId, false);
 
             _appInitGenerator.New()
-                .Init(appState)
-                .InitializeApp(appName);
+                //.Init(appState)
+                .InitializeApp(appState, appName);
         }
 
         private int CreateInDb(string appGuid, int? inheritAppId)
