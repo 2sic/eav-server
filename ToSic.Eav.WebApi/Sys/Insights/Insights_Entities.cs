@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app attributes for {appId} and {type}");
-            var appCtx = _appWork.Context(appId ?? 0);
+            var appCtx = _appWork.ContextPlus(appId ?? 0);
             var appEntities = _appWork.EntityRead();
 
             var typ = appCtx.AppState.GetContentType(type);

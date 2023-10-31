@@ -62,13 +62,13 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<ContentTypeApi>($"{appId}");
             _appId = appId;
-            AppCtx = _appSys.Value.Context(appId);
+            _appCtxPlus = _appSys.Value.ContextPlus(appId);
             AppManager = _appManagerLazy.Value.Init(appId);
             return l.Return(this);
         }
 
         private int _appId;
-        private IAppWorkCtx AppCtx;
+        private IAppWorkCtxPlus _appCtxPlus;
 
         #endregion
 
@@ -86,17 +86,17 @@ namespace ToSic.Eav.WebApi
             {
                 l.A($"is scope {scope}, will do extra processing");
                 // make sure additional settings etc. exist
-                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(AppCtx.AppState, null, Log); 
+                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(_appCtxPlus.AppState, null, Log); 
             }
             // should use app-manager and return each type 1x only
             var appEntities = _appSys.Value.Entities;
 
             // get all types
-            var allTypes = _appSys.Value.ContentTypes.All(AppCtx).OfScope(scope, true);
+            var allTypes = _appSys.Value.ContentTypes.All(_appCtxPlus).OfScope(scope, true);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
-                .Select(t => ContentTypeAsDto(t, appEntities.Get(AppCtx, t.Name).Count()));
+                .Select(t => ContentTypeAsDto(t, appEntities.Get(_appCtxPlus, t.Name).Count()));
             return l.ReturnAsOk(filteredType);
 	    }
 
@@ -214,7 +214,7 @@ namespace ToSic.Eav.WebApi
             return l.Return(fields.Select(a => FieldAsDto(a.Field, a.Type, true)));
         }
 
-        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appSys.Value.InputTypes.GetInputTypes(AppCtx));
+        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appSys.Value.InputTypes.GetInputTypes(_appCtxPlus));
         private readonly GetOnce<List<InputTypeInfo>> _appInputTypes = new GetOnce<List<InputTypeInfo>>();
 
         private ContentTypeFieldDto FieldAsDto(IContentTypeAttribute a, IContentType type, bool withContentType)

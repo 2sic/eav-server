@@ -32,7 +32,7 @@ namespace ToSic.Eav.Apps.AppSys
         /// Retrieve a list of all input types known to the current system
         /// </summary>
         /// <returns></returns>
-        public List<InputTypeInfo> GetInputTypes(IAppWorkCtx appCtx) => Log.Func(() =>
+        public List<InputTypeInfo> GetInputTypes(IAppWorkCtxPlus appCtxPlus) => Log.Func(() =>
         {
             // Inner helper to log each intermediate state
             void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog) =>
@@ -53,11 +53,11 @@ namespace ToSic.Eav.Apps.AppSys
             LogListOfInputTypes("Global", globalDef);
 
             // Merge input types registered in this app
-            var appTypes = GetAppRegisteredInputTypes(appCtx);
+            var appTypes = GetAppRegisteredInputTypes(appCtxPlus);
             LogListOfInputTypes("In App", appTypes);
 
             // Load input types which are stored as app-extension files
-            var extensionTypes = GetAppExtensionInputTypes(appCtx);
+            var extensionTypes = GetAppExtensionInputTypes(appCtxPlus);
 
             var inputTypes = extensionTypes;
             if (inputTypes.Count > 0)
@@ -69,9 +69,8 @@ namespace ToSic.Eav.Apps.AppSys
             LogListOfInputTypes("Combined", inputTypes);
 
             // Merge input types registered in global metadata-app
-            var systemAppCtx = _appWork.Context(Constants.MetaDataAppId);
-            // var systemAppRt = _lazyMetadataAppRuntime.Value.Init(Constants.MetaDataAppId/*, true*/);
-            var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx); // systemAppRt.ContentTypes.GetAppRegisteredInputTypes();
+            var systemAppCtx = _appWork.ContextPlus(Constants.MetaDataAppId);
+            var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx);
             systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
             LogListOfInputTypes("System", systemAppInputTypes);
             AddMissingTypes(inputTypes, systemAppInputTypes);
@@ -116,8 +115,8 @@ namespace ToSic.Eav.Apps.AppSys
         /// Get a list of input-types registered to the current app
         /// </summary>
         /// <returns></returns>
-        private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtx appCtx)
-            => _appEntities.Get(appCtx, InputTypes.TypeForInputTypeDefinition)
+        private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus appCtxPlus)
+            => _appEntities.Get(appCtxPlus, InputTypes.TypeForInputTypeDefinition)
                 .Select(e => new InputTypeInfo(
                     e.Value<string>(InputTypes.InputTypeType),
                     e.Value<string>(InputTypes.InputTypeLabel),

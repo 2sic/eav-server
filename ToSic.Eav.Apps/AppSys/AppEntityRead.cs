@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps.AppSys
         /// WARNING: ATM it respects published/unpublished because it's using the Data.
         /// It's not clear if this is actually intended.
         /// </summary>
-        public IEnumerable<IEntity> OnlyContent(IAppWorkCtx context, bool withConfiguration)
+        public IEnumerable<IEntity> OnlyContent(IAppWorkCtxPlus context, bool withConfiguration)
         {
             var l = Log.Fn<IEnumerable<IEntity>>();
             var scopes = withConfiguration
@@ -55,7 +55,7 @@ namespace ToSic.Eav.Apps.AppSys
         public IEntity Get(IAppWorkCtx context, Guid entityGuid) => context.AppState.List.One(entityGuid);
 
 
-        public IEnumerable<IEntity> Get(IAppWorkCtx context, string contentTypeName)
+        public IEnumerable<IEntity> Get(IAppWorkCtxPlus context, string contentTypeName)
         {
             var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(attach: context.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
@@ -63,11 +63,11 @@ namespace ToSic.Eav.Apps.AppSys
         }
 
 
-        public IEnumerable<IEntity> GetWithParentAppsExperimental(IAppWorkCtx context, string contentTypeName)
+        public IEnumerable<IEntity> GetWithParentAppsExperimental(IAppWorkCtxPlus context, string contentTypeName)
         {
             var l = Log.Fn<IEnumerable<IEntity>>($"{nameof(contentTypeName)}: {contentTypeName}");
             var appWithParents = _dataSourceFactory.Value.Create<AppWithParents>(attach: context.Data);
-            var newCtx = new AppWorkCtx(context, data: appWithParents);
+            var newCtx = context.NewWithPresetData(data: appWithParents);
             return l.Return(Get(newCtx, contentTypeName));
         }
 

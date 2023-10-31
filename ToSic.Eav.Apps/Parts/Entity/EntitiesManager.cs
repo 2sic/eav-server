@@ -75,7 +75,7 @@ namespace ToSic.Eav.Apps.Parts
         public void Import(List<IEntity> newEntities)
         {
             var appCtx = Parent.GetContextWip();
-            foreach (var e in newEntities.Where(e => _appWork.Entities.Get(appCtx, e.EntityGuid) /*Parent.Read.Entities.Get(e.EntityGuid)*/ != null))
+            foreach (var e in newEntities.Where(e => _appWork.Entities.Get(appCtx, e.EntityGuid) != null))
                 throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
             newEntities = newEntities

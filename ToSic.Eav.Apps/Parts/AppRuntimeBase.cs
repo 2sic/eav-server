@@ -81,7 +81,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public static IAppWorkCtx GetContextWip<T>(this T appRuntime) where T : AppRuntimeBase
         {
-            return new AppWorkCtx(appRuntime.DsfWip, appRuntime.AppState, appRuntime.ShowDrafts);
+            return new AppWorkCtx(appRuntime.AppState);
         }
     }
 }

@@ -44,12 +44,12 @@ namespace ToSic.Eav.WebApi
         private readonly LazySvc<IConvertToEavLight> _entitiesToDicLazy;
         private readonly EntityBuilder _entityBuilder;
         private readonly Generator<MultiPermissionsTypes> _multiPermissionsTypes;
-        public IAppWorkCtx AppCtx { get; private set; }
+        public IAppWorkCtxPlus AppCtx { get; private set; }
 
 
         public EntityApi Init(int appId, bool? showDrafts = default)
         {
-            AppCtx = _appWork.Context(appId, showDrafts: showDrafts);
+            AppCtx = _appWork.ContextPlus(appId, showDrafts: showDrafts);
             return this;
         }
 
@@ -85,7 +85,7 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         public IEnumerable<IDictionary<string, object>> GetEntities(AppState appState, string contentType, bool showDrafts)
         {
-            var appWorkCtx = _appWork.Context(appState, showDrafts: showDrafts);
+            var appWorkCtx = _appWork.ContextPlus(appState, showDrafts: showDrafts);
             return EntityToDic.Convert(_appWork.Entities.Get(appWorkCtx, contentType));
         }
 

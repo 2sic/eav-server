@@ -39,8 +39,7 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<IEnumerable<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
-            //AppRuntime.Init(appId, withDrafts);
-            var appCtx = _appWork.Context(appId, showDrafts: withDrafts);
+            var appCtx = _appWork.ContextPlus(appId, showDrafts: withDrafts);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {

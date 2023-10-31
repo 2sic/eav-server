@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.Services;
@@ -56,14 +55,30 @@ namespace ToSic.Eav.Apps.AppSys
             throw new ArgumentException("Some of the identity arguments must be provided.");
         }
 
-        public IAppWorkCtx Context(AppState appState, bool? showDrafts = default, IDataSource data = default)
-            => new AppWorkCtx(_dataSourcesService, appState, showDrafts, data);
+        public IAppWorkCtxPlus CtxPlus(IAppWorkCtx ctx = default, IAppIdentity identity = default, AppState state = default, int? appId = default)
+        {
+            if (ctx is IAppWorkCtxPlus asPlus) return asPlus;
+            if (ctx != null) return ContextPlus(ctx.AppState);
+            if (state != null) return ContextPlus(state);
+            if (identity != null) return ContextPlus(identity);
+            if (appId != null) return ContextPlus(appId.Value);
+            throw new ArgumentException("Some of the identity arguments must be provided.");
+        }
 
-        public IAppWorkCtx Context(int appId, bool? showDrafts = default, IDataSource data = default)
-            => new AppWorkCtx(_dataSourcesService, _appStates.Value.Get(appId), showDrafts, data);
+        public IAppWorkCtx Context(AppState appState) => new AppWorkCtx(appState);
+        public IAppWorkCtxPlus ContextPlus(AppState appState, bool? showDrafts = default, IDataSource data = default)
+            => new AppWorkCtxPlus(_dataSourcesService, appState, showDrafts, data);
 
-        public IAppWorkCtx Context(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource data = default)
-            => new AppWorkCtx(_dataSourcesService, _appStates.Value.KeepOrGet(appIdentity), showDrafts, data);
+        public IAppWorkCtx Context(int appId) => new AppWorkCtx(_appStates.Value.Get(appId));
+        public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource data = default)
+            => new AppWorkCtxPlus(_dataSourcesService, appState: _appStates.Value.Get(appId), showDrafts, data);
+
+        public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(_appStates.Value.KeepOrGet(appIdentity));
+        public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource data = default)
+            => new AppWorkCtxPlus(_dataSourcesService, _appStates.Value.KeepOrGet(appIdentity), showDrafts, data);
+
+        public IAppWorkCtxPlus ToCtxPlus(IAppWorkCtx appCtx, bool? showDrafts = default, IDataSource data = default)
+            => new AppWorkCtxPlus(appCtx, _dataSourcesService, appCtx.AppState, showDrafts, data);
 
         #endregion
 
