@@ -12,6 +12,7 @@ namespace ToSic.Eav.Apps.AppSys
 {
     public class AppWork: ServiceBase
     {
+        private readonly Generator<EntityWorkFieldList> _genEntityFieldList;
         private readonly Generator<EntityWorkMetadata> _genEntityMetadata;
         private readonly Generator<EntityWorkUpdate> _genEntityUpdate;
         private readonly Generator<EntityWorkCreate> _genEntityCreate;
@@ -35,7 +36,8 @@ namespace ToSic.Eav.Apps.AppSys
             Generator<EntityWorkSave> genEntitySave,
             Generator<EntityWorkCreate> genEntityCreate,
             Generator<EntityWorkUpdate> genEntityUpdate,
-            Generator<EntityWorkMetadata> genEntityMetadata) : base("App.SysCtF")
+            Generator<EntityWorkMetadata> genEntityMetadata,
+            Generator<EntityWorkFieldList> genEntityFieldList) : base("App.SysCtF")
         {
             ConnectServices(
                 _dataSourcesService = dataSourcesService,
@@ -48,7 +50,9 @@ namespace ToSic.Eav.Apps.AppSys
                 _genEntitySave = genEntitySave,
                 _genEntityCreate = genEntityCreate,
                 _genEntityUpdate = genEntityUpdate,
-                _genEntityMetadata = genEntityMetadata
+                _genEntityMetadata = genEntityMetadata,
+                _genEntityFieldList = genEntityFieldList
+
             );
         }
 
@@ -134,6 +138,10 @@ namespace ToSic.Eav.Apps.AppSys
 
         public EntityWorkMetadata EntityMetadata(IAppWorkCtxWithDb ctx, AppState appState = default) 
             => _genEntityMetadata.New().InitContext(ctx ?? CtxWithDb(appState));
+
+        public EntityWorkFieldList EntityFieldList(IAppWorkCtxWithDb ctx = default, AppState appState = default)
+            => _genEntityFieldList.New().InitContext(ctx ?? CtxWithDb(appState));
+
         #endregion
     }
 }

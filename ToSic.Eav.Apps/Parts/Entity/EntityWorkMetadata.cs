@@ -15,8 +15,10 @@ namespace ToSic.Eav.Apps.Parts
 
         public EntityWorkMetadata(AppWork appWork, DataBuilder builder) : base("AWk.EntCre")
         {
-            _appWork = appWork;
-            _builder = builder;
+            ConnectServices(
+                _appWork = appWork,
+                _builder = builder
+            );
         }
 
         public void SaveMetadata(Target target, string typeName, Dictionary<string, object> values) 

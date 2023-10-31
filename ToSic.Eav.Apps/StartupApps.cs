@@ -50,6 +50,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<EntityWorkCreate>();
             services.TryAddTransient<EntityWorkUpdate>();
             services.TryAddTransient<EntityWorkMetadata>();
+            services.TryAddTransient<EntityWorkFieldList>();
 
             services.TryAddTransient<Import>();
 

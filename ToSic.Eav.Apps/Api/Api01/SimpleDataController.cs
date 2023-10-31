@@ -135,7 +135,6 @@ namespace ToSic.Eav.Api.Api01
             var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
 
             // #ExtractEntitySave - verified
-            //var ids = _appManager.Entities.Save(importEntity);
             var ids = _appWork.Value.EntitySave(AppSysCtx.AppState).Save(importEntity);
 
             return (ids, "ok");
@@ -201,11 +200,11 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values) => Log.Do($"update i:{entityId}", () =>
         {
-            var original = _appManager.AppState.List.FindRepoId(entityId);
+            var original = AppSysCtx.AppState.List.FindRepoId(entityId);
             var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
-            // #ExtractEntitySave - ???
-            _appWork.Value.EntityUpdate(null, appState: _appManager.AppState)
-            /*_appManager.Entities*/.UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
+            // #ExtractEntitySave - verified
+            _appWork.Value.EntityUpdate(null, appState: AppSysCtx.AppState)
+                .UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
         });
 
 
@@ -364,22 +363,22 @@ namespace ToSic.Eav.Api.Api01
             // 1. Find if user may write PUBLISHED:
 
             // 1.1. app permissions 
-            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, _appManager.AppState)
+            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, AppSysCtx.AppState)
                 .UserMay(GrantSets.WritePublished)) return (true, true);
 
             // 1.2. type permissions
-            if (_appPermissionCheckGenerator.New().ForType(_ctx, _appManager.AppState, targetType)
+            if (_appPermissionCheckGenerator.New().ForType(_ctx, AppSysCtx.AppState, targetType)
                 .UserMay(GrantSets.WritePublished)) return (true, true);
 
 
             // 2. Find if user may write DRAFT:
 
             // 2.1. app permissions 
-            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, _appManager.AppState)
+            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, AppSysCtx.AppState)
                 .UserMay(GrantSets.WriteDraft)) return (false, true);
 
             // 2.2. type permissions
-            if (_appPermissionCheckGenerator.New().ForType(_ctx, _appManager.AppState, targetType)
+            if (_appPermissionCheckGenerator.New().ForType(_ctx, AppSysCtx.AppState, targetType)
                 .UserMay(GrantSets.WriteDraft)) return (false, true);
 
 

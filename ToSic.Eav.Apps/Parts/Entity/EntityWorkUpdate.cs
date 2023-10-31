@@ -13,16 +13,18 @@ namespace ToSic.Eav.Apps.Parts
     public class EntityWorkUpdate: AppWorkBase<IAppWorkCtxWithDb>
     {
         private readonly AppWork _appWork;
-        private readonly DataBuilder Builder;
+        private readonly DataBuilder _builder;
         private readonly LazySvc<EntitySaver> _entitySaverLazy;
         private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
 
         public EntityWorkUpdate(AppWork appWork, DataBuilder builder, LazySvc<EntitySaver> entitySaverLazy, LazySvc<IImportExportEnvironment> environmentLazy) : base("AWk.EntCre")
         {
-            _appWork = appWork;
-            Builder = builder;
-            _entitySaverLazy = entitySaverLazy;
-            _environmentLazy = environmentLazy;
+            ConnectServices(
+                _appWork = appWork,
+                _builder = builder,
+                _entitySaverLazy = entitySaverLazy,
+                _environmentLazy = environmentLazy
+            );
         }
 
 
@@ -51,7 +53,7 @@ namespace ToSic.Eav.Apps.Parts
         /// <param name="orig">Original entity to be updated</param>
         /// <param name="values">Dictionary of values to update</param>
         /// <param name="draftAndBranch">Optionally specify that it should be a draft change</param>
-        private bool UpdatePartsFromValues(IEntity orig, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
+        internal bool UpdatePartsFromValues(IEntity orig, UpdateList values, (bool published, bool branch)? draftAndBranch = null)
         {
             var l = Log.Fn<bool>();
             var tempEnt = CreatePartialEntityOld(orig, values);
@@ -99,7 +101,7 @@ namespace ToSic.Eav.Apps.Parts
             if (values == null || !values.Any())
                 return (null, "nothing to save");
 
-            return (Builder.Entity.Create(appId: AppWorkCtx.AppId, contentType: orig.Type, attributes: Builder.Attribute.Create(values)), "ok");
+            return (_builder.Entity.Create(appId: AppWorkCtx.AppId, contentType: orig.Type, attributes: _builder.Attribute.Create(values)), "ok");
         });
     }
 }
