@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
@@ -74,7 +75,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public void Import(List<IEntity> newEntities)
         {
-            var appCtx = Parent.GetContextWip();
+            var appCtx = Parent.AppState.CreateAppWorkCtx();
             foreach (var e in newEntities.Where(e => _appWork.Entities.Get(appCtx, e.EntityGuid) != null))
                 throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 

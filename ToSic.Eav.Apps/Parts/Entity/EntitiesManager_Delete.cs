@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.Parts
         ) => Log.Func($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true, func: () =>
         {
             // do optional type-check and if necessary, throw error
-            var appCtx = Parent.GetContextWip();
+            var appCtx = Parent.AppState.CreateAppWorkCtx();
             BatchCheckTypesMatch(appCtx, ids, contentType);
 
             // get related metadata ids

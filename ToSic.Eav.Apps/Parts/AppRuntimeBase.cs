@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.AppSys;
-using ToSic.Eav.Services;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Parts
 {
@@ -14,14 +12,9 @@ namespace ToSic.Eav.Apps.Parts
 
         public class MyServices : MyServicesBase
         {
-            public IDataSourcesService DataSourceFactory { get; }
             public IAppStates AppStates { get; }
 
-            public MyServices(
-                IDataSourcesService dataSourceFactory,
-                IAppStates appStates
-            ) => ConnectServices(
-                DataSourceFactory = dataSourceFactory,
+            public MyServices(IAppStates appStates) => ConnectServices(
                 AppStates = appStates
             );
         }
@@ -61,9 +54,6 @@ namespace ToSic.Eav.Apps.Parts
         private AppState _appState;
 
         #endregion
-
-
-        internal IDataSourcesService DsfWip => Services.DataSourceFactory;
     }
 
     public static class AppRuntimeExtensions
@@ -77,11 +67,6 @@ namespace ToSic.Eav.Apps.Parts
         {
             parent.InitInternal(app, null);
             return parent;
-        }
-
-        public static IAppWorkCtx GetContextWip<T>(this T appRuntime) where T : AppRuntimeBase
-        {
-            return new AppWorkCtx(appRuntime.AppState);
         }
     }
 }

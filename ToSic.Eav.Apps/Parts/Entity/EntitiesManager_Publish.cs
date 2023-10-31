@@ -40,7 +40,7 @@ namespace ToSic.Eav.Apps.Parts
         public void Publish(int[] entityIds)
         {
             Log.A(Log.Try(() => "Publish(" + entityIds.Length + " items [" + string.Join(",", entityIds) + "])"));
-            var appCtx = Parent.GetContextWip();
+            var appCtx = Parent.AppState.CreateAppWorkCtx();
             foreach (var eid in entityIds)
                 try
                 {

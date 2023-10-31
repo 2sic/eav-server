@@ -34,4 +34,9 @@ namespace ToSic.Eav.Apps.AppSys
         public AppState AppState { get; }
 
     }
+
+    public static class AppWorkExtensions
+    {
+        public static IAppWorkCtx CreateAppWorkCtx(this AppState appState) => new AppWorkCtx(appState);
+    }
 }
