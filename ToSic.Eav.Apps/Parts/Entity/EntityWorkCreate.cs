@@ -15,8 +15,10 @@ namespace ToSic.Eav.Apps.Parts
 
         public EntityWorkCreate(AppWork appWork, DataBuilder builder) : base("AWk.EntCre")
         {
-            _appWork = appWork;
-            _builder = builder;
+            ConnectServices(
+                _appWork = appWork,
+                _builder = builder
+            );
         }
 
         public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null) 

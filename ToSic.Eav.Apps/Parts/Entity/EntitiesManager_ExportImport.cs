@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Parts
             ImportResolveReferenceMode resolveReferenceMode)
         {
             var ct = Parent.AppState.GetContentType(contentTypeName);
-            return _lazyImportListXml.Value.Init(Parent, ct,
+            return _lazyImportListXml.Value.Init(Parent.AppState, ct,
                 dataStream, languages, documentLanguageFallback,
                 deleteSetting, resolveReferenceMode);
         }

@@ -12,6 +12,7 @@ namespace ToSic.Eav.Apps.AppSys
 {
     public class AppWork: ServiceBase
     {
+        private readonly Generator<EntityWorkDelete> _genEntityDelete;
         private readonly Generator<EntityWorkFieldList> _genEntityFieldList;
         private readonly Generator<EntityWorkMetadata> _genEntityMetadata;
         private readonly Generator<EntityWorkUpdate> _genEntityUpdate;
@@ -37,7 +38,8 @@ namespace ToSic.Eav.Apps.AppSys
             Generator<EntityWorkCreate> genEntityCreate,
             Generator<EntityWorkUpdate> genEntityUpdate,
             Generator<EntityWorkMetadata> genEntityMetadata,
-            Generator<EntityWorkFieldList> genEntityFieldList) : base("App.SysCtF")
+            Generator<EntityWorkFieldList> genEntityFieldList,
+            Generator<EntityWorkDelete> genEntityDelete) : base("App.SysCtF")
         {
             ConnectServices(
                 _dataSourcesService = dataSourcesService,
@@ -51,8 +53,8 @@ namespace ToSic.Eav.Apps.AppSys
                 _genEntityCreate = genEntityCreate,
                 _genEntityUpdate = genEntityUpdate,
                 _genEntityMetadata = genEntityMetadata,
-                _genEntityFieldList = genEntityFieldList
-
+                _genEntityFieldList = genEntityFieldList,
+                _genEntityDelete = genEntityDelete
             );
         }
 
@@ -142,6 +144,8 @@ namespace ToSic.Eav.Apps.AppSys
         public EntityWorkFieldList EntityFieldList(IAppWorkCtxWithDb ctx = default, AppState appState = default)
             => _genEntityFieldList.New().InitContext(ctx ?? CtxWithDb(appState));
 
+        public EntityWorkDelete EntityDelete(IAppWorkCtxWithDb ctx = default, AppState appState = default)
+            => _genEntityDelete.New().InitContext(ctx ?? CtxWithDb(appState));
         #endregion
     }
 }

@@ -10,6 +10,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
@@ -43,6 +44,7 @@ namespace ToSic.Eav.Apps
 
             // New part v16 with better architecture
             services.TryAddTransient<AppWork>();
+            services.TryAddTransient<AppWorkService>();
             services.TryAddTransient<AppEntityRead>();
             services.TryAddTransient<AppContentTypes>();
             services.TryAddTransient<AppInputTypes>();
@@ -51,6 +53,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<EntityWorkUpdate>();
             services.TryAddTransient<EntityWorkMetadata>();
             services.TryAddTransient<EntityWorkFieldList>();
+            services.TryAddTransient<EntityWorkDelete>();
 
             services.TryAddTransient<Import>();
 

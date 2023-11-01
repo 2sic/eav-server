@@ -4,6 +4,8 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
+using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Lib.DI;
@@ -23,19 +25,22 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public partial class ImportListXml: ServiceBase 
     {
-        private readonly DataBuilder _builder;
-
         #region Dependency Injection
 
-        private readonly LazySvc<Import> _importerLazy;
-
-        public ImportListXml(LazySvc<Import> importerLazy, DataBuilder builder) : base("App.ImpVtT")
+        public ImportListXml(LazySvc<Import> importerLazy, DataBuilder builder, AppWorkService appWorkSvc) : base("App.ImpVtT")
         {
             ConnectServices(
                 _builder = builder,
-                _importerLazy = importerLazy
+                _importerLazy = importerLazy,
+                AppWorkSvc = appWorkSvc
             );
         }
+
+        private AppWorkService AppWorkSvc { get; }
+
+        private readonly LazySvc<Import> _importerLazy;
+
+        private readonly DataBuilder _builder;
 
         #endregion
 
@@ -44,9 +49,7 @@ namespace ToSic.Eav.Apps.ImportExport
         private IContentType ContentType { get; set; }
         private List<IEntity> ExistingEntities { get; set; }
 
-        private AppState App { get; set; }
-        private AppManager AppMan { get; set; }
-
+        private AppState AppState { get; set; }
 
         /// <summary>
         /// Create a xml import. The data stream passed will be imported to memory, and checked 
@@ -59,7 +62,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="deleteSetting">How to handle entities already in the repository</param>
         /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
-        public ImportListXml Init(AppManager appMan,
+        public ImportListXml Init(
+            AppState appState,
             IContentType contentType,
             Stream dataStream, 
             IEnumerable<string> languages, 
@@ -67,13 +71,12 @@ namespace ToSic.Eav.Apps.ImportExport
             ImportDeleteUnmentionedItems deleteSetting, 
             ImportResolveReferenceMode resolveLinkMode)
         {
-            //ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog(Log);
 
-            AppMan = appMan;
-            App = appMan.AppState;
+            AppState = appState;
+            AppWorkSvc.Init(AppState);
 
-            _appId = App.AppId;
+            _appId = AppState.AppId;
 
             ContentType = contentType;
             if (ContentType == null)
@@ -83,7 +86,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             Log.A("Content type ok:" + contentType.Name);
 
-            ExistingEntities = App.List.Where(e => e.Type == contentType).ToList();
+            ExistingEntities = AppState.List.Where(e => e.Type == contentType).ToList();
             Log.A($"Existing entities: {ExistingEntities.Count}");
 
             _languages = languages?.ToList();
@@ -302,7 +305,8 @@ namespace ToSic.Eav.Apps.ImportExport
             if (_deleteSetting == ImportDeleteUnmentionedItems.All)
             {
                 var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
-                AppMan.Entities.Delete(idsToDelete);
+                // #ExtractEntitySave - ???
+                AppWorkSvc.EntityDelete.Delete(idsToDelete);
             }
 
             var import = _importerLazy.Value.Init(null, _appId, false, true);

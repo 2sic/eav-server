@@ -7,10 +7,32 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public partial class EntitiesManager
+    public class EntityWorkDelete: AppWorkBase<IAppWorkCtxWithDb>
     {
-        public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null) 
-            => Delete(new[] {id}, contentType, force, skipIfCant, parentId, parentField);
+        private readonly AppWork _appWork;
+
+        public EntityWorkDelete(AppWork appWork) : base("AWk.EntCre")
+        {
+            ConnectServices(
+                _appWork = appWork
+            );
+        }
+
+        public bool Delete(Guid guid, bool force = false)
+        {
+            var l = Log.Fn<bool>($"delete guid:{guid}");
+            // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
+            return l.Return(Delete(AppWorkCtx.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId, force: force));
+        }
+
+
+        public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false,
+            int? parentId = null, string parentField = null)
+            => Delete(new[] { id }, contentType, force, skipIfCant, parentId, parentField);
+
+        public bool Delete(List<int> ids) => Log.Func($"ids:{ids.Count}", timer: true, func: () =>
+            Delete(ids.ToArray(), null, false, true));
+
 
         /// <summary>
         /// delete an entity
@@ -27,7 +49,7 @@ namespace ToSic.Eav.Apps.Parts
         ) => Log.Func($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true, func: () =>
         {
             // do optional type-check and if necessary, throw error
-            var appCtx = Parent.AppState.CreateAppWorkCtx();
+            var appCtx = AppWorkCtx.AppState.CreateAppWorkCtx();
             BatchCheckTypesMatch(appCtx, ids, contentType);
 
             // get related metadata ids
@@ -43,17 +65,18 @@ namespace ToSic.Eav.Apps.Parts
             // than delete entities with metadata without app cache purge
             var repositoryIds = deleteIds.ToArray();
             var ok = false;
-            var dc = Parent.DataController;
+            var dc = AppWorkCtx.DataController;
             dc.DoButSkipAppCachePurge(() => ok = dc.Entities.DeleteEntity(repositoryIds, true, true));
 
             // remove entity from cache
             // introduced in v15.05 to reduce work on entity delete
             // in past we PurgeApp in whole on each entity delete
             // this should be much faster, but side effects are possible.
-            Parent.AppState.Remove(repositoryIds, true);
+            AppWorkCtx.AppState.Remove(repositoryIds, true);
 
             return ok;
         });
+
 
         private void CollectMetaDataIdsRecursively(IAppWorkCtx appCtx, int id, ref List<int> metaDataIds)
         {
@@ -89,14 +112,15 @@ namespace ToSic.Eav.Apps.Parts
             }
         }
 
-        internal (bool HasMessages, string Messages) CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null) 
-            => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(new[] {entityId}, parentId, parentField).First().Value;
+        internal (bool HasMessages, string Messages) CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null)
+            => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(new[] { entityId }, parentId, parentField).First().Value;
+
 
         private Dictionary<int, (bool HasMessages, string Messages)> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string parentField = null)
         {
             var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
-            var relationships = Parent.AppState.Relationships;
+            var relationships = AppWorkCtx.AppState.Relationships;
 
             foreach (var entityId in ids)
             {
@@ -159,17 +183,5 @@ namespace ToSic.Eav.Apps.Parts
             }
         }
 
-        public bool Delete(Guid guid)
-        {
-            Log.A($"delete guid:{guid}");
-            // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
-            // force: true - force-delete the data-source part
-            return Delete(Parent.DataController.Entities.GetMostCurrentDbEntity(guid).EntityId, force: true);
-        }
-
-        public bool Delete(List<int> ids) => Log.Func($"ids:{ids.Count}", timer: true, func: () => 
-            Delete(ids.ToArray(), null, false, true));
-
     }
-    
 }

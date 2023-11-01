@@ -55,8 +55,7 @@ namespace ToSic.Eav.Apps.Parts
             saveList.Add(newQuery);
 
             // #ExtractEntitySave - verified
-            //Parent.Entities.Save(saveList);
-            _appWork.Value.EntitySave(Parent.AppState).Save(saveList);
+            AppWorkSvc.EntitySave.Save(saveList);
             l.Done();
         }
 
