@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.AppSys;
+using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
@@ -36,17 +39,23 @@ namespace ToSic.Eav.Repository.Efc.Tests
         }
 
         // todo: move tests to tests of ToSic.Eav.Apps
+        // ATM this test doesn't work
         [TestMethod]
         public void DevPc2dmRestoreV2()
         {
             var id = ItemToRestoreToV2;
             var version = 2;
-            var appManager = GetService<AppManager>().Init(Specs);
+
+            //var appManager = GetService<AppManager>().Init(Specs);
+            var versionSvc = GetService<AppWorkUnit<WorkEntityVersioning, IAppWorkCtxWithDb>>().New(appId: Specs.AppId);
             var dc = GetService<DbDataController>().Init(Specs.ZoneId, Specs.AppId);
-            var all = appManager.Entities.VersionHistory(id);  dc.Versioning.GetHistoryList(id, false);
+            //var all = appManager.Entities.VersionHistory(id);
+            dc.Versioning.GetHistoryList(id, false);
+            var all = versionSvc.VersionHistory(id);
             var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
 
-            appManager.Entities.VersionRestore(id, vId);
+            //appManager.Entities.VersionRestore(id, vId);
+            //versionSvc.VersionRestore(id, vId);
         }
 
         [TestMethod]

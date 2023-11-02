@@ -17,20 +17,17 @@ namespace ToSic.Eav.Apps
         public new class MyServices: MyServicesBase<AppRuntimeBase.MyServices>
         {
             public LazySvc<DbDataController> DbDataController { get; }
-            public LazySvc<EntitiesManager> EntitiesManager { get; }
             public LazySvc<QueryManager> QueryManager { get; }
             public LazySvc<ContentTypeManager> ContentTypeManager { get; }
 
             public MyServices(AppRuntimeBase.MyServices parentServices,
                 LazySvc<DbDataController> dbDataController,
-                LazySvc<EntitiesManager> entitiesManager,
                 LazySvc<QueryManager> queryManager,
                 LazySvc<ContentTypeManager> contentTypeManager
             ) : base(parentServices)
             {
                 ConnectServices(
                     DbDataController = dbDataController,
-                    EntitiesManager = entitiesManager,
                     QueryManager = queryManager,
                     ContentTypeManager = contentTypeManager
                 );
@@ -49,7 +46,6 @@ namespace ToSic.Eav.Apps
                 else
                     c.Init(ZoneId, AppId);
             });
-            _services.EntitiesManager.SetInit(m => m.ConnectTo(this));
             _services.QueryManager.SetInit(m => m.ConnectTo(this));
             _services.ContentTypeManager.SetInit(ct => ct.ConnectTo(this));
         }
@@ -85,11 +81,6 @@ namespace ToSic.Eav.Apps
         /// Storage system providing another interface
         /// </summary>
         internal IStorage Storage => DataController;
-
-        /// <summary>
-        /// The entity-management subsystem
-        /// </summary>
-        public EntitiesManager Entities => _services.EntitiesManager.Value;
 
         /// <summary>
         /// Queries Management Subsystem

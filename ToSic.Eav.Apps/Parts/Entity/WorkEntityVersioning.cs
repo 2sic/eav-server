@@ -1,15 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps.AppSys;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Persistence.Versions;
+using ToSic.Lib.DI;
 using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.Apps.Parts
 {
-    public partial class EntitiesManager
+    public class WorkEntityVersioning : AppWorkBase<IAppWorkCtxWithDb>
     {
+        private readonly LazySvc<Import> _import;
+        public SystemManager SystemManager { get; }
+        private readonly LazySvc<JsonSerializer> _jsonSerializer;
 
-        public List<ItemHistory> VersionHistory(int id, bool includeData = true) => Parent.DataController.Versioning.GetHistoryList(id, includeData);
+        public WorkEntityVersioning(SystemManager systemManager, LazySvc<Import> import, LazySvc<JsonSerializer> jsonSerializer) : base("AWk.EntCre")
+        {
+            ConnectServices(
+                SystemManager = systemManager,
+                _jsonSerializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState)),
+                _import = import.SetInit(i => i.Init(AppWorkCtx.ZoneId, AppWorkCtx.AppId, false, false))
+
+            );
+        }
+
+
+        public List<ItemHistory> VersionHistory(int id, bool includeData = true) => AppWorkCtx.DataController.Versioning.GetHistoryList(id, includeData);
 
         /// <summary>
         /// Restore an Entity to the specified Version by creating a new Version using the Import
@@ -20,14 +40,14 @@ namespace ToSic.Eav.Apps.Parts
             var newVersion = PrepareRestoreEntity(entityId, changeId);
 
             // Restore Entity
-            DbImporter.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
+            _import.Value.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
 
             // Delete Draft (if any)
-            var entityDraft = Parent.DataController.Publishing.GetDraftBranchEntityId(entityId);
+            var entityDraft = AppWorkCtx.DataController.Publishing.GetDraftBranchEntityId(entityId);
             if (entityDraft.HasValue)
-                Parent.DataController.Entities.DeleteEntity(entityDraft.Value);
+                AppWorkCtx.DataController.Entities.DeleteEntity(entityDraft.Value);
 
-            SystemManager.Purge(Parent); 
+            SystemManager.Purge(AppWorkCtx);
         }
 
 
@@ -42,7 +62,7 @@ namespace ToSic.Eav.Apps.Parts
             //var deserializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log);
 
             var str = GetFromTimelime(entityId, changeId);
-            return Serializer.Value.Deserialize(str);
+            return _jsonSerializer.Value.Deserialize(str);
 
         }
 
@@ -50,7 +70,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             try
             {
-                var timelineItem = Parent.DataController.Versioning.GetItem(entityId, changeId).Json;
+                var timelineItem = AppWorkCtx.DataController.Versioning.GetItem(entityId, changeId).Json;
                 if (timelineItem != null) return timelineItem;
                 throw new InvalidOperationException(
                     $"EntityId {entityId} with ChangeId {changeId} not found in DataTimeline.");
@@ -61,5 +81,6 @@ namespace ToSic.Eav.Apps.Parts
                     $"Error getting EntityId {entityId} with ChangeId {changeId} from DataTimeline. {ex.Message}");
             }
         }
+
     }
 }

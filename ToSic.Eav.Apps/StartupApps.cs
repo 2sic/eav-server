@@ -40,7 +40,6 @@ namespace ToSic.Eav.Apps
             // Runtime parts
             services.TryAddTransient<MdRecommendations>(); // new v13
             services.TryAddTransient<MdRequirements>(); // new v13
-            services.TryAddTransient<EntitiesManager>();
 
             // New part v16 with better architecture
             services.TryAddTransient<AppWorkContextService>();
@@ -57,6 +56,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<EntityWorkFieldList>();
             services.TryAddTransient<EntityWorkDelete>();
             services.TryAddTransient<EntityWorkPublish>();
+            services.TryAddTransient<WorkEntityVersioning>();
 
             services.TryAddTransient<Import>();
 
