@@ -43,8 +43,10 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<EntitiesManager>();
 
             // New part v16 with better architecture
+            services.TryAddTransient<AppWorkContextService>();
             services.TryAddTransient<AppWork>();
             services.TryAddTransient<AppWorkService>();
+            services.TryAddTransient(typeof(AppWorkUnit<,>));
             services.TryAddTransient<AppEntityRead>();
             services.TryAddTransient<AppContentTypes>();
             services.TryAddTransient<AppInputTypes>();
@@ -54,6 +56,7 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<EntityWorkMetadata>();
             services.TryAddTransient<EntityWorkFieldList>();
             services.TryAddTransient<EntityWorkDelete>();
+            services.TryAddTransient<EntityWorkPublish>();
 
             services.TryAddTransient<Import>();
 

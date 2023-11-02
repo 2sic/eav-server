@@ -89,7 +89,7 @@ namespace ToSic.Eav.WebApi
         /// </summary>
         public IEnumerable<IDictionary<string, object>> GetEntities(AppState appState, string contentType, bool showDrafts)
         {
-            var appWorkCtx = AppWorkSvc.AppWork.ContextPlus(appState, showDrafts: showDrafts);
+            var appWorkCtx = AppWorkSvc.AppWork.CtxSvc.ContextPlus(appState, showDrafts: showDrafts);
             return EntityToDic.Convert(AppWorkSvc.AppWork.Entities.Get(appWorkCtx, contentType));
         }
 

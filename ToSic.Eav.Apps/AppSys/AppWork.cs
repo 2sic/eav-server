@@ -1,9 +1,8 @@
-﻿using System;
-using ToSic.Eav.Apps.ImportExport;
+﻿using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
@@ -12,98 +11,66 @@ namespace ToSic.Eav.Apps.AppSys
 {
     public class AppWork: ServiceBase
     {
+        public AppWorkContextService CtxSvc { get; }
+        private readonly Generator<EntityWorkPublish> _genEntityPublish;
         private readonly Generator<EntityWorkDelete> _genEntityDelete;
         private readonly Generator<EntityWorkFieldList> _genEntityFieldList;
         private readonly Generator<EntityWorkMetadata> _genEntityMetadata;
         private readonly Generator<EntityWorkUpdate> _genEntityUpdate;
         private readonly Generator<EntityWorkCreate> _genEntityCreate;
         private readonly Generator<EntityWorkSave> _genEntitySave;
-        private readonly Generator<LazySvc<DbDataController>> _dbDataController;
         private readonly Generator<AppInputTypes> _genInputType;
         private readonly Generator<ExportListXml> _exportListXmlGenerator;
         private readonly Generator<AppEntityRead> _genEntity;
         private readonly Generator<AppContentTypes> _genType;
-        private readonly IDataSourcesService _dataSourcesService;
-        private readonly LazySvc<IAppStates> _appStates;
 
         public AppWork(
-            IDataSourcesService dataSourcesService,
-            LazySvc<IAppStates> appStates,
+            AppWorkContextService ctxSvc,
             Generator<AppEntityRead> genEntity,
             Generator<AppContentTypes> genType,
             Generator<AppInputTypes> genInputType,
             Generator<ExportListXml> exportListXmlGenerator,
-            Generator<LazySvc<DbDataController>> dbDataController,
             Generator<EntityWorkSave> genEntitySave,
             Generator<EntityWorkCreate> genEntityCreate,
             Generator<EntityWorkUpdate> genEntityUpdate,
             Generator<EntityWorkMetadata> genEntityMetadata,
             Generator<EntityWorkFieldList> genEntityFieldList,
-            Generator<EntityWorkDelete> genEntityDelete) : base("App.SysCtF")
+            Generator<EntityWorkDelete> genEntityDelete,
+            Generator<EntityWorkPublish> genEntityPublish) : base("App.SysCtF")
         {
             ConnectServices(
-                _dataSourcesService = dataSourcesService,
-                _appStates = appStates,
+                CtxSvc = ctxSvc,
                 _genEntity = genEntity,
                 _genType = genType,
                 _genInputType = genInputType,
                 _exportListXmlGenerator = exportListXmlGenerator,
-                _dbDataController = dbDataController,
                 _genEntitySave = genEntitySave,
                 _genEntityCreate = genEntityCreate,
                 _genEntityUpdate = genEntityUpdate,
                 _genEntityMetadata = genEntityMetadata,
                 _genEntityFieldList = genEntityFieldList,
-                _genEntityDelete = genEntityDelete
+                _genEntityDelete = genEntityDelete,
+                _genEntityPublish = genEntityPublish
             );
         }
 
-        #region Public Helpers - commonly used to get App System Context
-
-        public IAppStates AppStates => _appStates.Value;
-
-        #endregion
-
         #region Context
 
-        //public IAppWorkCtx Ctx(IAppWorkCtx ctx = default, IAppIdentity identity = default, AppState state = default, int? appId = default)
-        //{
-        //    if (ctx != null) return ctx;
-        //    if (state != null) return Context(state);
-        //    if (identity != null) return Context(identity);
-        //    if (appId != null) return Context(appId.Value);
-        //    throw new ArgumentException("Some of the identity arguments must be provided.");
-        //}
 
-        public IAppWorkCtxPlus CtxPlus(IAppWorkCtx ctx = default, IAppIdentity identity = default, AppState state = default, int? appId = default)
-        {
-            if (ctx is IAppWorkCtxPlus asPlus) return asPlus;
-            if (ctx != null) return ContextPlus(ctx.AppState);
-            if (state != null) return ContextPlus(state);
-            if (identity != null) return ContextPlus(identity);
-            if (appId != null) return ContextPlus(appId.Value);
-            throw new ArgumentException("Some of the identity arguments must be provided.");
-        }
-
-        public IAppWorkCtx Context(AppState appState) => new AppWorkCtx(appState);
-        public IAppWorkCtxPlus ContextPlus(AppState appState, bool? showDrafts = default, IDataSource data = default)
-            => new AppWorkCtxPlus(_dataSourcesService, appState, showDrafts, data);
-
-        public IAppWorkCtx Context(int appId) => new AppWorkCtx(_appStates.Value.Get(appId));
+        public IAppWorkCtx Context(int appId) => CtxSvc.Context(appId);
         public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource data = default)
-            => new AppWorkCtxPlus(_dataSourcesService, appState: _appStates.Value.Get(appId), showDrafts, data);
+            => CtxSvc.ContextPlus(appId, showDrafts, data);
 
-        public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(_appStates.Value.KeepOrGet(appIdentity));
+        public IAppWorkCtx Context(IAppIdentity appIdentity) => CtxSvc.Context(appIdentity);
+
         public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource data = default)
-            => new AppWorkCtxPlus(_dataSourcesService, _appStates.Value.KeepOrGet(appIdentity), showDrafts, data);
+            => CtxSvc.ContextPlus(appIdentity, showDrafts, data);
 
         public IAppWorkCtxPlus ToCtxPlus(IAppWorkCtx appCtx, bool? showDrafts = default, IDataSource data = default)
-            => new AppWorkCtxPlus(appCtx, _dataSourcesService, appCtx.AppState, showDrafts, data);
+            => CtxSvc.ToCtxPlus(appCtx, showDrafts, data);
 
         public IAppWorkCtxWithDb CtxWithDb(AppState appState, DbDataController existingDb = default)
-            => existingDb == null
-                ? new AppWorkCtxWithDb(_dbDataController.New().SetInit(dc => dc.Init(appState)), appState)
-                : new AppWorkCtxWithDb(existingDb, appState);
+            => CtxSvc.CtxWithDb(appState, existingDb);
 
         #endregion
 
@@ -146,6 +113,10 @@ namespace ToSic.Eav.Apps.AppSys
 
         public EntityWorkDelete EntityDelete(IAppWorkCtxWithDb ctx = default, AppState appState = default)
             => _genEntityDelete.New().InitContext(ctx ?? CtxWithDb(appState));
+
+        public EntityWorkPublish EntityPublish(IAppWorkCtxWithDb ctx = default, AppState appState = default)
+            => _genEntityPublish.New().InitContext(ctx ?? CtxWithDb(appState));
+
         #endregion
     }
 }

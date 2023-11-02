@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Parts
         private readonly AppWork _appWork;
         private readonly DataBuilder _builder;
 
-        public EntityWorkMetadata(AppWork appWork, DataBuilder builder) : base("AWk.EntCre")
+        public EntityWorkMetadata(AppWork appWork, DataBuilder builder) : base("AWk.EntMd")
         {
             ConnectServices(
                 _appWork = appWork,

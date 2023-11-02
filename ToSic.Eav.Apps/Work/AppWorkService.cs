@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps.Work
         /// Standard init - just with App State and everything else as default.
         /// </summary>
         /// <returns></returns>
-        public AppWorkService Init(AppState appState) => this.InitContext(AppWork.Context(appState));
+        public AppWorkService Init(AppState appState) => this.InitContext(AppWork.CtxSvc.Context(appState));
 
         /// <summary>
         /// Init using ID and optionally setting showDrafts.
@@ -83,5 +83,8 @@ namespace ToSic.Eav.Apps.Work
 
         public EntityWorkMetadata Metadata => _metadata ?? (_metadata = AppWork.EntityMetadata(WorkCtxWithDb));
         private EntityWorkMetadata _metadata;
+
+        public EntityWorkPublish Publish => _publish ?? (_publish = AppWork.EntityPublish(WorkCtxWithDb));
+        private EntityWorkPublish _publish;
     }
 }

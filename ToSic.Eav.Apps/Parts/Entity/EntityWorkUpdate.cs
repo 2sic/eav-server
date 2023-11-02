@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
         private readonly LazySvc<EntitySaver> _entitySaverLazy;
         private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
 
-        public EntityWorkUpdate(AppWork appWork, DataBuilder builder, LazySvc<EntitySaver> entitySaverLazy, LazySvc<IImportExportEnvironment> environmentLazy) : base("AWk.EntCre")
+        public EntityWorkUpdate(AppWork appWork, DataBuilder builder, LazySvc<EntitySaver> entitySaverLazy, LazySvc<IImportExportEnvironment> environmentLazy) : base("AWk.EntUpd")
         {
             ConnectServices(
                 _appWork = appWork,

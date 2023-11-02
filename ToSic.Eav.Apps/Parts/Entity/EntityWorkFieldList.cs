@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps.Parts
     {
         private readonly AppWork _appWork;
 
-        public EntityWorkFieldList(AppWork appWork) : base("AWk.EntCre")
+        public EntityWorkFieldList(AppWork appWork) : base("AWk.EntFL")
         {
             ConnectServices(
                 _appWork = appWork

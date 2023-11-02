@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Parts
     {
         private readonly AppWork _appWork;
 
-        public EntityWorkDelete(AppWork appWork) : base("AWk.EntCre")
+        public EntityWorkDelete(AppWork appWork) : base("AWk.EntDel")
         {
             ConnectServices(
                 _appWork = appWork
