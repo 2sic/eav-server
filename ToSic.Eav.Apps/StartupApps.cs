@@ -49,13 +49,13 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppEntityRead>();
             services.TryAddTransient<AppContentTypes>();
             services.TryAddTransient<AppInputTypes>();
-            services.TryAddTransient<EntityWorkSave>();
-            services.TryAddTransient<EntityWorkCreate>();
-            services.TryAddTransient<EntityWorkUpdate>();
-            services.TryAddTransient<EntityWorkMetadata>();
-            services.TryAddTransient<EntityWorkFieldList>();
-            services.TryAddTransient<EntityWorkDelete>();
-            services.TryAddTransient<EntityWorkPublish>();
+            services.TryAddTransient<WorkEntitySave>();
+            services.TryAddTransient<WorkEntityCreate>();
+            services.TryAddTransient<WorkEntityUpdate>();
+            services.TryAddTransient<WorkMetadata>();
+            services.TryAddTransient<WorkFieldList>();
+            services.TryAddTransient<WorkEntityDelete>();
+            services.TryAddTransient<WorkEntityPublish>();
             services.TryAddTransient<WorkEntityVersioning>();
 
             services.TryAddTransient<Import>();

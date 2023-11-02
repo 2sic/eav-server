@@ -6,14 +6,14 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Data.Build;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public class EntityWorkCreate: AppWorkBase<IAppWorkCtxWithDb>
+    public class WorkEntityCreate : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly AppWork _appWork;
         private readonly DataBuilder _builder;
 
-        public EntityWorkCreate(AppWork appWork, DataBuilder builder) : base("AWk.EntCre")
+        public WorkEntityCreate(AppWork appWork, DataBuilder builder) : base("AWk.EntCre")
         {
             ConnectServices(
                 _appWork = appWork,
@@ -21,10 +21,10 @@ namespace ToSic.Eav.Apps.Parts
             );
         }
 
-        public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null) 
+        public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
         {
             var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
-            
+
             var newEnt = _builder.Entity.Create(appId: AppWorkCtx.AppState.AppId, guid: Guid.NewGuid(),
                 contentType: AppWorkCtx.AppState.GetContentType(typeName),
                 attributes: _builder.Attribute.Create(values),

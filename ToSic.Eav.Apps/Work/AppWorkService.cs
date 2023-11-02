@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.AppSys;
-using ToSic.Eav.Apps.Parts;
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 #pragma warning disable IDE0074
@@ -15,7 +14,7 @@ namespace ToSic.Eav.Apps.Work
     /// but in rare cases you need to regenerate the state or do more fine-tuned work
     /// in which case you should just use the <see cref="AppWork"/> instead. 
     /// </summary>
-    public class AppWorkService : AppWorkBase<IAppWorkCtx>
+    public class AppWorkService : WorkUnitBase<IAppWorkCtx>
     {
         #region Constructor, Init, Context
 
@@ -66,25 +65,25 @@ namespace ToSic.Eav.Apps.Work
         private AppEntityRead _entRead;
 
 
-        public EntityWorkCreate EntityCreate => _create ?? (_create = AppWork.EntityCreate(WorkCtxWithDb));
-        private EntityWorkCreate _create;
+        public WorkEntityCreate EntityCreate => _create ?? (_create = AppWork.EntityCreate(WorkCtxWithDb));
+        private WorkEntityCreate _create;
 
-        public EntityWorkDelete EntityDelete => _del ?? (_del = AppWork.EntityDelete(WorkCtxWithDb));
-        private EntityWorkDelete _del;
+        public WorkEntityDelete EntityDelete => _del ?? (_del = AppWork.EntityDelete(WorkCtxWithDb));
+        private WorkEntityDelete _del;
 
-        public EntityWorkUpdate EntityUpdate => _update ?? (_update = AppWork.EntityUpdate(WorkCtxWithDb));
-        private EntityWorkUpdate _update;
+        public WorkEntityUpdate EntityUpdate => _update ?? (_update = AppWork.EntityUpdate(WorkCtxWithDb));
+        private WorkEntityUpdate _update;
 
-        public EntityWorkSave EntitySave => _save ?? (_save = AppWork.EntitySave(WorkCtxWithDb));
-        private EntityWorkSave _save;
+        public WorkEntitySave EntitySave => _save ?? (_save = AppWork.EntitySave(WorkCtxWithDb));
+        private WorkEntitySave _save;
 
-        public EntityWorkFieldList FieldList => _fieldList ?? (_fieldList = AppWork.EntityFieldList(WorkCtxWithDb));
-        private EntityWorkFieldList _fieldList;
+        public WorkFieldList FieldList => _fieldList ?? (_fieldList = AppWork.EntityFieldList(WorkCtxWithDb));
+        private WorkFieldList _fieldList;
 
-        public EntityWorkMetadata Metadata => _metadata ?? (_metadata = AppWork.EntityMetadata(WorkCtxWithDb));
-        private EntityWorkMetadata _metadata;
+        public WorkMetadata Metadata => _metadata ?? (_metadata = AppWork.EntityMetadata(WorkCtxWithDb));
+        private WorkMetadata _metadata;
 
-        public EntityWorkPublish Publish => _publish ?? (_publish = AppWork.EntityPublish(WorkCtxWithDb));
-        private EntityWorkPublish _publish;
+        public WorkEntityPublish Publish => _publish ?? (_publish = AppWork.EntityPublish(WorkCtxWithDb));
+        private WorkEntityPublish _publish;
     }
 }

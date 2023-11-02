@@ -6,13 +6,13 @@ using ToSic.Eav.Data;
 using Callback = System.Func<ToSic.Eav.Apps.Parts.Tools.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
 
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public class EntityWorkFieldList : AppWorkBase<IAppWorkCtxWithDb>
+    public class WorkFieldList : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly AppWork _appWork;
 
-        public EntityWorkFieldList(AppWork appWork) : base("AWk.EntFL")
+        public WorkFieldList(AppWork appWork) : base("AWk.EntFL")
         {
             ConnectServices(
                 _appWork = appWork
@@ -24,8 +24,7 @@ namespace ToSic.Eav.Apps.Parts
             target = AppWorkCtx.AppState.GetDraftOrKeep(target);
             var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
             var values = callback.Invoke(lists);
-            _appWork.EntityUpdate(AppWorkCtx)
-            /*Parent.Entities*/.UpdatePartsFromValues(target, values, (published: !asDraft, branch: asDraft));
+            _appWork.EntityUpdate(AppWorkCtx).UpdatePartsFromValues(target, values, (published: !asDraft, branch: asDraft));
         }
 
         public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd, bool padWithNulls = false)

@@ -10,9 +10,9 @@ using ToSic.Lib.DI;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public class WorkEntityVersioning : AppWorkBase<IAppWorkCtxWithDb>
+    public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly LazySvc<Import> _import;
         public SystemManager SystemManager { get; }

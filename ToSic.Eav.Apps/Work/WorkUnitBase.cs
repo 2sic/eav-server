@@ -2,13 +2,13 @@
 using ToSic.Eav.Apps.AppSys;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public abstract class AppWorkBase<TContext>: ServiceBase where TContext : class, IAppWorkCtx
+    public abstract class WorkUnitBase<TContext> : ServiceBase where TContext : class, IAppWorkCtx
     {
         private TContext _appWorkCtx;
 
-        protected AppWorkBase(string logName) : base(logName)
+        protected WorkUnitBase(string logName) : base(logName)
         {
         }
 
@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.Parts
     {
         public static TWork InitContext<TWork, TContext>(this TWork original, TContext appWorkContext)
             where TContext : class, IAppWorkCtx
-            where TWork: AppWorkBase<TContext>
+            where TWork : WorkUnitBase<TContext>
         {
             original._initCtx(appWorkContext);
             return original;

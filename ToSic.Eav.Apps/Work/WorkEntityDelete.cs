@@ -5,13 +5,13 @@ using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public class EntityWorkDelete: AppWorkBase<IAppWorkCtxWithDb>
+    public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly AppWork _appWork;
 
-        public EntityWorkDelete(AppWork appWork) : base("AWk.EntDel")
+        public WorkEntityDelete(AppWork appWork) : base("AWk.EntDel")
         {
             ConnectServices(
                 _appWork = appWork

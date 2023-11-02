@@ -3,15 +3,15 @@ using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Caching;
 using ToSic.Lib.DI;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public class EntityWorkPublish : AppWorkBase<IAppWorkCtxWithDb>
+    public class WorkEntityPublish : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
         private readonly AppsCacheSwitch _appsCache;
         private readonly AppWork _appWork;
 
-        public EntityWorkPublish(AppWork appWork, LazySvc<IAppLoaderTools> appLoaderTools, AppsCacheSwitch appsCache /* Note: Singleton */) : base("AWk.EntPub")
+        public WorkEntityPublish(AppWork appWork, LazySvc<IAppLoaderTools> appLoaderTools, AppsCacheSwitch appsCache /* Note: Singleton */) : base("AWk.EntPub")
         {
             ConnectServices(
                 _appWork = appWork,

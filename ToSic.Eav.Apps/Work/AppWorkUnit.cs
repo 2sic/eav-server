@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.AppSys;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -13,7 +12,7 @@ namespace ToSic.Eav.Apps.Work
     /// <typeparam name="TWork"></typeparam>
     /// <typeparam name="TContext"></typeparam>
     public class AppWorkUnit<TWork, TContext>: ServiceBase
-        where TWork : AppWorkBase<TContext>
+        where TWork : WorkUnitBase<TContext>
         where TContext : class, IAppWorkCtx
     {
         private readonly AppWorkContextService _ctxSvc;

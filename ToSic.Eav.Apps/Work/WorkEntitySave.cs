@@ -16,16 +16,16 @@ using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public class EntityWorkSave: AppWorkBase<IAppWorkCtxWithDb>
+    public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly AppWork _appWork;
         private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
         private readonly AppsCacheSwitch _appsCache;
         private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
 
-        public EntityWorkSave(
+        public WorkEntitySave(
             AppWork appWork,
             LazySvc<DataBuilder> multiBuilder,
             LazySvc<IAppLoaderTools> appLoaderTools,
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Parts
             => Save(new List<IEntity> { entity }, saveOptions).FirstOrDefault();
 
 
-        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null) 
+        public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
         {
             var l = Log.Fn<List<int>>("save count:" + entities.Count + ", with Options:" + (saveOptions != null));
             // Run the change in a lock/transaction

@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.Repository.Efc;
@@ -12,13 +11,13 @@ namespace ToSic.Eav.Apps.AppSys
     public class AppWork: ServiceBase
     {
         public AppWorkContextService CtxSvc { get; }
-        private readonly Generator<EntityWorkPublish> _genEntityPublish;
-        private readonly Generator<EntityWorkDelete> _genEntityDelete;
-        private readonly Generator<EntityWorkFieldList> _genEntityFieldList;
-        private readonly Generator<EntityWorkMetadata> _genEntityMetadata;
-        private readonly Generator<EntityWorkUpdate> _genEntityUpdate;
-        private readonly Generator<EntityWorkCreate> _genEntityCreate;
-        private readonly Generator<EntityWorkSave> _genEntitySave;
+        private readonly Generator<WorkEntityPublish> _genEntityPublish;
+        private readonly Generator<WorkEntityDelete> _genEntityDelete;
+        private readonly Generator<WorkFieldList> _genEntityFieldList;
+        private readonly Generator<WorkMetadata> _genEntityMetadata;
+        private readonly Generator<WorkEntityUpdate> _genEntityUpdate;
+        private readonly Generator<WorkEntityCreate> _genEntityCreate;
+        private readonly Generator<WorkEntitySave> _genEntitySave;
         private readonly Generator<AppInputTypes> _genInputType;
         private readonly Generator<ExportListXml> _exportListXmlGenerator;
         private readonly Generator<AppEntityRead> _genEntity;
@@ -30,13 +29,13 @@ namespace ToSic.Eav.Apps.AppSys
             Generator<AppContentTypes> genType,
             Generator<AppInputTypes> genInputType,
             Generator<ExportListXml> exportListXmlGenerator,
-            Generator<EntityWorkSave> genEntitySave,
-            Generator<EntityWorkCreate> genEntityCreate,
-            Generator<EntityWorkUpdate> genEntityUpdate,
-            Generator<EntityWorkMetadata> genEntityMetadata,
-            Generator<EntityWorkFieldList> genEntityFieldList,
-            Generator<EntityWorkDelete> genEntityDelete,
-            Generator<EntityWorkPublish> genEntityPublish) : base("App.SysCtF")
+            Generator<WorkEntitySave> genEntitySave,
+            Generator<WorkEntityCreate> genEntityCreate,
+            Generator<WorkEntityUpdate> genEntityUpdate,
+            Generator<WorkMetadata> genEntityMetadata,
+            Generator<WorkFieldList> genEntityFieldList,
+            Generator<WorkEntityDelete> genEntityDelete,
+            Generator<WorkEntityPublish> genEntityPublish) : base("App.SysCtF")
         {
             ConnectServices(
                 CtxSvc = ctxSvc,
@@ -93,28 +92,28 @@ namespace ToSic.Eav.Apps.AppSys
         public AppContentTypes ContentTypeRead() => _genType.New();
 
 
-        public EntityWorkCreate EntityCreate(IAppWorkCtxWithDb appCtx) => _genEntityCreate.New().InitContext(appCtx);
+        public WorkEntityCreate EntityCreate(IAppWorkCtxWithDb appCtx) => _genEntityCreate.New().InitContext(appCtx);
 
-        public EntityWorkSave EntitySave(IAppWorkCtxWithDb appCtx) => _genEntitySave.New().InitContext(appCtx);
+        public WorkEntitySave EntitySave(IAppWorkCtxWithDb appCtx) => _genEntitySave.New().InitContext(appCtx);
 
-        public EntityWorkSave EntitySave(AppState appState) => _genEntitySave.New().InitContext(CtxWithDb(appState));
+        public WorkEntitySave EntitySave(AppState appState) => _genEntitySave.New().InitContext(CtxWithDb(appState));
 
-        public EntityWorkSave EntitySave(AppState appState, DbDataController existingController) 
+        public WorkEntitySave EntitySave(AppState appState, DbDataController existingController) 
             => _genEntitySave.New().InitContext(CtxWithDb(appState, existingController));
 
-        public EntityWorkUpdate EntityUpdate(IAppWorkCtxWithDb ctx, AppState appState = default) 
+        public WorkEntityUpdate EntityUpdate(IAppWorkCtxWithDb ctx, AppState appState = default) 
             => _genEntityUpdate.New().InitContext(ctx ?? CtxWithDb(appState));
 
-        public EntityWorkMetadata EntityMetadata(IAppWorkCtxWithDb ctx, AppState appState = default) 
+        public WorkMetadata EntityMetadata(IAppWorkCtxWithDb ctx, AppState appState = default) 
             => _genEntityMetadata.New().InitContext(ctx ?? CtxWithDb(appState));
 
-        public EntityWorkFieldList EntityFieldList(IAppWorkCtxWithDb ctx = default, AppState appState = default)
+        public WorkFieldList EntityFieldList(IAppWorkCtxWithDb ctx = default, AppState appState = default)
             => _genEntityFieldList.New().InitContext(ctx ?? CtxWithDb(appState));
 
-        public EntityWorkDelete EntityDelete(IAppWorkCtxWithDb ctx = default, AppState appState = default)
+        public WorkEntityDelete EntityDelete(IAppWorkCtxWithDb ctx = default, AppState appState = default)
             => _genEntityDelete.New().InitContext(ctx ?? CtxWithDb(appState));
 
-        public EntityWorkPublish EntityPublish(IAppWorkCtxWithDb ctx = default, AppState appState = default)
+        public WorkEntityPublish EntityPublish(IAppWorkCtxWithDb ctx = default, AppState appState = default)
             => _genEntityPublish.New().InitContext(ctx ?? CtxWithDb(appState));
 
         #endregion

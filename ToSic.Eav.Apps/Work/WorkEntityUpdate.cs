@@ -8,16 +8,16 @@ using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Lib.DI;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public class EntityWorkUpdate: AppWorkBase<IAppWorkCtxWithDb>
+    public class WorkEntityUpdate : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly AppWork _appWork;
         private readonly DataBuilder _builder;
         private readonly LazySvc<EntitySaver> _entitySaverLazy;
         private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
 
-        public EntityWorkUpdate(AppWork appWork, DataBuilder builder, LazySvc<EntitySaver> entitySaverLazy, LazySvc<IImportExportEnvironment> environmentLazy) : base("AWk.EntUpd")
+        public WorkEntityUpdate(AppWork appWork, DataBuilder builder, LazySvc<EntitySaver> entitySaverLazy, LazySvc<IImportExportEnvironment> environmentLazy) : base("AWk.EntUpd")
         {
             ConnectServices(
                 _appWork = appWork,
