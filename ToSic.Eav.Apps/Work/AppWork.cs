@@ -7,6 +7,7 @@ namespace ToSic.Eav.Apps.Work
 {
     public class AppWork : ServiceBase
     {
+        private readonly Generator<WorkAttributesMod> _genAttributesMod;
         private readonly Generator<WorkEntities> _genEntitiesNew;
         private readonly Generator<WorkInputTypes> _genInputType;
         private readonly Generator<WorkEntityPublish> _genEntityPublish;
@@ -27,6 +28,7 @@ namespace ToSic.Eav.Apps.Work
             Generator<WorkMetadata> genEntityMetadata,
             Generator<WorkFieldList> genEntityFieldList,
             Generator<WorkEntityDelete> genEntityDelete,
+            Generator<WorkAttributesMod> genAttributesMod,
             Generator<WorkEntityPublish> genEntityPublish) : base("App.SysCtF")
         {
             ConnectServices(
@@ -39,7 +41,9 @@ namespace ToSic.Eav.Apps.Work
                 _genEntityMetadata = genEntityMetadata,
                 _genEntityFieldList = genEntityFieldList,
                 _genEntityDelete = genEntityDelete,
-                _genEntityPublish = genEntityPublish
+                _genEntityPublish = genEntityPublish,
+                _genAttributesMod = genAttributesMod
+
             );
         }
 
@@ -95,8 +99,13 @@ namespace ToSic.Eav.Apps.Work
 
         public WorkEntityPublish EntityPublish(IAppWorkCtxWithDb ctx = default, AppState appState = default)
             => _genEntityPublish.New().InitContext(ctx ?? CtxWithDb(appState));
-        public WorkInputTypes InputTypesNew(IAppWorkCtxPlus ctx = default, AppState appState = default)
+        
+        
+        public WorkInputTypes InputTypes(IAppWorkCtxPlus ctx = default, AppState appState = default)
             => _genInputType.New().InitContext(ctx ?? CtxSvc.ContextPlus(appState));
+
+        public WorkAttributesMod AttributesMod(IAppWorkCtxWithDb ctx = default, AppState appState = default)
+            => _genAttributesMod.New().InitContext(ctx ?? CtxSvc.CtxWithDb(appState));
 
         #endregion
     }

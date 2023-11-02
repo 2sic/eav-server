@@ -18,18 +18,15 @@ namespace ToSic.Eav.Apps
         {
             public LazySvc<DbDataController> DbDataController { get; }
             public LazySvc<QueryManager> QueryManager { get; }
-            public LazySvc<ContentTypeManager> ContentTypeManager { get; }
 
             public MyServices(AppRuntimeBase.MyServices parentServices,
                 LazySvc<DbDataController> dbDataController,
-                LazySvc<QueryManager> queryManager,
-                LazySvc<ContentTypeManager> contentTypeManager
+                LazySvc<QueryManager> queryManager
             ) : base(parentServices)
             {
                 ConnectServices(
                     DbDataController = dbDataController,
-                    QueryManager = queryManager,
-                    ContentTypeManager = contentTypeManager
+                    QueryManager = queryManager
                 );
             }
         }
@@ -47,7 +44,6 @@ namespace ToSic.Eav.Apps
                     c.Init(ZoneId, AppId);
             });
             _services.QueryManager.SetInit(m => m.ConnectTo(this));
-            _services.ContentTypeManager.SetInit(ct => ct.ConnectTo(this));
         }
         private readonly MyServices _services;
 
@@ -87,10 +83,6 @@ namespace ToSic.Eav.Apps
         /// </summary>
         public QueryManager Queries => _services.QueryManager.Value;
 
-        /// <summary>
-        /// Content-Types Manager Subsystem
-        /// </summary>
-        public ContentTypeManager ContentTypes => _services.ContentTypeManager.Value;
 
     }
 }

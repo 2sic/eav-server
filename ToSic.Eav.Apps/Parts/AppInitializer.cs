@@ -29,7 +29,6 @@ namespace ToSic.Eav.Apps.Parts
             LazySvc<DataBuilder> builder,
             Generator<IRepositoryLoader> repositoryLoaderGenerator,
             AppWork appWork,
-            Generator<AppManager> appManagerGenerator,
             SystemManager systemManager,
             IAppStates appStates) : base("Eav.AppBld")
         {
@@ -38,34 +37,15 @@ namespace ToSic.Eav.Apps.Parts
                 _builder = builder,
                 SystemManager = systemManager,
                 _repositoryLoaderGenerator = repositoryLoaderGenerator,
-                _appManagerGenerator = appManagerGenerator,
                 _appStates = appStates
             );
         }
 
         private readonly AppWork _appWork;
         private readonly LazySvc<DataBuilder> _builder;
-        private readonly Generator<AppManager> _appManagerGenerator;
         private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
         private readonly IAppStates _appStates;
         protected readonly SystemManager SystemManager;
-
-
-        //public AppInitializer Init(AppState appState)
-        //{
-        //    AppState = appState;
-        //    return this;
-        //}
-
-        //private AppState AppState { get; set; }
-
-        ///// <summary>
-        ///// The App Manager must be re-created during initialization
-        ///// So we don't inject into into this class, but instead create it on demand
-        ///// </summary>
-        //private AppManager AppManager =>
-        //    _appManager ?? (_appManager = _appManagerGenerator.New().InitWithState(AppState, true));
-        //private AppManager _appManager;
 
 
         #endregion
@@ -141,34 +121,36 @@ namespace ToSic.Eav.Apps.Parts
         }
 
 
-        private bool CreateAllMissingContentTypes(AppState appState, List<AddContentTypeAndOrEntityTask> newItems) => Log.Func($"Check for {newItems.Count}", l =>
+        private bool CreateAllMissingContentTypes(AppState appState, List<AddContentTypeAndOrEntityTask> newItems)
         {
-            var appManager = _appManagerGenerator.New().InitWithState(appState, true);
+            var l = Log.Fn<bool>($"Check for {newItems.Count}");
+            var inputTypeMod = _appWork.AttributesMod(appState: appState);
             var addedTypes = false;
             foreach (var item in newItems)
                 if (item.InAppType && FindContentType(appState, item.SetName, item.InAppType) == null)
                 {
                     l.A("couldn't find type, will create");
                     // create App-Man if not created yet
-                    appManager.ContentTypes.Create(item.SetName, Scopes.App);
+                    inputTypeMod.Create(item.SetName, Scopes.App);
                     addedTypes = true;
                 }
                 else
                     l.A($"Type '{item.SetName}' found");
 
-            return addedTypes;
-        });
+            return l.Return(addedTypes);
+        }
         
         private void MetadataEnsureTypeAndSingleEntity(AppState appState,
-            AddContentTypeAndOrEntityTask cTypeAndOrEntity) => Log.Do($"{cTypeAndOrEntity.SetName} for app {appState.AppId} - inApp: {cTypeAndOrEntity.InAppType}", l =>
+            AddContentTypeAndOrEntityTask cTypeAndOrEntity)
         {
+            var l = Log.Fn($"{cTypeAndOrEntity.SetName} for app {appState.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
             var ct = FindContentType(appState, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
 
             // if it's still null, we have a problem...
             if (ct == null)
             {
                 l.A("type is still null, error");
-                throw new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel");
+                throw l.Done(new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel"));
             }
 
             var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
@@ -182,7 +164,8 @@ namespace ToSic.Eav.Apps.Parts
             //var appManager = _appManagerGenerator.New().InitWithState(appState, true);
             //appManager.Entities.Save(newEnt);
             _appWork.EntitySave(appState).Save(newEnt);
-        });
+            l.Done();
+        }
 
         private IContentType FindContentType(AppState appState, string setName, bool inAppType)
         {

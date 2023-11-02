@@ -2,28 +2,23 @@
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Apps.Work;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public class ContentTypeManager : PartOf<AppManager>
+    public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly AppWork _appWork;
-        public ContentTypeManager(AppWork appWork) : base("App.TypMng")
+
+        public WorkAttributesMod(AppWork appWork) : base("ApS.InpGet")
         {
             ConnectServices(
                 _appWork = appWork
             );
         }
 
-        private IAppWorkCtxWithDb AppCtxWithDb => _appCtx ?? (_appCtx = _appWork.CtxWithDb(Parent.AppState, Parent.DataController));
-        private IAppWorkCtxWithDb _appCtx;
-
-        public void Create(string nameId, string scope)
-        {
-            Parent.DataController.DoAndSave(() =>
-                Parent.DataController.AttribSet.PrepareDbAttribSet(nameId, nameId, scope, false, Parent.AppId));
-        }
+        public void Create(string nameId, string scope) =>
+            AppWorkCtx.DataController.DoAndSave(() =>
+                AppWorkCtx.DataController.AttribSet.PrepareDbAttribSet(nameId, nameId, scope, false, AppWorkCtx.AppId));
 
         /// <summary>
         /// Append a new Attribute to an AttributeSet
@@ -32,12 +27,23 @@ namespace ToSic.Eav.Apps.Parts
         public int CreateAttributeAndInitializeAndSave(int attributeSetId, ContentTypeAttribute attDef, string inputType)
         {
             var l = Log.Fn<int>($"type:{attributeSetId}, input:{inputType}");
-            var newAttribute = Parent.DataController.Attributes.AddAttributeAndSave(attributeSetId, attDef);
+            var newAttribute = AppWorkCtx.DataController.Attributes.AddAttributeAndSave(attributeSetId, attDef);
 
             // set the nice name and input type, important for newly created attributes
             InitializeNameAndInputType(attDef.Name, inputType, newAttribute);
 
             return l.ReturnAndLog(newAttribute);
+        }
+
+        public bool UpdateInputType(int attributeId, string inputType)
+        {
+            var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
+            var newValues = new Dictionary<string, object> { { AttributeMetadata.GeneralFieldInputType, inputType } };
+
+            var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
+            // #ExtractEntitySave - verified
+            _appWork.EntityMetadata(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+            return l.ReturnTrue();
         }
 
         private void InitializeNameAndInputType(string staticName, string inputType, int attributeId)
@@ -52,19 +58,9 @@ namespace ToSic.Eav.Apps.Parts
             };
             var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
             // #ExtractEntitySave - verified
-            _appWork.EntityMetadata(AppCtxWithDb).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+            _appWork.EntityMetadata(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
             l.Done();
         }
 
-        public bool UpdateInputType(int attributeId, string inputType)
-        {
-            var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
-            var newValues = new Dictionary<string, object> { { AttributeMetadata.GeneralFieldInputType, inputType } };
-
-            var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-            // #ExtractEntitySave - verified
-            _appWork.EntityMetadata(AppCtxWithDb).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
-            return l.ReturnTrue();
-        }
     }
 }

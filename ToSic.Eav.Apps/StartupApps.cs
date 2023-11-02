@@ -56,6 +56,8 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<WorkEntityPublish>();
             services.TryAddTransient<WorkEntityVersioning>();
 
+            services.TryAddTransient<WorkAttributesMod>();
+
             services.TryAddTransient<Import>();
 
             services.TryAddTransient<ZipExport>();
