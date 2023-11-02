@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Api.Api01;
-using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
@@ -46,8 +45,8 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppWork>();
             services.TryAddTransient<AppWorkService>();
             services.TryAddTransient(typeof(AppWorkUnit<,>));
-            services.TryAddTransient<AppEntityRead>();
-            services.TryAddTransient<AppInputTypes>();
+            services.TryAddTransient<WorkEntities>();
+            services.TryAddTransient<WorkInputTypes>();
             services.TryAddTransient<WorkEntitySave>();
             services.TryAddTransient<WorkEntityCreate>();
             services.TryAddTransient<WorkEntityUpdate>();

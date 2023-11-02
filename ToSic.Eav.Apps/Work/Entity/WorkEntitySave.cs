@@ -47,7 +47,8 @@ namespace ToSic.Eav.Apps.Work
 
         public void Import(List<IEntity> newEntities)
         {
-            foreach (var e in newEntities.Where(e => _appWork.Entities.Get(AppWorkCtx, e.EntityGuid) != null))
+            var appStateList = AppWorkCtx.AppState.List;
+            foreach (var e in newEntities.Where(e => appStateList.One(e.EntityGuid) != null))
                 throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
             newEntities = newEntities

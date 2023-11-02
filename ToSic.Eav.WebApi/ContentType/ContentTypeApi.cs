@@ -89,14 +89,14 @@ namespace ToSic.Eav.WebApi
                 _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(_appCtxPlus.AppState, null, Log); 
             }
             // should use app-manager and return each type 1x only
-            var appEntities = _appSys.Value.Entities;
+            var appEntities = _appSys.Value.Entities(_appCtxPlus);
 
             // get all types
             var allTypes = _appCtxPlus.AppState.ContentTypes.OfScope(scope, true);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
-                .Select(t => ContentTypeAsDto(t, appEntities.Get(_appCtxPlus, t.Name).Count()));
+                .Select(t => ContentTypeAsDto(t, appEntities.Get(t.Name).Count()));
             return l.ReturnAsOk(filteredType);
 	    }
 
@@ -214,7 +214,7 @@ namespace ToSic.Eav.WebApi
             return l.Return(fields.Select(a => FieldAsDto(a.Field, a.Type, true)));
         }
 
-        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appSys.Value.InputTypes.GetInputTypes(_appCtxPlus));
+        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appSys.Value.InputTypesNew(_appCtxPlus).GetInputTypes());
         private readonly GetOnce<List<InputTypeInfo>> _appInputTypes = new GetOnce<List<InputTypeInfo>>();
 
         private ContentTypeFieldDto FieldAsDto(IContentTypeAttribute a, IContentType type, bool withContentType)

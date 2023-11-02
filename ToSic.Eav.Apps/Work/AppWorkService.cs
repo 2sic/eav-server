@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.AppSys;
-
+﻿
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 #pragma warning disable IDE0074
 
@@ -61,8 +60,8 @@ namespace ToSic.Eav.Apps.Work
 
         #endregion
 
-        public AppEntityRead Entities => _entRead ?? (_entRead = AppWork.Entities);
-        private AppEntityRead _entRead;
+        public WorkEntities Entities => _entReadNew ?? (_entReadNew = AppWork.Entities(WorkCtxPlus));
+        private WorkEntities _entReadNew;
 
 
         public WorkEntityCreate EntityCreate => _create ?? (_create = AppWork.EntityCreate(WorkCtxWithDb));

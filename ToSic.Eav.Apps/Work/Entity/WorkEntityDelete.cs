@@ -79,7 +79,7 @@ namespace ToSic.Eav.Apps.Work
 
         private void CollectMetaDataIdsRecursively(IAppWorkCtx appCtx, int id, ref List<int> metaDataIds)
         {
-            var childrenMetaDataIds = _appWork.Entities.Get(appCtx, id).Metadata.Select(md => md.EntityId).ToList();
+            var childrenMetaDataIds = appCtx.AppState.List.FindRepoId(id).Metadata.Select(md => md.EntityId).ToList();
             if (!childrenMetaDataIds.Any()) return;
             foreach (var childrenMetadataId in childrenMetaDataIds)
                 CollectMetaDataIdsRecursively(appCtx, childrenMetadataId, ref metaDataIds);
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Apps.Work
         {
             foreach (var id in ids)
             {
-                var found = _appWork.Entities.Get(appCtx, id); // Parent.Read.Entities.Get(id);
+                var found = appCtx.AppState.List.FindRepoId(id); // Parent.Read.Entities.Get(id);
                 if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
                     throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
             }

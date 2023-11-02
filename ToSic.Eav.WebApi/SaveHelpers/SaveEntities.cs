@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.AppSys;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data.Build;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Formats;
@@ -26,9 +23,8 @@ namespace ToSic.Eav.WebApi.SaveHelpers
             );
         }
 
-        private bool UseOldSave = true;
 
-        public void UpdateGuidAndPublishedAndSaveMany(AppManager initializedAppMan, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
+        public void UpdateGuidAndPublishedAndSaveMany(IAppWorkCtx appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
         {
             var l = Log.Fn();
             //foreach (var bundle in itemsToImport)
@@ -59,7 +55,7 @@ namespace ToSic.Eav.WebApi.SaveHelpers
             //    initializedAppMan.Entities.Save(entitiesToImport);
             //else
             {
-                var saver = _appWork.EntitySave(initializedAppMan.AppState);
+                var saver = _appWork.EntitySave(appCtx.AppState);
                 saver.Save(entitiesToImport);
             }
             l.Done();
@@ -69,15 +65,15 @@ namespace ToSic.Eav.WebApi.SaveHelpers
         /// Generate pairs of guid/id of the newly added items
         /// </summary>
         /// <returns></returns>
-        public Dictionary<Guid, int> GenerateIdList(IAppWorkCtx appCtx, AppEntityRead appEntities, IEnumerable<BundleWithHeader> items)
+        public Dictionary<Guid, int> GenerateIdList(WorkEntities workEntities, IEnumerable<BundleWithHeader> items)
         {
             var l = Log.Fn<Dictionary<Guid, int>>();
             
             var idList = items.Select(e =>
                 {
-                    var foundEntity = appEntities.Get(appCtx, e.Header.Guid);
+                    var foundEntity = workEntities.Get(e.Header.Guid);
                     var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
-                    var draft = foundEntity  == null ? null : appCtx.AppState.GetDraft(foundEntity);
+                    var draft = foundEntity  == null ? null : workEntities.AppWorkCtx.AppState.GetDraft(foundEntity);
                     l.A($"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
                     return draft ?? foundEntity; // return the draft (that would be the latest), or the found, or null if not found
                 })

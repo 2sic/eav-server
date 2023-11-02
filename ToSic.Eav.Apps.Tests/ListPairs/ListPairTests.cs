@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps.Parts.Tools;
+using ToSic.Eav.Apps.Work;
 
 namespace ToSic.Eav.Apps.Tests
 {

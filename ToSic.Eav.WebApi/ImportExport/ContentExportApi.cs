@@ -132,7 +132,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         {
             var l = Log.Fn<THttpResponseType>($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
-            var entity = _appWork.Entities.Get(_appCtx, id);
+            var entity = _appCtx.AppState.List.FindRepoId(id);
             var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
 
             return l.ReturnAsOk(_responseMaker.File(
@@ -202,11 +202,12 @@ namespace ToSic.Eav.WebApi.ImportExport
                 CtIncludeInherited = true,
                 CtAttributeIncludeInheritedMetadata = false
             };
+            var appState = _appCtx.AppState;
             foreach (var contentTypeName in export.ContentTypes)
             {
                 if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
 
-                var contentType = _appCtx.AppState.GetContentType(contentTypeName);
+                var contentType = appState.GetContentType(contentTypeName);
                 var jsonType = serializer.ToPackage(contentType, serSettings);
                 bundleList.ContentTypes.Add(new JsonContentTypeSet
                 {
@@ -221,7 +222,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             {
                 if (bundleList.Entities == null) bundleList.Entities = new List<JsonEntity>();
 
-                var entity = _appWork.Entities.Get(_appCtx, entityGuid);
+                var entity = appState.List.One(entityGuid);
                 bundleList.Entities.Add(serializer.ToJson(entity, export.EntitiesWithMetadata ? FileSystemLoader.QueryMetadataDepth : 0));
             }
 

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Parts.Tools;
-using ToSic.Eav.Data;
-using Callback = System.Func<ToSic.Eav.Apps.Parts.Tools.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
+using ToSic.Eav.Data;   
+using Callback = System.Func<ToSic.Eav.Apps.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
 
 
 namespace ToSic.Eav.Apps.Work

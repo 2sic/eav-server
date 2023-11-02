@@ -1,15 +1,15 @@
-﻿using ToSic.Eav.Apps.AppSys;
-using ToSic.Eav.Apps.ImportExport;
+﻿using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Lib.DI;
-using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Work
 {
     public class AppWork : ServiceBase
     {
+        private readonly Generator<WorkEntities> _genEntitiesNew;
+        private readonly Generator<WorkInputTypes> _genInputType;
         public AppWorkContextService CtxSvc { get; }
         private readonly Generator<WorkEntityPublish> _genEntityPublish;
         private readonly Generator<WorkEntityDelete> _genEntityDelete;
@@ -18,14 +18,11 @@ namespace ToSic.Eav.Apps.Work
         private readonly Generator<WorkEntityUpdate> _genEntityUpdate;
         private readonly Generator<WorkEntityCreate> _genEntityCreate;
         private readonly Generator<WorkEntitySave> _genEntitySave;
-        private readonly Generator<AppInputTypes> _genInputType;
         private readonly Generator<ExportListXml> _exportListXmlGenerator;
-        private readonly Generator<AppEntityRead> _genEntity;
 
         public AppWork(
             AppWorkContextService ctxSvc,
-            Generator<AppEntityRead> genEntity,
-            Generator<AppInputTypes> genInputType,
+            Generator<WorkEntities> genEntitiesNew, Generator<WorkInputTypes> genInputType,
             Generator<ExportListXml> exportListXmlGenerator,
             Generator<WorkEntitySave> genEntitySave,
             Generator<WorkEntityCreate> genEntityCreate,
@@ -37,7 +34,7 @@ namespace ToSic.Eav.Apps.Work
         {
             ConnectServices(
                 CtxSvc = ctxSvc,
-                _genEntity = genEntity,
+                _genEntitiesNew = genEntitiesNew,
                 _genInputType = genInputType,
                 _exportListXmlGenerator = exportListXmlGenerator,
                 _genEntitySave = genEntitySave,
@@ -72,16 +69,13 @@ namespace ToSic.Eav.Apps.Work
 
         #region Sys Parts Factories
 
-        public AppEntityRead Entities => _entRead.Get(() => _genEntity.New());
-        private readonly GetOnce<AppEntityRead> _entRead = new GetOnce<AppEntityRead>();
-
-        public AppInputTypes InputTypes => _inputTypes.Get(() => _genInputType.New());
-        private readonly GetOnce<AppInputTypes> _inputTypes = new GetOnce<AppInputTypes>();
-
         public ExportListXml EntityXmlExporter(IAppWorkCtx appCtx, string contentType)
             => _exportListXmlGenerator.New().Init(appCtx.AppState, appCtx.AppState.GetContentType(contentType));
 
-        public AppEntityRead EntityRead() => _genEntity.New();
+        public WorkEntities Entities(int appId) => _genEntitiesNew.New().InitContext(CtxSvc.ContextPlus(appId));
+
+        public WorkEntities Entities(IAppWorkCtxPlus ctx = default, AppState appState = default)
+            => _genEntitiesNew.New().InitContext(ctx ?? CtxSvc.ContextPlus(appState));
 
 
         public WorkEntityCreate EntityCreate(IAppWorkCtxWithDb appCtx) => _genEntityCreate.New().InitContext(appCtx);
@@ -107,6 +101,8 @@ namespace ToSic.Eav.Apps.Work
 
         public WorkEntityPublish EntityPublish(IAppWorkCtxWithDb ctx = default, AppState appState = default)
             => _genEntityPublish.New().InitContext(ctx ?? CtxWithDb(appState));
+        public WorkInputTypes InputTypesNew(IAppWorkCtxPlus ctx = default, AppState appState = default)
+            => _genInputType.New().InitContext(ctx ?? CtxSvc.ContextPlus(appState));
 
         #endregion
     }

@@ -51,19 +51,19 @@ namespace ToSic.Eav.WebApi
             }
 
             IEnumerable<IEntity> list;
-            var appEnts = _appWork.EntityRead();
+            var appEnts = _appWork.Entities(appCtx);
 
             // optionally filter by type
             if (contentType != null)
             {
                 l.A($"filter by type:{contentType.Name}");
-                list = appEnts.Get(appCtx, contentTypeName);
+                list = appEnts.Get(contentTypeName);
             }
             else
             {
                 l.A("won't filter by type because it's null");
                 l.A($"Will restrict by scope if user is not system admin: {_user.IsSystemAdmin}");
-                list = appEnts.OnlyContent(appCtx, _user.IsSystemAdmin); // only super user should also get Configuration
+                list = appEnts.OnlyContent(_user.IsSystemAdmin); // only super user should also get Configuration
             }
 
             // optionally filter by IDs

@@ -1,5 +1,6 @@
 ﻿using ToSic.Lib.Logging;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Work
@@ -48,7 +49,7 @@ namespace ToSic.Eav.Apps.Work
             var l = Log.Fn($"PublishWithoutPurge({entityId})");
 
             // 1. make sure we're publishing the draft, because the entityId might be the published one...
-            var contEntity = _appWork.Entities.Get(AppWorkCtx, entityId);
+            var contEntity = AppWorkCtx.AppState.List.FindRepoId(entityId);
             if (contEntity == null)
                 l.A($"Will skip, couldn't find the entity {entityId}");
             else

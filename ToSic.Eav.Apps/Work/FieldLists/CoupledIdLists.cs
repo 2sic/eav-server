@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Parts;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
 using DicNameObj = System.Collections.Generic.Dictionary<string, object>;
 
-namespace ToSic.Eav.Apps.Parts.Tools
+namespace ToSic.Eav.Apps.Work
 {
     /// <summary>
     /// This is responsible for managing / changing list-pairs of entities.

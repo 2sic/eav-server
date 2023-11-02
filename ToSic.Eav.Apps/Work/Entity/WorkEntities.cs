@@ -2,23 +2,21 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.AppSys
+namespace ToSic.Eav.Apps.Work
 {
     /// <summary>
     /// WIP - meant as a replacement of EntityRuntime with clean architecture
     /// </summary>
-    public class AppEntityRead: ServiceBase
+    public class WorkEntities: WorkUnitBase<IAppWorkCtxPlus>
     {
         private readonly LazySvc<IDataSourcesService> _dataSourceFactory;
-        public AppEntityRead(LazySvc<IDataSourcesService> dataSourceFactory) : base("ApS.EnRead")
+        public WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory) : base("ApS.EnRead")
         {
             ConnectServices(
                 _dataSourceFactory = dataSourceFactory
@@ -28,48 +26,48 @@ namespace ToSic.Eav.Apps.AppSys
         /// <summary>
         /// All entities in the app - this also includes system entities like data-source configuration etc.
         /// </summary>
-        public IImmutableList<IEntity> All(IAppWorkCtx context) => context.AppState.List;
+        public IImmutableList<IEntity> All() => AppWorkCtx.AppState.List;
 
         /// <summary>
         /// All content-entities. It does not include system-entity items.
         /// WARNING: ATM it respects published/unpublished because it's using the Data.
         /// It's not clear if this is actually intended.
         /// </summary>
-        public IEnumerable<IEntity> OnlyContent(IAppWorkCtxPlus context, bool withConfiguration)
+        public IEnumerable<IEntity> OnlyContent(bool withConfiguration)
         {
             var l = Log.Fn<IEnumerable<IEntity>>();
             var scopes = withConfiguration
                 ? new[] { Scopes.Default, Scopes.SystemConfiguration }
                 : new[] { Scopes.Default };
-            return l.Return(context.Data.List.Where(e => scopes.Contains(e.Type.Scope)));
+            return l.Return(AppWorkCtx.Data.List.Where(e => scopes.Contains(e.Type.Scope)));
         }
 
         /// <summary>
         /// Get this item or return null if not found
         /// </summary>
-        public IEntity Get(IAppWorkCtx context, int entityId) => context.AppState.List.FindRepoId(entityId);
+        public IEntity Get(int entityId) => AppWorkCtx.AppState.List.FindRepoId(entityId);
 
         /// <summary>
         /// Get this item or return null if not found
         /// </summary>
         /// <returns></returns>
-        public IEntity Get(IAppWorkCtx context, Guid entityGuid) => context.AppState.List.One(entityGuid);
+        public IEntity Get(Guid entityGuid) => AppWorkCtx.AppState.List.One(entityGuid);
 
 
-        public IEnumerable<IEntity> Get(IAppWorkCtxPlus context, string contentTypeName)
+        public IEnumerable<IEntity> Get(string contentTypeName)
         {
-            var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(attach: context.Data); // need to go to cache, to include published & unpublished
+            var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(attach: AppWorkCtx.Data); // need to go to cache, to include published & unpublished
             typeFilter.TypeName = contentTypeName;
             return typeFilter.List;
         }
 
 
-        public IEnumerable<IEntity> GetWithParentAppsExperimental(IAppWorkCtxPlus context, string contentTypeName)
+        public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName)
         {
             var l = Log.Fn<IEnumerable<IEntity>>($"{nameof(contentTypeName)}: {contentTypeName}");
-            var appWithParents = _dataSourceFactory.Value.Create<AppWithParents>(attach: context.Data);
-            var newCtx = context.NewWithPresetData(data: appWithParents);
-            return l.Return(Get(newCtx, contentTypeName));
+            var appWithParents = _dataSourceFactory.Value.Create<AppWithParents>(attach: AppWorkCtx.Data);
+            var newCtx = AppWorkCtx.NewWithPresetData(data: appWithParents);
+            return l.Return(Get(contentTypeName));
         }
 
     }

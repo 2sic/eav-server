@@ -82,7 +82,7 @@ namespace ToSic.Eav.WebApi
         /// Get all Entities of specified Type
         /// </summary>
         public IEnumerable<IDictionary<string, object>> GetEntities(string contentType)
-            => EntityToDic.Convert(AppWorkSvc.Entities.Get(AppWorkSvc.WorkCtxPlus, contentType));
+            => EntityToDic.Convert(AppWorkSvc.Entities.Get(contentType));
 
         /// <summary>
         /// Get all Entities of specified Type
@@ -90,7 +90,7 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<IDictionary<string, object>> GetEntities(AppState appState, string contentType, bool showDrafts)
         {
             var appWorkCtx = AppWorkSvc.AppWork.CtxSvc.ContextPlus(appState, showDrafts: showDrafts);
-            return EntityToDic.Convert(AppWorkSvc.AppWork.Entities.Get(appWorkCtx, contentType));
+            return EntityToDic.Convert(AppWorkSvc.AppWork.Entities(appWorkCtx).Get(contentType));
         }
 
         public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
@@ -180,7 +180,7 @@ namespace ToSic.Eav.WebApi
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
         public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string parentField = null) 
-            => Delete(contentType, AppWorkSvc.Entities.Get(AppWorkSvc.WorkCtxPlus, entityGuid).EntityId, force, parentId, parentField);
+            => Delete(contentType, AppWorkSvc.Entities.Get(entityGuid).EntityId, force, parentId, parentField);
 
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace ToSic.Eav.WebApi
         {
             var wrapLog = Log.Fn<List<Dictionary<string, object>>>(timer: true);
             EntityToDic.ConfigureForAdminUse();
-            var originals = AppWorkSvc.Entities.Get(AppWorkSvc.WorkCtxPlus, contentType).ToList();
+            var originals = AppWorkSvc.Entities.Get(contentType).ToList();
 
             // in the successor app, we can get an additional AppConfiguration, AppSettings or AppResources from the ancestor app
             // that we can optionally exclude from the results
