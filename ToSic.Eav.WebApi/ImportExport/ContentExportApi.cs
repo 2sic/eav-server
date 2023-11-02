@@ -10,6 +10,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using System.Collections.Generic;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Data;
@@ -36,6 +37,7 @@ namespace ToSic.Eav.WebApi.ImportExport
 {
     public class ContentExportApi : ServiceBase
     {
+        private readonly Generator<ExportListXml> _exportListXmlGenerator;
         private readonly AppWork _appWork;
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
@@ -47,10 +49,13 @@ namespace ToSic.Eav.WebApi.ImportExport
             IAppStates appStates,
             Generator<JsonSerializer> jsonSerializer,
             IResponseMaker responseMaker,
+            Generator<ExportListXml> exportListXmlGenerator,
             LazySvc<IFeaturesInternal> features
             ) : base("Api.EaCtEx")
         {
-            ConnectServices(_appWork = appWork,
+            ConnectServices(
+                _appWork = appWork,
+                _exportListXmlGenerator = exportListXmlGenerator,
                 _appStates = appStates,
                 _jsonSerializer = jsonSerializer,
                 _responseMaker = responseMaker,
@@ -93,7 +98,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 throw new Exception("trouble finding selected IDs to export", e);
             }
 
-            var tableExporter = _appWork.EntityXmlExporter(_appCtx, contentType);
+            var tableExporter = _exportListXmlGenerator.New().Init(_appCtx.AppState, contentType);
             var fileContent = exportSelection == ExportSelection.Blank
                 ? tableExporter.EmptyListTemplate()
                 : tableExporter.GenerateXml(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,

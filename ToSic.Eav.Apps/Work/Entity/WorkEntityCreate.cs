@@ -24,7 +24,7 @@ namespace ToSic.Eav.Apps.Work
         {
             var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
 
-            var newEnt = _builder.Entity.Create(appId: AppWorkCtx.AppState.AppId, guid: Guid.NewGuid(),
+            var newEnt = _builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
                 contentType: AppWorkCtx.AppState.GetContentType(typeName),
                 attributes: _builder.Attribute.Create(values),
                 metadataFor: metadataFor);
@@ -56,9 +56,8 @@ namespace ToSic.Eav.Apps.Work
                 return existingEnt.EntityId;
             }
 
-            var appState = AppWorkCtx.AppState;
             var newE = _builder.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
-                contentType: appState.GetContentType(typeName),
+                contentType: AppWorkCtx.AppState.GetContentType(typeName),
                 attributes: _builder.Attribute.Create(values));
             return _appWork.EntitySave(AppWorkCtx).Save(newE);
         }
