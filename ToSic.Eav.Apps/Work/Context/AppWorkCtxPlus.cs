@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.Services;
 
-namespace ToSic.Eav.Apps.AppSys
+namespace ToSic.Eav.Apps.Work
 {
-    public class AppWorkCtxPlus: AppWorkCtx, IAppWorkCtxPlus
+    public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus
     {
         public AppWorkCtxPlus(IDataSourcesService dsf, AppState appState, bool? showDrafts, IDataSource data = default) : base(appState)
         {

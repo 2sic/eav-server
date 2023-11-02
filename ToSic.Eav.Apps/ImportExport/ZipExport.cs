@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.XPath;
-using ToSic.Eav.Apps.AppSys;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
@@ -16,6 +15,7 @@ using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using ToSic.Eav.Apps.Work;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps.ImportExport
             );
         }
 
-        private readonly AppSys.AppWork _appWork;
+        private readonly AppWork _appWork;
         private readonly XmlExporter _xmlExporter;
         private readonly IGlobalConfiguration _globalConfiguration;
         public IDataSourcesService DataSourceFactory { get; }

@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Repository.Efc;
 using ToSic.Lib.DI;
 
-namespace ToSic.Eav.Apps.AppSys
+namespace ToSic.Eav.Apps.Work
 {
-    public interface IAppWorkCtxWithDb: IAppWorkCtx
+    public interface IAppWorkCtxWithDb : IAppWorkCtx
     {
         DbDataController DataController { get; }
     }

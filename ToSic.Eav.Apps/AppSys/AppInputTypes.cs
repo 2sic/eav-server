@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Run;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
@@ -139,8 +140,7 @@ namespace ToSic.Eav.Apps.AppSys
         {
             try
             {
-                //var appState = Parent.AppState;
-                var appLoader = _appFileSystemLoaderLazy.Value.Init(appCtx.AppState /*appState*/);
+                var appLoader = _appFileSystemLoaderLazy.Value.Init(appCtx.AppState);
                 var inputTypes = appLoader.InputTypes();
                 return (inputTypes, $"{inputTypes.Count}");
             }

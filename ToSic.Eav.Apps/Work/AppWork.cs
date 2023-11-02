@@ -1,14 +1,14 @@
-﻿using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Apps.Work;
+﻿using ToSic.Eav.Apps.AppSys;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.AppSys
+namespace ToSic.Eav.Apps.Work
 {
-    public class AppWork: ServiceBase
+    public class AppWork : ServiceBase
     {
         public AppWorkContextService CtxSvc { get; }
         private readonly Generator<WorkEntityPublish> _genEntityPublish;
@@ -90,13 +90,13 @@ namespace ToSic.Eav.Apps.AppSys
 
         public WorkEntitySave EntitySave(AppState appState) => _genEntitySave.New().InitContext(CtxWithDb(appState));
 
-        public WorkEntitySave EntitySave(AppState appState, DbDataController existingController) 
+        public WorkEntitySave EntitySave(AppState appState, DbDataController existingController)
             => _genEntitySave.New().InitContext(CtxWithDb(appState, existingController));
 
-        public WorkEntityUpdate EntityUpdate(IAppWorkCtxWithDb ctx, AppState appState = default) 
+        public WorkEntityUpdate EntityUpdate(IAppWorkCtxWithDb ctx, AppState appState = default)
             => _genEntityUpdate.New().InitContext(ctx ?? CtxWithDb(appState));
 
-        public WorkMetadata EntityMetadata(IAppWorkCtxWithDb ctx, AppState appState = default) 
+        public WorkMetadata EntityMetadata(IAppWorkCtxWithDb ctx, AppState appState = default)
             => _genEntityMetadata.New().InitContext(ctx ?? CtxWithDb(appState));
 
         public WorkFieldList EntityFieldList(IAppWorkCtxWithDb ctx = default, AppState appState = default)

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Apps.AppSys
+namespace ToSic.Eav.Apps.Work
 {
     /// <summary>
     /// Context object for performing App modifications.

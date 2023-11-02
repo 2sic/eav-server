@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource;
 
-namespace ToSic.Eav.Apps.AppSys
+namespace ToSic.Eav.Apps.Work
 {
     /// <summary>
     /// Extended context to work with App Data.
@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.AppSys
     ///
     /// In rare cases the Data can also be replaced with further restrictions.
     /// </summary>
-    public interface IAppWorkCtxPlus: IAppWorkCtx
+    public interface IAppWorkCtxPlus : IAppWorkCtx
     {
         bool? ShowDrafts { get; }
         IDataSource Data { get; }
