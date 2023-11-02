@@ -47,7 +47,6 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppWorkService>();
             services.TryAddTransient(typeof(AppWorkUnit<,>));
             services.TryAddTransient<AppEntityRead>();
-            services.TryAddTransient<AppContentTypes>();
             services.TryAddTransient<AppInputTypes>();
             services.TryAddTransient<WorkEntitySave>();
             services.TryAddTransient<WorkEntityCreate>();

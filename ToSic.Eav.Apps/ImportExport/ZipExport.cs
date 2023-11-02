@@ -227,7 +227,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             // Get Export XML
             var appIdentity = new AppIdentity(_zoneId, _appId);
-            var attributeSets = _appWork.ContentTypes.All(AppSysCtx).OfScope(includeAttributeTypes: true);
+            var attributeSets = AppSysCtx.AppState.ContentTypes.OfScope(includeAttributeTypes: true);
             attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
             // Exclude ParentApp attributeSets

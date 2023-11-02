@@ -92,7 +92,7 @@ namespace ToSic.Eav.WebApi
             var appEntities = _appSys.Value.Entities;
 
             // get all types
-            var allTypes = _appSys.Value.ContentTypes.All(_appCtxPlus).OfScope(scope, true);
+            var allTypes = _appCtxPlus.AppState.ContentTypes.OfScope(scope, true);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
