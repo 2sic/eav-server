@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Parts
 
         public EntitiesManager(
             AppWork appWork,
-            LazySvc<ImportListXml> lazyImportListXml,
+            LazySvc<ImportListXml> importListXml,
             LazySvc<Import> importLazy,
             SystemManager systemManager,
             LazySvc<IAppLoaderTools> appLoaderTools,
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps.Parts
         {
             ConnectServices(
                 _appWork = appWork,
-                _lazyImportListXml = lazyImportListXml,
+                _importListXml = importListXml,
                 _importLazy = importLazy,
                 SystemManager = systemManager,
                 _appLoaderTools = appLoaderTools,
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps.Parts
             );
         }
         private readonly AppWork _appWork;
-        private readonly LazySvc<ImportListXml> _lazyImportListXml;
+        private readonly LazySvc<ImportListXml> _importListXml;
         private readonly LazySvc<Import> _importLazy;
         private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
         private readonly AppsCacheSwitch _appsCache;

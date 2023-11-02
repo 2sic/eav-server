@@ -24,39 +24,39 @@ namespace ToSic.Eav.WebApi.ImportExport
     /// <inheritdoc />
     public class ContentImportApi : ServiceBase
     {
+        private readonly LazySvc<ImportListXml> _importListXml;
 
-        public ContentImportApi(LazySvc<AppManager> appManagerLazy, AppWork appWork, LazySvc<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
+        public ContentImportApi(LazySvc<ImportListXml> importListXml, AppWork appWork, LazySvc<JsonSerializer> jsonSerializerLazy, SystemManager systemManager, IAppStates appStates) : base("Api.EaCtIm")
         {
             ConnectServices(
                 _appWork = appWork,
-                _appManagerLazy = appManagerLazy,
+                _importListXml = importListXml,
                 _jsonSerializerLazy = jsonSerializerLazy,
                 _systemManager = systemManager,
                 _appStates = appStates
             );
         }
         private readonly AppWork _appWork;
-        private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<JsonSerializer> _jsonSerializerLazy;
         private readonly SystemManager _systemManager;
         private readonly IAppStates _appStates;
-        private AppManager _appManager;
+        private IAppWorkCtx AppWorkCtx { get; set; }
 
         public ContentImportApi Init(int appId)
         {
-            _appManager = _appManagerLazy.Value.Init(appId);
-            Log.A($"For app: {appId}");
-            return this;
+            var l = Log.Fn<ContentImportApi>($"app: {appId}");
+            AppWorkCtx = _appWork.Context(appId);
+            return l.Return(this);
         }
 
 
         [HttpPost]
         public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
         {
-            Log.A("eval content - start" + args.DebugInfo);
+            var l = Log.Fn<ContentImportResultDto>("eval content - start" + args.DebugInfo);
 
             var import = GetXmlImport(args);
-            return import.ErrorLog.HasErrors
+            var result = import.ErrorLog.HasErrors
                 ? new ContentImportResultDto(!import.ErrorLog.HasErrors, import.ErrorLog.Errors)
                 : new ContentImportResultDto(!import.ErrorLog.HasErrors, new ImportStatisticsDto
                 {
@@ -69,6 +69,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                     DocumentElementsCount = import.DocumentElements.Count(),
                     LanguagesInDocumentCount = import.Info_LanguagesInDocument.Count()
                 });
+            return l.Return(result);
         }
 
         [HttpPost]
@@ -88,14 +89,15 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         private ImportListXml GetXmlImport(ContentImportArgsDto args)
         {
-            Log.A("get xml import " + args.DebugInfo);
-            var contextLanguages = _appStates.Languages(_appManager.ZoneId).Select(l => l.EnvironmentKey).ToArray();
+            var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
+            var contextLanguages = _appStates.Languages(AppWorkCtx.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
 
-            using (var contentSteam = new MemoryStream(global::System.Convert.FromBase64String(args.ContentBase64)))
+            using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
             {
-                return _appManager.Entities.Importer(args.ContentType, contentSteam,
+                var importer = _importListXml.Value.Init(AppWorkCtx.AppState, args.ContentType, contentSteam,
                     contextLanguages, args.DefaultLanguage,
                     args.ClearEntities, args.ImportResourcesReferences);
+                return l.Return(importer);
             }
         }
 
@@ -105,16 +107,13 @@ namespace ToSic.Eav.WebApi.ImportExport
             var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
             try
             {
-                var deserializer = _jsonSerializerLazy.Value.SetApp(_appManager.AppState);
+                var deserializer = _jsonSerializerLazy.Value.SetApp(AppWorkCtx.AppState);
                 // Since we're importing directly into this app, we prefer local content-types
                 deserializer.PreferLocalAppTypes = true;
 
                 var listToImport = new List<IEntity> { deserializer.Deserialize(args.GetContentString()) };
 
-                // #ExtractEntitySave - verified
-                //_appManager.Entities.Import(listToImport);
-
-                _appWork.EntitySave(_appManager.AppState).Import(listToImport);
+                _appWork.EntitySave(AppWorkCtx.AppState).Import(listToImport);
 
                 return l.ReturnTrue();
             }

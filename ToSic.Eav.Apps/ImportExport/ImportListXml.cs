@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -55,8 +54,8 @@ namespace ToSic.Eav.Apps.ImportExport
         /// Create a xml import. The data stream passed will be imported to memory, and checked 
         /// for errors. If no error could be found, the data can be persisted to the repository.
         /// </summary>
-        /// <param name="appMan"></param>
-        /// <param name="contentType">content-type</param>
+        /// <param name="appState"></param>
+        /// <param name="typeName">content-type</param>
         /// <param name="dataStream">Xml data stream to import</param>
         /// <param name="languages">Languages that can be imported (2sxc languages enabled)</param>
         /// <param name="documentLanguageFallback">Fallback document language</param>
@@ -64,7 +63,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
         public ImportListXml Init(
             AppState appState,
-            IContentType contentType,
+            string typeName,
             Stream dataStream, 
             IEnumerable<string> languages, 
             string documentLanguageFallback, 
@@ -72,6 +71,7 @@ namespace ToSic.Eav.Apps.ImportExport
             ImportResolveReferenceMode resolveLinkMode)
         {
             ErrorLog = new ImportErrorLog(Log);
+            var contentType = appState.GetContentType(typeName);
 
             AppState = appState;
             AppWorkSvc.Init(AppState);
