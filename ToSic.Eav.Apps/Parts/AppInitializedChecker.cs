@@ -31,9 +31,7 @@ namespace ToSic.Eav.Apps.Parts
                 return callLog.ReturnFalse("ok");
 
             // something is missing, so we must build them
-            _appInitGenerator.New()
-                //.Init(appState)
-                .InitializeApp(appState, appName);
+            _appInitGenerator.New().InitializeApp(appState, appName);
             return callLog.ReturnTrue();
         }
 

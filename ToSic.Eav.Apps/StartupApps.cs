@@ -32,7 +32,6 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<AppManager.MyServices>();
             services.TryAddTransient<ZoneRuntime>();
             services.TryAddTransient<ZoneManager>();
-            services.TryAddTransient<QueryManager>();
             services.TryAddTransient<SystemManager>();
             services.TryAddTransient<AppFinder>();
 
@@ -57,6 +56,10 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<WorkEntityVersioning>();
 
             services.TryAddTransient<WorkAttributesMod>();
+            services.TryAddTransient<WorkQueryMod>();
+            services.AddTransient<WorkQueryCopy>();
+
+            // More services
 
             services.TryAddTransient<Import>();
 

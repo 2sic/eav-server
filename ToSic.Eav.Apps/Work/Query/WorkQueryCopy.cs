@@ -1,19 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Query;
-using ToSic.Eav.Generics;
-using ToSic.Eav.Metadata;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using ToSic.Eav.Metadata;
 using Connection = ToSic.Eav.DataSource.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Query.Connections;
+using System.Collections.Immutable;
+using ToSic.Eav.Data.Build;
+using ToSic.Eav.Generics;
+using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Serialization;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
-    public partial class QueryManager
+    public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     {
+        public WorkQueryCopy(
+            LazySvc<AppWorkService> appWorkServiceLazy,
+            LazySvc<QueryManager> queryManager,
+            LazySvc<DataBuilder> builder,
+            LazySvc<JsonSerializer> jsonSerializer) : base("AWk.QryMod")
+        {
+            ConnectServices(
+                _appWorkServiceLazy = appWorkServiceLazy,
+                _queryManager = queryManager,
+                Serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState)),
+                _builder = builder
+            );
+        }
+
+
+        private readonly LazySvc<DataBuilder> _builder;
+        private readonly LazySvc<AppWorkService> _appWorkServiceLazy;
+        private readonly LazySvc<QueryManager> _queryManager;
+        private LazySvc<JsonSerializer> Serializer;
+
+        private AppWorkService AppWorkSvc => _appWorkSvc ?? (_appWorkSvc = _appWorkServiceLazy.Value.Init(AppWorkCtx.AppState));
+        private AppWorkService _appWorkSvc;
+
+        private QueryDefinition Get(int queryId) => _queryManager.Value.Get(AppWorkSvc.AppState, queryId);
+
 
         public void SaveCopy(int id) => SaveCopy(Get(id));
 
