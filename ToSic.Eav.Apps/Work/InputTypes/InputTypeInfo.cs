@@ -2,7 +2,7 @@
 using ToSic.Eav.Metadata;
 using static ToSic.Eav.Metadata.Decorators;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
     /// <summary>
     /// Describes an input field type with it's labels, abilities etc. 

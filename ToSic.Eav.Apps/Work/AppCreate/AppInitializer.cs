@@ -4,14 +4,13 @@ using System.IO;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
-using ToSic.Eav.Apps.Work;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
     /// <summary>
     /// The AppInitializer is responsible for ensuring that an App-object has all the properties / metadata it needs. Specifically:

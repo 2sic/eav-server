@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
     /// <summary>
     /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.

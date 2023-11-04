@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps.Work
 {
     /// <summary>
     /// Special tool just to create an app.
