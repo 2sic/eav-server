@@ -31,7 +31,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public ImportService(
             AppWorkContextService appWorkCtxSvc,
-            //LazySvc<AppManager> appManagerLazy, 
             IImportExportEnvironment importExportEnvironment,
             LazySvc<EntitySaver> entitySaverLazy,
             DataBuilder dataBuilder
@@ -39,13 +38,12 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             ConnectServices(
                 _appWorkCtxSvc = appWorkCtxSvc,
-                //_appManagerLazy = appManagerLazy,
                 _importExportEnvironment = importExportEnvironment,
                 _entitySaver = entitySaverLazy,
                 _dataBuilder = dataBuilder
             );
         }
-        //private readonly LazySvc<AppManager> _appManagerLazy;
+
         private readonly IImportExportEnvironment _importExportEnvironment;
         private readonly LazySvc<EntitySaver> _entitySaver;
         private readonly DataBuilder _dataBuilder;
@@ -53,17 +51,13 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public ImportService Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
         {
-            //AppManager = zoneId.HasValue
-            //    ? _appManagerLazy.Value.Init(new AppIdentity(zoneId.Value, appId))
-            //    : _appManagerLazy.Value.Init(appId);
-            //Storage = AppManager.Storage;
             var ctx = zoneId.HasValue
                 ? _appWorkCtxSvc.Context(new AppIdentity(zoneId.Value, appId))
                 : _appWorkCtxSvc.Context(appId);
             var ctxWithDb = _appWorkCtxSvc.CtxWithDb(ctx.AppState);
             Storage = ctxWithDb.DataController;
             AppId = appId;
-            ZoneId = ctxWithDb.ZoneId; // AppManager.ZoneId;
+            ZoneId = ctxWithDb.ZoneId;
 
             SaveOptions = _importExportEnvironment.SaveOptions(ZoneId);
 

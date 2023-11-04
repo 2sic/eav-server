@@ -25,7 +25,32 @@ namespace ToSic.Eav.Apps.Work
             );
         }
 
-        public TWork New(IAppWorkCtx ctx = default, IAppIdentity identity = default, AppState state = default, int? appId = default) 
-            => _generator.New().InitContext(_ctxSvc.CtxGen<TContext>(ctx, identity, state, appId));
+        public TWork New(IAppWorkCtx ctx = default, IAppIdentity identity = default)
+            => _generator.New().InitContext(_ctxSvc.CtxGen<TContext>(ctx, identity));
+
+        public TWork New(AppState state = default)
+            => _generator.New().InitContext(_ctxSvc.CtxGen<TContext>(state: state));
+        
+        public TWork New(int? appId = default)
+            => _generator.New().InitContext(_ctxSvc.CtxGen<TContext>(appId: appId));
+    }
+
+    public class AppWorkUnit<TWork> : AppWorkUnit<TWork, IAppWorkCtx> where TWork : WorkUnitBase<IAppWorkCtx>
+    {
+        public AppWorkUnit(AppWorkContextService ctxSvc, Generator<TWork> generator) : base(ctxSvc, generator)
+        {
+        }
+    }
+    public class AppWorkUnitPlus<TWork> : AppWorkUnit<TWork, IAppWorkCtxPlus> where TWork : WorkUnitBase<IAppWorkCtxPlus>
+    {
+        public AppWorkUnitPlus(AppWorkContextService ctxSvc, Generator<TWork> generator) : base(ctxSvc, generator)
+        {
+        }
+    }
+    public class AppWorkUnitWithDb<TWork> : AppWorkUnit<TWork, IAppWorkCtxWithDb> where TWork : WorkUnitBase<IAppWorkCtxWithDb>
+    {
+        public AppWorkUnitWithDb(AppWorkContextService ctxSvc, Generator<TWork> generator) : base(ctxSvc, generator)
+        {
+        }
     }
 }
