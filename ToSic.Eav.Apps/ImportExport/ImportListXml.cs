@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         #region Dependency Injection
 
-        public ImportListXml(LazySvc<Import> importerLazy, DataBuilder builder, AppWorkService appWorkSvc) : base("App.ImpVtT")
+        public ImportListXml(LazySvc<ImportService> importerLazy, DataBuilder builder, AppWorkService appWorkSvc) : base("App.ImpVtT")
         {
             ConnectServices(
                 _builder = builder,
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         private AppWorkService AppWorkSvc { get; }
 
-        private readonly LazySvc<Import> _importerLazy;
+        private readonly LazySvc<ImportService> _importerLazy;
 
         private readonly DataBuilder _builder;
 

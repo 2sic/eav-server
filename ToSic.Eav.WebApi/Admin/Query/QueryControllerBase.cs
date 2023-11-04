@@ -26,7 +26,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
 {
     /// <inheritdoc />
     /// <summary>
-    /// Web API Controller for the Pipeline Designer UI
+    /// Web API Controller for the Pipeline Designer UI.
+    ///
+    /// It's just a base controller, because some methods need to be added at the SXC level which don't exist in the EAV.
     /// </summary>
     public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerBase<TImplementation>.MyServices> where TImplementation : QueryControllerBase<TImplementation>
     {

@@ -61,7 +61,7 @@ namespace ToSic.Eav.Apps
 
             // More services
 
-            services.TryAddTransient<Import>();
+            services.TryAddTransient<ImportService>();
 
             services.TryAddTransient<ZipExport>();
             services.TryAddTransient<ZipImport>();

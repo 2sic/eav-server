@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Eav.Generics;
@@ -18,42 +19,51 @@ using ToSic.Eav.Data.Build;
 namespace ToSic.Eav.Apps.ImportExport
 {
     /// <summary>
-    /// Import Schema and Entities to the EAV SqlStore
+    /// Import Content Types and/or Entities to the EAV SqlStore
     /// </summary>
-    public class Import: ServiceBase
+    public class ImportService: ServiceBase
     {
+        private readonly AppWorkContextService _appWorkCtxSvc;
         private const int ChunkLimitToStartChunking = 2500;
         private const int ChunkSizeAboveLimit = 500;
 
         #region Constructor / DI
 
-        public Import(LazySvc<AppManager> appManagerLazy, 
+        public ImportService(
+            AppWorkContextService appWorkCtxSvc,
+            //LazySvc<AppManager> appManagerLazy, 
             IImportExportEnvironment importExportEnvironment,
             LazySvc<EntitySaver> entitySaverLazy,
             DataBuilder dataBuilder
             ) : base("Eav.Import")
         {
             ConnectServices(
-                _appManagerLazy = appManagerLazy,
+                _appWorkCtxSvc = appWorkCtxSvc,
+                //_appManagerLazy = appManagerLazy,
                 _importExportEnvironment = importExportEnvironment,
                 _entitySaver = entitySaverLazy,
                 _dataBuilder = dataBuilder
             );
         }
-        private readonly LazySvc<AppManager> _appManagerLazy;
+        //private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly IImportExportEnvironment _importExportEnvironment;
         private readonly LazySvc<EntitySaver> _entitySaver;
         private readonly DataBuilder _dataBuilder;
 
 
-        public Import Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
+        public ImportService Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
         {
-            AppManager = zoneId.HasValue
-                ? _appManagerLazy.Value.Init(new AppIdentity(zoneId.Value, appId))
-                : _appManagerLazy.Value.Init(appId);
-            Storage = AppManager.Storage;
+            //AppManager = zoneId.HasValue
+            //    ? _appManagerLazy.Value.Init(new AppIdentity(zoneId.Value, appId))
+            //    : _appManagerLazy.Value.Init(appId);
+            //Storage = AppManager.Storage;
+            var ctx = zoneId.HasValue
+                ? _appWorkCtxSvc.Context(new AppIdentity(zoneId.Value, appId))
+                : _appWorkCtxSvc.Context(appId);
+            var ctxWithDb = _appWorkCtxSvc.CtxWithDb(ctx.AppState);
+            Storage = ctxWithDb.DataController;
             AppId = appId;
-            ZoneId = AppManager.ZoneId;
+            ZoneId = ctxWithDb.ZoneId; // AppManager.ZoneId;
 
             SaveOptions = _importExportEnvironment.SaveOptions(ZoneId);
 
@@ -63,7 +73,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
             return this;
         }
-        internal AppManager AppManager;
+        //internal AppManager AppManager;
 
         #endregion
 

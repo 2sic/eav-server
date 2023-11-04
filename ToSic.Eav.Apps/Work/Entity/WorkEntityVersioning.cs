@@ -13,11 +13,11 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     {
-        private readonly LazySvc<Import> _import;
+        private readonly LazySvc<ImportService> _import;
         public SystemManager SystemManager { get; }
         private readonly LazySvc<JsonSerializer> _jsonSerializer;
 
-        public WorkEntityVersioning(SystemManager systemManager, LazySvc<Import> import, LazySvc<JsonSerializer> jsonSerializer) : base("AWk.EntCre")
+        public WorkEntityVersioning(SystemManager systemManager, LazySvc<ImportService> import, LazySvc<JsonSerializer> jsonSerializer) : base("AWk.EntCre")
         {
             ConnectServices(
                 SystemManager = systemManager,

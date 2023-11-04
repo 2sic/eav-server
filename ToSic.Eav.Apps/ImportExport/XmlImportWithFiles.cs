@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             public readonly LazySvc<DataBuilder> MultiBuilder;
             public LazySvc<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
-            internal readonly LazySvc<Import> ImporterLazy;
+            internal readonly LazySvc<ImportService> ImporterLazy;
             internal readonly LazySvc<DbDataController> DbDataForNewApp;
             internal readonly LazySvc<DbDataController> DbDataForAppImport;
             internal readonly IImportExportEnvironment Environment;
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps.ImportExport
             internal readonly SystemManager SystemManager;
 
             public MyServices(
-                LazySvc<Import> importerLazy,
+                LazySvc<ImportService> importerLazy,
                 LazySvc<DbDataController> dbDataForNewApp,
                 LazySvc<DbDataController> dbDataForAppImport,
                 IImportExportEnvironment importExportEnvironment,
