@@ -9,13 +9,13 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkEntityCreate : WorkUnitBase<IAppWorkCtxWithDb>
     {
-        private readonly AppWork _appWork;
+        private readonly GenWorkDb<WorkEntitySave> _workEntSave;
         private readonly DataBuilder _builder;
 
-        public WorkEntityCreate(AppWork appWork, DataBuilder builder) : base("AWk.EntCre")
+        public WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave) : base("AWk.EntCre")
         {
             ConnectServices(
-                _appWork = appWork,
+                _workEntSave = workEntSave,
                 _builder = builder
             );
         }
@@ -29,7 +29,7 @@ namespace ToSic.Eav.Apps.Work
                 attributes: _builder.Attribute.Create(values),
                 metadataFor: metadataFor);
 
-            var eid = _appWork.EntitySave(AppWorkCtx).Save(newEnt);
+            var eid = _workEntSave.New(AppWorkCtx).Save(newEnt);
             var guid = AppWorkCtx.DataController.Entities.TempLastSaveGuid;
 
             return l.Return((eid, guid), $"id:{eid}, guid:{guid}");
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Apps.Work
             var newE = _builder.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
                 contentType: AppWorkCtx.AppState.GetContentType(typeName),
                 attributes: _builder.Attribute.Create(values));
-            return _appWork.EntitySave(AppWorkCtx).Save(newE);
+            return _workEntSave.New(AppWorkCtx).Save(newE);
         }
 
     }

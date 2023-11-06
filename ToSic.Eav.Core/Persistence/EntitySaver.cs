@@ -311,7 +311,7 @@ namespace ToSic.Eav.Persistence
             return (result, $"{result.Count}");
         });
 
-        private ( IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
+        private (IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
             CorrectPublishedAndGuidImports(IDictionary<string, IAttribute> values, bool logDetails
             ) => Log.Func(enabled: logDetails, func: l =>
         {

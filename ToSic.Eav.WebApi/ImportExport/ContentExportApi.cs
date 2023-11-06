@@ -37,15 +37,15 @@ namespace ToSic.Eav.WebApi.ImportExport
 {
     public class ContentExportApi : ServiceBase
     {
+        private readonly AppWorkContextService _appWorkCtxSvc;
         private readonly Generator<ExportListXml> _exportListXmlGenerator;
-        private readonly AppWork _appWork;
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly IResponseMaker _responseMaker;
         private readonly LazySvc<IFeaturesInternal> _features;
 
         public ContentExportApi(
-            AppWork appWork,
+            AppWorkContextService appWorkCtxSvc,
             IAppStates appStates,
             Generator<JsonSerializer> jsonSerializer,
             IResponseMaker responseMaker,
@@ -54,7 +54,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             ) : base("Api.EaCtEx")
         {
             ConnectServices(
-                _appWork = appWork,
+                _appWorkCtxSvc = appWorkCtxSvc,
                 _exportListXmlGenerator = exportListXmlGenerator,
                 _appStates = appStates,
                 _jsonSerializer = jsonSerializer,
@@ -66,7 +66,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public ContentExportApi Init(int appId)
         {
             var l = Log.Fn<ContentExportApi>($"For app: {appId}");
-            _appCtx = _appWork.Context(appId);
+            _appCtx = _appWorkCtxSvc.Context(appId);
             return l.Return(this);
         }
 

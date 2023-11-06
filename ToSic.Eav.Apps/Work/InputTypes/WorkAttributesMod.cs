@@ -7,12 +7,12 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
     {
-        private readonly AppWork _appWork;
+        private readonly GenWorkDb<WorkMetadata> _workMetadata;
 
-        public WorkAttributesMod(AppWork appWork) : base("ApS.InpGet")
+        public WorkAttributesMod(GenWorkDb<WorkMetadata> workMetadata) : base("ApS.InpGet")
         {
             ConnectServices(
-                _appWork = appWork
+                _workMetadata = workMetadata
             );
         }
 
@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Work
 
             var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
             // #ExtractEntitySave - verified
-            _appWork.EntityMetadata(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+            _workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
             return l.ReturnTrue();
         }
 
@@ -58,7 +58,7 @@ namespace ToSic.Eav.Apps.Work
             };
             var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
             // #ExtractEntitySave - verified
-            _appWork.EntityMetadata(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+            _workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
             l.Done();
         }
 

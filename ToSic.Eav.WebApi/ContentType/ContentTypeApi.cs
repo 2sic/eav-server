@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Shared;
@@ -26,28 +25,34 @@ namespace ToSic.Eav.WebApi
     /// </summary>
     public partial class ContentTypeApi : ServiceBase
     {
-        private readonly LazySvc<AppWork> _appWork;
 
         #region Constructor / DI
 
         public ContentTypeApi(
-            LazySvc<AppWork> appWork, 
             LazySvc<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
             LazySvc<IConvertToEavLight> convertToEavLight, 
             LazySvc<DataBuilder> multiBuilder,
+            GenWorkPlus<WorkEntities> workEntities,
+            GenWorkPlus<WorkInputTypes> inputTypes,
+            GenWorkDb<WorkAttributesMod> attributesMod,
             IAppStates appStates) : base("Api.EavCTC")
         {
             ConnectServices(
-                _appWork = appWork,
+                _inputTypes = inputTypes,
+                _attributesMod = attributesMod,
                 _dbLazy = dbLazy,
                 _appInitializedChecker = appInitializedChecker,
                 _convertToEavLight = convertToEavLight,
+                _workEntities = workEntities,
                 _multiBuilder = multiBuilder,
                 _appStates = appStates
             );
         }
 
+        private readonly GenWorkDb<WorkAttributesMod> _attributesMod;
+        private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
+        private readonly GenWorkPlus<WorkEntities> _workEntities;
         private readonly LazySvc<DataBuilder> _multiBuilder;
         private readonly LazySvc<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
@@ -58,7 +63,7 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<ContentTypeApi>($"{appId}");
             _appId = appId;
-            _appCtxPlus = _appWork.Value.ContextPlus(appId);
+            _appCtxPlus = _workEntities.CtxSvc.ContextPlus(appId);
             return l.Return(this);
         }
 
@@ -84,7 +89,7 @@ namespace ToSic.Eav.WebApi
                 _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(_appCtxPlus.AppState, null, Log); 
             }
             // should use app-manager and return each type 1x only
-            var appEntities = _appWork.Value.Entities(_appCtxPlus);
+            var appEntities = _workEntities.New(_appCtxPlus);
 
             // get all types
             var allTypes = _appCtxPlus.AppState.ContentTypes.OfScope(scope, true);
@@ -209,7 +214,7 @@ namespace ToSic.Eav.WebApi
             return l.Return(fields.Select(a => FieldAsDto(a.Field, a.Type, true)));
         }
 
-        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appWork.Value.InputTypes(_appCtxPlus).GetInputTypes());
+        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _inputTypes.New(_appCtxPlus).GetInputTypes());
         private readonly GetOnce<List<InputTypeInfo>> _appInputTypes = new GetOnce<List<InputTypeInfo>>();
 
         private ContentTypeFieldDto FieldAsDto(IContentTypeAttribute a, IContentType type, bool withContentType)
@@ -321,16 +326,21 @@ namespace ToSic.Eav.WebApi
 	        var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
             var attDef = _multiBuilder.Value.TypeAttributeBuilder
                 .Create(appId: _appCtxPlus.AppId, name: staticName, type: ValueTypeHelpers.Get(type), isTitle: false, id: 0, sortOrder: sortOrder);
-            var id = _appWork.Value.AttributesMod(_appWork.Value.CtxSvc.CtxWithDb(_appCtxPlus.AppState)).CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
+            //var id = _appWork.Value.AttributesMod(_appWork.Value.CtxSvc.CtxWithDb(_appCtxPlus.AppState)).CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
+            var id = AttributesMod.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
             return l.Return(id);
         }
 
         public bool SetInputType(int attributeId, string inputType)
         {
             var l = Log.Fn<bool>($"update input type attrib:{attributeId}, input:{inputType}");
-            var ok = _appWork.Value.AttributesMod(_appWork.Value.CtxSvc.CtxWithDb(_appCtxPlus.AppState)).UpdateInputType(attributeId, inputType);
+            //var ok = _appWork.Value.AttributesMod(_appWork.Value.CtxSvc.CtxWithDb(_appCtxPlus.AppState)).UpdateInputType(attributeId, inputType);
+            var ok = AttributesMod.UpdateInputType(attributeId, inputType);
             return l.Return(ok);
         }
+
+        private WorkAttributesMod AttributesMod => _attributesModInitialized ?? (_attributesModInitialized = _attributesMod.New(_appCtxPlus.AppState));
+        private WorkAttributesMod _attributesModInitialized;
 
 	    public bool DeleteField(int contentTypeId, int attributeId)
 	    {

@@ -11,17 +11,21 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkEntityUpdate : WorkUnitBase<IAppWorkCtxWithDb>
     {
-        private readonly AppWork _appWork;
+        private readonly GenWorkDb<WorkEntitySave> _workEntSave;
         private readonly DataBuilder _builder;
         private readonly LazySvc<EntitySaver> _entitySaverLazy;
         private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
 
-        public WorkEntityUpdate(AppWork appWork, DataBuilder builder, LazySvc<EntitySaver> entitySaverLazy, LazySvc<IImportExportEnvironment> environmentLazy) : base("AWk.EntUpd")
+        public WorkEntityUpdate(
+            DataBuilder builder,
+            LazySvc<EntitySaver> entitySaverLazy,
+            LazySvc<IImportExportEnvironment> environmentLazy,
+            GenWorkDb<WorkEntitySave> workEntSave) : base("AWk.EntUpd")
         {
             ConnectServices(
-                _appWork = appWork,
                 _builder = builder,
                 _entitySaverLazy = entitySaverLazy,
+                _workEntSave = workEntSave,
                 _environmentLazy = environmentLazy
             );
         }
@@ -89,7 +93,7 @@ namespace ToSic.Eav.Apps.Work
                 saveEnt.PlaceDraftInBranch = draftAndBranch.Value.branch;
             }
 
-            _appWork.EntitySave(AppWorkCtx).Save(saveEnt, saveOptions);
+            _workEntSave.New(AppWorkCtx).Save(saveEnt, saveOptions);
             return l.ReturnTrue("ok");
         }
 

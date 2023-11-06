@@ -9,14 +9,16 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkMetadata : WorkUnitBase<IAppWorkCtxWithDb>
     {
-        private readonly AppWork _appWork;
+        private readonly GenWorkDb<WorkEntityUpdate> _entityUpdate;
+        private readonly GenWorkDb<WorkEntitySave> _workEntSave;
         private readonly DataBuilder _builder;
 
-        public WorkMetadata(AppWork appWork, DataBuilder builder) : base("AWk.EntMd")
+        public WorkMetadata(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave, GenWorkDb<WorkEntityUpdate> entityUpdate) : base("AWk.EntMd")
         {
             ConnectServices(
-                _appWork = appWork,
-                _builder = builder
+                _entityUpdate = entityUpdate,
+                _builder = builder,
+                _workEntSave = workEntSave
             );
         }
 
@@ -30,8 +32,7 @@ namespace ToSic.Eav.Apps.Work
             var existingEntity = AppWorkCtx.AppState.List
                 .FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
             if (existingEntity != null)
-                _appWork.EntityUpdate(AppWorkCtx)
-                    .UpdateParts(existingEntity.EntityId, values);
+                _entityUpdate.New(AppWorkCtx).UpdateParts(existingEntity.EntityId, values);
             else
             {
                 var appState = AppWorkCtx.AppState;
@@ -39,8 +40,7 @@ namespace ToSic.Eav.Apps.Work
                     contentType: appState.GetContentType(typeName),
                     attributes: _builder.Attribute.Create(values),
                     metadataFor: target);
-                _appWork.EntitySave(AppWorkCtx)
-                    .Save(saveEnt);
+                _workEntSave.New(AppWorkCtx).Save(saveEnt);
             }
 
             l.Done();

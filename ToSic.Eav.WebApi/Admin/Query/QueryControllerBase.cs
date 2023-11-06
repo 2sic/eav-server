@@ -37,8 +37,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
         public class MyServices : MyServicesBase
         {
-            public AppWorkUnit<WorkQueryMod, IAppWorkCtx> WorkUnitQueryMod { get; }
-            public AppWorkUnit<WorkQueryCopy, IAppWorkCtx> WorkUnitQueryCopy { get; }
+            public GenWorkBasic<WorkQueryMod> WorkUnitQueryMod { get; }
+            public GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy { get; }
             public LazySvc<QueryManager> QueryManager { get; }
             /// <summary>
             /// The AppStates Generator should only be used in the Definition.
@@ -62,8 +62,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 Generator<PassThrough> passThrough,
                 LazySvc<QueryManager> queryManager,
                 Generator<AppStates> appStates,
-                AppWorkUnit<WorkQueryMod, IAppWorkCtx> workUnitQueryMod,
-                AppWorkUnit<WorkQueryCopy, IAppWorkCtx> workUnitQueryCopy)
+                GenWorkBasic<WorkQueryMod> workUnitQueryMod,
+                GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
             {
                 ConnectServices(
                     QueryBuilder = queryBuilder,

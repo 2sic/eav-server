@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Eav.WebApi.Dto;
@@ -13,15 +12,15 @@ namespace ToSic.Eav.WebApi.Admin
     {
         public const string LogSuffix = "Field";
 
-        public FieldControllerReal(LazySvc<ContentTypeApi> ctApiLazy, AppWork appWork): base("Api.FieldRl")
+        public FieldControllerReal(LazySvc<ContentTypeApi> ctApiLazy, GenWorkPlus<WorkInputTypes> inputTypes): base("Api.FieldRl")
         {
             ConnectServices(
-                _ctApiLazy = ctApiLazy,
-                _appWork = appWork
+                _inputTypes = inputTypes,
+                _ctApiLazy = ctApiLazy
             );
         }
 
-        private readonly AppWork _appWork;
+        private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
         private readonly LazySvc<ContentTypeApi> _ctApiLazy;
 
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
@@ -32,7 +31,7 @@ namespace ToSic.Eav.WebApi.Admin
         public string[] DataTypes(int appId) => _ctApiLazy.Value.Init(appId).DataTypes();
 
 
-        public List<InputTypeInfo> InputTypes(int appId) => _appWork.InputTypes(_appWork.ContextPlus(appId)).GetInputTypes();
+        public List<InputTypeInfo> InputTypes(int appId) => _inputTypes.New(appId).GetInputTypes();
 
 
         public Dictionary<string, string> ReservedNames() => Attributes.ReservedNames;

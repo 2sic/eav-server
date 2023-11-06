@@ -17,15 +17,15 @@ namespace ToSic.Eav.WebApi
 
         #region DI Constructor
 
-        public EntityPickerApi(AppWork appWork, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
+        public EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
         {
             ConnectServices(
                 _cultureResolver = cultureResolver,
-                _user = user,
-                _appWork = appWork
+                _workEntities = workEntities,
+                _user = user
             );
         }
-        private readonly AppWork _appWork;
+        private readonly GenWorkPlus<WorkEntities> _workEntities;
         private readonly IZoneCultureResolver _cultureResolver;
         private readonly IUser _user;
 
@@ -39,11 +39,11 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<IEnumerable<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
-            var appCtx = _appWork.ContextPlus(appId, showDrafts: withDrafts);
+            var appEnts = _workEntities.New(appId, showDrafts: withDrafts);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {
-                contentType = appCtx.AppState.GetContentType(contentTypeName);
+                contentType = appEnts.AppWorkCtx.AppState.GetContentType(contentTypeName);
                 l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
                 if (contentType == null)
                     return l.Return(new List<EntityForPickerDto>(),
@@ -51,7 +51,6 @@ namespace ToSic.Eav.WebApi
             }
 
             IEnumerable<IEntity> list;
-            var appEnts = _appWork.Entities(appCtx);
 
             // optionally filter by type
             if (contentType != null)

@@ -8,13 +8,9 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
     {
-        private readonly AppWork _appWork;
 
-        public WorkEntityDelete(AppWork appWork) : base("AWk.EntDel")
+        public WorkEntityDelete() : base("AWk.EntDel")
         {
-            ConnectServices(
-                _appWork = appWork
-            );
         }
 
         public bool Delete(Guid guid, bool force = false)

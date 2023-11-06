@@ -9,12 +9,10 @@ namespace ToSic.Eav.Apps.Work
     {
         private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
         private readonly AppsCacheSwitch _appsCache;
-        private readonly AppWork _appWork;
 
-        public WorkEntityPublish(AppWork appWork, LazySvc<IAppLoaderTools> appLoaderTools, AppsCacheSwitch appsCache /* Note: Singleton */) : base("AWk.EntPub")
+        public WorkEntityPublish(LazySvc<IAppLoaderTools> appLoaderTools, AppsCacheSwitch appsCache /* Note: Singleton */) : base("AWk.EntPub")
         {
             ConnectServices(
-                _appWork = appWork,
                 _appLoaderTools = appLoaderTools,
                 _appsCache = appsCache
             );

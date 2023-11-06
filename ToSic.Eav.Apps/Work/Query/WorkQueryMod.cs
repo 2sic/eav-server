@@ -14,42 +14,47 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
     {
+
         public WorkQueryMod(
             LazySvc<SystemManager> systemManagerLazy,
-            LazySvc<AppWorkService> appWorkServiceLazy,
             LazySvc<QueryManager> queryManager,
-            LazySvc<QueryDefinitionBuilder> queryDefBuilder) : base("AWk.QryMod")
+            LazySvc<QueryDefinitionBuilder> queryDefBuilder,
+            GenWorkDb<WorkEntityCreate> entCreate,
+            GenWorkDb<WorkEntityDelete> entDelete,
+            GenWorkDb<WorkEntityUpdate> entUpdate) : base("AWk.QryMod")
         {
             ConnectServices(
-                _appWorkServiceLazy = appWorkServiceLazy,
                 _systemManagerLazy = systemManagerLazy,
                 _queryManager = queryManager,
-                _queryDefBuilder = queryDefBuilder
-
+                _queryDefBuilder = queryDefBuilder,
+                _entDelete = entDelete,
+                _entCreate = entCreate,
+                _entUpdate = entUpdate
             );
         }
 
-        private readonly LazySvc<AppWorkService> _appWorkServiceLazy;
+        private readonly GenWorkDb<WorkEntityUpdate> _entUpdate;
+        private readonly GenWorkDb<WorkEntityCreate> _entCreate;
+        private readonly GenWorkDb<WorkEntityDelete> _entDelete;
         private readonly LazySvc<SystemManager> _systemManagerLazy;
         private readonly LazySvc<QueryManager> _queryManager;
         private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
 
 
-        private AppWorkService AppWorkSvc => _appWorkSvc ?? (_appWorkSvc = _appWorkServiceLazy.Value.Init(AppWorkCtx.AppState));
-        private AppWorkService _appWorkSvc;
-
         public bool Delete(int id)
         {
             var l = Log.Fn<bool>($"delete a#{AppWorkCtx.AppId}, id:{id}");
-            // Commented in v13, new implementation is based on AppState.Relationships
-            var canDeleteResult = AppWorkSvc.EntityDelete.CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(id);
+
+            var entDelete = _entDelete.New(AppWorkCtx.AppState);
+
+            var canDeleteResult = entDelete.CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(id);
             if (!canDeleteResult.HasMessages)
                 throw l.Done(new Exception(canDeleteResult.Messages));
 
 
             // Get the Entity describing the Query and Query Parts (DataSources)
-            var queryEntity = _queryManager.Value.GetQueryEntity(id, AppWorkSvc.AppState);
-            var qDef = _queryDefBuilder.Value.Create(queryEntity, AppWorkSvc.AppId);
+            var queryEntity = _queryManager.Value.GetQueryEntity(id, AppWorkCtx.AppState);
+            var qDef = _queryDefBuilder.Value.Create(queryEntity, AppWorkCtx.AppId);
 
             var parts = qDef.Parts;
             var mdItems = parts
@@ -59,18 +64,18 @@ namespace ToSic.Eav.Apps.Work
                 .ToList();
 
             // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
-            AppWorkSvc.EntityDelete.Delete(mdItems);
-            AppWorkSvc.EntityDelete.Delete(parts.Select(p => p.Id).ToList());
-            AppWorkSvc.EntityDelete.Delete(id);
+            entDelete.Delete(mdItems);
+            entDelete.Delete(parts.Select(p => p.Id).ToList());
+            entDelete.Delete(id);
 
             // flush cache
-            _systemManagerLazy.Value.PurgeApp(AppWorkSvc.AppId);
+            _systemManagerLazy.Value.PurgeApp(AppWorkCtx.AppId);
 
             return l.ReturnTrue();
         }
 
         private QueryDefinition Get(int queryId)
-            => _queryManager.Value.Get(AppWorkSvc.AppState, queryId);
+            => _queryManager.Value.Get(AppWorkCtx.AppState, queryId);
 
         /// <summary>
         /// Update an existing query in this app
@@ -126,11 +131,11 @@ namespace ToSic.Eav.Apps.Work
                     dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
 
                 if (entityId != null)
-                    AppWorkSvc.EntityUpdate.UpdateParts(Convert.ToInt32(entityId), dataSource);
+                    _entUpdate.New(AppWorkCtx.AppState).UpdateParts(Convert.ToInt32(entityId), dataSource);
                 // Add new DataSource
                 else
                 {
-                    var newSpecs = AppWorkSvc.EntityCreate.Create(QueryConstants.QueryPartTypeName, dataSource,
+                    var newSpecs = _entCreate.New(AppWorkCtx.AppState).Create(QueryConstants.QueryPartTypeName, dataSource,
                         new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                     newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
                 }
@@ -161,9 +166,10 @@ namespace ToSic.Eav.Apps.Work
             // Get EntityGuids from the UI (except Out and unsaved)
             newEntityGuids.AddRange(newDataSources);
 
+            var entDelete = _entDelete.New(AppWorkCtx.AppState);
             foreach (var entToDel in existingEntityGuids.Where(guid => !newEntityGuids.Contains(guid)))
                 // force: true - force-delete the data-source part even if it still has metadata and stuff referencing it
-                AppWorkSvc.EntityDelete.Delete(entToDel, force: true);
+                entDelete.Delete(entToDel, force: true);
             l.Done();
         }
 
@@ -189,7 +195,7 @@ namespace ToSic.Eav.Apps.Work
             // add to new object...then send to save/update
             values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
             // #ExtractEntitySave
-            AppWorkSvc.EntityUpdate.UpdateParts(id, values);
+            _entUpdate.New(AppWorkCtx.AppState).UpdateParts(id, values);
             l.Done();
         }
 

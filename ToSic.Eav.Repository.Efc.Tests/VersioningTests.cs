@@ -45,7 +45,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var version = 2;
 
             //var appManager = GetService<AppManager>().Init(Specs);
-            var versionSvc = GetService<AppWorkUnit<WorkEntityVersioning, IAppWorkCtxWithDb>>().New(appId: Specs.AppId);
+            var versionSvc = GetService<GenWorkDb<WorkEntityVersioning>>().New(appId: Specs.AppId);
             var dc = GetService<DbDataController>().Init(Specs.ZoneId, Specs.AppId);
             //var all = appManager.Entities.VersionHistory(id);
             dc.Versioning.GetHistoryList(id, false);

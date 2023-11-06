@@ -18,30 +18,27 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     {
+
         public WorkQueryCopy(
-            LazySvc<AppWorkService> appWorkServiceLazy,
             LazySvc<QueryManager> queryManager,
             LazySvc<DataBuilder> builder,
-            LazySvc<JsonSerializer> jsonSerializer) : base("AWk.QryMod")
+            LazySvc<JsonSerializer> jsonSerializer,
+            GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod")
         {
             ConnectServices(
-                _appWorkServiceLazy = appWorkServiceLazy,
+                _entSave = entSave,
                 _queryManager = queryManager,
                 Serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState)),
                 _builder = builder
             );
         }
 
-
+        private readonly GenWorkDb<WorkEntitySave> _entSave;
         private readonly LazySvc<DataBuilder> _builder;
-        private readonly LazySvc<AppWorkService> _appWorkServiceLazy;
         private readonly LazySvc<QueryManager> _queryManager;
         private LazySvc<JsonSerializer> Serializer;
 
-        private AppWorkService AppWorkSvc => _appWorkSvc ?? (_appWorkSvc = _appWorkServiceLazy.Value.Init(AppWorkCtx.AppState));
-        private AppWorkService _appWorkSvc;
-
-        private QueryDefinition Get(int queryId) => _queryManager.Value.Get(AppWorkSvc.AppState, queryId);
+        private QueryDefinition Get(int queryId) => _queryManager.Value.Get(AppWorkCtx.AppState, queryId);
 
 
         public void SaveCopy(int id) => SaveCopy(Get(id));
@@ -84,7 +81,7 @@ namespace ToSic.Eav.Apps.Work
             saveList.Add(newQuery);
 
             // #ExtractEntitySave - verified
-            AppWorkSvc.EntitySave.Save(saveList);
+            _entSave.New(AppWorkCtx.AppState).Save(saveList);
             l.Done();
         }
 

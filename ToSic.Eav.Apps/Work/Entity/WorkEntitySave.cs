@@ -19,21 +19,17 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
     {
-        private readonly AppWork _appWork;
         private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
         private readonly AppsCacheSwitch _appsCache;
         private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
 
         public WorkEntitySave(
-            AppWork appWork,
             LazySvc<DataBuilder> multiBuilder,
             LazySvc<IAppLoaderTools> appLoaderTools,
             AppsCacheSwitch appsCache, // Note: Singleton
-            LazySvc<IImportExportEnvironment> environmentLazy
-        ) : base("Wrk.EntSav")
+            LazySvc<IImportExportEnvironment> environmentLazy) : base("Wrk.EntSav")
         {
             ConnectServices(
-                _appWork = appWork,
                 _multiBuilder = multiBuilder,
                 _appLoaderTools = appLoaderTools,
                 _appsCache = appsCache,

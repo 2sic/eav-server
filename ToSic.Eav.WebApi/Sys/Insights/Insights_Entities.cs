@@ -20,10 +20,9 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app attributes for {appId} and {type}");
-            var appCtx = _appWork.ContextPlus(appId ?? 0);
-            var appEntities = _appWork.Entities(appCtx);
+            var appEntities = _workEntities.New(appId ?? 0);
 
-            var typ = appCtx.AppState.GetContentType(type);
+            var typ = appEntities.AppWorkCtx.AppState.GetContentType(type);
 
             var msg = "" + H1($"Entities of {type} ({HtmlEncode(typ?.Name)}/{typ?.NameId}) in {appId}\n");
             try
@@ -70,7 +69,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app entity metadata for {appId} and entity {entity}");
-            var ent = _appWork.Entities(appId.Value).Get(entity.Value);
+            var ent = _workEntities.New(appId.Value).Get(entity.Value);
 
             var msg = H1($"Entity Metadata for {entity} in {appId}\n").ToString();
             var metadata = ent.Metadata.ToList();
@@ -84,7 +83,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app entity permissions for {appId} and entity {entity}");
-            var ent = _appWork.Entities(appId.Value).Get(entity.Value);
+            var ent = _workEntities.New(appId.Value).Get(entity.Value);
 
             var msg = H1($"Entity Permissions for {entity} in {appId}\n").ToString();
             var permissions = ent.Metadata.Permissions.Select(p => p.Entity).ToList();
@@ -98,17 +97,17 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 return message;
 
             Log.A($"debug app entity metadata for {appId} and entity {nameId}");
-            var appCtx = _appWork.ContextPlus(appId.Value);
+            var entities = _workEntities.New(appId.Value);
 
             IEntity ent;
             if (int.TryParse(nameId, out var entityId))
-                ent = _appWork.Entities(appCtx).Get(entityId);
+                ent = entities.Get(entityId);
             else if (Guid.TryParse(nameId, out var entityGuid))
-                ent = _appWork.Entities(appCtx).Get(entityGuid);
+                ent = entities.Get(entityGuid);
             else
                 throw CreateBadRequest("can't use entityid - must be number or guid");
 
-            var ser = _jsonSerializer.New().SetApp(appCtx.AppState);
+            var ser = _jsonSerializer.New().SetApp(entities.AppWorkCtx.AppState);
             var json = ser.Serialize(ent);
 
             var msg = H1($"Entity Debug for {nameId} in {appId}\n")

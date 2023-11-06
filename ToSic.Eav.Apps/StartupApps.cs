@@ -27,7 +27,6 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ContextOfSite>();
 
             // Runtimes and Managers
-            services.TryAddTransient<ZoneRuntime>();
             services.TryAddTransient<ZoneManager>();
             services.TryAddTransient<SystemManager>();
             services.TryAddTransient<AppFinder>();
@@ -38,12 +37,9 @@ namespace ToSic.Eav.Apps
 
             // New part v16 with better architecture
             services.TryAddTransient<AppWorkContextService>();
-            services.TryAddTransient<AppWork>();
-            services.TryAddTransient<AppWorkService>();
-            services.TryAddTransient(typeof(AppWorkUnit<,>));
-            services.TryAddTransient(typeof(AppWorkUnit<>));
-            services.TryAddTransient(typeof(AppWorkUnitPlus<>));
-            services.TryAddTransient(typeof(AppWorkUnitWithDb<>));
+            services.TryAddTransient(typeof(GenWorkPlus<>));
+            services.TryAddTransient(typeof(GenWorkDb<>));
+            services.TryAddTransient(typeof(GenWorkBasic<>));
             services.TryAddTransient<WorkEntities>();
             services.TryAddTransient<WorkInputTypes>();
             services.TryAddTransient<WorkEntitySave>();

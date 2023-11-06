@@ -12,14 +12,13 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 {
     public class SaveEntities: ServiceBase
     {
-        private readonly AppWork _appWork;
+        private readonly GenWorkDb<WorkEntitySave> _workEntSave;
         private readonly EntityBuilder _entityBuilder;
-        public SaveEntities(EntityBuilder entityBuilder, AppWork appWork) : base("Eav.SavHlp")
+        public SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave> workEntSave) : base("Eav.SavHlp")
         {
             ConnectServices(
                 _entityBuilder = entityBuilder,
-                _appWork = appWork
-
+                _workEntSave = workEntSave
             );
         }
 
@@ -51,13 +50,8 @@ namespace ToSic.Eav.WebApi.SaveHelpers
 
             l.A($"will save {entitiesToImport.Count} items");
             // #ExtractEntitySave - verified
-            //if (UseOldSave)
-            //    initializedAppMan.Entities.Save(entitiesToImport);
-            //else
-            {
-                var saver = _appWork.EntitySave(appCtx.AppState);
-                saver.Save(entitiesToImport);
-            }
+            var saver = _workEntSave.New(appCtx.AppState);
+            saver.Save(entitiesToImport);
             l.Done();
         }
 

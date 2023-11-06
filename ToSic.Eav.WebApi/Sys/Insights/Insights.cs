@@ -15,7 +15,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal: ServiceBase
     {
-        private readonly AppWork _appWork;
+        private readonly GenWorkPlus<WorkEntities> _workEntities;
         private readonly LazySvc<LicenseCatalog> _licenseCatalog;
         private readonly LazySvc<SystemFingerprint> _fingerprint;
         private readonly Generator<JsonSerializer> _jsonSerializer;
@@ -29,13 +29,14 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             LazySvc<ILicenseService> licenseServiceLazy, 
             LazySvc<SystemFingerprint> fingerprint,
             LazySvc<LicenseCatalog> licenseCatalog,
+            GenWorkPlus<WorkEntities> workEntities,
             IUser user, 
             LightSpeedStats lightSpeedStats,
-            AppWork appWork,
             Generator<JsonSerializer> jsonSerializer)
             : base("Api.SysIns")
         {
             ConnectServices(
+                _workEntities = workEntities,
                 _appStates = appStates,
                 _logStore = logStore,
                 _licenseServiceLazy = licenseServiceLazy,
@@ -43,7 +44,6 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 _licenseCatalog = licenseCatalog,
                 _user = user,
                 _lightSpeedStats = lightSpeedStats,
-                _appWork = appWork,
                 _jsonSerializer = jsonSerializer,
                 SystemManager = systemManager
             );

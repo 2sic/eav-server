@@ -92,7 +92,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 
             Log.A($"debug app-internals for {appId}");
             //var appRead = AppRt(appId);
-            var pkg = _appWork.Context(appId.Value).AppState; // appRead.AppState;
+            var pkg = _appStates.Get(appId.Value);
 
             var msg = H1($"App internals for {appId}").ToString();
             try

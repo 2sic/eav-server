@@ -5,7 +5,7 @@ using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps
 {
-    public class ZoneManager : ZoneBase //<ZoneManager>
+    public class ZoneManager : ZoneBase
     {
         #region Constructor and simple properties
 

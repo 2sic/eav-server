@@ -41,15 +41,17 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         public SimpleDataController(
             DataBuilder builder,
-            LazySvc<AppWork> appWork,
-            AppWorkService appWorkSvc,
             IZoneMapper zoneMapper,
             IContextOfSite ctx,
+            GenWorkDb<WorkEntitySave> entSave,
+            GenWorkDb<WorkEntityUpdate> entUpdate,
+            GenWorkDb<WorkEntityDelete> entDelete,
             Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             ConnectServices(
-                _appWork = appWork,
-                AppWorkSvc = appWorkSvc,
+                _entSave = entSave,
+                _entUpdate = entUpdate,
+                _entDelete = entDelete,
                 _zoneMapper = zoneMapper,
                 _builder = builder,
                 _ctx = ctx,
@@ -57,8 +59,9 @@ namespace ToSic.Eav.Api.Api01
             );
         }
 
-        private AppWorkService AppWorkSvc { get; }
-        private readonly LazySvc<AppWork> _appWork;
+        private readonly GenWorkDb<WorkEntitySave> _entSave;
+        private readonly GenWorkDb<WorkEntityUpdate> _entUpdate;
+        private readonly GenWorkDb<WorkEntityDelete> _entDelete;
         private readonly IZoneMapper _zoneMapper;
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _appPermissionCheckGenerator;
@@ -69,12 +72,14 @@ namespace ToSic.Eav.Api.Api01
 
         private int _appId;
         private bool _checkWritePermissions = true; // default behavior is to check write publish/draft permissions (that should happen for REST, but not for c# API)
+        private IAppWorkCtxWithDb _ctxWithDb;
 
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
         /// <param name="checkWritePermissions"></param>
-        public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true) => Log.Func($"{zoneId}, {appId}", l =>
+        public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true)
         {
+            var l = Log.Fn<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
 
             // when zoneId is not that same as in current context, we need to set right site for provided zoneId
@@ -82,20 +87,21 @@ namespace ToSic.Eav.Api.Api01
 
             _defaultLanguageCode = GetDefaultLanguage(zoneId);
             var appIdentity = new AppIdentity(zoneId, appId);
-            AppWorkSvc.Init(AppWorkSvc.AppWork.Context(appIdentity).AppState);
+            _ctxWithDb = _entSave.CtxSvc.CtxWithDb(appIdentity);
             _checkWritePermissions = checkWritePermissions;
             l.A($"Default language:{_defaultLanguageCode}");
-            return this;
-        });
+            return l.Return(this);
+        }
 
-        private string GetDefaultLanguage(int zoneId) => Log.Func($"{zoneId}", () =>
+        private string GetDefaultLanguage(int zoneId)
         {
+            var l = Log.Fn<string>($"{zoneId}");
             var site = _zoneMapper.SiteOfZone(zoneId);
-            if (site == null) return ("", "site is null");
+            if (site == null) return l.Return("", "site is null");
 
             var usesLanguages = _zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
-            return (usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
-        });
+            return l.Return(usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
+        }
         
         #endregion
 
@@ -116,7 +122,7 @@ namespace ToSic.Eav.Api.Api01
             if (multiValues == null) return (null, "attributes were null");
 
             // ensure the type really exists
-            var type = AppWorkSvc.AppState.GetContentType(contentTypeName);
+            var type = _ctxWithDb.AppState.GetContentType(contentTypeName);
             if (type == null)
                 throw l.Done(new ArgumentException("Error: Content type '" + contentTypeName + "' does not exist."));
 
@@ -125,7 +131,7 @@ namespace ToSic.Eav.Api.Api01
             var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
 
             // #ExtractEntitySave - verified
-            var ids = _appWork.Value.EntitySave(AppWorkSvc.AppState).Save(importEntity);
+            var ids = _entSave.New(_ctxWithDb.AppState).Save(importEntity);
 
             return (ids, "ok");
         });
@@ -190,11 +196,10 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values) => Log.Do($"update i:{entityId}", () =>
         {
-            var original = AppWorkSvc.AppState.List.FindRepoId(entityId);
+            var original = _ctxWithDb.AppState.List.FindRepoId(entityId);
             var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
             // #ExtractEntitySave - verified
-            _appWork.Value.EntityUpdate(null, appState: AppWorkSvc.AppState)
-                .UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
+            _entUpdate.New(_ctxWithDb.AppState).UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
         });
 
 
@@ -203,14 +208,14 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         /// <param name="entityId">Entity ID</param>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(int entityId) => AppWorkSvc.EntityDelete.Delete(entityId);
+        public void Delete(int entityId) => _entDelete.New(_ctxWithDb.AppState).Delete(entityId);
 
 
         /// <summary>
         /// Delete the entity specified by GUID.
         /// </summary>
         /// <param name="entityGuid">Entity GUID</param>
-        public void Delete(Guid entityGuid) => AppWorkSvc.EntityDelete.Delete(entityGuid);
+        public void Delete(Guid entityGuid) => _entDelete.New(_ctxWithDb.AppState).Delete(entityGuid);
 
 
         private IDictionary<string, object> ConvertRelationsToNullArray(IContentType contentType,
@@ -310,8 +315,6 @@ namespace ToSic.Eav.Api.Api01
             if (attributes.SafeNone())
                 return (new Dictionary<string, IAttribute>(), "null/empty");
 
-            //var tempMutable = _builder.Attribute.Mutable(attributes);
-
             var updated = attributes.Select(keyValuePair =>
                 {
                     // Handle content-type attributes
@@ -351,7 +354,7 @@ namespace ToSic.Eav.Api.Api01
             // this write publish/draft permission checks should happen only for REST API
 
             // 1. Find if user may write PUBLISHED:
-            var appState = AppWorkSvc.AppState;
+            var appState = _ctxWithDb.AppState;
 
             // 1.1. app permissions 
             if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appState)

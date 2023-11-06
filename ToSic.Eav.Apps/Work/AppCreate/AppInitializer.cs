@@ -27,12 +27,14 @@ namespace ToSic.Eav.Apps.Work
         public AppInitializer(
             LazySvc<DataBuilder> builder,
             Generator<IRepositoryLoader> repositoryLoaderGenerator,
-            AppWork appWork,
+            GenWorkDb<WorkEntitySave> workEntSave,
+            GenWorkDb<WorkAttributesMod> attributesMod,
             SystemManager systemManager,
             IAppStates appStates) : base("Eav.AppBld")
         {
             ConnectServices(
-                _appWork = appWork,
+                _attributesMod = attributesMod,
+                _workEntSave = workEntSave,
                 _builder = builder,
                 SystemManager = systemManager,
                 _repositoryLoaderGenerator = repositoryLoaderGenerator,
@@ -40,7 +42,8 @@ namespace ToSic.Eav.Apps.Work
             );
         }
 
-        private readonly AppWork _appWork;
+        private readonly GenWorkDb<WorkAttributesMod> _attributesMod;
+        private readonly GenWorkDb<WorkEntitySave> _workEntSave;
         private readonly LazySvc<DataBuilder> _builder;
         private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
         private readonly IAppStates _appStates;
@@ -97,7 +100,6 @@ namespace ToSic.Eav.Apps.Work
                 // get the latest app-state, but not-initialized so we can make changes
                 var repoLoader = _repositoryLoaderGenerator.New();
                 appState = repoLoader.AppState(appState.AppId, false);
-                //_appManager = null; // reset, because afterwards we need a clean AppManager
             }
 
             addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
@@ -123,7 +125,7 @@ namespace ToSic.Eav.Apps.Work
         private bool CreateAllMissingContentTypes(AppState appState, List<AddContentTypeAndOrEntityTask> newItems)
         {
             var l = Log.Fn<bool>($"Check for {newItems.Count}");
-            var inputTypeMod = _appWork.AttributesMod(appState: appState);
+            var inputTypeMod = _attributesMod.New(appState);
             var addedTypes = false;
             foreach (var item in newItems)
                 if (item.InAppType && FindContentType(appState, item.SetName, item.InAppType) == null)
@@ -157,12 +159,8 @@ namespace ToSic.Eav.Apps.Work
             var newEnt = _builder.Value.Entity.Create(appId: appState.AppId, guid: Guid.NewGuid(),
                 contentType: ct,
                 attributes: _builder.Value.Attribute.Create(values), metadataFor: mdTarget);
-            //newEnt.SetMetadata(new Target((int)TargetTypes.App, null) { KeyNumber = AppState.AppId });
 
-            // #ExtractEntitySave - verified
-            //var appManager = _appManagerGenerator.New().InitWithState(appState, true);
-            //appManager.Entities.Save(newEnt);
-            _appWork.EntitySave(appState).Save(newEnt);
+            _workEntSave.New(appState).Save(newEnt);
             l.Done();
         }
 

@@ -24,21 +24,20 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public partial class ImportListXml: ServiceBase 
     {
+
         #region Dependency Injection
 
-        public ImportListXml(LazySvc<ImportService> importerLazy, DataBuilder builder, AppWorkService appWorkSvc) : base("App.ImpVtT")
+        public ImportListXml(LazySvc<ImportService> importerLazy, DataBuilder builder, GenWorkDb<WorkEntityDelete> entDelete) : base("App.ImpVtT")
         {
             ConnectServices(
                 _builder = builder,
                 _importerLazy = importerLazy,
-                AppWorkSvc = appWorkSvc
+                _entDelete = entDelete
             );
         }
 
-        private AppWorkService AppWorkSvc { get; }
-
+        private readonly GenWorkDb<WorkEntityDelete> _entDelete;
         private readonly LazySvc<ImportService> _importerLazy;
-
         private readonly DataBuilder _builder;
 
         #endregion
@@ -74,8 +73,6 @@ namespace ToSic.Eav.Apps.ImportExport
             var contentType = appState.GetContentType(typeName);
 
             AppState = appState;
-            AppWorkSvc.Init(AppState);
-
             _appId = AppState.AppId;
 
             ContentType = contentType;
@@ -200,9 +197,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     // if this value is just a placeholder/reference to another value,
                     // then find the master/primary value, and add this language to it's language list
-                    var entityValue =
-                        AttributeLanguageImportHelper.ValueItemOfLanguageOrNull(entityAttributes, valName,
-                            valueReferenceLanguage);
+                    var entityValue = AttributeLanguageImportHelper
+                        .ValueItemOfLanguageOrNull(entityAttributes, valName, valueReferenceLanguage);
                     if (entityValue.Value != null)
                     {
                         // 2023-02-24 2dm #immutable
@@ -214,9 +210,6 @@ namespace ToSic.Eav.Apps.ImportExport
                             entityValue.Value, updatedValue);
                         var newAttribute = _builder.Attribute.CreateFrom(entityValue.Attribute, newValues);
                         entityAttributes = _builder.Attribute.Replace(entityAttributes, newAttribute);
-                        //entityValue.Attribute.Values = dummy - fix;
-                        //entityValue.Attribute.Values.Remove(entityValue.Value);
-                        //entityValue.Attribute.Values.Add(updatedValue);
                         continue;
                     }
 
@@ -305,14 +298,13 @@ namespace ToSic.Eav.Apps.ImportExport
             if (_deleteSetting == ImportDeleteUnmentionedItems.All)
             {
                 var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
-                // #ExtractEntitySave - ???
-                AppWorkSvc.EntityDelete.Delete(idsToDelete);
+                _entDelete.New(AppState).Delete(idsToDelete);
             }
 
             var import = _importerLazy.Value.Init(null, _appId, false, true);
             import.ImportIntoDb(null, ImportEntities);
-            // important note: don't purge cache here, but the caller MUST do this!
 
+            // important note: don't purge cache here, but the caller MUST do this!
             Timer.Stop();
             TimeForDbImport = Timer.ElapsedMilliseconds;
             return "ok";

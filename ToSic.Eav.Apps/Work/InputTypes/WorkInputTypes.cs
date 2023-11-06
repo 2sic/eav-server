@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
@@ -11,16 +10,16 @@ namespace ToSic.Eav.Apps.Work
 {
     public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
     {
-        private readonly AppWork _appWork;
+        private readonly GenWorkPlus<WorkEntities> _workEntities;
         private readonly LazySvc<IAppFileSystemLoader> _appFileSystemLoaderLazy;
         private readonly IAppStates _appStates;
 
-        public WorkInputTypes(IAppStates appStates, LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy, AppWork appWork) : base("ApS.InpGet")
+        public WorkInputTypes(IAppStates appStates, LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy, GenWorkPlus<WorkEntities> workEntities) : base("ApS.InpGet")
         {
             ConnectServices(
                 _appStates = appStates,
-                _appFileSystemLoaderLazy = appFileSystemLoaderLazy,
-                _appWork = appWork
+                _workEntities = workEntities,
+                _appFileSystemLoaderLazy = appFileSystemLoaderLazy
             );
         }
 
@@ -66,7 +65,7 @@ namespace ToSic.Eav.Apps.Work
             LogListOfInputTypes("Combined", inputTypes);
 
             // Merge input types registered in global metadata-app
-            var systemAppCtx = _appWork.ContextPlus(Constants.MetaDataAppId);
+            var systemAppCtx = _workEntities.CtxSvc.ContextPlus(Constants.MetaDataAppId);
             var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx);
             systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
             LogListOfInputTypes("System", systemAppInputTypes);
@@ -114,7 +113,7 @@ namespace ToSic.Eav.Apps.Work
         /// <param name="appCtxPlus">App context to use. Often the current app, but can be a custom one.</param>
         /// <returns></returns>
         private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus appCtxPlus = default)
-            => _appWork.Entities(appCtxPlus ?? AppWorkCtx).Get(InputTypes.TypeForInputTypeDefinition)
+            => _workEntities.New(appCtxPlus ?? AppWorkCtx).Get(InputTypes.TypeForInputTypeDefinition)
                 .Select(e => new InputTypeInfo(
                     e.Value<string>(InputTypes.InputTypeType),
                     e.Value<string>(InputTypes.InputTypeLabel),
