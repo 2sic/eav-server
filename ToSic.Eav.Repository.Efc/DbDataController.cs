@@ -111,7 +111,6 @@ namespace ToSic.Eav.Repository.Efc
         /// Set ZoneId, AppId and ParentAppId on current context.
         /// </summary>
         /// <param name="appState"></param>
-        /// <param name="parentLog"></param>
         /// <returns></returns>
         public DbDataController Init(AppState appState)
         {
