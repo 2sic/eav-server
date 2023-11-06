@@ -5,10 +5,10 @@ using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Languages;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
@@ -26,25 +26,37 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<ContextOfSite>();
 
             // Runtimes and Managers
-            services.TryAddTransient<AppRuntimeBase.MyServices>();
-            services.TryAddTransient<AppRuntime>();
-            services.TryAddTransient<AppManager>();
-            services.TryAddTransient<AppManager.MyServices>();
-            services.TryAddTransient<ZoneRuntime>();
             services.TryAddTransient<ZoneManager>();
-            services.TryAddTransient<QueryManager>();
-            services.TryAddTransient<SystemManager>();
+            services.TryAddTransient<AppCachePurger>();
             services.TryAddTransient<AppFinder>();
 
             // Runtime parts
-            services.TryAddTransient<ContentTypeRuntime>();
-            services.TryAddTransient<MetadataRuntime>();
             services.TryAddTransient<MdRecommendations>(); // new v13
             services.TryAddTransient<MdRequirements>(); // new v13
-            services.TryAddTransient<EntityRuntime>();
-            services.TryAddTransient<EntitiesManager>();
 
-            services.TryAddTransient<Import>();
+            // New part v16 with better architecture
+            services.TryAddTransient<AppWorkContextService>();
+            services.TryAddTransient(typeof(GenWorkPlus<>));
+            services.TryAddTransient(typeof(GenWorkDb<>));
+            services.TryAddTransient(typeof(GenWorkBasic<>));
+            services.TryAddTransient<WorkEntities>();
+            services.TryAddTransient<WorkInputTypes>();
+            services.TryAddTransient<WorkEntitySave>();
+            services.TryAddTransient<WorkEntityCreate>();
+            services.TryAddTransient<WorkEntityUpdate>();
+            services.TryAddTransient<WorkMetadata>();
+            services.TryAddTransient<WorkFieldList>();
+            services.TryAddTransient<WorkEntityDelete>();
+            services.TryAddTransient<WorkEntityPublish>();
+            services.TryAddTransient<WorkEntityVersioning>();
+
+            services.TryAddTransient<WorkAttributesMod>();
+            services.TryAddTransient<WorkQueryMod>();
+            services.TryAddTransient<WorkQueryCopy>();
+
+            // More services
+
+            services.TryAddTransient<ImportService>();
 
             services.TryAddTransient<ZipExport>();
             services.TryAddTransient<ZipImport>();

@@ -26,15 +26,16 @@ namespace ToSic.Eav.Apps.ImportExport
 
         protected ExportImportValueConversion ValueConverter { get; }
 
+        public ExportListXml Init(AppState appState, string typeName) => Init(appState, appState.GetContentType(typeName));
         public ExportListXml Init(AppState app, IContentType contentType)
         {
-            App = app;
+            AppState = app;
             ContentType = contentType;
             return this;
         }
 
         private readonly XmlBuilder _xBuilder = new XmlBuilder();
-        private AppState App { get; set; }
+        private AppState AppState { get; set; }
         public IContentType ContentType { get; set; }
 
         #endregion
@@ -102,7 +103,7 @@ namespace ToSic.Eav.Apps.ImportExport
             var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
             // Query all entities, or just the ones with specified IDs
-            var entities = App.ListPublished.List.Where(e => e.Type == ContentType);
+            var entities = AppState.ListPublished.List.Where(e => e.Type == ContentType);
             if (selectedIds != null && selectedIds.Length > 0)
                 entities = entities.Where(e => selectedIds.Contains(e.EntityId));
             var entList = entities.ToList();

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Shared;
@@ -16,63 +15,66 @@ using ToSic.Eav.WebApi.Security;
 using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
+using ToSic.Eav.Apps.Work;
 
 namespace ToSic.Eav.WebApi
 {
-	/// <inheritdoc />
-	/// <summary>
-	/// Web API Controller for ContentTypes
-	/// </summary>
-	public partial class ContentTypeApi : ServiceBase
+    /// <inheritdoc />
+    /// <summary>
+    /// Web API Controller for ContentTypes
+    /// </summary>
+    public partial class ContentTypeApi : ServiceBase
     {
 
         #region Constructor / DI
 
         public ContentTypeApi(
-            LazySvc<AppRuntime> appRuntimeLazy, 
-            LazySvc<AppManager> appManagerLazy, 
             LazySvc<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
             LazySvc<IConvertToEavLight> convertToEavLight, 
             LazySvc<DataBuilder> multiBuilder,
+            GenWorkPlus<WorkEntities> workEntities,
+            GenWorkPlus<WorkInputTypes> inputTypes,
+            GenWorkDb<WorkAttributesMod> attributesMod,
             IAppStates appStates) : base("Api.EavCTC")
         {
             ConnectServices(
-                _appRuntimeLazy = appRuntimeLazy,
-                _appManagerLazy = appManagerLazy,
+                _inputTypes = inputTypes,
+                _attributesMod = attributesMod,
                 _dbLazy = dbLazy,
                 _appInitializedChecker = appInitializedChecker,
                 _convertToEavLight = convertToEavLight,
+                _workEntities = workEntities,
                 _multiBuilder = multiBuilder,
                 _appStates = appStates
             );
         }
 
+        private readonly GenWorkDb<WorkAttributesMod> _attributesMod;
+        private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
+        private readonly GenWorkPlus<WorkEntities> _workEntities;
         private readonly LazySvc<DataBuilder> _multiBuilder;
-        private readonly LazySvc<AppRuntime> _appRuntimeLazy;
-        private readonly LazySvc<AppManager> _appManagerLazy;
         private readonly LazySvc<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
         private readonly LazySvc<IConvertToEavLight> _convertToEavLight;
         private readonly IAppStates _appStates;
-        private AppManager AppManager { get; set; }
 
         public ContentTypeApi Init(int appId)
         {
             var l = Log.Fn<ContentTypeApi>($"{appId}");
             _appId = appId;
-            AppManager = _appManagerLazy.Value.Init(appId);
+            _appCtxPlus = _workEntities.CtxSvc.ContextPlus(appId);
             return l.Return(this);
         }
 
         private int _appId;
+        private IAppWorkCtxPlus _appCtxPlus;
 
         #endregion
 
         #region Content-Type Get, Delete, Save
 
-        // todo: rename to "List" to match external name, once feature/oqtane2 branch isn't used any more
-        public IEnumerable<ContentTypeDto> Get(string scope = null, bool withStatistics = false)
+        public IEnumerable<ContentTypeDto> List(string scope = null, bool withStatistics = false)
         {
             var l = Log.Fn<IEnumerable<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
 
@@ -83,19 +85,18 @@ namespace ToSic.Eav.WebApi
             if (scope == Data.Scopes.App)
             {
                 l.A($"is scope {scope}, will do extra processing");
-                var appState = _appStates.Get(AppManager);
                 // make sure additional settings etc. exist
-                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log); 
+                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(_appCtxPlus.AppState, null, Log); 
             }
             // should use app-manager and return each type 1x only
-            var appMan = AppManager;
+            var appEntities = _workEntities.New(_appCtxPlus);
 
             // get all types
-            var allTypes = appMan.Read.ContentTypes.All.OfScope(scope, true);
+            var allTypes = _appCtxPlus.AppState.ContentTypes.OfScope(scope, true);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
-                .Select(t => ContentTypeAsDto(t, appMan.Read.Entities.Get(t.Name).Count()));
+                .Select(t => ContentTypeAsDto(t, appEntities.Get(t.Name).Count()));
             return l.ReturnAsOk(filteredType);
 	    }
 
@@ -213,7 +214,7 @@ namespace ToSic.Eav.WebApi
             return l.Return(fields.Select(a => FieldAsDto(a.Field, a.Type, true)));
         }
 
-        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _appRuntimeLazy.Value.Init(_appId).ContentTypes.GetInputTypes());
+        private List<InputTypeInfo> AppInputTypes => _appInputTypes.Get(() => _inputTypes.New(_appCtxPlus).GetInputTypes());
         private readonly GetOnce<List<InputTypeInfo>> _appInputTypes = new GetOnce<List<InputTypeInfo>>();
 
         private ContentTypeFieldDto FieldAsDto(IContentTypeAttribute a, IContentType type, bool withContentType)
@@ -322,17 +323,24 @@ namespace ToSic.Eav.WebApi
 
         public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
 	    {
-	        Log.A($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
+	        var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
             var attDef = _multiBuilder.Value.TypeAttributeBuilder
-                .Create(appId: AppManager.AppId, name: staticName, type: ValueTypeHelpers.Get(type), isTitle: false, id: 0, sortOrder: sortOrder);
-            return AppManager.ContentTypes.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
-	    }
+                .Create(appId: _appCtxPlus.AppId, name: staticName, type: ValueTypeHelpers.Get(type), isTitle: false, id: 0, sortOrder: sortOrder);
+            //var id = _appWork.Value.AttributesMod(_appWork.Value.CtxSvc.CtxWithDb(_appCtxPlus.AppState)).CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
+            var id = AttributesMod.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
+            return l.Return(id);
+        }
 
         public bool SetInputType(int attributeId, string inputType)
         {
-            Log.A($"update input type attrib:{attributeId}, input:{inputType}");
-            return AppManager.ContentTypes.UpdateInputType(attributeId, inputType);
+            var l = Log.Fn<bool>($"update input type attrib:{attributeId}, input:{inputType}");
+            //var ok = _appWork.Value.AttributesMod(_appWork.Value.CtxSvc.CtxWithDb(_appCtxPlus.AppState)).UpdateInputType(attributeId, inputType);
+            var ok = AttributesMod.UpdateInputType(attributeId, inputType);
+            return l.Return(ok);
         }
+
+        private WorkAttributesMod AttributesMod => _attributesModInitialized ?? (_attributesModInitialized = _attributesMod.New(_appCtxPlus.AppState));
+        private WorkAttributesMod _attributesModInitialized;
 
 	    public bool DeleteField(int contentTypeId, int attributeId)
 	    {

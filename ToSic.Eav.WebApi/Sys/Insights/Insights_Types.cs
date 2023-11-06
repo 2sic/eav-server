@@ -16,11 +16,10 @@ namespace ToSic.Eav.WebApi.Sys.Insights
         {
             var l = Log.Fn<string>();
             if (appId == null)
-                return "please add appid to the url parameters";
+                return l.Return("please add appid to the url parameters");
 
             l.A($"debug app types for {appId}");
-            var appRead = AppRt(appId);
-            var pkg = appRead.AppState;
+            var pkg = _appStates.Get(appId.Value);
 
             var msg = TypesTable(appId.Value, pkg.ContentTypes, pkg.List);
 

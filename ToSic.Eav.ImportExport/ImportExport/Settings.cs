@@ -20,7 +20,6 @@
             $"{Constants.AppDataProtectedFolder}\\{Constants.ZipFolderForGlobalAppStuff}"
         };
 
-        // Keep this commented till End of June 2022 #cleanUp #oldTemplates #2631
         public const string TemplateContentType = "2SexyContent-Template";
 
         /// <summary>

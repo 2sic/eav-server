@@ -10,6 +10,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using System.Collections.Generic;
+using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Data;
@@ -20,8 +21,10 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 #if NETFRAMEWORK
 using System.Web.Http;
+using ToSic.Eav.Apps.Work;
 #else
 using Microsoft.AspNetCore.Mvc;
+using ToSic.Eav.Apps.Work;
 #endif
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
@@ -34,24 +37,25 @@ namespace ToSic.Eav.WebApi.ImportExport
 {
     public class ContentExportApi : ServiceBase
     {
-        private readonly LazySvc<AppManager> _appManagerLazy;
+        private readonly AppWorkContextService _appWorkCtxSvc;
+        private readonly Generator<ExportListXml> _exportListXmlGenerator;
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly IResponseMaker _responseMaker;
         private readonly LazySvc<IFeaturesInternal> _features;
 
-        private AppManager _appManager;
         public ContentExportApi(
-            LazySvc<AppManager> appManagerLazy, 
+            AppWorkContextService appWorkCtxSvc,
             IAppStates appStates,
             Generator<JsonSerializer> jsonSerializer,
             IResponseMaker responseMaker,
+            Generator<ExportListXml> exportListXmlGenerator,
             LazySvc<IFeaturesInternal> features
             ) : base("Api.EaCtEx")
         {
-
             ConnectServices(
-                _appManagerLazy = appManagerLazy,
+                _appWorkCtxSvc = appWorkCtxSvc,
+                _exportListXmlGenerator = exportListXmlGenerator,
                 _appStates = appStates,
                 _jsonSerializer = jsonSerializer,
                 _responseMaker = responseMaker,
@@ -61,10 +65,12 @@ namespace ToSic.Eav.WebApi.ImportExport
 
         public ContentExportApi Init(int appId)
         {
-            _appManager = _appManagerLazy.Value.Init(appId);
-            Log.A($"For app: {appId}");
-            return this;
+            var l = Log.Fn<ContentExportApi>($"For app: {appId}");
+            _appCtx = _appWorkCtxSvc.Context(appId);
+            return l.Return(this);
         }
+
+        private IAppWorkCtx _appCtx;
 
         public (string FileContents, string FileName) ExportContent(IUser user,
             string language,
@@ -78,7 +84,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var l = Log.Fn<(string, string)>($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
             SecurityHelpers.ThrowIfNotContentAdmin(user, l);
 
-            var contextLanguages = _appStates.Languages(_appManager.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
+            var contextLanguages = _appStates.Languages(_appCtx.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
 
             // check if we have an array of ids
             int[] ids = null;
@@ -92,7 +98,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 throw new Exception("trouble finding selected IDs to export", e);
             }
 
-            var tableExporter = _appManager.Entities.Exporter(contentType);
+            var tableExporter = _exportListXmlGenerator.New().Init(_appCtx.AppState, contentType);
             var fileContent = exportSelection == ExportSelection.Blank
                 ? tableExporter.EmptyListTemplate()
                 : tableExporter.GenerateXml(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,
@@ -113,8 +119,8 @@ namespace ToSic.Eav.WebApi.ImportExport
         {
             var l = Log.Fn<THttpResponseType>($"get fields type:{name}");
             SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
-            var type = _appManager.Read.ContentTypes.Get(name);
-            var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
+            var type = _appCtx.AppState.GetContentType(name);
+            var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
             var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters();
 
@@ -131,8 +137,8 @@ namespace ToSic.Eav.WebApi.ImportExport
         {
             var l = Log.Fn<THttpResponseType>($"get fields id:{id}");
             SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
-            var entity = _appManager.Read.Entities.Get(id);
-            var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
+            var entity = _appCtx.AppState.List.FindRepoId(id);
+            var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
 
             return l.ReturnAsOk(_responseMaker.File(
                 serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),
@@ -154,7 +160,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             // find all decorator metadata of type SystemExportDecorator
             l.A($"metadataExportMarkers:{export.ExportMarkers.Count}");
 
-            var serializer = _jsonSerializer.New().SetApp(_appManager.AppState);
+            var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
 
             var bundle = BundleBuild(export, serializer);
 
@@ -169,7 +175,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfiguration)
         {
             var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfiguration}");
-            var systemExportConfiguration = _appManager.AppState.List.One(exportConfiguration);
+            var systemExportConfiguration = _appCtx.AppState.List.One(exportConfiguration);
             if (systemExportConfiguration == null)
             {
                 var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is missing");
@@ -201,12 +207,13 @@ namespace ToSic.Eav.WebApi.ImportExport
                 CtIncludeInherited = true,
                 CtAttributeIncludeInheritedMetadata = false
             };
+            var appState = _appCtx.AppState;
             foreach (var contentTypeName in export.ContentTypes)
             {
                 if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
 
-                var contentType = _appManager.Read.ContentTypes.Get(contentTypeName);
-                var jsonType = serializer.ToPackage(contentType, /*true,*/ serSettings);
+                var contentType = appState.GetContentType(contentTypeName);
+                var jsonType = serializer.ToPackage(contentType, serSettings);
                 bundleList.ContentTypes.Add(new JsonContentTypeSet
                 {
                     ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType),
@@ -220,7 +227,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             {
                 if (bundleList.Entities == null) bundleList.Entities = new List<JsonEntity>();
 
-                var entity = _appManager.Read.Entities.Get(entityGuid);
+                var entity = appState.List.One(entityGuid);
                 bundleList.Entities.Add(serializer.ToJson(entity, export.EntitiesWithMetadata ? FileSystemLoader.QueryMetadataDepth : 0));
             }
 

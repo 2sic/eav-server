@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource;
@@ -25,7 +26,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
 {
     /// <inheritdoc />
     /// <summary>
-    /// Web API Controller for the Pipeline Designer UI
+    /// Web API Controller for the Pipeline Designer UI.
+    ///
+    /// It's just a base controller, because some methods need to be added at the SXC level which don't exist in the EAV.
     /// </summary>
     public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerBase<TImplementation>.MyServices> where TImplementation : QueryControllerBase<TImplementation>
     {
@@ -34,6 +37,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
         public class MyServices : MyServicesBase
         {
+            public GenWorkBasic<WorkQueryMod> WorkUnitQueryMod { get; }
+            public GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy { get; }
             public LazySvc<QueryManager> QueryManager { get; }
             /// <summary>
             /// The AppStates Generator should only be used in the Definition.
@@ -41,7 +46,6 @@ namespace ToSic.Eav.WebApi.Admin.Query
             /// This is to ensure it has the changes previously saved
             /// </summary>
             public Generator<AppStates> AppStates { get; }
-            public LazySvc<AppManager> AppManagerLazy { get; }
             public QueryBuilder QueryBuilder { get; }
             public LazySvc<ConvertToEavLight> EntToDicLazy { get; }
             public LazySvc<QueryInfo> QueryInfoLazy { get; }
@@ -49,19 +53,19 @@ namespace ToSic.Eav.WebApi.Admin.Query
             public Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> JsonSerializer { get; }
             public Generator<PassThrough> PassThrough { get; }
 
-            public MyServices(LazySvc<AppManager> appManagerLazy,
+            public MyServices(
                 QueryBuilder queryBuilder,
                 LazySvc<ConvertToEavLight> entToDicLazy,
                 LazySvc<QueryInfo> queryInfoLazy,
                 LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
                 Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
                 Generator<PassThrough> passThrough,
-                LazySvc<DataSource.Query.QueryManager> queryManager,
-                Generator<AppStates> appStates
-                )
+                LazySvc<QueryManager> queryManager,
+                Generator<AppStates> appStates,
+                GenWorkBasic<WorkQueryMod> workUnitQueryMod,
+                GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
             {
                 ConnectServices(
-                    AppManagerLazy = appManagerLazy,
                     QueryBuilder = queryBuilder,
                     EntToDicLazy = entToDicLazy,
                     QueryInfoLazy = queryInfoLazy,
@@ -69,6 +73,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
                     JsonSerializer = jsonSerializer,
                     PassThrough = passThrough,
                     QueryManager = queryManager,
+                    WorkUnitQueryMod = workUnitQueryMod,
+                    WorkUnitQueryCopy = workUnitQueryCopy,
                     AppStates = appStates
                 );
             }
@@ -80,22 +86,10 @@ namespace ToSic.Eav.WebApi.Admin.Query
         {
             QueryBuilder = services.QueryBuilder;
         }
-        private AppManager _appManager;
+        //private AppManager _appManager { get; set; }
         private QueryBuilder QueryBuilder { get; }
 
         #endregion
-
-        public TImplementation Init(int appId)
-        {
-            _appId = appId;
-            if (appId != 0) // if 0, then no context is available or used
-                _appManager = Services.AppManagerLazy.Value.Init(appId);
-            return this as TImplementation;
-        }
-
-        private int _appId;
-
-
 
         /// <summary>
         /// Get a Pipeline with DataSources
@@ -136,11 +130,12 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// <summary>
         /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
         /// </summary>
-        public IEnumerable<DataSourceDto> DataSources()
+        /// <param name="appIdentity"></param>
+        public IEnumerable<DataSourceDto> DataSources(AppIdentity appIdentity)
         {
-            var l = Log.Fn<IEnumerable<DataSourceDto>>($"a#{_appId}");
+            var l = Log.Fn<IEnumerable<DataSourceDto>>($"a#{appIdentity.AppId}");
             var dsCat = Services.DataSourceCatalogLazy.Value;
-            var installedDataSources = Services.DataSourceCatalogLazy.Value.GetAll(true, _appId);
+            var installedDataSources = Services.DataSourceCatalogLazy.Value.GetAll(true, appIdentity.AppId);
 
             var result = installedDataSources
                 .Select(ds => new DataSourceDto(ds, ds.VisualQuery?.DynamicOut == true ? null : dsCat.GetOutStreamNames(ds)))
@@ -171,7 +166,9 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
                 ?? new List<Connection>();
 
-            _appManager.Queries.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
+            Services.WorkUnitQueryMod.New(appId: appId)
+            //Services.WorkQueryMod.Value.InitContext(_appWorkCtx)
+            /*_appManager.Queries*/.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
             return l.ReturnAsOk(Get(appId, id));
         }
@@ -254,13 +251,13 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// <summary>
         /// Clone a Pipeline with all DataSources and their configurations
         /// </summary>
-        public void Clone(int appId, int id) => _appManager.Queries.SaveCopy(id);
+        public void Clone(int appId, int id) => Services.WorkUnitQueryCopy.New(appId: appId) /*_appManager.Queries*/.SaveCopy(id);
 		
 
-		/// <summary>
-		/// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
-		/// </summary>
-		public bool Delete(int id) => _appManager.Queries.Delete(id);
+		///// <summary>
+		///// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
+		///// </summary>
+		//public bool Delete(int id) => Services.WorkUnitQueryMod.New(appId: _appId) /*_appManager.Queries*/.Delete(id);
 
 
         public bool Import(EntityImportDto args)
@@ -268,10 +265,12 @@ namespace ToSic.Eav.WebApi.Admin.Query
             var l = Log.Fn<bool>(args.DebugInfo);
             try
             {
-                var deser = Services.JsonSerializer.New().SetApp(_appManager.AppState);
+                var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
+                var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = QueryBuilder.Create(ents, args.AppId);
-                _appManager.Queries.SaveCopy(qdef);
+                workUnit
+                /*_appManager.Queries*/.SaveCopy(qdef);
 
                 return l.ReturnTrue();
             }

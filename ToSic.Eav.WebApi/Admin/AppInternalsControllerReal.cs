@@ -115,7 +115,7 @@ namespace ToSic.Eav.WebApi.Admin
         }
 
         private IEnumerable<ContentTypeDto> TypeListInternal(int appId, string scope = null, bool withStatistics = false)
-            => _ctApiLazy.Value.Init(appId).Get(scope, withStatistics);
+            => _ctApiLazy.Value.Init(appId).List(scope, withStatistics);
 
         private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
             => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething)

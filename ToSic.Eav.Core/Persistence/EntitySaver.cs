@@ -14,9 +14,7 @@ namespace ToSic.Eav.Persistence
 {
     public class EntitySaver : ServiceBase
     {
-        public EntitySaver(
-            DataBuilder dataBuilder
-        ) : base("Dta.Saver")
+        public EntitySaver(DataBuilder dataBuilder) : base("Dta.Saver")
         {
             ConnectServices(
                 _dataBuilder = dataBuilder
@@ -250,9 +248,6 @@ namespace ToSic.Eav.Persistence
                 if (remainingLanguages.Count == 0) continue;
 
                 // Add the value with the remaining languages / relationships
-                // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
-                //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
-                //var languagesToUse = LanguageBuilder..Clone(remainingLanguages);
                 var val = _dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
                 result.Add(val);
             }
@@ -316,12 +311,11 @@ namespace ToSic.Eav.Persistence
             return (result, $"{result.Count}");
         });
 
-        private (/*IEntity Entity,*/ IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
-            CorrectPublishedAndGuidImports(/*IEntity newE,*/ IDictionary<string, IAttribute> values, bool logDetails
+        private (IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
+            CorrectPublishedAndGuidImports(IDictionary<string, IAttribute> values, bool logDetails
             ) => Log.Func(enabled: logDetails, func: l =>
         {
             // check IsPublished
-            //var isPublished = newE.Value(Attributes.EntityFieldIsPublished);
             values.TryGetValue(Attributes.EntityFieldIsPublished, out var isPublishedAttr);
             var isPublished = isPublishedAttr?.GetTypedValue(Array.Empty<string>()).Result;
             bool? newIsPublished = null;
@@ -330,17 +324,13 @@ namespace ToSic.Eav.Persistence
                 l.A("Found property for published, will move");
                 values.Remove(Attributes.EntityFieldIsPublished);
 
-                //var temp = isPublished.GetTypedValue(Array.Empty<string>());
                 if (isPublished is bool b)
                     newIsPublished = b;
-                //newE.IsPublished = b;
                 else if (isPublished is string sPublished && bool.TryParse(sPublished, out var boolPublished))
                     newIsPublished = boolPublished;
-                    //newE.IsPublished = boolPublished;
             }
 
             // check EntityGuid
-            //var probablyGuid = newE.Value(Attributes.EntityFieldGuid);
             values.TryGetValue(Attributes.EntityFieldGuid, out var probablyGuidAttr);
             var probablyGuid = probablyGuidAttr?.GetTypedValue(Array.Empty<string>()).Result;
             Guid? newGuid = null;
@@ -350,12 +340,9 @@ namespace ToSic.Eav.Persistence
                 values.Remove(Attributes.EntityFieldGuid);
                 if (Guid.TryParse(probablyGuid.ToString(), out var eGuid))
                     newGuid = eGuid;
-                    //newE.SetGuid(eGuid);
             }
 
-            //var cloned = _dataBuilder.Entity.ResetIdentifiers(newE, newGuid: newGuid, isPublished: newIsPublished);
-
-            return ((/*newEnt,*/ values, newGuid, newIsPublished), "ok");
+            return ((values, newGuid, newIsPublished), "ok");
         });
 
     }

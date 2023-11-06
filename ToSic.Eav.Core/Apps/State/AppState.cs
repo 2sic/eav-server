@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps
         {
             Log.A($"AppState for App {id.AppId}");
             this.LinkLog(parentLog, forceConnect: true);
-            Init(id);
+            InitAppBaseIds(id);
 
             ParentApp = parentApp;
             Log.A($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");

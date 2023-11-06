@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Lib.DI;
@@ -23,19 +24,21 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public partial class ImportListXml: ServiceBase 
     {
-        private readonly DataBuilder _builder;
 
         #region Dependency Injection
 
-        private readonly LazySvc<Import> _importerLazy;
-
-        public ImportListXml(LazySvc<Import> importerLazy, DataBuilder builder) : base("App.ImpVtT")
+        public ImportListXml(LazySvc<ImportService> importerLazy, DataBuilder builder, GenWorkDb<WorkEntityDelete> entDelete) : base("App.ImpVtT")
         {
             ConnectServices(
                 _builder = builder,
-                _importerLazy = importerLazy
+                _importerLazy = importerLazy,
+                _entDelete = entDelete
             );
         }
+
+        private readonly GenWorkDb<WorkEntityDelete> _entDelete;
+        private readonly LazySvc<ImportService> _importerLazy;
+        private readonly DataBuilder _builder;
 
         #endregion
 
@@ -44,36 +47,33 @@ namespace ToSic.Eav.Apps.ImportExport
         private IContentType ContentType { get; set; }
         private List<IEntity> ExistingEntities { get; set; }
 
-        private AppState App { get; set; }
-        private AppManager AppMan { get; set; }
-
+        private AppState AppState { get; set; }
 
         /// <summary>
         /// Create a xml import. The data stream passed will be imported to memory, and checked 
         /// for errors. If no error could be found, the data can be persisted to the repository.
         /// </summary>
-        /// <param name="appMan"></param>
-        /// <param name="contentType">content-type</param>
+        /// <param name="appState"></param>
+        /// <param name="typeName">content-type</param>
         /// <param name="dataStream">Xml data stream to import</param>
         /// <param name="languages">Languages that can be imported (2sxc languages enabled)</param>
         /// <param name="documentLanguageFallback">Fallback document language</param>
         /// <param name="deleteSetting">How to handle entities already in the repository</param>
         /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
-        public ImportListXml Init(AppManager appMan,
-            IContentType contentType,
+        public ImportListXml Init(
+            AppState appState,
+            string typeName,
             Stream dataStream, 
             IEnumerable<string> languages, 
             string documentLanguageFallback, 
             ImportDeleteUnmentionedItems deleteSetting, 
             ImportResolveReferenceMode resolveLinkMode)
         {
-            //ImportEntities = new List<Entity>();
             ErrorLog = new ImportErrorLog(Log);
+            var contentType = appState.GetContentType(typeName);
 
-            AppMan = appMan;
-            App = appMan.AppState;
-
-            _appId = App.AppId;
+            AppState = appState;
+            _appId = AppState.AppId;
 
             ContentType = contentType;
             if (ContentType == null)
@@ -83,7 +83,7 @@ namespace ToSic.Eav.Apps.ImportExport
             }
             Log.A("Content type ok:" + contentType.Name);
 
-            ExistingEntities = App.List.Where(e => e.Type == contentType).ToList();
+            ExistingEntities = AppState.List.Where(e => e.Type == contentType).ToList();
             Log.A($"Existing entities: {ExistingEntities.Count}");
 
             _languages = languages?.ToList();
@@ -197,9 +197,8 @@ namespace ToSic.Eav.Apps.ImportExport
 
                     // if this value is just a placeholder/reference to another value,
                     // then find the master/primary value, and add this language to it's language list
-                    var entityValue =
-                        AttributeLanguageImportHelper.ValueItemOfLanguageOrNull(entityAttributes, valName,
-                            valueReferenceLanguage);
+                    var entityValue = AttributeLanguageImportHelper
+                        .ValueItemOfLanguageOrNull(entityAttributes, valName, valueReferenceLanguage);
                     if (entityValue.Value != null)
                     {
                         // 2023-02-24 2dm #immutable
@@ -211,9 +210,6 @@ namespace ToSic.Eav.Apps.ImportExport
                             entityValue.Value, updatedValue);
                         var newAttribute = _builder.Attribute.CreateFrom(entityValue.Attribute, newValues);
                         entityAttributes = _builder.Attribute.Replace(entityAttributes, newAttribute);
-                        //entityValue.Attribute.Values = dummy - fix;
-                        //entityValue.Attribute.Values.Remove(entityValue.Value);
-                        //entityValue.Attribute.Values.Add(updatedValue);
                         continue;
                     }
 
@@ -302,13 +298,13 @@ namespace ToSic.Eav.Apps.ImportExport
             if (_deleteSetting == ImportDeleteUnmentionedItems.All)
             {
                 var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
-                AppMan.Entities.Delete(idsToDelete);
+                _entDelete.New(AppState).Delete(idsToDelete);
             }
 
             var import = _importerLazy.Value.Init(null, _appId, false, true);
             import.ImportIntoDb(null, ImportEntities);
-            // important note: don't purge cache here, but the caller MUST do this!
 
+            // important note: don't purge cache here, but the caller MUST do this!
             Timer.Stop();
             TimeForDbImport = Timer.ElapsedMilliseconds;
             return "ok";

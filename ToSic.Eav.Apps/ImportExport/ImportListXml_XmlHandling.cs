@@ -78,8 +78,8 @@ namespace ToSic.Eav.Apps.ImportExport
             if (documentTypeAttribute?.Value == null ||
                 documentTypeAttribute.Value != ContentType.Name.RemoveSpecialCharacters())
             {
-                ErrorLog.Add(ImportErrorCode.InvalidRoot);
-                return (false, $"error: {ImportErrorCode.InvalidRoot}");
+                ErrorLog.Add(ImportErrorCode.InvalidContentType);
+                return (false, $"error: {ImportErrorCode.InvalidContentType} - Trying to import of type {ContentType} but file contains {documentTypeAttribute}");
             }
 
             return (true, "ok");

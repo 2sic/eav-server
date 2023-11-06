@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Data;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Apps.Security;
+using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -13,7 +13,6 @@ using ToSic.Eav.Generics;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
@@ -42,62 +41,67 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         public SimpleDataController(
             DataBuilder builder,
-            LazySvc<AppManager> appManagerLazy,
-            LazySvc<DbDataController> dbDataLazy,
             IZoneMapper zoneMapper,
             IContextOfSite ctx,
+            GenWorkDb<WorkEntitySave> entSave,
+            GenWorkDb<WorkEntityUpdate> entUpdate,
+            GenWorkDb<WorkEntityDelete> entDelete,
             Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
         {
             ConnectServices(
-                _appManagerLazy = appManagerLazy,
-                _dbDataLazy = dbDataLazy,
+                _entSave = entSave,
+                _entUpdate = entUpdate,
+                _entDelete = entDelete,
                 _zoneMapper = zoneMapper,
                 _builder = builder,
                 _ctx = ctx,
                 _appPermissionCheckGenerator = appPermissionCheckGenerator
             );
         }
-        private readonly LazySvc<AppManager> _appManagerLazy;
-        private readonly LazySvc<DbDataController> _dbDataLazy;
+
+        private readonly GenWorkDb<WorkEntitySave> _entSave;
+        private readonly GenWorkDb<WorkEntityUpdate> _entUpdate;
+        private readonly GenWorkDb<WorkEntityDelete> _entDelete;
         private readonly IZoneMapper _zoneMapper;
         private readonly IContextOfSite _ctx;
         private readonly Generator<AppPermissionCheck> _appPermissionCheckGenerator;
         private readonly DataBuilder _builder;
 
 
-        private DbDataController _context;
-        private AppManager _appManager;
         private string _defaultLanguageCode;
 
         private int _appId;
         private bool _checkWritePermissions = true; // default behavior is to check write publish/draft permissions (that should happen for REST, but not for c# API)
+        private IAppWorkCtxWithDb _ctxWithDb;
 
         /// <param name="zoneId">Zone ID</param>
         /// <param name="appId">App ID</param>
         /// <param name="checkWritePermissions"></param>
-        public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true) => Log.Func($"{zoneId}, {appId}", l =>
+        public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true)
         {
+            var l = Log.Fn<SimpleDataController>($"{zoneId}, {appId}");
             _appId = appId;
 
             // when zoneId is not that same as in current context, we need to set right site for provided zoneId
             if (_ctx.Site.ZoneId != zoneId) _ctx.Site = _zoneMapper.SiteOfZone(zoneId);
 
             _defaultLanguageCode = GetDefaultLanguage(zoneId);
-            _context = _dbDataLazy.Value.Init(zoneId, appId);
-            _appManager = _appManagerLazy.Value.Init(new AppIdentity(zoneId, appId));
+            var appIdentity = new AppIdentity(zoneId, appId);
+            _ctxWithDb = _entSave.CtxSvc.CtxWithDb(appIdentity);
             _checkWritePermissions = checkWritePermissions;
             l.A($"Default language:{_defaultLanguageCode}");
-            return this;
-        });
+            return l.Return(this);
+        }
 
-        private string GetDefaultLanguage(int zoneId) => Log.Func($"{zoneId}", () =>
+        private string GetDefaultLanguage(int zoneId)
         {
+            var l = Log.Fn<string>($"{zoneId}");
             var site = _zoneMapper.SiteOfZone(zoneId);
-            if (site == null) return ("", "site is null");
+            if (site == null) return l.Return("", "site is null");
 
             var usesLanguages = _zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
-            return (usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
-        });
+            return l.Return(usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
+        }
         
         #endregion
 
@@ -118,7 +122,7 @@ namespace ToSic.Eav.Api.Api01
             if (multiValues == null) return (null, "attributes were null");
 
             // ensure the type really exists
-            var type = _appManager.Read.ContentTypes.Get(contentTypeName);
+            var type = _ctxWithDb.AppState.GetContentType(contentTypeName);
             if (type == null)
                 throw l.Done(new ArgumentException("Error: Content type '" + contentTypeName + "' does not exist."));
 
@@ -126,7 +130,9 @@ namespace ToSic.Eav.Api.Api01
 
             var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
 
-            var ids = _appManager.Entities.Save(importEntity);
+            // #ExtractEntitySave - verified
+            var ids = _entSave.New(_ctxWithDb.AppState).Save(importEntity);
+
             return (ids, "ok");
         });
 
@@ -190,9 +196,10 @@ namespace ToSic.Eav.Api.Api01
         /// <exception cref="ArgumentNullException">Entity does not exist</exception>
         public void Update(int entityId, Dictionary<string, object> values) => Log.Do($"update i:{entityId}", () =>
         {
-            var original = _appManager.AppState.List.FindRepoId(entityId);
+            var original = _ctxWithDb.AppState.List.FindRepoId(entityId);
             var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
-            _appManager.Entities.UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
+            // #ExtractEntitySave - verified
+            _entUpdate.New(_ctxWithDb.AppState).UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
         });
 
 
@@ -201,14 +208,14 @@ namespace ToSic.Eav.Api.Api01
         /// </summary>
         /// <param name="entityId">Entity ID</param>
         /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-        public void Delete(int entityId) => _appManager.Entities.Delete(entityId);
+        public void Delete(int entityId) => _entDelete.New(_ctxWithDb.AppState).Delete(entityId);
 
 
         /// <summary>
         /// Delete the entity specified by GUID.
         /// </summary>
         /// <param name="entityGuid">Entity GUID</param>
-        public void Delete(Guid entityGuid) => Delete(_context.Entities.GetMostCurrentDbEntity(entityGuid).EntityId);
+        public void Delete(Guid entityGuid) => _entDelete.New(_ctxWithDb.AppState).Delete(entityGuid);
 
 
         private IDictionary<string, object> ConvertRelationsToNullArray(IContentType contentType,
@@ -308,8 +315,6 @@ namespace ToSic.Eav.Api.Api01
             if (attributes.SafeNone())
                 return (new Dictionary<string, IAttribute>(), "null/empty");
 
-            //var tempMutable = _builder.Attribute.Mutable(attributes);
-
             var updated = attributes.Select(keyValuePair =>
                 {
                     // Handle content-type attributes
@@ -349,24 +354,25 @@ namespace ToSic.Eav.Api.Api01
             // this write publish/draft permission checks should happen only for REST API
 
             // 1. Find if user may write PUBLISHED:
+            var appState = _ctxWithDb.AppState;
 
             // 1.1. app permissions 
-            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, _appManager.AppState)
+            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appState)
                 .UserMay(GrantSets.WritePublished)) return (true, true);
 
             // 1.2. type permissions
-            if (_appPermissionCheckGenerator.New().ForType(_ctx, _appManager.AppState, targetType)
+            if (_appPermissionCheckGenerator.New().ForType(_ctx, appState, targetType)
                 .UserMay(GrantSets.WritePublished)) return (true, true);
 
 
             // 2. Find if user may write DRAFT:
 
             // 2.1. app permissions 
-            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, _appManager.AppState)
+            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appState)
                 .UserMay(GrantSets.WriteDraft)) return (false, true);
 
             // 2.2. type permissions
-            if (_appPermissionCheckGenerator.New().ForType(_ctx, _appManager.AppState, targetType)
+            if (_appPermissionCheckGenerator.New().ForType(_ctx, appState, targetType)
                 .UserMay(GrantSets.WriteDraft)) return (false, true);
 
 

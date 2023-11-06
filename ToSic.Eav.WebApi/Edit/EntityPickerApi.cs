@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
@@ -9,22 +8,24 @@ using ToSic.Eav.WebApi.Dto;
 using ToSic.Lib.Services;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic.Eav.Apps.Work;
 
 namespace ToSic.Eav.WebApi
 {
     public class EntityPickerApi : ServiceBase
     {
+
         #region DI Constructor
 
-        public EntityPickerApi(AppRuntime appRuntime, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
+        public EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
         {
             ConnectServices(
                 _cultureResolver = cultureResolver,
-                _user = user,
-                AppRuntime = appRuntime
+                _workEntities = workEntities,
+                _user = user
             );
         }
-        public AppRuntime AppRuntime { get; }
+        private readonly GenWorkPlus<WorkEntities> _workEntities;
         private readonly IZoneCultureResolver _cultureResolver;
         private readonly IUser _user;
 
@@ -38,11 +39,11 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<IEnumerable<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
-            AppRuntime.Init(appId, withDrafts);
+            var appEnts = _workEntities.New(appId, showDrafts: withDrafts);
             IContentType contentType = null;
             if (!IsNullOrEmpty(contentTypeName))
             {
-                contentType = AppRuntime.AppState.GetContentType(contentTypeName);
+                contentType = appEnts.AppWorkCtx.AppState.GetContentType(contentTypeName);
                 l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
                 if (contentType == null)
                     return l.Return(new List<EntityForPickerDto>(),
@@ -55,13 +56,13 @@ namespace ToSic.Eav.WebApi
             if (contentType != null)
             {
                 l.A($"filter by type:{contentType.Name}");
-                list = AppRuntime.Entities.Get(contentTypeName);
+                list = appEnts.Get(contentTypeName);
             }
             else
             {
                 l.A("won't filter by type because it's null");
                 l.A($"Will restrict by scope if user is not system admin: {_user.IsSystemAdmin}");
-                list = AppRuntime.Entities.OnlyContent(_user.IsSystemAdmin); // only super user should also get Configuration
+                list = appEnts.OnlyContent(_user.IsSystemAdmin); // only super user should also get Configuration
             }
 
             // optionally filter by IDs
