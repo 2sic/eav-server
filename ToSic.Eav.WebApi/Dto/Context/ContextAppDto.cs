@@ -47,5 +47,8 @@ namespace ToSic.Eav.WebApi.Dto
         /// </summary>
         public bool IsContentApp { get; set; }
 
+
+        [JsonIgnore(Condition = WhenWritingNull)]
+        public string Icon { get; set; }
     }
 }
