@@ -53,7 +53,7 @@ namespace ToSic.Eav.Apps
 
             services.TryAddTransient<WorkAttributesMod>();
             services.TryAddTransient<WorkQueryMod>();
-            services.AddTransient<WorkQueryCopy>();
+            services.TryAddTransient<WorkQueryCopy>();
 
             // More services
 
