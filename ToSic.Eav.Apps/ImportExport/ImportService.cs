@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Eav.Generics;
@@ -15,6 +14,7 @@ using ToSic.Lib.Services;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.Apps.ImportExport
 {
@@ -23,27 +23,26 @@ namespace ToSic.Eav.Apps.ImportExport
     /// </summary>
     public class ImportService: ServiceBase
     {
-        private readonly AppWorkContextService _appWorkCtxSvc;
-        private const int ChunkLimitToStartChunking = 2500;
-        private const int ChunkSizeAboveLimit = 500;
-
         #region Constructor / DI
 
         public ImportService(
-            AppWorkContextService appWorkCtxSvc,
+            Generator<DbDataController> genDbDataController,
             IImportExportEnvironment importExportEnvironment,
             LazySvc<EntitySaver> entitySaverLazy,
             DataBuilder dataBuilder
             ) : base("Eav.Import")
         {
             ConnectServices(
-                _appWorkCtxSvc = appWorkCtxSvc,
+                _genDbDataController = genDbDataController,
                 _importExportEnvironment = importExportEnvironment,
                 _entitySaver = entitySaverLazy,
                 _dataBuilder = dataBuilder
             );
         }
 
+        private readonly Generator<DbDataController> _genDbDataController;
+        private const int ChunkLimitToStartChunking = 2500;
+        private const int ChunkSizeAboveLimit = 500;
         private readonly IImportExportEnvironment _importExportEnvironment;
         private readonly LazySvc<EntitySaver> _entitySaver;
         private readonly DataBuilder _dataBuilder;
@@ -51,23 +50,20 @@ namespace ToSic.Eav.Apps.ImportExport
 
         public ImportService Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
         {
-            var ctx = zoneId.HasValue
-                ? _appWorkCtxSvc.Context(new AppIdentity(zoneId.Value, appId))
-                : _appWorkCtxSvc.Context(appId);
-            var ctxWithDb = _appWorkCtxSvc.CtxWithDb(ctx.AppState);
-            Storage = ctxWithDb.DataController;
+            // Get the DB controller - it can handle zoneId being null
+            // It's important to not use AppWorkContext or similar, because that would
+            // try to load the App into cache, and initialize the App before it's fully imported
+            var dbController = _genDbDataController.New().Init(zoneId, appId);
+            Storage = dbController;
             AppId = appId;
-            ZoneId = ctxWithDb.ZoneId;
+            ZoneId = dbController.ZoneId;
 
             SaveOptions = _importExportEnvironment.SaveOptions(ZoneId);
-
             SaveOptions.SkipExistingAttributes = skipExistingAttributes;
-
             SaveOptions.PreserveUntouchedAttributes = preserveUntouchedAttributes;
 
             return this;
         }
-        //internal AppManager AppManager;
 
         #endregion
 
@@ -220,21 +216,10 @@ namespace ToSic.Eav.Apps.ImportExport
                     .ToList();
 
 
-                //foreach (var attribute in contentType.Attributes)
-                //{
-                //    foreach (var attributeMd in attribute.Metadata)
-                //        attributeMd.ResetEntityId();
-                //    foreach (var permission in attribute.Metadata.Permissions)
-                //        permission.Entity.ResetEntityId();
-                //}
-
                 var ctMetadata = MetadataWithResetIds(contentType.Metadata);
-
-                //foreach (var metadata in contentType.Metadata)
-                //    metadata.ResetEntityId();
-
                 var newType = _dataBuilder.ContentType.CreateFrom(contentType, metadataItems: ctMetadata,
                     attributes: newAttributes);
+
                 return (newType, "existing not found, only reset IDs");
             }
 
@@ -259,25 +244,6 @@ namespace ToSic.Eav.Apps.ImportExport
                 })
                 .ToList();
 
-            //foreach (var newAttribute in contentType.Attributes)
-            //{
-            //    var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
-            //    if (oldAttr == null)
-            //    {
-            //        l.A($"New attr {newAttribute.Name} not found on original, merge not needed");
-            //        continue;
-            //    }
-
-            //    var newMetaList = newAttribute.Metadata
-            //        .Select(impMd => MergeOneMd(appState, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
-            //        .ToList();
-
-            //    if (newAttribute.Metadata.Permissions.Any())
-            //        newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
-
-            //    ((IMetadataInternals)newAttribute.Metadata).Use(newMetaList);
-            //}
-
             // check if the content-type has metadata, which needs merging
             var merged = contentType.Metadata
                 .Select(impMd => MergeOneMd(appState, (int)TargetTypes.ContentType, contentType.NameId, impMd))
@@ -294,15 +260,8 @@ namespace ToSic.Eav.Apps.ImportExport
         {
             var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.NameId).FirstOrDefault();
             if (existingMetadata == null)
-            {
-                //metadataToUse = newMd;
-                // Important to reset, otherwise the save process assumes it already exists in the DB
-                // NOTE: clone would be ok
+                // Must Reset guid, reset, otherwise the save process assumes it already exists in the DB; NOTE: clone would be ok
                 return _dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0);
-                //return _entityBuilder.ResetIdentifiers(newMd, newGuid: Guid.NewGuid(), newId: 0);
-                //metadataToUse.ResetEntityId();
-                //metadataToUse.SetGuid(Guid.NewGuid());
-            }
 
             return _entitySaver.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
         }
@@ -349,7 +308,6 @@ namespace ToSic.Eav.Apps.ImportExport
 
             // now update (main) entity id from existing - since it already exists
             var original = existingEntities.First();
-            //update.ResetEntityId(original.EntityId);
             var result = _entitySaver.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logDetails: logDetails);
             return (result, "ok");
         });
