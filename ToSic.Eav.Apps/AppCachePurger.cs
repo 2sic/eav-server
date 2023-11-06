@@ -5,7 +5,6 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps
 {
-    // Todo: Probably rename since it's only job is to purge - maybe AppStatePurger
     public class AppCachePurger: ServiceBase
     {
         #region Constructor
