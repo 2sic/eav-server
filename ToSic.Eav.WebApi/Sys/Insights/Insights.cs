@@ -24,7 +24,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 
         public InsightsControllerReal(
             IAppStates appStates, 
-            SystemManager systemManager,
+            AppCachePurger appCachePurger,
             ILogStoreLive logStore, 
             LazySvc<ILicenseService> licenseServiceLazy, 
             LazySvc<SystemFingerprint> fingerprint,
@@ -45,7 +45,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 _user = user,
                 _lightSpeedStats = lightSpeedStats,
                 _jsonSerializer = jsonSerializer,
-                SystemManager = systemManager
+                AppCachePurger = appCachePurger
             );
             _logHtml = new InsightsHtmlLog(_logStore);
         }
@@ -54,7 +54,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
         private readonly LazySvc<ILicenseService> _licenseServiceLazy;
         private readonly IUser _user;
         private readonly LightSpeedStats _lightSpeedStats;
-        protected readonly SystemManager SystemManager;
+        protected readonly AppCachePurger AppCachePurger;
 
         private InsightsHtmlTable HtmlTableBuilder { get; } = new InsightsHtmlTable();
         private readonly InsightsHtmlLog _logHtml;

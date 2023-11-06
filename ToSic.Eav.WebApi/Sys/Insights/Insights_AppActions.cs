@@ -7,7 +7,7 @@
             if (UrlParamsIncomplete(appId, out var message))
                 return message;
 
-            SystemManager.PurgeApp(appId.Value);
+            AppCachePurger.PurgeApp(appId.Value);
 
             return $"app {appId} has been purged";
         }

@@ -28,7 +28,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         public ContentImportApi(
             LazySvc<ImportListXml> importListXml, 
             LazySvc<JsonSerializer> jsonSerializerLazy,
-            SystemManager systemManager,
+            AppCachePurger appCachePurger,
             GenWorkDb<WorkEntitySave> workEntSave,
             IAppStates appStates) : base("Api.EaCtIm")
         {
@@ -36,14 +36,14 @@ namespace ToSic.Eav.WebApi.ImportExport
                 _workEntSave = workEntSave,
                 _importListXml = importListXml,
                 _jsonSerializerLazy = jsonSerializerLazy,
-                _systemManager = systemManager,
+                _appCachePurger = appCachePurger,
                 _appStates = appStates
             );
         }
         private readonly GenWorkDb<WorkEntitySave> _workEntSave;
         private readonly LazySvc<ImportListXml> _importListXml;
         private readonly LazySvc<JsonSerializer> _jsonSerializerLazy;
-        private readonly SystemManager _systemManager;
+        private readonly AppCachePurger _appCachePurger;
         private readonly IAppStates _appStates;
         private AppState _appState;
 
@@ -86,7 +86,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             if (!import.ErrorLog.HasErrors)
             {
                 import.PersistImportToRepository();
-                _systemManager.PurgeApp(args.AppId);
+                _appCachePurger.PurgeApp(args.AppId);
             }
 
             return l.Return(new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);

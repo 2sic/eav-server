@@ -14,13 +14,13 @@ namespace ToSic.Eav.Apps.Work
     public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     {
         private readonly LazySvc<ImportService> _import;
-        public SystemManager SystemManager { get; }
+        public AppCachePurger AppCachePurger { get; }
         private readonly LazySvc<JsonSerializer> _jsonSerializer;
 
-        public WorkEntityVersioning(SystemManager systemManager, LazySvc<ImportService> import, LazySvc<JsonSerializer> jsonSerializer) : base("AWk.EntCre")
+        public WorkEntityVersioning(AppCachePurger appCachePurger, LazySvc<ImportService> import, LazySvc<JsonSerializer> jsonSerializer) : base("AWk.EntCre")
         {
             ConnectServices(
-                SystemManager = systemManager,
+                AppCachePurger = appCachePurger,
                 _jsonSerializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState)),
                 _import = import.SetInit(i => i.Init(AppWorkCtx.ZoneId, AppWorkCtx.AppId, false, false))
 
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Apps.Work
             if (entityDraft.HasValue)
                 AppWorkCtx.DataController.Entities.DeleteEntity(entityDraft.Value);
 
-            SystemManager.Purge(AppWorkCtx);
+            AppCachePurger.Purge(AppWorkCtx);
         }
 
 

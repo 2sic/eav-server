@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Eav.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Services;
 using static System.String;
 using static ToSic.Eav.Apps.Decorators.MetadataRecommendation;
 
@@ -22,12 +22,21 @@ namespace ToSic.Eav.Apps.Decorators
     /// If this model works well, we'll probably reconsider how our xxxRead objects work
     /// </summary>
     /// <remarks>new in v13.02</remarks>
-    public class MdRecommendations: ReadBase
+    public class MdRecommendations: ServiceBase
     {
 
         public MdRecommendations(LazySvc<MdRequirements> requirements): base($"{AppConstants.LogName}.MdRead") 
             => ConnectServices(_requirements = requirements);
         private readonly LazySvc<MdRequirements> _requirements;
+
+        public void Init(AppState appState) => AppState = appState;
+
+        public AppState AppState
+        {
+            get => _appState ?? throw new Exception("Can't use this Read class before setting AppState");
+            protected set => _appState = value;
+        }
+        private AppState _appState;
 
 
         public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string recommendedTypeName = null)

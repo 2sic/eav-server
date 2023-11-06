@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.ImportExport
     {
         private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
         private readonly IAppStates _appStates;
-        private readonly SystemManager _systemManager;
+        private readonly AppCachePurger _appCachePurger;
         private int? _initialAppId;
         private int _zoneId;
         public readonly IImportExportEnvironment Env;
@@ -30,13 +30,13 @@ namespace ToSic.Eav.Apps.ImportExport
             public Generator<FileManager> FileManagerGenerator { get; }
             public IImportExportEnvironment Environment { get; }
             public Generator<XmlImportWithFiles> XmlImpExpFiles { get; }
-            public SystemManager SystemManager { get; }
+            public AppCachePurger AppCachePurger { get; }
             public IAppStates AppStates { get; }
 
             public MyServices(Generator<FileManager> fileManagerGenerator,
                 IImportExportEnvironment environment,
                 Generator<XmlImportWithFiles> xmlImpExpFiles,
-                SystemManager systemManager,
+                AppCachePurger appCachePurger,
                 IAppStates appStates
             )
             {
@@ -44,19 +44,19 @@ namespace ToSic.Eav.Apps.ImportExport
                     FileManagerGenerator = fileManagerGenerator,
                     Environment = environment,
                     XmlImpExpFiles = xmlImpExpFiles,
-                    SystemManager = systemManager,
+                    AppCachePurger = appCachePurger,
                     AppStates = appStates
                 );
             }
         }
 
-        public ZipImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, SystemManager systemManager, IAppStates appStates) : base(services, "Zip.Imp")
+        public ZipImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, AppCachePurger appCachePurger, IAppStates appStates) : base(services, "Zip.Imp")
         {
             Env = base.Services.Environment;
             ConnectServices(
                 _xmlImpExpFiles = xmlImpExpFiles,
                 _appStates = appStates,
-                _systemManager = systemManager,
+                _appCachePurger = appCachePurger,
                 Env = environment
             );
             Messages = new List<Message>();
@@ -260,7 +260,7 @@ namespace ToSic.Eav.Apps.ImportExport
             // New in V11 - now that we just imported content types into the /system folder
             // the App must be refreshed to ensure these are available for working
             // Must happen after CopyAppFiles(...)
-            _systemManager.PurgeApp(appId);
+            _appCachePurger.PurgeApp(appId);
 
         });
 

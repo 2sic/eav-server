@@ -1,8 +1,8 @@
-﻿using ToSic.Lib.Logging;
-using ToSic.Eav.Repository.Efc;
+﻿using ToSic.Eav.Repository.Efc;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Parts
+namespace ToSic.Eav.Apps
 {
     /// <summary>
     /// Special tool just to create an app.
@@ -12,23 +12,24 @@ namespace ToSic.Eav.Apps.Parts
     {
         #region Constructor / DI
 
-        public ZoneCreator(DbDataController db, SystemManager systemManager) : base("Eav.AppBld") =>
+        public ZoneCreator(DbDataController db, AppCachePurger appCachePurger) : base("Eav.AppBld") =>
             ConnectServices(
                 _db = db,
-                SystemManager = systemManager
+                AppCachePurger = appCachePurger
             );
         private readonly DbDataController _db;
-        protected readonly SystemManager SystemManager;
+        protected readonly AppCachePurger AppCachePurger;
 
 
         #endregion
 
-        public int Create(string name) => Log.Func($"create zone:{name}", () =>
+        public int Create(string name) 
         {
+            var l = Log.Fn<int>($"create zone:{name}");
             var zoneId = _db.Init(null, null).Zone.AddZone(name);
-            SystemManager.PurgeZoneList();
-            return (zoneId, $"created zone {zoneId}");
-        });
+            AppCachePurger.PurgeZoneList();
+            return l.Return(zoneId, $"created zone {zoneId}");
+        }
 
     }
 }

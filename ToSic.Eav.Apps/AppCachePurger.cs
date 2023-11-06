@@ -6,11 +6,11 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Apps
 {
     // Todo: Probably rename since it's only job is to purge - maybe AppStatePurger
-    public class SystemManager: ServiceBase
+    public class AppCachePurger: ServiceBase
     {
         #region Constructor
 
-        public SystemManager(IAppStates appStates, AppsCacheSwitch appsCache): base("App.SysMng")
+        public AppCachePurger(IAppStates appStates, AppsCacheSwitch appsCache): base("App.SysMng")
         {
             _appStates = appStates;
             _appsCache = appsCache;

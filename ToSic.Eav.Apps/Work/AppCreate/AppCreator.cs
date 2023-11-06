@@ -18,18 +18,18 @@ namespace ToSic.Eav.Apps.Work
 
         private int _zoneId;
 
-        public AppCreator(DbDataController db, IRepositoryLoader repositoryLoader, SystemManager systemManager, Generator<AppInitializer> appInitGenerator) : base("Eav.AppBld")
+        public AppCreator(DbDataController db, IRepositoryLoader repositoryLoader, AppCachePurger appCachePurger, Generator<AppInitializer> appInitGenerator) : base("Eav.AppBld")
         {
             ConnectServices(
                 _db = db,
                 _appInitGenerator = appInitGenerator,
-                SystemManager = systemManager,
+                AppCachePurger = appCachePurger,
                 RepositoryLoader = repositoryLoader
             );
         }
         private readonly DbDataController _db;
         private readonly Generator<AppInitializer> _appInitGenerator;
-        protected readonly SystemManager SystemManager;
+        protected readonly AppCachePurger AppCachePurger;
         protected readonly IRepositoryLoader RepositoryLoader;
 
         public AppCreator Init(int zoneId)
@@ -66,7 +66,7 @@ namespace ToSic.Eav.Apps.Work
             Log.A("create new app");
             var app = _db.Init(_zoneId, null).App.AddApp(null, appGuid, inheritAppId);
 
-            SystemManager.PurgeZoneList();
+            AppCachePurger.PurgeZoneList();
             Log.A($"app created a:{app.AppId}, guid:{appGuid}");
             return app.AppId;
         }

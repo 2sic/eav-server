@@ -29,14 +29,14 @@ namespace ToSic.Eav.Apps.Work
             Generator<IRepositoryLoader> repositoryLoaderGenerator,
             GenWorkDb<WorkEntitySave> workEntSave,
             GenWorkDb<WorkAttributesMod> attributesMod,
-            SystemManager systemManager,
+            AppCachePurger appCachePurger,
             IAppStates appStates) : base("Eav.AppBld")
         {
             ConnectServices(
                 _attributesMod = attributesMod,
                 _workEntSave = workEntSave,
                 _builder = builder,
-                SystemManager = systemManager,
+                AppCachePurger = appCachePurger,
                 _repositoryLoaderGenerator = repositoryLoaderGenerator,
                 _appStates = appStates
             );
@@ -47,7 +47,7 @@ namespace ToSic.Eav.Apps.Work
         private readonly LazySvc<DataBuilder> _builder;
         private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
         private readonly IAppStates _appStates;
-        protected readonly SystemManager SystemManager;
+        protected readonly AppCachePurger AppCachePurger;
 
 
         #endregion
@@ -96,7 +96,7 @@ namespace ToSic.Eav.Apps.Work
 
             if (CreateAllMissingContentTypes(appState, addList))
             {
-                SystemManager.Purge(appState);
+                AppCachePurger.Purge(appState);
                 // get the latest app-state, but not-initialized so we can make changes
                 var repoLoader = _repositoryLoaderGenerator.New();
                 appState = repoLoader.AppState(appState.AppId, false);
@@ -105,7 +105,7 @@ namespace ToSic.Eav.Apps.Work
             addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
 
             // Reset App-State to ensure it's reloaded with the added configuration
-            SystemManager.Purge(appState);
+            AppCachePurger.Purge(appState);
 
             return (false, "ok");
         });

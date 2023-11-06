@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Work
     {
 
         public WorkQueryMod(
-            LazySvc<SystemManager> systemManagerLazy,
+            LazySvc<AppCachePurger> systemManagerLazy,
             LazySvc<QueryManager> queryManager,
             LazySvc<QueryDefinitionBuilder> queryDefBuilder,
             GenWorkDb<WorkEntityCreate> entCreate,
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Apps.Work
         private readonly GenWorkDb<WorkEntityUpdate> _entUpdate;
         private readonly GenWorkDb<WorkEntityCreate> _entCreate;
         private readonly GenWorkDb<WorkEntityDelete> _entDelete;
-        private readonly LazySvc<SystemManager> _systemManagerLazy;
+        private readonly LazySvc<AppCachePurger> _systemManagerLazy;
         private readonly LazySvc<QueryManager> _queryManager;
         private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
 

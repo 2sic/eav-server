@@ -68,7 +68,7 @@ namespace ToSic.Eav.Apps.Paths
         /// </summary>
         private void LogAppPathDetails(string property, string result) => Log.Do(l =>
         {
-            l.A($"App State: {_appState.LogState()}");
+            l.A($"App State: {_appState.Show()}");
             l.A($"Site: {_site.Id}; Zone: {_site.ZoneId};");
             l.A($"{property}: {result}");
         });

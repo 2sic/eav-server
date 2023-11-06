@@ -25,7 +25,7 @@ namespace ToSic.Eav.Apps.ImportExport
             internal readonly ITargetTypes MetaTargetTypes;
             internal readonly IAppStates AppStates;
             internal readonly LazySvc<XmlToEntity> XmlToEntity;
-            internal readonly SystemManager SystemManager;
+            internal readonly AppCachePurger AppCachePurger;
 
             public MyServices(
                 LazySvc<ImportService> importerLazy,
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps.ImportExport
                 LazySvc<DbDataController> dbDataForAppImport,
                 IImportExportEnvironment importExportEnvironment,
                 ITargetTypes metaTargetTypes,
-                SystemManager systemManager,
+                AppCachePurger appCachePurger,
                 IAppStates appStates,
                 LazySvc<XmlToEntity> xmlToEntity,
                 LazySvc<ContentTypeAttributeBuilder> ctAttribBuilder,
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     MetaTargetTypes = metaTargetTypes,
                     AppStates = appStates,
                     XmlToEntity = xmlToEntity,
-                    SystemManager = systemManager,
+                    AppCachePurger = appCachePurger,
                     MultiBuilder = multiBuilder
                 );
             }

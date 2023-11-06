@@ -5,7 +5,6 @@ using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Languages;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
@@ -28,7 +27,7 @@ namespace ToSic.Eav.Apps
 
             // Runtimes and Managers
             services.TryAddTransient<ZoneManager>();
-            services.TryAddTransient<SystemManager>();
+            services.TryAddTransient<AppCachePurger>();
             services.TryAddTransient<AppFinder>();
 
             // Runtime parts
