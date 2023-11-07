@@ -86,7 +86,6 @@ namespace ToSic.Eav.WebApi.Admin.Query
         {
             QueryBuilder = services.QueryBuilder;
         }
-        //private AppManager _appManager { get; set; }
         private QueryBuilder QueryBuilder { get; }
 
         #endregion
@@ -139,6 +138,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
 
             var result = installedDataSources
                 .Select(ds => new DataSourceDto(ds, ds.VisualQuery?.DynamicOut == true ? null : dsCat.GetOutStreamNames(ds)))
+                .OrderBy(ds => ds.TypeNameForUi) // sort for better debugging in F12
                 .ToList();
 
             return l.Return(result, result.Count.ToString());
@@ -166,9 +166,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
                 ?? new List<Connection>();
 
-            Services.WorkUnitQueryMod.New(appId: appId)
-            //Services.WorkQueryMod.Value.InitContext(_appWorkCtx)
-            /*_appManager.Queries*/.Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
+            Services.WorkUnitQueryMod.New(appId: appId).Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
             return l.ReturnAsOk(Get(appId, id));
         }
@@ -251,14 +249,8 @@ namespace ToSic.Eav.WebApi.Admin.Query
         /// <summary>
         /// Clone a Pipeline with all DataSources and their configurations
         /// </summary>
-        public void Clone(int appId, int id) => Services.WorkUnitQueryCopy.New(appId: appId) /*_appManager.Queries*/.SaveCopy(id);
-		
-
-		///// <summary>
-		///// Delete a Pipeline with the Pipeline Entity, Pipeline Parts and their Configurations. Stops if the if the Pipeline Entity has relationships to other Entities.
-		///// </summary>
-		//public bool Delete(int id) => Services.WorkUnitQueryMod.New(appId: _appId) /*_appManager.Queries*/.Delete(id);
-
+        public void Clone(int appId, int id) => Services.WorkUnitQueryCopy.New(appId: appId).SaveCopy(id);
+        
 
         public bool Import(EntityImportDto args)
         {
@@ -269,8 +261,7 @@ namespace ToSic.Eav.WebApi.Admin.Query
                 var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppState);
                 var ents = deser.Deserialize(args.GetContentString());
                 var qdef = QueryBuilder.Create(ents, args.AppId);
-                workUnit
-                /*_appManager.Queries*/.SaveCopy(qdef);
+                workUnit.SaveCopy(qdef);
 
                 return l.ReturnTrue();
             }
