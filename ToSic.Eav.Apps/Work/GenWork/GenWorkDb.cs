@@ -1,5 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Work

@@ -326,7 +326,6 @@ namespace ToSic.Eav.WebApi
 	        var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
             var attDef = _multiBuilder.Value.TypeAttributeBuilder
                 .Create(appId: _appCtxPlus.AppId, name: staticName, type: ValueTypeHelpers.Get(type), isTitle: false, id: 0, sortOrder: sortOrder);
-            //var id = _appWork.Value.AttributesMod(_appWork.Value.CtxSvc.CtxWithDb(_appCtxPlus.AppState)).CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
             var id = AttributesMod.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
             return l.Return(id);
         }
@@ -334,7 +333,6 @@ namespace ToSic.Eav.WebApi
         public bool SetInputType(int attributeId, string inputType)
         {
             var l = Log.Fn<bool>($"update input type attrib:{attributeId}, input:{inputType}");
-            //var ok = _appWork.Value.AttributesMod(_appWork.Value.CtxSvc.CtxWithDb(_appCtxPlus.AppState)).UpdateInputType(attributeId, inputType);
             var ok = AttributesMod.UpdateInputType(attributeId, inputType);
             return l.Return(ok);
         }
