@@ -23,7 +23,7 @@ namespace ToSic.Eav.Data
         internal static int countOneOfContentTypeOpt;
 #endif
         /// <summary>
-        /// Get an entity with an entity-id
+        /// Get an entity with an entity-id - or null if not found
         /// </summary>
         /// <param name="list"></param>
         /// <param name="id"></param>
@@ -39,7 +39,7 @@ namespace ToSic.Eav.Data
         }
 
         /// <summary>
-        /// get an entity based on the guid
+        /// get an entity based on the guid - or null if not found
         /// </summary>
         /// <param name="list"></param>
         /// <param name="guid"></param>
