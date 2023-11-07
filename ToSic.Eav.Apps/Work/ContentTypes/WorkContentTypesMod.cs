@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Work
 {
@@ -9,10 +10,24 @@ namespace ToSic.Eav.Apps.Work
         }
 
 
-        public void Create(string nameId, string scope) =>
+        public void Create(string nameId, string scope)
+        {
+            var l = Log.Fn();
             AppWorkCtx.DataController.DoAndSave(() =>
                 AppWorkCtx.DataController.AttribSet.PrepareDbAttribSet(nameId, nameId, scope, false, AppWorkCtx.AppId));
+            l.Done();
+        }
 
+        public bool AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet,
+            bool alwaysShareConfig)
+        {
+            var l = Log.Fn<bool>($"save {AppWorkCtx.Show()}");
+            if (staticName.IsEmptyOrWs())
+                return l.ReturnFalse("item was null, will cancel");
+
+            AppWorkCtx.DataController.ContentType.AddOrUpdate(staticName, scope, name, usesConfigurationOfOtherSet, alwaysShareConfig);
+            return l.ReturnTrue();
+        }
 
         public bool CreateGhost(string sourceStaticName)
         {

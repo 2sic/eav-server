@@ -47,6 +47,10 @@ namespace ToSic.Eav.WebApi
             services.TryAddTransient<ContentExportApi>();
             services.TryAddTransient<ContentImportApi>();
 
+            // Converters, new v16
+            services.TryAddTransient<ConvertAttributeToDto>();
+            services.TryAddTransient<ConvertContentTypeToDto>();
+
             // Internal API helpers
             services.TryAddTransient<EntityApi>();
             services.TryAddTransient<IUiData, UiData>();

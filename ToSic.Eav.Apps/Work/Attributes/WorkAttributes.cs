@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps.Work
 
         public List<PairTypeWithAttribute> GetFields(string staticName)
         {
-            var l = Log.Fn<List<PairTypeWithAttribute>>($"get fields a#{AppWorkCtx.Show()}, type:{staticName}");
+            var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{AppWorkCtx.Show()}, type:{staticName}");
 
             if (!(AppWorkCtx.AppState.GetContentType(staticName) is IContentType type))
                 return l.Return(new List<PairTypeWithAttribute>(),
@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps.Work
 
             var fields = type.Attributes.OrderBy(a => a.SortOrder);
 
-            return l.Return(fields.Select(a => new PairTypeWithAttribute { Type = type, Field = a }).ToList());
+            return l.Return(fields.Select(a => new PairTypeWithAttribute { Type = type, Attribute = a }).ToList());
         }
 
         public List<PairTypeWithAttribute> GetSharedFields()
@@ -37,9 +37,9 @@ namespace ToSic.Eav.Apps.Work
             var fields = localTypes
                 .SelectMany(ct => ct.Attributes
                     .Where(a => a.Guid != null && a.SysSettings?.Share == true)
-                    .Select(a => new PairTypeWithAttribute { Type = ct, Field = a }))
+                    .Select(a => new PairTypeWithAttribute { Type = ct, Attribute = a }))
                 .OrderBy(set => set.Type.Name)
-                .ThenBy(set => set.Field.Name)
+                .ThenBy(set => set.Attribute.Name)
                 .ToList();
 
             return l.Return(fields);
