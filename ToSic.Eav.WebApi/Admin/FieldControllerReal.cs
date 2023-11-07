@@ -12,14 +12,17 @@ namespace ToSic.Eav.WebApi.Admin
     {
         public const string LogSuffix = "Field";
 
-        public FieldControllerReal(LazySvc<ContentTypeApi> ctApiLazy, GenWorkPlus<WorkInputTypes> inputTypes): base("Api.FieldRl")
+        public FieldControllerReal(LazySvc<ContentTypeApi> ctApiLazy, GenWorkPlus<WorkInputTypes> inputTypes, GenWorkDb<WorkAttributesMod> attributesMod): base("Api.FieldRl")
         {
             ConnectServices(
                 _inputTypes = inputTypes,
+                _attributesMod = attributesMod,
                 _ctApiLazy = ctApiLazy
             );
         }
 
+
+        private readonly GenWorkDb<WorkAttributesMod> _attributesMod;
         private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
         private readonly LazySvc<ContentTypeApi> _ctApiLazy;
 
@@ -28,7 +31,7 @@ namespace ToSic.Eav.WebApi.Admin
         public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName) => _ctApiLazy.Value.Init(appId).GetFields(staticName);
 
 
-        public string[] DataTypes(int appId) => _ctApiLazy.Value.Init(appId).DataTypes();
+        public string[] DataTypes(int appId) => _attributesMod.New(appId).DataTypes(); //_ctApiLazy.Value.Init(appId).DataTypes();
 
 
         public List<InputTypeInfo> InputTypes(int appId) => _inputTypes.New(appId).GetInputTypes();
@@ -38,24 +41,31 @@ namespace ToSic.Eav.WebApi.Admin
 
 
         public int Add(int appId, int contentTypeId, string staticName, string type, string inputType, int index)
-            => _ctApiLazy.Value.Init(appId).AddField(contentTypeId, staticName, type, inputType, index);
+            //=> _ctApiLazy.Value.Init(appId).AddField(contentTypeId, staticName, type, inputType, index);
+            => _attributesMod.New(appId).AddField(contentTypeId, staticName, type, inputType, index);
 
 
         public bool Delete(int appId, int contentTypeId, int attributeId)
-            => _ctApiLazy.Value.Init(appId).DeleteField(contentTypeId, attributeId);
+            => _attributesMod.New(appId).Delete(contentTypeId, attributeId);
+            //=> _ctApiLazy.Value.Init(appId).DeleteField(contentTypeId, attributeId);
 
 
         public bool Sort(int appId, int contentTypeId, string order)
-            => _ctApiLazy.Value.Init(appId).Reorder(contentTypeId, order);
+            => _attributesMod.New(appId).Reorder(contentTypeId, order.Trim('[', ']'));
+            //=> _ctApiLazy.Value.Init(appId).Reorder(contentTypeId, order);
 
 
         public bool InputType(int appId, int attributeId, string inputType)
-            => _ctApiLazy.Value.Init(appId).SetInputType(attributeId, inputType);
+        {
+            return _attributesMod.New(appId).SetInputType(attributeId, inputType);
+            //return _ctApiLazy.Value.Init(appId).SetInputType(attributeId, inputType);
+        }
 
         #endregion
 
         public void Rename(int appId, int contentTypeId, int attributeId, string newName)
-            => _ctApiLazy.Value.Init(appId).Rename(contentTypeId, attributeId, newName);
+            => _attributesMod.New(appId).Rename(contentTypeId, attributeId, newName);
+            //=> _ctApiLazy.Value.Init(appId).Rename(contentTypeId, attributeId, newName);
 
         #region Shared Fields
 

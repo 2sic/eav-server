@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
@@ -25,35 +24,32 @@ namespace ToSic.Eav.WebApi
     /// </summary>
     public partial class ContentTypeApi : ServiceBase
     {
-
         #region Constructor / DI
 
         public ContentTypeApi(
             LazySvc<DbDataController> dbLazy, 
             AppInitializedChecker appInitializedChecker,
-            LazySvc<IConvertToEavLight> convertToEavLight, 
-            LazySvc<DataBuilder> multiBuilder,
+            LazySvc<IConvertToEavLight> convertToEavLight,
             GenWorkPlus<WorkEntities> workEntities,
             GenWorkPlus<WorkInputTypes> inputTypes,
-            GenWorkDb<WorkAttributesMod> attributesMod,
+            GenWorkBasic<WorkAttributes> attributes,
             IAppStates appStates) : base("Api.EavCTC")
         {
             ConnectServices(
                 _inputTypes = inputTypes,
-                _attributesMod = attributesMod,
+                _attributes = attributes,
                 _dbLazy = dbLazy,
                 _appInitializedChecker = appInitializedChecker,
                 _convertToEavLight = convertToEavLight,
                 _workEntities = workEntities,
-                _multiBuilder = multiBuilder,
                 _appStates = appStates
             );
         }
 
-        private readonly GenWorkDb<WorkAttributesMod> _attributesMod;
+
+        private readonly GenWorkBasic<WorkAttributes> _attributes;
         private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
         private readonly GenWorkPlus<WorkEntities> _workEntities;
-        private readonly LazySvc<DataBuilder> _multiBuilder;
         private readonly LazySvc<DbDataController> _dbLazy;
         private readonly AppInitializedChecker _appInitializedChecker;
         private readonly LazySvc<IConvertToEavLight> _convertToEavLight;
@@ -143,14 +139,7 @@ namespace ToSic.Eav.WebApi
             return l.Return(ContentTypeAsDto(ct));
 	    }
 
-	    public bool Delete(string staticName)
-	    {
-	        var l = Log.Fn<bool>($"delete a#{_appId}, name:{staticName}");
-            GetDb().ContentType.Delete(staticName);
-	        return l.ReturnTrue();
-	    }
-
-	    public bool Save(Dictionary<string, string> item)
+        public bool Save(Dictionary<string, string> item)
 	    {
 	        var l = Log.Fn<bool>($"save a#{_appId}, item count:{item?.Count}");
 	        if (item == null)
@@ -165,13 +154,6 @@ namespace ToSic.Eav.WebApi
         }
         #endregion
 
-        public bool CreateGhost(string sourceStaticName)
-	    {
-	        var l = Log.Fn<bool>($"create ghost a#{_appId}, type:{sourceStaticName}");
-	        GetDb().ContentType.CreateGhost(sourceStaticName);
-            return l.ReturnTrue();
-	    }
-
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
         /// <summary>
@@ -180,15 +162,10 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldDto> GetFields(string staticName)
         {
             var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>($"get fields a#{_appId}, type:{staticName}");
-            var appState = _appStates.Get(_appId);
+            
+            var fields = _attributes.New(_appCtxPlus).GetFields(staticName);
 
-            if (!(appState.GetContentType(staticName) is IContentType type))
-                return l.Return(new List<ContentTypeFieldDto>(),
-                    $"error, type:{staticName} is null, it is missing or it is not a ContentType - something broke");
-
-            var fields = type.Attributes.OrderBy(a => a.SortOrder);
-
-            return l.Return(fields.Select(a => FieldAsDto(a, type, false)));
+            return l.Return(fields.Select(a => FieldAsDto(a.Field, a.Type, false)));
         }
 
         /// <summary>
@@ -198,18 +175,8 @@ namespace ToSic.Eav.WebApi
         public IEnumerable<ContentTypeFieldDto> GetSharedFields()
         {
             var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>($"get shared fields a#{_appId}");
-            var appState = _appStates.Get(_appId);
-            var localTypes = appState.ContentTypes
-                .Where(ct => !ct.HasAncestor())
-                .ToList();
 
-            var fields = localTypes
-                .SelectMany(ct => ct.Attributes
-                    .Where(a => a.Guid != null && a.SysSettings?.Share == true)
-                    .Select(a => new { Type = ct, Field = a}))
-                .OrderBy(set => set.Type.Name)
-                .ThenBy(set => set.Field.Name)
-                .ToList();
+            var fields = _attributes.New(_appId).GetSharedFields();
 
             return l.Return(fields.Select(a => FieldAsDto(a.Field, a.Type, true)));
         }
@@ -248,7 +215,7 @@ namespace ToSic.Eav.WebApi
                 // new in 12.01
                 IsEphemeral = a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral,
                     AttributeMetadata.TypeGeneral),
-                HasFormulas = HasCalculations(a),
+                HasFormulas = a.HasFormulas(Log),
 
                 // Read-Only new in v13
                 EditInfo = new EditInfoAttributeDto(type, a),
@@ -279,6 +246,8 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// The old method, which returns the text "unknown" if not known. 
         /// As soon as the new UI is used, this must be removed / deprecated
+        /// TODO: 2023-11 @2dm - this seems very old and has a note that it should be removed on new UI, but I'm not sure if this has already happened
+        /// TODO: should probably check if the UI still does any "unknown" checks
         /// </summary>
         /// <returns></returns>
         /// <remarks>
@@ -290,74 +259,6 @@ namespace ToSic.Eav.WebApi
 
             // unknown will let the UI fallback on other mechanisms
             return string.IsNullOrEmpty(inputType) ? Constants.NullNameId : inputType;
-        }
-
-        private bool HasCalculations(IContentTypeAttribute attribute)
-        {
-            var l = Log.Fn<bool>(attribute.Name);
-            var allMd = attribute.Metadata.FirstOrDefaultOfType(AttributeMetadata.TypeGeneral);
-            if (allMd == null) return l.ReturnFalse("no @All");
-
-            var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == AttributeMetadata.MetadataFieldAllFormulas);
-            if (calculationsAttr == null) return l.ReturnFalse("no calc property");
-
-            var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;
-            return l.Return(calculations?.Any() ?? false);
-        }
-
-
-        public bool Reorder(int contentTypeId, string newSortOrder)
-        {
-            var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{newSortOrder}");
-            var sortOrderList = newSortOrder.Trim('[', ']').Split(',').Select(int.Parse).ToList();
-            GetDb().ContentType.SortAttributes(contentTypeId, sortOrderList);
-            return l.ReturnTrue();
-        }
-
-	    public string[] DataTypes()
-	    {
-	        Log.A($"get data types");
-            return GetDb().Attributes.DataTypeNames();
-	    }
-
-
-        public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
-	    {
-	        var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-            var attDef = _multiBuilder.Value.TypeAttributeBuilder
-                .Create(appId: _appCtxPlus.AppId, name: staticName, type: ValueTypeHelpers.Get(type), isTitle: false, id: 0, sortOrder: sortOrder);
-            var id = AttributesMod.CreateAttributeAndInitializeAndSave(contentTypeId, attDef, inputType);
-            return l.Return(id);
-        }
-
-        public bool SetInputType(int attributeId, string inputType)
-        {
-            var l = Log.Fn<bool>($"update input type attrib:{attributeId}, input:{inputType}");
-            var ok = AttributesMod.UpdateInputType(attributeId, inputType);
-            return l.Return(ok);
-        }
-
-        private WorkAttributesMod AttributesMod => _attributesModInitialized ?? (_attributesModInitialized = _attributesMod.New(_appCtxPlus.AppState));
-        private WorkAttributesMod _attributesModInitialized;
-
-	    public bool DeleteField(int contentTypeId, int attributeId)
-	    {
-	        var l = Log.Fn<bool>($"delete field type#{contentTypeId}, attrib:{attributeId}");
-            return l.Return(GetDb().Attributes.RemoveAttributeAndAllValuesAndSave(attributeId));
-	    }
-
-	    public void SetTitle(int contentTypeId, int attributeId)
-	    {
-	        var l = Log.Fn($"set title type#{contentTypeId}, attrib:{attributeId}");
-	        GetDb().Attributes.SetTitleAttribute(attributeId, contentTypeId);
-            l.Done();
-        }
-
-        public bool Rename(int contentTypeId, int attributeId, string newName)
-        {
-            var l = Log.Fn<bool>($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
-            GetDb().Attributes.RenameAttribute(attributeId, contentTypeId, newName);
-            return l.ReturnTrue();
         }
 
         #endregion

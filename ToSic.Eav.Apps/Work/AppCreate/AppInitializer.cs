@@ -21,19 +21,18 @@ namespace ToSic.Eav.Apps.Work
     /// </summary>
     public class AppInitializer : ServiceBase
     {
-
         #region Constructor / DI
 
         public AppInitializer(
             LazySvc<DataBuilder> builder,
             Generator<IRepositoryLoader> repositoryLoaderGenerator,
             GenWorkDb<WorkEntitySave> workEntSave,
-            GenWorkDb<WorkAttributesMod> attributesMod,
+            GenWorkDb<WorkContentTypesMod> contentTypesMod,
             AppCachePurger appCachePurger,
             IAppStates appStates) : base("Eav.AppBld")
         {
             ConnectServices(
-                _attributesMod = attributesMod,
+                _contentTypesMod = contentTypesMod,
                 _workEntSave = workEntSave,
                 _builder = builder,
                 AppCachePurger = appCachePurger,
@@ -42,7 +41,8 @@ namespace ToSic.Eav.Apps.Work
             );
         }
 
-        private readonly GenWorkDb<WorkAttributesMod> _attributesMod;
+
+        private readonly GenWorkDb<WorkContentTypesMod> _contentTypesMod;
         private readonly GenWorkDb<WorkEntitySave> _workEntSave;
         private readonly LazySvc<DataBuilder> _builder;
         private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
@@ -125,14 +125,14 @@ namespace ToSic.Eav.Apps.Work
         private bool CreateAllMissingContentTypes(AppState appState, List<AddContentTypeAndOrEntityTask> newItems)
         {
             var l = Log.Fn<bool>($"Check for {newItems.Count}");
-            var inputTypeMod = _attributesMod.New(appState);
+            var typesMod = _contentTypesMod.New(appState);
             var addedTypes = false;
             foreach (var item in newItems)
                 if (item.InAppType && FindContentType(appState, item.SetName, item.InAppType) == null)
                 {
                     l.A("couldn't find type, will create");
                     // create App-Man if not created yet
-                    inputTypeMod.Create(item.SetName, Scopes.App);
+                    typesMod.Create(item.SetName, Scopes.App);
                     addedTypes = true;
                 }
                 else

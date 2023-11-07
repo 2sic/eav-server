@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using static ToSic.Eav.Data.AttributeMetadata;
 
 namespace ToSic.Eav.Data
@@ -40,6 +42,25 @@ namespace ToSic.Eav.Data
             var itemTypeName = attribute.Metadata.GetBestValue<string>(Attributes.EntityFieldType) ?? "";
             var typeName = itemTypeName.Split(',').First().Trim();
             return typeName;
+        }
+
+        /// <summary>
+        /// Check if an attribute has formulas.
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public static bool HasFormulas(this IContentTypeAttribute attribute, ILog log)
+        {
+            var l = log.Fn<bool>(attribute.Name);
+            var allMd = attribute.Metadata.FirstOrDefaultOfType(AttributeMetadata.TypeGeneral);
+            if (allMd == null) return l.ReturnFalse("no @All");
+
+            var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == AttributeMetadata.MetadataFieldAllFormulas);
+            if (calculationsAttr == null) return l.ReturnFalse("no calc property");
+
+            var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;
+            return l.Return(calculations?.Any() ?? false);
         }
 
     }

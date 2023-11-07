@@ -49,7 +49,8 @@ namespace ToSic.Eav.Apps
             services.TryAddTransient<WorkEntityDelete>();
             services.TryAddTransient<WorkEntityPublish>();
             services.TryAddTransient<WorkEntityVersioning>();
-
+            services.TryAddTransient<WorkContentTypesMod>();
+            services.TryAddTransient<WorkAttributes>();
             services.TryAddTransient<WorkAttributesMod>();
             services.TryAddTransient<WorkQueryMod>();
             services.TryAddTransient<WorkQueryCopy>();
