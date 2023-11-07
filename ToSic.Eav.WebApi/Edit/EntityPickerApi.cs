@@ -35,9 +35,9 @@ namespace ToSic.Eav.WebApi
         /// Returns a list of entities, optionally filtered by contentType.
         /// </summary>
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-        public IEnumerable<EntityForPickerDto> GetForEntityPicker(int appId, string[] items, string contentTypeName, bool withDrafts)
+        public List<EntityForPickerDto> GetForEntityPicker(int appId, string[] items, string contentTypeName, bool withDrafts, bool allowFromAllScopes = false)
         {
-            var l = Log.Fn<IEnumerable<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
+            var l = Log.Fn<List<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
             var appEnts = _workEntities.New(appId, showDrafts: withDrafts);
             IContentType contentType = null;
@@ -50,19 +50,23 @@ namespace ToSic.Eav.WebApi
                         "A type was specified but not found, will return empty list");
             }
 
-            IEnumerable<IEntity> list;
+            List<IEntity> list;
 
             // optionally filter by type
             if (contentType != null)
             {
                 l.A($"filter by type:{contentType.Name}");
-                list = appEnts.Get(contentTypeName);
+                list = appEnts.Get(contentTypeName).ToList();
             }
             else
             {
                 l.A("won't filter by type because it's null");
                 l.A($"Will restrict by scope if user is not system admin: {_user.IsSystemAdmin}");
-                list = appEnts.OnlyContent(_user.IsSystemAdmin); // only super user should also get Configuration
+                list = allowFromAllScopes
+                    // Get all the data which the current user may see (filtering drafts etc.)
+                    ? appEnts.AppWorkCtx.Data.List.ToList()
+                    // Get all content only, and maybe configuration
+                    : appEnts.OnlyContent(withConfiguration: _user.IsSystemAdmin).ToList(); // only super user should also get Configuration
             }
 
             // optionally filter by IDs
@@ -70,7 +74,7 @@ namespace ToSic.Eav.WebApi
             {
                 l.A($"filter by {items.Length} ids");
                 var guids = items.Select(Guid.Parse);
-                list = list.Where(e => guids.Contains(e.EntityGuid));
+                list = list.Where(e => guids.Contains(e.EntityGuid)).ToList();
             }
             else
                 l.A("won't filter by IDs");
