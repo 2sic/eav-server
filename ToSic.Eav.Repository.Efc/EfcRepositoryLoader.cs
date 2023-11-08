@@ -21,9 +21,9 @@ namespace ToSic.Eav.Repository.Efc
 
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) => _dataController.Loader.ContentTypes(appId, source);
 
-        public AppState AppStateRaw(int appId, CodeRef codeRef) => _dataController.Loader.AppStateRaw(appId, codeRef);
+        public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateRaw(appId, codeRefTrail);
 
-        public AppState AppStateInitialized(int appId, CodeRef codeRef) => _dataController.Loader.AppStateInitialized(appId, codeRef);
+        public AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null) => _dataController.Loader.Update(app, startAt, entityIds);
 

@@ -89,29 +89,34 @@ namespace ToSic.Eav.Persistence.Efc
             return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
         }
 
-        public AppState AppStateRaw(int appId, CodeRef codeRef) => AppState(appId, false, codeRef);
-
-        public AppState AppStateInitialized(int appId, CodeRef codeRef) => AppState(appId, true, codeRef);
+        /// <inheritdoc />
+        public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail)
+        {
+            var l = Log.Fn<AppState>($"{appId}", timer: true);
+            var appState = LoadAppStateFromDb(appId);
+            return l.ReturnAsOk(appState);
+        }
 
         /// <inheritdoc />
-        private AppState AppState(int appId, bool ensureInitialized, CodeRef codeRef)
+        public AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail)
         {
-            var wrapLog = Log.Fn<AppState>($"{appId}, {ensureInitialized}", timer: true);
-
-            var appState = LoadAppStateFromDb(appId);
-            if (!ensureInitialized) return wrapLog.Return(appState, "won't check initialized");
-
             // Note: Ignore ensureInitialized on the content app
             // The reason is that this app - even when empty - is needed in the cache before data is imported
             // So if we initialize it, then things will result in duplicate settings/resources/configuration
             // Note that to ensure the Content app works, we must perform the same check again in the 
             // API Endpoint which will edit this data
-            if (appState.NameId == Constants.DefaultAppGuid) return wrapLog.Return(appState, "default app, don't auto-init");
 
-            var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, codeRef, Log)
+            var l = Log.Fn<AppState>($"{appId}", timer: true);
+
+            var appState = LoadAppStateFromDb(appId);
+
+            if (appState.NameId == Constants.DefaultAppGuid)
+                return l.Return(appState, "default app, don't auto-init");
+
+            var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, codeRefTrail.WithHere(), Log)
                 ? LoadAppStateFromDb(appId)
                 : appState;
-            return wrapLog.Return(result, "with init check");
+            return l.Return(result, "with init check");
         }
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)

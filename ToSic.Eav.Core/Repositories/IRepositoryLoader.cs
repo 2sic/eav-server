@@ -13,16 +13,16 @@ namespace ToSic.Eav.Repositories
         /// </summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <returns></returns>
-        /// <param name="codeRef">CodeRef of the original caller to know where it came from</param>
-        AppState AppStateRaw(int appId, CodeRef codeRef);
+        /// <param name="codeRefTrail">CodeRef of the original caller to know where it came from</param>
+        AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail);
 
         /// <summary>
         /// will enforce that app settings etc. are created
         /// </summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
-        /// <param name="codeRef">CodeRef of the original caller to know where it came from</param>
+        /// <param name="codeRefTrail">CodeRef of the original caller to know where it came from</param>
         /// <returns></returns>
-        AppState AppStateInitialized(int appId, CodeRef codeRef);
+        AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail);
 
         AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null);
 

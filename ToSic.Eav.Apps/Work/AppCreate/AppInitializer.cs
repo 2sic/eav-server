@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -59,8 +60,8 @@ namespace ToSic.Eav.Apps.Work
         /// </summary>
         /// <param name="appState">The app State</param>
         /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
-        /// <param name="codeRef">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
-        public bool InitializeApp(AppState appState, string newAppName, CodeRef codeRef)
+        /// <param name="codeRefTrail">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
+        public bool InitializeApp(AppState appState, string newAppName, CodeRefTrail codeRefTrail)
         {
             var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
             if (AppInitializedChecker.CheckIfAllPartsExist(appState, out var appConfig, out var appResources,
@@ -68,17 +69,17 @@ namespace ToSic.Eav.Apps.Work
                 return l.ReturnTrue("ok");
 
             // Get appName from cache - stop if it's a "Default" app
-            var eavAppName = appState.NameId;
+            var appName = appState.NameId;
 
             // v10.25 from now on the DefaultApp can also have settings and resources
-            var folder = PickCorrectFolderName(newAppName, eavAppName);
+            var folder = PickCorrectFolderName(newAppName, appName);
 
             var addList = new List<AddContentTypeAndOrEntityTask>();
             if (appConfig == null)
                 addList.Add(new AddContentTypeAndOrEntityTask(TypeAppConfig,
                     values: new Dictionary<string, object>
                     {
-                        { "DisplayName", newAppName.UseFallbackIfNoValue(eavAppName) },
+                        { "DisplayName", newAppName.UseFallbackIfNoValue(appName) },
                         { "Folder", folder },
                         { "AllowTokenTemplates", "True" },
                         { "AllowRazorTemplates", "True" },
@@ -87,7 +88,7 @@ namespace ToSic.Eav.Apps.Work
                         { "Version", $"00.00.{EavSystemInfo.Version.Major:00}" },
                         { "OriginalId", "" },
                         // 2023-11-08 2dm - https://github.com/2sic/2sxc/issues/3203
-                        { "DebugLog", $"Caller: {codeRef.Name}; Line: {codeRef.Line}; CodeFile: {codeRef.Path}" },
+                        { "DebugLog", codeRefTrail?.ToString() },
                     },
                     false));
 
@@ -100,12 +101,14 @@ namespace ToSic.Eav.Apps.Work
             if (appResources == null)
                 addList.Add(new AddContentTypeAndOrEntityTask(TypeAppResources));
 
+            // If the Types are missing, create these first
             if (CreateAllMissingContentTypes(appState, addList))
             {
+                // since the types were re-created, we must flush it from the cache
+                // this is because other APIs may access the AppStates (though they shouldn't)
                 CachePurger.Purge(appState);
                 // get the latest app-state, but not-initialized so we can make changes
-                var repoLoader = _repoLoader.New();
-                appState = repoLoader.AppStateRaw(appState.AppId, new CodeRef());
+                appState = _repoLoader.New().AppStateRaw(appState.AppId, new CodeRefTrail());
             }
 
             addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
@@ -128,13 +131,13 @@ namespace ToSic.Eav.Apps.Work
         }
 
 
-        private bool CreateAllMissingContentTypes(AppState appState, List<AddContentTypeAndOrEntityTask> newItems)
+        private bool CreateAllMissingContentTypes(AppState appStateRaw, List<AddContentTypeAndOrEntityTask> newItems)
         {
             var l = Log.Fn<bool>($"Check for {newItems.Count}");
-            var typesMod = _contentTypesMod.New(appState);
+            var typesMod = _contentTypesMod.New(appStateRaw);
             var addedTypes = false;
             foreach (var item in newItems)
-                if (item.InAppType && FindContentType(appState, item.SetName, item.InAppType) == null)
+                if (item.InAppType && FindContentType(appStateRaw, item.SetName, item.InAppType) == null)
                 {
                     l.A("couldn't find type, will create");
                     // create App-Man if not created yet
@@ -147,10 +150,10 @@ namespace ToSic.Eav.Apps.Work
             return l.Return(addedTypes);
         }
         
-        private void MetadataEnsureTypeAndSingleEntity(AppState appState, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
+        private void MetadataEnsureTypeAndSingleEntity(AppState appStateRaw, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
         {
-            var l = Log.Fn($"{cTypeAndOrEntity.SetName} for app {appState.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
-            var ct = FindContentType(appState, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
+            var l = Log.Fn($"{cTypeAndOrEntity.SetName} for app {appStateRaw.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
+            var ct = FindContentType(appStateRaw, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
 
             // if it's still null, we have a problem...
             if (ct == null)
@@ -160,16 +163,16 @@ namespace ToSic.Eav.Apps.Work
             }
 
             var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
-            var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appState.AppId);
-            var newEnt = _builder.Value.Entity.Create(appId: appState.AppId, guid: Guid.NewGuid(),
-                contentType: ct,
-                attributes: _builder.Value.Attribute.Create(values), metadataFor: mdTarget);
+            var attrs = _builder.Value.Attribute.Create(values);
+            var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appStateRaw.AppId);
+            var newEnt = _builder.Value.Entity
+                .Create(appId: appStateRaw.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
 
-            _entitySave.New(appState).Save(newEnt);
+            _entitySave.New(appStateRaw).Save(newEnt);
             l.Done();
         }
 
-        private IContentType FindContentType(AppState appState, string setName, bool inAppType)
+        private IContentType FindContentType(AppState appStateRaw, string setName, bool inAppType)
         {
             // if it's an in-app type, it should check the app, otherwise it should check the global type
             // we're NOT asking the app for all types (which would be the normal way)
@@ -179,7 +182,7 @@ namespace ToSic.Eav.Apps.Work
             // this is probably not so important any more, but I would leave it forever for now
             // discuss w/2dm if you think you want to change this
             var ct = inAppType
-                ? appState.GetContentType(setName)
+                ? appStateRaw.GetContentType(setName)
                 : _appStates.GetPresetApp().GetContentType(setName);
             return ct;
         }
