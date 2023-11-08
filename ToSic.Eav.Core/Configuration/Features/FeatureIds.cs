@@ -4,14 +4,12 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Configuration
 {
     /// <summary>
-    /// Note: these values are possibly used in other Apps - not often, but it's possible
-    /// Just make sure we don't use them
-    /// TODO:
-    /// 1. Create a new standard to use this
-    /// 2. Then mark as obsolete
-    /// 3. And log to obsolete that this feature shouldn't be used any more
+    /// Note: these values are possibly used in published Apps - not often, but it's possible.
+    /// The apps would use this to check if one of the older features existed.
+    /// Just make sure we don't use them in our code. 
     /// </summary>
     [PrivateApi("this should probably never be public, as we want to rename things at will")]
+    [Obsolete]
     public class FeatureIds
     {
         // Important: these names are public - don't ever change them
