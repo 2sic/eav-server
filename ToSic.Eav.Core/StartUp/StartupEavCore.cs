@@ -13,6 +13,7 @@ using ToSic.Eav.LookUp;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Capabilities;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
@@ -49,6 +50,9 @@ namespace ToSic.Eav.StartUp
             services.AddSingleton<FeaturesCatalog>();   // Must be singleton
             services.TryAddSingleton<IFeaturesInternal, FeaturesService>();    // this must come first!
             services.TryAddSingleton<IFeaturesService>(x => x.GetRequiredService<IFeaturesInternal>());
+
+            // New SystemCapability
+            services.TryAddTransient<SystemCapabilitiesServices>();
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();
