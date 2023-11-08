@@ -30,8 +30,8 @@ namespace ToSic.Eav.Apps.Work
 
         /// <summary>
         /// All content-entities. It does not include system-entity items.
-        /// WARNING: ATM it respects published/unpublished because it's using the Data.
-        /// It's not clear if this is actually intended.
+        /// Important: it respects published/unpublished because it's using the Data.
+        /// This is primarily meant for entity pickers
         /// </summary>
         public IEnumerable<IEntity> OnlyContent(bool withConfiguration)
         {

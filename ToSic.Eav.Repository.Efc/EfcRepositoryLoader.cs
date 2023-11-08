@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
+using System.Runtime.CompilerServices;
 
 namespace ToSic.Eav.Repository.Efc
 {
@@ -20,7 +21,9 @@ namespace ToSic.Eav.Repository.Efc
 
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) => _dataController.Loader.ContentTypes(appId, source);
 
-        public AppState AppState(int appId, bool ensureInitialized) => _dataController.Loader.AppState(appId, ensureInitialized);
+        public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateRaw(appId, codeRefTrail);
+
+        public AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null) => _dataController.Loader.Update(app, startAt, entityIds);
 

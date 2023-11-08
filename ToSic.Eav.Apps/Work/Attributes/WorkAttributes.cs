@@ -36,7 +36,10 @@ namespace ToSic.Eav.Apps.Work
 
             var fields = localTypes
                 .SelectMany(ct => ct.Attributes
-                    .Where(a => a.Guid != null && a.SysSettings?.Share == true)
+                    .Where(a =>
+                        a.AttributeId != 0                  // don't take AttributeId 0 which would be file-system based (not in DB)
+                        && a.Guid != null                   // Guid required for sharing
+                        && a.SysSettings?.Share == true)    // Share must be defined
                     .Select(a => new PairTypeWithAttribute { Type = ct, Attribute = a }))
                 .OrderBy(set => set.Type.Name)
                 .ThenBy(set => set.Attribute.Name)

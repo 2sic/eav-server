@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="DataSourceFactoryTestExtensions.cs" />
     <Compile Include="IServiceBuilder.cs" />
+    <Compile Include="IStorageExtensions.cs" />
     <Compile Include="Mocks\MockGlobalMetadataProvider.cs" />
     <Compile Include="Platforms\TestPlatformNotPatron.cs" />
     <Compile Include="Platforms\TestPlatformPatronPerfectionist.cs" />

@@ -64,13 +64,18 @@ namespace ToSic.Eav.DataSource
             var result = new List<ConfigMaskInfo>();
             foreach (var configProp in configProps)
             {
-                var name = configProp.ConfigFrom.Field ?? configProp.Name;
-                var fallback = $"{configProp.ConfigFrom.Fallback}";
-                // we mast use this logic instead of fallback.HasValue()
-                // because of Csv example and \t for fallback value
-                fallback = !string.IsNullOrEmpty(fallback) ? $"||{fallback}" : "";
-                var rule = $"{name}{fallback}";
-                var token = $"[{DataSourceConstants.MyConfigurationSourceName}:{rule}]";
+                var token = configProp.ConfigFrom.Token;
+                if (token == null)
+                {
+                    var name = configProp.ConfigFrom.Field ?? configProp.Name;
+                    var fallback = $"{configProp.ConfigFrom.Fallback}";
+                    // we mast use this logic instead of fallback.HasValue()
+                    // because of Csv example and \t for fallback value
+                    fallback = !string.IsNullOrEmpty(fallback) ? $"||{fallback}" : "";
+                    var rule = $"{name}{fallback}";
+                    token = $"[{DataSourceConstants.MyConfigurationSourceName}:{rule}]";
+                }
+
                 result.Add(new ConfigMaskInfo
                 {
                     Key = configProp.Name,

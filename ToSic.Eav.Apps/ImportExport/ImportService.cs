@@ -99,7 +99,7 @@ namespace ToSic.Eav.Apps.ImportExport
                             {
                                 // load everything, as content-type metadata is normal entities
                                 // but disable initialized, as this could cause initialize stuff we're about to import
-                                var appStateTemp = Storage.Loader.AppState(AppId, false);
+                                var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail());
                                 var newTypeList = newTypes.ToList();
                                 // first: import the attribute sets in the system scope, as they may be needed by others...
                                 // ...and would need a cache-refresh before 
@@ -120,7 +120,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
                                 // now reload the app state as it has new content-types
                                 // and it may need these to load the remaining attributes of the content-types
-                                var appStateTemp = Storage.Loader.AppState(AppId, false);
+                                var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail());
 
                                 // now the remaining attributeSets
                                 MergeAndSaveContentTypes(appStateTemp, nonSysTypes);
@@ -136,7 +136,7 @@ namespace ToSic.Eav.Apps.ImportExport
                     l.A("Not entities to import");
                 else
                 {
-                    var appStateTemp = Storage.Loader.AppState(AppId, false); // load all entities
+                    var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail()); // load all entities
                     var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () => newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                         .Where(e => e != null)

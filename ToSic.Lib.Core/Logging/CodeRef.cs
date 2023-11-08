@@ -37,14 +37,14 @@ namespace ToSic.Lib.Logging
         /// <param name="cPath">auto pre filled by the compiler - path to the code file</param>
         /// <param name="cName">auto pre filled by the compiler - method name</param>
         /// <param name="cLine">auto pre filled by the compiler - code line number</param>
-        public CodeRef([CallerFilePath] string cPath = default,
-            [CallerMemberName] string cName = default,
-            [CallerLineNumber] int cLine = default)
+        public CodeRef([CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
         {
             Path = cPath;
             Name = cName;
             Line = cLine;
         }
+
+        public override string ToString() => $"Caller: {Name}; Line: {Line}; File: {Path}";
 
         /// <summary>
         /// Manually create a <see cref="CodeRef"/> using an already available set of path/name/line.

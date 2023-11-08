@@ -8,16 +8,21 @@ namespace ToSic.Eav.Repositories
     public interface IRepositoryLoader: IHasLog, IContentTypeLoader
     {
         /// <summary>
-        /// Load the full AppState from the backend - maybe initialized, maybe not.
+        /// Special loader which won't initialize the state.
+        /// We're creating an own API for this, to better track down where things come from in case something is surprisingly wrong.
         /// </summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
-        /// <param name="ensureInitialized">if true, will enforce that app settings etc. are created</param>
-        /// <remarks>
-        /// Requesting Initialization may result in the app state being built twice - but that would only occur once per App ever (until it's initialized)
-        /// </remarks>
-        /// <returns>An object with everything which an app has, usually for caching</returns>
-        AppState AppState(int appId, bool ensureInitialized);
+        /// <returns></returns>
+        /// <param name="codeRefTrail">CodeRef of the original caller to know where it came from</param>
+        AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail);
 
+        /// <summary>
+        /// will enforce that app settings etc. are created
+        /// </summary>
+        /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
+        /// <param name="codeRefTrail">CodeRef of the original caller to know where it came from</param>
+        /// <returns></returns>
+        AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail);
 
         AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null);
 
