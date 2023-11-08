@@ -15,6 +15,6 @@ namespace ToSic.Eav.Apps
         /// <param name="appName"></param>
         /// <param name="parentLog"></param>
         /// <returns></returns>
-        bool EnsureAppConfiguredAndInformIfRefreshNeeded(AppState appIdentity, string appName, ILog parentLog);
+        bool EnsureAppConfiguredAndInformIfRefreshNeeded(AppState appIdentity, string appName, CodeRef codeRef, ILog parentLog);
     }
 }

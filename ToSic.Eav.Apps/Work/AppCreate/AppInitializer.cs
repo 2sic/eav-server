@@ -5,10 +5,12 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
+using static ToSic.Eav.Apps.AppLoadConstants;
 
 namespace ToSic.Eav.Apps.Work
 {
@@ -25,29 +27,29 @@ namespace ToSic.Eav.Apps.Work
 
         public AppInitializer(
             LazySvc<DataBuilder> builder,
-            Generator<IRepositoryLoader> repositoryLoaderGenerator,
-            GenWorkDb<WorkEntitySave> workEntSave,
+            Generator<IRepositoryLoader> repoLoader,
+            GenWorkDb<WorkEntitySave> entitySave,
             GenWorkDb<WorkContentTypesMod> contentTypesMod,
-            AppCachePurger appCachePurger,
+            AppCachePurger cachePurger,
             IAppStates appStates) : base("Eav.AppBld")
         {
             ConnectServices(
                 _contentTypesMod = contentTypesMod,
-                _workEntSave = workEntSave,
+                _entitySave = entitySave,
                 _builder = builder,
-                AppCachePurger = appCachePurger,
-                _repositoryLoaderGenerator = repositoryLoaderGenerator,
+                CachePurger = cachePurger,
+                _repoLoader = repoLoader,
                 _appStates = appStates
             );
         }
 
 
         private readonly GenWorkDb<WorkContentTypesMod> _contentTypesMod;
-        private readonly GenWorkDb<WorkEntitySave> _workEntSave;
+        private readonly GenWorkDb<WorkEntitySave> _entitySave;
         private readonly LazySvc<DataBuilder> _builder;
-        private readonly Generator<IRepositoryLoader> _repositoryLoaderGenerator;
+        private readonly Generator<IRepositoryLoader> _repoLoader;
         private readonly IAppStates _appStates;
-        protected readonly AppCachePurger AppCachePurger;
+        protected readonly AppCachePurger CachePurger;
 
 
         #endregion
@@ -57,11 +59,13 @@ namespace ToSic.Eav.Apps.Work
         /// </summary>
         /// <param name="appState">The app State</param>
         /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
-        public bool InitializeApp(AppState appState, string newAppName = null) => Log.Func($"{nameof(newAppName)}: {newAppName}", () =>
+        /// <param name="codeRef">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
+        public bool InitializeApp(AppState appState, string newAppName, CodeRef codeRef)
         {
+            var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
             if (AppInitializedChecker.CheckIfAllPartsExist(appState, out var appConfig, out var appResources,
                     out var appSettings, Log))
-                return (true, "ok");
+                return l.ReturnTrue("ok");
 
             // Get appName from cache - stop if it's a "Default" app
             var eavAppName = appState.NameId;
@@ -71,44 +75,46 @@ namespace ToSic.Eav.Apps.Work
 
             var addList = new List<AddContentTypeAndOrEntityTask>();
             if (appConfig == null)
-                addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppConfig,
+                addList.Add(new AddContentTypeAndOrEntityTask(TypeAppConfig,
                     values: new Dictionary<string, object>
                     {
-                        { "DisplayName", string.IsNullOrEmpty(newAppName) ? eavAppName : newAppName },
+                        { "DisplayName", newAppName.UseFallbackIfNoValue(eavAppName) /*string.IsNullOrEmpty(newAppName) ? eavAppName : newAppName*/ },
                         { "Folder", folder },
                         { "AllowTokenTemplates", "True" },
                         { "AllowRazorTemplates", "True" },
                         // always trailing with the version it was created with
                         // Note that v13 and 14 both report v13, only 15+ uses the real version
                         { "Version", $"00.00.{EavSystemInfo.Version.Major:00}" },
-                        { "OriginalId", "" }
+                        { "OriginalId", "" },
+                        // 2023-11-08 2dm - https://github.com/2sic/2sxc/issues/3203
+                        { "DebugLog", $"Caller: {codeRef.Name}; Line: {codeRef.Line}; CodeFile: {codeRef.Path}" },
                     },
                     false));
 
 
             // Add new (empty) ContentType for Settings
             if (appSettings == null)
-                addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppSettings));
+                addList.Add(new AddContentTypeAndOrEntityTask(TypeAppSettings));
 
             // add new (empty) ContentType for Resources
             if (appResources == null)
-                addList.Add(new AddContentTypeAndOrEntityTask(AppLoadConstants.TypeAppResources));
+                addList.Add(new AddContentTypeAndOrEntityTask(TypeAppResources));
 
             if (CreateAllMissingContentTypes(appState, addList))
             {
-                AppCachePurger.Purge(appState);
+                CachePurger.Purge(appState);
                 // get the latest app-state, but not-initialized so we can make changes
-                var repoLoader = _repositoryLoaderGenerator.New();
+                var repoLoader = _repoLoader.New();
                 appState = repoLoader.AppStateRaw(appState.AppId);
             }
 
             addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
 
             // Reset App-State to ensure it's reloaded with the added configuration
-            AppCachePurger.Purge(appState);
+            CachePurger.Purge(appState);
 
-            return (false, "ok");
-        });
+            return l.ReturnFalse("ok");
+        }
 
         private static string PickCorrectFolderName(string newAppName, string eavAppName)
         {
@@ -141,8 +147,7 @@ namespace ToSic.Eav.Apps.Work
             return l.Return(addedTypes);
         }
         
-        private void MetadataEnsureTypeAndSingleEntity(AppState appState,
-            AddContentTypeAndOrEntityTask cTypeAndOrEntity)
+        private void MetadataEnsureTypeAndSingleEntity(AppState appState, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
         {
             var l = Log.Fn($"{cTypeAndOrEntity.SetName} for app {appState.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
             var ct = FindContentType(appState, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
@@ -160,7 +165,7 @@ namespace ToSic.Eav.Apps.Work
                 contentType: ct,
                 attributes: _builder.Value.Attribute.Create(values), metadataFor: mdTarget);
 
-            _workEntSave.New(appState).Save(newEnt);
+            _entitySave.New(appState).Save(newEnt);
             l.Done();
         }
 

@@ -67,7 +67,7 @@ namespace ToSic.Eav.WebApi
             {
                 l.A($"is scope {scope}, will do extra processing");
                 // make sure additional settings etc. exist
-                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(_appCtxPlus.AppState, null, Log); 
+                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(_appCtxPlus.AppState, null, new CodeRef(), Log); 
             }
             // should use app-manager and return each type 1x only
             var appEntities = _workEntities.New(_appCtxPlus);

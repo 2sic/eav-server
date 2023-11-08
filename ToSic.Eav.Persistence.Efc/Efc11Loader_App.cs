@@ -94,8 +94,7 @@ namespace ToSic.Eav.Persistence.Efc
         public AppState AppStateRaw(int appId, [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
             => AppState(appId, false, new CodeRef(cPath, cName, cLine));
 
-        public AppState AppStateInitialized(int appId, [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
-            => AppState(appId, true, new CodeRef(cPath, cName, cLine));
+        public AppState AppStateInitialized(int appId, CodeRef codeRef) => AppState(appId, true, codeRef);
         // ReSharper restore ExplicitCallerInfoArgument
 
         /// <inheritdoc />
@@ -113,7 +112,7 @@ namespace ToSic.Eav.Persistence.Efc
             // API Endpoint which will edit this data
             if (appState.NameId == Constants.DefaultAppGuid) return wrapLog.Return(appState, "default app, don't auto-init");
 
-            var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
+            var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, codeRef, Log)
                 ? LoadAppStateFromDb(appId)
                 : appState;
             return wrapLog.Return(result, "with init check");

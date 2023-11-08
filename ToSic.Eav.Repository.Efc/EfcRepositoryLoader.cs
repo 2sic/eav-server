@@ -21,12 +21,10 @@ namespace ToSic.Eav.Repository.Efc
 
         public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) => _dataController.Loader.ContentTypes(appId, source);
 
-        //public AppState AppState(int appId, bool ensureInitialized) => _dataController.Loader.AppState(appId, ensureInitialized);
         public AppState AppStateRaw(int appId, [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default) 
             => _dataController.Loader.AppStateRaw(appId, cPath, cName, cLine);
 
-        public AppState AppStateInitialized(int appId, [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default) 
-            => _dataController.Loader.AppStateInitialized(appId, cPath, cName, cLine);
+        public AppState AppStateInitialized(int appId, CodeRef codeRef) => _dataController.Loader.AppStateInitialized(appId, codeRef);
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null) => _dataController.Loader.Update(app, startAt, entityIds);
 
