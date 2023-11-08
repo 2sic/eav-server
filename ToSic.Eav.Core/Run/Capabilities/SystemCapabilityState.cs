@@ -14,13 +14,9 @@ namespace ToSic.Eav.Run.Capabilities
         public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
         {
             Guid = Definition.Guid,
-            Values = new Dictionary<string, object>
+            Values = new Dictionary<string, object>(Definition.RawEntity.Attributes(null))
             {
-                { nameof(Definition.NameId), Definition.NameId },
-                { nameof(Definition.Name), Definition.Name },
-                { nameof(Definition.Description), Definition.Description },
-                { nameof(Definition.Link), Definition.Link },
-                { nameof(IsEnabled), IsEnabled },
+                [nameof(IsEnabled)] = IsEnabled,
             }
         });
 
