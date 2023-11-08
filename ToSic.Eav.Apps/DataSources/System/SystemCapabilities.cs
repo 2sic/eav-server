@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -24,7 +23,7 @@ namespace ToSic.Eav.DataSources.Sys
         DynamicOut = false
     )]
     // ReSharper disable once UnusedMember.Global
-    public sealed class Capabilities : CustomDataSource
+    public sealed class SystemCapabilities : CustomDataSource
     {
 
         #region Configuration-properties (no config)
@@ -36,10 +35,10 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Capabilities(MyServices services, SystemCapabilitiesServices featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public SystemCapabilities(MyServices services, SystemCapabilitiesServices sysCapabilities) : base(services, $"{DataSourceConstants.LogPrefix}.SysCap")
         {
-            ConnectServices(featuresService);
-            ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new DataFactoryOptions(typeName: "Feature"));
+            ConnectServices(sysCapabilities);
+            ProvideOutRaw(() => sysCapabilities.States.OrderBy(f => f.Definition.NameId), options: () => new DataFactoryOptions(typeName: "SystemCapabilities"));
         }
     }
 }

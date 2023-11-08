@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Licenses(MyServices services, ILicenseService licenseService) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Licenses(MyServices services, ILicenseService licenseService) : base(services, $"{DataSourceConstants.LogPrefix}.Lics")
         {
             ConnectServices(licenseService);
             ProvideOutRaw(() => licenseService.All.OrderBy(l => l.License?.Priority ?? 0), options: () => new DataFactoryOptions(typeName: "License"));

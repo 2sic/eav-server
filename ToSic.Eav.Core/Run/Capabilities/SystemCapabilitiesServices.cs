@@ -16,15 +16,20 @@ namespace ToSic.Eav.Run.Capabilities
             _sp = sp;
         }
 
-        public List<SystemCapabilityDefinition> All => _list ?? (_list = LoadCapabilities());
-        private List<SystemCapabilityDefinition> _list;
+        public List<SystemCapabilityDefinition> Definitions => _list ?? (_list = LoadCapabilities().Defs);
+        private static List<SystemCapabilityDefinition> _list;
+
+        public List<SystemCapabilityState> States => _listState ?? (_listState = LoadCapabilities().States);
+        private static List<SystemCapabilityState> _listState;
 
 
-        private List<SystemCapabilityDefinition> LoadCapabilities()
+        private (List<SystemCapabilityDefinition> Defs, List<SystemCapabilityState> States) LoadCapabilities()
         {
             var services = AssemblyHandling.FindInherited(typeof(ISystemCapability));
             var objects = services.Select(s => _sp.Build<ISystemCapability>(s));
-            return objects.Select(isco => isco.Definition).ToList();
+            var definitions = objects.Select(isco => isco.Definition).ToList();
+            var states = objects.Select(isco => isco.State).ToList();
+            return (definitions, states);
         }
     }
 }

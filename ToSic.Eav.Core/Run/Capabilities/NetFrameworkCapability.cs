@@ -2,9 +2,8 @@
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class NetFrameworkCapability: ISystemCapability
+    public class NetFrameworkCapability: SystemCapabilityBase
     {
-        public SystemCapabilityDefinition Definition => DefStatic;
 
         public static SystemCapabilityDefinition DefStatic { get; } = new SystemCapabilityDefinition(
             "NetFramework",
@@ -13,9 +12,9 @@ namespace ToSic.Eav.Run.Capabilities
         );
 
 #if NETFRAMEWORK
-        public bool IsAvailable => true;
+        public NetFrameworkCapability() : base(DefStatic, true) { }
 #else
-        public bool IsAvailable => false;
+        public NetFrameworkCapability() : base(DefStatic, false) { }
 #endif
 
     }

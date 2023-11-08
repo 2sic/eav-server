@@ -4,6 +4,8 @@
     {
         SystemCapabilityDefinition Definition { get; }
 
-        bool IsAvailable { get; }
+        bool IsEnabled { get; }
+
+        SystemCapabilityState State { get; }
     }
 }

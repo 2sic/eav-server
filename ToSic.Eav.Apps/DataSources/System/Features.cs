@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(MyServices services, IFeaturesInternal featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+        public Features(MyServices services, IFeaturesInternal featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Feats")
         {
             ConnectServices(featuresService);
             ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new DataFactoryOptions(typeName: "Feature"));

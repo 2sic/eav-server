@@ -2,9 +2,8 @@
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class NetCoreCapability: ISystemCapability
+    public class NetCoreCapability: SystemCapabilityBase, ISystemCapability
     {
-        public SystemCapabilityDefinition Definition => DefStatic;
 
         private static readonly SystemCapabilityDefinition DefStatic = new SystemCapabilityDefinition(
             "NetCore",
@@ -13,9 +12,9 @@ namespace ToSic.Eav.Run.Capabilities
         );
 
 #if NETFRAMEWORK
-        public bool IsAvailable => false;
+        public NetCoreCapability(): base(DefStatic, false) { }
 #else
-        public bool IsAvailable => true;
+        public NetCoreCapability(): base(DefStatic, true) { }
 #endif
 
     }
