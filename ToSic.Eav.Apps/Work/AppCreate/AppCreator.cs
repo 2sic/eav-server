@@ -54,7 +54,7 @@ namespace ToSic.Eav.Apps.Work
             var appId = CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);
 
             // must get app from DB directly, not from cache, so no State.Get(...)
-            var appState = RepositoryLoader.AppStateRaw(appId);
+            var appState = RepositoryLoader.AppStateRaw(appId, new CodeRef());
 
             _appInitGenerator.New().InitializeApp(appState, appName, new CodeRef());
         }

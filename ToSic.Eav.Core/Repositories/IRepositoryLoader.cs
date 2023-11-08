@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using ToSic.Eav.Apps;
 using ToSic.Lib.Logging;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -13,11 +12,9 @@ namespace ToSic.Eav.Repositories
         /// We're creating an own API for this, to better track down where things come from in case something is surprisingly wrong.
         /// </summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
-        /// <param name="cPath">Auto added origin, for debugging in case of trouble</param>
-        /// <param name="cName">Auto added origin, for debugging in case of trouble</param>
-        /// <param name="cLine">Auto added origin, for debugging in case of trouble</param>
         /// <returns></returns>
-        AppState AppStateRaw(int appId, [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default);
+        /// <param name="codeRef">CodeRef of the original caller to know where it came from</param>
+        AppState AppStateRaw(int appId, CodeRef codeRef);
 
         /// <summary>
         /// will enforce that app settings etc. are created

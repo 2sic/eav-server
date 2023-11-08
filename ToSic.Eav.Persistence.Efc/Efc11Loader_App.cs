@@ -8,7 +8,6 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
-using System.Runtime.CompilerServices;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -90,12 +89,9 @@ namespace ToSic.Eav.Persistence.Efc
             return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
         }
 
-            // ReSharper disable ExplicitCallerInfoArgument
-        public AppState AppStateRaw(int appId, [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
-            => AppState(appId, false, new CodeRef(cPath, cName, cLine));
+        public AppState AppStateRaw(int appId, CodeRef codeRef) => AppState(appId, false, codeRef);
 
         public AppState AppStateInitialized(int appId, CodeRef codeRef) => AppState(appId, true, codeRef);
-        // ReSharper restore ExplicitCallerInfoArgument
 
         /// <inheritdoc />
         private AppState AppState(int appId, bool ensureInitialized, CodeRef codeRef)
