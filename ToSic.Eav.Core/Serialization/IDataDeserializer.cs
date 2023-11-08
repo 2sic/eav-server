@@ -63,5 +63,13 @@ namespace ToSic.Eav.Serialization
         /// <param name="serialized"></param>
         /// <returns>ContentTypeAttributeSysSettings or null</returns>
         ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized);
+
+
+        /// <summary>
+        /// Serialize ContentTypeAttributeSysSettings
+        /// </summary>
+        /// <param name="sysSettings"></param>
+        /// <returns>string or null</returns>
+        string Serialize(ContentTypeAttributeSysSettings sysSettings);
     }
 }

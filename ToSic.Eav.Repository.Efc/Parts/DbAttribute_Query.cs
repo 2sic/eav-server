@@ -43,5 +43,8 @@ namespace ToSic.Eav.Repository.Efc.Parts
             => DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type)
             .Select(a => a.Type)
             .ToArray();
+
+        public ToSicEavAttributes Get(int attributeId) 
+            => DbContext.SqlDb.ToSicEavAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
     }
 }

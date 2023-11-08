@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using System.Linq;
-using System;
+using ToSic.Eav.Serialization;
+using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Work
 {
@@ -12,12 +14,15 @@ namespace ToSic.Eav.Apps.Work
     {
         private readonly ContentTypeAttributeBuilder _attributeBuilder;
         private readonly GenWorkDb<WorkMetadata> _workMetadata;
+        private readonly Generator<IDataDeserializer> _dataDeserializer;
 
-        public WorkAttributesMod(GenWorkDb<WorkMetadata> workMetadata, ContentTypeAttributeBuilder attributeBuilder) : base("ApS.InpGet")
+        public WorkAttributesMod(GenWorkDb<WorkMetadata> workMetadata, ContentTypeAttributeBuilder attributeBuilder, Generator<IDataDeserializer> dataDeserializer) : base("ApS.InpGet")
         {
+
             ConnectServices(
                 _attributeBuilder = attributeBuilder,
-                _workMetadata = workMetadata
+                _workMetadata = workMetadata,
+                _dataDeserializer = dataDeserializer
             );
         }
 
@@ -122,23 +127,53 @@ namespace ToSic.Eav.Apps.Work
 
         public void FieldShare(int attributeId, bool share, bool hide = false)
         {
-            // TODO: @STV
-            // - Ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
-            // - get the fields current SysSettings and update with the Share = share (hide we'll ignore for now, it's for future needs)
-            // - Update DB
-            // - Then flush the app-cache as necessary, same as any other attribute change
+            var l = Log.Fn($"attributeId:{attributeId}, share:{share}, hide:{hide}");
+
+            // get field attributeId
+            var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId)
+                /*?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.")*/;
+
+            // update with the Share = share (hide we'll ignore for now, it's for future needs)
+            var newSysSettings = new ContentTypeAttributeSysSettings(share: share);
+
+            var serializer = _dataDeserializer.New();
+            serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
+
+            // Update DB, and then flush the app-cache as necessary, same as any other attribute change
+            AppWorkCtx.DataController.DoAndSave(() =>
+            {
+                // ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
+                if (attribute.Guid.HasValue == false) attribute.Guid = Guid.NewGuid();
+
+                attribute.SysSettings = serializer.Serialize(newSysSettings);
+            });
+
+            l.Done();
         }
 
         public void FieldInherit(int attributeId, Guid inheritMetadataOf)
         {
-            // TODO: @STV
-            // - Get field attributeId and it's sys-settings
-            // - set InheritMetadataOf to the guid above (as string)
-            // - save
-            // - flush app-cache as necessary, same as any other attribute change
+            var l = Log.Fn($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
+
+            // get field attributeId
+            var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId);
+
+            // set InheritMetadataOf to the guid above(as string)
+            var newSysSettings = new ContentTypeAttributeSysSettings(
+                inherit: null,
+                inheritName: false,
+                inheritMetadata: false,
+                inheritMetadataOf: new Dictionary<Guid, string>() { [inheritMetadataOf] = "" });
+
+            var serializer = _dataDeserializer.New();
+            serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
+
+            // Update DB, and then flush the app-cache as necessary, same as any other attribute change
+            AppWorkCtx.DataController.DoAndSave(() => attribute.SysSettings = serializer.Serialize(newSysSettings));
+
+            l.Done();
         }
 
         #endregion
-
     }
 }

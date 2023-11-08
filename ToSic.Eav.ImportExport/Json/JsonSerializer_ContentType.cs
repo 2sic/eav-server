@@ -4,8 +4,8 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json
@@ -127,6 +127,23 @@ namespace ToSic.Eav.ImportExport.Json
                 Metadata = contentType.Metadata.Select(md => ToJson(md)).ToList()
             };
             return package;
+        }
+
+        public string Serialize(ContentTypeAttributeSysSettings sysSettings)
+        {
+            var l = Log.Fn<string>($"serialize {sysSettings} to json string");
+            if (sysSettings == null) return l.Return(null, "null sysSettings");
+            try
+            {
+                var json = JsonAttributeSysSettings.FromSysSettings(sysSettings);
+                var simple = System.Text.Json.JsonSerializer.Serialize(json, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+                return l.Return(simple, $"serialized sysSettings");
+            }
+            catch (Exception e)
+            {
+                l.Done(e);
+                throw;
+            }
         }
     }
 }

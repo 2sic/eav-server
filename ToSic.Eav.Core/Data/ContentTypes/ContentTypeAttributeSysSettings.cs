@@ -23,6 +23,19 @@ namespace ToSic.Eav.Data
             InheritMetadataOf = inheritMetadataOf;
         }
 
+        public ContentTypeAttributeSysSettings(bool share)
+        {
+            Share = share;
+        }
+
+        public ContentTypeAttributeSysSettings(Guid? inherit, bool inheritName, bool inheritMetadata, Dictionary<Guid, string> inheritMetadataOf)
+        {
+            Inherit = inherit;
+            InheritNameOfPrimary = inheritName;
+            InheritMetadataOfPrimary = inheritMetadata;
+            InheritMetadataOf = inheritMetadataOf;
+        }
+
         #region Sharing / Source
 
         /// <summary>
