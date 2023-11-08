@@ -59,16 +59,21 @@ namespace ToSic.Eav.WebApi
         {
             var l = Log.Fn<IEnumerable<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
 
-            // 2020-01-15 2sxc 10.27.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
-            // this is important on "Content" apps, because these don't auto-initialize when loading from the DB
-            // so for these, we must pre-ensure that the app is initialized as needed, if they 
-            // are editing the resources etc. 
-            if (scope == Data.Scopes.App)
-            {
-                l.A($"is scope {scope}, will do extra processing");
-                // make sure additional settings etc. exist
-                _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(_appCtxPlus.AppState, null, new CodeRef(), Log); 
-            }
+            // 2023-11-08 Will disable this now, as I believe there is no case
+            // ...where the data can be loaded into memory and NOT have initialized already. 
+            // https://github.com/2sic/2sxc/issues/3203
+
+            //// 2020-01-15 2sxc 10.27.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
+            //// this is important on "Content" apps, because these don't auto-initialize when loading from the DB
+            //// so for these, we must pre-ensure that the app is initialized as needed, if they 
+            //// are editing the resources etc. 
+            //if (scope == Data.Scopes.App)
+            //{
+            //    l.A($"is scope {scope}, will do extra processing");
+            //    // make sure additional settings etc. exist
+            //    _appInitializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(_appCtxPlus.AppState, null, new CodeRef(), Log); 
+            //}
+
             // should use app-manager and return each type 1x only
             var appEntities = _workEntities.New(_appCtxPlus);
 

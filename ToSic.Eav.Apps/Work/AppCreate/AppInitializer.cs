@@ -78,7 +78,7 @@ namespace ToSic.Eav.Apps.Work
                 addList.Add(new AddContentTypeAndOrEntityTask(TypeAppConfig,
                     values: new Dictionary<string, object>
                     {
-                        { "DisplayName", newAppName.UseFallbackIfNoValue(eavAppName) /*string.IsNullOrEmpty(newAppName) ? eavAppName : newAppName*/ },
+                        { "DisplayName", newAppName.UseFallbackIfNoValue(eavAppName) },
                         { "Folder", folder },
                         { "AllowTokenTemplates", "True" },
                         { "AllowRazorTemplates", "True" },
