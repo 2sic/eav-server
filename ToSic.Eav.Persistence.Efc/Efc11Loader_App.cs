@@ -8,7 +8,7 @@ using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
-using ToSic.Lib.DI;
+using System.Runtime.CompilerServices;
 
 namespace ToSic.Eav.Persistence.Efc
 {
@@ -27,7 +27,7 @@ namespace ToSic.Eav.Persistence.Efc
         /// </summary>
         /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
         /// <returns>An object with everything which an app has, usually for caching</returns>
-        private AppState LoadBasicAppState(int appId)
+        private AppState LoadAppStateFromDb(int appId)
         {
             _logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
@@ -90,12 +90,20 @@ namespace ToSic.Eav.Persistence.Efc
             return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
         }
 
+            // ReSharper disable ExplicitCallerInfoArgument
+        public AppState AppStateRaw(int appId, [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
+            => AppState(appId, false, new CodeRef(cPath, cName, cLine));
+
+        public AppState AppStateInitialized(int appId, [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
+            => AppState(appId, true, new CodeRef(cPath, cName, cLine));
+        // ReSharper restore ExplicitCallerInfoArgument
+
         /// <inheritdoc />
-        public AppState AppState(int appId, bool ensureInitialized)
+        private AppState AppState(int appId, bool ensureInitialized, CodeRef codeRef)
         {
             var wrapLog = Log.Fn<AppState>($"{appId}, {ensureInitialized}", timer: true);
 
-            var appState = LoadBasicAppState(appId);
+            var appState = LoadAppStateFromDb(appId);
             if (!ensureInitialized) return wrapLog.Return(appState, "won't check initialized");
 
             // Note: Ignore ensureInitialized on the content app
@@ -106,14 +114,14 @@ namespace ToSic.Eav.Persistence.Efc
             if (appState.NameId == Constants.DefaultAppGuid) return wrapLog.Return(appState, "default app, don't auto-init");
 
             var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, Log)
-                ? LoadBasicAppState(appId)
+                ? LoadAppStateFromDb(appId)
                 : appState;
             return wrapLog.Return(result, "with init check");
         }
 
         public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)
         {
-            var outerWrapLog = Log.Fn<AppState>(message: "What happens inside this is logged in the app-state loading log");
+            var lMain = Log.Fn<AppState>(message: "What happens inside this is logged in the app-state loading log");
             
             var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
             app.Load(() => Log.Do(timer: true, message: msg, action: l =>
@@ -127,7 +135,7 @@ namespace ToSic.Eav.Persistence.Efc
                     app.Folder = nameAndFolder.Path;
                 }
                 else
-                    Log.A("skipping metadata load");
+                    l.A("skipping metadata load");
 
                 if (startAt <= AppStateLoadSequence.ContentTypeLoad)
                     startAt = AppStateLoadSequence.ContentTypeLoad;
@@ -154,7 +162,7 @@ namespace ToSic.Eav.Persistence.Efc
                 l.A($"timers sql:sqlAll:{_sqlTotalTime}");
             }));
 
-            return outerWrapLog.ReturnAsOk(app);
+            return lMain.ReturnAsOk(app);
         }
 
         /// <summary>

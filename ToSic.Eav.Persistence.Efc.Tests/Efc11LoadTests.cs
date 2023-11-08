@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
+using ToSic.Testing.Shared;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
@@ -70,7 +71,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             Assert.AreEqual(ExpectedContentTypesOnApp2, results.Count, "dummy test: ");
         }
 
-        private AppState TestLoadApp(int appId) => Loader.AppState(appId, false);
+        private AppState TestLoadApp(int appId) => Loader.AppStateRawTA(appId);
 
         private IList<IContentType> TestLoadCts(int appId) => Loader.ContentTypes(appId, null);
     }

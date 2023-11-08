@@ -7,7 +7,6 @@ using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
 using ToSic.Testing.Shared;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.ImportExport.Tests
 {
@@ -27,7 +26,7 @@ namespace ToSic.Eav.ImportExport.Tests
         public void Xml_SerializeItemOnHome()
         {
             var test = new SpecsTestExportSerialize();
-            var app = GetService<IRepositoryLoader>().AppState(test.AppId, false);
+            var app = GetService<IRepositoryLoader>().AppStateRawTA(test.AppId);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = GetService<IAppStates>().Languages(test.ZoneId)
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
@@ -44,7 +43,7 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             var test = new SpecsTestExportSerialize();
             var appId = test.AppId;
-            var app = GetService<IRepositoryLoader>().AppState(appId, false);
+            var app = GetService<IRepositoryLoader>().AppStateRawTA(appId);
             var languageMap = GetService<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, app);
 

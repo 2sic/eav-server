@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
+using ToSic.Testing.Shared;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var test = new SpecsTestExportSerialize();
 
             var loader = GetService<IRepositoryLoader>();
-            var app = loader.AppState(test.AppId, false);
+            var app = loader.AppStateRawTA(test.AppId);
 
 
             var cts = app.ContentTypes;

@@ -32,7 +32,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         protected JsonSerializer SerializerOfApp(int appId)
         {
-            var app = Loader.AppState(appId, false);
+            var app = Loader.AppStateRawTA(appId);
             return GetService<JsonSerializer>().SetApp(app);
         }
 

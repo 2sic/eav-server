@@ -99,7 +99,7 @@ namespace ToSic.Eav.Apps.Work
                 AppCachePurger.Purge(appState);
                 // get the latest app-state, but not-initialized so we can make changes
                 var repoLoader = _repositoryLoaderGenerator.New();
-                appState = repoLoader.AppState(appState.AppId, false);
+                appState = repoLoader.AppStateRaw(appState.AppId);
             }
 
             addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
