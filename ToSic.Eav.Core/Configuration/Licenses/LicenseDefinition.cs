@@ -15,37 +15,29 @@
  *
  */
 using System;
-using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Configuration.Licenses
 {
     /// <summary>
     /// Defines a license - name, guid etc.
     /// </summary>
-    public class LicenseDefinition: IHasIdentityNameId
+    public class LicenseDefinition: AspectDefinition
     {
         public const string ConditionIsLicense = "license";
 
         public LicenseDefinition(int priority, string name, Guid guid, string description, bool featureLicense = false)
+        : base(guid.ToString(), guid, name, description ?? "")
         {
             Priority = priority;
-            Name = name;
-            Guid = guid;
-            Description = description ?? "";
             Condition = new Condition(ConditionIsLicense, guid.ToString());
             FeatureLicense = featureLicense;
         }
 
         public int Priority { get; }
 
-        public string Name { get; }
-
-        public string NameId => Guid.ToString();
-
-        public Guid Guid { get; }
         public bool AutoEnable { get; set; } = false;
-        public string Description { get; }
-        public LicenseDefinition[] AlsoInheritEnabledFrom = Array.Empty<LicenseDefinition>();
+
+        public LicenseDefinition[] AlsoInheritEnabledFrom { get; set; }= Array.Empty<LicenseDefinition>();
 
         public bool FeatureLicense { get; }
 

@@ -2,27 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
-using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using static ToSic.Eav.Configuration.RequirementCheckFeature;
 
 namespace ToSic.Eav.Configuration
 {
     [PrivateApi("no good reason to publish this")]
-    public class FeatureDefinition: IHasIdentityNameId
+    public class FeatureDefinition: AspectDefinition
     {
         #region Constructors
 
         public FeatureDefinition(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security,
-            IEnumerable<FeatureLicenseRule> licRules)
+            IEnumerable<FeatureLicenseRule> licRules): base(nameId, guid, name, description)
         {
-            Guid = guid;
-            NameId = nameId;
-            Name = name;
             Security = security;
             Public = isPublic;
             Ui = ui;
-            Description = description;
             Condition = new Condition(ConditionIsFeature, nameId);
             LicenseRules = CreateLicenseRules(licRules);    // must run at the end, as properties are needed
         }
@@ -42,33 +37,12 @@ namespace ToSic.Eav.Configuration
         /// Constructor for unknown feature - which only has a GUID to identify it
         /// </summary>
         /// <param name="unknownFeatureGuid"></param>
-        internal FeatureDefinition(Guid unknownFeatureGuid)
+        internal FeatureDefinition(Guid unknownFeatureGuid): base(null, unknownFeatureGuid, null)
         {
-            Guid = unknownFeatureGuid;
             Condition = new Condition(ConditionIsFeature, Guid.ToString());
         }
 
         #endregion
-
-        /// <summary>
-        /// Feature GUID
-        /// </summary>
-        public Guid Guid { get; }
-
-        /// <summary>
-        /// Feature String ID
-        /// </summary>
-        public string NameId { get; }
-
-        /// <summary>
-        /// A nice name / title for showing in UIs
-        /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        /// A nice description
-        /// </summary>
-        public string Description { get; }
 
         /// <summary>
         /// If true, this feature will be provided to the Ui
