@@ -50,5 +50,11 @@ namespace ToSic.Eav.WebApi.Dto
         /// Short info for the case where we get the fields of many types to show
         /// </summary>
         public JsonType ContentType { get; set; }
+
+        /// <summary>
+        /// WIP 16.08 - list the configuration types for a field.
+        /// This is so the UI knows what metadata types to request when editing the field.
+        /// </summary>
+        public IDictionary<string, bool> ConfigTypes {get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 using static ToSic.Eav.Metadata.Decorators;
 
@@ -20,7 +21,7 @@ namespace ToSic.Eav.Apps.Work
             AngularAssets = ngAssets;
             UseAdam = useAdam;
 
-            if(metadata == null) return;
+            if (metadata == null) return;
 
             if (metadata.HasType(IsObsoleteDecoratorId))
             {
@@ -30,6 +31,9 @@ namespace ToSic.Eav.Apps.Work
             if (metadata.HasType(RecommendedDecoratorId)) IsRecommended = true;
 
             if (metadata.HasType(IsDefaultDecorator)) IsDefault = true;
+
+            var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypes.TypeForInputTypeDefinition);
+            if (typeInputTypeDef != null) CustomConfigTypes = new InputTypes(typeInputTypeDef).CustomConfigTypes;
         }
 
         /// <summary>
@@ -38,6 +42,7 @@ namespace ToSic.Eav.Apps.Work
         public string Type { get; }
 
         public string Label { get; }
+
         public string Description { get; }
 
         public string Assets { get; }
@@ -80,6 +85,13 @@ namespace ToSic.Eav.Apps.Work
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? IsDefault { get; }
+
+        #endregion
+
+        #region New v16.08 / experimental
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string CustomConfigTypes { get; }
 
         #endregion
 

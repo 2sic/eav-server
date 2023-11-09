@@ -146,7 +146,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                             GetValOrAlt(hasPage, specs, "PageId"),
                             GetValOrAlt(hasMod, specs, "ModuleId"),
                             $"{realLog?.Entries.Count}",
-                            HtmlEncode((firstIfExists?.Message).NeverNull().Ellipsis(75, "…")),
+                            HtmlEncode((firstIfExists?.Message).NeverNull().Ellipsis(150, "…")),
                             HtmlEncode(firstIfExists?.Result),
                             new InsightsTime().ShowTime(realLog)
                         );

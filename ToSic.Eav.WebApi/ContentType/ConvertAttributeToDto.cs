@@ -10,6 +10,7 @@ using ToSic.Eav.WebApi.Security;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using ToSic.Eav.Apps.Work;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 
 
@@ -53,7 +54,7 @@ namespace ToSic.Eav.WebApi
             var a = item.Attribute;
             var type = item.Type;
             var ancestorDecorator = type.GetDecorator<IAncestor>();
-            var inputType = FindInputType(a);
+            var inputType = FindInputTypeOrUnknownOld(a);
             var ser = _convertToEavLight.Value;
             var appInputTypes = _inputTypes.New(_appId).GetInputTypes();
 
@@ -92,6 +93,9 @@ namespace ToSic.Eav.WebApi
                 Guid = a.Guid,
                 SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
                 ContentType = _withContentType ? new JsonType(type, false, false) : null,
+
+                // new 16.08
+                ConfigTypes = GetFieldConfigTypes(inputType, appInputTypes),
             };
 
             return l.ReturnAsOk(dto);
@@ -123,12 +127,65 @@ namespace ToSic.Eav.WebApi
         /// <remarks>
         /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
         /// </remarks>
-        private static string FindInputType(IContentTypeAttribute attribute)
+        private static string FindInputTypeOrUnknownOld(IContentTypeAttribute attribute)
         {
             var inputType = attribute.Metadata.GetBestValue<string>(AttributeMetadata.GeneralFieldInputType, AttributeMetadata.TypeGeneral);
 
             // unknown will let the UI fallback on other mechanisms
             return string.IsNullOrEmpty(inputType) ? Constants.NullNameId : inputType;
+        }
+
+        /// <summary>
+        /// Create a list of all expected types.
+        /// Eg. for "@String-dropdown-query"
+        /// - "@string"
+        /// - "@string-dropdown"
+        /// - "@string-dropdown-query"
+        /// </summary>
+        /// <param name="inputTypeName"></param>
+        /// <param name="inputTypes"></param>
+        /// <returns></returns>
+        private IDictionary<string, bool> GetFieldConfigTypes(string inputTypeName, IReadOnlyCollection<InputTypeInfo> inputTypes)
+        {
+            var l = Log.Fn<IDictionary<string, bool>>();
+            var newDic = new Dictionary<string, bool> { [AttributeMetadata.TypeGeneral] = true };
+
+            #region Helper Functions
+
+            InputTypeInfo FindInputType(string name) => inputTypes.FirstOrDefault(i => i.Type.EqualsInsensitive(name));
+
+            void AddToDicIfExists(string name, bool required)
+            {
+                var existing = FindInputType(name);
+                if (existing == null) return;
+                newDic["@" + existing.Type] = required;
+            }
+
+            #endregion
+
+            var customConfigs = FindInputType(inputTypeName)?.CustomConfigTypes;
+            if (customConfigs.HasValue())
+            {
+                var parts = customConfigs.Split(',').Select(s => s.Trim().TrimStart('@')).ToList();
+                foreach (var part in parts) 
+                    AddToDicIfExists(part, true);
+                return l.Return(newDic, $"custom list {newDic.Count}");
+            }
+
+            try
+            {
+                // Start with "@All" - which is always required
+                var segments = inputTypeName.Split('-');
+                var name = segments[0];
+                AddToDicIfExists(name, true);
+                foreach (var s in segments.Skip(1)) 
+                    AddToDicIfExists(name += "-" + s, true);
+            }
+            catch (Exception e)
+            {
+                l.Ex(e);
+            }
+            return l.Return(newDic, $"{newDic.Count}");
         }
     }
 }

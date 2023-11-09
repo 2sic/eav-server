@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Paths;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
@@ -69,43 +68,46 @@ namespace ToSic.Eav.Apps.Run
 
         #region Inits
 
-        public IAppFileSystemLoader Init(AppState app) => Log.Func($"{app.AppId}, {app.Folder}, ...", () =>
+        public IAppFileSystemLoader Init(AppState app)
         {
+            var l = Log.Fn<IAppFileSystemLoader>($"{app.AppId}, {app.Folder}, ...");
             _appState = app;
-            _appPaths = base.Services.AppPathsLazy.Value?.Init(Site, app);
+            _appPaths = Services.AppPathsLazy.Value?.Init(Site, app);
             InitPathAfterAppId();
-            return this;
-        });
+            return l.Return(this);
+        }
 
         IAppRepositoryLoader IAppRepositoryLoader.Init(AppState app) => Init(app) as IAppRepositoryLoader;
 
         /// <summary>
         /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this
         /// </summary>
-        /// <param name="path"></param>
         /// <returns></returns>
-        protected virtual bool InitPathAfterAppId() => Log.Func(() =>
+        protected virtual bool InitPathAfterAppId()
         {
+            var l = Log.Fn<bool>();
             Path = System.IO.Path.Combine(_appPaths.PhysicalPath, Constants.FolderAppExtensions);
             PathShared = System.IO.Path.Combine(_appPaths.PhysicalPathShared, Constants.FolderAppExtensions);
-            return (true, $"p:{Path}, ps:{PathShared}");
-        });
+            return l.ReturnTrue($"p:{Path}, ps:{PathShared}");
+        }
 
         #endregion
 
 
 
         /// <inheritdoc />
-        public List<InputTypeInfo> InputTypes() => Log.Func(() =>
+        public List<InputTypeInfo> InputTypes()
         {
+            var l = Log.Fn<List<InputTypeInfo>>();
             var types = GetInputTypes(Path, AppConstants.AppPathPlaceholder);
             types.AddRange(GetInputTypes(PathShared, AppConstants.AppPathSharedPlaceholder));
-            return (types, $"{types.Count}");
-        });
+            return l.Return(types, $"{types.Count}");
+        }
 
         /// <inheritdoc />
-        public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource) => Log.Func(l =>
+        public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource)
         {
+            var l = Log.Fn<IList<IContentType>>();
             try
             {
                 var extPaths = ExtensionPaths();
@@ -113,32 +115,34 @@ namespace ToSic.Eav.Apps.Run
                 var allTypes = extPaths.SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
                     .Distinct(new EqualityComparer_ContentType())
                     .ToList();
-                return (allTypes, "ok");
+                return l.Return(allTypes, "ok");
             }
             catch (Exception e)
             {
                 l.A("error " + e.Message);
             }
 
-            return (new List<IContentType>(), "error");
-        });
+            return l.Return(new List<IContentType>(), "error");
+        }
 
 
-        private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource) => Log.Func(extensionPath, () =>
+        private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
         {
+            var l = Log.Fn<IEnumerable<IContentType>>(extensionPath);
             var fsLoader = base.Services.FslGenerator.New().Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
             var types = fsLoader.ContentTypes();
-            return types;
-        });
+            return l.Return(types);
+        }
 
 
 
         #region Helpers
 
-        private List<InputTypeInfo> GetInputTypes(string path, string placeholder) => Log.Func(() =>
+        private List<InputTypeInfo> GetInputTypes(string path, string placeholder)
         {
+            var l = Log.Fn<List<InputTypeInfo>>();
             var di = new DirectoryInfo(path);
-            if (!di.Exists) return (new List<InputTypeInfo>(), "directory not found");
+            if (!di.Exists) return l.Return(new List<InputTypeInfo>(), "directory not found");
             var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
             Log.A($"found {inputFolders.Length} field-directories");
 
@@ -153,11 +157,11 @@ namespace ToSic.Eav.Apps.Run
                     var niceName = NiceName(name);
                     // TODO: use metadata information if available
                     return new InputTypeInfo(fullName, niceName, "Extension Field", "", false,
-                        $"{placeholder}/{Eav.Constants.FolderAppExtensions}/{name}/{JsFile}", false);
+                        $"{placeholder}/{Constants.FolderAppExtensions}/{name}/{JsFile}", false);
                 })
                 .ToList();
-            return (types, $"{types.Count}");
-        });
+            return l.Return(types, $"{types.Count}");
+        }
 
         private static string NiceName(string name)
         {
@@ -178,9 +182,9 @@ namespace ToSic.Eav.Apps.Run
 
         private List<string> ExtensionPaths()
         {
-            var wrapLog = Log.Fn<List<string>>();
+            var l = Log.Fn<List<string>>();
             var dir = new DirectoryInfo(Path);
-            if (!dir.Exists) return wrapLog.ReturnAndLog(new List<string>(), $"directory do not exist: {dir}");
+            if (!dir.Exists) return l.Return(new List<string>(), $"directory do not exist: {dir}");
             var sub = dir.GetDirectories();
             var subDirs = sub.SelectMany(
                 s => 
@@ -189,7 +193,7 @@ namespace ToSic.Eav.Apps.Run
                         .SelectMany(a => a.GetDirectories(Constants.FolderSystem)
                     ).Union(s.GetDirectories(Constants.FolderOldDotData)));
             var paths = subDirs.Where(d => d.Exists).Select(s => s.FullName).ToList();
-            return wrapLog.ReturnAndLog(paths, $"OK, paths:{string.Join(";", paths)}");
+            return l.Return(paths, $"OK, paths:{string.Join(";", paths)}");
         }
 
         #endregion

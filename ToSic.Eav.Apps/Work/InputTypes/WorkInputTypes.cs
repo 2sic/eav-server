@@ -4,7 +4,9 @@ using System.Linq;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.Data.InputTypes;
 
 namespace ToSic.Eav.Apps.Work
 {
@@ -12,9 +14,9 @@ namespace ToSic.Eav.Apps.Work
     {
         private readonly GenWorkPlus<WorkEntities> _workEntities;
         private readonly LazySvc<IAppFileSystemLoader> _appFileSystemLoaderLazy;
-        private readonly IAppStates _appStates;
+        private readonly LazySvc<IAppStates> _appStates;
 
-        public WorkInputTypes(IAppStates appStates, LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy, GenWorkPlus<WorkEntities> workEntities) : base("ApS.InpGet")
+        public WorkInputTypes(LazySvc<IAppStates> appStates, LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy, GenWorkPlus<WorkEntities> workEntities) : base("ApS.InpGet")
         {
             ConnectServices(
                 _appStates = appStates,
@@ -45,7 +47,7 @@ namespace ToSic.Eav.Apps.Work
                 });
 
             // Initial list is the global, file-system based types
-            var globalDef = GetGlobalInputTypesBasedOnContentTypes();
+            var globalDef = GetPresetInputTypesBasedOnContentTypes();
             LogListOfInputTypes("Global", globalDef);
 
             // Merge input types registered in this app
@@ -96,56 +98,62 @@ namespace ToSic.Eav.Apps.Work
         /// </summary>
         /// <param name="oldGlobalTypes"></param>
         /// <returns></returns>
-        private List<InputTypeInfo> MarkOldGlobalInputTypesAsObsolete(List<InputTypeInfo> oldGlobalTypes)
-        {
-            return oldGlobalTypes.Select(it =>
-            {
-                it.IsObsolete = true;
-                it.ObsoleteMessage = "Old input type, will default to another one.";
-                return it;
-            }).ToList();
-        }
+        private List<InputTypeInfo> MarkOldGlobalInputTypesAsObsolete(List<InputTypeInfo> oldGlobalTypes) =>
+            oldGlobalTypes
+                .Select(it =>
+                {
+                    it.IsObsolete = true;
+                    it.ObsoleteMessage = "Old input type, will default to another one.";
+                    return it;
+                })
+                .ToList();
 
 
         /// <summary>
         /// Get a list of input-types registered to the current app
         /// </summary>
-        /// <param name="appCtxPlus">App context to use. Often the current app, but can be a custom one.</param>
+        /// <param name="overrideCtx">App context to use. Often the current app, but can be a custom one.</param>
         /// <returns></returns>
-        private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus appCtxPlus = default)
-            => _workEntities.New(appCtxPlus ?? AppWorkCtx).Get(InputTypes.TypeForInputTypeDefinition)
+        private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus overrideCtx = default)
+        {
+            var list = _workEntities.New(overrideCtx ?? AppWorkCtx)
+                .Get(TypeForInputTypeDefinition);
+
+            return list
+                .Select(e => new InputTypes(e))
                 .Select(e => new InputTypeInfo(
-                    e.Value<string>(InputTypes.InputTypeType),
-                    e.Value<string>(InputTypes.InputTypeLabel),
-                    e.Value<string>(InputTypes.InputTypeDescription),
-                    e.Value<string>(InputTypes.InputTypeAssets),
-                    e.Value<bool>(InputTypes.InputTypeDisableI18N),
-                    e.Value<string>(InputTypes.InputTypeAngularAssets),
-                    e.Value<bool>(InputTypes.InputTypeUseAdam),
+                    e.Type,
+                    e.Label,
+                    e.Description,
+                    e.Assets,
+                    e.DisableI18n,
+                    e.AngularAssets,
+                    e.UseAdam,
                     e.Metadata
                 ))
                 .ToList();
-
+        }
 
 
         /// <summary>
         /// Experimental v11 - load input types based on folder
         /// </summary>
         /// <returns></returns>
-        private List<InputTypeInfo> GetAppExtensionInputTypes() => Log.Func(l =>
+        private List<InputTypeInfo> GetAppExtensionInputTypes()
         {
+            var l = Log.Fn<List<InputTypeInfo>>();
             try
             {
                 var appLoader = _appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppState);
                 var inputTypes = appLoader.InputTypes();
-                return (inputTypes, $"{inputTypes.Count}");
+                return l.Return(inputTypes, $"{inputTypes.Count}");
             }
             catch (Exception e)
             {
-                l.A("Error: " + e.Message);
-                return (new List<InputTypeInfo>(), "error");
+                l.Ex(e);
+                return l.Return(new List<InputTypeInfo>(), "error");
             }
-        });
+        }
 
         private const string FieldTypePrefix = "@";
 
@@ -153,26 +161,37 @@ namespace ToSic.Eav.Apps.Work
         /// Build a list of global (json) Content-Types and their metadata
         /// </summary>
         /// <returns></returns>
-        private List<InputTypeInfo> GetGlobalInputTypesBasedOnContentTypes()
+        private List<InputTypeInfo> GetPresetInputTypesBasedOnContentTypes()
         {
-            var types = _appStates.GetPresetApp().ContentTypes
+            var l = Log.Fn<List<InputTypeInfo>>(timer: true);
+            if (_presetInpTypeCache != null) return l.Return(_presetInpTypeCache, $"cached {_presetInpTypeCache.Count}");
+
+            var presetApp = _appStates.Value.GetPresetApp();
+
+            var types = presetApp.ContentTypes
                 .Where(p => p.NameId.StartsWith(FieldTypePrefix))
                 .Select(p => p).ToList();
 
             // try to access metadata, if it has any
-            var typesToCheckInThisOrder = new[] { InputTypes.TypeForInputTypeDefinition, ContentTypeDetails.ContentTypeTypeName, null };
-            var retyped = types.Select(it => new InputTypeInfo(
-                    it.NameId.TrimStart(FieldTypePrefix[0]),
-                    it.Metadata.GetBestValue<string>(InputTypes.InputTypeLabel, typesToCheckInThisOrder),
-                    it.Metadata.GetBestValue<string>(InputTypes.InputTypeDescription, typesToCheckInThisOrder),
-                    it.Metadata.GetBestValue<string>(InputTypes.InputTypeAssets, InputTypes.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<bool>(InputTypes.InputTypeDisableI18N, InputTypes.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<string>(InputTypes.InputTypeAngularAssets, InputTypes.TypeForInputTypeDefinition),
-                    it.Metadata.GetBestValue<bool>(InputTypes.InputTypeUseAdam, InputTypes.TypeForInputTypeDefinition),
-                    it.Metadata
-                ))
+            var typesToCheckInThisOrder = new[] { TypeForInputTypeDefinition, ContentTypeDetails.ContentTypeTypeName, null };
+            _presetInpTypeCache = types.Select(it =>
+                {
+                    var md = it.Metadata;
+                    return new InputTypeInfo(
+                        it.NameId.TrimStart(FieldTypePrefix[0]),
+                        md.GetBestValue<string>(nameof(InputTypes.Label), typesToCheckInThisOrder),
+                        md.GetBestValue<string>(nameof(InputTypes.Description), typesToCheckInThisOrder),
+                        md.GetBestValue<string>(nameof(InputTypes.Assets), TypeForInputTypeDefinition),
+                        md.GetBestValue<bool>(nameof(InputTypes.DisableI18n), TypeForInputTypeDefinition),
+                        md.GetBestValue<string>(nameof(InputTypes.AngularAssets), TypeForInputTypeDefinition),
+                        md.GetBestValue<bool>(nameof(InputTypes.UseAdam), TypeForInputTypeDefinition),
+                        md
+                    );
+                })
                 .ToList();
-            return retyped;
+            return l.Return(_presetInpTypeCache, $"{_presetInpTypeCache.Count}");
         }
+
+        private static List<InputTypeInfo> _presetInpTypeCache;
     }
 }
