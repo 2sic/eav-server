@@ -6,17 +6,17 @@ namespace ToSic.Eav.Data
 {
     public static class ContentTypeListExtensions
     {
-        public static IEnumerable<IContentType> OfScope(this IEnumerable<IContentType> all, string scope = null, bool includeAttributeTypes = false)
+        public static IEnumerable<IContentType> OfScope(this IEnumerable<IContentType> list, string scope = null, bool includeAttributeTypes = false)
         {
-            var set = all.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
+            var set = list.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
             if (scope != null)
                 set = set.Where(p => p.Scope == scope);
             return set.OrderBy(c => c.Name);
         }
 
-        public static IList<string> GetAllScopesInclDefault(this IEnumerable<IContentType> all)
+        public static IList<string> GetAllScopesInclDefault(this IEnumerable<IContentType> list)
         {
-            var scopes = all.Select(ct => ct.Scope).Distinct().ToList();
+            var scopes = list.Select(ct => ct.Scope).Distinct().ToList();
 
             // Make sure the "Default" scope is always included, otherwise it's missing on new apps
             if (!scopes.Contains(Scopes.Default)) scopes.Add(Scopes.Default);
@@ -27,9 +27,9 @@ namespace ToSic.Eav.Data
             return scopes.OrderBy(s => s).ToArray();
         }
 
-        public static IDictionary<string, string> GetAllScopesWithLabels(this IEnumerable<IContentType> all)
+        public static IDictionary<string, string> GetAllScopesWithLabels(this IEnumerable<IContentType> list)
         {
-            var scopes = all.GetAllScopesInclDefault();
+            var scopes = list.GetAllScopesInclDefault();
             var lookup = Scopes.ScopesWithNames;
             var results = scopes
                 .Select(s => new { value = s, name = lookup.TryGetValue(s, out var label) ? label : s })

@@ -9,6 +9,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.Repositories;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -48,8 +49,6 @@ namespace ToSic.Eav.DataSources.Sys
 
         private const string AppIdKey = "AppId";
 	    private const string ContentTypeTypeName = "ContentType";
-        private DataFactoryOptions _options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
-	    
 
         /// <summary>
         /// The app id
@@ -82,20 +81,41 @@ namespace ToSic.Eav.DataSources.Sys
             ConnectServices(
                 _appStates = appStates
             );
-            ProvideOut(GetList, options: () => new DataFactoryOptions(_options, appId: OfAppId));
+            var options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
+            ProvideOut(GetList, options: () => new DataFactoryOptions(options, appId: OfAppId));
 		}
         private readonly IAppStates _appStates;
 
-        private IEnumerable<IRawEntity> GetList() => Log.Func(l =>
+        private IEnumerable<IRawEntity> GetList()
         {
+            var l = Log.Fn<IEnumerable<IRawEntity>>();
             Configuration.Parse();
 
             var appId = OfAppId;
             var scp = Scope.UseFallbackIfNoValue(Data.Scopes.Default);
 
-            var types = _appStates.Get(appId).ContentTypes.OfScope(scp);
+            var types = _appStates.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
 
-            var list = types
+            // Deduplicate, in case we have identical types on current app and inherited
+            var deDuplicate = types
+                .GroupBy(t => t.NameId)
+                .Select(g =>
+                {
+                    // Just 1
+                    if (g.Count() == 1) return g.First();
+
+                    // More than 1, prioritize of the current app before parent-apps; SQL before File-System
+                    var ofCurrentApp = g.Where(t => t.AppId == appId).ToList();
+                    if (ofCurrentApp.Any())
+                        return ofCurrentApp.FirstOrDefault(t => t.RepositoryType == RepositoryTypes.Sql)
+                               ?? ofCurrentApp.First();
+
+                    // Fallback: just return 1
+                    return g.First();
+                })
+                .ToList();
+
+            var list = deDuplicate
                 .OrderBy(t => t.Name)
                 .Select(t => new RawEntity(ContentTypeUtil.BuildDictionary(t))
                 {
@@ -104,8 +124,9 @@ namespace ToSic.Eav.DataSources.Sys
                 })
                 .ToList();
 
-            return (list, $"{list.Count}");
-        });
+
+            return l.Return(list, $"{list.Count}");
+        }
 
         private static Guid? SafeConvertGuid(IContentType t)
         {

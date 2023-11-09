@@ -10,15 +10,16 @@ namespace ToSic.Eav.DataSources.Sys
     {
         internal static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>
         {
-            {ContentTypeType.Name.ToString(), t.Name},
-            {ContentTypeType.StaticName.ToString(), t.NameId},
-            {ContentTypeType.IsDynamic.ToString(), t.IsDynamic},
+            { ContentTypeType.Name.ToString(), t.Name },
+            { ContentTypeType.StaticName.ToString(), t.NameId },
+            { nameof(t.NameId), t.NameId },
+            { ContentTypeType.IsDynamic.ToString(), t.IsDynamic },
 
-            {ContentTypeType.Scope.ToString(), t.Scope},
-            {ContentTypeType.AttributesCount.ToString(), t.Attributes.Count()},
+            { ContentTypeType.Scope.ToString(), t.Scope },
+            { ContentTypeType.AttributesCount.ToString(), t.Attributes.Count() },
 
-            {ContentTypeType.RepositoryType.ToString(), t.RepositoryType.ToString()},
-            {ContentTypeType.RepositoryAddress.ToString(), t.RepositoryAddress},
+            { ContentTypeType.RepositoryType.ToString(), t.RepositoryType.ToString() },
+            { ContentTypeType.RepositoryAddress.ToString(), t.RepositoryAddress },
         };
     }
 }
