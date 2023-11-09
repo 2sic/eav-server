@@ -22,8 +22,8 @@ namespace ToSic.Eav.Apps.Work
             bool alwaysShareConfig)
         {
             var l = Log.Fn<bool>($"save {AppWorkCtx.Show()}");
-            if (staticName.IsEmptyOrWs())
-                return l.ReturnFalse("item was null, will cancel");
+            if (name.IsEmptyOrWs())
+                return l.ReturnFalse("name was empty, will cancel");
 
             AppWorkCtx.DataController.ContentType.AddOrUpdate(staticName, scope, name, usesConfigurationOfOtherSet, alwaysShareConfig);
             return l.ReturnTrue();
