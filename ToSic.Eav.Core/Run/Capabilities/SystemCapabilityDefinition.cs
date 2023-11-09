@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Run.Capabilities
@@ -11,16 +12,28 @@ namespace ToSic.Eav.Run.Capabilities
         public const string Prefix = "SystemCapability";
 
         public SystemCapabilityDefinition(string nameId, Guid guid, string name, string description = default, string link = default)
-        : base($"{Prefix}/{nameId}", guid, name, description)
+        : base(EnsurePrefix(nameId), guid, name, description)
         {
             Link = link;
         }
 
+        /// <summary>
+        /// Clone constructor - only original is required
+        /// </summary>
+        private SystemCapabilityDefinition(SystemCapabilityDefinition original, string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default)
+        : base(EnsurePrefix(nameId ?? original.NameId), guid ?? original.Guid, name ?? original.Name, description ?? original.Description)
+        {
+            Link = link ?? original.Link;
+        }
+
+        public SystemCapabilityDefinition Clone(string noParamOrder = Parameters.Protector, 
+            string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default)
+            => new SystemCapabilityDefinition(this, nameId, guid, name, description, link);
+
+        private static string EnsurePrefix(string original) 
+            => original.IsEmptyOrWs() ? Prefix + "-Error-No-Name" : original.StartsWith(Prefix) ? original : $"{Prefix}-{original}";
+
         public string Link { get; set; }
-
-        public static SystemCapabilityDefinition Blazor { get; } = new SystemCapabilityDefinition("Blazor", new Guid("9880cb15-ea2a-4b85-8eb8-7e9ccd390651"), "Blazor");
-
-        public static SystemCapabilityDefinition Cs73 { get; } = new SystemCapabilityDefinition("Cs0703", new Guid("686f54b2-5464-4eed-8faf-c30a36899b42"), "C# 7.3");
 
         public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
         {

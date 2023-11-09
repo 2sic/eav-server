@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class NetCoreCapability: SystemCapabilityBase, ISystemCapability
+    public class SystemCapabilityNetCore: SystemCapabilityBase
     {
 
         private static readonly SystemCapabilityDefinition DefStatic = new SystemCapabilityDefinition(
@@ -12,9 +12,9 @@ namespace ToSic.Eav.Run.Capabilities
         );
 
 #if NETFRAMEWORK
-        public NetCoreCapability(): base(DefStatic, false) { }
+        public SystemCapabilityNetCore(): base(DefStatic, false) { }
 #else
-        public NetCoreCapability(): base(DefStatic, true) { }
+        public SystemCapabilityNetCore(): base(DefStatic, true) { }
 #endif
 
     }

@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources.Sys
     /// </summary>
     [PrivateApi("Still WIP")]
     [VisualQuery(
-        NiceName = "Capabilities",
+        NiceName = "System Capabilities",
         UiHint = "List all System Capabilities",
         Icon = Icons.TableChart,
         Type = DataSourceType.System,
