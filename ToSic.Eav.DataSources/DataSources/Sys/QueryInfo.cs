@@ -10,6 +10,7 @@ using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -37,14 +38,12 @@ namespace ToSic.Eav.DataSources.Sys
         ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
         HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 
-    public sealed class QueryInfo : Eav.DataSource.DataSourceBase
+    public sealed class QueryInfo : DataSourceBase
     {
         private readonly IDataSourceGenerator<Attributes> _attributesGenerator;
         private readonly IDataFactory _dataFactory;
         public QueryBuilder QueryBuilder { get; }
-        private readonly LazySvc<QueryManager> _queryManagerLazy;
-        private QueryManager QueryManager => _queryManager ?? (_queryManager = _queryManagerLazy.Value);
-        private QueryManager _queryManager;
+        private readonly LazySvc<QueryManager> _queryManager;
 
         #region Configuration-properties (no config)
 
@@ -67,81 +66,87 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Attributes DS
         /// </summary>
         public QueryInfo(MyServices services,
-            LazySvc<QueryManager> queryManagerLazy, QueryBuilder queryBuilder, IDataFactory dataFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
+            LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataFactory dataFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
             services, $"{LogPrefix}.EavQIn")
         {
             ConnectServices(
                 QueryBuilder = queryBuilder,
-                _queryManagerLazy = queryManagerLazy,
+                _queryManager = queryManager,
                 _attributesGenerator = attributesGenerator,
                 _dataFactory = dataFactory.New(options: new DataFactoryOptions(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
             );
-            ProvideOut(GetStreams);
+            ProvideOut(GetStreamsOfQuery);
             ProvideOut(GetAttributes, "Attributes");
         }
 
-        private IImmutableList<IEntity> GetStreams() => Log.Func(l =>
+        /// <summary>
+        /// Get list of all streams which the query has.
+        /// </summary>
+        /// <returns></returns>
+        private IImmutableList<IEntity> GetStreamsOfQuery()
         {
-            CustomConfigurationParse();
+            var l = Log.Fn<IImmutableList<IEntity>>();
 
-            var result = _query?.Out.OrderBy(stream => stream.Key).Select(stream
+            var result = Query?.Out
+                             .OrderBy(stream => stream.Key)
+                             .Select(stream
                                  => _dataFactory.Create(new Dictionary<string, object>
                                  {
-                                     {StreamsType.Name.ToString(), stream.Key}
+                                     { StreamsType.Name.ToString(), stream.Key }
                                  }))
                              .ToImmutableList()
                          ?? EmptyList;
-            return (result, $"{result.Count}");
-        });
-
-        private IImmutableList<IEntity> GetAttributes() => Log.Func(l => 
+            return l.Return(result, $"{result.Count}");
+        }
+        
+        /// <summary>
+        /// List the attributes of
+        /// </summary>
+        /// <returns></returns>
+        private IImmutableList<IEntity> GetAttributes()
         {
-            CustomConfigurationParse();
+            var l = Log.Fn<IImmutableList<IEntity>>();
 
             // no query can happen if the name was blank
-            if (_query == null)
-                return (EmptyList, "null");
+            var query = Query;
+            if (query == null)
+                return l.Return(EmptyList, "null");
 
             // check that _query has the stream name
-            if (!_query.Out.ContainsKey(StreamName))
-                return (EmptyList, "can't find stream name in query");
+            if (!query.Out.ContainsKey(StreamName))
+                return l.Return(EmptyList, "can't find stream name in query");
 
-            var attribInfo = _attributesGenerator.New(attach: _query);
+            var attribInfo = _attributesGenerator.New(attach: query);
             if (StreamName != StreamDefaultName)
-                attribInfo.Attach(StreamDefaultName, _query, StreamName);
+                attribInfo.Attach(StreamDefaultName, query, StreamName);
 
             var results = attribInfo.List.ToImmutableList();
-            return (results, $"{results.Count}");
-        });
 
-        private void CustomConfigurationParse()
-        {
-            Configuration.Parse();
-            BuildQuery();
+            return l.Return(results, $"{results.Count}");
         }
 
+        private IDataSource Query => _q.Get(BuildQuery);
+        private readonly GetOnce<IDataSource> _q = new GetOnce<IDataSource>();
 
-        private void BuildQuery() => Log.Do(() =>
+
+        private IDataSource BuildQuery()
         {
+            var l = Log.Fn<IDataSource>();
+
+            Configuration.Parse();
+
             var qName = QueryName;
             if (string.IsNullOrWhiteSpace(qName))
-                return;
+                return l.ReturnNull("empty name");
 
             // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-            var found = QueryManager.FindQuery(this, qName, recurseParents: 3);
-                //qName.StartsWith(DataSourceConstants.GlobalEavQueryPrefix)
-                //? QueryManager.FindQuery(Constants.PresetIdentity, qName)
-                //: QueryManager.FindQuery(this, qName);
-
-            if (found == null)
-                throw new Exception($"Can't build information about query - couldn't find query '{qName}'");
+            var found = _queryManager.Value.FindQuery(this, qName, recurseParents: 3)
+                ?? throw new Exception($"Can't build query info - query not found '{qName}'");
 
             var builtQuery = QueryBuilder.GetDataSourceForTesting(QueryBuilder.Create(found, AppId),
                 lookUps: Configuration.LookUpEngine);
-            _query = builtQuery.Main;
-        });
-
-        private IDataSource _query;
+            return l.Return(builtQuery.Main);
+        }
 
     }
 }

@@ -8,6 +8,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -32,7 +33,7 @@ namespace ToSic.Eav.DataSources.Sys
         ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
         HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
-    public sealed class Attributes: Eav.DataSource.DataSourceBase
+    public sealed class Attributes: DataSourceBase
 	{
 
         #region Configuration-properties (no config)
@@ -64,11 +65,13 @@ namespace ToSic.Eav.DataSources.Sys
         private readonly IDataFactory _dataFactory;
 
         private IImmutableList<IEntity> GetList()
-	    {
+        {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             Configuration.Parse();
 
             // try to load the content-type - if it fails, return empty list
-            if (string.IsNullOrWhiteSpace(ContentTypeName)) return EmptyList;
+            if (string.IsNullOrWhiteSpace(ContentTypeName))
+                return l.Return(EmptyList, "no type name");
 
 	        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(StreamDefaultName);
 	        var optionalList = useStream
