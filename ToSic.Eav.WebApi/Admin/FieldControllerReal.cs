@@ -66,11 +66,14 @@ namespace ToSic.Eav.WebApi.Admin
             => _ctApiLazy.Value.Init(appId).GetSharedFields();
 
 
-        public void Share(int appId, int attributeId, bool share, bool hide = false)
+        public bool Share(int appId, int attributeId, bool share, bool hide = false)
             => _attributesMod.New(appId).FieldShare(attributeId, share, hide);
 
-        public void Inherit(int appId, int attributeId, Guid inheritMetadataOf)
+        public bool Inherit(int appId, int attributeId, Guid inheritMetadataOf)
             => _attributesMod.New(appId).FieldInherit(attributeId, inheritMetadataOf);
+
+        public bool AddInheritedField(int appId, int contentTypeId, string sourceType, Guid sourceField)
+            => _attributesMod.New(appId).AddInheritedField(contentTypeId, sourceType, sourceField);
 
         #endregion
     }

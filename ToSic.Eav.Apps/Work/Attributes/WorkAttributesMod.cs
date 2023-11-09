@@ -125,9 +125,9 @@ namespace ToSic.Eav.Apps.Work
 
         #region New Sharing Features
 
-        public void FieldShare(int attributeId, bool share, bool hide = false)
+        public bool FieldShare(int attributeId, bool share, bool hide = false)
         {
-            var l = Log.Fn($"attributeId:{attributeId}, share:{share}, hide:{hide}");
+            var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
 
             // get field attributeId
             var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId)
@@ -148,12 +148,12 @@ namespace ToSic.Eav.Apps.Work
                 attribute.SysSettings = serializer.Serialize(newSysSettings);
             });
 
-            l.Done();
+            return l.ReturnTrue();
         }
 
-        public void FieldInherit(int attributeId, Guid inheritMetadataOf)
+        public bool FieldInherit(int attributeId, Guid inheritMetadataOf)
         {
-            var l = Log.Fn($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
+            var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
 
             // get field attributeId
             var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId);
@@ -163,7 +163,7 @@ namespace ToSic.Eav.Apps.Work
                 inherit: null,
                 inheritName: false,
                 inheritMetadata: false,
-                inheritMetadataOf: new Dictionary<Guid, string>() { [inheritMetadataOf] = "" });
+                inheritMetadataOf: new Dictionary<Guid, string> { [inheritMetadataOf] = "" });
 
             var serializer = _dataDeserializer.New();
             serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
@@ -171,7 +171,40 @@ namespace ToSic.Eav.Apps.Work
             // Update DB, and then flush the app-cache as necessary, same as any other attribute change
             AppWorkCtx.DataController.DoAndSave(() => attribute.SysSettings = serializer.Serialize(newSysSettings));
 
-            l.Done();
+            return l.ReturnTrue();
+        }
+
+        // TODO: @STV
+        public bool AddInheritedField(int contentTypeId, string sourceType, Guid sourceField)
+        {
+            var l = Log.Fn<bool>();
+
+            // 1. First check that sources are correct
+
+            // 1.1 split the fields.value by the "/" - format should be "TypeStaticNameUsuallyGuid/Field-Guid"
+            // - first component should be the original content-type
+            // - second the source field guid
+            // - note that the content-type wouldn't be necessary, but we want to have it to prevent mistakes if for some reason the guid is duplicate
+            //
+            // - verify that the source fields exist, and really belong to the content-types they claim to be from
+
+
+            // 1.2 Find the source fields and only keep the ones that are valid
+
+            // 2. Create attributes
+            // 2.1 find the index for adding fields
+            // - get the content-type
+            // - make sure we have the attribute-count to add more fields
+
+            // 2.2 create the attributes based on the original data
+            // - name is the key in the dictionary
+            // - probably just call AddField code above
+            // - of course increment the start-index for each field
+
+
+            // 3. Configure inherit
+
+            return l.ReturnTrue();
         }
 
         #endregion

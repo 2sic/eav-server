@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources.Sys
     /// <summary>
     /// A DataSource that list all features.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    [PrivateApi("Still WIP")]
     [VisualQuery(
         NiceName = "Capabilities",
         UiHint = "List all System Capabilities",

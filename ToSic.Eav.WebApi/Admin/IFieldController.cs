@@ -101,7 +101,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="attributeId"></param>
         /// <param name="share"></param>
         /// <param name="hide"></param>
-        void Share(int appId, int attributeId, bool share, bool hide = false);
+        bool Share(int appId, int attributeId, bool share, bool hide = false);
 
         /// <summary>
         /// Configure field inherit settings WIP #SharedFieldDefinition
@@ -109,7 +109,9 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="appId"></param>
         /// <param name="attributeId"></param>
         /// <param name="inheritMetadataOf"></param>
-        void Inherit(int appId, int attributeId, Guid inheritMetadataOf);
+        bool Inherit(int appId, int attributeId, Guid inheritMetadataOf);
+
+        bool AddInheritedField(int appId, int contentTypeId, string sourceType, Guid sourceField);
 
         #endregion
     }
