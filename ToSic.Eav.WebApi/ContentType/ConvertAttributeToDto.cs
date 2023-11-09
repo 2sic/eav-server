@@ -57,6 +57,16 @@ namespace ToSic.Eav.WebApi
             var inputType = FindInputTypeOrUnknownOld(a);
             var ser = _convertToEavLight.Value;
             var appInputTypes = _inputTypes.New(_appId).GetInputTypes();
+            var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
+
+            // TODO: CONTINUE HERE - ONLY KEEP METADATA ACCORDING TO CONFIG-TYPES
+            // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side-effects
+            var mdToKeep = a.Metadata.Where(m => configTypes.Keys.Contains(m.Type.NameId)).ToList();
+
+            var inputMetadata = mdToKeep // a.Metadata
+                .ToDictionary(
+                    e => (Guid.TryParse(e.Type.NameId, out _) ? e.Type.Name : e.Type.NameId).TrimStart('@'),
+                    e => InputMetadata(type, a, e, ancestorDecorator, ser));
 
             var dto= new ContentTypeFieldDto
             {
@@ -67,17 +77,7 @@ namespace ToSic.Eav.WebApi
                 StaticName = a.Name,
                 IsTitle = a.IsTitle,
                 AttributeId = a.AttributeId,
-                Metadata = a.Metadata
-                    .ToDictionary(
-                        e =>
-                        {
-                            // if the static name is a GUID, then use the normal name as name-giver
-                            var name = Guid.TryParse(e.Type.NameId, out _)
-                                ? e.Type.Name
-                                : e.Type.NameId;
-                            return name.TrimStart('@');
-                        },
-                        e => InputMetadata(type, a, e, ancestorDecorator, ser)),
+                Metadata =inputMetadata,
                 InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
                 Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
 
@@ -95,7 +95,7 @@ namespace ToSic.Eav.WebApi
                 ContentType = _withContentType ? new JsonType(type, false, false) : null,
 
                 // new 16.08
-                ConfigTypes = GetFieldConfigTypes(inputType, appInputTypes),
+                ConfigTypes = configTypes,
             };
 
             return l.ReturnAsOk(dto);
@@ -148,44 +148,20 @@ namespace ToSic.Eav.WebApi
         private IDictionary<string, bool> GetFieldConfigTypes(string inputTypeName, IReadOnlyCollection<InputTypeInfo> inputTypes)
         {
             var l = Log.Fn<IDictionary<string, bool>>();
-            var newDic = new Dictionary<string, bool> { [AttributeMetadata.TypeGeneral] = true };
-
-            #region Helper Functions
 
             InputTypeInfo FindInputType(string name) => inputTypes.FirstOrDefault(i => i.Type.EqualsInsensitive(name));
 
-            void AddToDicIfExists(string name, bool required)
-            {
-                var existing = FindInputType(name);
-                if (existing == null) return;
-                newDic["@" + existing.Type] = required;
-            }
+            var inputType = FindInputType(inputTypeName);
+            if (inputType == null)
+                return l.Return(new Dictionary<string, bool> { [AttributeMetadata.TypeGeneral] = true }, "error - can't find type");
 
-            #endregion
+            var dicFromInfo = inputType.ConfigTypes();
 
-            var customConfigs = FindInputType(inputTypeName)?.CustomConfigTypes;
-            if (customConfigs.HasValue())
-            {
-                var parts = customConfigs.Split(',').Select(s => s.Trim().TrimStart('@')).ToList();
-                foreach (var part in parts) 
-                    AddToDicIfExists(part, true);
-                return l.Return(newDic, $"custom list {newDic.Count}");
-            }
+            var finalDic = dicFromInfo
+                .Where(pair => inputTypes.Any(i => i.Type.EqualsInsensitive(pair.Key.Trim('@'))))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-            try
-            {
-                // Start with "@All" - which is always required
-                var segments = inputTypeName.Split('-');
-                var name = segments[0];
-                AddToDicIfExists(name, true);
-                foreach (var s in segments.Skip(1)) 
-                    AddToDicIfExists(name += "-" + s, true);
-            }
-            catch (Exception e)
-            {
-                l.Ex(e);
-            }
-            return l.Return(newDic, $"{newDic.Count}");
+            return l.Return(finalDic, $"{finalDic.Count}");
         }
     }
 }

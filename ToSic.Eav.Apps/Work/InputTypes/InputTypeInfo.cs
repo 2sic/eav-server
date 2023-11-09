@@ -1,6 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
+using static System.StringComparer;
 using static ToSic.Eav.Metadata.Decorators;
 
 namespace ToSic.Eav.Apps.Work
@@ -92,6 +98,55 @@ namespace ToSic.Eav.Apps.Work
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string CustomConfigTypes { get; }
+
+        public IDictionary<string, bool> ConfigTypes(ILog log = null)
+        {
+            if (_configTypes != null) return _configTypes;
+
+            var l = log.Fn<IDictionary<string, bool>>();
+
+            var newDic = new Dictionary<string, bool>(InvariantCultureIgnoreCase) { [AttributeMetadata.TypeGeneral] = true };
+            
+            // New setup v16.08
+            // If we have custom settings, take @All and the custom settings only
+            if (CustomConfigTypes.HasValue())
+            {
+                try
+                {
+                    var parts = CustomConfigTypes
+                        .Split(',')
+                        .Select(s => s.Trim().TrimStart('@'))
+                        .Where(s => s.HasValue())
+                        .ToArray();
+                    foreach (var part in parts) newDic[part] = true;
+                    return l.Return(newDic, $"custom list {newDic.Count}");
+                }
+                catch (Exception ex)
+                {
+                    // Just log and fall back to default
+                    l.Ex(ex);
+                }
+            }
+
+            // Standard setup - this has been the default behavior since ca. v6
+            // @All, @MainType, @current-Type
+            // eg. [@All, @String, @string-url-path]
+            try
+            {
+                var mainType = Type.Split('-')[0];
+                mainType = mainType[0].ToString().ToUpper() + mainType.Substring(1);
+                newDic["@" + mainType] = true;
+                newDic["@" + Type] = true;
+            }
+            catch (Exception ex)
+            {
+                // Just log and fallback to the almost empty dictionary
+                l.Ex(ex);
+            }
+
+            return l.Return(_configTypes = newDic, $"{newDic.Count}");
+        }
+        private IDictionary<string, bool> _configTypes;
 
         #endregion
 
