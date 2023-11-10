@@ -111,7 +111,7 @@ namespace ToSic.Eav.Apps.Work
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ConfigTypes { get; }
 
-        public IDictionary<string, bool> ConfigTypeList(ILog log = null)
+        public IDictionary<string, bool> ConfigTypesDic(ILog log = null)
         {
             if (_configTypesList != null) return _configTypesList;
 
@@ -126,7 +126,7 @@ namespace ToSic.Eav.Apps.Work
                 {
                     var parts = ConfigTypes
                         .Split(',')
-                        .Select(s => s.Trim()) // .TrimStart('@'))
+                        .Select(s => s.Trim())
                         .Where(s => s.HasValue())
                         .ToArray();
                     foreach (var part in parts) newDic[part] = true;

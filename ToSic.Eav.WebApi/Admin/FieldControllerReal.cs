@@ -28,29 +28,27 @@ namespace ToSic.Eav.WebApi.Admin
 
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
-        public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName) => _ctApiLazy.Value.Init(appId).GetFields(staticName);
+        public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName)
+            => _ctApiLazy.Value.Init(appId).GetFields(staticName);
 
 
-        public string[] DataTypes(int appId) => _attributesMod.New(appId).DataTypes();
+        public string[] DataTypes(int appId)
+            => _attributesMod.New(appId).DataTypes();
 
+        public List<InputTypeInfo> InputTypes(int appId)
+            => _inputTypes.New(appId).GetInputTypes();
 
-        public List<InputTypeInfo> InputTypes(int appId) => _inputTypes.New(appId).GetInputTypes();
-
-
-        public Dictionary<string, string> ReservedNames() => Attributes.ReservedNames;
-
+        public Dictionary<string, string> ReservedNames()
+            => Attributes.ReservedNames;
 
         public int Add(int appId, int contentTypeId, string staticName, string type, string inputType, int index)
             => _attributesMod.New(appId).AddField(contentTypeId, staticName, type, inputType, index);
 
-
         public bool Delete(int appId, int contentTypeId, int attributeId)
             => _attributesMod.New(appId).Delete(contentTypeId, attributeId);
 
-
         public bool Sort(int appId, int contentTypeId, string order)
             => _attributesMod.New(appId).Reorder(contentTypeId, order.Trim('[', ']'));
-
 
         public bool InputType(int appId, int attributeId, string inputType) 
             => _attributesMod.New(appId).SetInputType(attributeId, inputType);
@@ -64,7 +62,6 @@ namespace ToSic.Eav.WebApi.Admin
 
         public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default) 
             => _ctApiLazy.Value.Init(appId).GetSharedFields(attributeId);
-
 
         public bool Share(int appId, int attributeId, bool share, bool hide = false)
             => _attributesMod.New(appId).FieldShare(attributeId, share, hide);

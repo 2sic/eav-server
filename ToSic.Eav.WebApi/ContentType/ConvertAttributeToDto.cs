@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
@@ -58,14 +59,20 @@ namespace ToSic.Eav.WebApi
             var appInputTypes = _inputTypes.New(_appId).GetInputTypes();
             var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
 
-            // TODO: CONTINUE HERE - ONLY KEEP METADATA ACCORDING TO CONFIG-TYPES
             // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side-effects
-            var mdToKeep = a.Metadata.Where(m => configTypes.Keys.Contains(m.Type.NameId)).ToList();
+            var attribMetadata = (ContentTypeAttributeMetadata)a.Metadata;
+            var mdToKeep = attribMetadata
+                .Where(m => configTypes.Keys.Contains(m.Type.NameId))
+                // .Where(m => attribMetadata.IsDirectlyOwned(m))
+                .ToList();
 
-            var inputMetadata = a.Metadata // mdToKeep // a.Metadata
+            var inputMetadata = mdToKeep // a.Metadata // mdToKeep // a.Metadata
                 .ToDictionary(
                     e => WorkInputTypes.GetTypeName(e.Type),
                     e => InputMetadata(type, a, e, ancestorDecorator, ser));
+
+            // Do this after filtering the metadata
+            configTypes = KeepOnlyConfigTypesWhichAreNotInherited(a, configTypes);
 
             var dto= new ContentTypeFieldDto
             {
@@ -98,6 +105,21 @@ namespace ToSic.Eav.WebApi
             };
 
             return l.ReturnAsOk(dto);
+        }
+
+        private static IDictionary<string, bool> KeepOnlyConfigTypesWhichAreNotInherited(IContentTypeAttribute a, IDictionary<string, bool> configTypes)
+        {
+            // Check if we're inheriting any metadata, as we don't want to give the 
+            // inherited MD to the user to edit.
+            var mdInheritList = a.SysSettings?.InheritMetadataOf;
+            if (mdInheritList.SafeAny())
+            {
+                var inheritExceptions = mdInheritList.Where(pair => pair.Key == Guid.Empty);
+                configTypes = configTypes.Where(ctPair => inheritExceptions.Any(ie => ie.Value == ctPair.Key))
+                    .ToDictionary(pair => pair.Key, pair => pair.Value);
+            }
+
+            return configTypes;
         }
 
         private EavLightEntity InputMetadata(IContentType contentType, IContentTypeAttribute a, IEntity e, IAncestor ancestor, IConvertToEavLight ser)
@@ -154,7 +176,7 @@ namespace ToSic.Eav.WebApi
             if (inputType == null)
                 return l.Return(new Dictionary<string, bool> { [AttributeMetadata.TypeGeneral] = true }, "error - can't find type");
 
-            var dicFromInfo = inputType.ConfigTypeList();
+            var dicFromInfo = inputType.ConfigTypesDic();
 
             var finalDic = dicFromInfo
                 .Where(pair => inputTypes.Any(i => i.Type.EqualsInsensitive(pair.Key.Trim('@'))))
@@ -162,5 +184,17 @@ namespace ToSic.Eav.WebApi
 
             return l.Return(finalDic, $"{finalDic.Count}");
         }
+
+        //private IDictionary<string, bool> NonInheritedConfigTypes(IContentTypeAttribute attribute, IDictionary<string, bool> fullList)
+        //{
+        //    var l = Log.Fn<IDictionary<string, bool>>();
+
+        //    var inheritDict = attribute.SysSettings?.InheritMetadataOf;
+        //    if (inheritDict.SafeNone()) return l.Return(fullList, "no changes");
+
+        //    var newList = fullList.Select(pair => inheritDict.Keys)
+
+        //    return l.ReturnNull();
+        //}
     }
 }

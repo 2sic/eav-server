@@ -28,7 +28,15 @@ namespace ToSic.Eav.Data
 
         private ContentTypeAttributeSysSettings SysSettings { get; }
 
-        
+        /// <summary>
+        /// Check if this metadata belongs to this attribute directly.
+        /// If not, it's either not metadata of this attribute, or it's from another source.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool IsDirectlyOwned(IEntity entity) => DirectlyOwned.Contains(entity);
+        private List<IEntity> DirectlyOwned => _directlyOwned.Get(() => base.LoadFromProviderInsideLock());
+        private readonly GetOnce<List<IEntity>> _directlyOwned = new GetOnce<List<IEntity>>();
 
         /// <summary>
         /// Override data loading.
@@ -38,7 +46,7 @@ namespace ToSic.Eav.Data
         protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
         {
             // If nothing to inherit, behave using standard key mechanisms
-            var ownMd = base.LoadFromProviderInsideLock();
+            var ownMd = DirectlyOwned;
             if (!SysSettings.InheritMetadata) return ownMd;
 
             // Assemble all the pieces from the sources it inherits from
