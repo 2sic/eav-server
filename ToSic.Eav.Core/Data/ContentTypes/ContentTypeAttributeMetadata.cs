@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 
@@ -15,35 +16,19 @@ namespace ToSic.Eav.Data
     [PrivateApi]
     public class ContentTypeAttributeMetadata: MetadataOf<int>
     {
-        public Guid? SourceGuid { get; }
-
-        // todo: move title generation to here using name/type?
-        public ContentTypeAttributeMetadata(int key, string name, ValueTypes type, Guid? sourceGuid = default, IReadOnlyCollection<IEntity> items = default, IHasMetadataSource appSource = default, Func<IHasMetadataSource> deferredSource = default)
+        public ContentTypeAttributeMetadata(int key, string name, ValueTypes type,
+            ContentTypeAttributeSysSettings sysSettings = default,
+            IReadOnlyCollection<IEntity> items = default,
+            IHasMetadataSource appSource = default,
+            Func<IHasMetadataSource> deferredSource = default)
             : base(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", items: items, appSource: appSource, deferredSource: deferredSource)
         {
-            SourceGuid = sourceGuid;
+            SysSettings = sysSettings ?? new ContentTypeAttributeSysSettings(); // make sure it's never null
         }
 
-        /// <summary>
-        /// Replace the key if we have a guid pointing to another Attribute
-        /// </summary>
-        protected override int Key => _key.Get(() => SourceGuid == null
-            ? base.Key
-            : SourceAttribute?.AttributeId ?? base.Key
-        );
-        private readonly GetOnce<int> _key = new GetOnce<int>();
+        private ContentTypeAttributeSysSettings SysSettings { get; }
 
-        /// <summary>
-        /// The Source Attribute (if any) which would provide the real metadata
-        /// </summary>
-        private IContentTypeAttribute SourceAttribute => _sourceAttribute.Get(() =>
-        {
-            if (SourceGuid == null) return null;
-            if (!(Source.MainSource is AppState app)) return null;
-            var attributes = app.ContentTypes.SelectMany(ct => ct.Attributes);
-            return attributes.FirstOrDefault(a => a.Guid == SourceGuid.Value);
-        });
-        private readonly GetOnce<IContentTypeAttribute> _sourceAttribute = new GetOnce<IContentTypeAttribute>();
+        
 
         /// <summary>
         /// Override data loading.
@@ -52,17 +37,76 @@ namespace ToSic.Eav.Data
         /// </summary>
         protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
         {
-            // Most common case - just behave as if this didn't do anything special
-            // Note that we'll ignore additions, as these are only used in ContentTypeMetadata and not here
-            var result = base.LoadFromProviderInsideLock();
-            if (result.Any() || SourceAttribute == null) return result;
+            // If nothing to inherit, behave using standard key mechanisms
+            var ownMd = base.LoadFromProviderInsideLock();
+            if (!SysSettings.InheritMetadata) return ownMd;
 
-            // Original result is still empty, but we have a SourceAttribute
-            // Common reason is that the SourceAttribute has directly attached metadata, so we'll try that
-            if (!(SourceAttribute.Metadata is ContentTypeAttributeMetadata sourceMd)) return result;
-            return sourceMd.Source.SourceDirect?.List == null 
-                ? result 
-                : base.LoadFromProviderInsideLock(sourceMd.Source.SourceDirect.List?.ToList());
+            // Assemble all the pieces from the sources it inherits from
+            var final = new List<IEntity>();
+            try
+            {
+                foreach (var sourceDef in SysSettings.InheritMetadataOf)
+                {
+                    var fromCurrent = GetMdOfOneSource(sourceDef.Key, sourceDef.Value, ownMd);
+                    if (fromCurrent == null) continue;
+                    var ofNewTypes = fromCurrent.Where(e => !final.Any(f => f.Type.Is(e.Type.NameId))).ToList();
+                    if (ofNewTypes.SafeAny())
+                        final.AddRange(ofNewTypes);
+                }
+            }
+            catch { /* ignore - in case something breaks here, just return empty list */ }
+
+            return final;
         }
+
+        private List<IEntity> GetMdOfOneSource(Guid source, string filter, List<IEntity> ownEntities)
+        {
+            var entities = source == Guid.Empty ? ownEntities : MetadataOfOneSource(source);
+            return !filter.HasValue()
+                ? entities
+                : entities?.OfType(filter)?.ToList();
+        }
+
+        private List<IEntity> MetadataOfOneSource(Guid guid)
+        {
+            // Empty refers to the own MD, should never get to here
+            if (guid == Guid.Empty) return null;
+
+            // Find source and its metadata
+            var source = SourceAttributes?.FirstOrDefault(a => a.Guid == guid);
+
+            // Null-Check & cast inner source to this type, so we can access it's private .Source later on
+            if (!(source?.Metadata is ContentTypeAttributeMetadata sourceMd)) return null;
+
+            var md = (
+                sourceMd.Source.SourceDirect?.List
+                ?? GetMetadataSource()?.GetMetadata((int)TargetTypes.Attribute, source.AttributeId)
+            )?.ToList();
+
+            return md; // can be null
+        }
+
+
+        /// <summary>
+        /// The Source Attribute (if any) which would provide the real metadata
+        /// </summary>
+        private List<IContentTypeAttribute> SourceAttributes => _sourceAttributes.Get(() =>
+        {
+            // Check all the basics to ensure we can work
+            if (!SysSettings.InheritMetadata) return null;
+            if (!(Source.MainSource is AppState appState)) return null;
+
+            // Get all the keys in the source-list except Empty (self-reference)
+            var sourceKeys = SysSettings.InheritMetadataOf.Keys
+                .Where(guid => guid != Guid.Empty)
+                .Cast<Guid?>()
+                .ToArray();
+
+            // Get all attributes in all content-types of the App and keep the ones we need
+            var appAttribs = appState.ContentTypes.SelectMany(ct => ct.Attributes);
+            return appAttribs.Where(a => sourceKeys.Contains(a.Guid)).ToList();
+        });
+        private readonly GetOnce<List<IContentTypeAttribute>> _sourceAttributes = new GetOnce<List<IContentTypeAttribute>>();
+
     }
 }

@@ -62,22 +62,39 @@ namespace ToSic.Eav.ImportExport.Json.V1
             new ContentTypeAttributeSysSettings(Share, inherit: Inherit ?? SourceGuid, inheritName: InheritName,
                 inheritMetadata: InheritMetadata, ConvertInheritMetadataStringToDicOrNull());
 
+        //private Dictionary<Guid, string> ConvertInheritMetadataStringToDicOrNull()
+        //{
+        //    if (InheritMetadataOf == null) return null;
+        //    var inheritDic = InheritMetadataOf.Trim().Split(',')
+        //        .Select(s =>
+        //        {
+        //            var parts = s.Split('/');
+        //            return parts.Length > 0
+        //                ? new
+        //                {
+        //                    Key = Guid.TryParse(parts[0], out var key) ? key : Guid.Empty,
+        //                    Value = parts.Length > 1 ? parts[1] : null
+        //                }
+        //                : null;
+        //        })
+        //        .Where(p => p != null && p.Key != Guid.Empty)
+        //        .ToDictionary(p => p.Key, p => p.Value);
+        //    return inheritDic;
+        //}
+
         private Dictionary<Guid, string> ConvertInheritMetadataStringToDicOrNull()
         {
-            var inheritDic = InheritMetadataOf?.Trim().Split(',')
+            if (InheritMetadataOf == null) return null;
+            var inheritDic = InheritMetadataOf.Trim().Split(',')
                 .Select(s =>
                 {
                     var parts = s.Split('/');
-                    return parts.Length > 0
-                        ? new
-                        {
-                            Key = Guid.TryParse(parts[0], out var key) ? key : Guid.Empty,
-                            Value = parts.Length > 1 ? parts[1] : null
-                        }
+                    return parts.Length > 0 && Guid.TryParse(parts[0], out var key)
+                        ? new { key, value = parts.Length > 1 ? parts[1] : null }
                         : null;
                 })
-                .Where(p => p != null && p.Key != Guid.Empty)
-                .ToDictionary(p => p.Key, p => p.Value);
+                .Where(p => p != null)
+                .ToDictionary(p => p.key, p => p.value);
             return inheritDic;
         }
     }

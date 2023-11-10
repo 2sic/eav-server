@@ -56,7 +56,7 @@ namespace ToSic.Eav.Data
                     .GetMetadata(TargetTypes.Entity, ctGuid)
                     .ToList();
 
-            // get the string based metadata
+            // combine with base string based metadata
             return base.LoadFromProviderInsideLock(mdUsingGuid);
         }
 

@@ -63,16 +63,14 @@ namespace ToSic.Eav.ImportExport.Json
 
                             // #SharedFieldDefinition
                             var attrSysSettings = jsonAttr.SysSettings?.ToSysSettings();
-                            var inheritMetadata = attrSysSettings?.InheritMetadata == true;
-                            var sourceGuid = inheritMetadata ? attrSysSettings.InheritMetadataMainGuid : null;
-                            var mdEntities = inheritMetadata
+                            var mdEntities = attrSysSettings?.InheritMetadata == true
                                 ? null
                                 : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
 
                             var appSourceForMd = DeserializationSettings?.CtAttributeMetadataAppState;
 
                             var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
-                                name: jsonAttr.Name, sourceGuid: sourceGuid, items: mdEntities, appSource: appSourceForMd);
+                                name: jsonAttr.Name, sysSettings: attrSysSettings, items: mdEntities, appSource: appSourceForMd);
 
                             var attDef = Services.DataBuilder.TypeAttributeBuilder
                                 .Create(
