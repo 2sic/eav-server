@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.WebApi.Dto;
 
@@ -92,7 +91,7 @@ namespace ToSic.Eav.WebApi.Admin
 
         #region Shared Field Definitions
 
-        IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId);
+        IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default);
 
         /// <summary>
         /// Configure field sharing settings WIP #SharedFieldDefinition

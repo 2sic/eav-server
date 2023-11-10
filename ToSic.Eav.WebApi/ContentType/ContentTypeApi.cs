@@ -111,11 +111,11 @@ namespace ToSic.Eav.WebApi
         }
 
 
-        public IEnumerable<ContentTypeFieldDto> GetSharedFields()
+        public IEnumerable<ContentTypeFieldDto> GetSharedFields(int attributeId)
         {
             var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>($"get shared fields a#{_appId}");
 
-            var fields = _attributes.New(_appId).GetSharedFields();
+            var fields = _attributes.New(_appId).GetSharedFields(attributeId);
 
             return l.Return(_convAttrDto.New().Init(_appId, true).Convert(fields));
         }

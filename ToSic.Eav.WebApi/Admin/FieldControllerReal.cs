@@ -62,8 +62,8 @@ namespace ToSic.Eav.WebApi.Admin
 
         #region Shared Fields
 
-        public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId) 
-            => _ctApiLazy.Value.Init(appId).GetSharedFields();
+        public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default) 
+            => _ctApiLazy.Value.Init(appId).GetSharedFields(attributeId);
 
 
         public bool Share(int appId, int attributeId, bool share, bool hide = false)
