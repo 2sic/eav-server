@@ -44,7 +44,7 @@ namespace ToSic.Eav.Apps.Work
         }
 
         /// <summary>
-        /// The type this input is for, like String etc.
+        /// The type this input is for, like `String`, `string-picker` etc.
         /// </summary>
         public string Type { get; }
 
@@ -111,6 +111,14 @@ namespace ToSic.Eav.Apps.Work
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ConfigTypes { get; }
 
+        /// <summary>
+        /// Internal processing to get the config-types in the format we need.
+        /// This varies a bit depending on if <see cref="ConfigTypes"/> is provided or empty.
+        ///
+        /// Note that it caches the result for the lifetime of this object, which can be quite long.
+        /// </summary>
+        /// <param name="log">Optional log to record what it does</param>
+        /// <returns></returns>
         public IDictionary<string, bool> ConfigTypesDic(ILog log = null)
         {
             if (_configTypesList != null) return _configTypesList;

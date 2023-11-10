@@ -33,10 +33,10 @@ namespace ToSic.Eav.Configuration
         public static readonly FeatureDefinition FieldShareConfigManagement = new FeatureDefinition(
             nameof(FieldShareConfigManagement),
             new Guid("e0398b1f-32ca-4734-b49a-83ff894e352e"),
-            "FieldShareConfigManagement",
+            "Field Sharing - Enable Configure in Admin UI",
             false,
             true,
-            "Enable Field Sharing Management in the UI.",
+            "Enable Field Sharing Management directly in the UI.",
             FeaturesCatalogRules.Security0Neutral,
             ForPatronAdvancedCmsAutoEnabled
         );

@@ -63,13 +63,12 @@ namespace ToSic.Eav.WebApi
             var attribMetadata = (ContentTypeAttributeMetadata)a.Metadata;
             var mdToKeep = attribMetadata
                 .Where(m => configTypes.Keys.Contains(m.Type.NameId))
-                // .Where(m => attribMetadata.IsDirectlyOwned(m))
                 .ToList();
 
-            var inputMetadata = mdToKeep // a.Metadata // mdToKeep // a.Metadata
-                .ToDictionary(
-                    e => WorkInputTypes.GetTypeName(e.Type),
-                    e => InputMetadata(type, a, e, ancestorDecorator, ser));
+            var inputMetadata = mdToKeep.ToDictionary(
+                e => WorkInputTypes.GetTypeName(e.Type),
+                e => InputMetadata(type, a, e, ancestorDecorator, ser)
+            );
 
             // Do this after filtering the metadata
             configTypes = KeepOnlyConfigTypesWhichAreNotInherited(a, configTypes);
@@ -184,17 +183,5 @@ namespace ToSic.Eav.WebApi
 
             return l.Return(finalDic, $"{finalDic.Count}");
         }
-
-        //private IDictionary<string, bool> NonInheritedConfigTypes(IContentTypeAttribute attribute, IDictionary<string, bool> fullList)
-        //{
-        //    var l = Log.Fn<IDictionary<string, bool>>();
-
-        //    var inheritDict = attribute.SysSettings?.InheritMetadataOf;
-        //    if (inheritDict.SafeNone()) return l.Return(fullList, "no changes");
-
-        //    var newList = fullList.Select(pair => inheritDict.Keys)
-
-        //    return l.ReturnNull();
-        //}
     }
 }
