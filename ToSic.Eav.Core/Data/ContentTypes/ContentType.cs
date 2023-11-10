@@ -152,5 +152,9 @@ namespace ToSic.Eav.Data
 
         #endregion
 
+        /// <summary>
+        /// Improve ToString for better debugging.
+        /// </summary>
+        public override string ToString() => $"{this.Name}/{NameId} - {base.ToString()}";
     }
 }
