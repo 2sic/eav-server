@@ -20,7 +20,7 @@ namespace ToSic.Eav.Metadata
             {
                 //_debugAllEntry++;
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-                _loadAllInLock.Do(() => _allCached == null || RequiresReload(), () => LoadFromProviderInsideLock());
+                _allCached = _loadAllInLock.Call(() => _allCached == null || UpStreamChanged(), LoadAndResetInLock,  _allCached ?? new List<IEntity>());
                 //_debugAllReturn++;
                 return _allCached;
             }
@@ -31,7 +31,19 @@ namespace ToSic.Eav.Metadata
         public long CacheTimestamp { get; private set; }
 
         [PrivateApi]
-        private bool RequiresReload() => Source.CacheChanged(CacheTimestamp);
+        private bool UpStreamChanged() => Source.CacheChanged(CacheTimestamp);
+
+        private List<IEntity> LoadAndResetInLock()
+        {
+            var result = LoadFromProviderInsideLock() ?? new List<IEntity>();
+            
+            // Reset everything and possibly also the timestamp
+            _metadataWithoutPermissions = null;
+            _permissions = null;
+            CacheTimestamp = GetMetadataSource()?.CacheTimestamp ?? CacheTimestamp;
+
+            return result;
+        }
 
         /// <summary>
         /// Load the metadata from the provider
@@ -47,12 +59,7 @@ namespace ToSic.Eav.Metadata
                           ?? mdProvider?.GetMetadata(_targetType, Key)
                           ?? new List<IEntity>();
             //_debugUse++;
-            _allCached = mdOfKey.Concat(additions ?? new List<IEntity>()).ToList();
-            _metadataWithoutPermissions = null;
-            _permissions = null;
-            if (mdProvider != null)
-                CacheTimestamp = mdProvider.CacheTimestamp;
-            return _allCached;
+            return (additions == null ? mdOfKey : mdOfKey.Concat(additions)).ToList();
         }
 
         /// <summary>

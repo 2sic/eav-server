@@ -19,7 +19,7 @@ namespace ToSic.Eav.Metadata
             get
             {
                 // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-                if (_metadataWithoutPermissions == null || RequiresReload())
+                if (_metadataWithoutPermissions == null || UpStreamChanged())
                     _metadataWithoutPermissions = AllWithHidden
                         .Where(md => !Permission.IsPermission(md))
                         .ToList();
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Metadata
         {
             get
             {
-                if (_permissions == null || RequiresReload())
+                if (_permissions == null || UpStreamChanged())
                     _permissions = AllWithHidden
                         .Where(Permission.IsPermission)
                         .Select(e => new Permission(e))
