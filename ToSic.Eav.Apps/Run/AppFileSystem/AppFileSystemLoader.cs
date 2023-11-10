@@ -157,7 +157,7 @@ namespace ToSic.Eav.Apps.Run
                     var niceName = NiceName(name);
                     // TODO: use metadata information if available
                     return new InputTypeInfo(fullName, niceName, "Extension Field", "", false,
-                        $"{placeholder}/{Constants.FolderAppExtensions}/{name}/{JsFile}", false);
+                        $"{placeholder}/{Constants.FolderAppExtensions}/{name}/{JsFile}", false, "file-system");
                 })
                 .ToList();
             return l.Return(types, $"{types.Count}");

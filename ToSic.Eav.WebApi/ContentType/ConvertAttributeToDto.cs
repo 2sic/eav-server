@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
@@ -63,9 +62,9 @@ namespace ToSic.Eav.WebApi
             // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side-effects
             var mdToKeep = a.Metadata.Where(m => configTypes.Keys.Contains(m.Type.NameId)).ToList();
 
-            var inputMetadata = mdToKeep // a.Metadata
+            var inputMetadata = a.Metadata // mdToKeep // a.Metadata
                 .ToDictionary(
-                    e => (Guid.TryParse(e.Type.NameId, out _) ? e.Type.Name : e.Type.NameId).TrimStart('@'),
+                    e => WorkInputTypes.GetTypeName(e.Type),
                     e => InputMetadata(type, a, e, ancestorDecorator, ser));
 
             var dto= new ContentTypeFieldDto
@@ -155,7 +154,7 @@ namespace ToSic.Eav.WebApi
             if (inputType == null)
                 return l.Return(new Dictionary<string, bool> { [AttributeMetadata.TypeGeneral] = true }, "error - can't find type");
 
-            var dicFromInfo = inputType.ConfigTypes();
+            var dicFromInfo = inputType.ConfigTypeList();
 
             var finalDic = dicFromInfo
                 .Where(pair => inputTypes.Any(i => i.Type.EqualsInsensitive(pair.Key.Trim('@'))))

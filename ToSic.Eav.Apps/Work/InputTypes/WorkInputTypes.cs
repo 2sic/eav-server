@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Data;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
-using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.Data.InputTypes;
 
@@ -30,8 +30,9 @@ namespace ToSic.Eav.Apps.Work
         /// Retrieve a list of all input types known to the current system
         /// </summary>
         /// <returns></returns>
-        public List<InputTypeInfo> GetInputTypes() => Log.Func(() =>
+        public List<InputTypeInfo> GetInputTypes()
         {
+            var l = Log.Fn<List<InputTypeInfo>>();
             // Inner helper to log each intermediate state
             void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog) =>
                 Log.Do($"{title}, {inputsToLog.Count}", () =>
@@ -77,8 +78,8 @@ namespace ToSic.Eav.Apps.Work
             // Sort for better debugging
             inputTypes = inputTypes.OrderBy(i => i.Type).ToList();
 
-            return (inputTypes, $"found {inputTypes.Count}");
-        });
+            return l.Return(inputTypes, $"found {inputTypes.Count}");
+        }
 
         /// <summary>
         /// Mini-helper to enhance a list with additional entries not yet contained
@@ -129,6 +130,7 @@ namespace ToSic.Eav.Apps.Work
                     e.DisableI18n,
                     e.AngularAssets,
                     e.UseAdam,
+                    "app-registered",
                     e.Metadata
                 ))
                 .ToList();
@@ -169,29 +171,43 @@ namespace ToSic.Eav.Apps.Work
             var presetApp = _appStates.Value.GetPresetApp();
 
             var types = presetApp.ContentTypes
-                .Where(p => p.NameId.StartsWith(FieldTypePrefix))
-                .Select(p => p).ToList();
+                .Where(p => p.NameId.StartsWith(FieldTypePrefix)
+                            // new 16.08 experimental
+                            || p.Name.StartsWith(FieldTypePrefix)
+                            || p.Metadata.HasType(TypeForInputTypeDefinition) 
+                )
+                .Select(p => p)
+                .ToList();
 
-            // try to access metadata, if it has any
+            // Define priority of metadata to check
             var typesToCheckInThisOrder = new[] { TypeForInputTypeDefinition, ContentTypeDetails.ContentTypeTypeName, null };
-            _presetInpTypeCache = types.Select(it =>
+            var inputsWithAt = types.Select(it =>
                 {
                     var md = it.Metadata;
                     return new InputTypeInfo(
-                        it.NameId.TrimStart(FieldTypePrefix[0]),
+                        // 2023-11-10 2dm - changed this to support new input-types based on guid-content-types
+                        //it.NameId.TrimStart(FieldTypePrefix[0]),
+                        md.GetBestValue<string>(nameof(InputTypes.Type), TypeForInputTypeDefinition)
+                            .UseFallbackIfNoValue(GetTypeName(it)).TrimStart(FieldTypePrefix[0]),
                         md.GetBestValue<string>(nameof(InputTypes.Label), typesToCheckInThisOrder),
                         md.GetBestValue<string>(nameof(InputTypes.Description), typesToCheckInThisOrder),
                         md.GetBestValue<string>(nameof(InputTypes.Assets), TypeForInputTypeDefinition),
                         md.GetBestValue<bool>(nameof(InputTypes.DisableI18n), TypeForInputTypeDefinition),
                         md.GetBestValue<string>(nameof(InputTypes.AngularAssets), TypeForInputTypeDefinition),
                         md.GetBestValue<bool>(nameof(InputTypes.UseAdam), TypeForInputTypeDefinition),
+                        "preset",
                         md
                     );
                 })
                 .ToList();
+
+            _presetInpTypeCache = inputsWithAt;
             return l.Return(_presetInpTypeCache, $"{_presetInpTypeCache.Count}");
         }
 
         private static List<InputTypeInfo> _presetInpTypeCache;
+
+        public static string GetTypeName(IContentType t)
+            => (Guid.TryParse(t.NameId, out _) ? t.Name : t.NameId).TrimStart('@');
     }
 }

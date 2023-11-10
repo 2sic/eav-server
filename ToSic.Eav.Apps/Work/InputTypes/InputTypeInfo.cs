@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Work
     /// </summary>
     public class InputTypeInfo
     {
-        public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, IMetadataOf metadata = null)
+        public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source, IMetadataOf metadata = null)
         {
             Type = type;
             Label = label;
@@ -26,6 +26,7 @@ namespace ToSic.Eav.Apps.Work
             DisableI18n = disableI18N;
             AngularAssets = ngAssets;
             UseAdam = useAdam;
+            Source = source;
 
             if (metadata == null) return;
 
@@ -39,7 +40,7 @@ namespace ToSic.Eav.Apps.Work
             if (metadata.HasType(IsDefaultDecorator)) IsDefault = true;
 
             var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypes.TypeForInputTypeDefinition);
-            if (typeInputTypeDef != null) CustomConfigTypes = new InputTypes(typeInputTypeDef).CustomConfigTypes;
+            if (typeInputTypeDef != null) ConfigTypes = new InputTypes(typeInputTypeDef).CustomConfigTypes;
         }
 
         /// <summary>
@@ -96,12 +97,23 @@ namespace ToSic.Eav.Apps.Work
 
         #region New v16.08 / experimental
 
+        /// <summary>
+        /// Just an internal info for better debugging - not meant to be used
+        /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string CustomConfigTypes { get; }
+        public string Source { get; }
 
-        public IDictionary<string, bool> ConfigTypes(ILog log = null)
+        /// <summary>
+        /// Configuration Content-Types used for this input type.
+        /// Almost always empty, in which case the logic uses defaults 
+        /// </summary>
+        /// <remarks>WIP/BETA v16.08</remarks>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string ConfigTypes { get; }
+
+        public IDictionary<string, bool> ConfigTypeList(ILog log = null)
         {
-            if (_configTypes != null) return _configTypes;
+            if (_configTypesList != null) return _configTypesList;
 
             var l = log.Fn<IDictionary<string, bool>>();
 
@@ -109,13 +121,12 @@ namespace ToSic.Eav.Apps.Work
             
             // New setup v16.08
             // If we have custom settings, take @All and the custom settings only
-            if (CustomConfigTypes.HasValue())
-            {
+            if (ConfigTypes.HasValue())
                 try
                 {
-                    var parts = CustomConfigTypes
+                    var parts = ConfigTypes
                         .Split(',')
-                        .Select(s => s.Trim().TrimStart('@'))
+                        .Select(s => s.Trim()) // .TrimStart('@'))
                         .Where(s => s.HasValue())
                         .ToArray();
                     foreach (var part in parts) newDic[part] = true;
@@ -123,10 +134,8 @@ namespace ToSic.Eav.Apps.Work
                 }
                 catch (Exception ex)
                 {
-                    // Just log and fall back to default
-                    l.Ex(ex);
+                    l.Ex(ex);   // Just log and fall back to default
                 }
-            }
 
             // Standard setup - this has been the default behavior since ca. v6
             // @All, @MainType, @current-Type
@@ -144,9 +153,9 @@ namespace ToSic.Eav.Apps.Work
                 l.Ex(ex);
             }
 
-            return l.Return(_configTypes = newDic, $"{newDic.Count}");
+            return l.Return(_configTypesList = newDic, $"{newDic.Count}");
         }
-        private IDictionary<string, bool> _configTypes;
+        private IDictionary<string, bool> _configTypesList;
 
         #endregion
 
