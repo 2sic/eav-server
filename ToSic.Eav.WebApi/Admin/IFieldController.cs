@@ -110,7 +110,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="inheritMetadataOf"></param>
         bool Inherit(int appId, int attributeId, Guid inheritMetadataOf);
 
-        bool AddInheritedField(int appId, int contentTypeId, string sourceType, Guid sourceField);
+        bool AddInheritedField(int appId, int contentTypeId, string sourceType, Guid sourceField, string name);
 
         #endregion
     }

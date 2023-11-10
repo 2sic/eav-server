@@ -1,27 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.Configuration.BuiltInFeatures;
 
 namespace ToSic.Eav.Apps.Work
 {
     public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
     {
+        private readonly LazySvc<IFeaturesInternal> _features;
         private readonly ContentTypeAttributeBuilder _attributeBuilder;
         private readonly GenWorkDb<WorkMetadata> _workMetadata;
         private readonly Generator<IDataDeserializer> _dataDeserializer;
 
-        public WorkAttributesMod(GenWorkDb<WorkMetadata> workMetadata, ContentTypeAttributeBuilder attributeBuilder, Generator<IDataDeserializer> dataDeserializer) : base("ApS.InpGet")
+        public WorkAttributesMod(GenWorkDb<WorkMetadata> workMetadata, ContentTypeAttributeBuilder attributeBuilder, Generator<IDataDeserializer> dataDeserializer, LazySvc<IFeaturesInternal> features) : base("ApS.InpGet")
         {
 
             ConnectServices(
                 _attributeBuilder = attributeBuilder,
                 _workMetadata = workMetadata,
+                _features = features,
                 _dataDeserializer = dataDeserializer
             );
         }
@@ -129,6 +134,9 @@ namespace ToSic.Eav.Apps.Work
         {
             var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
 
+            if (!_features.Value.Enabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+                throw exp;
+
             // get field attributeId
             var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId)
                 /*?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.")*/;
@@ -155,6 +163,9 @@ namespace ToSic.Eav.Apps.Work
         {
             var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
 
+            if (!_features.Value.Enabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+                throw exp;
+
             // get field attributeId
             var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId);
 
@@ -175,9 +186,12 @@ namespace ToSic.Eav.Apps.Work
         }
 
         // TODO: @STV
-        public bool AddInheritedField(int contentTypeId, string sourceType, Guid sourceField)
+        public bool AddInheritedField(int contentTypeId, string sourceType, Guid sourceField, string name)
         {
             var l = Log.Fn<bool>();
+
+            if (!_features.Value.Enabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+                throw exp;
 
             // 1. First check that sources are correct
 

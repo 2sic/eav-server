@@ -72,8 +72,8 @@ namespace ToSic.Eav.WebApi.Admin
         public bool Inherit(int appId, int attributeId, Guid inheritMetadataOf)
             => _attributesMod.New(appId).FieldInherit(attributeId, inheritMetadataOf);
 
-        public bool AddInheritedField(int appId, int contentTypeId, string sourceType, Guid sourceField)
-            => _attributesMod.New(appId).AddInheritedField(contentTypeId, sourceType, sourceField);
+        public bool AddInheritedField(int appId, int contentTypeId, string sourceType, Guid sourceField, string name)
+            => _attributesMod.New(appId).AddInheritedField(contentTypeId, sourceType, sourceField, name);
 
         #endregion
     }

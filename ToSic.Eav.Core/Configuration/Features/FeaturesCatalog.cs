@@ -31,11 +31,12 @@ namespace ToSic.Eav.Configuration
                 // Features for Patrons Advanced CMS
                 EditUiTranslateWithGoogle,  // v15
                 LanguagesAdvancedFallback,  // v16.04
+                FieldShareConfigManagement, // v16.08
 
                 // Patron SuperAdmin
-                AppSyncWithSiteFiles,       // v15
+                AppSyncWithSiteFiles,           // v15
                 AppAutoInstallerConfigurable,   // v15
-                DataExportImportBundles, // v15.01
+                DataExportImportBundles,        // v15.01
 
                 // Patron Infrastructure
                 SqlCompressDataTimeline, // v15
