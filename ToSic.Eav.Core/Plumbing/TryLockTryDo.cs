@@ -23,19 +23,25 @@ namespace ToSic.Eav.Plumbing
             }
         }
 
-        [Obsolete("warning - not really obsolete, but never tested yet, so if you use this, do verify it works")]
-        public TResult Call<TResult>(Func<bool> condition, Func<TResult> func, TResult fallback)
+        /// <summary>
+        /// Get / Generate a value inside a lock with double-check.
+        /// </summary>
+        /// <param name="condition">Function to call checking if we need to generate the result</param>
+        /// <param name="generator">the generator</param>
+        /// <param name="cacheOrDefault">fallback to provide if no loading should happen - typically a previously cached result or default data</param>
+        /// <returns></returns>
+        public TResult Call<TResult>(Func<bool> condition, Func<TResult> generator, TResult cacheOrDefault)
         {
-            if (!condition()) return fallback;
+            if (!condition()) return cacheOrDefault;
             PreLockCount++;
             lock (_loadLock)
             {
                 LockCount++;
                 // Re-check, in case after the lock opened, the condition was moot
                 if (condition())
-                    return func();
+                    return generator();
             }
-            return fallback;
+            return cacheOrDefault;
         }
 
         public int PreLockCount;
