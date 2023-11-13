@@ -49,5 +49,7 @@ namespace ToSic.Eav.Run.Capabilities
 
         private readonly GetOnce<IRawEntity> _newEntity = new GetOnce<IRawEntity>();
 
+
+        public override string ToString() => $"{Prefix}: {Name} ({NameId} / {Guid})";
     }
 }

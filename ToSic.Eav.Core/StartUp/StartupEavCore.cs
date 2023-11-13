@@ -14,6 +14,7 @@ using ToSic.Eav.Persistence;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Run.Capabilities;
+using ToSic.Eav.Run.Requirements;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
@@ -127,6 +128,8 @@ namespace ToSic.Eav.StartUp
             // Unknown-Runtime for loading configuration etc. File-runtime
             services.TryAddTransient<IRuntime, RuntimeUnknown>();
             services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
+
+            services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
             return services;
         }

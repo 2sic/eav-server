@@ -31,5 +31,14 @@ namespace ToSic.Eav.Run.Capabilities
             var states = objects.Select(isco => isco.State).ToList();
             return (definitions, states);
         }
+
+        public bool IsEnabled(string capabilityKey)
+        {
+            var capability = States.FirstOrDefault(c => c.Definition.NameId.EqualsInsensitive(capabilityKey));
+            return capability != null && capability.IsEnabled;
+        }
+
+        public SystemCapabilityDefinition GetDef(string capabilityKey) 
+            => Definitions.FirstOrDefault(c => c.NameId.EqualsInsensitive(capabilityKey));
     }
 }

@@ -10,6 +10,9 @@ namespace ToSic.Eav.Apps.Decorators
         public const string ReqFeature = "feature";
         public const string ReqLicense = "license";
         public const string ReqPlatform = "platform";
+        public const string ReqSystemCapability = "systemcapability";
+        public const string ReqNone = "none";
+        public const string ReqUnknown = "unknown";
 
         public RequirementDecorator(IEntity entity) : base(entity) { }
 
@@ -20,5 +23,7 @@ namespace ToSic.Eav.Apps.Decorators
         public string License => GetThis("");
 
         public string Platform => GetThis("");
+
+        public string SystemCapability => GetThis("");
     }
 }
