@@ -20,11 +20,11 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Feature Definition can be null, if a feature was activated with an unknown ID
         /// </summary>
-        private readonly FeatureDefinition _featureDefinition;
+        public FeatureDefinition FeatureDefinition { get; }
 
         public FeatureState(FeatureDefinition definition, DateTime expiration, bool enabled, string msgShort, string msgLong, bool allowedByLicense, bool enabledByDefault, bool? enabledInConfiguration)
         {
-            _featureDefinition = definition;
+            FeatureDefinition = definition;
             Expiration = expiration;
             _enabled = enabled;
             EnabledReason = msgShort;
@@ -35,13 +35,13 @@ namespace ToSic.Eav.Configuration
         }
 
 
-        public string NameId => _featureDefinition.NameId;
-        public Guid Guid => _featureDefinition.Guid;
+        public string NameId => FeatureDefinition.NameId;
+        public Guid Guid => FeatureDefinition.Guid;
 
-        public string Name => _featureDefinition.Name;
-        public string Description => _featureDefinition.Description;
+        public string Name => FeatureDefinition.Name;
+        public string Description => FeatureDefinition.Description;
 
-        public LicenseDefinition License => _license.Get(() => _featureDefinition.LicenseRules?.FirstOrDefault()?.LicenseDefinition);
+        public LicenseDefinition License => _license.Get(() => FeatureDefinition.LicenseRules?.FirstOrDefault()?.LicenseDefinition);
         private readonly GetOnce<LicenseDefinition> _license = new GetOnce<LicenseDefinition>();
 
         /// <summary>
@@ -71,13 +71,13 @@ namespace ToSic.Eav.Configuration
         /// This only applies to normal users.
         /// Admins and Super-Users will always get all the features in the Edit-UI, to allow for better UI hints. 
         /// </summary>
-        public bool IsForEditUi => _featureDefinition.Ui;
+        public bool IsForEditUi => FeatureDefinition.Ui;
 
         /// <summary>
         /// Determines if non-admins should still know about this feature in the UI
         /// </summary>
-        public bool IsPublic => _featureDefinition.Public;
-        public FeatureSecurity Security => _featureDefinition.Security;
+        public bool IsPublic => FeatureDefinition.Public;
+        public FeatureSecurity Security => FeatureDefinition.Security;
 
         /// <summary>
         /// Indicate if this feature is allowed to be activated

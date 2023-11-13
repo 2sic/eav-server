@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Configuration
 {
@@ -31,6 +32,8 @@ namespace ToSic.Eav.Configuration
         /// </remarks>
         [PrivateApi("Hide - was never public on this interface")]
         bool IsEnabled(params string[] nameIds);
+
+        FeatureState Get(string nameId);
 
         [PrivateApi("New in 13.05, not public at all")]
         bool IsEnabled(params FeatureDefinition[] features);

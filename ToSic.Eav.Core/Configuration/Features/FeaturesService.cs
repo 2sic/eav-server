@@ -40,6 +40,8 @@ namespace ToSic.Eav.Configuration
             return nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
         }
 
+        public FeatureState Get(string nameId) => All.FirstOrDefault(f => f.Name == nameId || f.NameId == nameId);
+
         public bool IsEnabled(params FeatureDefinition[] features) 
             => IsEnabled(features?.Select(f => f.NameId).ToArray());
 
