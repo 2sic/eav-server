@@ -19,6 +19,18 @@ namespace ToSic.Eav.Plumbing
             return GetTypes(log).Where(t => type.IsAssignableFrom(t) && (!t.IsAbstract || t.IsInterface) && t != type);
         }
 
+        /// <summary>
+        /// Check if specific type exists (eg. assembly is loaded from bin)
+        /// </summary>
+        /// <param name="typeFullName"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public static bool HasType(string typeFullName, ILog log = null)
+        {
+            var wrapLog = log.Fn<bool>(message: $"HasType {typeFullName}");
+            return wrapLog.ReturnAsOk(GetTypes(log).Any(t => (t.FullName?.IndexOf(typeFullName, StringComparison.OrdinalIgnoreCase) ?? -1) > -1));
+        }
+
         internal static List<Type> GetTypes(ILog log = null)
         {
             if (_typeCache != null) return _typeCache;
