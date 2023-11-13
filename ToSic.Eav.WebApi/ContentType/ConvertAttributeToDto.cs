@@ -65,10 +65,19 @@ namespace ToSic.Eav.WebApi
                 .Where(m => configTypes.Keys.Contains(m.Type.NameId))
                 .ToList();
 
-            var inputMetadata = mdToKeep.ToDictionary(
-                e => WorkInputTypes.GetTypeName(e.Type),
-                e => InputMetadata(type, a, e, ancestorDecorator, ser)
-            );
+            var inputMetadata = mdToKeep
+                .Select(e => new
+                {
+                    Entity = e,
+                    TypeName = WorkInputTypes.GetTypeName(e.Type),
+                })
+                // Remove duplicates of metadata of the same type (would be faulty data, but can happen)
+                .GroupBy(e => e.TypeName)
+                .Select(grp => grp.First())
+                .ToDictionary(
+                    set => set.TypeName,
+                    set => InputMetadata(type, a, set.Entity, ancestorDecorator, ser)
+                );
 
             // Do this after filtering the metadata
             configTypes = KeepOnlyConfigTypesWhichAreNotInherited(a, configTypes);
