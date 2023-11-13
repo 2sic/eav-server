@@ -58,11 +58,12 @@ namespace ToSic.Eav
             return new NamedArgumentException(msg, intro, paramNames, paramsText);
         }
 
+        /// <summary>
+        /// Special placeholder to indicate that all parameters following this should be named.
+        /// See [Convention: Named Parameters(https://go.2sxc.org/named-params).
+        /// </summary>
         public struct NoParamOrder
         {
-            public string Message { get; }
         }
-
-        public static NoParamOrder StructProtector = new NoParamOrder();
     }
 }

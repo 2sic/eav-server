@@ -12,6 +12,7 @@ using ToSic.Lib.Services;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
+using static ToSic.Eav.Data.AttributeMetadata;
 
 
 namespace ToSic.Eav.WebApi
@@ -19,21 +20,22 @@ namespace ToSic.Eav.WebApi
     public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
     {
         private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
-        private readonly LazySvc<IConvertToEavLight> _convertToEavLight;
+        private readonly LazySvc<IConvertToEavLight> _convertToLight;
 
-        public ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToEavLight, GenWorkPlus<WorkInputTypes> inputTypes) : base("Cnv.AtrDto")
+        public ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes) : base("Cnv.AtrDto")
         {
             ConnectServices(
                 _inputTypes = inputTypes,
-                _convertToEavLight = convertToEavLight
+                _convertToLight = convertToLight
             );
         }
 
         public ConvertAttributeToDto Init(int appId, bool withContentType)
         {
+            var l = Log.Fn<ConvertAttributeToDto>($"{appId}, withContentType:{withContentType}");
             _appId = appId;
             _withContentType = withContentType;
-            return this;
+            return l.Return(this);
         }
 
         private int _appId;
@@ -55,32 +57,8 @@ namespace ToSic.Eav.WebApi
             var type = item.Type;
             var ancestorDecorator = type.GetDecorator<IAncestor>();
             var inputType = FindInputTypeOrUnknownOld(a);
-            var ser = _convertToEavLight.Value;
             var appInputTypes = _inputTypes.New(_appId).GetInputTypes();
-            var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
-
-            // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side-effects
-            var attribMetadata = (ContentTypeAttributeMetadata)a.Metadata;
-            var mdToKeep = attribMetadata
-                .Where(m => configTypes.Keys.Contains(m.Type.NameId))
-                .ToList();
-
-            var inputMetadata = mdToKeep
-                .Select(e => new
-                {
-                    Entity = e,
-                    TypeName = WorkInputTypes.GetTypeName(e.Type),
-                })
-                // Remove duplicates of metadata of the same type (would be faulty data, but can happen)
-                .GroupBy(e => e.TypeName)
-                .Select(grp => grp.First())
-                .ToDictionary(
-                    set => set.TypeName,
-                    set => InputMetadata(type, a, set.Entity, ancestorDecorator, ser)
-                );
-
-            // Do this after filtering the metadata
-            configTypes = KeepOnlyConfigTypesWhichAreNotInherited(a, configTypes);
+            var inputConfigs = GetInputTypesAndMetadata(inputType, a, type, ancestorDecorator, appInputTypes);
 
             var dto= new ContentTypeFieldDto
             {
@@ -91,13 +69,12 @@ namespace ToSic.Eav.WebApi
                 StaticName = a.Name,
                 IsTitle = a.IsTitle,
                 AttributeId = a.AttributeId,
-                Metadata =inputMetadata,
+                Metadata = inputConfigs.InputMetadata,
                 InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
                 Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
 
                 // new in 12.01
-                IsEphemeral = a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral,
-                    AttributeMetadata.TypeGeneral),
+                IsEphemeral = a.Metadata.GetBestValue<bool>(MetadataFieldAllIsEphemeral, TypeGeneral),
                 HasFormulas = a.HasFormulas(Log),
 
                 // Read-Only new in v13
@@ -109,25 +86,70 @@ namespace ToSic.Eav.WebApi
                 ContentType = _withContentType ? new JsonType(type, false, false) : null,
 
                 // new 16.08
-                ConfigTypes = configTypes,
+                ConfigTypes = inputConfigs.ConfigTypes,
             };
 
             return l.ReturnAsOk(dto);
         }
 
-        private static IDictionary<string, bool> KeepOnlyConfigTypesWhichAreNotInherited(IContentTypeAttribute a, IDictionary<string, bool> configTypes)
+        private (IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)
+            GetInputTypesAndMetadata(string inputType, IContentTypeAttribute a, IContentType type, IAncestor ancestorDecorator, List<InputTypeInfo> appInputTypes)
         {
+            var l = Log.Fn<(IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)>();
+            var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
+
+            // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side-effects
+            var attribMetadata = (ContentTypeAttributeMetadata)a.Metadata;
+            var mdToKeep = attribMetadata
+                .Where(m => configTypes.Keys.Contains(m.Type.NameId))
+                .ToList();
+
+            l.A($"{nameof(mdToKeep)}: {mdToKeep.Count}; " + l.Try(() => string.Join(",", mdToKeep.Select(m => $"{m.Type}/{m}"))));
+
+            var mdDeduplicated = mdToKeep
+                .Select(e => new
+                {
+                    Entity = e,
+                    TypeName = WorkInputTypes.GetTypeName(e.Type),
+                })
+                // Remove duplicates of metadata of the same type (would be faulty data, but can happen)
+                .GroupBy(e => e.TypeName)
+                .Select(grp => grp.First())
+                .ToList();
+
+            l.A($"{nameof(mdDeduplicated)}: {mdDeduplicated.Count}; " + l.Try(() => string.Join(",", mdDeduplicated.Select(m => $"{m.Entity.Type}/{m.Entity}"))));
+
+            var inputMetadata = mdDeduplicated
+                .ToDictionary(
+                    set => set.TypeName,
+                    set => InputMetadata(type, a, set.Entity, ancestorDecorator, _convertToLight.Value)
+                );
+
+
+            // Do this after filtering the metadata
+            configTypes = KeepOnlyConfigTypesWhichAreNotInherited(a, configTypes, Log);
+            return l.Return((configTypes, inputMetadata));
+        }
+
+
+        private static IDictionary<string, bool> KeepOnlyConfigTypesWhichAreNotInherited(IContentTypeAttribute a, IDictionary<string, bool> configTypes, ILog log)
+        {
+            var l = log.Fn<IDictionary<string, bool>>($"{nameof(configTypes)} {configTypes.Count}");
+
             // Check if we're inheriting any metadata, as we don't want to give the 
             // inherited MD to the user to edit.
             var mdInheritList = a.SysSettings?.InheritMetadataOf;
-            if (mdInheritList.SafeAny())
-            {
-                var inheritExceptions = mdInheritList.Where(pair => pair.Key == Guid.Empty);
-                configTypes = configTypes.Where(ctPair => inheritExceptions.Any(ie => ie.Value == ctPair.Key))
-                    .ToDictionary(pair => pair.Key, pair => pair.Value);
-            }
+            if (!mdInheritList.SafeAny()) return l.Return(configTypes, "no restrictions");
 
-            return configTypes;
+            var inheritExceptions = mdInheritList.Where(pair => pair.Key == Guid.Empty);
+
+            l.A($"{nameof(inheritExceptions)}: {inheritExceptions.Count()}");
+
+            configTypes = configTypes
+                .Where(ctPair => inheritExceptions.Any(ie => ie.Value == ctPair.Key))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            return l.Return(configTypes, $"{configTypes.Count}");
         }
 
         private EavLightEntity InputMetadata(IContentType contentType, IContentTypeAttribute a, IEntity e, IAncestor ancestor, IConvertToEavLight ser)
@@ -158,7 +180,7 @@ namespace ToSic.Eav.WebApi
         /// </remarks>
         private static string FindInputTypeOrUnknownOld(IContentTypeAttribute attribute)
         {
-            var inputType = attribute.Metadata.GetBestValue<string>(AttributeMetadata.GeneralFieldInputType, AttributeMetadata.TypeGeneral);
+            var inputType = attribute.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeGeneral);
 
             // unknown will let the UI fallback on other mechanisms
             return string.IsNullOrEmpty(inputType) ? Constants.NullNameId : inputType;
@@ -182,7 +204,7 @@ namespace ToSic.Eav.WebApi
 
             var inputType = FindInputType(inputTypeName);
             if (inputType == null)
-                return l.Return(new Dictionary<string, bool> { [AttributeMetadata.TypeGeneral] = true }, "error - can't find type");
+                return l.Return(new Dictionary<string, bool> { [TypeGeneral] = true }, "error - can't find type");
 
             var dicFromInfo = inputType.ConfigTypesDic();
 
