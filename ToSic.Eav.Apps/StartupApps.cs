@@ -13,6 +13,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Requirements;
 using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Apps
@@ -33,6 +34,7 @@ namespace ToSic.Eav.Apps
             // Runtime parts
             services.TryAddTransient<MdRecommendations>(); // new v13
             services.TryAddTransient<MdRequirements>(); // new v13
+            services.TryAddTransient<IRequirementsService, MdRequirements>(); // new v16.08
 
             // New part v16 with better architecture
             services.TryAddTransient<AppWorkContextService>();
