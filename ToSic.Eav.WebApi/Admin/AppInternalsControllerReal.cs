@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.Admin
         public const string LogSuffix = "AppInternals";
         public AppInternalsControllerReal(
             LazySvc<IContextOfSite> context,
-            LazySvc<ContentTypeApi> ctApiLazy,
+            LazySvc<ContentTypeDtoService> ctApiLazy,
             LazySvc<IAppStates> appStates,
             LazySvc<EntityApi> entityApi,
             LazySvc<MetadataControllerReal> metadataControllerReal)
@@ -31,7 +31,7 @@ namespace ToSic.Eav.WebApi.Admin
             );
 
         private readonly LazySvc<IContextOfSite> _context;
-        private readonly LazySvc<ContentTypeApi> _ctApiLazy;
+        private readonly LazySvc<ContentTypeDtoService> _ctApiLazy;
         private readonly LazySvc<IAppStates> _appStates;
         private readonly LazySvc<EntityApi> _entityApi;
         private readonly LazySvc<MetadataControllerReal> _metadataControllerReal;
@@ -47,7 +47,9 @@ namespace ToSic.Eav.WebApi.Admin
             var isGlobal = appState.IsGlobalSettingsApp();
             var isPrimary = appState.AppId == _appStates.Value.PrimaryAppId(appState.ZoneId);
 
-            return new AppInternalsDto()
+            var isGlobalOrPrimary = isGlobal || isPrimary;
+
+            return new AppInternalsDto
             {
                 // 1. .../api/2sxc/admin/type/list?appId=999&scope=System.Configuration
                 //SystemConfiguration = systemConfiguration,
@@ -63,8 +65,8 @@ namespace ToSic.Eav.WebApi.Admin
                     // 3. .../api/2sxc/admin/entity/list?appId=999&contentType=App-Settings
                     {
                         "AppSettings",
-                        (isGlobal || isPrimary) 
-                            ? (settingsCustomExists ? EntityListInternal(appId, "SettingsCustom", excludeAncestor: true) : null) 
+                        isGlobalOrPrimary
+                            ? settingsCustomExists ? EntityListInternal(appId, "SettingsCustom", excludeAncestor: true) : null 
                             : EntityListInternal(appId, AppLoadConstants.TypeAppSettings, excludeAncestor: true)
                     },
 
@@ -77,8 +79,8 @@ namespace ToSic.Eav.WebApi.Admin
                     // 6. .../api/2sxc/admin/entity/list?appId=999&contentType=App-Resources
                     {
                         "AppResources",
-                        (isGlobal || isPrimary)
-                            ? (resourcesCustomExists ? EntityListInternal(appId, "ResourcesCustom", excludeAncestor: true) : null)
+                        isGlobalOrPrimary
+                            ? resourcesCustomExists ? EntityListInternal(appId, "ResourcesCustom", excludeAncestor: true) : null
                             : EntityListInternal(appId, AppLoadConstants.TypeAppResources, excludeAncestor: true)
 
                     },
@@ -95,16 +97,16 @@ namespace ToSic.Eav.WebApi.Admin
                     // 4. .../api/2sxc/admin/field/all?appid=999&staticName=App-Settings
                     {
                         "AppSettings",
-                        (isGlobal || isPrimary)
-                            ? (settingsCustomExists ? FieldAllInternal(appId, "SettingsCustom") : null)
+                        isGlobalOrPrimary
+                            ? settingsCustomExists ? FieldAllInternal(appId, "SettingsCustom") : null
                             : FieldAllInternal(appId, AppLoadConstants.TypeAppSettings)
                     },
 
                     // 7. .../api/2sxc/admin/field/all?appid=999&staticName=App-Resources
                     {
                         "AppResources",
-                        (isGlobal || isPrimary)
-                            ? (resourcesCustomExists ? FieldAllInternal(appId, "ResourcesCustom") : null)
+                        isGlobalOrPrimary
+                            ? resourcesCustomExists ? FieldAllInternal(appId, "ResourcesCustom") : null
                             : FieldAllInternal(appId, AppLoadConstants.TypeAppResources)
                     }
                 },
@@ -115,14 +117,14 @@ namespace ToSic.Eav.WebApi.Admin
         }
 
         private IEnumerable<ContentTypeDto> TypeListInternal(int appId, string scope = null, bool withStatistics = false)
-            => _ctApiLazy.Value.Init(appId).List(scope, withStatistics);
+            => _ctApiLazy.Value/*.Init(appId)*/.List(appId, scope, withStatistics);
 
         private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
             => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething)
                 .GetEntitiesForAdmin(contentType, excludeAncestor);
 
-        private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string staticName)
-            => _ctApiLazy.Value.Init(appId).GetFields(staticName);
+        private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)
+            => _ctApiLazy.Value/*.Init(appId)*/.GetFields(appId, typeName);
 
         private MetadataListDto MetadataListInternal(int appId, int targetType, string keyType, string key, string contentType = null)
             => _metadataControllerReal.Value.Get(appId, targetType, keyType, key, contentType);

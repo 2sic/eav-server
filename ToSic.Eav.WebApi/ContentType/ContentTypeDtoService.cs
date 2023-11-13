@@ -13,13 +13,12 @@ namespace ToSic.Eav.WebApi
     /// <summary>
     /// Web API Controller for ContentTypes
     /// </summary>
-    public partial class ContentTypeApi : ServiceBase
+    public /*partial*/ class ContentTypeDtoService : ServiceBase
     {
 
         #region Constructor / DI
 
-        public ContentTypeApi(
-            AppInitializedChecker appInitializedChecker,
+        public ContentTypeDtoService(
             GenWorkPlus<WorkEntities> workEntities,
             GenWorkBasic<WorkAttributes> attributes,
             Generator<ConvertAttributeToDto> convAttrDto,
@@ -27,7 +26,6 @@ namespace ToSic.Eav.WebApi
         {
             ConnectServices(
                 _attributes = attributes,
-                _appInitializedChecker = appInitializedChecker,
                 _convAttrDto = convAttrDto,
                 _convTypeDto = convTypeDto,
                 _workEntities = workEntities
@@ -38,26 +36,26 @@ namespace ToSic.Eav.WebApi
         private readonly Generator<ConvertAttributeToDto> _convAttrDto;
         private readonly GenWorkBasic<WorkAttributes> _attributes;
         private readonly GenWorkPlus<WorkEntities> _workEntities;
-        private readonly AppInitializedChecker _appInitializedChecker;
 
-        public ContentTypeApi Init(int appId)
-        {
-            var l = Log.Fn<ContentTypeApi>($"{appId}");
-            _appId = appId;
-            _appCtxPlus = _workEntities.CtxSvc.ContextPlus(appId);
-            return l.Return(this);
-        }
+        //public ContentTypeDtoService Init(int appId)
+        //{
+        //    var l = Log.Fn<ContentTypeDtoService>($"{appId}");
+        //    _appId = appId;
+        //    _appCtxPlus = _workEntities.CtxSvc.ContextPlus(appId);
+        //    return l.Return(this);
+        //}
 
-        private int _appId;
-        private IAppWorkCtxPlus _appCtxPlus;
+        //private int _appId;
+        //private IAppWorkCtxPlus _appCtxPlus;
 
         #endregion
 
         #region Content-Type Get, Delete, Save
 
-        public IEnumerable<ContentTypeDto> List(string scope = null, bool withStatistics = false)
+        public IEnumerable<ContentTypeDto> List(int appId, string scope = null, bool withStatistics = false)
         {
             var l = Log.Fn<IEnumerable<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
+            var appCtxPlus = _workEntities.CtxSvc.ContextPlus(appId);
 
             // 2023-11-08 Will disable this now, as I believe there is no case
             // ...where the data can be loaded into memory and NOT have initialized already. 
@@ -75,10 +73,10 @@ namespace ToSic.Eav.WebApi
             //}
 
             // should use app-manager and return each type 1x only
-            var appEntities = _workEntities.New(_appCtxPlus);
+            var appEntities = _workEntities.New(appCtxPlus);
 
             // get all types
-            var allTypes = _appCtxPlus.AppState.ContentTypes.OfScope(scope, true);
+            var allTypes = appCtxPlus.AppState.ContentTypes.OfScope(scope, true);
 
             var filteredType = allTypes.Where(t => t.Scope == scope)
                 .OrderBy(t => t.Name)
@@ -87,10 +85,11 @@ namespace ToSic.Eav.WebApi
 	    }
         
 
-	    public ContentTypeDto GetSingle(string contentTypeStaticName, string scope = null)
+	    public ContentTypeDto GetSingle(int appId, string contentTypeStaticName, string scope = null)
 	    {
-	        var l = Log.Fn<ContentTypeDto>($"a#{_appId}, type:{contentTypeStaticName}, scope:{scope}");
-            var ct = _appCtxPlus.AppState.GetContentType(contentTypeStaticName);
+	        var l = Log.Fn<ContentTypeDto>($"a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
+            var appCtxPlus = _workEntities.CtxSvc.ContextPlus(appId);
+            var ct = appCtxPlus.AppState.GetContentType(contentTypeStaticName);
             return l.Return(_convTypeDto.Convert(ct));
         }
 
@@ -101,25 +100,19 @@ namespace ToSic.Eav.WebApi
         /// <summary>
         /// Returns the configuration for a content type
         /// </summary>
-        public IEnumerable<ContentTypeFieldDto> GetFields(string staticName)
+        public IEnumerable<ContentTypeFieldDto> GetFields(int appId, string staticName)
         {
-            var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>($"get fields a#{_appId}, type:{staticName}");
-            
-            var fields = _attributes.New(_appCtxPlus).GetFields(staticName);
-
-            return l.Return(_convAttrDto.New().Init(_appId, false).Convert(fields));
+            var fields = _attributes.New(appId).GetFields(staticName);
+            return _convAttrDto.New().Init(appId, false).Convert(fields);
         }
 
 
-        public IEnumerable<ContentTypeFieldDto> GetSharedFields(int attributeId)
+        public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId)
         {
-            var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>($"get shared fields a#{_appId}");
-
-            var fields = _attributes.New(_appId).GetSharedFields(attributeId);
-
-            return l.Return(_convAttrDto.New().Init(_appId, true).Convert(fields));
+            var fields = _attributes.New(appId).GetSharedFields(attributeId);
+            return _convAttrDto.New().Init(appId, true).Convert(fields);
         }
-        
+
         #endregion
 
     }

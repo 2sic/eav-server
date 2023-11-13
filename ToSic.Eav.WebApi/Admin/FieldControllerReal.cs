@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.Admin
     {
         public const string LogSuffix = "Field";
 
-        public FieldControllerReal(LazySvc<ContentTypeApi> ctApiLazy, GenWorkPlus<WorkInputTypes> inputTypes, GenWorkDb<WorkAttributesMod> attributesMod): base("Api.FieldRl")
+        public FieldControllerReal(LazySvc<ContentTypeDtoService> ctApiLazy, GenWorkPlus<WorkInputTypes> inputTypes, GenWorkDb<WorkAttributesMod> attributesMod): base("Api.FieldRl")
         {
             ConnectServices(
                 _inputTypes = inputTypes,
@@ -24,12 +24,12 @@ namespace ToSic.Eav.WebApi.Admin
 
         private readonly GenWorkDb<WorkAttributesMod> _attributesMod;
         private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
-        private readonly LazySvc<ContentTypeApi> _ctApiLazy;
+        private readonly LazySvc<ContentTypeDtoService> _ctApiLazy;
 
         #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
         public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName)
-            => _ctApiLazy.Value.Init(appId).GetFields(staticName);
+            => _ctApiLazy.Value/*.Init(appId)*/.GetFields(appId, staticName);
 
 
         public string[] DataTypes(int appId)
@@ -61,7 +61,7 @@ namespace ToSic.Eav.WebApi.Admin
         #region Shared Fields
 
         public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default) 
-            => _ctApiLazy.Value.Init(appId).GetSharedFields(attributeId);
+            => _ctApiLazy.Value/*.Init(appId)*/.GetSharedFields(appId, attributeId);
 
         public bool Share(int appId, int attributeId, bool share, bool hide = false)
             => _attributesMod.New(appId).FieldShare(attributeId, share, hide);

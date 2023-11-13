@@ -42,7 +42,7 @@ namespace ToSic.Eav.WebApi
 
             // APIs
             services.TryAddTransient<EntityPickerApi>();
-            services.TryAddTransient<ContentTypeApi>();
+            services.TryAddTransient<ContentTypeDtoService>();
             services.TryAddTransient(typeof(QueryControllerBase<>.MyServices));
             services.TryAddTransient<ContentExportApi>();
             services.TryAddTransient<ContentImportApi>();
