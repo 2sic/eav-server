@@ -19,7 +19,7 @@ namespace ToSic.Eav
         public const string Protector = "Params must be named (" + HelpLink + ")";
 
         /// <summary>
-        /// We found that some external code had used the constant with the old value,
+        /// We found that some EXTERNAL code had used the constant with the old value,
         /// so we must check that too if things look bad.
         /// </summary>
         private const string OldProtector = "Params must be named (https://r.2sxc.org/named-params)";
@@ -58,6 +58,11 @@ namespace ToSic.Eav
             return new NamedArgumentException(msg, intro, paramNames, paramsText);
         }
 
+        public struct NoParamOrder
+        {
+            public string Message { get; }
+        }
 
+        public static NoParamOrder StructProtector = new NoParamOrder();
     }
 }
