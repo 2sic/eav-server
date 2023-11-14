@@ -4,6 +4,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Text.Unicode;
 
 namespace ToSic.Eav.Serialization
@@ -34,7 +35,8 @@ namespace ToSic.Eav.Serialization
             PropertyNamingPolicy = null, // leave property names unchanged (PascalCase for c#)
             ReadCommentHandling = JsonCommentHandling.Skip,
             WriteIndented = false,
-        };
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
+    };
 
         /// <summary>
         /// Most used set of JsonSerializerOptions for use in every JsonSerializer.
