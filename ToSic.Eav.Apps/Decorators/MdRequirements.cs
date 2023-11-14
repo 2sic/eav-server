@@ -89,14 +89,11 @@ namespace ToSic.Eav.Apps.Decorators
             public ReqStatusPrivate(RequirementDecorator decorator, string nameId, bool approved, AspectDefinition aspect = default)
             : base(nameId, approved, aspect ?? AspectDefinition.None)
             {
-                //NameId = nameId;
                 Decorator = decorator;
-                //Approved = approved;
             }
-            //public string NameId;
-            //public bool Approved;
+
             public RequirementDecorator Decorator;
-            public RequirementStatus Status => this;// new RequirementStatus(NameId, Approved);
+            public RequirementStatus Status => this;
         }
 
         internal ReqStatusPrivate RequirementMet(IEntity requirement)
@@ -106,43 +103,21 @@ namespace ToSic.Eav.Apps.Decorators
             if (requirement == null) return l.Return(new ReqStatusPrivate(null, ReqNone, true), ReqNone);
             var reqObj = new RequirementDecorator(requirement);
 
-            //ReqStatusPrivate BuildAndReturn(bool approved, string nameId, string reason)
-            //{
-            //    var result = new ReqStatusPrivate(reqObj, nameId, approved);
-            //    return l.Return(result, reason);
-            //}
-            ReqStatusPrivate BuildAndReturn2((bool approved, AspectDefinition aspect) check, string nameId, string reason)
-            {
-                var result = new ReqStatusPrivate(reqObj, nameId, check.approved);
-                return l.Return(result, reason);
-            }
+            ReqStatusPrivate BuildAndRet((bool approved, AspectDefinition aspect) check, string nameId, string reason) 
+                => l.Return(new ReqStatusPrivate(reqObj, nameId, check.approved, check.aspect), reason);
 
             // Check requirement type
             switch (reqObj.RequirementType)
             {
-                case ReqFeature:
-                    return l.Return(BuildAndReturn2(VerifyFeature(reqObj), reqObj.Feature?.Trim(), ReqFeature));
-                case ReqLicense:
-                    return l.Return(BuildAndReturn2(VerifyLicense(reqObj), reqObj.License?.Trim(), ReqLicense));
-                case ReqPlatform:
-                    return l.Return(BuildAndReturn2(VerifyPlatform(reqObj), reqObj.Platform?.Trim(), ReqPlatform));
-                case ReqSystemCapability:
-                    return BuildAndReturn2(VerifySysCap(reqObj), reqObj.SystemCapability?.Trim(), ReqSystemCapability);
-                default:
-                    // No known requirement, assume not fulfilled
-                    return l.Return( BuildAndReturn2((false, AspectDefinition.None), ReqUnknown, ReqUnknown));
+                case ReqFeature: return BuildAndRet(VerifyFeature(reqObj), reqObj.Feature?.Trim(), ReqFeature);
+                case ReqLicense: return BuildAndRet(VerifyLicense(reqObj), reqObj.License?.Trim(), ReqLicense);
+                case ReqPlatform: return BuildAndRet(VerifyPlatform(reqObj), reqObj.Platform?.Trim(), ReqPlatform);
+                case ReqSysCap: return BuildAndRet(VerifySysCap(reqObj), reqObj.SystemCapability?.Trim(), ReqSysCap);
+                // No known requirement, assume not fulfilled
+                default: return  BuildAndRet((false, AspectDefinition.None), ReqUnknown, ReqUnknown);
             }
         }
 
-        //private bool VerifyPlatform(RequirementDecorator reqObj)
-        //{
-        //    var platform = reqObj.Platform?.Trim();
-        //    var l = Log.Fn<bool>($"name: {platform}");
-        //    if (string.IsNullOrWhiteSpace(reqObj.Platform)) return l.Return(true, "no req. platform");
-
-        //    var enabled = _platInfo.Value.Name.EqualsInsensitive(reqObj.Platform.Trim());
-        //    return l.Return(enabled, $"enabled: {enabled}");
-        //}
         private (bool, AspectDefinition) VerifyPlatform(RequirementDecorator reqObj)
         {
             var platform = reqObj.Platform?.Trim();
@@ -153,14 +128,6 @@ namespace ToSic.Eav.Apps.Decorators
             return l.Return((enabled, AspectDefinition.Custom(platform, Guid.Empty, platform)), $"enabled: {enabled}");
         }
 
-        //private bool VerifyFeature(RequirementDecorator reqObj)
-        //{
-        //    var l = Log.Fn<bool>($"name: {reqObj.Feature}");
-        //    if (string.IsNullOrWhiteSpace(reqObj.Feature)) return l.Return(true, "no req. feature");
-
-        //    var enabled = _featsService.Value.IsEnabled(reqObj.Feature.Trim());
-        //    return l.Return(enabled, $"enabled: {enabled}");
-        //}
 
         private (bool, AspectDefinition) VerifyFeature(RequirementDecorator reqObj)
         {
@@ -185,17 +152,7 @@ namespace ToSic.Eav.Apps.Decorators
             return l.Return((enabled, status ?? AspectDefinition.None), $"enabled: {enabled}");
         }
 
-        //private bool VerifyLicense(RequirementDecorator reqObj) => Log.Func($"name: {reqObj.License}", () =>
-        //{
-        //    if (string.IsNullOrWhiteSpace(reqObj.License)) return (true, "no req. license");
 
-        //    // find license
-        //    var matchingLic = _licenseCatalog.TryGet(reqObj.License.Trim());
-        //    if (matchingLic == null) return (false, "unknown license");
-
-        //    var enabled = _licenseService.Value.IsEnabled(matchingLic);
-        //    return (enabled, $"enabled {enabled}");
-        //});
 
         private (bool, AspectDefinition) VerifyLicense(RequirementDecorator reqObj)
         {
