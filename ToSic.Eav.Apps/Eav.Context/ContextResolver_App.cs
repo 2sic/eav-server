@@ -4,7 +4,7 @@ using ToSic.Eav.Apps;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
 {
-    public partial class ContextResolver
+    partial class ContextResolver
     {
         /// <summary>
         /// This is set whenever an App Context is retrieved.
