@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class SystemCapabilityNetFramework: SystemCapabilityBase
+    public class SystemCapabilityNetFramework: SystemCapability
     {
 
         public static SystemCapabilityDefinition DefStatic { get; } = new SystemCapabilityDefinition(

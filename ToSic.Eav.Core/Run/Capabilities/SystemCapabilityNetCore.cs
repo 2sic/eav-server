@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class SystemCapabilityNetCore: SystemCapabilityBase
+    public class SystemCapabilityNetCore: SystemCapability
     {
 
         private static readonly SystemCapabilityDefinition DefStatic = new SystemCapabilityDefinition(

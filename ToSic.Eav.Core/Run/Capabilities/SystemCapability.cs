@@ -1,8 +1,8 @@
 ﻿namespace ToSic.Eav.Run.Capabilities
 {
-    public abstract class SystemCapabilityBase: ISystemCapability
+    public abstract class SystemCapability: ISystemCapability
     {
-        protected SystemCapabilityBase(SystemCapabilityDefinition definition, bool isEnabled = default)
+        protected SystemCapability(SystemCapabilityDefinition definition, bool isEnabled = default)
         {
             Definition = definition;
             IsEnabled = isEnabled;

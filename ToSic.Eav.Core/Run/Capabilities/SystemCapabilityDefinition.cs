@@ -18,17 +18,11 @@ namespace ToSic.Eav.Run.Capabilities
         }
 
         /// <summary>
-        /// Clone constructor - only original is required
+        /// Clone constructor - optionally override some values
         /// </summary>
-        private SystemCapabilityDefinition(SystemCapabilityDefinition original, string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default)
-        : base(EnsurePrefix(nameId ?? original.NameId), guid ?? original.Guid, name ?? original.Name, description ?? original.Description)
-        {
-            Link = link ?? original.Link;
-        }
-
         public SystemCapabilityDefinition Clone(string noParamOrder = Parameters.Protector, 
-            string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default)
-            => new SystemCapabilityDefinition(this, nameId, guid, name, description, link);
+            string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default) =>
+            new SystemCapabilityDefinition(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description, link ?? Link);
 
         private static string EnsurePrefix(string original) 
             => original.IsEmptyOrWs() ? Prefix + "-Error-No-Name" : original.StartsWith(Prefix) ? original : $"{Prefix}-{original}";
