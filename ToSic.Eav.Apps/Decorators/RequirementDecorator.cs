@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.Decorators
         public const string ReqFeature = "feature";
         public const string ReqLicense = "license";
         public const string ReqPlatform = "platform";
-        public const string ReqSystemCapability = "systemcapability";
+        public const string ReqSysCap = "systemcapability";
         public const string ReqNone = "none";
         public const string ReqUnknown = "unknown";
 
