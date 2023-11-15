@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -202,15 +203,12 @@ namespace ToSic.Eav.Apps.Work
             // - verify that the source fields exist, and really belong to the content-types they claim to be from
             var fields = _workAttributes.New(AppWorkCtx.AppId).GetSharedFields(attributeId: default)
                 .Where(f => f.Type.NameId == sourceType && f.Attribute.Guid == sourceField).ToList();
-            
+
             // 1.2 Find the source fields and only keep the ones that are valid
-            switch (fields.Count)
-            {
-                case 0:
-                    return l.ReturnFalse($"error: wrong sourceType {sourceType} or sourceField {sourceField}");
-                case > 1:
-                    return l.ReturnFalse($"error: we have multiple duplicated shared fields with sourceType {sourceType} and sourceField {sourceField}");
-            }
+            if (fields.Count == 0)
+                return l.ReturnFalse($"error: wrong sourceType {sourceType} or sourceField {sourceField}");
+            if (fields.Count > 1)
+                return l.ReturnFalse($"error: we have multiple: {fields.Count} duplicate shared fields with same sourceType {sourceType} and sourceField {sourceField}");
 
             var pairTypeWithAttribute = fields.Single();
 
@@ -226,9 +224,9 @@ namespace ToSic.Eav.Apps.Work
             // - name is the key in the dictionary
             // - probably just call AddField code above
             // - of course increment the start-index for each field
-            var newAttributeId = AddField(contentTypeId, name, 
-                type: pairTypeWithAttribute.Attribute.Type.ToString(), 
-                inputType: pairTypeWithAttribute.Attribute.InputType(), 
+            var newAttributeId = AddField(contentTypeId, name,
+                type: pairTypeWithAttribute.Attribute.Type.ToString(),
+                inputType: pairTypeWithAttribute.Attribute.InputType(),
                 sortOrder: contentType.Attributes.Count() + 1);
 
             // 3. Configure inherit
