@@ -18,14 +18,15 @@ namespace ToSic.Eav.Apps.Work
         private readonly LazySvc<IFeaturesInternal> _features;
         private readonly ContentTypeAttributeBuilder _attributeBuilder;
         private readonly GenWorkDb<WorkMetadata> _workMetadata;
+        private readonly GenWorkBasic<WorkAttributes> _workAttributes;
         private readonly Generator<IDataDeserializer> _dataDeserializer;
 
-        public WorkAttributesMod(GenWorkDb<WorkMetadata> workMetadata, ContentTypeAttributeBuilder attributeBuilder, Generator<IDataDeserializer> dataDeserializer, LazySvc<IFeaturesInternal> features) : base("ApS.InpGet")
+        public WorkAttributesMod(GenWorkDb<WorkMetadata> workMetadata, GenWorkBasic<WorkAttributes> workAttributes, ContentTypeAttributeBuilder attributeBuilder, Generator<IDataDeserializer> dataDeserializer, LazySvc<IFeaturesInternal> features) : base("ApS.InpGet")
         {
-
             ConnectServices(
                 _attributeBuilder = attributeBuilder,
                 _workMetadata = workMetadata,
+                _workAttributes = workAttributes,
                 _features = features,
                 _dataDeserializer = dataDeserializer
             );
@@ -185,7 +186,6 @@ namespace ToSic.Eav.Apps.Work
             return l.ReturnTrue();
         }
 
-        // TODO: @STV
         public bool AddInheritedField(int contentTypeId, string sourceType, Guid sourceField, string name)
         {
             var l = Log.Fn<bool>();
@@ -199,24 +199,40 @@ namespace ToSic.Eav.Apps.Work
             // - first component should be the original content-type
             // - second the source field guid
             // - note that the content-type wouldn't be necessary, but we want to have it to prevent mistakes if for some reason the guid is duplicate
-            //
             // - verify that the source fields exist, and really belong to the content-types they claim to be from
-
-
+            var fields = _workAttributes.New(AppWorkCtx.AppId).GetSharedFields(attributeId: default)
+                .Where(f => f.Type.NameId == sourceType && f.Attribute.Guid == sourceField).ToList();
+            
             // 1.2 Find the source fields and only keep the ones that are valid
+            switch (fields.Count)
+            {
+                case 0:
+                    return l.ReturnFalse($"error: wrong sourceType {sourceType} or sourceField {sourceField}");
+                case > 1:
+                    return l.ReturnFalse($"error: we have multiple duplicated shared fields with sourceType {sourceType} and sourceField {sourceField}");
+            }
+
+            var pairTypeWithAttribute = fields.Single();
 
             // 2. Create attributes
+
             // 2.1 find the index for adding fields
             // - get the content-type
+            var contentType = AppWorkCtx.AppState.GetContentType(contentTypeId);/*  ContentTypes.FirstOrDefault(c => c.Id == contentTypeId)*/;
+            if (contentType == null) return l.ReturnFalse($"error: wrong contentTypeId {contentTypeId}");
             // - make sure we have the attribute-count to add more fields
 
             // 2.2 create the attributes based on the original data
             // - name is the key in the dictionary
             // - probably just call AddField code above
             // - of course increment the start-index for each field
-
+            var newAttributeId = AddField(contentTypeId, name, 
+                type: pairTypeWithAttribute.Attribute.Type.ToString(), 
+                inputType: pairTypeWithAttribute.Attribute.InputType(), 
+                sortOrder: contentType.Attributes.Count() + 1);
 
             // 3. Configure inherit
+            FieldInherit(newAttributeId, inheritMetadataOf: sourceField);
 
             return l.ReturnTrue();
         }
