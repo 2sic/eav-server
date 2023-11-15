@@ -4,6 +4,11 @@ namespace ToSic.Eav.Run.Capabilities
 {
     public static class SystemCapabilityListForImplementation
     {
+        public static SystemCapabilityDefinition CSharp06 { get; } = new SystemCapabilityDefinition(
+            "CSharp06",
+            new Guid("9057e8a4-342f-4574-9cdd-216bfbcc36cc"),
+            "CSharp v6"
+        );
 
         public static SystemCapabilityDefinition CSharp07 { get; } = new SystemCapabilityDefinition(
             "CSharp07",

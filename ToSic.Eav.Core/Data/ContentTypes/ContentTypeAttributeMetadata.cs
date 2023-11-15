@@ -49,8 +49,7 @@ namespace ToSic.Eav.Data
         protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
         {
             // If nothing to inherit, behave using standard key mechanisms
-            var ownMd = base.LoadFromProviderInsideLock();
-            _directlyOwnedMd = ownMd;
+            var ownMd = _directlyOwnedMd = base.LoadFromProviderInsideLock();
             if (!SysSettings.InheritMetadata) return ownMd;
 
             // Assemble all the pieces from the sources it inherits from
