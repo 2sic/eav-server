@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 
@@ -42,6 +43,10 @@ namespace ToSic.Eav.Configuration
         /// A nice description
         /// </summary>
         public string Description { get; }
+
+        public virtual AspectDefinition Clone(StableApi.NoParamOrder noParamOrder = default, string nameId = default, Guid? guid = default, string name = default, string description = default)
+            => new AspectDefinition(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description);
+
 
         public override string ToString() => $"Aspect: {Name} ({NameId} / {Guid})";
     }

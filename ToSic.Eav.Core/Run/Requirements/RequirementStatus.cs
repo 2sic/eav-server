@@ -4,15 +4,12 @@ namespace ToSic.Eav.Run.Requirements
 {
     public class RequirementStatus
     {
-        public RequirementStatus(string nameId, bool isOk, AspectDefinition aspect = default, string message = default)
+        public RequirementStatus(bool isOk, AspectDefinition aspect = default, string message = default)
         {
-            NameId = nameId;
             IsOk = isOk;
             Aspect = aspect;
             Message = message;
         }
-
-        string NameId { get; }
 
         public bool IsOk { get; }
 

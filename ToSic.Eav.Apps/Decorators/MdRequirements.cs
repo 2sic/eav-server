@@ -42,7 +42,7 @@ namespace ToSic.Eav.Apps.Decorators
             var (ok, notOk) = CheckRequirements(requirements);
             return ok 
                 ? l.Return(new List<RequirementStatus>(), "all ok")
-                : l.Return(notOk.Select(r => r.Status).ToList(), $"a few not ok: {notOk.Count}");
+                : l.Return(notOk.Cast<RequirementStatus>().ToList(), $"a few not ok: {notOk.Count}");
         }
 
         public (bool Approved, string FeatureId) RequirementMet(IEnumerable<IEntity> requirement)
@@ -87,13 +87,12 @@ namespace ToSic.Eav.Apps.Decorators
         internal class ReqStatusPrivate: RequirementStatus
         {
             public ReqStatusPrivate(RequirementDecorator decorator, string nameId, bool approved, AspectDefinition aspect = default)
-            : base(nameId, approved, aspect ?? AspectDefinition.None)
+            : base(approved, aspect ?? AspectDefinition.None.Clone(nameId: nameId))
             {
                 Decorator = decorator;
             }
 
             public RequirementDecorator Decorator;
-            public RequirementStatus Status => this;
         }
 
         internal ReqStatusPrivate RequirementMet(IEntity requirement)

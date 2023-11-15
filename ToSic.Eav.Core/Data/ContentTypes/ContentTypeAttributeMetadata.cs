@@ -34,9 +34,12 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public bool IsDirectlyOwned(IEntity entity) => DirectlyOwned.Contains(entity);
-        private List<IEntity> DirectlyOwned => _directlyOwned.Get(() => base.LoadFromProviderInsideLock());
-        private readonly GetOnce<List<IEntity>> _directlyOwned = new GetOnce<List<IEntity>>();
+        public bool IsDirectlyOwned(IEntity entity) => _directlyOwnedMd?.Contains(entity) ?? false;
+
+        /// <summary>
+        /// This list is populated every time the metadata is loaded.
+        /// </summary>
+        private List<IEntity> _directlyOwnedMd;
 
         /// <summary>
         /// Override data loading.
@@ -46,7 +49,7 @@ namespace ToSic.Eav.Data
         protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
         {
             // If nothing to inherit, behave using standard key mechanisms
-            var ownMd = DirectlyOwned;
+            var ownMd = _directlyOwnedMd = base.LoadFromProviderInsideLock();
             if (!SysSettings.InheritMetadata) return ownMd;
 
             // Assemble all the pieces from the sources it inherits from
