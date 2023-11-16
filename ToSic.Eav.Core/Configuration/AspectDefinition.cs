@@ -11,6 +11,8 @@ namespace ToSic.Eav.Configuration
     [PrivateApi("no good reason to publish this")]
     public class AspectDefinition: IHasIdentityNameId
     {
+        public const string PatronsUrl = "https://patrons.2sxc.org";
+
         protected AspectDefinition(string nameId, Guid guid, string name, string description = default)
         {
             NameId = nameId;

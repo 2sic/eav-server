@@ -15,6 +15,7 @@
  *
  */
 
+using System.Linq;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.Configuration.Licenses.BuiltInLicenses;
 
@@ -35,7 +36,10 @@ namespace ToSic.Eav.Configuration.Licenses
                 PatronSuperAdmin,
                 PatronInfrastructure,
                 WebFarmCache,
-                EnterpriseCms
+                EnterpriseCms,
+
+                BuiltInLicenses.System,
+                Extension
 
 #if DEBUG
                 // disable in production
@@ -44,5 +48,11 @@ namespace ToSic.Eav.Configuration.Licenses
 #endif
             );
         }
+
+        public override LicenseDefinition TryGet(string name) =>
+            name == null
+                ? null
+                : base.TryGet(name)
+                  ?? Dictionary.Values.FirstOrDefault(lic => name.Equals(lic.Guid.ToString()));
     }
 }

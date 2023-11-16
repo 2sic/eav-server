@@ -210,8 +210,8 @@ namespace ToSic.Eav.Configuration
         internal static FeatureConfig FeatureConfigBuilder(FeatureState featureState) =>
             new FeatureConfig
             {
-                Id = featureState.Guid,
-                Enabled = featureState.Enabled
+                Id = featureState.Definition.Guid,
+                Enabled = featureState.IsEnabled
             };
 
         

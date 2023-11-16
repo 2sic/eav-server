@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Run.Capabilities;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
@@ -15,18 +17,12 @@ namespace ToSic.Eav.Configuration
     /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
     /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class FeatureState: IHasRawEntity<IRawEntity>, IHasIdentityNameId
+    public class FeatureState: AspectState<FeatureDefinition>, IHasRawEntity<IRawEntity>, IHasIdentityNameId
     {
-        /// <summary>
-        /// Feature Definition can be null, if a feature was activated with an unknown ID
-        /// </summary>
-        public FeatureDefinition FeatureDefinition { get; }
-
         public FeatureState(FeatureDefinition definition, DateTime expiration, bool enabled, string msgShort, string msgLong, bool allowedByLicense, bool enabledByDefault, bool? enabledInConfiguration)
+             : base(definition, enabled)
         {
-            FeatureDefinition = definition;
             Expiration = expiration;
-            _enabled = enabled;
             EnabledReason = msgShort;
             EnabledReasonDetailed = msgLong;
             AllowedByLicense = allowedByLicense;
@@ -34,22 +30,23 @@ namespace ToSic.Eav.Configuration
             EnabledByDefault = enabledByDefault;
         }
 
+        public static FeatureState SysFeatureState(SystemCapabilityDefinition definition, bool enabled)
+            => new FeatureState(definition, BuiltInLicenses.UnlimitedExpiry, enabled,
+                "System Feature", "System Feature, managed by the system; can't be changed interactively.", true, true,
+                null);
 
-        public string NameId => FeatureDefinition.NameId;
-        public Guid Guid => FeatureDefinition.Guid;
 
-        public string Name => FeatureDefinition.Name;
-        public string Description => FeatureDefinition.Description;
+        public string NameId => Definition.NameId;
 
-        public LicenseDefinition License => _license.Get(() => FeatureDefinition.LicenseRules?.FirstOrDefault()?.LicenseDefinition);
+        public LicenseDefinition License => _license.Get(() => Definition.LicenseRules?.FirstOrDefault()?.LicenseDefinition);
         private readonly GetOnce<LicenseDefinition> _license = new GetOnce<LicenseDefinition>();
 
         /// <summary>
-        /// Feature is enabled and hasn't expired yet
+        /// Feature is enabled and hasn't expired yet.
+        /// Will test the date every time it's used.
         /// </summary>
         /// <remarks>by default all features are disabled</remarks>
-        public bool Enabled => _enabled && Expiration > DateTime.Now;
-        private readonly bool _enabled;
+        public override bool IsEnabled => base.IsEnabled && Expiration > DateTime.Now;
 
         /// <summary>
         /// Reason why it was enabled
@@ -71,13 +68,13 @@ namespace ToSic.Eav.Configuration
         /// This only applies to normal users.
         /// Admins and Super-Users will always get all the features in the Edit-UI, to allow for better UI hints. 
         /// </summary>
-        public bool IsForEditUi => FeatureDefinition.Ui;
+        public bool IsForEditUi => Definition.Ui;
 
         /// <summary>
         /// Determines if non-admins should still know about this feature in the UI
         /// </summary>
-        public bool IsPublic => FeatureDefinition.Public;
-        public FeatureSecurity Security => FeatureDefinition.Security;
+        public bool IsPublic => Definition.Public;
+        public FeatureSecurity Security => Definition.Security;
 
         /// <summary>
         /// Indicate if this feature is allowed to be activated
@@ -96,24 +93,18 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public bool EnabledByDefault { get; }
 
-        /// <summary>
-        /// The link which will be used to show more details online.
-        /// eg: https://patrons.2sxc.org/rf?ContentSecurityPolicy
-        /// </summary>
-        public string Link => $"https://patrons.2sxc.org/rf?{NameId}";
-
-
         #region IHasNewEntity
 
+        [JsonIgnore]
         public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
         {
-            Guid = Guid,
+            Guid = Definition.Guid,
             Values = new Dictionary<string, object>
             {
                 { nameof(NameId), NameId },
-                { Attributes.TitleNiceName, Name },
-                { nameof(Description), Description },
-                { nameof(Enabled), Enabled },
+                { Attributes.TitleNiceName, Definition.Name },
+                { nameof(Definition.Description), Definition.Description },
+                { nameof(IsEnabled), IsEnabled },
                 { nameof(EnabledByDefault), EnabledByDefault },
                 // Not important, don't include
                 //{ "EnabledReason", EnabledReason },
@@ -126,7 +117,7 @@ namespace ToSic.Eav.Configuration
                 { $"{nameof(License)}{nameof(License.Name)}", License?.Name ?? Constants.NullNameId },
                 { $"{nameof(License)}{nameof(License.Guid)}", License?.Guid ?? Guid.Empty },
                 { nameof(AllowedByLicense), AllowedByLicense },
-                { nameof(Link), Link },
+                { nameof(Definition.Link), Definition.Link },
                 { nameof(IsPublic), IsPublic },
             }
         });

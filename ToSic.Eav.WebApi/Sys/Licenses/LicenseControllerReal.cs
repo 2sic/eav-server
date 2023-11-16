@@ -68,7 +68,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         /// <inheritdoc />
         public IEnumerable<LicenseDto> Summary()
         {
-            var licSer = _licenseServiceLazy.Value;
+            var licSvc = _licenseServiceLazy.Value;
             var licenses = _licenseCatalog.Value.List
                 .Where(l => !l.FeatureLicense)
                 .OrderBy(l => l.Priority);
@@ -78,7 +78,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             return licenses
                 .Select(l =>
                 {
-                    var state = licSer.State(l);
+                    var state = licSvc.State(l);
                     return new LicenseDto
                     {
                         Name = l.Name,
@@ -86,11 +86,12 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
                         Guid = l.Guid,
                         Description = l.Description,
                         AutoEnable = l.AutoEnable,
-                        IsEnabled = licSer.IsEnabled(l),
+                        IsEnabled = licSvc.IsEnabled(l),
                         Expires = state?.Expiration,
                         Features = features
                             .Where(f => f.License?.Name == l.Name)
                             .OrderBy(f => f.NameId)
+                            .Select(f => new FeatureStateDto(f))
                             .ToList()
                     };
                 });
@@ -144,7 +145,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         {
             var l = Log.Fn<LicenseFileResultDto>();
             var fingerprint = _fingerprint.GetFingerprint();
-            var url = $"https://patrons.2sxc.org/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
+            var url = $"{AspectDefinition.PatronsUrl}/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
             l.A($"retrieve license from url:{url}");
 
             string content;

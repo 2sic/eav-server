@@ -53,7 +53,7 @@ namespace ToSic.Eav.StartUp
             services.TryAddSingleton<IFeaturesService>(x => x.GetRequiredService<IFeaturesInternal>());
 
             // New SystemCapability
-            services.TryAddTransient<SystemCapabilitiesServices>();
+            services.TryAddTransient<SysFeaturesService>();
 
             // App-State and Cache
             services.TryAddSingleton<IAppsCache, AppsCache>();

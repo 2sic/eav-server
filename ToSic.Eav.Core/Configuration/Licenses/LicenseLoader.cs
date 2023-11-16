@@ -99,26 +99,26 @@ namespace ToSic.Eav.Configuration.Licenses
         /// Load the license JSON files
         /// </summary>
         /// <returns></returns>
-        private List<LicenseStored> LoadLicensesInConfigFolder() => Log.Func(l =>
+        private List<LicenseStored> LoadLicensesInConfigFolder()
         {
+            var l = Log.Fn<List<LicenseStored>>();
             // ensure that path to store files already exits
             var configFolder = _globalConfiguration.Value.ConfigFolder;
             Directory.CreateDirectory(configFolder);
+            l.A($"{nameof(configFolder)}: {configFolder}");
 
             var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
                 .Select(File.ReadAllText)
-                .Select(j => JsonSerializer.Deserialize<LicenseStored>(j)) // should not use common SxcJsonSerializerOptions
+                .Select(j => JsonSerializer.Deserialize<LicenseStored>(j)) // should NOT use common SxcJsonSerializerOptions
                 .Where(licenses => licenses != null).ToList();
 
-            l.A($"licensesStored: {licensesStored.Count}");
+            return l.Return(licensesStored, $"licensesStored: {licensesStored.Count}");
+        }
 
-            return licensesStored;
-        });
-
-        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint,
-            List<EnterpriseFingerprint> validEntFps) => Log.Func(l =>
+        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint, List<EnterpriseFingerprint> validEntFps)
         {
-            if (licenseStored == null) return (new List<LicenseState>(), "null");
+            var l = Log.Fn<List<LicenseState>>();
+            if (licenseStored == null) return l.Return(new List<LicenseState>(), "null");
 
             // Check signature valid
             var resultForSignature = licenseStored.GenerateIdentity();
@@ -166,10 +166,10 @@ namespace ToSic.Eav.Configuration.Licenses
                     // For this we must add a virtual license for this feature only
                     if (licDef == null)
                     {
-                        licDef = new LicenseDefinition(BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
+                        licDef = new LicenseDefinition(BuiltInLicenses.LicenseCustom, BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
                             Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
                             $"Feature: {storedDetails.Comments} ({storedDetails.Id})", featureLicense: true);
-                        l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId}");
+                        l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");
                         _licenseCatalog.Register(licDef);
                     }
 
@@ -189,8 +189,8 @@ namespace ToSic.Eav.Configuration.Licenses
                 })
                 .ToList();
 
-            return (licenseStates, licenseStates.Count.ToString());
-        });
+            return l.Return(licenseStates, $"count: {licenseStates.Count}");
+        }
 
         // license key description on this system
         private const string LicenseKeyDescription = "system license";

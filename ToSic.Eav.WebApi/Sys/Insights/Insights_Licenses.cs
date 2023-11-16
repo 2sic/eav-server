@@ -97,7 +97,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 var licDefinitions = _licenseCatalog.Value.List.OrderBy(l => l.Priority);
 
                 var licRows = licDefinitions.Select(l => RowFields(
-                    new SpecialField(l.Name, tooltip: l.NameId),
+                    new SpecialField(l.Name, tooltip: $"{l.NameId} ({l.Guid})"),
                     l.Description,
                     l.Priority,
                     l.AutoEnable,
@@ -105,7 +105,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 ));
 
                 licFilesSection += Table().Id("table-licenses").Wrap(
-                    HeadFieldsLeft(SpecialField.Left("Name"), SpecialField.Left("Description"),/* "Name", "Description",*/ "Priority", "Auto-Enable", "Special"),
+                    HeadFieldsLeft(SpecialField.Left("Name"), SpecialField.Left("Description"), "Priority", "Auto-Enable", "Special"),
                     Tbody(licRows)
                 );
             }

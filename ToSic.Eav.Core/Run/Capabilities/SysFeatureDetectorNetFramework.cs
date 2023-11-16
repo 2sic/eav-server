@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class SystemCapabilityNetFramework: SystemCapability
+    public class SysFeatureDetectorNetFramework: SysFeatureDetector
     {
 
         public static SystemCapabilityDefinition DefStatic { get; } = new SystemCapabilityDefinition(
@@ -12,9 +12,9 @@ namespace ToSic.Eav.Run.Capabilities
         );
 
 #if NETFRAMEWORK
-        public SystemCapabilityNetFramework() : base(DefStatic, true) { }
+        public SysFeatureDetectorNetFramework() : base(DefStatic, true) { }
 #else
-        public SystemCapabilityNetFramework() : base(DefStatic, false) { }
+        public SysFeatureDetectorNetFramework() : base(DefStatic, false) { }
 #endif
 
     }

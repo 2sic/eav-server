@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Configuration;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses
 {
@@ -16,6 +15,6 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
 
         public DateTime? Expires { get; set; }
 
-        public List<FeatureState> Features { get; set; }
+        public List<FeatureStateDto> Features { get; set; }
     }
 }

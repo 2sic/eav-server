@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static System.StringComparer;
@@ -9,28 +10,45 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.Configuration
 {
+    /// <summary>
+    /// WARNING: this is used as a singleton / static
+    /// not quite sure any more why, either the name is hard-coded in some apps or we felt like it's a performance improvement
+    /// </summary>
     [PrivateApi("hide implementation")]
     public class FeaturesService: IFeaturesInternal
     {
-        public FeaturesService(FeaturesCatalog featuresCatalog) => _featuresCatalog = featuresCatalog;
+        #region Constructor
+
+        /// <summary>
+        /// warning: singleton - don't use any complex services/dependencies here
+        /// </summary>
+        /// <param name="featuresCatalog"></param>
+        public FeaturesService(FeaturesCatalog featuresCatalog)
+        {
+            _featuresCatalog = featuresCatalog;
+        }
+
         private readonly FeaturesCatalog _featuresCatalog;
 
-        public IEnumerable<FeatureState> All => _all.Get(() => Merge(Stored, _featuresCatalog.List));
-        private static readonly GetOnce<List<FeatureState>> _all = new GetOnce<List<FeatureState>>();
+        #endregion
+
+
+        public IEnumerable<FeatureState> All => AllStaticCache.Get(() => Merge(Stored, _featuresCatalog.List, _staticSysFeatures));
+        private static readonly GetOnce<List<FeatureState>> AllStaticCache = new GetOnce<List<FeatureState>>();
 
         /// <summary>
         /// List of all enabled features with their guids and nameIds
         /// </summary>
-        public HashSet<string> EnabledFeatures => _enabledFeatures ?? (_enabledFeatures  = new HashSet<string>(All
-                .Where(f => f.Enabled)
-                .SelectMany(f => new[] { f.NameId, f.Guid.ToString() })
+        internal HashSet<string> EnabledFeatures => _enabledFeatures ?? (_enabledFeatures  = new HashSet<string>(All
+                .Where(f => f.IsEnabled)
+                .SelectMany(f => new[] { f.NameId, f.Definition.Guid.ToString() })
                 .Distinct(InvariantCultureIgnoreCase),
             InvariantCultureIgnoreCase));
         private HashSet<string> _enabledFeatures; // had to step back from GetOnce, because of "Error Unable to marshal host object to interpreter space"
 
-        public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.Enabled && f.IsForEditUi);
+        public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.IsEnabled && f.IsForEditUi);
 
-        public bool Enabled(Guid guid) => All.Any(f => f.Guid == guid && f.Enabled);
+        public bool Enabled(Guid guid) => All.Any(f => f.Definition.Guid == guid && f.IsEnabled);
         
         public bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
 
@@ -40,13 +58,13 @@ namespace ToSic.Eav.Configuration
             return nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
         }
 
-        public FeatureState Get(string nameId) => All.FirstOrDefault(f => f.Name == nameId || f.NameId == nameId);
+        public FeatureState Get(string nameId) => All.FirstOrDefault(f => f.Definition.Name == nameId || f.NameId == nameId);
 
         public bool IsEnabled(params FeatureDefinition[] features) 
             => IsEnabled(features?.Select(f => f.NameId).ToArray());
 
         public bool Valid => ValidInternal;
-        public static bool ValidInternal;
+        public static bool ValidInternal; // ATM always false; is used by a static class - not sure why this even exists as I don't think it's set anywhere
         
         public bool Enabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception)
         {
@@ -64,7 +82,7 @@ namespace ToSic.Eav.Configuration
                 .Where(i => !Enabled(i))
                 .Select(id =>
                 {
-                    var feat = All.FirstOrDefault(f => f.Guid == id);
+                    var feat = All.FirstOrDefault(f => f.Definition.Guid == id);
                     return new { Id = id, feat?.NameId };
                 });
 
@@ -81,11 +99,13 @@ namespace ToSic.Eav.Configuration
         public FeatureListStored Stored => _staticStored;
 
         private static FeatureListStored _staticStored;
+        private static List<FeatureState> _staticSysFeatures;
 
-        public bool UpdateFeatureList(FeatureListStored newList)
+        public bool UpdateFeatureList(FeatureListStored newList, List<FeatureState> sysFeatures)
         {
             _staticStored = newList;
-            _all.Reset();
+            _staticSysFeatures = sysFeatures;
+            AllStaticCache.Reset();
             _enabledFeatures = null;
             CacheTimestamp = DateTime.Now.Ticks;
             FeaturesChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
@@ -93,7 +113,7 @@ namespace ToSic.Eav.Configuration
         }
 
 
-        private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> featuresCat)
+        private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> featuresCat, List<FeatureState> sysFeatureStates)
         {
             var licService = new LicenseService();
 
@@ -139,6 +159,7 @@ namespace ToSic.Eav.Configuration
                     allowedByLicense: false, enabledByDefault: false,  enabledInConfiguration: f.Enabled));
 
             var final = (missingFeatures == null ? allFeats : allFeats.Union(missingFeatures)).ToList();
+            if (sysFeatureStates.SafeAny()) final = final.Union(sysFeatureStates).ToList();
             return final;
         }
 
