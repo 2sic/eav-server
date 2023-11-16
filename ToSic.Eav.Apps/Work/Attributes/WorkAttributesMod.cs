@@ -136,7 +136,7 @@ namespace ToSic.Eav.Apps.Work
         {
             var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
 
-            if (!_features.Value.Enabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+            if (!_features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
                 throw exp;
 
             // get field attributeId
@@ -165,7 +165,7 @@ namespace ToSic.Eav.Apps.Work
         {
             var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
 
-            if (!_features.Value.Enabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+            if (!_features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
                 throw exp;
 
             // get field attributeId
@@ -191,7 +191,7 @@ namespace ToSic.Eav.Apps.Work
         {
             var l = Log.Fn<bool>();
 
-            if (!_features.Value.Enabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+            if (!_features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
                 throw exp;
 
             // 1. First check that sources are correct

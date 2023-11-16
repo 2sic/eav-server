@@ -6,7 +6,7 @@ namespace ToSic.Eav.Configuration
     {
         public static void ThrowIfNotEnabled(this IFeaturesInternal featSer, string message, params Guid[] featureGuid)
         {
-            if (featSer.Enabled(featureGuid, message, out var exception)) return;
+            if (featSer.IsEnabled(featureGuid, message, out var exception)) return;
             throw exception;
         }
     }

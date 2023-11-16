@@ -43,7 +43,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
         [TestMethod]
         public void PasteClipboardActive()
         {
-            var x = FeaturesInternal.Enabled(BuiltInFeatures.PasteImageFromClipboard.Guid);
+            var x = FeaturesInternal.IsEnabled(BuiltInFeatures.PasteImageFromClipboard.Guid);
             Assert.IsTrue(x, "this should be enabled and non-expired");
         }
 
@@ -51,7 +51,7 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
         public void InventedFeatureGuid()
         {
             var inventedGuid = new Guid("12345678-1c8b-4286-a33b-3210ed3b2d9a");
-            var x = FeaturesInternal.Enabled(inventedGuid);
+            var x = FeaturesInternal.IsEnabled(inventedGuid);
             Assert.IsFalse(x, "this should be enabled and expired");
         }
     }

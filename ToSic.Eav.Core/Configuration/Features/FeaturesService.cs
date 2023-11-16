@@ -48,9 +48,9 @@ namespace ToSic.Eav.Configuration
 
         public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.IsEnabled && f.IsForEditUi);
 
-        public bool Enabled(Guid guid) => All.Any(f => f.Definition.Guid == guid && f.IsEnabled);
+        public bool IsEnabled(Guid guid) => All.Any(f => f.Definition.Guid == guid && f.IsEnabled);
         
-        public bool Enabled(IEnumerable<Guid> guids) => guids.All(Enabled);
+        public bool IsEnabled(IEnumerable<Guid> guids) => guids.All(IsEnabled);
 
         public bool IsEnabled(params string[] nameIds)
         {
@@ -66,10 +66,10 @@ namespace ToSic.Eav.Configuration
         public bool Valid => ValidInternal;
         public static bool ValidInternal; // ATM always false; is used by a static class - not sure why this even exists as I don't think it's set anywhere
         
-        public bool Enabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception)
+        public bool IsEnabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception)
         {
             // ReSharper disable PossibleMultipleEnumeration
-            var enabled = Enabled(features);
+            var enabled = IsEnabled(features);
             exception = enabled ? null : new FeaturesDisabledException(message + " - " + MsgMissingSome(features.ToArray()));
             // ReSharper restore PossibleMultipleEnumeration
             return enabled;
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Configuration
         public string MsgMissingSome(params Guid[] ids)
         {
             var missing = ids
-                .Where(i => !Enabled(i))
+                .Where(i => !IsEnabled(i))
                 .Select(id =>
                 {
                     var feat = All.FirstOrDefault(f => f.Definition.Guid == id);

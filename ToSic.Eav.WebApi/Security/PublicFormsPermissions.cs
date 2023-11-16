@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.Security
             // 2. check if feature is enabled
             var feats = new[] { BuiltInFeatures.PublicEditForm.Guid };
             var sysFeatures = mpa.FeaturesInternal;
-            if (userIsRestricted && !sysFeatures.Enabled(feats))
+            if (userIsRestricted && !sysFeatures.IsEnabled(feats))
             {
                 error = $"low-permission users may not access this - {sysFeatures.MsgMissingSome(feats)}";
                 preparedException = HttpException.PermissionDenied(error);
