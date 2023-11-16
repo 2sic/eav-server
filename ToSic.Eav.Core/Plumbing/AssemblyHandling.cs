@@ -31,6 +31,18 @@ namespace ToSic.Eav.Plumbing
             return wrapLog.ReturnAsOk(GetTypes(log).Any(t => (t.FullName?.IndexOf(typeFullName, StringComparison.OrdinalIgnoreCase) ?? -1) > -1));
         }
 
+        /// <summary>
+        /// Return Type if it exists, or null if not
+        /// </summary>
+        /// <param name="typeFullName"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        public static Type GetTypeOrNull(string typeFullName, ILog log = null)
+        {
+            var wrapLog = log.Fn<Type>(message: $"HasType {typeFullName}");
+            return wrapLog.ReturnAsOk(GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, StringComparison.OrdinalIgnoreCase) ?? -1) > -1));
+        }
+
         internal static List<Type> GetTypes(ILog log = null)
         {
             if (_typeCache != null) return _typeCache;
