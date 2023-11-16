@@ -97,5 +97,8 @@ namespace ToSic.Eav
         /// TODO: rename to Preset...
         /// </summary>
         public const int PresetContentTypeFakeParent = -42000001; // just a very strange, dummy number
+
+        public const string GoUrl = "https://go.2sxc.org";
+        public static string GoUrlFor(string code) => $"{GoUrl}/{code}";
     }
 }

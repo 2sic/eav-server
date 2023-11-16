@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Decorators
     public class MdRequirements: ServiceBase, IRequirementsService
     {
 
-        public MdRequirements(LazySvc<ILicenseService> licenseService, LazySvc<IFeaturesInternal> featsService, LazySvc<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog, LazySvc<SystemCapabilitiesServices> sysCapSvc)
+        public MdRequirements(LazySvc<ILicenseService> licenseService, LazySvc<IFeaturesInternal> featsService, LazySvc<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog, LazySvc<SysFeaturesService> sysCapSvc)
             : base($"{AppConstants.LogName}.MdReq")
         {
             ConnectServices(
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps.Decorators
         private readonly LazySvc<IFeaturesInternal> _featsService;
         private readonly LazySvc<IPlatformInfo> _platInfo;
         private readonly LicenseCatalog _licenseCatalog;
-        private readonly LazySvc<SystemCapabilitiesServices> _sysCapSvc;
+        private readonly LazySvc<SysFeaturesService> _sysCapSvc;
 
         public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements)
         {
@@ -136,7 +136,7 @@ namespace ToSic.Eav.Apps.Decorators
 
             var enabled = _featsService.Value.IsEnabled(feat);
             var status = _featsService.Value.Get(feat);
-            return l.Return((enabled, status?.FeatureDefinition ?? AspectDefinition.None), $"enabled: {enabled}");
+            return l.Return((enabled, status?.Definition ?? AspectDefinition.None), $"enabled: {enabled}");
         }
 
 

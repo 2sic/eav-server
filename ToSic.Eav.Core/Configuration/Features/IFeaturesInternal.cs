@@ -42,6 +42,6 @@ namespace ToSic.Eav.Configuration
         FeatureListStored Stored { get; }
         event EventHandler FeaturesChanged;
 
-        bool UpdateFeatureList(FeatureListStored newList);
+        bool UpdateFeatureList(FeatureListStored newList, List<FeatureState> sysFeatures);
     }
 }

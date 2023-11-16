@@ -9,6 +9,9 @@ namespace ToSic.Eav.Configuration
         public static List<FeatureLicenseRule> ForAllEnabled = BuildRule(BuiltInLicenses.CoreFree, true);
         public static List<FeatureLicenseRule> ForAllDisabled = BuildRule(BuiltInLicenses.CoreFree, false);
 
+        public static List<FeatureLicenseRule> SystemEnabled = BuildRule(BuiltInLicenses.System, true);
+        public static List<FeatureLicenseRule> ExtensionEnabled = BuildRule(BuiltInLicenses.Extension, true);
+
         public const bool ForUi = true;
         public const bool NotForUi = false;
         public const bool Public = true;

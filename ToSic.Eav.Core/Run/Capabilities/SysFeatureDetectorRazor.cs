@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class SystemCapabilityRazor: SystemCapability
+    public class SysFeatureDetectorRazor: SysFeatureDetector
     {
 
         private static readonly SystemCapabilityDefinition DefStatic = new SystemCapabilityDefinition(
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Run.Capabilities
             "Razor"
         );
 
-        public SystemCapabilityRazor(): base(DefStatic, false) { }
+        public SysFeatureDetectorRazor(): base(DefStatic, true) { }
 
     }
 }

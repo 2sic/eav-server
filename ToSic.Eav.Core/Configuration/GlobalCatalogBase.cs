@@ -30,7 +30,7 @@ namespace ToSic.Eav.Configuration
 
         public IReadOnlyCollection<T> List { get; private set; }
 
-        public T TryGet(string name) => Dictionary.TryGetValue(name, out var value) ? value : default;
+        public virtual T TryGet(string name) => Dictionary.TryGetValue(name, out var value) ? value : default;
 
         /// <summary>
         /// Add things to the registry

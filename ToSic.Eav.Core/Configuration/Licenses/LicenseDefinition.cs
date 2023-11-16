@@ -25,8 +25,8 @@ namespace ToSic.Eav.Configuration.Licenses
     {
         public const string ConditionIsLicense = "license";
 
-        public LicenseDefinition(int priority, string name, Guid guid, string description, bool featureLicense = false)
-        : base(guid.ToString(), guid, name, description ?? "")
+        public LicenseDefinition(string nameId, int priority, string name, Guid guid, string description, bool featureLicense = false)
+        : base(nameId ?? guid.ToString(), guid, name, description ?? "")
         {
             Priority = priority;
             Condition = new Condition(ConditionIsLicense, guid.ToString());
@@ -42,5 +42,6 @@ namespace ToSic.Eav.Configuration.Licenses
         public bool FeatureLicense { get; }
 
         public Condition Condition { get; }
+
     }
 }

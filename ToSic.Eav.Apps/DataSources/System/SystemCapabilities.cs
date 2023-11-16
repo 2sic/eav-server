@@ -35,10 +35,10 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public SystemCapabilities(MyServices services, SystemCapabilitiesServices sysCapabilities) : base(services, $"{DataSourceConstants.LogPrefix}.SysCap")
+        public SystemCapabilities(MyServices services, SysFeaturesService sysCapabilities) : base(services, $"{DataSourceConstants.LogPrefix}.SysCap")
         {
             ConnectServices(sysCapabilities);
-            ProvideOutRaw(() => sysCapabilities.States.OrderBy(f => f.Definition.NameId), options: () => new DataFactoryOptions(typeName: "SystemCapabilities"));
+            ProvideOutRaw(() => sysCapabilities.States.OrderBy(f => f.Definition.NameId), options: () => new DataFactoryOptions(typeName: "SystemFeatures"));
         }
     }
 }

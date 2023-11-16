@@ -42,13 +42,6 @@ namespace ToSic.Eav.WebApi.Cms
                 .ToList();
 
         public IList<FeatureDto> FeaturesDto(bool userHasPublishRights)
-            => Features(userHasPublishRights)
-                .Select(f => new FeatureDto
-                {
-                    NameId = f.NameId,
-                    Enabled = f.Enabled,
-                    Name = f.Name,
-                })
-                .ToList();
+            => Features(userHasPublishRights).Select(f => new FeatureDto(f)).ToList();
     }
 }

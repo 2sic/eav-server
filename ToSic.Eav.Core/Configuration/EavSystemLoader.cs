@@ -11,6 +11,7 @@ using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Data;
+using ToSic.Eav.Run.Capabilities;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Configuration
@@ -18,6 +19,7 @@ namespace ToSic.Eav.Configuration
     [PrivateApi]
     public class EavSystemLoader : LoaderBase
     {
+        private readonly SysFeaturesService _sysFeaturesService;
         private readonly IRuntime _appStateLoader;
         private readonly AppsCacheSwitch _appsCache;
         public readonly IFeaturesInternal Features;
@@ -37,10 +39,11 @@ namespace ToSic.Eav.Configuration
             FeatureConfigManager featureConfigManager, 
             LicenseLoader licenseLoader,
             ILogStore logStore,
-            IAppStates appStates
+            IAppStates appStates,
+            SysFeaturesService sysFeaturesService
         ) : base(logStore, $"{EavLogs.Eav}SysLdr")
         {
-            Log.A("System Load");
+            var l = Log.Fn("System Load");
             ConnectServices(
                 _fingerprint = fingerprint,
                 _appsCache = appsCache,
@@ -49,8 +52,10 @@ namespace ToSic.Eav.Configuration
                 _appStateLoader = runtime,
                 Features = features,
                 _featureConfigManager = featureConfigManager,
-                _licenseLoader = licenseLoader
-            );
+                _licenseLoader = licenseLoader,
+                _sysFeaturesService = sysFeaturesService
+                );
+            l.Done();
         }
 
         #endregion
@@ -68,16 +73,16 @@ namespace ToSic.Eav.Configuration
             var assemblyLoadLog = new Log(EavLogs.Eav + "AssLdr", null, "Load Assemblies");
             _logStore.Add(LogNames.LogStoreStartUp, assemblyLoadLog);
 
-            var ldo = Log.Fn(timer: true);
+            var l = Log.Fn(timer: true);
             AssemblyHandling.GetTypes(assemblyLoadLog);
 
             // Build the cache of all system-types. Must happen before everything else
-            ldo.A("Try to load global app-state");
+            l.A("Try to load global app-state");
             var presetApp = _appStateLoader.LoadFullAppState();
             _appsCache.Value.Add(presetApp);
 
             LoadLicenseAndFeatures();
-            ldo.Done("ok");
+            l.Done("ok");
         }
 
         /// <summary>
@@ -131,7 +136,7 @@ namespace ToSic.Eav.Configuration
 
 
         private bool SetFeaturesStored(FeatureListStored stored = null) 
-            => Features.UpdateFeatureList(stored ?? new FeatureListStored());
+            => Features.UpdateFeatureList(stored ?? new FeatureListStored(), _sysFeaturesService.States);
 
 
         /// <summary>
@@ -181,7 +186,7 @@ namespace ToSic.Eav.Configuration
             var updatedIds = changes.Select(f => f.FeatureGuid);
 
             var storedFeaturesButNotUpdated = Features.All
-                .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Guid))
+                .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Definition.Guid))
                 .Select(FeatureConfigManager.FeatureConfigBuilder).ToList();
             
             var updatedFeatures = changes

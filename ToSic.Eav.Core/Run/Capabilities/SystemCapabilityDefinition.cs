@@ -7,27 +7,30 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class SystemCapabilityDefinition: AspectDefinition, IHasRawEntity<IRawEntity>
+    public class SystemCapabilityDefinition: FeatureDefinition, IHasRawEntity<IRawEntity>
     {
-        public const string Prefix = "SystemCapability";
+        public const string Prefix = "System";
 
         public SystemCapabilityDefinition(string nameId, Guid guid, string name, string description = default, string link = default)
-        : base(EnsurePrefix(nameId), guid, name, description)
+        : base(EnsurePrefix(nameId), guid, name, isPublic: false, ui: false, description, FeatureSecurity.Unknown, BuiltInFeatures.SystemEnabled)
         {
-            Link = link;
+            _link = link;
         }
 
         /// <summary>
         /// Clone constructor - optionally override some values
         /// </summary>
-        public SystemCapabilityDefinition Clone(string noParamOrder = Parameters.Protector, 
+        public SystemCapabilityDefinition Clone(Lib.Coding.StableApi.NoParamOrder noParamOrder = default, 
             string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default) =>
             new SystemCapabilityDefinition(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description, link ?? Link);
 
         private static string EnsurePrefix(string original) 
             => original.IsEmptyOrWs() ? Prefix + "-Error-No-Name" : original.StartsWith(Prefix) ? original : $"{Prefix}-{original}";
 
-        public string Link { get; set; }
+        public override string Link => _link.UseFallbackIfNoValue($"{Constants.GoUrl}/sysfeats");
+        private readonly string _link;
+
+        public override bool IsConfigurable => false;
 
         public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
         {

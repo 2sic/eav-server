@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Configuration
+﻿using System.Text.Json.Serialization;
+
+namespace ToSic.Eav.Configuration
 {
     /// <summary>
     /// Experimental - base class for any kind of aspect and it's state
@@ -11,8 +13,12 @@
             IsEnabled = isEnabled;
         }
 
+        /// <summary>
+        /// Feature Definition.
+        /// </summary>
+        [JsonIgnore]
         public TAspect Definition { get; }
 
-        public bool IsEnabled { get; }
+        public virtual bool IsEnabled { get; }
     }
 }

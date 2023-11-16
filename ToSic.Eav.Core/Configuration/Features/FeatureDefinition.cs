@@ -19,14 +19,13 @@ namespace ToSic.Eav.Configuration
             Public = isPublic;
             Ui = ui;
             Condition = new Condition(ConditionIsFeature, nameId);
-            LicenseRules = CreateLicenseRules(licRules);    // must run at the end, as properties are needed
+            LicenseRules = CreateLicenseRules(licRules, nameId, guid);    // must run at the end, as properties are needed
         }
-
-        private IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules)
+        static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules, string nameId, Guid guid)
         {
             var newRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
             // Create virtual license rule so it can be enabled by its own GUID
-            var ownLicenseDefinition = new LicenseDefinition(0, $"Feature: {NameId}", Guid, $"Feature {NameId} ({Guid})");
+            var ownLicenseDefinition = new LicenseDefinition(BuiltInLicenses.LicenseCustom, 0, $"Feature: {nameId}", guid, $"Feature {nameId} ({guid})");
             var ownRule = new FeatureLicenseRule(ownLicenseDefinition, true);
             newRules.Add(ownRule);
             return newRules.AsReadOnly();
@@ -37,9 +36,8 @@ namespace ToSic.Eav.Configuration
         /// Constructor for unknown feature - which only has a GUID to identify it
         /// </summary>
         /// <param name="unknownFeatureGuid"></param>
-        internal FeatureDefinition(Guid unknownFeatureGuid): base(null, unknownFeatureGuid, null)
+        internal FeatureDefinition(Guid unknownFeatureGuid): this(unknownFeatureGuid.ToString(), unknownFeatureGuid, "Unknown Feature", false, false, "Unknown feature", FeatureSecurity.Unknown, null)
         {
-            Condition = new Condition(ConditionIsFeature, Guid.ToString());
         }
 
         #endregion
@@ -68,6 +66,15 @@ namespace ToSic.Eav.Configuration
         /// If null or false, it's either unknown or doesn't have security implications
         /// </summary>
         public FeatureSecurity Security { get; }
+
+
+        public virtual bool IsConfigurable => true;
+
+        /// <summary>
+        /// The link which will be used to show more details online.
+        /// eg: https://patrons.2sxc.org/rf?ContentSecurityPolicy
+        /// </summary>
+        public virtual string Link => $"{PatronsUrl}/rf?{NameId}";
 
         internal IReadOnlyList<FeatureLicenseRule> LicenseRules { get; }
 
