@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class Runtime
+    public partial class AppLoader
     {
         public List<IContentType> LoadGlobalContentTypes(AppState appState)
         {

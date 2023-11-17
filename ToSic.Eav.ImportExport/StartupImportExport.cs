@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Run;
@@ -15,7 +16,7 @@ namespace ToSic.Eav.ImportExport
         public static IServiceCollection AddImportExport(this IServiceCollection services)
         {
             // core things - usually not replaced
-            services.TryAddTransient<IRuntime, Runtime>();
+            services.TryAddTransient<IAppLoader, AppLoader>();
 
             services.TryAddTransient<IDataSerializer, JsonSerializer>();
             services.TryAddTransient<IDataDeserializer, JsonSerializer>();

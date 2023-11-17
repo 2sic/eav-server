@@ -21,7 +21,7 @@ namespace ToSic.Eav.Internal.Loaders
     public class EavSystemLoader : LoaderBase
     {
         private readonly SysFeaturesService _sysFeaturesService;
-        private readonly IRuntime _appStateLoader;
+        private readonly IAppLoader _appStateLoader;
         private readonly AppsCacheSwitch _appsCache;
         public readonly IEavFeaturesService Features;
         private readonly FeaturePersistenceService _featurePersistenceService;
@@ -34,7 +34,7 @@ namespace ToSic.Eav.Internal.Loaders
 
         public EavSystemLoader(
             SystemFingerprint fingerprint,  // note: must be of type SystemFingerprint, not IFingerprint
-            IRuntime runtime,
+            IAppLoader appLoader,
             AppsCacheSwitch appsCache, 
             IEavFeaturesService features, 
             FeaturePersistenceService featurePersistenceService, 
@@ -50,7 +50,7 @@ namespace ToSic.Eav.Internal.Loaders
                 _appsCache = appsCache,
                 _logStore = logStore,
                 _appStates = appStates,
-                _appStateLoader = runtime,
+                _appStateLoader = appLoader,
                 Features = features,
                 _featurePersistenceService = featurePersistenceService,
                 _licenseLoader = licenseLoader,

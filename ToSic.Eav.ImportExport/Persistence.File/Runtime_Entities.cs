@@ -9,7 +9,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class Runtime
+    public partial class AppLoader
     {
         private List<IEntity> LoadGlobalEntities(AppState appState)
         {

@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Context
 {
     [PrivateApi("internal functionality")]
     public interface IPlatformInfo

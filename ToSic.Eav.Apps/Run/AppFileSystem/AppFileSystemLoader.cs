@@ -7,6 +7,7 @@ using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
@@ -15,7 +16,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run
 {
-    public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, IAppFileSystemLoader, IAppRepositoryLoader
+    public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, IAppFileSystemLoader, IAppContentTypesLoader
     {
         #region Constants
 
@@ -77,7 +78,7 @@ namespace ToSic.Eav.Apps.Run
             return l.Return(this);
         }
 
-        IAppRepositoryLoader IAppRepositoryLoader.Init(AppState app) => Init(app) as IAppRepositoryLoader;
+        IAppContentTypesLoader IAppContentTypesLoader.Init(AppState app) => Init(app) as IAppContentTypesLoader;
 
         /// <summary>
         /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this

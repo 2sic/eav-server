@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.StartUp;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Internal.Loaders
 {
     /// <summary>
     /// WIP - the main loader which will run pre-loaders first, then the main loader

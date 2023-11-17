@@ -1,6 +1,7 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 
-namespace ToSic.Eav.Run.Unknown
+namespace ToSic.Eav.Internal.Environment
 {
     public sealed class ServerPathsUnknown: ServerPathsBase, IIsUnknown
     {

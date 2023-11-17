@@ -8,6 +8,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
@@ -120,13 +121,13 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
             services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
-            services.TryAddTransient<IAppRepositoryLoader, AppRepositoryLoaderUnknown>();
+            services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
 
             // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
             services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
             // Unknown-Runtime for loading configuration etc. File-runtime
-            services.TryAddTransient<IRuntime, RuntimeUnknown>();
+            services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
             services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
 
             services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();

@@ -1,13 +1,14 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Run;
+using ToSic.Eav.Run.Unknown;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-
-namespace ToSic.Eav.Run.Unknown
+namespace ToSic.Eav.Internal.Loaders
 {
-    public class RuntimeUnknown: ServiceBase, IRuntime, IIsUnknown
+    public class AppLoaderUnknown: ServiceBase, IAppLoader, IIsUnknown
     {
-        public RuntimeUnknown(WarnUseOfUnknown<RuntimeUnknown> _) : base("Eav.BscRnt") { }
+        public AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _) : base("Eav.BscRnt") { }
 
         public AppState LoadFullAppState() => new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogScopes.NotImplemented));
 

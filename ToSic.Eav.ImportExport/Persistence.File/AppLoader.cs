@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
@@ -14,11 +15,11 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class Runtime : ServiceBase, IRuntime
+    public partial class AppLoader : ServiceBase, IAppLoader
     {
         #region Constructor and DI
 
-        public Runtime(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, DataBuilder builder) : base("Eav.RunTme")
+        public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, DataBuilder builder) : base("Eav.RunTme")
         {
             _serviceProvider = sp;
             ConnectServices(

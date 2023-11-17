@@ -6,7 +6,7 @@ using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static System.IO.Path;
 
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Internal.Environment
 {
     public class GlobalPaths: ServiceBase
     {

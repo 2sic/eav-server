@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Repositories
+namespace ToSic.Eav.Internal.Loaders
 {
     public interface IContentTypeLoader
     {

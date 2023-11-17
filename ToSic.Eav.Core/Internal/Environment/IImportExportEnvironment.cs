@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using ToSic.Lib.Logging;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Persistence.Interfaces
+namespace ToSic.Eav.Internal.Environment
 {
     public interface IImportExportEnvironment: IHasLog
     {

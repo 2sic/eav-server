@@ -2,22 +2,20 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
-using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Repositories
+namespace ToSic.Eav.Internal.Loaders
 {
     /// <summary>
     /// Minimal state loader - can only load parts that an app can load, so content-types and entities
     /// </summary>
-    public interface IAppRepositoryLoader
+    public interface IAppContentTypesLoader
     {
         /// <summary>
         /// Real constructor, after DI
         /// </summary>
         /// <param name="app"></param>
-        /// <param name="log"></param>
         /// <returns></returns>
-        IAppRepositoryLoader Init(AppState app);
+        IAppContentTypesLoader Init(AppState app);
 
         /// <summary>
         /// Get all ContentTypes for specified AppId.

@@ -10,6 +10,8 @@ using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
+using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
@@ -77,7 +79,7 @@ namespace ToSic.Eav.Apps
 
             // File System Loaders (note: Dnn will introduce it's own to work around a DI issue)
             services.TryAddTransient<IAppFileSystemLoader, AppFileSystemLoader>();
-            services.TryAddTransient<IAppRepositoryLoader, AppFileSystemLoader>();
+            services.TryAddTransient<IAppContentTypesLoader, AppFileSystemLoader>();
             services.TryAddTransient<AppFileSystemLoader.MyServices>();
 
             // Helpers to build stuff

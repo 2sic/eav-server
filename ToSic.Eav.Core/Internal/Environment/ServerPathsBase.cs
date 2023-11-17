@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Run
+namespace ToSic.Eav.Internal.Environment
 {
     public abstract class ServerPathsBase: IServerPaths
     {
