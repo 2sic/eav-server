@@ -10,6 +10,9 @@ namespace ToSic.Eav.SysData
         [JsonPropertyName("features")]
         public List<FeatureStatePersisted> Features = new List<FeatureStatePersisted>();
 
+        /// <summary>
+        /// Fingerprint must be included for ensuring integrity of the data
+        /// </summary>
         [JsonPropertyName("fingerprint")]
         public string Fingerprint;
     }
