@@ -7,9 +7,9 @@ namespace ToSic.Eav.SysData
     /// </summary>
     public class AspectState<TAspect> where TAspect : Aspect
     {
-        public AspectState(TAspect definition, bool isEnabled)
+        public AspectState(TAspect aspect, bool isEnabled)
         {
-            Definition = definition;
+            Aspect = aspect;
             IsEnabled = isEnabled;
         }
 
@@ -17,7 +17,7 @@ namespace ToSic.Eav.SysData
         /// Feature Definition.
         /// </summary>
         [JsonIgnore]
-        public TAspect Definition { get; }
+        public TAspect Aspect { get; }
 
         public virtual bool IsEnabled { get; }
     }

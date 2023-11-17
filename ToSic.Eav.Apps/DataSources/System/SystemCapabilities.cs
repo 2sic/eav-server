@@ -38,7 +38,7 @@ namespace ToSic.Eav.DataSources.Sys
         public SystemCapabilities(MyServices services, SysFeaturesService sysCapabilities) : base(services, $"{DataSourceConstants.LogPrefix}.SysCap")
         {
             ConnectServices(sysCapabilities);
-            ProvideOutRaw(() => sysCapabilities.States.OrderBy(f => f.Definition.NameId), options: () => new DataFactoryOptions(typeName: "SystemFeatures"));
+            ProvideOutRaw(() => sysCapabilities.States.OrderBy(f => f.Aspect.NameId), options: () => new DataFactoryOptions(typeName: "SystemFeatures"));
         }
     }
 }

@@ -19,8 +19,8 @@ namespace ToSic.Eav.SysData
     [PrivateApi("no good reason to publish this")]
     public class FeatureState: AspectState<Feature>, IHasRawEntity<IRawEntity>, IHasIdentityNameId
     {
-        public FeatureState(Feature definition, DateTime expiration, bool enabled, string msgShort, string msgLong, bool allowedByLicense, bool enabledByDefault, bool? enabledInConfiguration)
-             : base(definition, enabled)
+        public FeatureState(Feature aspect, DateTime expiration, bool enabled, string msgShort, string msgLong, bool allowedByLicense, bool enabledByDefault, bool? enabledInConfiguration)
+             : base(aspect, enabled)
         {
             Expiration = expiration;
             EnabledReason = msgShort;
@@ -36,9 +36,9 @@ namespace ToSic.Eav.SysData
                 null);
 
 
-        public string NameId => Definition.NameId;
+        public string NameId => Aspect.NameId;
 
-        public FeatureSet License => _license.Get(() => Definition.LicenseRules?.FirstOrDefault()?.FeatureSet);
+        public FeatureSet License => _license.Get(() => Aspect.LicenseRules?.FirstOrDefault()?.FeatureSet);
         private readonly GetOnce<FeatureSet> _license = new GetOnce<FeatureSet>();
 
         /// <summary>
@@ -68,13 +68,13 @@ namespace ToSic.Eav.SysData
         /// This only applies to normal users.
         /// Admins and Super-Users will always get all the features in the Edit-UI, to allow for better UI hints. 
         /// </summary>
-        public bool IsForEditUi => Definition.Ui;
+        public bool IsForEditUi => Aspect.Ui;
 
         /// <summary>
         /// Determines if non-admins should still know about this feature in the UI
         /// </summary>
-        public bool IsPublic => Definition.Public;
-        public FeatureSecurity Security => Definition.Security;
+        public bool IsPublic => Aspect.Public;
+        public FeatureSecurity Security => Aspect.Security;
 
         /// <summary>
         /// Indicate if this feature is allowed to be activated
@@ -98,12 +98,12 @@ namespace ToSic.Eav.SysData
         [JsonIgnore]
         public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
         {
-            Guid = Definition.Guid,
+            Guid = Aspect.Guid,
             Values = new Dictionary<string, object>
             {
                 { nameof(NameId), NameId },
-                { Attributes.TitleNiceName, Definition.Name },
-                { nameof(Definition.Description), Definition.Description },
+                { Attributes.TitleNiceName, Aspect.Name },
+                { nameof(Aspect.Description), Aspect.Description },
                 { nameof(IsEnabled), IsEnabled },
                 { nameof(EnabledByDefault), EnabledByDefault },
                 // Not important, don't include
@@ -117,7 +117,7 @@ namespace ToSic.Eav.SysData
                 { $"{nameof(License)}{nameof(License.Name)}", License?.Name ?? Constants.NullNameId },
                 { $"{nameof(License)}{nameof(License.Guid)}", License?.Guid ?? Guid.Empty },
                 { nameof(AllowedByLicense), AllowedByLicense },
-                { nameof(Definition.Link), Definition.Link },
+                { nameof(Aspect.Link), Aspect.Link },
                 { nameof(IsPublic), IsPublic },
             }
         });

@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Context
         {
             NameId = state.NameId;
             IsEnabled = state.IsEnabled;
-            Name = state.Definition.Name;
+            Name = state.Aspect.Name;
         }
 
         public string NameId { get; }

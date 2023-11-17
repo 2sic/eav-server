@@ -58,7 +58,7 @@ namespace ToSic.Eav.Internal.Licenses
         {
             AllCache = licenses;
             EnabledCache = licenses
-                .Where(l => l.Enabled)
+                .Where(l => l.IsEnabled)
                 .OrderByDescending(l => l.Expiration) // same feature license with longer expiration have priority
                 // must do Distinct = GroupBy+First to ensure we don't have duplicate keys
                 .GroupBy(l => l.Aspect)

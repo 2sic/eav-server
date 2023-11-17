@@ -137,7 +137,7 @@ namespace ToSic.Eav.Apps.Decorators
 
             var enabled = _featsService.Value.IsEnabled(feat);
             var status = _featsService.Value.Get(feat);
-            return l.Return((enabled, status?.Definition ?? Aspect.None), $"enabled: {enabled}");
+            return l.Return((enabled, status?.Aspect ?? Aspect.None), $"enabled: {enabled}");
         }
 
 

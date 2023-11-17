@@ -23,23 +23,23 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.SysData
 {
-    public class FeatureSetState: IHasRawEntity<IRawEntity>
+    public class FeatureSetState: AspectState<FeatureSet>, IHasRawEntity<IRawEntity>
     {
-        public FeatureSetState() { }
+        public FeatureSetState(FeatureSet featureSet) : base(featureSet, true /* def true as otherwise we wouldn't have the config */ ) { }
 
         public string Title { get; internal set; }
         public string LicenseKey { get; internal set; }
 
         public Guid EntityGuid { get; internal set; }
 
-        public FeatureSet Aspect { get; internal set; }
+        // public FeatureSet Aspect { get; internal set; }
 
-        public bool Enabled => EnabledInConfiguration && Valid;
+        public override bool IsEnabled => EnabledInConfiguration && Valid;
 
         /// <summary>
         /// The state as toggled in the settings - ATM always true, as we don't read the settings
         /// </summary>
-        public bool EnabledInConfiguration { get; internal set; } = true;
+        public bool EnabledInConfiguration => true;
 
         public bool Valid => ExpirationIsValid && SignatureIsValid && FingerprintIsValid && VersionIsValid;
 
@@ -84,7 +84,7 @@ namespace ToSic.Eav.SysData
                 //{ "LicenseConditionIsEnabled", License.Condition.IsEnabled },
 
                 // Properties describing the state/enabled
-                { nameof(Enabled), Enabled },
+                { nameof(IsEnabled), IsEnabled },
                 { nameof(EnabledInConfiguration), EnabledInConfiguration },
                 { nameof(Valid), Valid },
                 { nameof(Expiration), Expiration },

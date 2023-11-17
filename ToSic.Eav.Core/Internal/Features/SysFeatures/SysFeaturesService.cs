@@ -35,7 +35,7 @@ namespace ToSic.Eav.Run.Capabilities
 
         public bool IsEnabled(string capabilityKey)
         {
-            var capability = States.FirstOrDefault(c => c.Definition.NameId.EqualsInsensitive(capabilityKey));
+            var capability = States.FirstOrDefault(c => c.Aspect.NameId.EqualsInsensitive(capabilityKey));
             return capability?.IsEnabled == true;
         }
 

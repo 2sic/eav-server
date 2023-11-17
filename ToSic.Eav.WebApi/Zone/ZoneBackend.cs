@@ -68,7 +68,7 @@ namespace ToSic.Eav.WebApi.Zone
 
             // owner is coma separated list of all owners from enabled licenses 
             var owner = string.Join(", ", licenses.All
-                .Where(ls => ls.Enabled)
+                .Where(ls => ls.IsEnabled)
                 .Select(ls => ls.Owner)
                 .Where(o => o.HasValue())
                 .Distinct());

@@ -188,7 +188,7 @@ namespace ToSic.Eav.Internal.Loaders
             var updatedIds = changes.Select(f => f.FeatureGuid);
 
             var storedFeaturesButNotUpdated = Features.All
-                .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Definition.Guid))
+                .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Aspect.Guid))
                 .Select(FeaturePersistenceService.FeatureConfigBuilder).ToList();
             
             var updatedFeatures = changes

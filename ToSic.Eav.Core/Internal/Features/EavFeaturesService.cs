@@ -42,14 +42,14 @@ namespace ToSic.Eav.Internal.Features
         /// </summary>
         internal HashSet<string> EnabledFeatures => _enabledFeatures ?? (_enabledFeatures  = new HashSet<string>(All
                 .Where(f => f.IsEnabled)
-                .SelectMany(f => new[] { f.NameId, f.Definition.Guid.ToString() })
+                .SelectMany(f => new[] { f.NameId, f.Aspect.Guid.ToString() })
                 .Distinct(InvariantCultureIgnoreCase),
             InvariantCultureIgnoreCase));
         private HashSet<string> _enabledFeatures; // had to step back from GetOnce, because of "Error Unable to marshal host object to interpreter space"
 
         public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.IsEnabled && f.IsForEditUi);
 
-        public bool IsEnabled(Guid guid) => All.Any(f => f.Definition.Guid == guid && f.IsEnabled);
+        public bool IsEnabled(Guid guid) => All.Any(f => f.Aspect.Guid == guid && f.IsEnabled);
         
         public bool IsEnabled(IEnumerable<Guid> guids) => guids.All(IsEnabled);
 
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Internal.Features
             return nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
         }
 
-        public FeatureState Get(string nameId) => All.FirstOrDefault(f => f.Definition.Name == nameId || f.NameId == nameId);
+        public FeatureState Get(string nameId) => All.FirstOrDefault(f => f.Aspect.Name == nameId || f.NameId == nameId);
 
         public bool IsEnabled(params Feature[] features) 
             => IsEnabled(features?.Select(f => f.NameId).ToArray());
@@ -83,7 +83,7 @@ namespace ToSic.Eav.Internal.Features
                 .Where(i => !IsEnabled(i))
                 .Select(id =>
                 {
-                    var feat = All.FirstOrDefault(f => f.Definition.Guid == id);
+                    var feat = All.FirstOrDefault(f => f.Aspect.Guid == id);
                     return new { Id = id, feat?.NameId };
                 });
 

@@ -178,10 +178,9 @@ namespace ToSic.Eav.Internal.Licenses
                         _licenseCatalog.Register(licDef);
                     }
 
-                    return new FeatureSetState
+                    return new FeatureSetState(licDef)
                     {
                         Title = licensesPersisted.Title,
-                        Aspect = licDef,
                         EntityGuid = licensesPersisted.GuidSalt,
                         LicenseKey = licensesPersisted.Key ?? LicenseKeyDescription,
                         Expiration = storedDetails.Expires ?? licensesPersisted.Expires,
@@ -206,10 +205,11 @@ namespace ToSic.Eav.Internal.Licenses
         /// <returns></returns>
         private List<FeatureSetState> AutoEnabledLicenses()
         {
-            var licenseStates = _licenseCatalog.List.Where(l => l.AutoEnable).Select(l => new FeatureSetState
+            var licenseStates = _licenseCatalog.List
+                .Where(ls => ls.AutoEnable)
+                .Select(ls => new FeatureSetState(ls)
                 {
-                    Title = l.Name,
-                    Aspect = l,
+                    Title = ls.Name,
                     EntityGuid = Guid.Empty,
                     LicenseKey = "always enabled",
                     Expiration = BuiltInLicenses.UnlimitedExpiry,

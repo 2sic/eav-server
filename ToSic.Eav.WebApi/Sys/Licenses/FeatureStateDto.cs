@@ -9,8 +9,8 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
 
         public FeatureStateDto(FeatureState state) : base(state)
         {
-            Guid = state.Definition.Guid;
-            Description = state.Definition.Description;
+            Guid = state.Aspect.Guid;
+            Description = state.Aspect.Description;
             EnabledReason = state.EnabledReason;
             EnabledReasonDetailed = state.EnabledReasonDetailed;
             EnabledByDefault = state.EnabledByDefault;
@@ -20,8 +20,8 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
             //LicenseEnabled = state.AllowedByLicense;
 
             Security = state.Security;
-            Link = state.Definition.Link;
-            IsConfigurable = state.Definition.IsConfigurable;
+            Link = state.Aspect.Link;
+            IsConfigurable = state.Aspect.IsConfigurable;
         }
 
         public Guid Guid { get; }
