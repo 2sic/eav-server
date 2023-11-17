@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Configuration;
-using ToSic.Lib;
+﻿using ToSic.Eav.Internal.Features;
 using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
@@ -16,12 +15,12 @@ namespace ToSic.Eav.Caching
     {
         public AppsCacheSwitch(
             ILogStore logStore,
-            IFeaturesInternal featuresService,
+            IEavFeaturesService featuresService,
             LazySvc<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher
         ) : base(logStore, serviceSwitcher) =>
             ConnectServices(_featuresService = featuresService);
 
-        private readonly IFeaturesInternal _featuresService;
+        private readonly IEavFeaturesService _featuresService;
 
         public new IAppsCacheSwitchable Value => _value.Get(GetOnceDuringCurrentRequest);
         private readonly GetOnce<IAppsCacheSwitchable> _value = new GetOnce<IAppsCacheSwitchable>();

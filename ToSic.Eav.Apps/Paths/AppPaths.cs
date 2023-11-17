@@ -1,8 +1,9 @@
 ﻿using System;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Helpers;
+using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Environment;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Lib.DI;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using ToSic.Eav.Configuration;
+using ToSic.Eav.Internal.Configuration;
 #if NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Metadata;
 #endif

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Configuration;
+using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.StartUp;
 

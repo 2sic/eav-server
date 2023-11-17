@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Configuration;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
@@ -14,14 +16,14 @@ namespace ToSic.Eav.WebApi.Admin.Features
         /// Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
         /// </summary>
         private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
-        private readonly LazySvc<IFeaturesInternal> _featuresLazy;
+        private readonly LazySvc<IEavFeaturesService> _featuresLazy;
         public const string LogSuffix = "Feats";
 
         #region Constructor / DI
 
         public FeatureControllerReal(
             LazySvc<EavSystemLoader> systemLoaderLazy,
-            LazySvc<IFeaturesInternal> featuresLazy
+            LazySvc<IEavFeaturesService> featuresLazy
             ) : base("Bck.Feats")
         {
             ConnectServices(

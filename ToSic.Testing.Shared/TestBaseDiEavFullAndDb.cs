@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Run;
 
 namespace ToSic.Testing.Shared

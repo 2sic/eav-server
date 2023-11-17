@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
 using ToSic.Lib.DI;
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.Security
 
         public class MyServices: MyServicesBase
         {
-            public MyServices(LazySvc<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IFeaturesInternal> featIntGen)
+            public MyServices(LazySvc<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IEavFeaturesService> featIntGen)
             {
                 ConnectServices(
                     ZoneMapper = zoneMapper,
@@ -30,7 +30,7 @@ namespace ToSic.Eav.Apps.Security
             }
             internal LazySvc<IZoneMapper> ZoneMapper { get; }
             internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; }
-            internal Generator<IFeaturesInternal> FeatIntGen { get; }
+            internal Generator<IEavFeaturesService> FeatIntGen { get; }
 
         }
 
@@ -62,7 +62,7 @@ namespace ToSic.Eav.Apps.Security
         public IContextOfSite Context { get; private set; }
         protected ISite SiteForSecurityCheck { get; private set; }
         protected bool SamePortal { get; private set; }
-        public IFeaturesInternal FeaturesInternal => Services.FeatIntGen.New();
+        public IEavFeaturesService FeaturesInternal => Services.FeatIntGen.New();
 
         #endregion
 

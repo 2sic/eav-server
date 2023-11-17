@@ -1,7 +1,8 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Persistence.Efc
 {
     public partial class Efc11Loader: ServiceBase, IRepositoryLoader
     {
-        private readonly Generator<IAppRepositoryLoader> _appFileContentTypesLoader;
+        private readonly Generator<IAppContentTypesLoader> _appFileContentTypesLoader;
         private readonly Generator<IDataDeserializer> _dataDeserializer;
 
         #region constructor and private vars
@@ -24,10 +25,10 @@ namespace ToSic.Eav.Persistence.Efc
             IAppInitializedChecker initializedChecker,
             IAppStates appStates,
             ILogStore logStore,
-            LazySvc<IFeaturesInternal> featuresService,
+            LazySvc<IEavFeaturesService> featuresService,
             DataBuilder dataBuilder,
             Generator<IDataDeserializer> dataDeserializer,
-            Generator<IAppRepositoryLoader> appFileContentTypesLoader) : base("Db.Efc11")
+            Generator<IAppContentTypesLoader> appFileContentTypesLoader) : base("Db.Efc11")
         {
             ConnectServices(
                 _dbContext = dbContext,
@@ -53,7 +54,7 @@ namespace ToSic.Eav.Persistence.Efc
         private readonly IAppInitializedChecker _initializedChecker;
         private readonly IAppStates _appStates;
         private readonly ILogStore _logStore;
-        private readonly LazySvc<IFeaturesInternal> _featuresService;
+        private readonly LazySvc<IEavFeaturesService> _featuresService;
         private readonly DataBuilder _dataBuilder;
 
         #endregion

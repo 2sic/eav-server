@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Persistence.File
 {
-    public partial class Runtime
+    public partial class AppLoader
     {
         public List<IContentType> LoadGlobalContentTypes(AppState appState)
         {

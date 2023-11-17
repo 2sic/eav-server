@@ -1,14 +1,14 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data;
+using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
-using static ToSic.Eav.Configuration.ConfigurationConstants;
+using static ToSic.Eav.Apps.AppStackConstants;
 
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Context
             public MyServices(
                 ContextOfSite.MyServices siteServices,
                 IAppStates appStates,
-                LazySvc<IFeaturesInternal> features,
+                LazySvc<IEavFeaturesService> features,
                 LazySvc<AppUserLanguageCheck> langChecks,
                 Generator<IEnvironmentPermission> environmentPermissions,
                 LazySvc<AppSettingsStack> settingsStack
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Context
             }
 
             public IAppStates AppStates { get; }
-            public LazySvc<IFeaturesInternal> Features { get; }
+            public LazySvc<IEavFeaturesService> Features { get; }
             public LazySvc<AppUserLanguageCheck> LangChecks { get; }
             public LazySvc<AppSettingsStack> SettingsStack { get; }
             internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions;

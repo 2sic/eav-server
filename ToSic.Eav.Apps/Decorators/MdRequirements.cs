@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.Internal.Requirements;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
-using ToSic.Eav.Run.Capabilities;
-using ToSic.Eav.Run.Requirements;
+using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Apps.Decorators.RequirementDecorator;
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Apps.Decorators
     public class MdRequirements: ServiceBase, IRequirementsService
     {
 
-        public MdRequirements(LazySvc<ILicenseService> licenseService, LazySvc<IFeaturesInternal> featsService, LazySvc<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog, LazySvc<SysFeaturesService> sysCapSvc)
+        public MdRequirements(LazySvc<ILicenseService> licenseService, LazySvc<IEavFeaturesService> featsService, LazySvc<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog, LazySvc<SysFeaturesService> sysCapSvc)
             : base($"{AppConstants.LogName}.MdReq")
         {
             ConnectServices(
@@ -30,7 +31,7 @@ namespace ToSic.Eav.Apps.Decorators
             );
         }
         private readonly LazySvc<ILicenseService> _licenseService;
-        private readonly LazySvc<IFeaturesInternal> _featsService;
+        private readonly LazySvc<IEavFeaturesService> _featsService;
         private readonly LazySvc<IPlatformInfo> _platInfo;
         private readonly LicenseCatalog _licenseCatalog;
         private readonly LazySvc<SysFeaturesService> _sysCapSvc;
@@ -86,8 +87,8 @@ namespace ToSic.Eav.Apps.Decorators
 
         internal class ReqStatusPrivate: RequirementStatus
         {
-            public ReqStatusPrivate(RequirementDecorator decorator, string nameId, bool approved, AspectDefinition aspect = default)
-            : base(approved, aspect ?? AspectDefinition.None.Clone(nameId: nameId))
+            public ReqStatusPrivate(RequirementDecorator decorator, string nameId, bool approved, Aspect aspect = default)
+            : base(approved, aspect ?? SysData.Aspect.None.Clone(nameId: nameId))
             {
                 Decorator = decorator;
             }
@@ -102,7 +103,7 @@ namespace ToSic.Eav.Apps.Decorators
             if (requirement == null) return l.Return(new ReqStatusPrivate(null, ReqNone, true), ReqNone);
             var reqObj = new RequirementDecorator(requirement);
 
-            ReqStatusPrivate BuildAndRet((bool approved, AspectDefinition aspect) check, string nameId, string reason) 
+            ReqStatusPrivate BuildAndRet((bool approved, Aspect aspect) check, string nameId, string reason) 
                 => l.Return(new ReqStatusPrivate(reqObj, nameId, check.approved, check.aspect), reason);
 
             // Check requirement type
@@ -113,53 +114,53 @@ namespace ToSic.Eav.Apps.Decorators
                 case ReqPlatform: return BuildAndRet(VerifyPlatform(reqObj), reqObj.Platform?.Trim(), ReqPlatform);
                 case ReqSysCap: return BuildAndRet(VerifySysCap(reqObj), reqObj.SystemCapability?.Trim(), ReqSysCap);
                 // No known requirement, assume not fulfilled
-                default: return  BuildAndRet((false, AspectDefinition.None), ReqUnknown, ReqUnknown);
+                default: return  BuildAndRet((false, Aspect.None), ReqUnknown, ReqUnknown);
             }
         }
 
-        private (bool, AspectDefinition) VerifyPlatform(RequirementDecorator reqObj)
+        private (bool, Aspect) VerifyPlatform(RequirementDecorator reqObj)
         {
             var platform = reqObj.Platform?.Trim();
-            var l = Log.Fn<(bool, AspectDefinition)>($"name: {platform}");
-            if (platform.IsEmptyOrWs()) return l.Return((true, AspectDefinition.None), "no req. platform");
+            var l = Log.Fn<(bool, Aspect)>($"name: {platform}");
+            if (platform.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. platform");
 
             var enabled = _platInfo.Value.Name.EqualsInsensitive(platform);
-            return l.Return((enabled, AspectDefinition.Custom(platform, Guid.Empty, platform)), $"enabled: {enabled}");
+            return l.Return((enabled, Aspect.Custom(platform, Guid.Empty, platform)), $"enabled: {enabled}");
         }
 
 
-        private (bool, AspectDefinition) VerifyFeature(RequirementDecorator reqObj)
+        private (bool, Aspect) VerifyFeature(RequirementDecorator reqObj)
         {
             var feat = reqObj.Feature?.Trim();
-            var l = Log.Fn<(bool, AspectDefinition)>($"name: {feat}");
-            if (feat.IsEmptyOrWs()) return l.Return((true, AspectDefinition.None), "no req. feature");
+            var l = Log.Fn<(bool, Aspect)>($"name: {feat}");
+            if (feat.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. feature");
 
             var enabled = _featsService.Value.IsEnabled(feat);
             var status = _featsService.Value.Get(feat);
-            return l.Return((enabled, status?.Definition ?? AspectDefinition.None), $"enabled: {enabled}");
+            return l.Return((enabled, status?.Aspect ?? Aspect.None), $"enabled: {enabled}");
         }
 
 
-        private (bool, AspectDefinition) VerifySysCap(RequirementDecorator reqObj)
+        private (bool, Aspect) VerifySysCap(RequirementDecorator reqObj)
         {
             var sysCap = reqObj.SystemCapability?.Trim();
-            var l = Log.Fn<(bool, AspectDefinition)>($"name: {sysCap}");
-            if (sysCap.IsEmptyOrWs()) return l.Return((true, AspectDefinition.None), "no req. feature");
+            var l = Log.Fn<(bool, Aspect)>($"name: {sysCap}");
+            if (sysCap.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. feature");
 
             var enabled = _sysCapSvc.Value.IsEnabled(sysCap);
             var status = _sysCapSvc.Value.GetDef(sysCap);
-            return l.Return((enabled, status ?? AspectDefinition.None), $"enabled: {enabled}");
+            return l.Return((enabled, status ?? Aspect.None), $"enabled: {enabled}");
         }
 
 
 
-        private (bool, AspectDefinition) VerifyLicense(RequirementDecorator reqObj)
+        private (bool, Aspect) VerifyLicense(RequirementDecorator reqObj)
         {
             var license = reqObj.License?.Trim();
-            var l = Log.Fn<(bool, AspectDefinition)>($"name: {license}");
-            if (license.IsEmptyOrWs()) return l.Return((true, AspectDefinition.None), "no req. license");
+            var l = Log.Fn<(bool, Aspect)>($"name: {license}");
+            if (license.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. license");
 
-            AspectDefinition GenAspectFromLicense() => AspectDefinition.Custom(license, Guid.TryParse(license, out var lic) ? lic : Guid.Empty);
+            Aspect GenAspectFromLicense() => Aspect.Custom(license, Guid.TryParse(license, out var lic) ? lic : Guid.Empty);
 
             // find license
             var matchingLic = _licenseCatalog.TryGet(reqObj.License.Trim());

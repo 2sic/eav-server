@@ -1,22 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Permissions;
+using ToSic.Eav.SysData;
 using ToSic.Eav.WebApi.Context;
 
 namespace ToSic.Eav.WebApi.Cms
 {
     public class UiData : IUiData
     {
-        public UiData(IFeaturesInternal features, IUser user)
+        public UiData(IEavFeaturesService features, IUser user)
         {
             _features = features;
             _user = user;
         }
 
-        private readonly IFeaturesInternal _features;
+        private readonly IEavFeaturesService _features;
         private readonly IUser _user;
 
         /// <summary>

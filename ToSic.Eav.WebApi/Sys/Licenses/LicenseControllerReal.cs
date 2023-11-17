@@ -4,12 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
+using ToSic.Eav.SysData;
 using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
 using ToSic.Eav.WebApi.Validation;
@@ -24,7 +27,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         private const string DefaultLicenseFileName = "default.license.json";
 
         private readonly LazySvc<ILicenseService> _licenseServiceLazy;
-        private readonly LazySvc<IFeaturesInternal> _featuresLazy;
+        private readonly LazySvc<IEavFeaturesService> _featuresLazy;
         private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
         private readonly LazySvc<LicenseCatalog> _licenseCatalog;
         private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
@@ -32,7 +35,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
 
         public LicenseControllerReal(
             LazySvc<ILicenseService> licenseServiceLazy, 
-            LazySvc<IFeaturesInternal> featuresLazy,
+            LazySvc<IEavFeaturesService> featuresLazy,
             LazySvc<IGlobalConfiguration> globalConfiguration,
             LazySvc<EavSystemLoader> systemLoaderLazy,
             LazySvc<LicenseCatalog> licenseCatalog,
@@ -145,7 +148,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses
         {
             var l = Log.Fn<LicenseFileResultDto>();
             var fingerprint = _fingerprint.GetFingerprint();
-            var url = $"{AspectDefinition.PatronsUrl}/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
+            var url = $"{Aspect.PatronsUrl}/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
             l.A($"retrieve license from url:{url}");
 
             string content;

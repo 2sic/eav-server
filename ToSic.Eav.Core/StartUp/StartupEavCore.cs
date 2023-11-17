@@ -3,18 +3,19 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Code.InfoSystem;
-using ToSic.Eav.Compression;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Internal.Compression;
+using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Internal.Requirements;
+using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Persistence;
-using ToSic.Eav.Repositories;
-using ToSic.Eav.Run;
-using ToSic.Eav.Run.Capabilities;
-using ToSic.Eav.Run.Requirements;
 using ToSic.Eav.Run.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
@@ -44,13 +45,12 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<GlobalPaths>();
             services.TryAddTransient<SystemLoader>();
             services.TryAddTransient<EavSystemLoader>();
-            services.TryAddTransient<FeatureConfigManager>();
+            services.TryAddTransient<FeaturePersistenceService>();
 
             // Make sure that IFeaturesInternal and IFeatures use the same singleton!
             services.AddSingleton<LicenseCatalog>();    // Must be singleton
             services.AddSingleton<FeaturesCatalog>();   // Must be singleton
-            services.TryAddSingleton<IFeaturesInternal, FeaturesService>();    // this must come first!
-            services.TryAddSingleton<IFeaturesService>(x => x.GetRequiredService<IFeaturesInternal>());
+            services.TryAddSingleton<IEavFeaturesService, EavFeaturesService>();    // this must come first!
 
             // New SystemCapability
             services.TryAddTransient<SysFeaturesService>();
@@ -80,7 +80,7 @@ namespace ToSic.Eav.StartUp
 
             // V14 Requirements Checks - don't use try-add, as we'll add many
             services.TryAddTransient<RequirementsService>();
-            services.AddTransient<IRequirementCheck, RequirementCheckFeature>();
+            services.AddTransient<IRequirementCheck, FeatureRequirementCheck>();
 
             services.TryAddTransient<LicenseLoader>();
 
@@ -120,13 +120,13 @@ namespace ToSic.Eav.StartUp
             services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
             services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
             services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
-            services.TryAddTransient<IAppRepositoryLoader, AppRepositoryLoaderUnknown>();
+            services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
 
             // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
             services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
             // Unknown-Runtime for loading configuration etc. File-runtime
-            services.TryAddTransient<IRuntime, RuntimeUnknown>();
+            services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
             services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
 
             services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();

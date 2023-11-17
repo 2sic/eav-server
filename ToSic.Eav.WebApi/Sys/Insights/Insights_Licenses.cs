@@ -57,11 +57,11 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 var rows = _licenseServiceLazy.Value.All
                     .ToList()
                     .Select(l => RowFields(
-                            EmojiTrueFalse(l.Enabled),
+                            EmojiTrueFalse(l.IsEnabled),
                             l.Title,
                             l.LicenseKey,
-                            l.License?.Name,
-                            l.License?.Guid,
+                            l.Aspect?.Name,
+                            l.Aspect?.Guid,
                             EmojiTrueFalse(l.Valid),
                             EmojiTrueFalse(l.SignatureIsValid),
                             EmojiTrueFalse(l.FingerprintIsValid),
