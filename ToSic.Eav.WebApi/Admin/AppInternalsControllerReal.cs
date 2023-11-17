@@ -58,8 +58,8 @@ namespace ToSic.Eav.WebApi.Admin
                 {
                     // 2. .../api/2sxc/admin/entity/list?appId=999&contentType=SettingsSystem
                     {
-                        ConfigurationConstants.Settings.SystemType,
-                        EntityListInternal(appId, ConfigurationConstants.Settings.SystemType)
+                        AppStackConstants.Settings.SystemType,
+                        EntityListInternal(appId, AppStackConstants.Settings.SystemType)
                     },
 
                     // 3. .../api/2sxc/admin/entity/list?appId=999&contentType=App-Settings
@@ -72,8 +72,8 @@ namespace ToSic.Eav.WebApi.Admin
 
                     // 5. .../api/2sxc/admin/entity/list?appId=999&contentType=ResourcesSystem
                     {
-                        ConfigurationConstants.Resources.SystemType,
-                        EntityListInternal(appId, ConfigurationConstants.Resources.SystemType)
+                        AppStackConstants.Resources.SystemType,
+                        EntityListInternal(appId, AppStackConstants.Resources.SystemType)
                     },
 
                     // 6. .../api/2sxc/admin/entity/list?appId=999&contentType=App-Resources

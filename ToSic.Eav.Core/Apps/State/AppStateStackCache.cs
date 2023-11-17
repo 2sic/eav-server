@@ -111,34 +111,34 @@ namespace ToSic.Eav.Apps
             void AddSource(string name, IPropertyLookup value)
                 => sources.Add(new KeyValuePair<string, IPropertyLookup>(name, value));
 
-            AddSource(PartApp, appStack.MetadataItem);
-            AddSource(PartAppSystem, appStack.SystemItem);
+            AddSource(AppStackConstants.PartApp, appStack.MetadataItem);
+            AddSource(AppStackConstants.PartAppSystem, appStack.SystemItem);
 
 
             // Ancestor Level (only for inherited apps, v13)
             if (ancestorOrNull != null)
             {
-                AddSource(PartAncestor, ancestorOrNull.MetadataItem);
-                AddSource(PartAncestorSystem, ancestorOrNull.SystemItem);
+                AddSource(AppStackConstants.PartAncestor, ancestorOrNull.MetadataItem);
+                AddSource(AppStackConstants.PartAncestorSystem, ancestorOrNull.SystemItem);
             }
 
             // Site level
             if (siteOrNull != null)
             {
-                AddSource(PartSite, siteOrNull.CustomItem);
-                AddSource(PartSiteSystem, siteOrNull.SystemItem);
+                AddSource(AppStackConstants.PartSite, siteOrNull.CustomItem);
+                AddSource(AppStackConstants.PartSiteSystem, siteOrNull.SystemItem);
             }
 
 
             // Global
             if (global != null)
             {
-                AddSource(PartGlobal, global.CustomItem);
-                AddSource(PartGlobalSystem, global.SystemItem);
+                AddSource(AppStackConstants.PartGlobal, global.CustomItem);
+                AddSource(AppStackConstants.PartGlobalSystem, global.SystemItem);
             }
 
             // System Presets
-            AddSource(PartPresetSystem, preset.SystemItem);
+            AddSource(AppStackConstants.PartPresetSystem, preset.SystemItem);
             return l.Return(sources, "ok");
         }
 

@@ -4,7 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.Configuration.ConfigurationConstants;
+using static ToSic.Eav.Apps.AppStackConstants;
 using static ToSic.Eav.Configuration.ConfigurationStack;
 
 namespace ToSic.Eav.Apps

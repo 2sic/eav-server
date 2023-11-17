@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Plumbing;
-using static ToSic.Eav.Configuration.ConfigurationConstants;
+using static ToSic.Eav.Apps.AppStackConstants;
 
 namespace ToSic.Eav.DataSources.Sys
 {

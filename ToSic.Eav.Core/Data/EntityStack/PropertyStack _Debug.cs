@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Configuration;
 using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Data.PropertyLookup;
@@ -46,7 +47,7 @@ namespace ToSic.Eav.Data
             // Remove settings-internal keys which are not useful
             // use Blacklist to find these
             result = result.Where(r =>
-                !ConfigurationConstants.BlacklistKeys.Any(blk => r.Path.EndsWith(PropertyDumpItem.Separator + blk)))
+                !AppStackConstants.BlacklistKeys.Any(blk => r.Path.EndsWith(PropertyDumpItem.Separator + blk)))
                 .ToArray();
 
             // V13 - drop null values
