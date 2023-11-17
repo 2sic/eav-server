@@ -7,11 +7,11 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.SysData
 {
-    public class SystemCapabilityDefinition: Feature, IHasRawEntity<IRawEntity>
+    public class SysFeature: Feature, IHasRawEntity<IRawEntity>
     {
         public const string Prefix = "System";
 
-        public SystemCapabilityDefinition(string nameId, Guid guid, string name, string description = default, string link = default)
+        public SysFeature(string nameId, Guid guid, string name, string description = default, string link = default)
         : base(EnsurePrefix(nameId), guid, name, isPublic: false, ui: false, description, FeatureSecurity.Unknown, BuiltInFeatures.SystemEnabled)
         {
             _link = link;
@@ -20,9 +20,9 @@ namespace ToSic.Eav.SysData
         /// <summary>
         /// Clone constructor - optionally override some values
         /// </summary>
-        public SystemCapabilityDefinition Clone(Lib.Coding.StableApi.NoParamOrder noParamOrder = default, 
+        public SysFeature Clone(Lib.Coding.StableApi.NoParamOrder noParamOrder = default, 
             string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default) =>
-            new SystemCapabilityDefinition(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description, link ?? Link);
+            new SysFeature(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description, link ?? Link);
 
         private static string EnsurePrefix(string original) 
             => original.IsEmptyOrWs() ? Prefix + "-Error-No-Name" : original.StartsWith(Prefix) ? original : $"{Prefix}-{original}";

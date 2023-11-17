@@ -29,7 +29,7 @@ namespace ToSic.Eav.SysData
             EnabledByDefault = enabledByDefault;
         }
 
-        public static FeatureState SysFeatureState(SystemCapabilityDefinition definition, bool enabled)
+        public static FeatureState SysFeatureState(SysFeature definition, bool enabled)
             => new FeatureState(definition, BuiltInLicenses.UnlimitedExpiry, enabled,
                 "System Feature", "System Feature, managed by the system; can't be changed interactively.", true, true,
                 null);

@@ -4,13 +4,13 @@ namespace ToSic.Eav.Internal.Features
 {
     public abstract class SysFeatureDetector: ISysFeatureDetector
     {
-        protected SysFeatureDetector(SystemCapabilityDefinition definition, bool isEnabled = default)
+        protected SysFeatureDetector(SysFeature definition, bool isEnabled = default)
         {
             Definition = definition;
             IsEnabled = isEnabled;
         }
 
-        public SystemCapabilityDefinition Definition { get; }
+        public SysFeature Definition { get; }
 
         public virtual bool IsEnabled { get; }
 

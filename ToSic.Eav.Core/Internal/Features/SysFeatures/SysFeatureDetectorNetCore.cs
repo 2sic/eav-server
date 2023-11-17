@@ -6,7 +6,7 @@ namespace ToSic.Eav.Internal.Features
     public class SysFeatureDetectorNetCore: SysFeatureDetector
     {
 
-        private static readonly SystemCapabilityDefinition DefStatic = new SystemCapabilityDefinition(
+        private static readonly SysFeature DefStatic = new SysFeature(
             "NetCore",
             new Guid("57c306d5-ec3f-47e2-ad3a-ae871eb96a41"),
             "Net Core"

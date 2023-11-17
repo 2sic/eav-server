@@ -4,7 +4,7 @@ namespace ToSic.Eav.Internal.Features
 {
     public interface ISysFeatureDetector
     {
-        SystemCapabilityDefinition Definition { get; }
+        SysFeature Definition { get; }
 
         bool IsEnabled { get; }
 
