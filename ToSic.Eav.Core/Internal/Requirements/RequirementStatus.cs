@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Run.Requirements
+namespace ToSic.Eav.Internal.Requirements
 {
     public class RequirementStatus
     {

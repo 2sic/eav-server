@@ -10,10 +10,10 @@ using ToSic.Eav.Apps.Run;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
+using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
-using ToSic.Eav.Run.Requirements;
 using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Apps

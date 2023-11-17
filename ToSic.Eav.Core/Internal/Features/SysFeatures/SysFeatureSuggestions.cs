@@ -1,8 +1,9 @@
 ﻿using System;
+using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Run.Capabilities
+namespace ToSic.Eav.Internal.Features
 {
-    public static class SystemCapabilityListForImplementation
+    public static class SysFeatureSuggestions
     {
         public static SystemCapabilityDefinition CSharp06 { get; } = new SystemCapabilityDefinition(
             "CSharp06",

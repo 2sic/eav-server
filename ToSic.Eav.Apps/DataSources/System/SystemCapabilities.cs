@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.Run.Capabilities;
+using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Documentation;
 
 // ReSharper disable once CheckNamespace

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.SysData;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Run.Capabilities
+namespace ToSic.Eav.SysData
 {
     public class SystemCapabilityDefinition: Feature, IHasRawEntity<IRawEntity>
     {

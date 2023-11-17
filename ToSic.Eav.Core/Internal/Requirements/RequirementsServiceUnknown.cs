@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Run.Unknown;
 
-namespace ToSic.Eav.Run.Requirements
+namespace ToSic.Eav.Internal.Requirements
 {
     internal class RequirementsServiceUnknown: IRequirementsService
     {

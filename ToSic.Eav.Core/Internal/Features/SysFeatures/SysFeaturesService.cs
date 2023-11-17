@@ -6,7 +6,7 @@ using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Run.Capabilities
+namespace ToSic.Eav.Internal.Features
 {
     public class SysFeaturesService: ServiceBase
     {

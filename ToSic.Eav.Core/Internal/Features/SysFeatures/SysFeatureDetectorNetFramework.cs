@@ -1,6 +1,7 @@
 ﻿using System;
+using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Run.Capabilities
+namespace ToSic.Eav.Internal.Features
 {
     public class SysFeatureDetectorNetFramework: SysFeatureDetector
     {

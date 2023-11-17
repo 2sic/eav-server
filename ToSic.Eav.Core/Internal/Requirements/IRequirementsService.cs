@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Run.Requirements
+namespace ToSic.Eav.Internal.Requirements
 {
     public interface IRequirementsService
     {
