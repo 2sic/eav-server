@@ -26,13 +26,6 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
 
 
         [TestMethod]
-        public void EnsureIFeaturesAndIFeaturesInternalAreSameSingleton()
-        {
-            var featuresNonInternal = GetService<IFeaturesService>();
-            Assert.AreEqual(FeaturesInternal, featuresNonInternal, "They must be the identical object");
-        }
-
-        [TestMethod]
         public void LoadFromConfiguration()
         {
             var x = FeaturesInternal.All;

@@ -50,8 +50,6 @@ namespace ToSic.Eav.StartUp
             services.AddSingleton<LicenseCatalog>();    // Must be singleton
             services.AddSingleton<FeaturesCatalog>();   // Must be singleton
             services.TryAddSingleton<IFeaturesInternal, FeaturesService>();    // this must come first!
-            services.TryAddTransient<IFeaturesService, FeaturesServiceCompatibility>();
-            // services.TryAddSingleton<IFeaturesService>(x => x.GetRequiredService<IFeaturesInternal>());
 
             // New SystemCapability
             services.TryAddTransient<SysFeaturesService>();
