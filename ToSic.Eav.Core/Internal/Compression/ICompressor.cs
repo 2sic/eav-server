@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Compression
+﻿namespace ToSic.Eav.Internal.Compression
 {
     public interface ICompressor
     {

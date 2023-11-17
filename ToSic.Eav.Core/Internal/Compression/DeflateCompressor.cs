@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace ToSic.Eav.Compression
+namespace ToSic.Eav.Internal.Compression
 {
     public class DeflateCompressor : ICompressor
     {

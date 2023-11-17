@@ -2,7 +2,7 @@
 using System.Text;
 using ToSic.Eav.Internal.Features;
 
-namespace ToSic.Eav.Compression
+namespace ToSic.Eav.Internal.Compression
 {
     public class Compressor
     {

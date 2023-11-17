@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using ToSic.Eav.Compression;
+using ToSic.Eav.Internal.Compression;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
