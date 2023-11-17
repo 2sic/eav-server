@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Lib.Logging;
 
-
-namespace ToSic.Eav.Run.Unknown
+namespace ToSic.Eav.Internal.Unknown
 {
     public class WarnUseOfUnknown<T>
     {

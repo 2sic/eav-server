@@ -5,7 +5,8 @@ namespace ToSic.Eav
 {
     public class EavSystemInfo
     {
-        public static Version Version => Assembly.GetExecutingAssembly().GetName().Version;
+        public static Version Version => _version ?? (_version = Assembly.GetExecutingAssembly().GetName().Version);
+        private static Version _version;
 
         public static readonly string VersionString = VersionToNiceFormat(Version);
 
