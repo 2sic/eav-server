@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using ToSic.Eav.Caching;
+using ToSic.Eav.SysData;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     [PrivateApi("Internal stuff only")]
-    public interface IFeaturesInternal: /*IFeaturesService,*/ ICacheExpiring
+    public interface IEavFeaturesService: ICacheExpiring
     {
         #region WIP trying to remove the old IFeaturesService from our used API - this is temporary - should rename later as is better
 
@@ -62,12 +63,12 @@ namespace ToSic.Eav.Configuration
         FeatureState Get(string nameId);
 
         [PrivateApi("New in 13.05, not public at all")]
-        bool IsEnabled(params FeatureDefinition[] features);
+        bool IsEnabled(params Feature[] features);
 
 
-        FeatureListStored Stored { get; }
+        FeatureStatesPersisted Stored { get; }
         event EventHandler FeaturesChanged;
 
-        bool UpdateFeatureList(FeatureListStored newList, List<FeatureState> sysFeatures);
+        bool UpdateFeatureList(FeatureStatesPersisted newList, List<FeatureState> sysFeatures);
     }
 }

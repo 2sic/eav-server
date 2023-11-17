@@ -1,14 +1,16 @@
-﻿namespace ToSic.Eav.Configuration
+﻿using ToSic.Eav.SysData;
+
+namespace ToSic.Eav.Internal.Requirements
 {
-    public class ConditionError
+    public class RequirementError
     {
-        public ConditionError(Condition condition, string message)
+        public RequirementError(Requirement requirement, string message)
         {
-            Condition = condition;
+            Requirement = requirement;
             Message = message;
         }
 
-        public Condition Condition { get; set; }
+        public Requirement Requirement { get; set; }
 
         public string Message { get; set; }
     }

@@ -14,20 +14,25 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
+using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.Internal.Licenses
 {
     /// <summary>
     /// Will check the loaded licenses and prepare validity information for use during system runtime
@@ -99,9 +104,9 @@ namespace ToSic.Eav.Configuration.Licenses
         /// Load the license JSON files
         /// </summary>
         /// <returns></returns>
-        private List<LicenseStored> LoadLicensesInConfigFolder()
+        private List<LicensesPersisted> LoadLicensesInConfigFolder()
         {
-            var l = Log.Fn<List<LicenseStored>>();
+            var l = Log.Fn<List<LicensesPersisted>>();
             // ensure that path to store files already exits
             var configFolder = _globalConfiguration.Value.ConfigFolder;
             Directory.CreateDirectory(configFolder);
@@ -109,25 +114,25 @@ namespace ToSic.Eav.Configuration.Licenses
 
             var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
                 .Select(File.ReadAllText)
-                .Select(j => JsonSerializer.Deserialize<LicenseStored>(j)) // should NOT use common SxcJsonSerializerOptions
+                .Select(j => JsonSerializer.Deserialize<LicensesPersisted>(j)) // should NOT use common SxcJsonSerializerOptions
                 .Where(licenses => licenses != null).ToList();
 
             return l.Return(licensesStored, $"licensesStored: {licensesStored.Count}");
         }
 
-        private List<LicenseState> LicensesStateBuilder(LicenseStored licenseStored, string fingerprint, List<EnterpriseFingerprint> validEntFps)
+        private List<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, List<EnterpriseFingerprint> validEntFps)
         {
-            var l = Log.Fn<List<LicenseState>>();
-            if (licenseStored == null) return l.Return(new List<LicenseState>(), "null");
+            var l = Log.Fn<List<FeatureSetState>>();
+            if (licensesPersisted == null) return l.Return(new List<FeatureSetState>(), "null");
 
             // Check signature valid
-            var resultForSignature = licenseStored.GenerateIdentity();
+            var resultForSignature = licensesPersisted.GenerateIdentity();
             var validSig = false;
             try
             {
                 var data = new UnicodeEncoding().GetBytes(resultForSignature);
                 validSig = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930,
-                    licenseStored.Signature, data);
+                    licensesPersisted.Signature, data);
             }
             catch (Exception ex)
             {
@@ -137,11 +142,11 @@ namespace ToSic.Eav.Configuration.Licenses
             l.A($"Signature: {validSig}");
 
             // Check fingerprints
-            var fps = licenseStored.FingerprintsArray;
+            var fps = licensesPersisted.FingerprintsArray;
             var validFp = fps.Any(fingerprint.Equals) || validEntFps.Any(ld => fps.Any(ld.Fingerprint.Equals));
             l.A($"Fingerprint: {validFp}");
 
-            var validVersion = licenseStored.Versions?
+            var validVersion = licensesPersisted.Versions?
                 .Split(',')
                 .Select(v => v.Trim())
                 .Any(v => int.TryParse(v, out var licVersion) && SystemInformation.Version.Major == licVersion)
@@ -149,10 +154,10 @@ namespace ToSic.Eav.Configuration.Licenses
 
             l.A($"Version: {validVersion}");
 
-            var validDate = DateTime.Now.CompareTo(licenseStored.Expires) <= 0;
+            var validDate = DateTime.Now.CompareTo(licensesPersisted.Expires) <= 0;
             l.A($"Expired: {validDate}");
 
-            var licenses = licenseStored?.Licenses ?? new List<LicenseStoredDetails>();
+            var licenses = licensesPersisted?.Licenses ?? new List<FeatureSetDetailsPersisted>();
             l.A($"Licenses: {licenses.Count}");
 
 
@@ -166,25 +171,25 @@ namespace ToSic.Eav.Configuration.Licenses
                     // For this we must add a virtual license for this feature only
                     if (licDef == null)
                     {
-                        licDef = new LicenseDefinition(BuiltInLicenses.LicenseCustom, BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
+                        licDef = new FeatureSet(BuiltInLicenses.LicenseCustom, BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
                             Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
                             $"Feature: {storedDetails.Comments} ({storedDetails.Id})", featureLicense: true);
                         l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");
                         _licenseCatalog.Register(licDef);
                     }
 
-                    return new LicenseState
+                    return new FeatureSetState
                     {
-                        Title = licenseStored.Title,
-                        License = licDef,
-                        EntityGuid = licenseStored.GuidSalt,
-                        LicenseKey = licenseStored.Key ?? LicenseKeyDescription,
-                        Expiration = storedDetails.Expires ?? licenseStored.Expires,
-                        ExpirationIsValid = DateTime.Now.CompareTo(storedDetails.Expires ?? licenseStored.Expires) <= 0,
+                        Title = licensesPersisted.Title,
+                        Aspect = licDef,
+                        EntityGuid = licensesPersisted.GuidSalt,
+                        LicenseKey = licensesPersisted.Key ?? LicenseKeyDescription,
+                        Expiration = storedDetails.Expires ?? licensesPersisted.Expires,
+                        ExpirationIsValid = DateTime.Now.CompareTo(storedDetails.Expires ?? licensesPersisted.Expires) <= 0,
                         FingerprintIsValid = validFp,
                         SignatureIsValid = validSig,
                         VersionIsValid = validVersion,
-                        Owner = licenseStored.Owner,
+                        Owner = licensesPersisted.Owner,
                     };
                 })
                 .ToList();
@@ -199,12 +204,12 @@ namespace ToSic.Eav.Configuration.Licenses
         /// Get list of licenses which are always auto-enabled
         /// </summary>
         /// <returns></returns>
-        private List<LicenseState> AutoEnabledLicenses()
+        private List<FeatureSetState> AutoEnabledLicenses()
         {
-            var licenseStates = _licenseCatalog.List.Where(l => l.AutoEnable).Select(l => new LicenseState
+            var licenseStates = _licenseCatalog.List.Where(l => l.AutoEnable).Select(l => new FeatureSetState
                 {
                     Title = l.Name,
-                    License = l,
+                    Aspect = l,
                     EntityGuid = Guid.Empty,
                     LicenseKey = "always enabled",
                     Expiration = BuiltInLicenses.UnlimitedExpiry,

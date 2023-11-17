@@ -2,13 +2,13 @@
 using System.Text.Json.Serialization;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.SysData
 {
     [PrivateApi("no good reason to publish this")]
-    public class FeatureListStored
+    public class FeatureStatesPersisted
     {
         [JsonPropertyName("features")]
-        public List<FeatureConfig> Features = new List<FeatureConfig>();
+        public List<FeatureStatePersisted> Features = new List<FeatureStatePersisted>();
 
         [JsonPropertyName("fingerprint")]
         public string Fingerprint;

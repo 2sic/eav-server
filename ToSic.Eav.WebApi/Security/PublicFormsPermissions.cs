@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Security;
-using ToSic.Eav.Configuration;
+using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Errors;

@@ -1,7 +1,7 @@
 ﻿using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Loaders
 {
     public class LoaderBase: ServiceBase
     {

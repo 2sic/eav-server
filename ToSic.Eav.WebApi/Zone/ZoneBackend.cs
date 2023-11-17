@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Code.InfoSystem;
-using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security.Fingerprint;

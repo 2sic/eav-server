@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Lib.Documentation;
 
 // ReSharper disable once CheckNamespace
@@ -37,7 +37,7 @@ namespace ToSic.Eav.DataSources.Sys
         public Licenses(MyServices services, ILicenseService licenseService) : base(services, $"{DataSourceConstants.LogPrefix}.Lics")
         {
             ConnectServices(licenseService);
-            ProvideOutRaw(() => licenseService.All.OrderBy(l => l.License?.Priority ?? 0), options: () => new DataFactoryOptions(typeName: "License"));
+            ProvideOutRaw(() => licenseService.All.OrderBy(l => l.Aspect?.Priority ?? 0), options: () => new DataFactoryOptions(typeName: "License"));
         }
     }
 }

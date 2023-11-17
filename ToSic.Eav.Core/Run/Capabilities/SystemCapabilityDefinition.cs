@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.SysData;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Run.Capabilities
 {
-    public class SystemCapabilityDefinition: FeatureDefinition, IHasRawEntity<IRawEntity>
+    public class SystemCapabilityDefinition: Feature, IHasRawEntity<IRawEntity>
     {
         public const string Prefix = "System";
 

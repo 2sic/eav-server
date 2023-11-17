@@ -2,13 +2,13 @@
 using System.Text.Json.Serialization;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.SysData
 {
     /// <summary>
     /// This stores the enabled / expiry of a feature
     /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class FeatureConfig
+    public class FeatureStatePersisted
     {
         /// <summary>
         /// Feature GUID

@@ -5,9 +5,10 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Environment;
 using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.ImportExport.ImportHelpers;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Identity;
+using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.WebApi.Dto;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.WebApi.ImportExport
     {
         #region DI Constructor
 
-        public ImportApp(IEnvironmentLogger envLogger, ZipImport zipImport, IGlobalConfiguration globalConfiguration, IUser user, AppFinder appFinder, ISite site, Generator<XmlImportWithFiles> xmlImpExpFiles, IFeaturesInternal features) : base("Bck.Export")
+        public ImportApp(IEnvironmentLogger envLogger, ZipImport zipImport, IGlobalConfiguration globalConfiguration, IUser user, AppFinder appFinder, ISite site, Generator<XmlImportWithFiles> xmlImpExpFiles, IEavFeaturesService features) : base("Bck.Export")
         {
             ConnectServices(
                 _envLogger = envLogger,
@@ -42,7 +43,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         private readonly AppFinder _appFinder;
         private readonly ISite _site;
         private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
-        private readonly IFeaturesInternal _features;
+        private readonly IEavFeaturesService _features;
 
         #endregion
 

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Configuration
+﻿namespace ToSic.Eav.SysData
 {
     public class FeatureSecurity
     {

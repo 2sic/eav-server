@@ -18,28 +18,29 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.Internal.Licenses
 {
     public interface ILicenseService
     {
         /// <summary>
         /// All licenses
         /// </summary>
-        List<LicenseState> All { get; }
+        List<FeatureSetState> All { get; }
 
         /// <summary>
         /// Enabled licenses, in a dictionary to retrieve with the LicenseDefinition object
         /// </summary>
-        IImmutableDictionary<Guid, LicenseState> Enabled { get; }
+        IImmutableDictionary<Guid, FeatureSetState> Enabled { get; }
 
         /// <summary>
         /// Check if a license is enabled - using the real primary LicenseDefinition object as the key.
         /// </summary>
         /// <returns></returns>
-        bool IsEnabled(LicenseDefinition license);
+        bool IsEnabled(FeatureSet license);
 
-        LicenseState State(LicenseDefinition license);
+        FeatureSetState State(FeatureSet license);
         /// <summary>
         /// Check if any license is valid.
         /// </summary>

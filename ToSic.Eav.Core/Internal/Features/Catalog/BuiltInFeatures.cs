@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     public partial class BuiltInFeatures
     {
@@ -10,7 +10,7 @@ namespace ToSic.Eav.Configuration
         // So always create the definition there first, then use the GUID of that definition here
 
 
-        internal static List<FeatureLicenseRule> BuildRule(LicenseDefinition licDef, bool featureEnabled) => new List<FeatureLicenseRule>
+        internal static List<FeatureLicenseRule> BuildRule(FeatureSet licDef, bool featureEnabled) => new List<FeatureLicenseRule>
         {
             new FeatureLicenseRule(licDef, featureEnabled)
         };

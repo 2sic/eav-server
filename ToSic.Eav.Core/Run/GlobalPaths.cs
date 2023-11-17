@@ -1,6 +1,6 @@
 ﻿using System;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Helpers;
+using ToSic.Eav.Internal.Configuration;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;

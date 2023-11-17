@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
+using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 

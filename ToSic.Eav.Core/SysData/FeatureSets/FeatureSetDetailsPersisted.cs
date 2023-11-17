@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.SysData
 {
-    public class LicenseStoredDetails
+    public class FeatureSetDetailsPersisted
     {
         /// <summary>
         /// A fingerprint / License

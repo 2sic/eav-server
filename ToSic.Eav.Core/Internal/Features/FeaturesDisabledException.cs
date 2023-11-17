@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     /// <summary>
     /// Typed exception so code can check if the exception was a feature-exception

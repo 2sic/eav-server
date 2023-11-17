@@ -14,24 +14,25 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
+
 using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Raw;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.SysData
 {
-    public class LicenseState: IHasRawEntity<IRawEntity>
+    public class FeatureSetState: IHasRawEntity<IRawEntity>
     {
-        public LicenseState() { }
+        public FeatureSetState() { }
 
         public string Title { get; internal set; }
         public string LicenseKey { get; internal set; }
 
         public Guid EntityGuid { get; internal set; }
 
-        public LicenseDefinition License { get; internal set; }
+        public FeatureSet Aspect { get; internal set; }
 
         public bool Enabled => EnabledInConfiguration && Valid;
 
@@ -65,17 +66,17 @@ namespace ToSic.Eav.Configuration.Licenses
         /// </summary>
         public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
         {
-            Guid = License.Guid,
+            Guid = Aspect.Guid,
             Values = new Dictionary<string, object>
             {
                 // Properties describing the License
                 // { Attributes.NameIdNiceName, License.Name },
-                { Attributes.TitleNiceName, License.Name },
-                { nameof(License.NameId), License.NameId },
+                { Attributes.TitleNiceName, Aspect.Name },
+                { nameof(Aspect.NameId), Aspect.NameId },
                 { nameof(LicenseKey), LicenseKey },
-                { nameof(License.Description), License.Description },
-                { nameof(License.AutoEnable), License.AutoEnable },
-                { nameof(License.Priority), License.Priority },
+                { nameof(Aspect.Description), Aspect.Description },
+                { nameof(Aspect.AutoEnable), Aspect.AutoEnable },
+                { nameof(Aspect.Priority), Aspect.Priority },
                 // The License Condition is an internal property
                 // Used when checking conditions on other objects - if this license is what is expected
                 //{ "LicenseConditionType", License.Condition.Type },

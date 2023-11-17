@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     [PrivateApi]
     public class FeatureConstants

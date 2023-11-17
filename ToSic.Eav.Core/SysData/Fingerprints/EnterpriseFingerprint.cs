@@ -2,7 +2,7 @@
 using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.SysData
 {
     public class EnterpriseFingerprint
     {

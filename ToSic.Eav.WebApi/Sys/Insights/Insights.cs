@@ -2,8 +2,8 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Context;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Lib.DI;

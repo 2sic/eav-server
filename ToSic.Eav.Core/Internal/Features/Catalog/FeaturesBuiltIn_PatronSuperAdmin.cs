@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     public partial class BuiltInFeatures
     {
-        internal static List<FeatureLicenseRule> ForPatronSuperAdminAutoEnabled = BuildRule(Licenses.BuiltInLicenses.PatronSuperAdmin, true);
+        internal static List<FeatureLicenseRule> ForPatronSuperAdminAutoEnabled = BuildRule(BuiltInLicenses.PatronSuperAdmin, true);
 
-        public static readonly FeatureDefinition AppSyncWithSiteFiles = new FeatureDefinition(
+        public static readonly Feature AppSyncWithSiteFiles = new Feature(
             nameof(AppSyncWithSiteFiles),
             new Guid("35694e6b-cd2f-4634-9ecf-5bd6fd14d9a1"),
             "App Sync - Allow Include Site Files",
@@ -18,7 +20,7 @@ namespace ToSic.Eav.Configuration
             ForPatronSuperAdminAutoEnabled
         );
         
-        public static readonly FeatureDefinition AppAutoInstallerConfigurable = new FeatureDefinition(
+        public static readonly Feature AppAutoInstallerConfigurable = new Feature(
             nameof(AppAutoInstallerConfigurable),
             new Guid("3413786a-de3a-416f-827f-5d4c7cfc11a6"),
             "App Auto-Installer - Make it more configurable.",
@@ -29,7 +31,7 @@ namespace ToSic.Eav.Configuration
             ForPatronSuperAdminAutoEnabled
         );
 
-        public static readonly FeatureDefinition DataExportImportBundles = new FeatureDefinition(
+        public static readonly Feature DataExportImportBundles = new Feature(
             nameof(DataExportImportBundles),
             new Guid("32f4d1e6-764c-4702-9cda-521428aca66c"),
             "Export Data in configured bundles",

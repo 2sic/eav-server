@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -54,10 +54,10 @@ namespace ToSic.Eav.Security
 
         public class MyServices: MyServicesBase
         {
-            public IFeaturesInternal Features { get; }
+            public IEavFeaturesService Features { get; }
             public IEnvironmentPermission EnvironmentPermission { get; }
 
-            public MyServices(IFeaturesInternal features, IEnvironmentPermission environmentPermission)
+            public MyServices(IEavFeaturesService features, IEnvironmentPermission environmentPermission)
             {
                 ConnectServices(
                     Features = features,

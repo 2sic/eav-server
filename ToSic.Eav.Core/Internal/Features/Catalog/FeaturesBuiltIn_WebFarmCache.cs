@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     public partial class BuiltInFeatures
     {
         public static List<FeatureLicenseRule> ForForWebFarmCacheDisabled = BuildRule(BuiltInLicenses.WebFarmCache, false);
         public static List<FeatureLicenseRule> ForForWebFarmCacheEnabled = BuildRule(BuiltInLicenses.WebFarmCache, true);
 
-        public static readonly FeatureDefinition WebFarmCache = new FeatureDefinition(
+        public static readonly Feature WebFarmCache = new Feature(
             "WebFarmCache",
             new Guid("11c0fedf-16a7-4596-900c-59e860b47965"),
             "Web Farm Cache",
@@ -19,7 +20,7 @@ namespace ToSic.Eav.Configuration
             ForForWebFarmCacheDisabled
         );
 
-        public static readonly FeatureDefinition WebFarmCacheDebug = new FeatureDefinition(
+        public static readonly Feature WebFarmCacheDebug = new Feature(
             "WebFarmCacheDebug",
             new Guid("031cf718-271e-41de-89ca-d1dd4ecfe602"),
             "Web Farm Cache with verbose debugging",

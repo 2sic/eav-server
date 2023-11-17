@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Configuration
+﻿using ToSic.Eav.SysData;
+
+namespace ToSic.Eav.Internal.Features
 {
     public static class FeaturesCatalogRules
     {

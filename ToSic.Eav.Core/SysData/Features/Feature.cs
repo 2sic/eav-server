@@ -1,31 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Lib.Documentation;
-using static ToSic.Eav.Configuration.RequirementCheckFeature;
+using static ToSic.Eav.Internal.Features.FeatureRequirementCheck;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.SysData
 {
     [PrivateApi("no good reason to publish this")]
-    public class FeatureDefinition: AspectDefinition
+    public class Feature: Aspect
     {
         #region Constructors
 
-        public FeatureDefinition(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security,
+        public Feature(string nameId, Guid guid, string name, bool isPublic, bool ui, string description, FeatureSecurity security,
             IEnumerable<FeatureLicenseRule> licRules): base(nameId, guid, name, description)
         {
             Security = security;
             Public = isPublic;
             Ui = ui;
-            Condition = new Condition(ConditionIsFeature, nameId);
+            Requirement = new Requirement(ConditionIsFeature, nameId);
             LicenseRules = CreateLicenseRules(licRules, nameId, guid);    // must run at the end, as properties are needed
         }
         static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules, string nameId, Guid guid)
         {
             var newRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
             // Create virtual license rule so it can be enabled by its own GUID
-            var ownLicenseDefinition = new LicenseDefinition(BuiltInLicenses.LicenseCustom, 0, $"Feature: {nameId}", guid, $"Feature {nameId} ({guid})");
+            var ownLicenseDefinition = new FeatureSet(BuiltInLicenses.LicenseCustom, 0, $"Feature: {nameId}", guid, $"Feature {nameId} ({guid})");
             var ownRule = new FeatureLicenseRule(ownLicenseDefinition, true);
             newRules.Add(ownRule);
             return newRules.AsReadOnly();
@@ -36,7 +37,7 @@ namespace ToSic.Eav.Configuration
         /// Constructor for unknown feature - which only has a GUID to identify it
         /// </summary>
         /// <param name="unknownFeatureGuid"></param>
-        internal FeatureDefinition(Guid unknownFeatureGuid): this(unknownFeatureGuid.ToString(), unknownFeatureGuid, "Unknown Feature", false, false, "Unknown feature", FeatureSecurity.Unknown, null)
+        internal Feature(Guid unknownFeatureGuid): this(unknownFeatureGuid.ToString(), unknownFeatureGuid, "Unknown Feature", false, false, "Unknown feature", FeatureSecurity.Unknown, null)
         {
         }
 
@@ -78,6 +79,6 @@ namespace ToSic.Eav.Configuration
 
         internal IReadOnlyList<FeatureLicenseRule> LicenseRules { get; }
 
-        public Condition Condition { get; }
+        public Requirement Requirement { get; }
     }
 }

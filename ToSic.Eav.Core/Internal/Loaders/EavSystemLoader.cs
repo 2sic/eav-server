@@ -4,17 +4,19 @@ using System.Linq;
 using System.Text.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Configuration.Licenses;
-using ToSic.Lib.Logging;
+using ToSic.Eav.Data;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
+using ToSic.Eav.Run.Capabilities;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
-using ToSic.Eav.Data;
-using ToSic.Eav.Run.Capabilities;
+using ToSic.Eav.SysData;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Loaders
 {
     [PrivateApi]
     public class EavSystemLoader : LoaderBase
@@ -22,8 +24,8 @@ namespace ToSic.Eav.Configuration
         private readonly SysFeaturesService _sysFeaturesService;
         private readonly IRuntime _appStateLoader;
         private readonly AppsCacheSwitch _appsCache;
-        public readonly IFeaturesInternal Features;
-        private readonly FeatureConfigManager _featureConfigManager;
+        public readonly IEavFeaturesService Features;
+        private readonly FeaturePersistenceService _featurePersistenceService;
         private readonly ILogStore _logStore;
         private readonly IAppStates _appStates;
         private readonly LicenseLoader _licenseLoader;
@@ -35,8 +37,8 @@ namespace ToSic.Eav.Configuration
             SystemFingerprint fingerprint,  // note: must be of type SystemFingerprint, not IFingerprint
             IRuntime runtime,
             AppsCacheSwitch appsCache, 
-            IFeaturesInternal features, 
-            FeatureConfigManager featureConfigManager, 
+            IEavFeaturesService features, 
+            FeaturePersistenceService featurePersistenceService, 
             LicenseLoader licenseLoader,
             ILogStore logStore,
             IAppStates appStates,
@@ -51,7 +53,7 @@ namespace ToSic.Eav.Configuration
                 _appStates = appStates,
                 _appStateLoader = runtime,
                 Features = features,
-                _featureConfigManager = featureConfigManager,
+                _featurePersistenceService = featurePersistenceService,
                 _licenseLoader = licenseLoader,
                 _sysFeaturesService = sysFeaturesService
                 );
@@ -135,8 +137,8 @@ namespace ToSic.Eav.Configuration
         public bool ReloadFeatures() => SetFeaturesStored(LoadFeaturesStored());
 
 
-        private bool SetFeaturesStored(FeatureListStored stored = null) 
-            => Features.UpdateFeatureList(stored ?? new FeatureListStored(), _sysFeaturesService.States);
+        private bool SetFeaturesStored(FeatureStatesPersisted stored = null) 
+            => Features.UpdateFeatureList(stored ?? new FeatureStatesPersisted(), _sysFeaturesService.States);
 
 
         /// <summary>
@@ -144,22 +146,22 @@ namespace ToSic.Eav.Configuration
         /// When old format is detected, it is converted to new format.
         /// </summary>
         /// <returns></returns>
-        private FeatureListStored LoadFeaturesStored()
+        private FeatureStatesPersisted LoadFeaturesStored()
         {
-            var l = Log.Fn<FeatureListStored>();
+            var l = Log.Fn<FeatureStatesPersisted>();
             try
             {
-                var (filePath, fileContent) = _featureConfigManager.LoadFeaturesFile();
+                var (filePath, fileContent) = _featurePersistenceService.LoadFeaturesFile();
                 if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
                     return l.ReturnNull("ok, but 'features.json' is missing");
 
                 // handle old 'features.json' format
-                var stored = _featureConfigManager.ConvertOldFeaturesFile(filePath, fileContent);
+                var stored = _featurePersistenceService.ConvertOldFeaturesFile(filePath, fileContent);
                 if (stored != null) 
                     return l.ReturnAndLog(stored, "converted to new features.json");
 
                 // return features stored
-                return l.ReturnAndLog(JsonSerializer.Deserialize<FeatureListStored>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml), "ok, features loaded");
+                return l.ReturnAndLog(JsonSerializer.Deserialize<FeatureStatesPersisted>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml), "ok, features loaded");
             }
             catch (Exception e)
             {
@@ -176,24 +178,24 @@ namespace ToSic.Eav.Configuration
         public bool UpdateFeatures(List<FeatureManagementChange> changes)
         {
             var l = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
-            var saved = _featureConfigManager.SaveFeaturesUpdate(changes);
+            var saved = _featurePersistenceService.SaveFeaturesUpdate(changes);
             SetFeaturesStored(FeatureListStoredBuilder(changes));
             return l.ReturnAndLog(saved, "ok, updated");
         }
 
-        private FeatureListStored FeatureListStoredBuilder(List<FeatureManagementChange> changes)
+        private FeatureStatesPersisted FeatureListStoredBuilder(List<FeatureManagementChange> changes)
         {
             var updatedIds = changes.Select(f => f.FeatureGuid);
 
             var storedFeaturesButNotUpdated = Features.All
                 .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Definition.Guid))
-                .Select(FeatureConfigManager.FeatureConfigBuilder).ToList();
+                .Select(FeaturePersistenceService.FeatureConfigBuilder).ToList();
             
             var updatedFeatures = changes
                 .Where(f => f.Enabled.HasValue)
-                .Select(FeatureConfigManager.FeatureConfigBuilder).ToList();
+                .Select(FeaturePersistenceService.FeatureConfigBuilder).ToList();
 
-            return new FeatureListStored
+            return new FeatureStatesPersisted
             {
                 Features = storedFeaturesButNotUpdated.Union(updatedFeatures).ToList(),
                 Fingerprint = _fingerprint.GetFingerprint()

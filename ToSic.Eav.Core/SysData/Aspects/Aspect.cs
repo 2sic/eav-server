@@ -3,17 +3,17 @@ using ToSic.Lib.Coding;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.SysData
 {
     /// <summary>
     /// Base class for various aspects of the system, such as features or capabilities.
     /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class AspectDefinition: IHasIdentityNameId
+    public class Aspect: IHasIdentityNameId
     {
         public const string PatronsUrl = "https://patrons.2sxc.org";
 
-        protected AspectDefinition(string nameId, Guid guid, string name, string description = default)
+        protected Aspect(string nameId, Guid guid, string name, string description = default)
         {
             NameId = nameId;
             Guid = guid;
@@ -21,10 +21,10 @@ namespace ToSic.Eav.Configuration
             Description = description;
         }
 
-        public static AspectDefinition Custom(string nameId, Guid guid, string name = default, string description = default) 
-            => new AspectDefinition(nameId, guid, name, description);
+        public static Aspect Custom(string nameId, Guid guid, string name = default, string description = default) 
+            => new Aspect(nameId, guid, name, description);
 
-        public static AspectDefinition None = new AspectDefinition("None", Guid.Empty, "None");
+        public static Aspect None = new Aspect("None", Guid.Empty, "None");
 
         /// <summary>
         /// GUID Identifier for this Aspect.
@@ -46,8 +46,8 @@ namespace ToSic.Eav.Configuration
         /// </summary>
         public string Description { get; }
 
-        public virtual AspectDefinition Clone(StableApi.NoParamOrder noParamOrder = default, string nameId = default, Guid? guid = default, string name = default, string description = default)
-            => new AspectDefinition(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description);
+        public virtual Aspect Clone(StableApi.NoParamOrder noParamOrder = default, string nameId = default, Guid? guid = default, string name = default, string description = default)
+            => new Aspect(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description);
 
 
         public override string ToString() => $"Aspect: {Name} ({NameId} / {Guid})";

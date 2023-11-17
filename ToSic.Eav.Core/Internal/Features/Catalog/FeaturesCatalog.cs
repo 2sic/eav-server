@@ -1,11 +1,13 @@
-﻿using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Internal.Catalogs;
+using ToSic.Eav.SysData;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.Configuration.BuiltInFeatures;
+using static ToSic.Eav.Internal.Features.BuiltInFeatures;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     [PrivateApi]
-    public class FeaturesCatalog: GlobalCatalogBase<FeatureDefinition>
+    public class FeaturesCatalog: GlobalCatalogBase<Feature>
     {
         public FeaturesCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.FeatCt", new CodeRef())
         {

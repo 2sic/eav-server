@@ -14,22 +14,23 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
+
 using System;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.SysData
 {
     /// <summary>
     /// Defines a license - name, guid etc.
     /// </summary>
-    public class LicenseDefinition: AspectDefinition
+    public class FeatureSet: Aspect
     {
         public const string ConditionIsLicense = "license";
 
-        public LicenseDefinition(string nameId, int priority, string name, Guid guid, string description, bool featureLicense = false)
+        public FeatureSet(string nameId, int priority, string name, Guid guid, string description, bool featureLicense = false)
         : base(nameId ?? guid.ToString(), guid, name, description ?? "")
         {
             Priority = priority;
-            Condition = new Condition(ConditionIsLicense, guid.ToString());
+            Requirement = new Requirement(ConditionIsLicense, guid.ToString());
             FeatureLicense = featureLicense;
         }
 
@@ -37,11 +38,11 @@ namespace ToSic.Eav.Configuration.Licenses
 
         public bool AutoEnable { get; set; } = false;
 
-        public LicenseDefinition[] AlsoInheritEnabledFrom { get; set; }= Array.Empty<LicenseDefinition>();
+        public FeatureSet[] AlsoInheritEnabledFrom { get; set; }= Array.Empty<FeatureSet>();
 
         public bool FeatureLicense { get; }
 
-        public Condition Condition { get; }
+        public Requirement Requirement { get; }
 
     }
 }

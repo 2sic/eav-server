@@ -1,10 +1,10 @@
-﻿using ToSic.Eav.Configuration;
+﻿using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Run.Requirements
 {
     public class RequirementStatus
     {
-        public RequirementStatus(bool isOk, AspectDefinition aspect = default, string message = default)
+        public RequirementStatus(bool isOk, Aspect aspect = default, string message = default)
         {
             IsOk = isOk;
             Aspect = aspect;
@@ -13,7 +13,7 @@ namespace ToSic.Eav.Run.Requirements
 
         public bool IsOk { get; }
 
-        public AspectDefinition Aspect { get; }
+        public Aspect Aspect { get; }
 
         public string Message { get; }
     }

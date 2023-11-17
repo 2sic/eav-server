@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using ToSic.Eav.Helpers;
+using ToSic.Eav.Internal.Loaders;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Configuration
 {
     public class GlobalConfiguration : IGlobalConfiguration
     {

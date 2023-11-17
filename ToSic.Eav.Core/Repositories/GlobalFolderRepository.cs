@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Configuration;
+using ToSic.Eav.Internal.Configuration;
 
 namespace ToSic.Eav.Repositories
 {

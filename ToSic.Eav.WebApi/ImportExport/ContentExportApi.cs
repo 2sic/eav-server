@@ -11,10 +11,10 @@ using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using System.Collections.Generic;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Serialization;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Security;
 using ToSic.Eav.WebApi.Infrastructure;
 using ToSic.Lib.DI;
@@ -42,7 +42,7 @@ namespace ToSic.Eav.WebApi.ImportExport
         private readonly IAppStates _appStates;
         private readonly Generator<JsonSerializer> _jsonSerializer;
         private readonly IResponseMaker _responseMaker;
-        private readonly LazySvc<IFeaturesInternal> _features;
+        private readonly LazySvc<IEavFeaturesService> _features;
 
         public ContentExportApi(
             AppWorkContextService appWorkCtxSvc,
@@ -50,7 +50,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             Generator<JsonSerializer> jsonSerializer,
             IResponseMaker responseMaker,
             Generator<ExportListXml> exportListXmlGenerator,
-            LazySvc<IFeaturesInternal> features
+            LazySvc<IEavFeaturesService> features
             ) : base("Api.EaCtEx")
         {
             ConnectServices(

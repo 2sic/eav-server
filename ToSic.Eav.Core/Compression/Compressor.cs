@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using ToSic.Eav.Configuration;
+using ToSic.Eav.Internal.Features;
 
 namespace ToSic.Eav.Compression
 {
@@ -9,7 +9,7 @@ namespace ToSic.Eav.Compression
         private readonly bool _featureEnabled;
         private ICompressor _compressor;
 
-        public Compressor(IFeaturesInternal features = null)
+        public Compressor(IEavFeaturesService features = null)
         {
             // TODO: review with 2DM, because fallback is to "true" (used by unit testing)
             _featureEnabled = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;

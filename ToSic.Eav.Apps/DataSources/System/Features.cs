@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Documentation;
 
 // ReSharper disable once CheckNamespace
@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources.Sys
         /// Constructs a new Scopes DS
         /// </summary>
         [PrivateApi]
-        public Features(MyServices services, IFeaturesInternal featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Feats")
+        public Features(MyServices services, IEavFeaturesService featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Feats")
         {
             ConnectServices(featuresService);
             ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new DataFactoryOptions(typeName: "Feature"));

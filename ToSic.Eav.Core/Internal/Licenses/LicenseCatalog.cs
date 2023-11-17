@@ -16,12 +16,14 @@
  */
 
 using System.Linq;
+using ToSic.Eav.Internal.Catalogs;
+using ToSic.Eav.SysData;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.Configuration.Licenses.BuiltInLicenses;
+using static ToSic.Eav.Internal.Licenses.BuiltInLicenses;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.Internal.Licenses
 {
-    public class LicenseCatalog: GlobalCatalogBase<LicenseDefinition>
+    public class LicenseCatalog: GlobalCatalogBase<FeatureSet>
     {
         public LicenseCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.LicCat", new CodeRef())
         {
@@ -49,7 +51,7 @@ namespace ToSic.Eav.Configuration.Licenses
             );
         }
 
-        public override LicenseDefinition TryGet(string name) =>
+        public override FeatureSet TryGet(string name) =>
             name == null
                 ? null
                 : base.TryGet(name)

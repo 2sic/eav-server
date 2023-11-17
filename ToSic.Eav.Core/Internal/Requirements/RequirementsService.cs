@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Requirements
 {
     /// <summary>
     /// Internal service to check if a requirement has been met
@@ -20,26 +21,26 @@ namespace ToSic.Eav.Configuration
 
         protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
 
-        public List<ConditionError> Check(IEnumerable<IHasRequirements> withRequirements) => Log.Func(timer: true, func: () =>
+        public List<RequirementError> Check(IEnumerable<IHasRequirements> withRequirements) => Log.Func(timer: true, func: () =>
         {
-            var result = withRequirements?.SelectMany(Check).ToList() ?? new List<ConditionError>();
+            var result = withRequirements?.SelectMany(Check).ToList() ?? new List<RequirementError>();
             return (result, $"{result.Count} requirements failed");
         });
 
-        public List<ConditionError> Check(IHasRequirements withRequirements) 
+        public List<RequirementError> Check(IHasRequirements withRequirements) 
             => Check(withRequirements?.Requirements);
 
-        public List<ConditionError> Check(List<Condition> requirements)
+        public List<RequirementError> Check(List<Requirement> requirements)
         {
-            if (requirements == null || requirements.Count == 0) return new List<ConditionError>();
+            if (requirements == null || requirements.Count == 0) return new List<RequirementError>();
             return requirements.Select(Check).Where(c => c != null).ToList();
         }
 
-        public ConditionError Check(Condition condition)
+        public RequirementError Check(Requirement requirement)
         {
-            if (condition == null) return null;
+            if (requirement == null) return null;
 
-            var checker = Checkers.Value.ByNameId(condition.Type);
+            var checker = Checkers.Value.ByNameId(requirement.Type);
 
             // TODO: ERROR IF CHECKER NOT FOUND
             // Must wait till we implement all checkers, ATM just feature
@@ -47,10 +48,10 @@ namespace ToSic.Eav.Configuration
             // We may refactor the license to just be a requirement
             if (checker == null) return null;
 
-            if (checker.IsOk(condition)) return null;
+            if (checker.IsOk(requirement)) return null;
 
-            return new ConditionError(condition,
-                $"Condition '{condition.Type}.{condition.NameId}' is not met. " + checker.InfoIfNotOk(condition));
+            return new RequirementError(requirement,
+                $"Condition '{requirement.Type}.{requirement.NameId}' is not met. " + checker.InfoIfNotOk(requirement));
         }
     }
 }

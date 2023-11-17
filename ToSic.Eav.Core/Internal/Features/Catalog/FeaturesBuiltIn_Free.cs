@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     public partial class BuiltInFeatures
     {
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Configuration
         public const bool Public = true;
         public const bool NotForPublic = false;
 
-        public static readonly FeatureDefinition WysiwygPasteFormatted = new FeatureDefinition(
+        public static readonly Feature WysiwygPasteFormatted = new Feature(
             "WysiwygPasteFormatted",
             new Guid("1b13e0e6-a346-4454-a1e6-2fb18c047d20"),
             "Paste Formatted Text",
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Configuration
 
 
 
-        public static readonly FeatureDefinition EditUiShowNotes = new FeatureDefinition(
+        public static readonly Feature EditUiShowNotes = new Feature(
             "EditUiShowNotes",
             new Guid("945320af-9ba9-4117-87cb-d63815e99fd4"),
             "Edit UI: Show notes button",
@@ -43,7 +44,7 @@ namespace ToSic.Eav.Configuration
             ForAllEnabled
         );
 
-        public static readonly FeatureDefinition EditUiShowMetadataFor = new FeatureDefinition(
+        public static readonly Feature EditUiShowMetadataFor = new Feature(
             "EditUiShowMetadataFor",
             new Guid("717b5d0a-07b1-41ec-a670-ec9665cd4af1"),
             "Edit UI: Show information if something is Metadata-For",

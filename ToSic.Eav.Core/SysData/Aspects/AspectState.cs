@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.SysData
 {
     /// <summary>
     /// Experimental - base class for any kind of aspect and it's state
     /// </summary>
-    public class AspectState<TAspect> where TAspect : AspectDefinition
+    public class AspectState<TAspect> where TAspect : Aspect
     {
         public AspectState(TAspect definition, bool isEnabled)
         {

@@ -1,19 +1,21 @@
-﻿using ToSic.Lib.DI;
+﻿using ToSic.Eav.Internal.Requirements;
+using ToSic.Eav.SysData;
+using ToSic.Lib.DI;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
-    public class RequirementCheckFeature: RequirementCheckBase
+    public class FeatureRequirementCheck: RequirementCheckBase
     {
         public const string ConditionIsFeature = "feature";
 
-        public RequirementCheckFeature(LazySvc<IFeaturesInternal> features) => Features = features;
-        private LazySvc<IFeaturesInternal> Features { get; }
+        public FeatureRequirementCheck(LazySvc<IEavFeaturesService> features) => Features = features;
+        private LazySvc<IEavFeaturesService> Features { get; }
 
         public override string NameId => ConditionIsFeature;
 
-        public override bool IsOk(Condition condition) => Features.Value.IsEnabled(condition.NameId);
+        public override bool IsOk(Requirement requirement) => Features.Value.IsEnabled(requirement.NameId);
 
-        public override string InfoIfNotOk(Condition condition) 
-            => $"The feature '{condition.NameId}' is not enabled - see https://go.2sxc.org/features.";
+        public override string InfoIfNotOk(Requirement requirement) 
+            => $"The feature '{requirement.NameId}' is not enabled - see https://go.2sxc.org/features.";
     }
 }

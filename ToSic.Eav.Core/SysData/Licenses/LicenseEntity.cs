@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.SysData
 {
     /// <summary>
     /// License entity - usually stored in the global / preset App

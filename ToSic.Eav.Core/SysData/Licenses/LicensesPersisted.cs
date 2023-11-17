@@ -14,6 +14,7 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,9 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.Plumbing;
 using static System.String;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.SysData
 {
-    public class LicenseStored
+    public class LicensesPersisted
     {
         /// <summary>
         /// Just a title to better label the license configuration
@@ -49,12 +50,12 @@ namespace ToSic.Eav.Configuration.Licenses
         /// <summary>
         /// Fingerprints of systems where this license applies
         /// </summary>
-        public List<LicenseStoredDetails> Fingerprints { get; set; }
+        public List<FeatureSetDetailsPersisted> Fingerprints { get; set; }
 
         /// <summary>
         /// Fingerprints of systems where this license applies
         /// </summary>
-        public List<LicenseStoredDetails> Licenses { get; set; }
+        public List<FeatureSetDetailsPersisted> Licenses { get; set; }
 
         /// <summary>
         /// List of 2sxc/eav versions which this license applies to
@@ -97,7 +98,7 @@ namespace ToSic.Eav.Configuration.Licenses
         {
             const string dateFormat = "yyyy-MM-dd";
 
-            var licenseList = Licenses ?? new List<LicenseStoredDetails>();
+            var licenseList = Licenses ?? new List<FeatureSetDetailsPersisted>();
             var licenses = licenseList.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty();
 
             // License expiry must be built in a way

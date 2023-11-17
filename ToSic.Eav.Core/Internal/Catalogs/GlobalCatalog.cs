@@ -7,7 +7,7 @@ using ToSic.Lib.Data;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Catalogs
 {
     /// <summary>
     /// A template object to build a global catalog of features or something.

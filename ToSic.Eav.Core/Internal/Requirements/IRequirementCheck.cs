@@ -1,11 +1,12 @@
-﻿using ToSic.Lib.DI;
+﻿using ToSic.Eav.SysData;
+using ToSic.Lib.DI;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Requirements
 {
     public interface IRequirementCheck: ISwitchableService
     {
-        bool IsOk(Condition condition);
+        bool IsOk(Requirement requirement);
 
-        string InfoIfNotOk(Condition condition);
+        string InfoIfNotOk(Requirement requirement);
     }
 }

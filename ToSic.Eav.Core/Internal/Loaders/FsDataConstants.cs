@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Loaders
 {
     [PrivateApi]
     public class FsDataConstants

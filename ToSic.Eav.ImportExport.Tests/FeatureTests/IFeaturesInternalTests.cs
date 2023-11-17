@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Configuration;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Run;
 using ToSic.Testing.Shared;
 using ToSic.Testing.Shared.Platforms;
@@ -14,9 +14,9 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
     {
         public IFeaturesInternalTests()
         {
-            FeaturesInternal = GetService<IFeaturesInternal>();
+            FeaturesInternal = GetService<IEavFeaturesService>();
         }
-        internal IFeaturesInternal FeaturesInternal;
+        internal IEavFeaturesService FeaturesInternal;
 
         protected override void SetupServices(IServiceCollection services)
         {

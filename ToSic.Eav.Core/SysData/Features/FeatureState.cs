@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using ToSic.Eav.Configuration.Licenses;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Run.Capabilities;
 using ToSic.Lib.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.SysData
 {
     /// <summary>
     /// Information about an enabled feature
     /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
     /// </summary>
     [PrivateApi("no good reason to publish this")]
-    public class FeatureState: AspectState<FeatureDefinition>, IHasRawEntity<IRawEntity>, IHasIdentityNameId
+    public class FeatureState: AspectState<Feature>, IHasRawEntity<IRawEntity>, IHasIdentityNameId
     {
-        public FeatureState(FeatureDefinition definition, DateTime expiration, bool enabled, string msgShort, string msgLong, bool allowedByLicense, bool enabledByDefault, bool? enabledInConfiguration)
+        public FeatureState(Feature definition, DateTime expiration, bool enabled, string msgShort, string msgLong, bool allowedByLicense, bool enabledByDefault, bool? enabledInConfiguration)
              : base(definition, enabled)
         {
             Expiration = expiration;
@@ -38,8 +38,8 @@ namespace ToSic.Eav.Configuration
 
         public string NameId => Definition.NameId;
 
-        public LicenseDefinition License => _license.Get(() => Definition.LicenseRules?.FirstOrDefault()?.LicenseDefinition);
-        private readonly GetOnce<LicenseDefinition> _license = new GetOnce<LicenseDefinition>();
+        public FeatureSet License => _license.Get(() => Definition.LicenseRules?.FirstOrDefault()?.FeatureSet);
+        private readonly GetOnce<FeatureSet> _license = new GetOnce<FeatureSet>();
 
         /// <summary>
         /// Feature is enabled and hasn't expired yet.

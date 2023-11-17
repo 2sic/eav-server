@@ -1,12 +1,11 @@
-﻿namespace ToSic.Eav.Configuration
+﻿namespace ToSic.Eav.SysData
 {
-    public class Condition
+    public class Requirement
     {
-        public Condition(string type, string nameId, bool isEnabled = true)
+        public Requirement(string type, string nameId)
         {
             Type = type;
             NameId = nameId;
-            IsEnabled = isEnabled;
         }
 
         public string Type { get; set; }
@@ -15,10 +14,5 @@
         /// The string identifier of this condition
         /// </summary>
         public string NameId { get; set; }
-
-        /// <summary>
-        /// Usually IsEnabled must be true
-        /// </summary>
-        public bool IsEnabled { get; set; }
     }
 }

@@ -4,20 +4,22 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using ToSic.Lib.Logging;
+using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
+using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
-    public class FeatureConfigManager : ServiceBase
+    public class FeaturePersistenceService : ServiceBase
     {
         private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
         private readonly LazySvc<SystemFingerprint> _fingerprint;
 
-        public FeatureConfigManager(LazySvc<IGlobalConfiguration> globalConfiguration, LazySvc<SystemFingerprint> fingerprint) : base("FeatCfgMng")
+        public FeaturePersistenceService(LazySvc<IGlobalConfiguration> globalConfiguration, LazySvc<SystemFingerprint> fingerprint) : base("FeatCfgMng")
         {
             ConnectServices(
                 _globalConfiguration = globalConfiguration,
@@ -54,7 +56,7 @@ namespace ToSic.Eav.Configuration
         /// <param name="filePath"></param>
         /// <param name="fileContent"></param>
         /// <returns>features stored</returns>
-        internal FeatureListStored ConvertOldFeaturesFile(string filePath, string fileContent)
+        internal FeatureStatesPersisted ConvertOldFeaturesFile(string filePath, string fileContent)
         {
             var fileJson = JsonNode.Parse(fileContent, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions).AsObject();
 
@@ -82,9 +84,9 @@ namespace ToSic.Eav.Configuration
         /// Get features from json old format (v12)
         /// </summary>
         /// <param name="json"></param>
-        private FeatureListStored GetFeaturesFromOldFormat(JsonObject json)
+        private FeatureStatesPersisted GetFeaturesFromOldFormat(JsonObject json)
         {
-            var features = new FeatureListStored();
+            var features = new FeatureStatesPersisted();
 
             var fs = (string)json["Entity"]["Attributes"]["Custom"]["Features"]["*"];
             var oldFeatures = JsonNode.Parse(fs, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions).AsObject();
@@ -95,7 +97,7 @@ namespace ToSic.Eav.Configuration
 
             foreach (var f in oldFeatures["features"].AsArray())
             {
-                features.Features.Add(new FeatureConfig()
+                features.Features.Add(new FeatureStatePersisted()
                 {
                     Id = (Guid)f["id"],
                     Enabled = (bool)f["enabled"],
@@ -110,12 +112,12 @@ namespace ToSic.Eav.Configuration
         /// <summary>
         /// Save new features config in "features.json".
         /// </summary>
-        private bool SaveFeaturesNew(FeatureListStored features) => Log.Func(l =>
+        private bool SaveFeaturesNew(FeatureStatesPersisted features) => Log.Func(l =>
         {
             try
             {
                 // when null, prepare empty features
-                if (features == null) features = new FeatureListStored();
+                if (features == null) features = new FeatureStatesPersisted();
 
                 // update to latest fingerprint
                 features.Fingerprint = _fingerprint.Value.GetFingerprint();
@@ -169,7 +171,7 @@ namespace ToSic.Eav.Configuration
                 
                 // if features.json is missing, we still need empty list of stored features so we can create new one on save
                 if (fileContent == null)
-                    fileContent = JsonSerializer.Serialize(new FeatureListStored(), JsonOptions.FeaturesJson);
+                    fileContent = JsonSerializer.Serialize(new FeatureStatesPersisted(), JsonOptions.FeaturesJson);
 
                 // handle old 'features.json' format
                 var stored = ConvertOldFeaturesFile(filePath, fileContent);
@@ -207,16 +209,16 @@ namespace ToSic.Eav.Configuration
         });
 
 
-        internal static FeatureConfig FeatureConfigBuilder(FeatureState featureState) =>
-            new FeatureConfig
+        internal static FeatureStatePersisted FeatureConfigBuilder(FeatureState featureState) =>
+            new FeatureStatePersisted
             {
                 Id = featureState.Definition.Guid,
                 Enabled = featureState.IsEnabled
             };
 
         
-        internal static FeatureConfig FeatureConfigBuilder(FeatureManagementChange change) =>
-            new FeatureConfig
+        internal static FeatureStatePersisted FeatureConfigBuilder(FeatureManagementChange change) =>
+            new FeatureStatePersisted
             {
                 Id = change.FeatureGuid,
                 Enabled = change.Enabled ?? false

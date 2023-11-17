@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.SysData
 {
     public interface IHasRequirements
     {
         /// <summary>
         /// Optional requirements which are necessary for this feature to be used
         /// </summary>
-        List<Condition> Requirements { get; }
+        List<Requirement> Requirements { get; }
     }
 }

@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.SysData;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static System.StringComparer;
 // ReSharper disable ConvertToNullCoalescingCompoundAssignment
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     /// <summary>
     /// WARNING: this is used as a singleton / static
     /// not quite sure any more why, either the name is hard-coded in some apps or we felt like it's a performance improvement
     /// </summary>
     [PrivateApi("hide implementation")]
-    public class FeaturesService: IFeaturesInternal
+    public class EavFeaturesService: IEavFeaturesService
     {
         #region Constructor
 
@@ -23,7 +24,7 @@ namespace ToSic.Eav.Configuration
         /// warning: singleton - don't use any complex services/dependencies here
         /// </summary>
         /// <param name="featuresCatalog"></param>
-        public FeaturesService(FeaturesCatalog featuresCatalog)
+        public EavFeaturesService(FeaturesCatalog featuresCatalog)
         {
             _featuresCatalog = featuresCatalog;
         }
@@ -60,7 +61,7 @@ namespace ToSic.Eav.Configuration
 
         public FeatureState Get(string nameId) => All.FirstOrDefault(f => f.Definition.Name == nameId || f.NameId == nameId);
 
-        public bool IsEnabled(params FeatureDefinition[] features) 
+        public bool IsEnabled(params Feature[] features) 
             => IsEnabled(features?.Select(f => f.NameId).ToArray());
 
         public bool Valid => ValidInternal;
@@ -96,12 +97,12 @@ namespace ToSic.Eav.Configuration
         #region Static Caches
 
         [PrivateApi]
-        public FeatureListStored Stored => _staticStored;
+        public FeatureStatesPersisted Stored => _staticStored;
 
-        private static FeatureListStored _staticStored;
+        private static FeatureStatesPersisted _staticStored;
         private static List<FeatureState> _staticSysFeatures;
 
-        public bool UpdateFeatureList(FeatureListStored newList, List<FeatureState> sysFeatures)
+        public bool UpdateFeatureList(FeatureStatesPersisted newList, List<FeatureState> sysFeatures)
         {
             _staticStored = newList;
             _staticSysFeatures = sysFeatures;
@@ -113,7 +114,7 @@ namespace ToSic.Eav.Configuration
         }
 
 
-        private static List<FeatureState> Merge(FeatureListStored config, IReadOnlyCollection<FeatureDefinition> featuresCat, List<FeatureState> sysFeatureStates)
+        private static List<FeatureState> Merge(FeatureStatesPersisted config, IReadOnlyCollection<Feature> featuresCat, List<FeatureState> sysFeatureStates)
         {
             var licService = new LicenseService();
 
@@ -126,15 +127,15 @@ namespace ToSic.Eav.Configuration
                 var expiry = DateTime.MinValue;
 
                 // Check if the required license is active
-                var enabledRule = f.LicenseRules.FirstOrDefault(lr => licService.IsEnabled(lr.LicenseDefinition));
+                var enabledRule = f.LicenseRules.FirstOrDefault(lr => licService.IsEnabled(lr.FeatureSet));
                 if (enabledRule != null)
                 {
-                    licService.Enabled.TryGetValue(enabledRule.LicenseDefinition.Guid, out var licenseState);
+                    licService.Enabled.TryGetValue(enabledRule.FeatureSet.Guid, out var licenseState);
                     var specialExpiry = licenseState?.Expiration;
                     enabled = enabledRule.EnableFeatureByDefault;
                     licenseEnabled = true; // The license is active, so it's allowed to enable this
-                    msgShort = enabledRule.LicenseDefinition.Name;
-                    message = $" by default with license {enabledRule.LicenseDefinition.Name}";
+                    msgShort = enabledRule.FeatureSet.Name;
+                    message = $" by default with license {enabledRule.FeatureSet.Name}";
                     expiry = specialExpiry ?? BuiltInLicenses.UnlimitedExpiry;
                 }
 
@@ -155,7 +156,7 @@ namespace ToSic.Eav.Configuration
             // Find additional, un matching features which are not known in the catalog
             var missingFeatures = config?.Features
                 .Where(f => featuresCat.All(fd => fd.Guid != f.Id))
-                .Select(f => new FeatureState(new FeatureDefinition(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
+                .Select(f => new FeatureState(new Feature(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
                     allowedByLicense: false, enabledByDefault: false,  enabledInConfiguration: f.Enabled));
 
             var final = (missingFeatures == null ? allFeats : allFeats.Union(missingFeatures)).ToList();

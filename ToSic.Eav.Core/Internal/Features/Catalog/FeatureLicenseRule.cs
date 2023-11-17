@@ -1,16 +1,16 @@
-﻿using ToSic.Eav.Configuration.Licenses;
+﻿using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Features
 {
     public class FeatureLicenseRule
     {
-        public FeatureLicenseRule(LicenseDefinition licenseDefinition, bool enabled)
+        public FeatureLicenseRule(FeatureSet featureSet, bool enabled)
         {
-            LicenseDefinition = licenseDefinition;
+            FeatureSet = featureSet;
             EnableFeatureByDefault = enabled;
         }
 
-        public LicenseDefinition LicenseDefinition { get; }
+        public FeatureSet FeatureSet { get; }
 
         public bool EnableFeatureByDefault { get; } = true;
     }

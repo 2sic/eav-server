@@ -14,54 +14,56 @@
  * So asking for support to finance advanced features is not asking for much. 
  *
  */
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Configuration.Licenses
+namespace ToSic.Eav.Internal.Licenses
 {
     public class LicenseService : ILicenseService
     {
         #region Public APIs
 
         /// <inheritdoc />
-        public List<LicenseState> All => AllCache;
+        public List<FeatureSetState> All => AllCache;
 
         /// <inheritdoc />
         /// <remarks>
         /// We use the real static LicenseDefinition as an index, because this ensures that people can't inject other license objects to bypass security.
         /// </remarks>
-        public IImmutableDictionary<Guid, LicenseState> Enabled => EnabledCache;
+        public IImmutableDictionary<Guid, FeatureSetState> Enabled => EnabledCache;
 
         /// <inheritdoc />
-        public bool IsEnabled(LicenseDefinition license) => EnabledCache.ContainsKey(license.Guid);
+        public bool IsEnabled(FeatureSet license) => EnabledCache.ContainsKey(license.Guid);
 
-        public LicenseState State(LicenseDefinition license) => EnabledCache.TryGetValue(license.Guid, out var result) ? result : null;
+        public FeatureSetState State(FeatureSet license) => EnabledCache.TryGetValue(license.Guid, out var result) ? result : null;
 
         #endregion
 
         #region Internal stuff, caching, static
 
-        private static List<LicenseState> AllCache { get; set; } = new List<LicenseState>();
+        private static List<FeatureSetState> AllCache { get; set; } = new List<FeatureSetState>();
 
 
-        private static IImmutableDictionary<Guid, LicenseState> EnabledCache { get; set; } =
-            new Dictionary<Guid, LicenseState>().ToImmutableDictionary();
+        private static IImmutableDictionary<Guid, FeatureSetState> EnabledCache { get; set; } =
+            new Dictionary<Guid, FeatureSetState>().ToImmutableDictionary();
 
         public static long CacheTimestamp;
 
 
-        internal static void Update(List<LicenseState> licenses)
+        internal static void Update(List<FeatureSetState> licenses)
         {
             AllCache = licenses;
             EnabledCache = licenses
                 .Where(l => l.Enabled)
                 .OrderByDescending(l => l.Expiration) // same feature license with longer expiration have priority
                 // must do Distinct = GroupBy+First to ensure we don't have duplicate keys
-                .GroupBy(l => l.License)
+                .GroupBy(l => l.Aspect)
                 .Select(g => g.First())
-                .ToImmutableDictionary(l => l.License.Guid, l => l); ;
+                .ToImmutableDictionary(l => l.Aspect.Guid, l => l); ;
             CacheTimestamp = DateTime.Now.Ticks;
             AllLicensesAreInvalid = AreAllLicensesInvalid();
         }
@@ -73,10 +75,10 @@ namespace ToSic.Eav.Configuration.Licenses
         internal static bool AreAllLicensesInvalid()
         {
             // if we do not have license for validation, than it can not be invalid
-            if (AllCache.All(l => l.License.AutoEnable)) return false;
+            if (AllCache.All(l => l.Aspect.AutoEnable)) return false;
             
             // any valid license?
-            foreach (var license in AllCache.Where(l => !l.License.AutoEnable))
+            foreach (var license in AllCache.Where(l => !l.Aspect.AutoEnable))
                 if (license.Valid)
                     return false;
             return true;

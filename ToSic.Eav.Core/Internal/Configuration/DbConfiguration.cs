@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Configuration
+namespace ToSic.Eav.Internal.Configuration
 {
 	/// <summary>
 	/// Global Eav Configuration

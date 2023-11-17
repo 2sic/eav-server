@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Configuration
+﻿using ToSic.Eav.SysData;
+
+namespace ToSic.Eav.Internal.Requirements
 {
     /// <summary>
     /// Base class for requirements checkers.
@@ -12,8 +14,8 @@
 
         public int Priority => 0;
 
-        public abstract bool IsOk(Condition condition);
+        public abstract bool IsOk(Requirement requirement);
 
-        public abstract string InfoIfNotOk(Condition condition);
+        public abstract string InfoIfNotOk(Requirement requirement);
     }
 }

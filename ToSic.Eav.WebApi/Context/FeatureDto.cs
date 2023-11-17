@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Configuration;
+﻿using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.WebApi.Context
 {
