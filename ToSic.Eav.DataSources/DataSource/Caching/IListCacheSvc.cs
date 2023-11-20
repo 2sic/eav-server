@@ -42,7 +42,7 @@ namespace ToSic.Eav.DataSource.Caching
         /// <param name="sourceTimestamp"></param>
         /// <param name="durationInSeconds">The cache validity duration in seconds. If 0 or omitted, default value will be used. </param>
         /// <param name="slidingExpiration"></param>
-        void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true);
+        void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, bool refreshOnSourceRefresh, int durationInSeconds = 0, bool slidingExpiration = true);
 
         /// <summary>
         /// Add an item to the list-cache

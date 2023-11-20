@@ -109,7 +109,7 @@ namespace ToSic.Eav.Apps
         private void FlushDataSnapshot()
         {
             // Purge the list and parent lists - must happen first, as otherwise the list-access will be interrupted
-            _dsCacheSvc.Value.UnCache(0, this, true);
+            _dsCacheSvc.Value.Flush(this, true);
             Reset();
         }
 

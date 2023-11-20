@@ -8,13 +8,13 @@ namespace ToSic.Eav.DataSource.Caching
     /// Internal cache for the data-sources
     /// </summary>
     [PrivateApi]
-    internal class DataSourceListCache
+    public /* should be internal as soon as insights work with that */ class DataSourceListCache
     {
         #region Static Caching and Lock Variables
 
         internal static ObjectCache Cache => MemoryCache.Default;
 
-        internal static readonly ConcurrentDictionary<string, object> LoadLocks
+        public static readonly ConcurrentDictionary<string, object> LoadLocks
             = new ConcurrentDictionary<string, object>();
 
         #endregion
@@ -41,12 +41,12 @@ namespace ToSic.Eav.DataSource.Caching
 
         #endregion
 
-        #region Get Stream from Cache
+        #region Get (static)
 
-        //public static ListCacheItem Get(string key) => Cache[key] as ListCacheItem;
 
-        //public static ListCacheItem Get(IDataStream dataStream) => Get(CacheKey(dataStream));
+        public static ListCacheItem GetStream(string key) => Cache[key] as ListCacheItem;
 
         #endregion
+
     }
 }

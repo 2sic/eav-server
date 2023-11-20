@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource.Caching
 {
@@ -7,7 +6,12 @@ namespace ToSic.Eav.DataSource.Caching
     public interface IDataSourceCacheService
     {
         IListCacheSvc ListCache { get; }
-        bool UnCache(int recursion, IDataSource dataSource, bool cascade = false, IReadOnlyDictionary<string, IDataStream> streams = default);
-        bool UnCache(int recursion, IDataStream stream, bool cascade = false);
+
+        bool FlushAll();
+
+        bool Flush(string key);
+
+        bool Flush(IDataSource dataSource, bool cascade = false);
+        bool Flush(IDataStream stream, bool cascade = false);
     }
 }
