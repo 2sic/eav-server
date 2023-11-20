@@ -44,6 +44,12 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             if (view.EqualsInsensitive(nameof(Types))) return Types(appId);
             if (view.EqualsInsensitive(nameof(Purge))) return Purge(appId);
 
+            // DataSourceCache
+            if (view.EqualsInsensitive(nameof(_dsCache.Value.DataSourceCache))) return _dsCache.Value.DataSourceCache();
+            if (view.EqualsInsensitive(nameof(_dsCache.Value.DataSourceCacheItem))) return _dsCache.Value.DataSourceCacheItem(key);
+            if (view.EqualsInsensitive(nameof(_dsCache.Value.DataSourceCacheFlush))) return _dsCache.Value.DataSourceCacheFlush(key);
+            if (view.EqualsInsensitive(nameof(_dsCache.Value.DataSourceCacheFlushAll))) return _dsCache.Value.DataSourceCacheFlushAll();
+
             // Cache: Entities and Details, Attributes, Metadata etc.
             if (view.EqualsInsensitive(nameof(Entities))) return Entities(appId, type);
             if (view.EqualsInsensitive(nameof(Entity))) return Entity(appId, nameId);

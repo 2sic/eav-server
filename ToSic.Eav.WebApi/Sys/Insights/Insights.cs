@@ -14,6 +14,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
 {
     public partial class InsightsControllerReal: ServiceBase
     {
+        private readonly LazySvc<InsightsDataSourceCache> _dsCache;
         private readonly LazySvc<LicenseCatalog> _licenseCatalog;
         private readonly LazySvc<SystemFingerprint> _fingerprint;
         private readonly Generator<JsonSerializer> _jsonSerializer;
@@ -31,7 +32,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             IUser user, 
             LightSpeedStats lightSpeedStats,
             Generator<AppRuntime> appRuntimeGenerator,
-            Generator<JsonSerializer> jsonSerializer)
+            Generator<JsonSerializer> jsonSerializer,
+            LazySvc<InsightsDataSourceCache> dsCache)
             : base("Api.SysIns")
         {
             ConnectServices(
@@ -44,7 +46,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                 _lightSpeedStats = lightSpeedStats,
                 _appRuntimeGenerator = appRuntimeGenerator,
                 _jsonSerializer = jsonSerializer,
-                SystemManager = systemManager
+                SystemManager = systemManager,
+                _dsCache = dsCache
             );
             _logHtml = new InsightsHtmlLog(_logStore);
         }
@@ -71,7 +74,6 @@ namespace ToSic.Eav.WebApi.Sys.Insights
         private AppRuntime AppRt(int? appId) => _appRuntimeGenerator.New().Init(appId.Value);
 
         private AppState AppState(int? appId) => _appStates.Get(appId.Value);
-
 
     }
 }

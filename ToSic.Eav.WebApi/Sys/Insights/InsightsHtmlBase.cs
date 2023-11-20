@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Web;
 using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
@@ -44,6 +45,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             return Tag.A(label).Href(link);
         }
 
+        internal A LinkBack() => Tag.A( HtmlEncode("🔙 Back")).On("click", "history.back();");
+
         protected bool NiceLink = true;
 
         private string UrlTo(string view, int? appId = null, string noParamOrder = Eav.Parameters.Protector,
@@ -53,7 +56,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             var link = (NiceLink ? $"./{view}?" : $"details?view={view}")
                        + (appId != null ? "&appid=" + appId : "")
                        + (type != null ? "&type=" + type : "")
-                       + (key != null ? "&key=" + key : "")
+                       + (key != null ? "&key=" + UrlEncoder.Default.Encode(key) : "")
                        + (nameId != null ? "&nameId=" + nameId : "")
                        + (more != null ? "&" + more : "");
             return link;

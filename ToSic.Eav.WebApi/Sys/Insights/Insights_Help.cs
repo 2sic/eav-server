@@ -32,6 +32,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
                         Li(LinkTo("Help (this screen", nameof(Help))),
                         Li(LinkTo("All Logs", nameof(Logs))),
                         Li(LinkTo("In Memory Cache", nameof(Cache))),
+                        Li(LinkTo("In Memory DataSource Cache", nameof(_dsCache.Value.DataSourceCache))),
                         Li(LinkTo("ping the system / IsAlive", nameof(IsAlive)))
                     )
 

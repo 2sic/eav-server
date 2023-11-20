@@ -13,6 +13,7 @@ using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.SaveHelpers;
 using ToSic.Eav.WebApi.Serialization;
 using ToSic.Eav.WebApi.Sys;
+using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Zone;
 using InsightsControllerReal = ToSic.Eav.WebApi.Sys.Insights.InsightsControllerReal;
@@ -24,7 +25,7 @@ namespace ToSic.Eav.WebApi
         public static IServiceCollection AddEavWebApi(this IServiceCollection services)
         {
             // Insights, the most important core backend
-            services.TryAddTransient<InsightsControllerReal>();
+            services.AddInsights();
 
             // Real Controller Implementations https://go.2sxc.org/proxy-controllers
             services.TryAddTransient<FeatureControllerReal>();
@@ -67,6 +68,15 @@ namespace ToSic.Eav.WebApi
             services.TryAddScoped<IResponseMaker, ResponseMaker>();
 
             services.AddNetInfrastructure();
+
+            return services;
+        }
+
+        public static IServiceCollection AddInsights(this IServiceCollection services)
+        {
+            // Insights, the most important core backend
+            services.TryAddTransient<InsightsControllerReal>();
+            services.TryAddTransient<InsightsDataSourceCache>();
 
             return services;
         }
