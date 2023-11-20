@@ -1,11 +1,14 @@
-﻿namespace ToSic.Eav.Caching
+﻿using ToSic.Lib.Documentation;
+
+namespace ToSic.Eav.Caching
 {
+    [PrivateApi]
     public interface ICanSelfCache
     {
         /// <summary>
         /// Place the stream in the cache if wanted, by default not
         /// </summary>
-        bool AutoCaching { get; set; }
+        bool AutoCaching { get; /*set;*/ }
 
         /// <summary>
         /// Default cache duration is 3600 * 24 (1 day)

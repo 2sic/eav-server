@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSource.Caching;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -33,5 +33,11 @@ namespace ToSic.Eav.DataSourceTests
 
         public static IEnumerable<IEntity> ListForTests(this IDataStream stream) => stream.List;
 
+        public static bool HasTA(this IListCacheSvc listCache, string key) => DataSourceListCache.HasStream(key);
+        public static bool HasTA(this IListCacheSvc listCache, IDataStream dataStream) => DataSourceListCache.HasStream(dataStream);
+
+        public static ListCacheItem GetTA(this IListCacheSvc listCache, string key) => listCache.Get(key);
+
+        public static ListCacheItem GetTA(this IListCacheSvc listCache, IDataStream dataStream) => listCache.Get(dataStream);
     }
 }

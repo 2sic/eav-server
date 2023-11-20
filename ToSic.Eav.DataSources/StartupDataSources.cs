@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSource.Catalog;
 using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.Services;
@@ -41,6 +42,9 @@ namespace ToSic.Eav.DataSources
             services.TryAddTransient<ITreeMapper, TreeMapper>();
 
             services.TryAddTransient<ConfigurationDataLoader>();
+
+            services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();
+            services.TryAddTransient<IListCacheSvc, ListCacheSvc>();
 
             services.AddDataSourcesFallback();
 

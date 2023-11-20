@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.DI;
+﻿using ToSic.Eav.DataSource.Caching;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
@@ -17,9 +18,10 @@ namespace ToSic.Eav.DataSource
         [PrivateApi]
         public class MyServices : MyServicesBase
         {
-            [PrivateApi] public DataSourceConfiguration Configuration { get; }
-            [PrivateApi] public ConfigurationDataLoader ConfigDataLoader { get; }
-            [PrivateApi] public LazySvc<DataSourceErrorHelper> ErrorHandler { get; }
+            public LazySvc<IDataSourceCacheService> CacheService { get; }
+            public DataSourceConfiguration Configuration { get; }
+            public ConfigurationDataLoader ConfigDataLoader { get; }
+            public LazySvc<DataSourceErrorHelper> ErrorHandler { get; }
 
             /// <summary>
             /// Note that we will use Generators for safety, because in rare cases the dependencies could be re-used to create a sub-data-source
@@ -28,13 +30,15 @@ namespace ToSic.Eav.DataSource
             public MyServices(
                 DataSourceConfiguration configuration,
                 LazySvc<DataSourceErrorHelper> errorHandler,
-                ConfigurationDataLoader configDataLoader
+                ConfigurationDataLoader configDataLoader,
+                LazySvc<IDataSourceCacheService> cacheService
             )
             {
                 ConnectServices(
                     Configuration = configuration,
                     ErrorHandler = errorHandler,
-                    ConfigDataLoader = configDataLoader
+                    ConfigDataLoader = configDataLoader,
+                    CacheService = cacheService
                 );
             }
         }

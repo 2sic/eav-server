@@ -9,20 +9,22 @@ using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources
 {
-    public partial class App
+    public partial class App: IDataSourceReset
     {
         #region Dynamic Out
 
         private readonly StreamDictionary _out;
-        protected bool RequiresRebuildOfOut = true;
-        
+        private bool _requiresRebuildOfOut = true;
+
+        public void Reset() => _requiresRebuildOfOut = true;
+
         /// <inheritdoc/>
         public override IReadOnlyDictionary<string, IDataStream> Out
         {
             get
             {
                 // Use pre-built if already ready and nothing changed RequiresRebuild
-                if (!RequiresRebuildOfOut) return _out.AsReadOnly();
+                if (!_requiresRebuildOfOut) return _out.AsReadOnly();
 
                 // Parse config before we continue, as AppSwitch could be set now
                 Configuration.Parse();
@@ -33,7 +35,7 @@ namespace ToSic.Eav.DataSources
 
                 // now create all streams
                 CreateAppOutWithAllStreams();
-                RequiresRebuildOfOut = false;
+                _requiresRebuildOfOut = false;
                 return _out.AsReadOnly();
             }
         }
@@ -42,8 +44,9 @@ namespace ToSic.Eav.DataSources
         /// <summary>
         /// Create a stream for each data-type
         /// </summary>
-        private void CreateAppOutWithAllStreams() => Log.Do(l =>
+        private StreamDictionary CreateAppOutWithAllStreams()
         {
+            var l = Log.Fn<StreamDictionary>();
             IDataStream upstream;
             try
             {
@@ -76,6 +79,7 @@ namespace ToSic.Eav.DataSources
                 typeList += typeName + ",";
 
                 var deferredStream = new DataStreamWithCustomCaching(
+                    Services.CacheService,
                     () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState,
                         $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                     this,
@@ -86,19 +90,20 @@ namespace ToSic.Eav.DataSources
                 _out.Add(typeName, deferredStream);
             }
 
-            l.A($"Added with drafts:{showDraftsForCacheKey} streams: {typeList}");
-        });
+            return l.Return(_out, $"Added with drafts:{showDraftsForCacheKey} streams: {typeList}");
+        }
 
         /// <summary>
         /// Build an EntityTypeFilter for this content-type to provide as a stream
         /// </summary>
-        private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName) => Log.Func($"..., ..., {typeName}", () =>
+        private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName)
         {
+            var l = Log.Fn<EntityTypeFilter>($"..., ..., {typeName}");
             var ds = _services.DataSourceFactory.Create<EntityTypeFilter>(attach: upstreamDataSource,
                 options: new DataSourceOptions(appIdentity: this, lookUp: Configuration.LookUpEngine));
             ds.TypeName = typeName;
             ds.AddDebugInfo(Guid, null); // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
-            return ds;
-        });
+            return l.Return(ds);
+        }
     }
 }

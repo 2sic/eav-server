@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Lib.Data;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 
@@ -11,12 +13,14 @@ namespace ToSic.Eav.DataSource.Streams
     public class ConnectionStream: IDataStream, IWrapper<IDataStream>
     {
 
-        public ConnectionStream(DataSourceConnection connection, DataSourceErrorHelper errorHandler = null)
+        public ConnectionStream(LazySvc<IDataSourceCacheService> cache, DataSourceConnection connection, DataSourceErrorHelper errorHandler = null)
         {
+            _cache = cache;
             Connection = connection;
             _errorHandler = errorHandler;
         }
 
+        private readonly LazySvc<IDataSourceCacheService> _cache;
         public DataSourceConnection Connection;
         private readonly DataSourceErrorHelper _errorHandler;
 
@@ -52,7 +56,7 @@ namespace ToSic.Eav.DataSource.Streams
         private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
         {
             var errors = _errorHandler.Create(title: title, message: message);
-            return new DataStream(intendedSource, "ConnectionStreamError", () => errors);
+            return new DataStream(_cache, intendedSource, "ConnectionStreamError", () => errors);
         }
 
         public IDataStream GetContents() => InnerStream;
@@ -65,7 +69,7 @@ namespace ToSic.Eav.DataSource.Streams
         public bool AutoCaching
         {
             get => InnerStream.AutoCaching;
-            set => InnerStream.AutoCaching = value;
+            //set => InnerStream.AutoCaching = value;
         }
 
         public int CacheDurationInSeconds
@@ -80,7 +84,7 @@ namespace ToSic.Eav.DataSource.Streams
             set => InnerStream.CacheRefreshOnSourceRefresh = value;
         }
 
-        public void PurgeList(bool cascade = false) => InnerStream.PurgeList(cascade);
+        //public void PurgeList(bool cascade = false) => InnerStream.PurgeList(cascade);
 
         public IEnumerator<IEntity> GetEnumerator() => InnerStream.GetEnumerator();
 
@@ -94,6 +98,7 @@ namespace ToSic.Eav.DataSource.Streams
         public string Scope => InnerStream.Scope;
 
         public DataStreamCacheStatus Caching => InnerStream.Caching;
+        public void ResetStream() => InnerStream.ResetStream();
 
         #endregion
 

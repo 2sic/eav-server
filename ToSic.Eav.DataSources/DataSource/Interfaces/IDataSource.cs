@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSource.Caching.CacheInfo;
 using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
@@ -15,7 +14,7 @@ namespace ToSic.Eav.DataSource
     /// Public interface for an Eav DataSource. All DataSource objects are based on this. 
     /// </summary>
     [PublicApi_Stable_ForUseInYourCode]
-    public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, ICanPurgeListCache, IHasLog
+    public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IHasLog
 #pragma warning disable CS0618
         , IDataTarget
 #pragma warning restore CS0618

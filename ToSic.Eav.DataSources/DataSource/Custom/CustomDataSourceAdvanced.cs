@@ -1,5 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
@@ -30,7 +31,8 @@ namespace ToSic.Eav.DataSource
                 DataSourceConfiguration configuration,
                 LazySvc<DataSourceErrorHelper> errorHandler,
                 ConfigurationDataLoader configDataLoader,
-                IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader)
+                LazySvc<IDataSourceCacheService> cacheService,
+                IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, cacheService)
             {
                 ConnectServices(
                     DataFactory = dataFactory

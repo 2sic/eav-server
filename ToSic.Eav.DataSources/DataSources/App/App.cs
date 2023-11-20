@@ -46,7 +46,7 @@ namespace ToSic.Eav.DataSources
 			{
                 Configuration.SetThisObsolete(value);
                 AppId = value;
-				RequiresRebuildOfOut = true;
+                Reset();
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace ToSic.Eav.DataSources
 			{
                 Configuration.SetThisObsolete(value);
                 ZoneId = value;
-				RequiresRebuildOfOut = true;
+                Reset();
 			}
 		}
 

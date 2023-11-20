@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSource.Caching.CacheInfo;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource.Streams
@@ -15,9 +17,9 @@ namespace ToSic.Eav.DataSource.Streams
     [PrivateApi]
     public class DataStreamWithCustomCaching: DataStream
     {
-        public DataStreamWithCustomCaching(Func<ICacheInfo> cacheInfoDelegate, IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate, 
+        public DataStreamWithCustomCaching(LazySvc<IDataSourceCacheService> cache, Func<ICacheInfo> cacheInfoDelegate, IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate, 
             bool enableAutoCaching, string scope)
-            : base(source, name, listDelegate, enableAutoCaching)
+            : base(cache, source, name, listDelegate, enableAutoCaching)
         {
             CacheInfoDelegate = cacheInfoDelegate;
             Scope = scope;

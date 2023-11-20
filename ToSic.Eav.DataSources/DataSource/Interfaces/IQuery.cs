@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSource
     /// It has an underlying <see cref="QueryDefinition"/> and Params which can be modified by code before running the query. 
     /// </summary>
     [PublicApi]
-    public interface IQuery: IDataSource
+    public interface IQuery: IDataSource, IDataSourceReset
     {
         /// <summary>
         /// The underlying definition for the current query so you can check what's inside.
@@ -57,10 +57,6 @@ namespace ToSic.Eav.DataSource
         IDictionary<string, string> Params();
 
 
-        /// <summary>
-        /// Reset the query, so it can be run again. Requires all params to be set again.
-        /// </summary>
-        void Reset();
 
         [PrivateApi]
         IDataSource Source { get; }

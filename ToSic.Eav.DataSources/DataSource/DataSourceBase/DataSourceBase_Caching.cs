@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Caching;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSource
 {
@@ -44,13 +42,15 @@ namespace ToSic.Eav.DataSource
         #endregion
 
 
-        /// <inheritdoc />
-        [PrivateApi]
-        public virtual void PurgeList(bool cascade = false) => Log.Do($"{cascade} - on {GetType().Name}", l =>
-        {
-            foreach (var stream in In)
-                stream.Value.PurgeList(cascade);
-            if (!In.Any()) l.A("No streams found to clear");
-        });
+        ///// <inheritdoc />
+        //[PrivateApi]
+        //// TODO: MOVING TO DataSourceCacheService
+        //public virtual void PurgeList(bool cascade = false)// => Log.Do($"{cascade} - on {GetType().Name}", l =>
+        //{
+        //    Services.DsCacheSvc.Value.UnCache(0,this, cascade);
+        //    //foreach (var stream in In)
+        //    //    stream.Value.PurgeList(cascade);
+        //    //if (!In.Any()) l.A("No streams found to clear");
+        //}//);
     }
 }

@@ -9,14 +9,8 @@ namespace ToSic.Eav.DataSource.Caching
     /// Marks objects that can cache lists based on certain rules - including retention time and if up-stream changes should refresh the cache. 
     /// </summary>
     [PrivateApi("this is just fyi")]
-    public interface IListCache
+    public interface IListCacheSvc
     {
-        /// <summary>
-        /// The time a list stays in the cache by default - default is 3600 = 1 hour.
-        /// Is used in all Set commands where the default duration is needed.
-        /// </summary>
-        int DefaultDuration { get; }
-
         /// <summary>
         /// Get a list from the cache
         /// </summary>
@@ -50,18 +44,6 @@ namespace ToSic.Eav.DataSource.Caching
         /// <param name="slidingExpiration"></param>
         void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true);
 
-        ///// <summary>
-        ///// Add an item to the list-cache
-        ///// </summary>
-        ///// <param name="key">cache key</param>
-        ///// <param name="list">items to put into the cache for this cache key</param>
-        ///// <param name="sourceTimestamp"></param>
-        ///// <param name="durationInSeconds">The cache validity duration in seconds. If 0 or omitted, default value will be used. </param>
-        ///// <param name="slidingExpiration"></param>
-        //void Set(string key, IEnumerable<IEntity> list, long sourceTimestamp, int durationInSeconds = 0, bool slidingExpiration = true);
-
-
-
         /// <summary>
         /// Add an item to the list-cache
         /// </summary>
@@ -70,30 +52,5 @@ namespace ToSic.Eav.DataSource.Caching
         /// <param name="slidingExpiration"></param>
         void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true);
 
-        /// <summary>
-        /// Remove an item from the list-cache using the string-key
-        /// </summary>
-        /// <param name="key">the identifier in the cache</param>
-        void Remove(string key);
-
-        /// <summary>
-        /// Remove an item from the list cache using a data-stream key
-        /// </summary>
-        /// <param name="dataStream">the data stream, which can provide it's cache-key</param>
-        void Remove(IDataStream dataStream);
-
-        /// <summary>
-        /// Check if it has this in the cache
-        /// </summary>
-        /// <param name="key">the identifier in the cache</param>
-        /// <returns>true if found</returns>
-        bool Has(string key);
-
-        /// <summary>
-        /// Check if it has this in the cache
-        /// </summary>
-        /// <param name="dataStream">the data stream, which can provide it's cache-key</param>
-        /// <returns>true if found</returns>
-        bool Has(IDataStream dataStream);
     }
 }

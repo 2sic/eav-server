@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources
         {
             var outDic = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
             foreach (var dataStream in In.Where(s => !outDic.ContainsKey(s.Key)))
-                outDic.Add(dataStream.Key, new DataStream(this, dataStream.Key, () => GetList(dataStream.Key)));
+                outDic.Add(dataStream.Key, new DataStream(Services.CacheService, this, dataStream.Key, () => GetList(dataStream.Key)));
             return outDic;
         }
 
