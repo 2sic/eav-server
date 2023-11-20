@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -12,7 +11,7 @@ namespace ToSic.Eav.DataSource
 	/// A stream can be read from, and it can be attached to upstream data-sources for further processing.
 	/// </summary>
 	[PublicApi_Stable_ForUseInYourCode]
-	public interface IDataStream: ICanSelfCache, ICanPurgeListCache, IEnumerable<IEntity>, IDataSourceLinkable
+	public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLinkable
     {
         /// <summary>
         /// The list of items in this stream.
@@ -44,5 +43,12 @@ namespace ToSic.Eav.DataSource
         /// </summary>
         [PrivateApi]
         DataStreamCacheStatus Caching { get; }
+
+		/// <summary>
+		/// Reset the stream - this will clear the local and force a reload of the data.
+		/// It will not flush the up-stream caches.
+		/// </summary>
+        [PrivateApi]
+        void ResetStream();
     }
 }

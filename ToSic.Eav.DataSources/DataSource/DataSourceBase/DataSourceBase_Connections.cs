@@ -75,8 +75,10 @@ namespace ToSic.Eav.DataSource
 
         /// <inheritdoc />
         [PublicApi]
-        public virtual IReadOnlyDictionary<string, IDataStream> Out => _outRw.AsReadOnly();
-        private readonly StreamDictionary _outRw = new StreamDictionary();
+        public virtual IReadOnlyDictionary<string, IDataStream> Out => OutWritable.AsReadOnly();
+
+        private StreamDictionary OutWritable => _outWritable ?? (_outWritable = new StreamDictionary(Services.CacheService));
+        private StreamDictionary _outWritable;
 
         /// <inheritdoc />
         public IDataStream this[string outName] => GetStream(outName);
@@ -104,7 +106,7 @@ namespace ToSic.Eav.DataSource
 
             // If empty is preferred to an error, return this
             if (emptyIfNotFound)
-                return l.Return(new DataStream(this, name, () => new List<IEntity>()), "create empty");
+                return l.Return(new DataStream(Services.CacheService, this, name, () => new List<IEntity>()), "create empty");
 
             // Not found and no rule to handle it, throw error
             throw l.Done(new KeyNotFoundException(
@@ -164,7 +166,7 @@ namespace ToSic.Eav.DataSource
             var l = Log.Fn($"{nameof(connection)}: {connection.SourceStream} to {connection.TargetStream}");
             if (Immutable && !_overrideImmutable)
                 throw l.Done(new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}"));
-            _inRw[connection.TargetStream] = new ConnectionStream(connection, Error);
+            _inRw[connection.TargetStream] = new ConnectionStream(Services.CacheService, connection, Error);
             Connections.AddIn(connection);
             l.Done();
         }

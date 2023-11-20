@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Data;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.DI;
@@ -19,12 +20,15 @@ namespace ToSic.Eav.Apps
     [PublicApi_Stable_ForUseInYourCode]
     public sealed class AppData: Eav.DataSources.App, IAppData
     {
+        private readonly LazySvc<IDataSourceCacheService> _dsCacheSvc;
+
         #region Constructor stuff
 
-        public AppData(MyServices services, LazySvc<SimpleDataController> dataController): base(services)
+        public AppData(MyServices services, LazySvc<SimpleDataController> dataController, LazySvc<IDataSourceCacheService> dsCacheSvc) : base(services)
         {
             ConnectServices(
-                DataController = dataController.SetInit(dc => dc.Init(ZoneId, AppId, false))
+                DataController = dataController.SetInit(dc => dc.Init(ZoneId, AppId, false)),
+                _dsCacheSvc = dsCacheSvc
             );
         }
 
@@ -37,24 +41,20 @@ namespace ToSic.Eav.Apps
         private LazySvc<SimpleDataController> DataController { get; }
 
         /// <inheritdoc />
-        public IEntity Create(string contentTypeName,
-            Dictionary<string, object> values,
-            string userName = null,
-            ITarget target = null
-        ) => Log.Func(contentTypeName, () =>
+        public IEntity Create(string contentTypeName, Dictionary<string, object> values, string userName = default, ITarget target = default)
         {
+            var l = Log.Fn<IEntity>(contentTypeName);
             // Ensure case insensitive
             values = values.ToInvariant();
 
             if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
             var ids = DataController.Value.Create(contentTypeName, new List<Dictionary<string, object>> { values }, target);
             var id = ids.FirstOrDefault();
-            // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             // try to find it again (AppState.List contains also draft items)
             var created = AppState.List.One(id);
-            return created;
-        });
+            return l.Return(created, $"{created?.EntityId}/{created?.EntityGuid}");
+        }
 
         private static void ProvideOwnerInValues(Dictionary<string, object> values, string userIdentityToken)
         {
@@ -64,11 +64,9 @@ namespace ToSic.Eav.Apps
         }
 
         /// <inheritdoc />
-        public IEnumerable<IEntity> Create(string contentTypeName,
-            IEnumerable<Dictionary<string, object>> multiValues,
-            string userName = null
-        ) => Log.Func(message: $"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}", func: () =>
+        public IEnumerable<IEntity> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, string userName = default)
         {
+            var l = Log.Fn<IEnumerable<IEntity>>($"app create many ({multiValues.Count()}) new entities of type:{contentTypeName}");
             // ensure case insensitive
             multiValues = multiValues.Select(mv => mv.ToInvariant()).ToList();
 
@@ -77,33 +75,31 @@ namespace ToSic.Eav.Apps
                     ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
 
             var ids = DataController.Value.Create(contentTypeName, multiValues);
-            // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
             var created = List.Where(e => ids.Contains(e.EntityId)).ToList();
-            return created;
-        });
+            return l.Return(created, $"{created.Count}");
+        }
 
         /// <inheritdoc />
-        public void Update(int entityId, Dictionary<string, object> values, string userName = null
-        ) => Log.Do($"app update i:{entityId}", () =>
+        public void Update(int entityId, Dictionary<string, object> values, string userName = default)
         {
-            // userName is not used (to change owner of updated entity).
+            var l = Log.Fn($"app update i:{entityId}");
+            // FYI: userName is not used (to change owner of updated entity).
             DataController.Value.Update(entityId, values);
-            // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-        });
+            l.Done();
+        }
 
 
         /// <inheritdoc />
-        public void Delete(int entityId, string userName = null) => Log.Do($"app delete i:{entityId}", () =>
+        public void Delete(int entityId, string userName = default)
         {
-            // userName is not used (to change owner of deleted entity).
+            var l = Log.Fn($"app delete i:{entityId}");
+            // FYI: userName is not used (to change owner of deleted entity).
             DataController.Value.Delete(entityId);
-            // Out must now be rebuilt, because otherwise it will still have old data in the streams
             FlushDataSnapshot();
-            // workaround because AppState is deleted
-            //In.Remove(DataSourceConstants.StreamDefaultName);
-        });
+            l.Done();
+        }
 
         /// <summary>
         /// All 2sxc data is always snapshot, so read will only run a query once and keep it till the objects are killed.
@@ -113,8 +109,8 @@ namespace ToSic.Eav.Apps
         private void FlushDataSnapshot()
         {
             // Purge the list and parent lists - must happen first, as otherwise the list-access will be interrupted
-            PurgeList(true);
-            RequiresRebuildOfOut = true;
+            _dsCacheSvc.Value.UnCache(0, this, true);
+            Reset();
         }
 
         /// <inheritdoc />

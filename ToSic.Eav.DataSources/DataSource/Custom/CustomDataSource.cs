@@ -6,6 +6,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
@@ -35,7 +36,8 @@ namespace ToSic.Eav.DataSource
                 DataSourceConfiguration configuration,
                 LazySvc<DataSourceErrorHelper> errorHandler,
                 ConfigurationDataLoader configDataLoader,
-                IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, dataFactory)
+                LazySvc<IDataSourceCacheService> cacheService,
+                IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, cacheService, dataFactory)
             {
             }
         }

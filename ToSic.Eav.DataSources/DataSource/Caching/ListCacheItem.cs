@@ -33,7 +33,6 @@ namespace ToSic.Eav.DataSource.Caching
         ///// <param name="cacheKey">The cache key as it is stored in the cache</param>
         public ListCacheItem(IImmutableList<IEntity> list, long cacheTimestamp)
         {
-            //CacheKey = cacheKey;
             List = list;
             CacheTimestamp = cacheTimestamp;
         }

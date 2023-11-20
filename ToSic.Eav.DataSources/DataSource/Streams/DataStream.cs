@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Caching;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
@@ -15,9 +16,78 @@ namespace ToSic.Eav.DataSource.Streams
     /// A DataStream to get Entities when needed
     /// </summary>
     [PrivateApi]
-    public class DataStream : IDataStream, IHasLog
+    public class DataStream : IDataStream // , IHasLog
     {
+        #region Constructor
+
         private readonly Func<IImmutableList<IEntity>> _listDelegate;
+        private readonly LazySvc<IDataSourceCacheService> _cache;
+
+        ///// <summary>
+        ///// Constructs a new DataStream
+        ///// </summary>
+        ///// <param name="source">The DataSource providing Entities when needed</param>
+        ///// <param name="name">Name of this Stream</param>
+        ///// <param name="listDelegate">Function which gets Entities</param>
+        ///// <param name="enableAutoCaching"></param>
+        //public DataStream(IDataSource source, string name, Func<IEnumerable<IEntity>> listDelegate = null, bool enableAutoCaching = false)
+        //    : this(source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
+
+        /// <summary>
+        /// Constructs a new DataStream
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <param name="source">The DataSource providing Entities when needed</param>
+        /// <param name="name">Name of this Stream</param>
+        /// <param name="listDelegate">Function which gets Entities</param>
+        /// <param name="enableAutoCaching"></param>
+        public DataStream(LazySvc<IDataSourceCacheService> cache, IDataSource source, string name, Func<IEnumerable<IEntity>> listDelegate = null, bool enableAutoCaching = false)
+            : this(cache, source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
+
+        ///// <summary>
+        ///// Constructs a new DataStream
+        ///// </summary>
+        ///// <param name="source">The DataSource providing Entities when needed</param>
+        ///// <param name="name">Name of this Stream</param>
+        ///// <param name="listDelegate">Function which gets Entities</param>
+        ///// <param name="enableAutoCaching"></param>
+        //public DataStream(IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate = null, bool enableAutoCaching = false)
+        //{
+        //    Source = source;
+        //    Name = name;
+        //    _listDelegate = listDelegate;
+        //    AutoCaching = enableAutoCaching;
+        //}
+
+        /// <summary>
+        /// Constructs a new DataStream
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <param name="source">The DataSource providing Entities when needed</param>
+        /// <param name="name">Name of this Stream</param>
+        /// <param name="listDelegate">Function which gets Entities</param>
+        /// <param name="enableAutoCaching"></param>
+        public DataStream(LazySvc<IDataSourceCacheService> cache, IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate = null, bool enableAutoCaching = false)
+        {
+            _cache = cache;
+            Source = source;
+            Name = name;
+            _listDelegate = listDelegate;
+            AutoCaching = enableAutoCaching;
+        }
+
+        private static Func<IImmutableList<IEntity>> ConvertDelegate(Func<IEnumerable<IEntity>> original)
+        {
+            if (original == null) return null;
+            return () =>
+            {
+                var initialResult = original();
+                return initialResult as IImmutableList<IEntity> ?? initialResult.ToImmutableList();
+            };
+        }
+
+        #endregion
+
 
         #region Self-Caching and Results-Persistence Properties / Features
 
@@ -47,63 +117,36 @@ namespace ToSic.Eav.DataSource.Streams
         /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
         /// </summary>
         public virtual DataStreamCacheStatus Caching => _cachingInternal ?? (_cachingInternal = new DataStreamCacheStatus(Source, Source, Name));
+
         private DataStreamCacheStatus _cachingInternal;
 
 
         #endregion
 
-        /// <summary>
-        /// Constructs a new DataStream
-        /// </summary>
-        /// <param name="source">The DataSource providing Entities when needed</param>
-        /// <param name="name">Name of this Stream</param>
-        /// <param name="listDelegate">Function which gets Entities</param>
-        /// <param name="enableAutoCaching"></param>
-        public DataStream(IDataSource source, string name, Func<IEnumerable<IEntity>> listDelegate = null, bool enableAutoCaching = false)
-            : this(source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
 
-        /// <summary>
-        /// Constructs a new DataStream
-        /// </summary>
-        /// <param name="source">The DataSource providing Entities when needed</param>
-        /// <param name="name">Name of this Stream</param>
-        /// <param name="listDelegate">Function which gets Entities</param>
-        /// <param name="enableAutoCaching"></param>
-        public DataStream(IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate = null, bool enableAutoCaching = false)
-        {
-            Source = source;
-            Name = name;
-            _listDelegate = listDelegate;
-            AutoCaching = enableAutoCaching;
-        }
-
-        private static Func<IImmutableList<IEntity>> ConvertDelegate(Func<IEnumerable<IEntity>> original)
-        {
-            if (original == null) return null;
-            return () =>
-            {
-                var initialResult = original();
-                return initialResult as IImmutableList<IEntity> ?? initialResult.ToImmutableList();
-            };
-        }
 
         #region Get Dictionary and Get List
 
+        /// <inheritdoc />
         public IEnumerable<IEntity> List => _list.GetM(Log, parameters: $"{nameof(Name)}:{Name}", timer: true, generator: _ =>
         {
             // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
             if (!AutoCaching) return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
 
-            var cacheItem = new ListCache(Log).GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+            var cacheItem = _cache.Value.ListCache.GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
             return (cacheItem.List, $"with {nameof(AutoCaching)}");
         });
+
+        /// <inheritdoc />
+        public void ResetStream() => _list.Reset();
 
         /// <summary>
         /// A temporary result list - must be a List, because otherwise
         /// there's a high risk of IEnumerable signatures with functions being stored inside.
-        /// 
-        /// Note that were possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
         /// </summary>
+        /// <remarks>
+        /// Where possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
+        /// </remarks>
         private readonly GetOnce<IImmutableList<IEntity>> _list = new GetOnce<IImmutableList<IEntity>>();
 
         /// <summary>
@@ -139,19 +182,6 @@ namespace ToSic.Eav.DataSource.Streams
         }
         #endregion
 
-
-
-        public void PurgeList(bool cascade = false) => Log.Do(message: $"PurgeList on Stream: {Name}, {nameof(cascade)}:{cascade}", action: l =>
-        {
-            l.A("kill the very local temp cache");
-            _list.Reset();
-            l.A("kill in list-cache");
-            new ListCache(Log).Remove(this);
-            if (!cascade) return;
-            l.A("tell upstream source to flush as well");
-            Source.PurgeList(true);
-        });
-
         /// <inheritdoc />
         /// <summary>
         /// The source which holds this stream
@@ -170,6 +200,7 @@ namespace ToSic.Eav.DataSource.Streams
         public IEnumerator<IEntity> GetEnumerator() => List.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => List.GetEnumerator();
+
         #endregion Support for IEnumerable<IEntity>
 
         public ILog Log => Source?.Log; // Note that it can be null, but most commands on Log are null-safe

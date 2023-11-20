@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;
@@ -17,14 +17,20 @@ namespace ToSic.Eav.DataSource.Query
 	/// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
 	/// </summary>
 	[PrivateApi]
-	public sealed class Query : DataSourceBase, IQuery
+	public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 	{
         #region Configuration-properties
 
         /// <inheritdoc />
         public QueryDefinition Definition { get; private set; }
 
-		private StreamDictionary _out = new StreamDictionary();
+		private StreamDictionary OutWritable
+        {
+            get => _outWritable ?? (_outWritable = new StreamDictionary(Services.CacheService));
+            set => _outWritable = value;
+        }
+
+        private StreamDictionary _outWritable;
 		private bool _requiresRebuildOfOut = true;
 
         /// <summary>
@@ -35,10 +41,10 @@ namespace ToSic.Eav.DataSource.Query
 		{
 			get
 			{
-			    if (!_requiresRebuildOfOut) return _out.AsReadOnly();
+			    if (!_requiresRebuildOfOut) return OutWritable.AsReadOnly();
 			    CreateOutWithAllStreams();
 			    _requiresRebuildOfOut = false;
-			    return _out.AsReadOnly();
+			    return OutWritable.AsReadOnly();
 			}
 		}
         #endregion
@@ -110,7 +116,7 @@ namespace ToSic.Eav.DataSource.Query
             var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine,
                 new List<ILookUp> { paramsOverride });
             _source = queryInfos.Item1;
-            _out = new StreamDictionary(this, _source.Out);
+            OutWritable = new StreamDictionary(this, _source.Out);
         });
 
         private QueryBuilder QueryBuilder => _queryBuilder.Get(() => _queryBuilderLazy.Value);
@@ -155,30 +161,35 @@ namespace ToSic.Eav.DataSource.Query
         /// <inheritdoc />
         public void Reset()
         {
-            Log.A("Reset query");
+            var l = Log.Fn("Reset query and update RequiresRebuildOfOut");
             Definition.Reset();
             _requiresRebuildOfOut = true;
+            l.Done();
         }
 
-        /// <summary>
-        /// Override PurgeList, because we don't really have In streams, unless we use parameters. 
-        /// </summary>
-        /// <param name="cascade"></param>
-        public override void PurgeList(bool cascade = false) => Log.Do($"{cascade} - on {GetType().Name}", l =>
-        {
-            // PurgeList on all In, as would usually happen
-            // This will only purge query-in used for parameter
-            base.PurgeList(cascade);
+        ///// <summary>
+        ///// Override PurgeList, because we don't really have In streams, unless we use parameters. 
+        ///// </summary>
+        ///// <param name="cascade"></param>
+        //public override void PurgeList(bool cascade = false)
+        //{
+        //    var l = Log.Fn($"{cascade} - on {GetType().Name}");
+        //    // PurgeList on all In, as would usually happen
+        //    // This will only purge query-in used for parameter
+        //    //base.PurgeList(cascade);
+        //    Services.DsCacheSvc.Value.UnCache(0, this, cascade);
+        //    //Services.DsCacheSvc.Value.UnCache(this, cascade, Out);
 
-            l.A("Now purge the lists which the Query has on the Out");
-            foreach (var stream in Source.Out)
-                stream.Value.PurgeList(cascade);
-            if (!Source.Out.Any()) l.A("No streams on Source.Out found to clear");
+        //    //l.A("Now purge the lists which the Query has on the Out");
+        //    //foreach (var stream in Source.Out)
+        //    //    stream.Value.PurgeList(cascade);
+        //    //if (!Source.Out.Any()) l.A("No streams on Source.Out found to clear");
 
-            l.A("Update RequiresRebuildOfOut");
-            _requiresRebuildOfOut = true;
-
-        });
+        //    Reset();
+        //    //l.A("Update RequiresRebuildOfOut");
+        //    //_requiresRebuildOfOut = true;
+        //    l.Done();
+        //}
     }
 
 }

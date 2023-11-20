@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Streams;
@@ -47,7 +46,7 @@ namespace ToSic.Eav.DataSources
 			{
                 Configuration.SetThisObsolete(value);
                 AppId = value;
-				RequiresRebuildOfOut = true;
+                Reset();
 			}
 		}
 
@@ -63,7 +62,7 @@ namespace ToSic.Eav.DataSources
 			{
                 Configuration.SetThisObsolete(value);
                 ZoneId = value;
-				RequiresRebuildOfOut = true;
+                Reset();
 			}
 		}
 

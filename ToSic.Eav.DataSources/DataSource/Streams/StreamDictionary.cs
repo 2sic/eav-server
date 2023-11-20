@@ -1,17 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.Generics;
+using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSource.Streams
 {
     public class StreamDictionary
     {
+        private readonly LazySvc<IDataSourceCacheService> _cache;
         internal IDataSource Source;
 
         private readonly DictionaryInvariant<IDataStream> _inner = new DictionaryInvariant<IDataStream>();
 
-        public StreamDictionary() { }
+        public StreamDictionary(LazySvc<IDataSourceCacheService> cache)
+        {
+            _cache = cache;
+        }
 
         /// <summary>
         /// Re-bundle an existing set of streams for the new Source which will provide it
@@ -38,7 +44,7 @@ namespace ToSic.Eav.DataSource.Streams
         public bool ContainsKey(string name) => _inner.ContainsKey(name);
 
         private IDataStream WrapStream(string name, IDataStream stream) =>
-            new DataStream(Source, name, () => stream.List) { Scope = stream.Scope };
+            new DataStream(_cache, Source, name, () => stream.List) { Scope = stream.Scope };
 
         public IReadOnlyDictionary<string, IDataStream> AsReadOnly() => _ro.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inner));
         protected GetOnce<IReadOnlyDictionary<string, IDataStream>> _ro = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
