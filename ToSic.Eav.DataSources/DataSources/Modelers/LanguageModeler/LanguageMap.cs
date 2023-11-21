@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ToSic.Eav.DataSources
@@ -22,6 +23,9 @@ namespace ToSic.Eav.DataSources
         public string Source;
         public bool HasLanguages;
         public LanguageToField[] Fields;
+
+        public List<string> FieldNames => _fieldNames ?? (_fieldNames = Fields.Select(f => f.OriginalField).ToList());
+        private List<string> _fieldNames;
 
         public string LoadLine(string original)
         {

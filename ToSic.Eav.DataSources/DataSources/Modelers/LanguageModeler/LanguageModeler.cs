@@ -80,67 +80,74 @@ namespace ToSic.Eav.DataSources
 
             var mapErrors = fieldMap
                 .Where(lm => !string.IsNullOrWhiteSpace(lm.Error))
-                .Select(lm => $"'{lm.Original}': {lm.Error}");
+                .Select(lm => $"'{lm.Original}': {lm.Error}")
+                .ToArray();
 
             var fieldMapErrors = string.Join(";", mapErrors);
             if (!string.IsNullOrWhiteSpace(fieldMapErrors))
                 return l.ReturnAsError(Error.Create(title: "Field Map Error", message: fieldMapErrors));
 
-            #endregion
-
             l.A($"Field Map created - has {fieldMap.Length} parts");
+
+            #endregion
 
             var source = TryGetIn();
             if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
+            var atBld = _dataBuilder.Attribute;
             var result = new List<IEntity>();
             foreach (var entity in source)
             {
-                var attributes = _dataBuilder.Attribute.Mutable(entity.Attributes);
+                var attributes = atBld.Mutable(entity.Attributes);
 
                 foreach (var map in fieldMap)
+                {
+                    var newName = map.Target;
+
                     // if source value contains = it must be a language mapping
                     if (map.HasLanguages)
                     {
-                        var allSourceAttrs = map.Fields.Select(f => f.OriginalField);
+                        var allSourceAttrs = map.FieldNames;
 
                         // inherit type from an existing value (we try all attributes to prevent issues)
                         var firstExistingValue = allSourceAttrs
                             .Where(s => attributes.ContainsKey(s))
-                            .Select(s => attributes[s]).FirstOrDefault();
-                        var newAttribute =
-                            _dataBuilder.Attribute.Create(map.Target,
-                                firstExistingValue?.Type ?? ValueTypes.String); // if there are no values, we assume it's a string field
-                        // #immutableTodo
-                        attributes.Add(map.Target, newAttribute);
+                            .Select(s => attributes[s])
+                            .FirstOrDefault();
 
+                        // if there are no values, we'll assume it's a string field
+                        var newAttribute = atBld.Create(newName, firstExistingValue?.Type ?? ValueTypes.String); 
+
+                        // Loop through each source field to add the value to the new attribute
                         foreach (var entry in map.Fields)
                         {
                             if (!attributes.ContainsKey(entry.OriginalField))
                             {
                                 // do not create values for fields which do not exist
-                                l.A($"Field mapping ignored for entity {entity.EntityId} and language {entry.Language} because source attribute {entry.OriginalField} does not exist.");
+                                l.A($"Field mapping ignored for # {entity.EntityId} / language {entry.Language}; source attribute {entry.OriginalField} does not exist.");
                                 continue;
                             }
 
                             var currentAttribute = attributes[entry.OriginalField];
                             var value = currentAttribute.Values.FirstOrDefault()?.ObjectContents;
                             // Remove first, in case the new name replaces an old one
-                            var temp = _dataBuilder.Attribute.CreateOrUpdate(originalOrNull: currentAttribute, name: map.Target, value: value, type: newAttribute.Type, language: entry.Language);
-                            attributes = _dataBuilder.Attribute.Replace(attributes, temp);
+                            newAttribute = atBld.CreateOrUpdate(originalOrNull: newAttribute, name: newName, value: value, type: newAttribute.Type, language: entry.Language);
                         }
+
+                        // #immutableTodo
+                        attributes.Add(newName, newAttribute);
                     }
                     else // simple re-mapping / renaming
                     {
                         if (!attributes.ContainsKey(map.Source))
                         {
-                            l.A($"Field mapping not possible for entity {entity.EntityId} because source attribute {map.Source} does not exist.");
+                            l.A($"Field mapping not possible for #{entity.EntityId}; source attribute {map.Source} does not exist.");
                             continue;
                         }
 
                         // Make a copy to make sure the Name property of the attribute is set correctly
                         var sourceAttr = attributes[map.Source];
-                        var newAttribute = _dataBuilder.Attribute.Create(map.Target, sourceAttr.Type, sourceAttr.Values.ToList());
+                        var newAttribute = atBld.Create(newName, sourceAttr.Type, sourceAttr.Values.ToList());
                         // Remove first, in case the new name replaces an old one
                         // #immutableTodo
                         attributes.Remove(map.Source);
@@ -148,8 +155,9 @@ namespace ToSic.Eav.DataSources
                         // #immutableTodo
                         attributes.Add(map.Target, newAttribute);
                     }
+                }
 
-                var modifiedEntity = _dataBuilder.Entity.CreateFrom(entity, attributes: _dataBuilder.Attribute.Create(attributes));
+                var modifiedEntity = _dataBuilder.Entity.CreateFrom(entity, attributes: atBld.Create(attributes));
 
                 result.Add(modifiedEntity);
             }
