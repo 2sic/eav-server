@@ -33,6 +33,7 @@ namespace ToSic.Eav.Internal.Features
                 // Features for Patrons Advanced CMS
                 EditUiTranslateWithGoogle,  // v15
                 LanguagesAdvancedFallback,  // v16.04
+                CopyrightManagement,        // v16.08 / v17
                 FieldShareConfigManagement, // v16.08
 
                 // Patron SuperAdmin
