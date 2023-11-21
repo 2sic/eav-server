@@ -11,14 +11,16 @@ namespace ToSic.Eav.DataSources
 {
     public partial class TreeMapper
     {
+        private const string PrefixForNeeds = "Needs:";
         public IImmutableList<IEntity> AddParentChild(
             IEnumerable<IEntity> originals,
             string parentIdField,
             string childToParentRefField,
             string newChildrenField = default,
             string newParentField = default,
-            LazyLookup<object, IEntity> lookup = default) => Log.Func(l =>
+            LazyLookup<object, IEntity> lookup = default)
         {
+            var l = Log.Fn<IImmutableList<IEntity>>();
             // Make sure we have field names in case they were not provided & full-clone entities/relationships
             newParentField = newParentField ?? DefaultParentFieldName;
             newChildrenField = newChildrenField ?? DefaultChildrenFieldName;
@@ -34,24 +36,33 @@ namespace ToSic.Eav.DataSources
                 })
                 .ToList();
 
+            var attrBld = _builder.Attribute;
+
             var result = withKeys.Select(pair =>
-            {
-                var newAttributes = new List<IAttribute>
                 {
-                    _builder.Attribute.Relationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup),
-                    _builder.Attribute.Relationship(newChildrenField, new List<object> { "Needs:" + pair.Partner.OwnId }, lookup)
-                };
-                var attributes = _builder.Attribute.Replace(pair.Entity.Attributes, newAttributes);
-                return _builder.Entity.CreateFrom(pair.Entity, attributes: _builder.Attribute.Create(attributes));
-            }).ToList();
+                    // Create list of the new attributes with the parent and child relationships
+                    var newAttributes = new List<IAttribute>
+                    {
+                        attrBld.Relationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup),
+                        attrBld.Relationship(newChildrenField, new List<object> { $"{PrefixForNeeds}{pair.Partner.OwnId}" }, lookup)
+                    };
+                    // Create combine list of attributes and generate an entity from that
+                    var attributes = attrBld.Replace(pair.Entity.Attributes, newAttributes);
+                    var newEntity = _builder.Entity.CreateFrom(pair.Entity, attributes: attrBld.Create(attributes));
+
+                    // Assemble a new pair, for later populating the lookup list
+                    // It's important to use the _new_ entity here, because the original is missing the new attributes
+                    return new EntityPair<(object OwnId, object RelatedId)>(newEntity, pair.Partner);
+                })
+                .ToList();
 
             // Add lookup to own id
-            lookup.Add(withKeys.Select(pair => new KeyValuePair<object, IEntity>(pair.Partner.OwnId, pair.Entity)));
+            lookup.Add(result.Select(pair => new KeyValuePair<object, IEntity>(pair.Partner.OwnId, pair.Entity)));
             // Add list of "Needs:ParentId" so that the parents can find it
-            lookup.Add(withKeys.Select(pair => new KeyValuePair<object, IEntity>("Needs:" + pair.Partner.RelatedId, pair.Entity)));
+            lookup.Add(result.Select(pair => new KeyValuePair<object, IEntity>($"{PrefixForNeeds}{pair.Partner.RelatedId}", pair.Entity)));
 
-            return result.ToImmutableList();
-        });
+            return l.Return(result.Select(r => r.Entity).ToImmutableList());
+        }
 
         /// <summary>
         /// Gets the key for the specified field.
