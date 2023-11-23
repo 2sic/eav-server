@@ -20,7 +20,7 @@
 
 
         public CodeUse UsedAs(int appId = default, string specificId = default, string[] more = default)
-            => new CodeUse(Change,
+            => new(Change,
                 appId: appId == default ? AppId : appId,
                 specificId: specificId ?? SpecificId,
                 more: more ?? More);

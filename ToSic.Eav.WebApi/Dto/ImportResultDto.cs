@@ -7,7 +7,7 @@ namespace ToSic.Eav.WebApi.Dto
     {
         public bool Success;
 
-        public List<Message> Messages = new List<Message>();
+        public List<Message> Messages = new();
 
         public ImportResultDto(bool success = false, string msg = null, Message.MessageTypes type = Message.MessageTypes.Information)
         {

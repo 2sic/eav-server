@@ -32,19 +32,19 @@ namespace ToSic.Eav.DataSources
             .AddStream(name: StreamPublishedName)
             .AddStream(name: StreamDraftsName));
 
-        private readonly GetOnce<IDataSourceLink> _link = new GetOnce<IDataSourceLink>();
+        private readonly GetOnce<IDataSourceLink> _link = new();
 
         /// <summary>
         /// Special CacheKey generator for AppRoots, which rely on the state
         /// </summary>
         [PrivateApi]
-        public new ICacheKeyManager CacheKey => _cacheKey ?? (_cacheKey = new AppRootCacheKey(this));
+        public new ICacheKeyManager CacheKey => _cacheKey ??= new AppRootCacheKey(this);
         private CacheKey _cacheKey;
 
         /// <summary>
         /// Get the <see cref="AppState"/> of this app from the cache.
         /// </summary>
-	    private AppState AppState => _appState ?? (_appState = _appStates.Get(this));
+	    private AppState AppState => _appState ??= _appStates.Get(this);
         private AppState _appState;
 
         #region Cache-Chain

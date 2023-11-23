@@ -70,6 +70,6 @@ namespace ToSic.Eav.Apps.Assets
             if (Bytes < Factor * Factor * Factor) return (Mb, "MB");
             return (Gb, "GB");
         });
-        private readonly GetOnce<(decimal, string)> _bestSizeCache = new GetOnce<(decimal, string)>();
+        private readonly GetOnce<(decimal, string)> _bestSizeCache = new();
     }
 }

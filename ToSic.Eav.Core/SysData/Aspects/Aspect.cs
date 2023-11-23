@@ -21,10 +21,10 @@ namespace ToSic.Eav.SysData
             Description = description;
         }
 
-        public static Aspect Custom(string nameId, Guid guid, string name = default, string description = default) 
-            => new Aspect(nameId, guid, name, description);
+        public static Aspect Custom(string nameId, Guid guid, string name = default, string description = default) =>
+            new(nameId, guid, name, description);
 
-        public static Aspect None = new Aspect("None", Guid.Empty, "None");
+        public static Aspect None = new("None", Guid.Empty, "None");
 
         /// <summary>
         /// GUID Identifier for this Aspect.
@@ -46,8 +46,9 @@ namespace ToSic.Eav.SysData
         /// </summary>
         public string Description { get; }
 
-        public virtual Aspect Clone(StableApi.NoParamOrder noParamOrder = default, string nameId = default, Guid? guid = default, string name = default, string description = default)
-            => new Aspect(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description);
+        public virtual Aspect Clone(StableApi.NoParamOrder noParamOrder = default, string nameId = default,
+            Guid? guid = default, string name = default, string description = default) => new(nameId ?? NameId,
+            guid ?? Guid, name ?? Name, description ?? Description);
 
 
         public override string ToString() => $"Aspect: {Name} ({NameId} / {Guid})";

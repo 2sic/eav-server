@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data
     public partial class Entity: IHasPiggyBack
     {
         [PrivateApi("WIP Piggyback")]
-        public PiggyBack.PiggyBack PiggyBack => _piggyBack ?? (_piggyBack = new PiggyBack.PiggyBack());
+        public PiggyBack.PiggyBack PiggyBack => _piggyBack ??= new PiggyBack.PiggyBack();
         private PiggyBack.PiggyBack _piggyBack;
     }
 }

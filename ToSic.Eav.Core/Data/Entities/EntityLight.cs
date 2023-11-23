@@ -65,7 +65,7 @@ namespace ToSic.Eav.Data
 
         /// <inheritdoc />
         public int OwnerId => _ownerId.Get(() => int.TryParse(Owner.After("="), out var o) ? o : -1);
-        private readonly GetOnce<int> _ownerId = new GetOnce<int>();
+        private readonly GetOnce<int> _ownerId = new();
         #endregion
 
         #region direct attribute accessor using this[...]

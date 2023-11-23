@@ -58,7 +58,7 @@ namespace ToSic.Eav.Data
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static PropReqResult Null(PropertyLookupPath path) => new PropReqResult(result: null, fieldType: null, path: path);
+        public static PropReqResult Null(PropertyLookupPath path) => new(result: null, fieldType: null, path: path);
         public static PropReqResult NullFinal(PropertyLookupPath path) => Null(path).AsFinal(0);
 
         public PropReqResult AsFinal(int sourceIndex)

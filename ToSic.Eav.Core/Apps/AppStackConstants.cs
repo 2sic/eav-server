@@ -36,7 +36,7 @@
 
         internal static string[] BlacklistKeys = { FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope };
 
-        public static AppThingsIdentifiers Resources = new AppThingsIdentifiers
+        public static AppThingsIdentifiers Resources = new()
         {
             AppType = AppLoadConstants.TypeAppResources,
             CustomType = "ResourcesCustom",
@@ -44,7 +44,7 @@
             Target = AppThingsToStack.Resources
         };
 
-        public static AppThingsIdentifiers Settings = new AppThingsIdentifiers
+        public static AppThingsIdentifiers Settings = new()
         {
             AppType = AppLoadConstants.TypeAppSettings,
             CustomType = "SettingsCustom",

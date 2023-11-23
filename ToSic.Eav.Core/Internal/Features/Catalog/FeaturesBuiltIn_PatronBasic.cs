@@ -9,7 +9,7 @@ namespace ToSic.Eav.Internal.Features
     {
         public static List<FeatureLicenseRule> ForPatronBasicEnabled = BuildRule(BuiltInLicenses.PatronBasic, true);
 
-        public static readonly Feature PasteImageFromClipboard = new Feature(
+        public static readonly Feature PasteImageFromClipboard = new(
             "PasteImageFromClipboard",
             new Guid("f6b8d6da-4744-453b-9543-0de499aa2352"),
             "Paste Image from Clipboard",
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Internal.Features
             ForPatronBasicEnabled
         );
 
-        public static readonly Feature NoSponsoredByToSic = new Feature(
+        public static readonly Feature NoSponsoredByToSic = new(
             "NoSponsoredByToSic",
             new Guid("4f3d0021-1c8b-4286-a33b-3210ed3b2d9a"),
             "No Sponsored-By-2sic messages",
@@ -31,7 +31,7 @@ namespace ToSic.Eav.Internal.Features
             ForPatronBasicEnabled
         );
 
-        public static readonly Feature EditUiGpsCustomDefaults = new Feature(
+        public static readonly Feature EditUiGpsCustomDefaults = new(
             "EditUiGpsCustomDefaults",
             new Guid("19736d09-7424-43fc-9a65-04b53bf7f95c"),
             "Set custom defaults for the GPS Picker.",

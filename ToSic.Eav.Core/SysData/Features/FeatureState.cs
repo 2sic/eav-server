@@ -30,7 +30,7 @@ namespace ToSic.Eav.SysData
         }
 
         public static FeatureState SysFeatureState(SysFeature definition, bool enabled)
-            => new FeatureState(definition, BuiltInLicenses.UnlimitedExpiry, enabled,
+            => new(definition, BuiltInLicenses.UnlimitedExpiry, enabled,
                 "System Feature", "System Feature, managed by the system; can't be changed interactively.", true, true,
                 null);
 
@@ -38,7 +38,7 @@ namespace ToSic.Eav.SysData
         public string NameId => Aspect.NameId;
 
         public FeatureSet License => _license.Get(() => Aspect.LicenseRules?.FirstOrDefault()?.FeatureSet);
-        private readonly GetOnce<FeatureSet> _license = new GetOnce<FeatureSet>();
+        private readonly GetOnce<FeatureSet> _license = new();
 
         /// <summary>
         /// Feature is enabled and hasn't expired yet.
@@ -120,7 +120,7 @@ namespace ToSic.Eav.SysData
                 { nameof(IsPublic), IsPublic },
             }
         });
-        private readonly GetOnce<IRawEntity> _newEntity = new GetOnce<IRawEntity>();
+        private readonly GetOnce<IRawEntity> _newEntity = new();
 
         #endregion
     }

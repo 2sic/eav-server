@@ -28,8 +28,8 @@ namespace ToSic.Eav.Data.Raw
 
         public IDictionary<string, object> Values
         {
-            // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
-            get => _values ?? (_values = new Dictionary<string, object>(InvariantCultureIgnoreCase));
+            
+            get => _values ??= new Dictionary<string, object>(InvariantCultureIgnoreCase);
             set => _values = value?.ToInvariant() ?? _values;
         }
         private IDictionary<string, object> _values;

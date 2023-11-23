@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Security
         /// All the permission checks that will be used
         /// </summary>
         public Dictionary<string, IPermissionCheck> PermissionCheckers
-            => _permissionCheckers ?? (_permissionCheckers = InitializePermissionChecks());
+            => _permissionCheckers ??= InitializePermissionChecks();
         private Dictionary<string, IPermissionCheck> _permissionCheckers;
 
         #region abstract methods

@@ -47,8 +47,7 @@ namespace ToSic.Eav.DataSource
 
         #region Value Setters
 
-        public DataSourceOptions Values(IImmutableDictionary<string, string> values)
-            => new DataSourceOptions(this, values: values);
+        public DataSourceOptions Values(IImmutableDictionary<string, string> values) => new(this, values: values);
         
         
         #endregion

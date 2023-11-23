@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSource.Streams
         private readonly LazySvc<IDataSourceCacheService> _cache;
         internal IDataSource Source;
 
-        private readonly DictionaryInvariant<IDataStream> _inner = new DictionaryInvariant<IDataStream>();
+        private readonly DictionaryInvariant<IDataStream> _inner = new();
 
         public StreamDictionary(LazySvc<IDataSourceCacheService> cache)
         {
@@ -47,6 +47,6 @@ namespace ToSic.Eav.DataSource.Streams
             new DataStream(_cache, Source, name, () => stream.List) { Scope = stream.Scope };
 
         public IReadOnlyDictionary<string, IDataStream> AsReadOnly() => _ro.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inner));
-        protected GetOnce<IReadOnlyDictionary<string, IDataStream>> _ro = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
+        protected GetOnce<IReadOnlyDictionary<string, IDataStream>> _ro = new();
     }
 }

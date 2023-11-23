@@ -31,7 +31,7 @@ namespace ToSic.Eav.Context
         #endregion
 
         public IContextOfSite Site() => _site.Get(() => _contextOfSite.New());
-        private readonly GetOnce<IContextOfSite> _site = new GetOnce<IContextOfSite>();
+        private readonly GetOnce<IContextOfSite> _site = new();
 
 
     }

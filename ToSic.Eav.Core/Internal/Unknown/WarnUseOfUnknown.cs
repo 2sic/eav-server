@@ -22,6 +22,6 @@ namespace ToSic.Eav.Internal.Unknown
             logStore.Add("warnings-not-implemented", log);
         }
 
-        private static readonly List<Type> AlreadyWarnedTypes = new List<Type>();
+        private static readonly List<Type> AlreadyWarnedTypes = new();
     }
 }

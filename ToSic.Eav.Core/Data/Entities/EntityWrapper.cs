@@ -166,6 +166,6 @@ namespace ToSic.Eav.Data
         public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
             => Entity._Dump(specs, path);
 
-        public List<IDecorator<IEntity>> Decorators { get; } = new List<IDecorator<IEntity>>();
+        public List<IDecorator<IEntity>> Decorators { get; } = new();
     }
 }

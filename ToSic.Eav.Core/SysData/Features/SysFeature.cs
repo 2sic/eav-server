@@ -22,7 +22,7 @@ namespace ToSic.Eav.SysData
         /// </summary>
         public SysFeature Clone(Lib.Coding.StableApi.NoParamOrder noParamOrder = default, 
             string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default) =>
-            new SysFeature(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description, link ?? Link);
+            new(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description, link ?? Link);
 
         private static string EnsurePrefix(string original) 
             => original.IsEmptyOrWs() ? Prefix + "-Error-No-Name" : original.StartsWith(Prefix) ? original : $"{Prefix}-{original}";
@@ -44,7 +44,7 @@ namespace ToSic.Eav.SysData
             }
         });
 
-        private readonly GetOnce<IRawEntity> _newEntity = new GetOnce<IRawEntity>();
+        private readonly GetOnce<IRawEntity> _newEntity = new();
 
 
         public override string ToString() => $"{Prefix}: {Name} ({NameId} / {Guid})";

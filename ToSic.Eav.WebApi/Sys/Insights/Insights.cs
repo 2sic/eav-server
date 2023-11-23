@@ -59,7 +59,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
         private readonly LightSpeedStats _lightSpeedStats;
         protected readonly AppCachePurger AppCachePurger;
 
-        private InsightsHtmlTable HtmlTableBuilder { get; } = new InsightsHtmlTable();
+        private InsightsHtmlTable HtmlTableBuilder { get; } = new();
         private readonly InsightsHtmlLog _logHtml;
 
         #endregion

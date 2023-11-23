@@ -25,8 +25,8 @@ namespace ToSic.Eav.DataSource
 
         #region Serialization properties just for debugging in QueryInfo
 
-        public QuickSourceInfo Source => new QuickSourceInfo(DataSource, SourceStream);
-        public QuickSourceInfo Target => new QuickSourceInfo(DataTarget, TargetStream);
+        public QuickSourceInfo Source => new(DataSource, SourceStream);
+        public QuickSourceInfo Target => new(DataTarget, TargetStream);
 
         #endregion
 

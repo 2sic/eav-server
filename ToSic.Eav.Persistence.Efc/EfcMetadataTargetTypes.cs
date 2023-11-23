@@ -41,7 +41,7 @@ namespace ToSic.Eav.Persistence.Efc
             return result != ReservedType ? result : typeId.ToString();
         }
 
-        public ImmutableDictionary<int, string> TargetTypes => _targetTypes ?? (_targetTypes = GetTargetTypes());
+        public ImmutableDictionary<int, string> TargetTypes => _targetTypes ??= GetTargetTypes();
         private static ImmutableDictionary<int, string> _targetTypes;
 
         /// <summary>

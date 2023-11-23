@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps
 
 
         public IEntity AppConfiguration
-            => (_appConfigSynched ?? (_appConfigSynched = BuildSynchedMetadata(Owner, AppLoadConstants.TypeAppConfig))).Value;
+            => (_appConfigSynched ??= BuildSynchedMetadata(Owner, AppLoadConstants.TypeAppConfig)).Value;
         private SynchronizedObject<IEntity> _appConfigSynched;
 
         private static SynchronizedObject<IEntity> BuildSynchedMetadata(AppState parent, string staticName)
@@ -41,13 +41,13 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The App-Settings or App-Resources
         /// </summary>
-        public IEntity MetadataItem => (_appItemSynced ?? (_appItemSynced = BuildSynchedMetadata(Owner, Target.AppType))).Value;
+        public IEntity MetadataItem => (_appItemSynced ??= BuildSynchedMetadata(Owner, Target.AppType)).Value;
         private SynchronizedObject<IEntity> _appItemSynced;
 
-        public IEntity SystemItem => (_appSystemSynched ?? (_appSystemSynched = BuildSynchedItem(Owner, Target.SystemType))).Value;
+        public IEntity SystemItem => (_appSystemSynched ??= BuildSynchedItem(Owner, Target.SystemType)).Value;
         private SynchronizedObject<IEntity> _appSystemSynched;
 
-        public IEntity CustomItem => (_appCustomSynced ?? (_appCustomSynced = BuildSynchedItem(Owner, Target.CustomType))).Value;
+        public IEntity CustomItem => (_appCustomSynced ??= BuildSynchedItem(Owner, Target.CustomType)).Value;
         private SynchronizedObject<IEntity> _appCustomSynced;
 
     }

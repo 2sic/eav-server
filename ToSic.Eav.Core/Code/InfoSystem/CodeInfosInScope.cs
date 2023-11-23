@@ -19,7 +19,7 @@ namespace ToSic.Eav.Code.InfoSystem
         public IEnumerable<CodeInfoInLogStore> GetWarnings() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Warning) ?? new List<CodeInfoInLogStore>();
 
         private IEnumerable<CodeInfoInLogStore> Warnings => _warnings;
-        private readonly List<CodeInfoInLogStore> _warnings = new List<CodeInfoInLogStore>();
+        private readonly List<CodeInfoInLogStore> _warnings = new();
 
         /// <summary>
         /// Add it to the list and ensure that any known specs are also included
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Code.InfoSystem
         });
 
 
-        private readonly GetOnce<IDictionary<string, string>> _specs = new GetOnce<IDictionary<string, string>>();
+        private readonly GetOnce<IDictionary<string, string>> _specs = new();
         private Func<IDictionary<string, string>> _specsFactory;
     }
 }

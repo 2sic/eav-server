@@ -63,7 +63,7 @@ namespace ToSic.Eav.DataFormats.EavLight
         /// <inheritdoc/>
         public bool WithPublishing { get; private set; }
         
-        [PrivateApi] public MetadataForSerialization MetadataFor { get; private set; } = new MetadataForSerialization();
+        [PrivateApi] public MetadataForSerialization MetadataFor { get; private set; } = new();
         [PrivateApi] public ISubEntitySerialization Metadata { get; private set; } = new SubEntitySerialization();
 
         private bool WithEditInfos { get; set; }
@@ -84,12 +84,12 @@ namespace ToSic.Eav.DataFormats.EavLight
 
         public string[] Languages
         {
-            get => _languages ?? (_languages = base.Services.ZoneCultureResolver.SafeLanguagePriorityCodes());
+            get => _languages ??= Services.ZoneCultureResolver.SafeLanguagePriorityCodes();
             set => _languages = value;
         }
 
         [PrivateApi("not public ATM")]
-        public TypeSerialization Type { get; set; } = new TypeSerialization();
+        public TypeSerialization Type { get; set; } = new();
 
         private string[] _languages;
 
@@ -194,7 +194,7 @@ namespace ToSic.Eav.DataFormats.EavLight
 
             return entityValues;
         }
-        private readonly Dictionary<object, List<string>> _excludeAttributesCache = new Dictionary<object, List<string>>();
+        private readonly Dictionary<object, List<string>> _excludeAttributesCache = new();
 
         private void OptimizeRemoveEmptyValues(EntitySerializationDecorator rules, EavLightEntity entityValues)
         {

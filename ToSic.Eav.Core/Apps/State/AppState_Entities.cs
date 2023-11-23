@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The simple list of <em>all</em> entities, used everywhere
         /// </summary>
-        public IImmutableList<IEntity> List => (ListCache ?? (ListCache = BuildList())).List;
+        public IImmutableList<IEntity> List => (ListCache ??= BuildList()).List;
         internal SynchronizedEntityList ListCache;
 
         private SynchronizedEntityList BuildList()
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Apps
 
         IEnumerable<IEntity> IEntitiesSource.List => List;
 
-        internal Dictionary<int, IEntity> Index { get; } = new Dictionary<int, IEntity>();
+        internal Dictionary<int, IEntity> Index { get; } = new();
 
         /// <summary>
         /// Add an entity to the cache. Should only be used by EAV code

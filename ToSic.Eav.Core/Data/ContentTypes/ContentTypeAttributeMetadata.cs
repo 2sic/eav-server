@@ -117,7 +117,7 @@ namespace ToSic.Eav.Data
             var appAttribs = appState.ContentTypes.SelectMany(ct => ct.Attributes);
             return appAttribs.Where(a => sourceKeys.Contains(a.Guid)).ToList();
         });
-        private readonly GetOnce<List<IContentTypeAttribute>> _sourceAttributes = new GetOnce<List<IContentTypeAttribute>>();
+        private readonly GetOnce<List<IContentTypeAttribute>> _sourceAttributes = new();
 
     }
 }

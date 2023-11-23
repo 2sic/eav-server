@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSource.Query
 
 		private StreamDictionary OutWritable
         {
-            get => _outWritable ?? (_outWritable = new StreamDictionary(Services.CacheService));
+            get => _outWritable ??= new StreamDictionary(Services.CacheService);
             set => _outWritable = value;
         }
 
@@ -120,7 +120,7 @@ namespace ToSic.Eav.DataSource.Query
         });
 
         private QueryBuilder QueryBuilder => _queryBuilder.Get(() => _queryBuilderLazy.Value);
-        private readonly GetOnce<QueryBuilder> _queryBuilder = new GetOnce<QueryBuilder>();
+        private readonly GetOnce<QueryBuilder> _queryBuilder = new();
 
 
 

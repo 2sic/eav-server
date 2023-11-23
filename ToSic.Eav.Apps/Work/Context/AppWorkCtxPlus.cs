@@ -25,8 +25,8 @@ namespace ToSic.Eav.Apps.Work
         private IDataSourcesService DataSourcesFactory { get; }
 
 
-        // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
-        public IDataSource Data => _data ?? (_data = DataSourcesFactory.CreateDefault(new DataSourceOptions(appIdentity: AppState, showDrafts: ShowDrafts)));
+        
+        public IDataSource Data => _data ??= DataSourcesFactory.CreateDefault(new DataSourceOptions(appIdentity: AppState, showDrafts: ShowDrafts));
         private IDataSource _data;
 
 

@@ -66,7 +66,7 @@ namespace ToSic.Eav.LookUp
 		/// Gets the Regular expression for the token to be replaced
 		/// </summary>
 		/// <value>A regular Expression</value>   
-		public static Regex Tokenizer { get; } = new Regex(RegExFindAllTokens, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
+		public static Regex Tokenizer { get; } = new(RegExFindAllTokens, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
 
         /// <summary>
         /// Checks for present [Object:Property] tokens

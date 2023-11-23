@@ -37,7 +37,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// The inherited content-types
         /// </summary>
-        public IEnumerable<IContentType> ContentTypes => _contentTypes ?? (_contentTypes = GetInheritedTypes());
+        public IEnumerable<IContentType> ContentTypes => _contentTypes ??= GetInheritedTypes();
         private IEnumerable<IContentType> _contentTypes;
 
         /// <summary>

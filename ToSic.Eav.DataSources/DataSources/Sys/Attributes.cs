@@ -114,7 +114,7 @@ namespace ToSic.Eav.DataSources.Sys
 
         private static Dictionary<string, object> AsDic(string name, ValueTypes type, bool isTitle, int sortOrder,
             bool builtIn)
-            => new Dictionary<string, object>
+            => new()
             {
                 { AttributeType.Name.ToString(), name },
                 { AttributeType.Type.ToString(), type.ToString() },

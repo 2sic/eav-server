@@ -4,8 +4,8 @@ namespace ToSic.Eav.Caching
 {
     public class LightSpeedStats
     {
-        public ConcurrentDictionary<int, int> ItemsCount { get; } = new ConcurrentDictionary<int, int>();
-        public ConcurrentDictionary<int, long> Size { get; } = new ConcurrentDictionary<int, long>();
+        public ConcurrentDictionary<int, int> ItemsCount { get; } = new();
+        public ConcurrentDictionary<int, long> Size { get; } = new();
 
         public void Add(int appId, int size)
         {

@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps
 {
     public partial class AppState
     {
-        private readonly object _transactionLock = new object();
+        private readonly object _transactionLock = new();
 
         /// <summary>
         /// Experiment to try to ensure the same entity cannot be created twice

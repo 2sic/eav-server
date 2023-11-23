@@ -72,7 +72,7 @@ namespace ToSic.Eav.DataSources.Caching
 
             return new ReadOnlyDictionary<string, IDataStream>(outList);
         });
-        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _out = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
+        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _out = new();
 
         #endregion
 

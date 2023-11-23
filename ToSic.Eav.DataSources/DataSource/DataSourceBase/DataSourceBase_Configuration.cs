@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSource
         /// <inheritdoc />
         public IDataSourceConfiguration Configuration => _config.Get(() => base.Services.Configuration.Attach(this));
 
-        private readonly GetOnce<IDataSourceConfiguration> _config = new GetOnce<IDataSourceConfiguration>();
+        private readonly GetOnce<IDataSourceConfiguration> _config = new();
 
         /// <summary>
         /// Add a value to the configuration list for later resolving tokens and using in Cache-Keys.

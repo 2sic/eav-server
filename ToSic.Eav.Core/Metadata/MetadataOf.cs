@@ -86,7 +86,7 @@ namespace ToSic.Eav.Metadata
         #region Target
 
         public ITarget Target => _target.Get(() => new Target(_targetType, _metadataTitle, Key));
-        private readonly GetOnce<ITarget> _target = new GetOnce<ITarget>();
+        private readonly GetOnce<ITarget> _target = new();
         private readonly string _metadataTitle;
 
         #endregion

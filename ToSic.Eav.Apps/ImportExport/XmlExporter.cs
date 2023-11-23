@@ -27,14 +27,14 @@ namespace ToSic.Eav.Apps.ImportExport
     {
 
         #region simple properties
-        protected readonly List<int> ReferencedFileIds = new List<int>();
-        protected readonly List<int> ReferencedFolderIds = new List<int>();
-        public List<TenantFileItem> ReferencedFiles = new List<TenantFileItem>();
+        protected readonly List<int> ReferencedFileIds = new();
+        protected readonly List<int> ReferencedFolderIds = new();
+        public List<TenantFileItem> ReferencedFiles = new();
         private bool _isAppExport;
 
         public string[] AttributeSetNamesOrIds;
         public string[] EntityIDs;
-        public List<Message> Messages = new List<Message>();
+        public List<Message> Messages = new();
 
         public AppState AppState { get; private set; }
 
@@ -314,7 +314,7 @@ namespace ToSic.Eav.Apps.ImportExport
 
         #region Files & Pages
 
-        private XElement GetFilesXElements() => new XElement(XmlConstants.PortalFiles /*"PortalFiles" */,
+        private XElement GetFilesXElements() => new(XmlConstants.PortalFiles /*"PortalFiles" */,
             ReferencedFileIds.Distinct().Select(GetFileXElement)
         );
 

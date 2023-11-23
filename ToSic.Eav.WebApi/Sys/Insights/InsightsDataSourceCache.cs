@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
             );
         }
 
-        internal InsightsHtmlBase Html = new InsightsHtmlBase();
+        internal InsightsHtmlBase Html = new();
 
         public string DataSourceCache()
         {

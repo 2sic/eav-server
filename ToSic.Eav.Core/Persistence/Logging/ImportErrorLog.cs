@@ -12,7 +12,7 @@ namespace ToSic.Eav.Persistence.Logging
 
         public ImportError this[int index] => Errors[index];
 
-        public List<ImportError> Errors { get; } = new List<ImportError>();
+        public List<ImportError> Errors { get; } = new();
 
         public int ErrorCount => Errors.Count;
 

@@ -25,11 +25,11 @@ namespace ToSic.Eav.Persistence.File
         /// <summary>
         /// The master list of content-types which is available for assigning later on.
         /// </summary>
-        public List<IContentType> Source { get; } = new List<IContentType>();
+        public List<IContentType> Source { get; } = new();
 
         protected IDictionary<string, IContentType> Lookup =>
             _lookup.Get(() => Source.ToDictionary(t => t.NameId, t => t, InvariantCultureIgnoreCase));
-        private readonly GetOnce<IDictionary<string, IContentType>> _lookup = new GetOnce<IDictionary<string, IContentType>>();
+        private readonly GetOnce<IDictionary<string, IContentType>> _lookup = new();
 
         /// <summary>
         /// This will be called by the serializer to generate a delayed/lazy IContentType.

@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using ToSic.Eav.Metadata;
 
-// ReSharper disable ConvertToNullCoalescingCompoundAssignment
+
 
 namespace ToSic.Eav.Data.Build
 {

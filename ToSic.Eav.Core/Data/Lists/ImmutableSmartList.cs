@@ -28,7 +28,7 @@ namespace ToSic.Eav.Data
 
         #region Smart bits / performance
 
-        internal LazyFastAccess Fast => _lfa ?? (_lfa = new LazyFastAccess(Contents));
+        internal LazyFastAccess Fast => _lfa ??= new LazyFastAccess(Contents);
         private LazyFastAccess _lfa;
 
         #endregion

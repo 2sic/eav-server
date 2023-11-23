@@ -12,7 +12,7 @@ namespace ToSic.Eav.Internal.Features
 
         // ATM only used in azing, so still easy to change
 
-        public static readonly Feature AdamRestrictLookupToEntity = new Feature(
+        public static readonly Feature AdamRestrictLookupToEntity = new(
             nameof(AdamRestrictLookupToEntity),
             new Guid("702f694c-53bd-4d03-b75c-4dad9c4fb852"),
             "ADAM - Restrict file lookup to the same entity (BETA, not final)",

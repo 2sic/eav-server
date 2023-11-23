@@ -10,7 +10,7 @@ namespace ToSic.Eav.Internal.Features
         // So always create the definition there first, then use the GUID of that definition here
 
 
-        internal static List<FeatureLicenseRule> BuildRule(FeatureSet licDef, bool featureEnabled) => new List<FeatureLicenseRule>
+        internal static List<FeatureLicenseRule> BuildRule(FeatureSet licDef, bool featureEnabled) => new()
         {
             new FeatureLicenseRule(licDef, featureEnabled)
         };

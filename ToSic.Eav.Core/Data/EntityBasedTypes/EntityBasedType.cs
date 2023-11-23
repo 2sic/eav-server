@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
-// ReSharper disable ConvertToNullCoalescingCompoundAssignment
+
 
 namespace ToSic.Eav.Data
 {
@@ -19,7 +19,7 @@ namespace ToSic.Eav.Data
         public IEntity Entity { get; protected set; }
 
         [PrivateApi] public IEntity RootContentsForEqualityCheck => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
-        public List<IDecorator<IEntity>> Decorators => _decorators ?? (_decorators = (Entity as IEntityWrapper)?.Decorators ?? new List<IDecorator<IEntity>>());
+        public List<IDecorator<IEntity>> Decorators => _decorators ??= (Entity as IEntityWrapper)?.Decorators ?? new List<IDecorator<IEntity>>();
         private List<IDecorator<IEntity>> _decorators;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace ToSic.Eav.Data
             => LookupLanguages = languageCode != null ? new[] { languageCode } : Array.Empty<string>();
 
         /// <inheritdoc />
-        public virtual string Title => _title ?? (_title = Entity?.GetBestTitle() ?? "");
+        public virtual string Title => _title ??= Entity?.GetBestTitle() ?? "";
         private string _title;
 
         /// <inheritdoc />

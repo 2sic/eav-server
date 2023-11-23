@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources
         /// <inheritdoc/>
         public override IReadOnlyDictionary<string, IDataStream> Out => _getOut.Get(() => new ReadOnlyDictionary<string, IDataStream>(CreateOutWithAllStreams()));
 
-        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _getOut = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
+        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _getOut = new();
 
         /// <summary>
         /// Attach all missing streams, now that Out is used the first time.

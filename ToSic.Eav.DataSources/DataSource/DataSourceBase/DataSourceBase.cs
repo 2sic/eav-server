@@ -91,7 +91,7 @@ namespace ToSic.Eav.DataSource
 
         [PublicApi]
         public DataSourceErrorHelper Error => _errorHandler.Get(() => Services.ErrorHandler.Value.Link(this));
-        private readonly GetOnce<DataSourceErrorHelper> _errorHandler = new GetOnce<DataSourceErrorHelper>();
+        private readonly GetOnce<DataSourceErrorHelper> _errorHandler = new();
 
         #endregion
 

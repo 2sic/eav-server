@@ -10,7 +10,7 @@ namespace ToSic.Eav.Internal.Features
         internal static List<FeatureLicenseRule> ForPatronAdvancedCmsAutoEnabled = BuildRule(BuiltInLicenses.PatronAdvancedCms, true);
 
 
-        public static readonly Feature EditUiTranslateWithGoogle = new Feature(
+        public static readonly Feature EditUiTranslateWithGoogle = new(
             nameof(EditUiTranslateWithGoogle),
             new Guid("353186b4-7e19-41fb-9dca-c408c26e43d7"),
             "Edit UI - Enable Translate with Google Translate",
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Internal.Features
             ForPatronAdvancedCmsAutoEnabled
         );
         
-        public static readonly Feature LanguagesAdvancedFallback = new Feature(
+        public static readonly Feature LanguagesAdvancedFallback = new(
             nameof(LanguagesAdvancedFallback),
             new Guid("95bb2232-ec19-4f9c-adf9-9df07d841cc8"),
             "Languages - Customize language fallback sequence",
@@ -32,7 +32,7 @@ namespace ToSic.Eav.Internal.Features
             ForPatronAdvancedCmsAutoEnabled
         );
 
-        public static readonly Feature FieldShareConfigManagement = new Feature(
+        public static readonly Feature FieldShareConfigManagement = new(
             nameof(FieldShareConfigManagement),
             new Guid("e0398b1f-32ca-4734-b49a-83ff894e352e"),
             "Field Sharing - Enable Configure in Admin UI",
@@ -43,7 +43,7 @@ namespace ToSic.Eav.Internal.Features
             ForPatronAdvancedCmsAutoEnabled
         );
 
-        public static readonly Feature CopyrightManagement = new Feature(
+        public static readonly Feature CopyrightManagement = new(
             nameof(CopyrightManagement),
             new Guid("2114297a-d1e7-40d2-88d7-e44cd1111bfa"),
             "Copyright Management for Content (WIP/Beta v17)",

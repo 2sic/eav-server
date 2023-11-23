@@ -126,7 +126,7 @@ namespace ToSic.Eav.DataSources.Sys
         }
 
         private IDataSource Query => _q.Get(BuildQuery);
-        private readonly GetOnce<IDataSource> _q = new GetOnce<IDataSource>();
+        private readonly GetOnce<IDataSource> _q = new();
 
 
         private IDataSource BuildQuery()

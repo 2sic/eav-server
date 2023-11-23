@@ -49,7 +49,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
 
         #region AppConfig
         private XElement _appConfig;
-        internal XElement AppConfig => _appConfig ?? (_appConfig = GetAppConfig());
+        internal XElement AppConfig => _appConfig ??= GetAppConfig();
 
         private XElement GetAppConfig()
         {
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers
         #region AppFolder
 
         private string _appFolder;
-        public string AppFolder => _appFolder ?? (_appFolder = GetKeyValueOrThrowOnNull("Folder"));
+        public string AppFolder => _appFolder ??= GetKeyValueOrThrowOnNull("Folder");
 
         #endregion
 

@@ -73,8 +73,8 @@ namespace ToSic.Eav.Persistence.File
         private List<string> _paths;
 
 
-        internal List<FileSystemLoader> Loaders => _loader ?? (_loader = Paths
-            .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, null)).ToList());
+        internal List<FileSystemLoader> Loaders => _loader ??= Paths
+            .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, null)).ToList();
         private List<FileSystemLoader> _loader;
 
 

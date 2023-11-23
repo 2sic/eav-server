@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Caching.CacheInfo;
 using ToSic.Eav.DataSource.Streams;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -16,6 +17,7 @@ namespace ToSic.Eav.DataSources
         private readonly StreamDictionary _out;
         private bool _requiresRebuildOfOut = true;
 
+        [PrivateApi]
         public void Reset() => _requiresRebuildOfOut = true;
 
         /// <inheritdoc/>

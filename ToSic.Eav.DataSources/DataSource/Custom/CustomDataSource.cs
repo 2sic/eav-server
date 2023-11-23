@@ -60,8 +60,8 @@ namespace ToSic.Eav.DataSource
 
         private DataFactoryOptions Options
         {
-            // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
-            get => _options ?? (_options = new DataFactoryOptions(typeName: "Custom"));
+            
+            get => _options ??= new DataFactoryOptions(typeName: "Custom");
             set => _options = value;
         }
         private DataFactoryOptions _options;

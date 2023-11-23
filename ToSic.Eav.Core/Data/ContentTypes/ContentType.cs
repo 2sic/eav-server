@@ -117,7 +117,7 @@ namespace ToSic.Eav.Data
 
         [PrivateApi] // #SharedFieldDefinition
         public ContentTypeSysSettings SysSettings { get; }
-        private readonly GetOnce<string> _titleFieldName = new GetOnce<string>();
+        private readonly GetOnce<string> _titleFieldName = new();
 
         /// <inheritdoc />
         public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => a.Name.EqualsInsensitive(fieldName));

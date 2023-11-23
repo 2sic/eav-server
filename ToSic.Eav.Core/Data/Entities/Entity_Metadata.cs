@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data
     {
         /// <inheritdoc />
         public IMetadataOf Metadata => _metadataOf.Get(() => _getMetadataOf(EntityGuid, GetBestTitle() ?? "entity with unknown title"));
-        private readonly GetOnce<IMetadataOf> _metadataOf = new GetOnce<IMetadataOf>();
+        private readonly GetOnce<IMetadataOf> _metadataOf = new();
         private readonly Func<Guid, string, IMetadataOf> _getMetadataOf;
 
         /// <inheritdoc />

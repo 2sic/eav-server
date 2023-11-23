@@ -9,7 +9,7 @@ namespace ToSic.Eav
         {
         }
 
-        private static CodeHelp SuperUserHelp(string message) => new CodeHelp(name: "super-user-help", detect: null,
+        private static CodeHelp SuperUserHelp(string message) => new(name: "super-user-help", detect: null,
             uiMessage: message ?? "Dev/SuperUser 👨🏽‍💻 ERROR INFORMATION",
             detailsHtml: "Only SuperUsers and Devs 👨🏽‍💻 see this message. Normal users won't see it");
 

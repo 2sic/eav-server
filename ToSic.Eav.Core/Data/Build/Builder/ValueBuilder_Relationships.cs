@@ -71,7 +71,7 @@ namespace ToSic.Eav.Data.Build
         /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
         /// </summary>
         private Value<IEnumerable<IEntity>> NewEmptyRelationship
-            => new Value<IEnumerable<IEntity>>(new LazyEntitiesSource(null, identifiers: null));
+            => new(new LazyEntitiesSource(null, identifiers: null));
 
         internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableList();
 

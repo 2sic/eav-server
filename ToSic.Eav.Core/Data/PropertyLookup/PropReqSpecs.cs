@@ -25,15 +25,14 @@ namespace ToSic.Eav.Data.PropertyLookup
         /// </summary>
         public readonly ILog LogOrNull;
 
-        public PropReqSpecs ForOtherField(string field) 
-            => new PropReqSpecs(field, Dimensions, LogOrNull, TreatEmptyAsDefault);
+        public PropReqSpecs ForOtherField(string field) => new(field, Dimensions, LogOrNull, TreatEmptyAsDefault);
 
-        public PropReqSpecs SubLog(string title)
-            => new PropReqSpecs(Field, Dimensions, LogOrNull.SubLogOrNull(title), TreatEmptyAsDefault);
-        public PropReqSpecs SubLog(string title, bool enabled)
-            => new PropReqSpecs(Field, Dimensions, LogOrNull.SubLogOrNull(title, enabled), TreatEmptyAsDefault);
+        public PropReqSpecs SubLog(string title) =>
+            new(Field, Dimensions, LogOrNull.SubLogOrNull(title), TreatEmptyAsDefault);
+        public PropReqSpecs SubLog(string title, bool enabled) => new(Field, Dimensions,
+            LogOrNull.SubLogOrNull(title, enabled), TreatEmptyAsDefault);
 
-        public string Dump() => _dump ?? (_dump = $"{nameof(PropReqSpecs)} {{ {nameof(Field)}:{Field}, {nameof(Dimensions)}:{string.Join(",", Dimensions)} }}");
+        public string Dump() => _dump ??= $"{nameof(PropReqSpecs)} {{ {nameof(Field)}:{Field}, {nameof(Dimensions)}:{string.Join(",", Dimensions)} }}";
         private string _dump;
     }
 }

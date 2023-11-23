@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSource.Query
 	[PrivateApi]
 	public static class Connections
 	{
-		private static readonly Regex WireRegex = new Regex("(?<From>.+):(?<Out>.+)>(?<To>.+):(?<In>.+)", RegexOptions.Compiled);
+		private static readonly Regex WireRegex = new("(?<From>.+):(?<Out>.+)>(?<To>.+):(?<In>.+)", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Deserialize a string of Wiring Infos to WireInfo Objects

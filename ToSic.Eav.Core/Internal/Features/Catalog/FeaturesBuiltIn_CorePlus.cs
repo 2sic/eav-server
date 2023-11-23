@@ -11,7 +11,7 @@ namespace ToSic.Eav.Internal.Features
         public static List<FeatureLicenseRule> ForCorePlusDisabled = BuildRule(BuiltInLicenses.CorePlus, false);
 
 
-        public static readonly Feature PublicEditForm = new Feature(
+        public static readonly Feature PublicEditForm = new(
             "PublicEditForm",
             new Guid("d93baf71-74c6-4956-9fe0-8281acdfd14a"),
             "Public use of Edit Form",
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Internal.Features
         );
 
 
-        public static readonly Feature PublicUploadFiles = new Feature(
+        public static readonly Feature PublicUploadFiles = new(
             "PublicUploadFiles",
             new Guid("79b9f5f8-d104-458b-8e8f-9f4a11c5935e"),
             "Public Upload of Files",
@@ -37,7 +37,7 @@ namespace ToSic.Eav.Internal.Features
             ForCorePlusDisabled
         );
 
-        public static readonly Feature SaveInAdamApi = new Feature(
+        public static readonly Feature SaveInAdamApi = new(
             "SaveInAdamApi",
             new Guid("ecdab0f6-4692-4544-b1e7-72581f489f6a"),
             "SaveInAdam API",
@@ -48,7 +48,7 @@ namespace ToSic.Eav.Internal.Features
             ForCorePlusEnabled
         );
 
-        public static readonly Feature PermissionCheckUsers = new Feature(
+        public static readonly Feature PermissionCheckUsers = new(
             "PermissionCheckUsers",
             new Guid("47c71ee9-ac7b-45bf-a08b-dfc8ce7c7775"),
             "Permission Check based on User",
@@ -59,7 +59,7 @@ namespace ToSic.Eav.Internal.Features
             ForCorePlusEnabled
         );
 
-        public static readonly Feature PermissionCheckGroups = new Feature(
+        public static readonly Feature PermissionCheckGroups = new(
             "PermissionCheckGroups",
             new Guid("0fd479cc-300f-47fd-88fd-8f2fe092bc09"),
             "Permission Check based on Group",
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Internal.Features
             ForCorePlusEnabled
         );
 
-        public static readonly Feature EditUiAllowDebugModeForEditors = new Feature(
+        public static readonly Feature EditUiAllowDebugModeForEditors = new(
             "EditUiAllowDebugModeForEditors",
             new Guid("a7703dbe-2659-44c7-9ef5-1cd114357d86"),
             "Edit UI: Allow normal editors (not System-Admins) to enter Debug-Mode",

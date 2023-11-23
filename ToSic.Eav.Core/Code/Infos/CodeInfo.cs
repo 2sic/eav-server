@@ -51,7 +51,7 @@ namespace ToSic.Eav.Code.Infos
             nameId: string.Format(NameId, replacements),
             message: string.Format(Message, replacements));
 
-        public CodeUse UsedAs(int appId = default, string specificId = default, string[] more = default)
-            => new CodeUse(this, appId: appId, specificId: specificId, more: more);
+        public CodeUse UsedAs(int appId = default, string specificId = default, string[] more = default) =>
+            new(this, appId: appId, specificId: specificId, more: more);
     }
 }

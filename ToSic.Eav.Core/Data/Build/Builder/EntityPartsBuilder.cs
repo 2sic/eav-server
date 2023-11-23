@@ -27,7 +27,7 @@ namespace ToSic.Eav.Data.Build
         /// <param name="metadata"></param>
         /// <returns></returns>
         public static EntityPartsBuilder ForAppAndOptionalMetadata(AppState source = default, List<IEntity> metadata = default) =>
-            new EntityPartsBuilder(
+            new(
                 entity => new RelationshipManager(entity, source),
                 getMetadataOf: metadata != default
                     ? CreateMetadataOfItems(metadata)

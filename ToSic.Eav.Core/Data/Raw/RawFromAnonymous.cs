@@ -82,6 +82,6 @@ namespace ToSic.Eav.Data.Raw
 
 
         public override IEnumerable<object> RelationshipKeys(RawConvertOptions options) => _relationshipKeys;
-        private readonly List<object> _relationshipKeys = new List<object>();
+        private readonly List<object> _relationshipKeys = new();
     }
 }

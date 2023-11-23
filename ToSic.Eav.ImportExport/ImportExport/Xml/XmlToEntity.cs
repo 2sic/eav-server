@@ -20,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Xml
 	{
         private class TargetLanguageToSourceLanguage: DimensionDefinition
         {
-            public List<DimensionDefinition> PrioritizedDimensions = new List<DimensionDefinition>();
+            public List<DimensionDefinition> PrioritizedDimensions = new();
         }
 
         public XmlToEntity(IAppStates appStates, DataBuilder dataBuilder) : base("Imp.XmlEnt")
@@ -74,7 +74,7 @@ namespace ToSic.Eav.ImportExport.Xml
                 };
                 result = new List<TargetLanguageToSourceLanguage>
                 {
-                    new TargetLanguageToSourceLanguage
+                    new()
                     {
                         Active = true,
                         EnvironmentKey = envDefLang,

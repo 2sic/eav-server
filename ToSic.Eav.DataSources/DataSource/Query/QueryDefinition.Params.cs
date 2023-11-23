@@ -17,14 +17,14 @@ namespace ToSic.Eav.DataSource.Query
 		/// <summary>
         /// The param-dictionary used for the LookUp. All keys will be available in the token [Params:key]
         /// </summary>
-        public IDictionary<string, string> Params => _params ?? (_params = GenerateParamsDic(ParamsRaw, Log));
+        public IDictionary<string, string> Params => _params ??= GenerateParamsDic(ParamsRaw, Log);
         private IDictionary<string, string> _params;
 
 		/// <summary>
         /// The <see cref="ILookUp"/> for the params of this query - based on the Params.
         /// </summary>
         /// <returns>Always returns a valid ILookup, even if no params found. </returns>
-        public ILookUp ParamsLookUp => _paraLookUp ?? (_paraLookUp = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, Params));
+        public ILookUp ParamsLookUp => _paraLookUp ??= new LookUpInDictionary(DataSourceConstants.ParamsSourceName, Params);
         private ILookUp _paraLookUp;
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace ToSic.Eav.DataSource.Query
         /// Anything that doesn't match will be ignored. <br/>
         /// Comments should start with a //
         /// </summary>
-        public static Regex ParamRegex = new Regex(
+        public static Regex ParamRegex = new(
             $@"^(?<{KeyProperty}>\w+)(\=(?<{KeyValue}>[^\r\n]*)?)?",
             RegexOptions.Compiled | RegexOptions.Multiline);
 

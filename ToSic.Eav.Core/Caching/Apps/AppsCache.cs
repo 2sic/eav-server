@@ -36,7 +36,7 @@ namespace ToSic.Eav.Caching
 
         // note: this object must be volatile!
         [PrivateApi] protected static volatile IReadOnlyDictionary<int, Zone> ZoneAppCache;
-        [PrivateApi] protected static readonly object ZoneAppLoadLock = new object();
+        [PrivateApi] protected static readonly object ZoneAppLoadLock = new();
 
 
         #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove

@@ -24,7 +24,7 @@
             MetadataForSerialization original,
             MetadataForSerialization addition = null,
             bool serialize = false, bool key = false, bool type = false) =>
-            new MetadataForSerialization
+            new()
             {
                 Serialize = original?.Serialize ?? addition?.Serialize ?? serialize,
                 SerializeKey = original?.SerializeKey ?? addition?.SerializeKey ?? key,

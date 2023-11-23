@@ -71,7 +71,7 @@ namespace ToSic.Eav.DataSources
         }
 
         #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
-        static readonly Random Generator = new Random();
+        static readonly Random Generator = new();
 
         private IImmutableList<T> ShuffleInternal<T>(List<T> sequence, int take) => Log.Func(l =>
         {

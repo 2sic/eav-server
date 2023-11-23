@@ -45,14 +45,14 @@ namespace ToSic.Eav.Data.Build
         public DateTime Created { get; } = DateTime.Now;
         public DateTime Modified { get; } = DateTime.Now;
 
-        private RawConvertOptions RawConvertOptions { get; } = new RawConvertOptions();
+        private RawConvertOptions RawConvertOptions { get; } = new();
 
         public ILookup<object, IEntity> Relationships => _nonLazyRelationships ?? _lazyRelationships;
         private ILookup<object, IEntity> _nonLazyRelationships;
-        private LazyLookup<object, IEntity> _lazyRelationships = new LazyLookup<object, IEntity>();
+        private LazyLookup<object, IEntity> _lazyRelationships = new();
 
         private RawRelationshipsConverter RelsConverter => _relsConverter.Get(() => new RawRelationshipsConverter(_builder, Log));
-        private readonly GetOnce<RawRelationshipsConverter> _relsConverter = new GetOnce<RawRelationshipsConverter>();
+        private readonly GetOnce<RawRelationshipsConverter> _relsConverter = new();
         #endregion
 
 
@@ -163,7 +163,7 @@ namespace ToSic.Eav.Data.Build
 
         /// <inheritdoc />
         public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
-            => new EntityPair<T>(Create(rawEntity), rawEntity);
+            => new(Create(rawEntity), rawEntity);
 
         #endregion
 

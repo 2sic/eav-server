@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSource
 
         #region Get List From Cache or Generate
 
-        public static ConcurrentDictionary<Type, List<ConfigMaskInfo>> Cache = new ConcurrentDictionary<Type, List<ConfigMaskInfo>>();
+        public static ConcurrentDictionary<Type, List<ConfigMaskInfo>> Cache = new();
 
         public List<ConfigMaskInfo> GetTokens(Type type)
         {

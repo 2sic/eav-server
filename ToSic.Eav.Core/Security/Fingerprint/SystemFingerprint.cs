@@ -79,7 +79,7 @@ namespace ToSic.Eav.Security.Fingerprint
         internal static void ResetForTest() => _fingerprintCache = null;
 
         public List<EnterpriseFingerprint> EnterpriseFingerprintsWIP => _enterpriseFingerprints;
-        private static List<EnterpriseFingerprint> _enterpriseFingerprints = new List<EnterpriseFingerprint>();
+        private static List<EnterpriseFingerprint> _enterpriseFingerprints = new();
 
         internal void LoadEnterpriseFingerprintsWIP(List<EnterpriseFingerprint> enterpriseFingerprints) 
             => _enterpriseFingerprints = enterpriseFingerprints;

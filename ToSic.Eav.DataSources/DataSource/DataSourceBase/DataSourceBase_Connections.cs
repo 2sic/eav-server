@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSource
         #region Connections
 
         [InternalApi_DoNotUse_MayChangeWithoutNotice]
-        internal DataSourceConnections Connections => _connections ?? (_connections = new DataSourceConnections(this));
+        internal DataSourceConnections Connections => _connections ??= new DataSourceConnections(this);
         private DataSourceConnections _connections;
 
         #endregion
@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSource
         /// <inheritdoc />
         [PublicApi]
         public virtual IReadOnlyDictionary<string, IDataStream> In => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw));
-        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new GetOnce<IReadOnlyDictionary<string, IDataStream>>();
+        private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new();
         private readonly IDictionary<string, IDataStream> _inRw = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace ToSic.Eav.DataSource
         [PublicApi]
         public virtual IReadOnlyDictionary<string, IDataStream> Out => OutWritable.AsReadOnly();
 
-        private StreamDictionary OutWritable => _outWritable ?? (_outWritable = new StreamDictionary(Services.CacheService));
+        private StreamDictionary OutWritable => _outWritable ??= new StreamDictionary(Services.CacheService);
         private StreamDictionary _outWritable;
 
         /// <inheritdoc />

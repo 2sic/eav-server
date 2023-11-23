@@ -24,7 +24,7 @@ namespace ToSic.Eav.LookUp
 
         // todo: probably change and not let the outside modify directly
         [PrivateApi]
-	    public Dictionary<string, ILookUp> Sources { get; } = new Dictionary<string, ILookUp>(InvariantCultureIgnoreCase);
+	    public Dictionary<string, ILookUp> Sources { get; } = new(InvariantCultureIgnoreCase);
 
         /// <summary>
         /// List of all Configurations for this DataSource

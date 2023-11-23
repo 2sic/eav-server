@@ -34,7 +34,7 @@ namespace ToSic.Eav.Apps.ImportExport
             return this;
         }
 
-        private readonly XmlBuilder _xBuilder = new XmlBuilder();
+        private readonly XmlBuilder _xBuilder = new();
         private AppState AppState { get; set; }
         public IContentType ContentType { get; set; }
 

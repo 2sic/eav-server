@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.Run
             return new List<Message>();
         }
 
-        public override Version TenantVersion => new Version(0,0,0);
+        public override Version TenantVersion => new(0,0,0);
 
         public override string FallbackContentTypeScope => "Default";
 

@@ -7,7 +7,7 @@ using ToSic.Eav.SysData;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static System.StringComparer;
-// ReSharper disable ConvertToNullCoalescingCompoundAssignment
+
 
 namespace ToSic.Eav.Internal.Features
 {
@@ -35,16 +35,16 @@ namespace ToSic.Eav.Internal.Features
 
 
         public IEnumerable<FeatureState> All => AllStaticCache.Get(() => Merge(Stored, _featuresCatalog.List, _staticSysFeatures));
-        private static readonly GetOnce<List<FeatureState>> AllStaticCache = new GetOnce<List<FeatureState>>();
+        private static readonly GetOnce<List<FeatureState>> AllStaticCache = new();
 
         /// <summary>
         /// List of all enabled features with their guids and nameIds
         /// </summary>
-        internal HashSet<string> EnabledFeatures => _enabledFeatures ?? (_enabledFeatures  = new HashSet<string>(All
+        internal HashSet<string> EnabledFeatures => _enabledFeatures ??= new HashSet<string>(All
                 .Where(f => f.IsEnabled)
                 .SelectMany(f => new[] { f.NameId, f.Aspect.Guid.ToString() })
                 .Distinct(InvariantCultureIgnoreCase),
-            InvariantCultureIgnoreCase));
+            InvariantCultureIgnoreCase);
         private HashSet<string> _enabledFeatures; // had to step back from GetOnce, because of "Error Unable to marshal host object to interpreter space"
 
         public IEnumerable<FeatureState> UiFeaturesForEditors => All.Where(f => f.IsEnabled && f.IsForEditUi);

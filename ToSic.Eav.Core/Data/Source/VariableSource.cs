@@ -22,10 +22,10 @@ namespace ToSic.Eav.Data.Source
         }
 
         public TSource MainSource => _mainSource.Get(() => SourceApp ?? SourceDeferred?.Invoke());
-        private readonly GetOnce<TSource> _mainSource = new GetOnce<TSource>();
+        private readonly GetOnce<TSource> _mainSource = new();
 
         public ICacheExpiring ExpirySource => _expirySourceReal.Get(() => (ICacheExpiring)SourceDirect ?? MainSource);
-        private readonly GetOnce<ICacheExpiring> _expirySourceReal = new GetOnce<ICacheExpiring>();
+        private readonly GetOnce<ICacheExpiring> _expirySourceReal = new();
 
         /// <summary>
         /// The cache has a very "old" timestamp, so it's never newer than a dependent

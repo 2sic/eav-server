@@ -45,7 +45,7 @@ namespace ToSic.Eav.Internal.Licenses
 
         #region Internal stuff, caching, static
 
-        private static List<FeatureSetState> AllCache { get; set; } = new List<FeatureSetState>();
+        private static List<FeatureSetState> AllCache { get; set; } = new();
 
 
         private static IImmutableDictionary<Guid, FeatureSetState> EnabledCache { get; set; } =

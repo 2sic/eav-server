@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data
                 ? wrapper.RootContentsForEqualityCheck ?? RootContentsForEqualityCheck
                 : contents;
         });
-        private readonly GetOnce<IContentType> _rootContentsForEqualityCheck = new GetOnce<IContentType>();
+        private readonly GetOnce<IContentType> _rootContentsForEqualityCheck = new();
 
         public static bool operator ==(ContentTypeWrapper d1, ContentTypeWrapper d2) => IsEqual(d1, d2);
 

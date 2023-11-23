@@ -26,7 +26,7 @@ namespace ToSic.Eav.Metadata
             }
         }
         private List<IEntity> _allCached;
-        private readonly TryLockTryDo _loadAllInLock = new TryLockTryDo();
+        private readonly TryLockTryDo _loadAllInLock = new();
         
         public long CacheTimestamp { get; private set; }
 
@@ -68,7 +68,7 @@ namespace ToSic.Eav.Metadata
         /// <returns></returns>
         [PrivateApi]
         protected IMetadataSource GetMetadataSource() => _mdsGetOnce.Get(() => Source.MainSource?.MetadataSource);
-        private readonly GetOnce<IMetadataSource> _mdsGetOnce = new GetOnce<IMetadataSource>();
+        private readonly GetOnce<IMetadataSource> _mdsGetOnce = new();
 
     }
 }

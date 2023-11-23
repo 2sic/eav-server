@@ -27,7 +27,7 @@ namespace ToSic.Eav.Apps
             // "View" Settings/Resources - always add, no matter if null, so the key always exists
             var sources = new List<KeyValuePair<string, IPropertyLookup>>
             {
-                new KeyValuePair<string, IPropertyLookup>(PartView, viewPart)
+                new(PartView, viewPart)
             };
 
             // All in the App and below

@@ -11,7 +11,7 @@ namespace ToSic.Eav.Internal.Loaders
     {
         public AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _) : base("Eav.BscRnt") { }
 
-        public AppState LoadFullAppState() => new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogScopes.NotImplemented));
+        public AppState LoadFullAppState() => new(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogScopes.NotImplemented));
 
         public void ReloadConfigEntities() { /* do nothing */ }
     }

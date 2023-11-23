@@ -11,14 +11,14 @@ namespace ToSic.Eav.Code.InfoSystem
         /// <summary>
         /// Keep track of all obsolete code, so we don't over-report it.
         /// </summary>
-        private static Dictionary<string, int> ObsoleteIdCount { get; } = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+        private static Dictionary<string, int> ObsoleteIdCount { get; } = new(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Keep track of specific cases of an obsolete report, because these should always only be reported once
         /// </summary>
-        private static Dictionary<string, int> SpecificCases { get; } = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+        private static Dictionary<string, int> SpecificCases { get; } = new(StringComparer.InvariantCultureIgnoreCase);
 
-        private static readonly EntryOptions NoCodeDetails = new EntryOptions { HideCodeReference = true };
+        private static readonly EntryOptions NoCodeDetails = new() { HideCodeReference = true };
 
         /// <summary>
         /// 

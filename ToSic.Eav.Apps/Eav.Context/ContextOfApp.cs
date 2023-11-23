@@ -10,7 +10,7 @@ using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Apps.AppStackConstants;
 
-// ReSharper disable ConvertToNullCoalescingCompoundAssignment
+
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context
@@ -117,20 +117,20 @@ namespace ToSic.Eav.Context
 
             return (fromApp, $"{fromApp}");
         }));
-        private readonly GetOnce<bool> _userMayEditGet = new GetOnce<bool>();
+        private readonly GetOnce<bool> _userMayEditGet = new();
 
         public AppState AppState => _appState.Get(() => AppIdentity == null ? null : AppServices.AppStates.Get(AppIdentity));
-        private readonly GetOnce<AppState> _appState = new GetOnce<AppState>();
+        private readonly GetOnce<AppState> _appState = new();
 
         #region Settings and Resources
 
         private AppSettingsStack AppSettingsStack => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppState));
-        private readonly GetOnce<AppSettingsStack> _appSettingsStack = new GetOnce<AppSettingsStack>();
+        private readonly GetOnce<AppSettingsStack> _appSettingsStack = new();
 
         public PropertyStack AppSettings => _settings.Get(() => AppSettingsStack.GetStack(RootNameSettings));
-        private readonly GetOnce<PropertyStack> _settings = new GetOnce<PropertyStack>();
+        private readonly GetOnce<PropertyStack> _settings = new();
         public PropertyStack AppResources => _resources.Get(() => AppSettingsStack.GetStack(RootNameResources));
-        private readonly GetOnce<PropertyStack> _resources = new GetOnce<PropertyStack>();
+        private readonly GetOnce<PropertyStack> _resources = new();
 
         #endregion
     }

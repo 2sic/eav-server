@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources
         public bool HasLanguages;
         public LanguageToField[] Fields;
 
-        public List<string> FieldNames => _fieldNames ?? (_fieldNames = Fields.Select(f => f.OriginalField).ToList());
+        public List<string> FieldNames => _fieldNames ??= Fields.Select(f => f.OriginalField).ToList();
         private List<string> _fieldNames;
 
         public string LoadLine(string original)

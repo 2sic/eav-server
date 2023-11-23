@@ -28,7 +28,7 @@ namespace ToSic.Eav.Apps
             return this;
         }
 
-        internal DbDataController DataController => _db ?? (_db = _dbLazy.Value.Init(ZoneId, null));
+        internal DbDataController DataController => _db ??= _dbLazy.Value.Init(ZoneId, null);
         private DbDataController _db;
 
         #endregion

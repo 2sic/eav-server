@@ -61,7 +61,7 @@ namespace ToSic.Eav.DataSource.Streams
 
         public IDataStream GetContents() => InnerStream;
         private IDataStream InnerStream => _dataStream.Get(LoadStream);
-        private readonly GetOnce<IDataStream> _dataStream = new GetOnce<IDataStream>();
+        private readonly GetOnce<IDataStream> _dataStream = new();
 
 
         #region Simple properties linked to the underlying Stream

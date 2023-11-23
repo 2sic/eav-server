@@ -15,8 +15,8 @@ namespace ToSic.Eav.WebApi.ApiExplorer
 
         public bool IsBody(ParameterInfo paramInfo) => false;
 
-        public List<string> GetHttpVerbs(MethodInfo methodInfo) => new List<string>();
+        public List<string> GetHttpVerbs(MethodInfo methodInfo) => new();
 
-        public ApiSecurityDto GetSecurity(MemberInfo member) => new ApiSecurityDto();
+        public ApiSecurityDto GetSecurity(MemberInfo member) => new();
     }
 }

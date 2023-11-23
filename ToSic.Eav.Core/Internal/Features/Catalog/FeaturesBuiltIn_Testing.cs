@@ -10,7 +10,7 @@ namespace ToSic.Eav.Internal.Features
     {
         public static List<FeatureLicenseRule> ForTestingDisabled = BuildRule(BuiltInLicenses.CoreTesting, false);
 
-        public static readonly Feature TestingFeature001 = new Feature(
+        public static readonly Feature TestingFeature001 = new(
             nameof(TestingFeature001),
             new Guid("f6cad4f7-f7ad-4205-9887-f7e28443ea8f"),
             "Just for testing!",

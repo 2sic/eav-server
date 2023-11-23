@@ -67,7 +67,7 @@ namespace ToSic.Eav.Apps.Security
         #endregion
 
         protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
-            => new Dictionary<string, IPermissionCheck> { { "App", BuildPermissionChecker() } };
+            => new() { { "App", BuildPermissionChecker() } };
         
         public bool ZoneIsOfCurrentContextOrUserIsSuper(out string error)
         {

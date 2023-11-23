@@ -23,6 +23,6 @@ namespace ToSic.Eav.SysData
                 ? (true, $"License ok; For: '{signatureOriginal}'")
                 : (false, $"Fingerprint Stored/Signed: '{Fingerprint}'; Expected: '{expected}'");
         });
-        private readonly GetOnce<(bool Valid, string Message)> _validity = new GetOnce<(bool Valid, string Message)>();
+        private readonly GetOnce<(bool Valid, string Message)> _validity = new();
     }
 }

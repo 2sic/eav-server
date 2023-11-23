@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.ContentTypes
     /// </summary>
     public class DeferredContentTypeProvider : IDeferredContentTypeProvider
     {
-        public List<IContentType> Source { get; } = new List<IContentType>();
+        public List<IContentType> Source { get; } = new();
         public DeferredContentTypeProvider()
         {
         }

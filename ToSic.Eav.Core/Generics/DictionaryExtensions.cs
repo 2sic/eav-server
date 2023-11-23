@@ -33,8 +33,8 @@ namespace ToSic.Eav.Generics
             return original.ToInvariantCopy();
         }
 
-        public static Dictionary<string, T> ToInvariantCopy<T>(this IDictionary<string, T> original) 
-            => new Dictionary<string, T>(original, InvariantCultureIgnoreCase);
+        public static Dictionary<string, T> ToInvariantCopy<T>(this IDictionary<string, T> original) =>
+            new(original, InvariantCultureIgnoreCase);
 
         public static bool TryGetTyped<TResult, TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, out TResult result)
         {

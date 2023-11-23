@@ -120,7 +120,7 @@ namespace ToSic.Eav.DataSource
             {
                 { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSourceForIn, base.Services.ZoneCultureResolverLazy.Value) }
             });
-        private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new GetOnce<IDictionary<string, ILookUp>>();
+        private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new();
 
 
         public string Get(string name) => Parse(name);

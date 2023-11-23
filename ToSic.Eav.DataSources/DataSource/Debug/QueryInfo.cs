@@ -22,8 +22,8 @@ namespace ToSic.Eav.DataSource.Debug
         }
 
         public QueryDefinition QueryDefinition;
-        public List<StreamInfo> Streams = new List<StreamInfo>();
-        public Dictionary<Guid, DataSourceInfo> Sources = new Dictionary<Guid, DataSourceInfo>();
+        public List<StreamInfo> Streams = new();
+        public Dictionary<Guid, DataSourceInfo> Sources = new();
 
         /// <summary>
         /// Provide an array of infos related to a stream and data source

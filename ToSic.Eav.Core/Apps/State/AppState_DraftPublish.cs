@@ -49,8 +49,8 @@ namespace ToSic.Eav.Apps
         /// </summary>
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         public SynchronizedList<IEntity> ListPublished
-            => _listPublished ?? (_listPublished = new SynchronizedEntityList(this,
-                   () => List.Where(e => e.IsPublished).ToImmutableList()));
+            => _listPublished ??= new SynchronizedEntityList(this,
+                () => List.Where(e => e.IsPublished).ToImmutableList());
 
         private SynchronizedEntityList _listPublished;
 
@@ -59,9 +59,8 @@ namespace ToSic.Eav.Apps
         /// </summary>
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         public SynchronizedList<IEntity> ListNotHavingDrafts
-            => _listNotHavingDrafts ?? (_listNotHavingDrafts =
-                new SynchronizedEntityList(this,
-                    () => List.Where(e => GetDraft(e) == null).ToImmutableList()));
+            => _listNotHavingDrafts ??= new SynchronizedEntityList(this,
+                () => List.Where(e => GetDraft(e) == null).ToImmutableList());
 
         private SynchronizedEntityList _listNotHavingDrafts;
 
@@ -71,7 +70,7 @@ namespace ToSic.Eav.Apps
         /// </summary>
         [PrivateApi("this is an optimization feature which shouldn't be used by others")]
         private SynchronizedObject<ImmutableDictionary<int, IEntity>> ListDrafts
-            => _listDrafts ?? (_listDrafts = new SynchronizedObject<ImmutableDictionary<int, IEntity>>(this,
+            => _listDrafts ??= new SynchronizedObject<ImmutableDictionary<int, IEntity>>(this,
                 () =>
                 {
                     var unpublished = List.Where(e => e.IsPublished == false);
@@ -80,7 +79,7 @@ namespace ToSic.Eav.Apps
                     // so we deduplicate and keep the last - otherwise we would break this dictionary.
                     var lastOnly = unpublished.GroupBy(e => e.EntityId).Select(g => g.Last()).ToList();
                     return lastOnly.ToImmutableDictionary(e => e.EntityId);
-                }));
+                });
 
         private SynchronizedObject<ImmutableDictionary<int, IEntity>> _listDrafts;
 

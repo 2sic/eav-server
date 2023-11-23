@@ -17,10 +17,10 @@ namespace ToSic.Eav.Internal.Features
             _sp = sp;
         }
 
-        public List<SysFeature> Definitions => _list ?? (_list = LoadCapabilities().Defs);
+        public List<SysFeature> Definitions => _list ??= LoadCapabilities().Defs;
         private static List<SysFeature> _list;
 
-        public List<FeatureState> States => _listState ?? (_listState = LoadCapabilities().States);
+        public List<FeatureState> States => _listState ??= LoadCapabilities().States;
         private static List<FeatureState> _listState;
 
 

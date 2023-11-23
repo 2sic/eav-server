@@ -210,7 +210,7 @@ namespace ToSic.Eav.Internal.Features
 
 
         internal static FeatureStatePersisted FeatureConfigBuilder(FeatureState featureState) =>
-            new FeatureStatePersisted
+            new()
             {
                 Id = featureState.Aspect.Guid,
                 Enabled = featureState.IsEnabled
@@ -218,7 +218,7 @@ namespace ToSic.Eav.Internal.Features
 
         
         internal static FeatureStatePersisted FeatureConfigBuilder(FeatureManagementChange change) =>
-            new FeatureStatePersisted
+            new()
             {
                 Id = change.FeatureGuid,
                 Enabled = change.Enabled ?? false

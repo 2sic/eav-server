@@ -5,7 +5,7 @@ namespace ToSic.Eav
 {
     public class EavSystemInfo
     {
-        public static Version Version => _version ?? (_version = Assembly.GetExecutingAssembly().GetName().Version);
+        public static Version Version => _version ??= Assembly.GetExecutingAssembly().GetName().Version;
         private static Version _version;
 
         public static readonly string VersionString = VersionToNiceFormat(Version);
@@ -28,7 +28,7 @@ namespace ToSic.Eav
         /// <param name="version"></param>
         /// <returns></returns>
         private static Version VersionWithFakeBuildNumber(Version version) =>
-            new Version(version.Major, version.Minor, version.Build,
+            new(version.Major, version.Minor, version.Build,
                 (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds);
 
     }

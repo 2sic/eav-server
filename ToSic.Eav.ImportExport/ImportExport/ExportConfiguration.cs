@@ -43,7 +43,7 @@ namespace ToSic.Eav.ImportExport
         /// Find all decorator metadata of type SystemExportDecorator
         /// </summary>
         public List<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity.Parents(ExportDecorator.TypeNameId).Select(e => new ExportDecorator(e)).ToList());
-        private readonly GetOnce<List<ExportDecorator>> _exportMarkers = new GetOnce<List<ExportDecorator>>();
+        private readonly GetOnce<List<ExportDecorator>> _exportMarkers = new();
 
         /// <summary>
         /// Content Types to Export

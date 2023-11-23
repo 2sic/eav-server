@@ -13,7 +13,7 @@ namespace ToSic.Eav.Security.Permissions
         /// It's important to note that create-grants don't provide
         /// read-grants
         /// </remarks>
-        public static List<Grants> ReadSomething = new List<Grants>
+        public static List<Grants> ReadSomething = new()
         {
             Approve,
             Read,
@@ -24,7 +24,7 @@ namespace ToSic.Eav.Security.Permissions
             Full
         };
 
-        public static List<Grants> ReadDraft = new List<Grants>
+        public static List<Grants> ReadDraft = new()
         {
             Approve,
             DeleteDraft,
@@ -36,7 +36,7 @@ namespace ToSic.Eav.Security.Permissions
             Update
         };
 
-        public static List<Grants> ReadPublished = new List<Grants>
+        public static List<Grants> ReadPublished = new()
         {
             Approve,
             Read,
@@ -46,7 +46,7 @@ namespace ToSic.Eav.Security.Permissions
             Update
         };
 
-        public static List<Grants> WriteSomething = new List<Grants>
+        public static List<Grants> WriteSomething = new()
         {
             Delete,
             DeleteDraft,
@@ -60,7 +60,7 @@ namespace ToSic.Eav.Security.Permissions
         };
 
         // ReSharper disable once UnusedMember.Global
-        public static List<Grants> WriteDraft = new List<Grants>
+        public static List<Grants> WriteDraft = new()
         {
             Delete,
             DeleteDraft,
@@ -72,7 +72,7 @@ namespace ToSic.Eav.Security.Permissions
             Update
         };
 
-        public static List<Grants> WritePublished = new List<Grants>
+        public static List<Grants> WritePublished = new()
         {
             Create,
             Update,
@@ -82,7 +82,7 @@ namespace ToSic.Eav.Security.Permissions
         };
 
 
-        public static List<Grants> UpdateSomething = new List<Grants>
+        public static List<Grants> UpdateSomething = new()
         {
             Develop,
             Full,
@@ -92,14 +92,14 @@ namespace ToSic.Eav.Security.Permissions
         };
 
 
-        public static List<Grants> DeleteSomething = new List<Grants>
+        public static List<Grants> DeleteSomething = new()
         {
             Delete,
             DeleteDraft
         };
 
 
-        public static List<Grants> CreateSomething = new List<Grants>
+        public static List<Grants> CreateSomething = new()
         {
             Create,
             CreateDraft,

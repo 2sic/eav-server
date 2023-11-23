@@ -20,7 +20,7 @@ namespace ToSic.Eav.Serialization
         /// also to preserve json compatibility with older apis used by Newtonsoft.Json.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        private static readonly JsonSerializerOptions DefaultOptions = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions DefaultOptions = new()
         {
             AllowTrailingCommas = true,
             Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter(), new ObjectToInferredTypesConverter(), new ExceptionConverter<Exception>() },
@@ -50,7 +50,7 @@ namespace ToSic.Eav.Serialization
         /// Never allow the raw UnsafeRelaxedJsonEscaping output to be emitted into an HTML page or a <script> element.
         /// https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-character-encoding#serialize-all-characters
         /// </summary>
-        public static JsonSerializerOptions UnsafeJsonWithoutEncodingHtml = new JsonSerializerOptions(DefaultOptions)
+        public static JsonSerializerOptions UnsafeJsonWithoutEncodingHtml = new(DefaultOptions)
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
@@ -79,7 +79,7 @@ namespace ToSic.Eav.Serialization
         /// - additional defense-in-depth protections against XSS or information disclosure attacks, such as those which might result from the client and server disagreeing on the charset.
         /// This is alternative to UnsafeJsonWithoutEncodingHtml that is using UnsafeRelaxedJsonEscaping encoder.
         /// </summary>
-        public static JsonSerializerOptions SafeJsonForHtmlAttributes = new JsonSerializerOptions(DefaultOptions)
+        public static JsonSerializerOptions SafeJsonForHtmlAttributes = new(DefaultOptions)
         {
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CurrencySymbols/*, UnicodeRanges.Latin1Supplement, UnicodeRanges.LatinExtendedA, UnicodeRanges.LatinExtendedB, UnicodeRanges.LatinExtendedC, UnicodeRanges.LatinExtendedD, UnicodeRanges.LatinExtendedE, UnicodeRanges.LatinExtendedAdditional*/),
         };
@@ -87,7 +87,7 @@ namespace ToSic.Eav.Serialization
         /// <summary>
         /// For use in features.json to preserve simpler datetime format.
         /// </summary>
-        public static JsonSerializerOptions FeaturesJson = new JsonSerializerOptions(DefaultOptions)
+        public static JsonSerializerOptions FeaturesJson = new(DefaultOptions)
         {
             Converters = { new JsonShortDateTimeConverter() },
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -97,7 +97,7 @@ namespace ToSic.Eav.Serialization
         /// Default JsonDocumentOptions for direct use with JsonNode.Parse and JsonDocument.Parse
         /// to preserve json compatibility with older apis used by Newtonsoft.Json.
         /// </summary>
-        public static JsonDocumentOptions JsonDocumentDefaultOptions = new JsonDocumentOptions()
+        public static JsonDocumentOptions JsonDocumentDefaultOptions = new()
         {
             AllowTrailingCommas = true,
             CommentHandling = JsonCommentHandling.Skip,
@@ -111,7 +111,7 @@ namespace ToSic.Eav.Serialization
         /// Default JsonNodeOptions for direct use with JsonNode.Parse
         /// to preserve json compatibility with older apis used by Newtonsoft.Json.
         /// </summary>
-        public static JsonNodeOptions JsonNodeDefaultOptions = new JsonNodeOptions()
+        public static JsonNodeOptions JsonNodeDefaultOptions = new()
         {
             PropertyNameCaseInsensitive = true,
         };

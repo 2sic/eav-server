@@ -37,6 +37,6 @@ namespace ToSic.Eav.Data.PropertyLookup
         }
 
         public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
-            => new List<PropertyDumpItem> { new PropertyDumpItem { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" } };
+            => new() { new PropertyDumpItem { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" } };
     }
 }

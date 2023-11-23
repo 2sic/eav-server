@@ -50,7 +50,7 @@ namespace ToSic.Eav.Persistence.File
                 return (new Dictionary<string, JsonFormat>(), "error");
             }
         });
-        private readonly GetOnce<Dictionary<string, JsonFormat>> _jsonBundles = new GetOnce<Dictionary<string, JsonFormat>>();
+        private readonly GetOnce<Dictionary<string, JsonFormat>> _jsonBundles = new();
 
 
 

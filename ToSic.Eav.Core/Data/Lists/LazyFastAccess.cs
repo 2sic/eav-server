@@ -68,12 +68,12 @@ namespace ToSic.Eav.Data
 
         private readonly IEnumerable<IEntity> _list;
 
-        private readonly ConcurrentDictionary<int, IEntity> _byInt = new ConcurrentDictionary<int, IEntity>();
-        private readonly ConcurrentDictionary<int, IEntity> _byRepoId = new ConcurrentDictionary<int, IEntity>();
-        private readonly ConcurrentDictionary<Guid, IEntity> _byGuid = new ConcurrentDictionary<Guid, IEntity>();
-        private readonly ConcurrentDictionary<int, bool> _has = new ConcurrentDictionary<int, bool>();
+        private readonly ConcurrentDictionary<int, IEntity> _byInt = new();
+        private readonly ConcurrentDictionary<int, IEntity> _byRepoId = new();
+        private readonly ConcurrentDictionary<Guid, IEntity> _byGuid = new();
+        private readonly ConcurrentDictionary<int, bool> _has = new();
 
         private readonly ConcurrentDictionary<string, IImmutableList<IEntity>> _ofType =
-            new ConcurrentDictionary<string, IImmutableList<IEntity>>(StringComparer.InvariantCultureIgnoreCase);
+            new(StringComparer.InvariantCultureIgnoreCase);
     }
 }

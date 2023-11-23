@@ -8,7 +8,7 @@ namespace ToSic.Eav.Caching
         
         public long FirstTimestamp { get; private set; }
         
-        public Stack<CacheHistory> History { get; } = new Stack<CacheHistory>();
+        public Stack<CacheHistory> History { get; } = new();
 
         public int ResetCount { get; private set; }
 

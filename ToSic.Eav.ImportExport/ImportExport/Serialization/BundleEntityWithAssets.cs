@@ -7,6 +7,6 @@ namespace ToSic.Eav.ImportExport.Serialization
     public class BundleEntityWithAssets
     {
         public IEntity Entity;
-        public List<JsonAsset> Assets = new List<JsonAsset>();
+        public List<JsonAsset> Assets = new();
     }
 }

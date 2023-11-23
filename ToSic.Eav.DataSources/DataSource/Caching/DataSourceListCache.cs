@@ -14,8 +14,7 @@ namespace ToSic.Eav.DataSource.Caching
 
         internal static ObjectCache Cache => MemoryCache.Default;
 
-        public static readonly ConcurrentDictionary<string, object> LoadLocks
-            = new ConcurrentDictionary<string, object>();
+        public static readonly ConcurrentDictionary<string, object> LoadLocks = new();
 
         #endregion
 

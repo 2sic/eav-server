@@ -15,6 +15,6 @@
         /// <summary>
         /// For fallback in null-cases, probably not used ATM
         /// </summary>
-        public static FeatureSecurity Unknown = new FeatureSecurity(0, Constants.NullNameId);
+        public static FeatureSecurity Unknown = new(0, Constants.NullNameId);
     }
 }

@@ -18,7 +18,7 @@ namespace ToSic.Eav.Internal.Features
         public const bool Public = true;
         public const bool NotForPublic = false;
 
-        public static readonly Feature WysiwygPasteFormatted = new Feature(
+        public static readonly Feature WysiwygPasteFormatted = new(
             "WysiwygPasteFormatted",
             new Guid("1b13e0e6-a346-4454-a1e6-2fb18c047d20"),
             "Paste Formatted Text",
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Internal.Features
 
 
 
-        public static readonly Feature EditUiShowNotes = new Feature(
+        public static readonly Feature EditUiShowNotes = new(
             "EditUiShowNotes",
             new Guid("945320af-9ba9-4117-87cb-d63815e99fd4"),
             "Edit UI: Show notes button",
@@ -44,7 +44,7 @@ namespace ToSic.Eav.Internal.Features
             ForAllEnabled
         );
 
-        public static readonly Feature EditUiShowMetadataFor = new Feature(
+        public static readonly Feature EditUiShowMetadataFor = new(
             "EditUiShowMetadataFor",
             new Guid("717b5d0a-07b1-41ec-a670-ec9665cd4af1"),
             "Edit UI: Show information if something is Metadata-For",

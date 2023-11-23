@@ -57,7 +57,7 @@ namespace ToSic.Eav.Apps
         /// <summary>
         /// Store for the app-private timestamp. In inherited apps, it will be combined with the parent using the CacheExpiryDelegate
         /// </summary>
-        private Timestamped CacheTimestampPrivate { get; } = new Timestamped();
+        private Timestamped CacheTimestampPrivate { get; } = new();
 
         /// <summary>
         /// Create an expiry source for this app.
@@ -70,7 +70,7 @@ namespace ToSic.Eav.Apps
                 : CacheTimestampPrivate;
 
         [PrivateApi] 
-        public PiggyBack PiggyBack => _piggyBack ?? (_piggyBack = new PiggyBack());
+        public PiggyBack PiggyBack => _piggyBack ??= new PiggyBack();
         private PiggyBack _piggyBack;
 
     }

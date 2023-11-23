@@ -10,7 +10,7 @@ namespace ToSic.Eav.Internal.Features
         public static List<FeatureLicenseRule> ForForWebFarmCacheDisabled = BuildRule(BuiltInLicenses.WebFarmCache, false);
         public static List<FeatureLicenseRule> ForForWebFarmCacheEnabled = BuildRule(BuiltInLicenses.WebFarmCache, true);
 
-        public static readonly Feature WebFarmCache = new Feature(
+        public static readonly Feature WebFarmCache = new(
             "WebFarmCache",
             new Guid("11c0fedf-16a7-4596-900c-59e860b47965"),
             "Web Farm Cache",
@@ -20,7 +20,7 @@ namespace ToSic.Eav.Internal.Features
             ForForWebFarmCacheDisabled
         );
 
-        public static readonly Feature WebFarmCacheDebug = new Feature(
+        public static readonly Feature WebFarmCacheDebug = new(
             "WebFarmCacheDebug",
             new Guid("031cf718-271e-41de-89ca-d1dd4ecfe602"),
             "Web Farm Cache with verbose debugging",

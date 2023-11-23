@@ -65,7 +65,7 @@ namespace ToSic.Eav.DataSources
 
         #region Out
         /// <inheritdoc/>
-        public override IReadOnlyDictionary<string, IDataStream> Out => (_out ?? (_out = new StreamDictionary(this, Query?.Out))).AsReadOnly();
+        public override IReadOnlyDictionary<string, IDataStream> Out => (_out ??= new StreamDictionary(this, Query?.Out)).AsReadOnly();
 
         private StreamDictionary _out;
         #endregion
@@ -76,7 +76,7 @@ namespace ToSic.Eav.DataSources
         /// The inner query object. Will be initialized the first time it's accessed.
         /// </summary>
         [PrivateApi("not sure if showing this has any value - probably not")]
-        public Query Query => _query ?? (_query = BuildQuery());
+        public Query Query => _query ??= BuildQuery();
         private Query _query;
         #endregion
 

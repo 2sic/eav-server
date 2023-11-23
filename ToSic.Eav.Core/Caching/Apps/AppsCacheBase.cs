@@ -42,7 +42,7 @@ namespace ToSic.Eav.Caching
                 new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
                 new List<Data.DimensionDefinition>
                 {
-                    new Data.DimensionDefinition
+                    new()
                     {
                         Active = true,
                         DimensionId = 0,
@@ -146,8 +146,7 @@ namespace ToSic.Eav.Caching
         /// <summary>
         /// List of locks, to ensure that each app locks the loading process separately
         /// </summary>
-        private static readonly ConcurrentDictionary<string, object> LoadLocks
-            = new ConcurrentDictionary<string, object>();
+        private static readonly ConcurrentDictionary<string, object> LoadLocks = new();
 
         #region Purge Cache
 

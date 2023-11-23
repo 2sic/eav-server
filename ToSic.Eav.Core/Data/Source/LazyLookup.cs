@@ -13,9 +13,9 @@ namespace ToSic.Eav.Data.Source
     public class LazyLookup<TKey, TValue> : ILookup<TKey, TValue>
     {
         public ILookup<TKey, TValue> Source => _source.Get(() => Raw.ToLookup(r => r.Key, r => r.Value));
-        private readonly GetOnce<ILookup<TKey, TValue>> _source = new GetOnce<ILookup<TKey, TValue>>();
+        private readonly GetOnce<ILookup<TKey, TValue>> _source = new();
 
-        public List<KeyValuePair<TKey, TValue>> Raw = new List<KeyValuePair<TKey, TValue>>();
+        public List<KeyValuePair<TKey, TValue>> Raw = new();
 
         public LazyLookup(/*ILookup<TKey, TValue> source = null*/)
         {

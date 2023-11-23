@@ -95,7 +95,7 @@ namespace ToSic.Eav.SysData
                 { nameof(Owner), Owner }
             },
         });
-        private readonly GetOnce<IRawEntity> _newEntity = new GetOnce<IRawEntity>();
+        private readonly GetOnce<IRawEntity> _newEntity = new();
 
         #endregion
 

@@ -59,7 +59,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
 
 
         public ContentTypeAttributeSysSettings ToSysSettings() =>
-            new ContentTypeAttributeSysSettings(Share, inherit: Inherit ?? SourceGuid, inheritName: InheritName,
+            new(Share, inherit: Inherit ?? SourceGuid, inheritName: InheritName,
                 inheritMetadata: InheritMetadata, ConvertInheritMetadataStringToDicOrNull());
 
         //private Dictionary<Guid, string> ConvertInheritMetadataStringToDicOrNull()

@@ -116,7 +116,7 @@ namespace ToSic.Eav.DataSource.Streams
         /// <summary>
         /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
         /// </summary>
-        public virtual DataStreamCacheStatus Caching => _cachingInternal ?? (_cachingInternal = new DataStreamCacheStatus(Source, Source, Name));
+        public virtual DataStreamCacheStatus Caching => _cachingInternal ??= new DataStreamCacheStatus(Source, Source, Name);
 
         private DataStreamCacheStatus _cachingInternal;
 
@@ -147,7 +147,7 @@ namespace ToSic.Eav.DataSource.Streams
         /// <remarks>
         /// Where possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
         /// </remarks>
-        private readonly GetOnce<IImmutableList<IEntity>> _list = new GetOnce<IImmutableList<IEntity>>();
+        private readonly GetOnce<IImmutableList<IEntity>> _list = new();
 
         /// <summary>
         /// Assemble the list - from the initially configured ListDelegate
@@ -207,6 +207,6 @@ namespace ToSic.Eav.DataSource.Streams
 
 
         public IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: Source, stream: this, outName: Name));
-        private readonly GetOnce<IDataSourceLink> _link = new GetOnce<IDataSourceLink>();
+        private readonly GetOnce<IDataSourceLink> _link = new();
     }
 }

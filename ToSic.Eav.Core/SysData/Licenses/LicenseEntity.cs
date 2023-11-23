@@ -16,7 +16,7 @@ namespace ToSic.Eav.SysData
 
         public string Fingerprint => GetThis("");
 
-        public EnterpriseFingerprint AsEnterprise() => new EnterpriseFingerprint
+        public EnterpriseFingerprint AsEnterprise() => new()
         {
             Id = Id,
             Guid = Guid,

@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Work
     /// </summary>
     public class CoupledIdLists: HelperBase
     {
-        public DicNameInt Lists = new DicNameInt(StringComparer.InvariantCultureIgnoreCase);
+        public DicNameInt Lists = new(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Constructor

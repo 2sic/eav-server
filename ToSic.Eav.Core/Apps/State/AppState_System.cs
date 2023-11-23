@@ -11,12 +11,12 @@ namespace ToSic.Eav.Apps
         /// <param name="sp"></param>
         /// <returns></returns>
         [PrivateApi]
-        public AppStateMetadata SettingsInApp => _settingsInApp ?? (_settingsInApp = new AppStateMetadata(this, AppStackConstants.Settings));
+        public AppStateMetadata SettingsInApp => _settingsInApp ??= new AppStateMetadata(this, AppStackConstants.Settings);
         private AppStateMetadata _settingsInApp;
 
 
         [PrivateApi]
-        public AppStateMetadata ResourcesInApp => _resourcesInApp ?? (_resourcesInApp = new AppStateMetadata(this, AppStackConstants.Resources));
+        public AppStateMetadata ResourcesInApp => _resourcesInApp ??= new AppStateMetadata(this, AppStackConstants.Resources);
         private AppStateMetadata _resourcesInApp;
 
         [PrivateApi]

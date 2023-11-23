@@ -10,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Json.V1
         /// V1 - header information
         /// </summary>
         [JsonPropertyOrder(-1000)] // make sure it's always on top for clarity
-        public JsonHeader _ = new JsonHeader();
+        public JsonHeader _ = new();
         
         /// <summary>
         /// Bundles in this package.

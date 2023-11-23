@@ -39,7 +39,7 @@ namespace ToSic.Eav.Data
             if (GetContents() is IHasDecorators<IContentType> hasDecors) list.AddRange(hasDecors.Decorators);
             return list;
         });
-        private readonly GetOnce<List<IDecorator<IContentType>>> _decorators = new GetOnce<List<IDecorator<IContentType>>>();
+        private readonly GetOnce<List<IDecorator<IContentType>>> _decorators = new();
         private readonly IDecorator<IContentType> _wrapperDecorator;
 
 

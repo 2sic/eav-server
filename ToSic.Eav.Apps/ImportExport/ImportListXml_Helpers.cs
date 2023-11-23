@@ -20,7 +20,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// Helper to measure time used for stuff
         /// </summary>
-        public Stopwatch Timer { get; set; } = new Stopwatch();
+        public Stopwatch Timer { get; set; } = new();
 
         public long TimeForMemorySetup;
         public long TimeForDbImport;
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Apps.ImportExport
         /// <summary>
         /// The entities created from the document. They will be saved to the repository.
         /// </summary>
-        public List<Entity> ImportEntities { get; } = new List<Entity>();
+        public List<Entity> ImportEntities { get; } = new();
 
         private Entity GetImportEntity(Guid entityGuid) => Log.Func(l =>
         {

@@ -12,8 +12,7 @@ namespace ToSic.Eav.Data.PiggyBack
     [PrivateApi("Internal, may still change a lot")]
     public class PiggyBack
     {
-        private readonly ConcurrentDictionary<string, object> _cache =
-            new ConcurrentDictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ConcurrentDictionary<string, object> _cache = new(StringComparer.InvariantCultureIgnoreCase);
 
         public bool Has(string key) => _cache.ContainsKey(key);
 

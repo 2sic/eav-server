@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSource.Query
             KeyProperty = "Property",
             KeyValue = "Value";
 
-        internal static Regex TestParamRegex = new Regex(
+        internal static Regex TestParamRegex = new(
             $@"(?:\[(?<{KeyToken}>\w+):(?<{KeyProperty}>\w+)\])=(?<{KeyValue}>[^\r\n]*)", RegexOptions.Compiled);
 
 

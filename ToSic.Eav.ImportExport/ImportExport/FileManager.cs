@@ -103,7 +103,7 @@ namespace ToSic.Eav.ImportExport
                 return (new List<string>(), $"warning, json is not valid in '{Constants.AppJson}'");
             }
         }));
-        private readonly GetOnce<List<string>> _excludeSearchPatterns = new GetOnce<List<string>>();
+        private readonly GetOnce<List<string>> _excludeSearchPatterns = new();
 
 
         /// <summary>

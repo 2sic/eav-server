@@ -11,7 +11,7 @@ using ToSic.Lib.Services;
 using ToSic.Sxc.Apps.Paths;
 using static System.IO.Path;
 
-// ReSharper disable ConvertToNullCoalescingCompoundAssignment
+
 
 namespace ToSic.Eav.Apps.Paths
 {

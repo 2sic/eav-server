@@ -147,7 +147,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             if (!_features.IsEnabled(BuiltInFeatures.AppSyncWithSiteFiles))
             {
                 var message = $"Skip all. Can't install pending apps because feature {BuiltInFeatures.AppSyncWithSiteFiles.NameId} is not enabled.";
-                var messages = new List<Message>() { new Message(message, Message.MessageTypes.Warning)};
+                var messages = new List<Message>() { new(message, Message.MessageTypes.Warning)};
                 Log.A(message);
                 result.Success = false;
                 result.Messages.AddRange(messages);

@@ -11,7 +11,7 @@ namespace ToSic.Eav.Plumbing
             nfi.NumberGroupSeparator = "`";
             return nfi;
         });
-        private static readonly GetOnce<NumberFormatInfo> _numberSeparator = new GetOnce<NumberFormatInfo>();
+        private static readonly GetOnce<NumberFormatInfo> _numberSeparator = new();
 
 
         public static string ToAposString(this double value) => value.ToString("N2", NumberSeparator);

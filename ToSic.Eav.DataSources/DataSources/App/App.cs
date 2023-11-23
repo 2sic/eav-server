@@ -161,7 +161,7 @@ namespace ToSic.Eav.DataSources
         public IMetadataSource Metadata => AppState;
 
 		protected AppState AppState => _appState.Get(() => _services.AppStates.Get(this));
-        private readonly GetOnce<AppState> _appState = new GetOnce<AppState>();
+        private readonly GetOnce<AppState> _appState = new();
     }
 
 }

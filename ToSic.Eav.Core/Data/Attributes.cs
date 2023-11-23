@@ -36,7 +36,7 @@ namespace ToSic.Eav.Data
         public const string IdNiceName = "Id";
         public const string GuidNiceName = "Guid";
 
-        public static Dictionary<string, string> SystemFields = new Dictionary<string, string>
+        public static Dictionary<string, string> SystemFields = new()
         {
             { IdNiceName, NumberNiceName },
             { GuidNiceName, nameof(Guid) },
@@ -98,7 +98,7 @@ namespace ToSic.Eav.Data
         /// <summary>
         /// Reserved field names - the UI should prevent creating fields with this name
         /// </summary>
-        public static Dictionary<string, string> ReservedNames { get; } = new Dictionary<string, string>
+        public static Dictionary<string, string> ReservedNames { get; } = new()
         {
             { EntityFieldTitle, "This is a unique name for the entity title."},
             { EntityFieldId, "This is a unique name for the entity Id."},
@@ -157,7 +157,7 @@ namespace ToSic.Eav.Data
         /// AttributeSet StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
         /// </summary>
         public static Regex StaticNameValidation =
-            new Regex("^[_a-zA-Z]{1}[_a-zA-Z0-9]*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            new("^[_a-zA-Z]{1}[_a-zA-Z0-9]*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// If AttributeSet StaticName doesn't match, users see this message.

@@ -26,6 +26,6 @@ namespace ToSic.Eav.Context
 
             return (u.IsSiteAdmin || u.IsSiteDeveloper, "admin/developer");
         }));
-        private readonly GetOnce<bool> _userMayEditWip = new GetOnce<bool>();
+        private readonly GetOnce<bool> _userMayEditWip = new();
     }
 }

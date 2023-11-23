@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSource.Caching
             }
         }
 
-        public virtual string CacheFullKey => _fullKey ?? (_fullKey = string.Join(">", SubKeys.Distinct()));
+        public virtual string CacheFullKey => _fullKey ??= string.Join(">", SubKeys.Distinct());
 
 
         /// <summary>

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data.Build
 {
     public class DimensionBuilder
     {
-        public Language CreateFrom(ILanguage orig, bool? readOnly) => new Language(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
+        public Language CreateFrom(ILanguage orig, bool? readOnly) => new(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
 
         //public IImmutableList<ILanguage> Clone(IList<ILanguage> orig) => orig
         //    // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks

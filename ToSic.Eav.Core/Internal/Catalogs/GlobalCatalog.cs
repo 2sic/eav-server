@@ -53,6 +53,6 @@ namespace ToSic.Eav.Internal.Catalogs
             l.Done($"now contains {List.Count} items");
         }
 
-        private readonly ConcurrentDictionary<string, T> _master = new ConcurrentDictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ConcurrentDictionary<string, T> _master = new(StringComparer.InvariantCultureIgnoreCase);
     }
 }

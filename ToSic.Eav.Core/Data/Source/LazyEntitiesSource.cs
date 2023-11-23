@@ -49,7 +49,7 @@ namespace ToSic.Eav.Data.Source
         /// <summary>
         /// Blank value, just for marking the list as empty
         /// </summary>
-        private static readonly List<int?> EntityIdsEmpty = new List<int?>();
+        private static readonly List<int?> EntityIdsEmpty = new();
         private readonly IEntitiesSource _lookupList;
         private readonly bool _preferGuid;
         private List<int?> _entityIds;
@@ -61,7 +61,7 @@ namespace ToSic.Eav.Data.Source
         /// Note that only the EntityIds <em>or</em> the Guids should be populated.
         /// </remarks>
         internal List<int?> EntityIds 
-            => _entityIds ?? (_entityIds = this.Select(e => e?.EntityId).ToList());
+            => _entityIds ??= this.Select(e => e?.EntityId).ToList();
 
         /// <summary>
         /// Identifiers of the items in the list. Build with either the Guids or the Ids, depending on what was used.

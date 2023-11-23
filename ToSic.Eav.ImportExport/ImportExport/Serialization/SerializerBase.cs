@@ -139,7 +139,7 @@ namespace ToSic.Eav.Serialization
 
         public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 
-        protected IEntitiesSource LazyRelationshipLookupList => _relList ?? (_relList = App);
+        protected IEntitiesSource LazyRelationshipLookupList => _relList ??= App;
         private IEntitiesSource _relList;
 
     }

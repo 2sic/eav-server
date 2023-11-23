@@ -51,7 +51,7 @@ namespace ToSic.Eav.DataSource.Query
         /// <summary>
         /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
         /// </summary>
-        public IList<Connection> Connections => _connections ?? (_connections = Eav.DataSource.Query.Connections.Deserialize(ConnectionsRaw));
+        public IList<Connection> Connections => _connections ??= Eav.DataSource.Query.Connections.Deserialize(ConnectionsRaw);
         private IList<Connection> _connections;
 
         /// <summary>

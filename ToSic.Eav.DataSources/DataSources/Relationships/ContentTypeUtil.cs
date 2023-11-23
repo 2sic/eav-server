@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSources.Sys
 {
     public class ContentTypeUtil
     {
-        internal static Dictionary<string, object> BuildDictionary(IContentType t) => new Dictionary<string, object>
+        internal static Dictionary<string, object> BuildDictionary(IContentType t) => new()
         {
             { ContentTypeType.Name.ToString(), t.Name },
             { ContentTypeType.StaticName.ToString(), t.NameId },

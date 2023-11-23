@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack
         }
 
         public PropertyLookupDictionary Lookup => _lookup.Get(() => new PropertyLookupDictionary(SourceId, Data()));
-        private readonly GetOnce<PropertyLookupDictionary> _lookup = new GetOnce<PropertyLookupDictionary>();
+        private readonly GetOnce<PropertyLookupDictionary> _lookup = new();
 
         public KeyValuePair<string, IPropertyLookup> StackPart =>
             _stackPart.Get(() => new KeyValuePair<string, IPropertyLookup>(Lookup.NameId, Lookup));

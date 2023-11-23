@@ -14,10 +14,10 @@
 
         public string Tooltip { get; }
 
-        public static SpecialField Center(object value) => new SpecialField(value, "text-align: center;");
+        public static SpecialField Center(object value) => new(value, "text-align: center;");
 
-        public static SpecialField Right(object value) => new SpecialField(value, "text-align: right; padding - right: 5px;");
+        public static SpecialField Right(object value) => new(value, "text-align: right; padding - right: 5px;");
 
-        public static SpecialField Left(object value) => new SpecialField(value, "text-align: left;");
+        public static SpecialField Left(object value) => new(value, "text-align: left;");
     }
 }

@@ -18,8 +18,7 @@ namespace ToSic.Eav.WebApi.Errors
             return new HttpExceptionAbstraction(httpStatusCode, helpText);
         }
 
-        public static HttpExceptionAbstraction BadRequest(string message)
-            => new HttpExceptionAbstraction(HttpStatusCode.BadRequest, message);
+        public static HttpExceptionAbstraction BadRequest(string message) => new(HttpStatusCode.BadRequest, message);
 
         public static HttpExceptionAbstraction InformativeErrorForTypeAccessDenied(string contentType, List<Grants> grant, bool staticNameIsGuid)
         {
@@ -37,12 +36,12 @@ namespace ToSic.Eav.WebApi.Errors
         }
 
         public static HttpExceptionAbstraction NotAllowedFileType(string filename, string message = null) 
-            => new HttpExceptionAbstraction(HttpStatusCode.UnsupportedMediaType, $"file {filename} has an unsupported file type. {message}");
+            => new(HttpStatusCode.UnsupportedMediaType, $"file {filename} has an unsupported file type. {message}");
 
         public static HttpExceptionAbstraction PermissionDenied(string message = null) 
-            => new HttpExceptionAbstraction(HttpStatusCode.Forbidden, $"Permission denied. {message}");
+            => new(HttpStatusCode.Forbidden, $"Permission denied. {message}");
 
         public static HttpExceptionAbstraction MissingParam(string paramName) 
-            => new HttpExceptionAbstraction(HttpStatusCode.BadRequest, $"Param {paramName} missing.");
+            => new(HttpStatusCode.BadRequest, $"Param {paramName} missing.");
     }
 }

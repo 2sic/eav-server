@@ -24,8 +24,8 @@
 
         public readonly StackAddress Ancestor;
 
-        public StackAddress NewWithOtherIndex(int index) => new StackAddress(Source, Field, index, Ancestor);
+        public StackAddress NewWithOtherIndex(int index) => new(Source, Field, index, Ancestor);
 
-        public StackAddress Child(IPropertyStackLookup source, string field, int index) => new StackAddress(source, field, index, this);
+        public StackAddress Child(IPropertyStackLookup source, string field, int index) => new(source, field, index, this);
     }
 }

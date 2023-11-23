@@ -12,11 +12,11 @@ namespace ToSic.Eav.DataSource
 
         /// <inheritdoc />
         [PrivateApi]
-        public List<string> CacheRelevantConfigurations { get; } = new List<string>();
+        public List<string> CacheRelevantConfigurations { get; } = new();
 
 
         [PrivateApi]
-        public ICacheKeyManager CacheKey => _cacheKey ?? (_cacheKey = new CacheKey(this));
+        public ICacheKeyManager CacheKey => _cacheKey ??= new CacheKey(this);
         private CacheKey _cacheKey;
 
         /// <inheritdoc />

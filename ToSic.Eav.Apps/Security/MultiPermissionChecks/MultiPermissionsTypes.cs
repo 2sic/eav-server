@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Security
         private readonly LazySvc<IAppStates> _appStates;
 
         // Note: AppState must be public, as we have some extension methods that need it
-        public AppState AppState => _appState ?? (_appState = App as AppState ?? _appStates.Value.Get(App));
+        public AppState AppState => _appState ??= App as AppState ?? _appStates.Value.Get(App);
         private AppState _appState;
 
         public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)

@@ -8,8 +8,8 @@ namespace ToSic.Eav.DataSource
     [PrivateApi]
     public class DataSourceConnections
     {
-        public List<DataSourceConnection> In = new List<DataSourceConnection>();
-        public List<DataSourceConnection> Out = new List<DataSourceConnection>();
+        public List<DataSourceConnection> In = new();
+        public List<DataSourceConnection> Out = new();
 
         [JsonIgnore]    // don't try to serialize, as it's too large of an object
         public DataSourceBase Parent { get; }

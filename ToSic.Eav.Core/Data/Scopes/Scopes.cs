@@ -44,7 +44,7 @@ namespace ToSic.Eav.Data
         private const string CmsOld = "2SexyContent-System";
 
         [PrivateApi]
-        public static Dictionary<string, string> ScopesWithNames = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        public static Dictionary<string, string> ScopesWithNames = new(StringComparer.InvariantCultureIgnoreCase)
         {
             {Default, Default},
             {SystemConfiguration, "Configuration (Views etc.)" },

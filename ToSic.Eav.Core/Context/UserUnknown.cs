@@ -14,7 +14,7 @@ namespace ToSic.Eav.Context
 
         public Guid Guid => System.Guid.Empty;
 
-        public List<int> Roles => new List<int>();
+        public List<int> Roles => new();
 
         public bool IsSystemAdmin => false;
 

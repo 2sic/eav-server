@@ -107,7 +107,7 @@ namespace ToSic.Eav.WebApi.App
         /// <param name="attributeDefinition"></param>
         /// <param name="foundValue"></param>
         private static Exception ValueMappingError(IAttributeBase attributeDefinition, object foundValue)
-            => new Exception(
+            => new(
                 $"Tried to create {attributeDefinition.Name} and couldn't convert to correct {attributeDefinition.Type}: '{foundValue}'");
 
         /// <summary>
