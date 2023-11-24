@@ -6,6 +6,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkAttributes : WorkUnitBase<IAppWorkCtx>
 {
 

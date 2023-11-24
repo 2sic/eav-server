@@ -1,11 +1,13 @@
-﻿using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Context;
+using ToSic.Lib.Documentation;
 
-namespace ToSic.Sxc.Apps.Paths;
+namespace ToSic.Eav.Apps.Paths;
 
 /// <summary>
 /// Internal interface to enable helpers to switch between paths on both the App and AppPaths
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IAppPaths
 {
     /// <summary>

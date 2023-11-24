@@ -4,6 +4,7 @@ using ToSic.Lib.Logging;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IContextResolver: IHasLog, IContextResolverUserPermissions
 {
     /// <summary>

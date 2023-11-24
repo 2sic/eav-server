@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Adam;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AdamConstants
 {
     public const string AdamRootFolder = "adam";

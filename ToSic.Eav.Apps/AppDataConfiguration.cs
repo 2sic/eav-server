@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Apps;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppDataConfiguration: IAppDataConfiguration
 {
     public AppDataConfiguration(ILookUpEngine configuration, bool? showDrafts = null)

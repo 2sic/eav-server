@@ -12,7 +12,7 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class XmlImportWithFiles
+partial class XmlImportWithFiles
 {
 
     private List<IContentType> GetImportContentTypes(IReadOnlyCollection<XElement> list) => Log.Func($"items: {list.Count}", () =>

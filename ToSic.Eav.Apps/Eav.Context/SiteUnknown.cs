@@ -5,7 +5,7 @@ using ToSic.Eav.Run;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
-public class SiteUnknown: ISite, IIsUnknown
+internal class SiteUnknown: ISite, IIsUnknown
 {
     private const string Unknown = "unknown - please implement the ISite interface to get real values";
 

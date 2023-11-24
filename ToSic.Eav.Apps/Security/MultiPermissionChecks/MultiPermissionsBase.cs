@@ -10,6 +10,7 @@ namespace ToSic.Eav.Apps.Security;
 /// A permission checker which is initialized with various items which must be checked
 /// Calling Ensure or similar will verify that all permission checks succeed
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class MultiPermissionsBase<TServices>: ServiceBase<TServices>, IMultiPermissionCheck where TServices: MyServicesBase
 {
     #region Constructor / Init stuff

@@ -11,6 +11,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
 {
     private readonly LazySvc<ImportService> _import;

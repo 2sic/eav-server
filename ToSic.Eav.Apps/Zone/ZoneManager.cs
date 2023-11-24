@@ -1,11 +1,11 @@
-﻿using ToSic.Eav.Apps.Parts;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZoneManager : ServiceBase, IZoneIdentity
 {
     #region Constructor and simple properties

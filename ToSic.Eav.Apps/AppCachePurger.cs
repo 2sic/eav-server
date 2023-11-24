@@ -5,7 +5,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps;
 
-public class AppCachePurger: ServiceBase
+class AppCachePurger: ServiceBase
 {
     #region Constructor
 

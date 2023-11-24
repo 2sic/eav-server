@@ -3,6 +3,7 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppWorkCtxWithDb : AppWorkCtx, IAppWorkCtxWithDb
 {
     private readonly DbDataController _db;

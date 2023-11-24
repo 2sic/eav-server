@@ -7,6 +7,7 @@ using ToSic.Eav.Data.Build;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntityCreate : WorkUnitBase<IAppWorkCtxWithDb>
 {
     private readonly GenWorkDb<WorkEntitySave> _workEntSave;

@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.Apps.Assets;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFileId>
 {
     /// <inheritdoc/>

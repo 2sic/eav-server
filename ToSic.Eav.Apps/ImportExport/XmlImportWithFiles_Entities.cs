@@ -14,7 +14,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class XmlImportWithFiles
+partial class XmlImportWithFiles
 {
     /// <summary>
     /// Returns a collection of EAV import entities

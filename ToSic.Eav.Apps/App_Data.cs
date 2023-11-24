@@ -7,7 +7,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Apps;
 
-public partial class App
+partial class App
 {
     [PrivateApi]
     public ILookUpEngine ConfigurationProvider => _configurationProvider.Get(() => AppDataConfig.Configuration);

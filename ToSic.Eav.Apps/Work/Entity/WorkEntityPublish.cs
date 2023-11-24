@@ -5,6 +5,7 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntityPublish : WorkUnitBase<IAppWorkCtxWithDb>
 {
     private readonly LazySvc<IAppLoaderTools> _appLoaderTools;

@@ -5,6 +5,7 @@ namespace ToSic.Eav.Apps.Run;
 /// <summary>
 /// Identifies a content-block with all the parameters necessary to find it in the system
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IBlockIdentifier: IAppIdentity
 {
     /// <summary>

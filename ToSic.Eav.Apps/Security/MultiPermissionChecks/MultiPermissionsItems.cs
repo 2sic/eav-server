@@ -7,6 +7,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Security;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MultiPermissionsItems: MultiPermissionsApp
 {
     #region Constructors and DI / Init

@@ -3,6 +3,7 @@
 namespace ToSic.Eav.Apps.Run;
 
 /// <inheritdoc />
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class BlockIdentifier: IBlockIdentifier
 {
     public BlockIdentifier(int zoneId, int appId, string appNameId, Guid guid, Guid viewOverride)

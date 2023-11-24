@@ -8,7 +8,6 @@ using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Run;
 using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
@@ -16,6 +15,7 @@ using static ToSic.Eav.Apps.Decorators.RequirementDecorator;
 
 namespace ToSic.Eav.Apps.Decorators;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MdRequirements: ServiceBase, IRequirementsService
 {
 

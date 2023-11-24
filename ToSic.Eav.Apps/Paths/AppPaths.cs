@@ -5,10 +5,8 @@ using ToSic.Eav.Helpers;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Run;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using ToSic.Sxc.Apps.Paths;
 using static System.IO.Path;
 
 
@@ -31,7 +29,7 @@ namespace ToSic.Eav.Apps.Paths;
 /// * Future: We should find a way to scope some DI to a module, so it doesn't bleed to others
 ///   But that is a bit difficult, because there are also some services like the IPage which should be shared across modules
 /// </remarks>
-public class AppPaths: ServiceBase, IAppPaths
+internal class AppPaths: ServiceBase, IAppPathsMicroSvc
 {
     private const bool Debug = true;
 
@@ -52,7 +50,7 @@ public class AppPaths: ServiceBase, IAppPaths
     /// <param name="site">The site - in some cases the site of the App can be different from the context-site, so it must be passed in</param>
     /// <param name="appState"></param>
     /// <returns></returns>
-    public AppPaths Init(ISite site, AppState appState)
+    public IAppPaths Init(ISite site, AppState appState)
     {
         _site = site;
         _appState = appState;
@@ -61,7 +59,7 @@ public class AppPaths: ServiceBase, IAppPaths
     }
     private ISite _site;
     private AppState _appState;
-    public bool InitDone;
+    public bool InitDone { get; private set; }
 
     /// <summary>
     /// We are having some difficulties that the App is caching the wrong path, so temporarily we'll log

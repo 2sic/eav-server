@@ -9,6 +9,7 @@ namespace ToSic.Eav.Apps.Work;
 /// <summary>
 /// Helper to prepare the work context of any Unit of Work
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppWorkContextService: ServiceBase
 {
     public AppWorkContextService(LazySvc<IDataSourcesService> dataSourceSvc, LazySvc<IAppStates> appStates, Generator<LazySvc<DbDataController>> dbGen) : base("App.WrkCtx")

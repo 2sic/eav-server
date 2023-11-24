@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -22,6 +21,7 @@ namespace ToSic.Eav.Apps.Work;
 /// - App Settings
 /// It must be called from an AppManager, which has been created for this app
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppInitializer : ServiceBase
 {
     #region Constructor / DI

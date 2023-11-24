@@ -6,7 +6,7 @@ using ToSic.Eav.ImportExport.Options;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class ImportListXml
+partial class ImportListXml
 {
 
     /// <summary>

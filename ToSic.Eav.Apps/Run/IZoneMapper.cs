@@ -11,6 +11,7 @@ namespace ToSic.Eav.Run;
 /// This helps find Zone information of a Site and the other way around. 
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IZoneMapper: IHasLog
 {
     /// <summary>

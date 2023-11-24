@@ -4,6 +4,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Apps.Assets;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
 {
     /// <inheritdoc />

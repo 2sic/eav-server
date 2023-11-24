@@ -88,7 +88,8 @@ public static class StartupApps
         services.TryAddTransient<IAppInitializedChecker, AppInitializedChecker>();
         services.TryAddTransient<AppInitializedChecker>();
         services.TryAddTransient<AppInitializer>();
-        services.TryAddTransient<AppPaths>();
+        //services.TryAddTransient<AppPaths>();
+        services.TryAddTransient<IAppPathsMicroSvc, AppPaths>(); // WIP trying to remove direct access to AppPaths
 
         // export import stuff
         services.TryAddScoped<ExportListXml>();

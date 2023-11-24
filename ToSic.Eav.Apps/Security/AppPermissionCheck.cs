@@ -11,6 +11,7 @@ namespace ToSic.Eav.Apps.Security;
 /// <summary>
 /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppPermissionCheck: PermissionCheckBase
 {
     #region Constructor & DI

@@ -22,6 +22,7 @@ namespace ToSic.Eav.Apps.Decorators;
 /// If this model works well, we'll probably reconsider how our xxxRead objects work
 /// </summary>
 /// <remarks>new in v13.02</remarks>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MdRecommendations: ServiceBase
 {
 

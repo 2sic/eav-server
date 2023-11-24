@@ -9,6 +9,7 @@ namespace ToSic.Eav.Apps.Decorators;
 /// <summary>
 /// Important: also used as DTO, so don't just rename the parameters
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MetadataRecommendation: IEquatable<MetadataRecommendation>
 {
     public const int PrioMax = 100;

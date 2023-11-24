@@ -15,6 +15,7 @@ using static ToSic.Eav.Apps.AppStackConstants;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContextOfApp: ContextOfSite, IContextOfApp
 {
     #region Constructor / DI
@@ -70,8 +71,6 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         if (AppIdentity == null || AppIdentity.AppId != appIdentity.AppId)
             AppIdentity = appIdentity;
     });
-
-    //public void ResetApp(int appId) => ResetApp(AppServices.AppStates.IdentityOfApp(appId));
 
     protected virtual IAppIdentity AppIdentity
     {

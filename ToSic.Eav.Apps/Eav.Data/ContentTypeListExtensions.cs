@@ -6,6 +6,7 @@ namespace ToSic.Eav.Data;
 
 public static class ContentTypeListExtensions
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IEnumerable<IContentType> OfScope(this IEnumerable<IContentType> list, string scope = null, bool includeAttributeTypes = false)
     {
         var set = list.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
@@ -14,7 +15,7 @@ public static class ContentTypeListExtensions
         return set.OrderBy(c => c.Name);
     }
 
-    public static IList<string> GetAllScopesInclDefault(this IEnumerable<IContentType> list)
+    internal static IList<string> GetAllScopesInclDefault(this IEnumerable<IContentType> list)
     {
         var scopes = list.Select(ct => ct.Scope).Distinct().ToList();
 
@@ -27,6 +28,7 @@ public static class ContentTypeListExtensions
         return scopes.OrderBy(s => s).ToArray();
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IDictionary<string, string> GetAllScopesWithLabels(this IEnumerable<IContentType> list)
     {
         var scopes = list.GetAllScopesInclDefault();

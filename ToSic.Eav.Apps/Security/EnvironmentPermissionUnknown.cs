@@ -6,7 +6,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Security;
 
-public class EnvironmentPermissionUnknown : EnvironmentPermission
+internal class EnvironmentPermissionUnknown : EnvironmentPermission
 {
     public EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> _) : base(LogScopes.NotImplemented)
     { }

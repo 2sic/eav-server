@@ -16,6 +16,7 @@ using ToSic.Eav.ImportExport.Serialization;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 {
 

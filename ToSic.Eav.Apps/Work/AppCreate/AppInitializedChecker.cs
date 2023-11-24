@@ -11,6 +11,7 @@ namespace ToSic.Eav.Apps.Work;
 /// <summary>
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
 {
     private readonly Generator<AppInitializer> _appInitGenerator;

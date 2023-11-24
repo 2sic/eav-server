@@ -22,6 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport;
 /// <summary>
 /// Import a virtual table of content-items
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class ImportListXml: ServiceBase 
 {
 

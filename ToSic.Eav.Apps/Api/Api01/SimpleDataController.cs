@@ -32,6 +32,7 @@ namespace ToSic.Eav.Api.Api01;
 /// <summary>
 /// This is a simple controller with some Create, Update and Delete commands. 
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class SimpleDataController: ServiceBase
 {
     #region Constructor / DI

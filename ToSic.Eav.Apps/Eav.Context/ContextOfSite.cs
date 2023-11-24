@@ -11,6 +11,7 @@ namespace ToSic.Eav.Context;
 /// All these objects should normally be injectable
 /// In rare cases you may want to replace them, which is why Site/User have Set Accessors
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSite
 {
     #region Constructor / DI

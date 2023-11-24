@@ -11,7 +11,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class XmlImportWithFiles
+partial class XmlImportWithFiles
 {
     public bool IsCompatible(XDocument doc)
     {

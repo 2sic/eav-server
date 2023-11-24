@@ -18,6 +18,7 @@ namespace ToSic.Eav.Apps;
 /// including Create, Update and Delete
 /// </summary>
 [PublicApi_Stable_ForUseInYourCode]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public sealed class AppData: Eav.DataSources.App, IAppData
 {
     private readonly LazySvc<IDataSourceCacheService> _dsCacheSvc;

@@ -9,6 +9,7 @@ namespace ToSic.Eav.Apps.Work;
 /// Primarily used to do one single operation such as a simple delete, publish etc.
 /// </summary>
 /// <typeparam name="TWork"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class GenWorkBasic<TWork>: ServiceBase where TWork : WorkUnitBase<IAppWorkCtx>
 {
     private readonly LazySvc<AppWorkContextService> _ctxSvc;

@@ -14,6 +14,7 @@ namespace ToSic.Eav.Apps.Security;
 /// <summary>
 /// Do consolidated permission checks on a set of permissions
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MyServices>
 {
     #region Constructors and DI

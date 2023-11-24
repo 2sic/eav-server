@@ -9,7 +9,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class ImportListXml
+partial class ImportListXml
 {
 
     private bool RunDocumentValidityChecks() => Log.Func(timer: true, func: () =>

@@ -18,6 +18,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZipExport: ServiceBase
 {
     private readonly IAppStates _appStates;

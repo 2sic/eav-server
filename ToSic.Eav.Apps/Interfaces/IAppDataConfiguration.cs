@@ -7,6 +7,7 @@ namespace ToSic.Eav.Apps;
 /// The configuration of an app-data - usually relevant so the source will auto-filter out unpublished data for normal viewers.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IAppDataConfiguration
 {
     /// <summary>

@@ -3,6 +3,7 @@ using ToSic.Eav.Services;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus
 {
     public AppWorkCtxPlus(IDataSourcesService dsf, AppState appState, bool? showDrafts, IDataSource data = default) : base(appState)

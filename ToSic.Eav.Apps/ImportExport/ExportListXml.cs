@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
 using ToSic.Lib.Logging;
@@ -13,6 +12,7 @@ namespace ToSic.Eav.Apps.ImportExport;
 /// <summary>
 /// For exporting a content-type into xml, either just the schema or with data
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ExportListXml: ServiceBase
 {
     #region Dependency Injection and Init

@@ -6,7 +6,7 @@ using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.Apps;
 
-public partial class App
+partial class App
 {
     /// <summary>
     /// Accessor to queries. Use like:

@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps.Work;
 /// Context object for performing App modifications.
 /// This should help us change all the Read/Parts etc. to be fully functional and not depend on a Parent object. 
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppWorkCtx : IAppWorkCtx
 {
     /// <inheritdoc />

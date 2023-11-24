@@ -7,7 +7,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps;
 
-public partial class App: IHasPermissions
+partial class App: IHasPermissions
 {
     #region Metadata and Permission Accessors
 

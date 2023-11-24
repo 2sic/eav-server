@@ -7,6 +7,7 @@ namespace ToSic.Eav.Apps.Work;
 /// Base class for all app-work helpers.
 /// </summary>
 /// <typeparam name="TContext"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class WorkUnitBase<TContext> : ServiceBase where TContext : class, IAppWorkCtx
 {
 

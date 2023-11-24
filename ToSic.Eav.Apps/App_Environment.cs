@@ -5,7 +5,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps;
 
-public partial class App
+partial class App
 {
     /// <inheritdoc />
     [PrivateApi]

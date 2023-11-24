@@ -11,7 +11,7 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class XmlImportWithFiles
+partial class XmlImportWithFiles
 {
     /// <summary>
     /// Do the import

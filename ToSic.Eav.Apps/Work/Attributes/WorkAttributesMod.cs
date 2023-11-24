@@ -13,6 +13,7 @@ using static ToSic.Eav.Internal.Features.BuiltInFeatures;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
 {
     private readonly LazySvc<IEavFeaturesService> _features;

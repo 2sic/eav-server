@@ -6,6 +6,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public sealed class AppFinder: ServiceBase
 {
     #region Constructor / DI

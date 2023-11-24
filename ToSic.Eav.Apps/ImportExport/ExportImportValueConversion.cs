@@ -10,6 +10,7 @@ namespace ToSic.Eav.Apps.ImportExport;
 /// <summary>
 /// For exporting a content-type into xml, either just the schema or with data
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ExportImportValueConversion : ServiceBase
 {
     #region Dependency Injection

@@ -7,6 +7,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Security;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class EnvironmentPermission : ServiceBase, IEnvironmentPermission
 {
     // Constant keys for security, historic from Dnn

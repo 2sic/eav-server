@@ -5,11 +5,11 @@ using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence;
-using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntityUpdate : WorkUnitBase<IAppWorkCtxWithDb>
 {
     private readonly GenWorkDb<WorkEntitySave> _workEntSave;

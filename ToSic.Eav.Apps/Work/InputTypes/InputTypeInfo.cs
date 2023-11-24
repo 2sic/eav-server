@@ -15,6 +15,7 @@ namespace ToSic.Eav.Apps.Work;
 /// Describes an input field type with it's labels, abilities etc. 
 /// This is so that input fields can self-describe.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class InputTypeInfo
 {
     public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source, IMetadataOf metadata = null)

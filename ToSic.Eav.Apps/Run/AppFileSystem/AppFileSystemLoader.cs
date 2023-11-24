@@ -16,6 +16,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Run;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, IAppFileSystemLoader, IAppContentTypesLoader
 {
     #region Constants
@@ -29,7 +30,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
 
     public class MyServices: MyServicesBase
     {
-        public MyServices(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<AppPaths> appPathsLazy)
+        public MyServices(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy)
         {
             ConnectServices(
                 Site = site,
@@ -39,7 +40,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
         }
         public ISite Site { get; }
         internal Generator<FileSystemLoader> FslGenerator { get; }
-        internal LazySvc<AppPaths> AppPathsLazy { get; }
+        internal LazySvc<IAppPathsMicroSvc> AppPathsLazy { get; }
     }
 
     /// <summary>
@@ -65,7 +66,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     protected int AppId => _appState.AppId;
     protected ISite Site;
     private AppState _appState;
-    private AppPaths _appPaths;
+    private IAppPaths _appPaths;
 
     #region Inits
 

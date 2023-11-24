@@ -22,6 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport;
 /// <summary>
 /// Import Content Types and/or Entities to the EAV SqlStore
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ImportService: ServiceBase
 {
     #region Constructor / DI

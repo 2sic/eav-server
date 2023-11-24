@@ -7,7 +7,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence;
-using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
@@ -18,6 +17,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Work;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
 {
     private readonly LazySvc<IAppLoaderTools> _appLoaderTools;

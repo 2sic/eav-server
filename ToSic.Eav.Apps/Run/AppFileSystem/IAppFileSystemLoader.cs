@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Apps.Work;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Run;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IAppFileSystemLoader: IHasLog
 {
     /// <summary>

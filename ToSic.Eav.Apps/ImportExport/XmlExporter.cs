@@ -22,6 +22,7 @@ namespace ToSic.Eav.Apps.ImportExport;
 // this has a minimal risk of being different!
 // should all get it from cache only!
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class XmlExporter : ServiceBase
 {
 

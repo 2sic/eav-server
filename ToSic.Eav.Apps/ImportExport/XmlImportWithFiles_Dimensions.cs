@@ -11,7 +11,7 @@ using ToSic.Eav.ImportExport;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class XmlImportWithFiles
+partial class XmlImportWithFiles
 {
 
     private static List<DimensionDefinition> BuildSourceDimensionsList(XElement xmlSource)

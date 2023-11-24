@@ -9,6 +9,7 @@ namespace ToSic.Eav.Apps.Work;
 ///
 /// In rare cases the Data can also be replaced with further restrictions.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IAppWorkCtxPlus : IAppWorkCtx
 {
     bool? ShowDrafts { get; }

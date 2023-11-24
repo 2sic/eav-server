@@ -12,7 +12,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class ImportListXml
+partial class ImportListXml
 {
 
     #region Timing / Debuging infos

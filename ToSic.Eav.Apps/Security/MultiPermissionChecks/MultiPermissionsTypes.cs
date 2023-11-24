@@ -7,6 +7,7 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Security;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MultiPermissionsTypes: MultiPermissionsApp
 {
     private const string LogName = "Sec.MPTyps";

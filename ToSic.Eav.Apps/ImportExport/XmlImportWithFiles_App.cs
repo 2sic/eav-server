@@ -9,7 +9,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class XmlImportWithFiles
+partial class XmlImportWithFiles
 {
     /// <summary>
     /// Creates an app and then imports the xml

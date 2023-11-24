@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Run;
 
-public class ImportExportEnvironmentUnknown: ImportExportEnvironmentBase, IIsUnknown
+internal class ImportExportEnvironmentUnknown: ImportExportEnvironmentBase, IIsUnknown
 {
     public ImportExportEnvironmentUnknown(ISite site, IAppStates appStates, WarnUseOfUnknown<ImportExportEnvironmentUnknown> _) 
         : base(site, appStates, $"{LogScopes.NotImplemented}.IExEnv") { }

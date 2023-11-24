@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IContextOfApp: IContextOfSite
 {
     /// <summary>

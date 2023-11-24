@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Languages;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SiteLanguageState: ISiteLanguageState
 {
     public SiteLanguageState(string code, string culture, bool isEnabled)

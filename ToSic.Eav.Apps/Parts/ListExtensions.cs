@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Parts;
 // todo: maybe move to something like ToSic.Eav.Generics
 internal static class ListExtensions
 {
-    internal static void EnsureListLength<T>(this List<T> listMain, int length)
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]    internal static void EnsureListLength<T>(this List<T> listMain, int length)
     {
         if (listMain.Count < length)
             listMain.AddRange(Enumerable.Repeat(default(T), length - listMain.Count));

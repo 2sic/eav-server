@@ -3,6 +3,7 @@
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IContextOfSite: IHasLog, IContextOfUserPermissions
 {
     /// <summary>

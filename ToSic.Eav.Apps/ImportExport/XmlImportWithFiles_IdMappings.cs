@@ -10,7 +10,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
-public partial class XmlImportWithFiles
+partial class XmlImportWithFiles
 {
     private readonly Dictionary<int, int> _fileIdCorrectionList = new();
     private readonly Dictionary<int, int> _folderIdCorrectionList = new();

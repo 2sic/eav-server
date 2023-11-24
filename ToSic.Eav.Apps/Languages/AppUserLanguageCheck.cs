@@ -16,6 +16,7 @@ using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.Apps.Languages;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppUserLanguageCheck: ServiceBase
 {
     public AppUserLanguageCheck(LazySvc<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, LazySvc<IAppStates> appStatesLazy,

@@ -11,6 +11,7 @@ namespace ToSic.Eav.Apps.Run;
 /// Base class for other zone mappers.
 /// Has prepared code which should be the same across implementations. 
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class ZoneMapperBase: ServiceBase, IZoneMapper
 {
 

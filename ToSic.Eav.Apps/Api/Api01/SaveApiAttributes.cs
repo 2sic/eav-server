@@ -3,6 +3,7 @@
 /// <summary>
 /// 
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SaveApiAttributes
 {
     /// <summary>

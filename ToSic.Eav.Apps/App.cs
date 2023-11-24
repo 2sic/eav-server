@@ -15,6 +15,7 @@ namespace ToSic.Eav.Apps;
 /// name, folder, data, metadata etc.
 /// </summary>
 [PublicApi_Stable_ForUseInYourCode]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class App: AppBase<App.MyServices>, IApp
 {
     #region Constructor / DI

@@ -6,13 +6,13 @@ using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZipImport : ServiceBase<ZipImport.MyServices>
 {
     private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;

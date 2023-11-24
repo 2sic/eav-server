@@ -2,13 +2,12 @@
 using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Unknown;
-using ToSic.Eav.Run;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Run;
 
-public class ZoneMapperUnknown: ZoneMapperBase, IIsUnknown
+internal class ZoneMapperUnknown: ZoneMapperBase, IIsUnknown
 {
     private readonly Generator<ISite> _site;
 

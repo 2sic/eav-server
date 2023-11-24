@@ -11,6 +11,7 @@ namespace ToSic.Eav.Apps.ImportExport.ImportHelpers;
 /// <summary>
 /// Read an xml file, check for headers and verify all the parts to better process the import
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ImportXmlReader: HelperBase
 {
     public ImportXmlReader(string xmlPath, XmlImportWithFiles importer, ILog parentLog) : base(parentLog, "Imp.XmlPrt")

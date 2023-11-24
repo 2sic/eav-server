@@ -13,6 +13,7 @@ namespace ToSic.Eav.Apps.Work;
 /// <summary>
 /// WIP - meant as a replacement of EntityRuntime with clean architecture
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntities: WorkUnitBase<IAppWorkCtxPlus>
 {
     private readonly LazySvc<IDataSourcesService> _dataSourceFactory;

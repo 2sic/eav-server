@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Apps.Ui;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public struct ContentTypeUiInfo
 {
     public string Name;
