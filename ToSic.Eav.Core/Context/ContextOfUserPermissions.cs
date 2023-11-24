@@ -8,7 +8,7 @@ namespace ToSic.Eav.Context;
 /// Very basic implementation.
 /// Should be replaced in Eav.Apps which often knows more about the user than just the simple site context
 /// </summary>
-public class ContextOfUserPermissions: ServiceBase, IContextOfUserPermissions
+internal class ContextOfUserPermissions: ServiceBase, IContextOfUserPermissions
 {
     public IUser User { get; }
 

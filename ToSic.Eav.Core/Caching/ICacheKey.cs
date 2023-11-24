@@ -8,6 +8,7 @@ namespace ToSic.Eav.Caching;
 /// so that a different cache is used based on changing parameters. 
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICacheKey
 {
     /// <summary>

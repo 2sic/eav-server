@@ -6,6 +6,7 @@
 /// <remarks>
 /// Added v15.04
 /// </remarks>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IContextResolverUserPermissions
 {
     IContextOfUserPermissions UserPermissions();

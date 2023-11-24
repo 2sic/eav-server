@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Code.Infos;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeInfoWarning: CodeInfo
 {
     private CodeInfoWarning(string nameId, Version from, Version to, string link = default, string message = default) : base(CodeInfoTypes.Warning, nameId, from, to, link, message)

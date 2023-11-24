@@ -7,6 +7,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Code.InfoSystem;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeInfosInScope
 {
     public readonly CodeInfoStats CodeInfoStats;

@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Apps;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppLoadConstants
 {
     public const string

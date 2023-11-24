@@ -2,6 +2,8 @@
 
 namespace ToSic.Eav.Caching;
 
+// note: this should probably not be in eav.core
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LightSpeedStats
 {
     public ConcurrentDictionary<int, int> ItemsCount { get; } = new();

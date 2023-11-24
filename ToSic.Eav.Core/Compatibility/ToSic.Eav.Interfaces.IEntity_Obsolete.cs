@@ -1,6 +1,5 @@
 ﻿#if NETFRAMEWORK
 using System;
-using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
 // This is old stuff / compatibility necessary for DNN
@@ -9,13 +8,7 @@ using ToSic.Lib.Documentation;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Interfaces
 {
-    /// <summary>
-    /// The primary data-item in the system, IEntity is a generic data-item for any kind of information.
-    /// Note that it inherits <see cref="IEntityLight"/> which is the basic definition without languages,
-    /// versioning, publishing etc.
-    /// </summary>
-    [PrivateApi]
-    public partial interface IEntity
+    partial interface IEntity
     {
 
         /// <summary>

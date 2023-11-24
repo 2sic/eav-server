@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Code.Infos;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICodeInfo
 {
     string NameId { get; }

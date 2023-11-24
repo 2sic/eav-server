@@ -6,7 +6,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Code.InfoSystem;
 
-public partial class CodeInfoService
+partial class CodeInfoService
 {
     /// <summary>
     /// Keep track of all obsolete code, so we don't over-report it.

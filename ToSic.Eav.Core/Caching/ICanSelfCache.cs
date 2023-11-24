@@ -3,6 +3,7 @@
 namespace ToSic.Eav.Caching;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICanSelfCache
 {
     /// <summary>

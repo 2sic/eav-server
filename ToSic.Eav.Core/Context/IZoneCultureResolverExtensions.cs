@@ -8,6 +8,7 @@ namespace ToSic.Eav.Context;
 
 // ReSharper disable once InconsistentNaming
 [PrivateApi("this is all very internal, and names may still change")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class IZoneCultureResolverExtensions
 {
     public static string SafeCurrentCultureCode(this IZoneCultureResolver resolver)

@@ -9,6 +9,7 @@ namespace ToSic.Eav.Caching;
 /// Specialized form of SynchronizedList which only offers entities, but these
 /// in a signature that have ultra-fast lookups. 
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SynchronizedEntityList: SynchronizedList<IEntity>
 {
     public SynchronizedEntityList(ICacheExpiring upstream, Func<IImmutableList<IEntity>> rebuild) 

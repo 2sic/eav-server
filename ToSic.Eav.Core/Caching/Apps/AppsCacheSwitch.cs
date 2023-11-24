@@ -11,6 +11,7 @@ namespace ToSic.Eav.Caching;
 /// Once it's found the right one, it will keep returning that,
 /// unless the features report that a setting has been changed, in which case it will re-evaluate the best match. 
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppsCacheSwitch : ServiceSwitcherSingleton<IAppsCacheSwitchable>, ICacheDependent
 {
     public AppsCacheSwitch(

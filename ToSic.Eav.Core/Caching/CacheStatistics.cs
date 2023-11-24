@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Caching;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CacheStatistics: ICacheStatistics
 {
     public long CacheTimestamp { get; private set; }
@@ -21,6 +22,7 @@ public class CacheStatistics: ICacheStatistics
     }
 }
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public struct CacheHistory
 {
     public long Timestamp;

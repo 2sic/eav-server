@@ -3,6 +3,7 @@
 /// <summary>
 /// Interface to mark objects which can get a service.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICanGetService
 {
     /// <summary>

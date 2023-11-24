@@ -7,6 +7,7 @@ using System.Runtime.Caching.Hosting;
 namespace ToSic.Eav.Caching.CachingMonitors;
 
 //  based on https://github.com/microsoft/referencesource/blob/master/System.Runtime.Caching/System/Caching/FileChangeNotificationSystem.cs
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
 {
     private readonly Hashtable _dirMonitors;

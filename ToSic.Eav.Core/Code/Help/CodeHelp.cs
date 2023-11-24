@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Code.Help;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeHelp
 {
     public const string ErrHelpPre = "Error in your code. ";

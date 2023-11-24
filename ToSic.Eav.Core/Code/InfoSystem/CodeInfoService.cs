@@ -1,10 +1,10 @@
 ﻿using ToSic.Eav.Code.Infos;
-using ToSic.Eav.Code.InfoSystem;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Code.InfoSystem;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class CodeInfoService: ServiceBase
 {
     private readonly LazySvc<CodeInfosInScope> _scope;

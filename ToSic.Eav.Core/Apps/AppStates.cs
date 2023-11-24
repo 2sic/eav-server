@@ -12,7 +12,7 @@ namespace ToSic.Eav.Apps;
 /// The names of the Get etc. will probably change a few more times
 /// </summary>
 [PrivateApi("internal")]
-public class AppStates: IAppStates
+internal class AppStates: IAppStates
 {
     public AppStates(IAppLoaderTools loaderTools, AppsCacheSwitch appsCacheSwitch)
     {

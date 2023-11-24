@@ -6,7 +6,7 @@ using static ToSic.Eav.Code.InfoSystem.CodeInfoConstants;
 
 namespace ToSic.Eav.Code.InfoSystem;
 
-public partial class CodeInfoService
+partial class CodeInfoService
 {
     private const int StackFramesWhichBelongToThisService = 3;
 

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Caching;
 /// The default Apps Cache system running on a normal environment. 
 /// </summary>
 [PrivateApi]
-public class AppsCache: AppsCacheBase, IAppsCacheSwitchable
+internal class AppsCache: AppsCacheBase, IAppsCacheSwitchable
 {
     #region SwitchableService
 

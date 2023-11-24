@@ -6,6 +6,7 @@ namespace ToSic.Eav.Caching;
 /// Marks objects which are cache-based, and which may contain obsolete cached data.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICacheExpiring: ITimestamped
 {
     /// <summary>

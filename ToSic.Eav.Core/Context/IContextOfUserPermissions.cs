@@ -3,6 +3,7 @@
 /// <summary>
 /// WIP 15.04
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IContextOfUserPermissions
 {
     /// <summary>

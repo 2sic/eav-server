@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Code.Infos;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeInfoObsolete: CodeInfo
 {
     private CodeInfoObsolete(string nameId, Version from, Version to, string link = default, string message = default) : base(CodeInfoTypes.Obsolete, nameId, from, to, link, message)

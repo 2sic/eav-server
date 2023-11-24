@@ -5,6 +5,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Code.InfoSystem;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeInfoStats
 {
     /// <summary>

@@ -7,6 +7,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Apps;
 
 [PrivateApi("WIP")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IAppStates
 {
     #region Get an App
@@ -56,10 +57,13 @@ public interface IAppStates
     bool IsCached(IAppIdentity appId);
 }
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class IAppStatesExtensions
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static AppState KeepOrGet(this IAppStates appStates, IAppIdentity app) => app as AppState ?? appStates.Get(app);
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static AppState KeepOrGet(this LazySvc<IAppStates> appStates, IAppIdentity app) =>
         app as AppState ?? appStates.Value.Get(app);
 }

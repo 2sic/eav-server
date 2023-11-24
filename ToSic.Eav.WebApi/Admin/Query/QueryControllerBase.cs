@@ -46,7 +46,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
         /// It's important that it will always generate new objects.
         /// This is to ensure it has the changes previously saved
         /// </summary>
-        public Generator<AppStates> AppStates { get; }
+        public Generator<IAppStates> AppStates { get; }
         public QueryBuilder QueryBuilder { get; }
         public LazySvc<ConvertToEavLight> EntToDicLazy { get; }
         public LazySvc<QueryInfo> QueryInfoLazy { get; }
@@ -62,7 +62,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
             Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
             Generator<PassThrough> passThrough,
             LazySvc<QueryManager> queryManager,
-            Generator<AppStates> appStates,
+            Generator<IAppStates> appStates,
             GenWorkBasic<WorkQueryMod> workUnitQueryMod,
             GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
         {

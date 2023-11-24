@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps;
 /// Marks things which belongs to a Zone
 /// </summary>
 [PublicApi_Stable_ForUseInYourCode]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IZoneIdentity
 {
     /// <summary>

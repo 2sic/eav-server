@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Code.InfoSystem;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class CodeInfoConstants
 {
     public const string ObsoleteNameInHistory = LogConstants.StoreWarningsPrefix + "obsolete";
