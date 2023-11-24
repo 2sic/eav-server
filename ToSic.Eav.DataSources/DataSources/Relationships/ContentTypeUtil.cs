@@ -6,7 +6,8 @@ using ToSic.Eav.DataSources.Sys.Types;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;
 
-public class ContentTypeUtil
+// TODO: THIS should be moved to the right place, using the new IRawEntity setup
+internal class ContentTypeUtil
 {
     internal static Dictionary<string, object> BuildDictionary(IContentType t) => new()
     {

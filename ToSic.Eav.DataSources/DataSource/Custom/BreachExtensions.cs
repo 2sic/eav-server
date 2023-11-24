@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -10,6 +9,7 @@ namespace ToSic.Eav.DataSource;
 /// <summary>
 /// Special - very internal - helper to breach internal APIs in edge cases where they are needed outside.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class BreachExtensions
 {
     public static CustomDataSource CustomDataSourceLight(CustomDataSource.MyServices services,

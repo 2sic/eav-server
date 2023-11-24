@@ -8,7 +8,7 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources;
 
-public partial class Serialization
+partial class Serialization
 {
 
     #region Dynamic Out

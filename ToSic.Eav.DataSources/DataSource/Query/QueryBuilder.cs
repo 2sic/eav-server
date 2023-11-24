@@ -17,6 +17,7 @@ namespace ToSic.Eav.DataSource.Query;
 /// <summary>
 /// Factory to create a Data Query
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryBuilder: ServiceBase
 {
     private readonly QueryDefinitionBuilder _queryDefinitionBuilder;

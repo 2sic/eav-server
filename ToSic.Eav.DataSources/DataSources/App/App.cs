@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources;
     In = new []{DataSourceConstants.StreamDefaultName},
     ConfigurationType = "|Config ToSic.Eav.DataSources.App",
     HelpLink = "https://go.2sxc.org/DsApp")]
-public partial class App : Eav.DataSource.DataSourceBase
+public partial class App : DataSourceBase
 {
     #region Configuration-properties
 

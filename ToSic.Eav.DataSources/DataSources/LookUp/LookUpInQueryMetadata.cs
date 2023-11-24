@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources.LookUp;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PrivateApi]
-public class LookUpInQueryMetadata : LookUpInEntity
+internal class LookUpInQueryMetadata : LookUpInEntity
 {
     private readonly IEntity _parent;
 

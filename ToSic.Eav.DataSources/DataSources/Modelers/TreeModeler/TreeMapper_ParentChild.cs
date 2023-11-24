@@ -9,7 +9,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSources;
 
-public partial class TreeMapper
+partial class TreeMapper
 {
     private const string PrefixForNeeds = "Needs:";
     public IImmutableList<IEntity> AddParentChild(

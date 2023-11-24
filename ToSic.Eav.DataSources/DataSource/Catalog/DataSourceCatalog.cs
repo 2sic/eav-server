@@ -10,6 +10,7 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.DataSource.Catalog;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class DataSourceCatalog: ServiceBase
 {
     private readonly LazySvc<IAppDataSourcesLoader> _appDataSourcesLoader;

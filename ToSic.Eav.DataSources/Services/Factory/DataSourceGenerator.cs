@@ -4,11 +4,11 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Services;
 
-public class DataSourceGenerator<TDataSource>: ServiceBase, IDataSourceGenerator<TDataSource> where TDataSource : IDataSource
+internal class DataSourceGenerator<TDataSource>: ServiceBase, IDataSourceGenerator<TDataSource> where TDataSource : IDataSource
 {
-    private readonly LazySvc<DataSourcesService> _dataSourceFactory;
+    private readonly LazySvc<IDataSourcesService> _dataSourceFactory;
 
-    public DataSourceGenerator(LazySvc<DataSourcesService> dataSourceFactory): base("DS.DsGen")
+    public DataSourceGenerator(LazySvc<IDataSourcesService> dataSourceFactory): base("DS.DsGen")
     {
         _dataSourceFactory = dataSourceFactory;
     }

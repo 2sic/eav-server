@@ -6,6 +6,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.DataSource;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DataSourceConnections
 {
     public List<DataSourceConnection> In = new();

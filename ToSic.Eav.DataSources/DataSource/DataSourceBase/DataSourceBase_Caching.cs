@@ -6,7 +6,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource;
 
-public abstract partial class DataSourceBase
+partial class DataSourceBase
 {
     #region Caching stuff
 

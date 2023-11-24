@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSource.Caching.CacheInfo;
 /// Custom Cache Information which only check the app-state for time-stamp.
 /// It also includes a suffix "more" to ensure than various items have unique cache-keys.
 /// </summary>
-public class CacheInfoAppAndMore: ICacheInfo
+internal class CacheInfoAppAndMore: ICacheInfo
 {
     /// <summary>
     /// The prefix for the cache-key

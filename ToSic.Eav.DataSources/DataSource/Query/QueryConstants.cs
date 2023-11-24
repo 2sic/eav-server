@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource.Query;
 
@@ -7,6 +6,7 @@ namespace ToSic.Eav.DataSource.Query;
 /// Constants used by Queries / VisualQuery
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryConstants
 {
     #region Params

@@ -12,7 +12,7 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
 
-public abstract partial class DataSourceBase
+partial class DataSourceBase
 {
     #region Connections
 

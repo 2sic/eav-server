@@ -7,7 +7,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSource.Query;
 
-public partial class QueryDefinition
+partial class QueryDefinition
 {
     internal const string KeyToken = "Token",
         KeyProperty = "Property",

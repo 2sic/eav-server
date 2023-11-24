@@ -5,6 +5,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ValueLanguages : ServiceBase
 {
     #region Constructor / DI

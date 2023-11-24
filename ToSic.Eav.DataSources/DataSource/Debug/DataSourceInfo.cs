@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSource.Query;
-using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.DataSource.Debug;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DataSourceInfo
 {
     /// <summary>

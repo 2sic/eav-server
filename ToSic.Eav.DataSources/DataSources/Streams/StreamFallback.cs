@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources;
     DynamicIn = true,
     HelpLink = "https://go.2sxc.org/DsStreamFallback")]
 
-public sealed class StreamFallback : Eav.DataSource.DataSourceBase
+public sealed class StreamFallback : DataSourceBase
 {
 
     #region Debug-Properties

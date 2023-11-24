@@ -8,10 +8,10 @@ using static System.StringComparison;
 
 namespace ToSic.Eav.DataSource;
 
-public abstract partial class DataSourceBase
+partial class DataSourceBase
 {
     /// <inheritdoc />
-    public IDataSourceConfiguration Configuration => _config.Get(() => base.Services.Configuration.Attach(this));
+    public IDataSourceConfiguration Configuration => _config.Get(() => Services.Configuration.Attach(this));
 
     private readonly GetOnce<IDataSourceConfiguration> _config = new();
 

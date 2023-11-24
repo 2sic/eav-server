@@ -7,7 +7,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSource.Streams;
 
-public class StreamDictionary
+internal class StreamDictionary
 {
     private readonly LazySvc<IDataSourceCacheService> _cache;
     internal IDataSource Source;

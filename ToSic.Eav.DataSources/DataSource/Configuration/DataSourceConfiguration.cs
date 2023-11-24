@@ -12,6 +12,7 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MyServices>, IDataSourceConfiguration
 {
     #region Dependencies - Must be in DI

@@ -1,10 +1,9 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource.Caching;
-using ToSic.Eav.DataSources.Caching;
 
 namespace ToSic.Eav.DataSources;
 
-public class AppRootCacheKey: CacheKey
+internal class AppRootCacheKey: CacheKey
 {
     public AppRootCacheKey(AppRoot appRoot) : base(appRoot)
     {

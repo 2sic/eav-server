@@ -10,7 +10,8 @@ namespace ToSic.Eav.DataSource;
 /// It manages all the properties which the data source will want to look up, as well as
 /// the LookUp engine which will perform the token resolution
 /// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice] 
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataSourceConfiguration
 {
     /// <summary>

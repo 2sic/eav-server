@@ -8,6 +8,7 @@ namespace ToSic.Eav.DataSource.Caching;
 /// Internal cache for the data-sources
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public /* should be internal as soon as insights work with that */ class DataSourceListCache
 {
     #region Static Caching and Lock Variables

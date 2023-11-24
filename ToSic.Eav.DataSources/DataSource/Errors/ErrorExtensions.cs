@@ -3,6 +3,7 @@ using ToSic.Eav.Data;
 
 namespace ToSic.Eav.DataSource;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class ErrorExtensions
 {
     public static bool IsError(this IDataSource ds)

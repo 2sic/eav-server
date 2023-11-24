@@ -90,7 +90,7 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
         var source = TryGetIn();
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
-        var tm = (TreeMapper)_treeMapper;
+        var tm = _treeMapper;
         switch (Identifier)
         {
             case "EntityGuid":

@@ -6,6 +6,7 @@ namespace ToSic.Eav.DataSource.Query;
 /// Represent a connection which connects two DataSources in a Query
 /// </summary>
 [PrivateApi("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public struct Connection
 {
     internal const string FromField = "From";

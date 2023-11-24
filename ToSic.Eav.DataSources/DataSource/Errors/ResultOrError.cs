@@ -4,6 +4,7 @@ using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ResultOrError<T>
 {
     public bool IsOk { get; }

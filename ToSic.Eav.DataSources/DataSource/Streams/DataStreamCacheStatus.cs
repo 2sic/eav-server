@@ -7,6 +7,7 @@ namespace ToSic.Eav.DataSource.Streams;
 /// <summary>
 /// Provides information of how to cache a stream.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DataStreamCacheStatus: CacheKey, ICacheExpiring
 {
     public DataStreamCacheStatus(ICacheInfo cacheInfoProvider, IDataSource dataSource, string cacheSuffix) 

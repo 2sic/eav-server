@@ -10,6 +10,7 @@ namespace ToSic.Eav.DataSource.Query;
 /// This contains the structure / definition of a query, which was originally stored in an <see cref="IEntity"/>
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class QueryDefinition: EntityBasedWithLog
 {
     #region Constants / Field Names

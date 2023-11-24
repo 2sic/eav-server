@@ -9,6 +9,7 @@ namespace ToSic.Eav.DataSource.Caching;
 /// Marks objects that can cache lists based on certain rules - including retention time and if up-stream changes should refresh the cache. 
 /// </summary>
 [PrivateApi("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IListCacheSvc
 {
     /// <summary>

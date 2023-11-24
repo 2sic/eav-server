@@ -8,6 +8,7 @@ namespace ToSic.Eav.DataSource.Query;
 // Note that the DTO already exists in another file...
 
 // not really easy, because it appears that the EntityGuid is used as a string to send back infos from the UI
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class QueryPartDefExtTemp
 {
     public static Dictionary<string, object> AsDictionary(this QueryPartDefinition part)

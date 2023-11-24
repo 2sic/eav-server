@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSource.Streams;
 /// A DataStream to get Entities when needed
 /// </summary>
 [PrivateApi]
-public class DataStream : IDataStream // , IHasLog
+internal class DataStream : IDataStream // , IHasLog
 {
     #region Constructor
 

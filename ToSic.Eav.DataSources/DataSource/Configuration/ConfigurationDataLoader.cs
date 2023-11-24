@@ -21,9 +21,9 @@ public class ConfigurationDataLoader: ServiceBase
 
     #region Get List From Cache or Generate
 
-    public static ConcurrentDictionary<Type, List<ConfigMaskInfo>> Cache = new();
+    internal static ConcurrentDictionary<Type, List<ConfigMaskInfo>> Cache = new();
 
-    public List<ConfigMaskInfo> GetTokens(Type type)
+    internal List<ConfigMaskInfo> GetTokens(Type type)
     {
         var l = Log.Fn<List<ConfigMaskInfo>>();
         if (Cache.TryGetValue(type, out var cachedResult))
@@ -36,7 +36,7 @@ public class ConfigurationDataLoader: ServiceBase
 
     #endregion
 
-    public List<ConfigMaskInfo> GenerateTokens(Type type)
+    internal List<ConfigMaskInfo> GenerateTokens(Type type)
     {
         var l = Log.Fn<List<ConfigMaskInfo>>();
         var configProps = type

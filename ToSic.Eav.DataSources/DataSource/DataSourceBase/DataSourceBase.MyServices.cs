@@ -5,7 +5,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSource;
 
-public abstract partial class DataSourceBase
+partial class DataSourceBase
 {
     /// <summary>
     /// Services used by the <see cref="DataSourceBase"/>.

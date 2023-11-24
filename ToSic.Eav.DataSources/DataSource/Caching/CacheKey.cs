@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.DataSource.Caching;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CacheKey: ICacheKeyManager
 {
     public readonly IDataSource DataSource;

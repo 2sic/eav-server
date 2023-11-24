@@ -17,6 +17,7 @@ namespace ToSic.Eav.DataSource.Query;
 /// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 {
     #region Configuration-properties

@@ -7,6 +7,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSource.Debug;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryInfo: ServiceBase
 {
     /// <summary>

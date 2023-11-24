@@ -10,7 +10,8 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.DataSource.Streams;
 
 [PrivateApi]
-public class ConnectionStream: IDataStream, IWrapper<IDataStream>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+internal class ConnectionStream: IDataStream, IWrapper<IDataStream>
 {
 
     public ConnectionStream(LazySvc<IDataSourceCacheService> cache, DataSourceConnection connection, DataSourceErrorHelper errorHandler = null)

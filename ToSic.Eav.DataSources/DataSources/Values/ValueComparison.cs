@@ -10,7 +10,7 @@ using static ToSic.Eav.DataSources.CompareOperators;
 namespace ToSic.Eav.DataSources;
 
 [PrivateApi]
-public class ValueComparison: HelperBase
+internal class ValueComparison: HelperBase
 {
     internal ValueComparison(Action<string, string> errCallback, ILog parentLog): base(parentLog, "Eav.DsCmMk")
     {

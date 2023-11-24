@@ -7,7 +7,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSource.Query;
 
-public partial class QueryDefinition
+partial class QueryDefinition
 {
     /// <summary>
     /// The raw Params used in this query, as stored in the IEntity

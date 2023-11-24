@@ -4,21 +4,21 @@ using ToSic.Eav.DataSource.VisualQuery;
 
 namespace ToSic.Eav.DataSource.Catalog;
 
-public partial class DataSourceCatalog
+partial class DataSourceCatalog
 {
     /// <summary>
     /// A cache of all DataSource Types - initialized upon first access ever, then static cache.
     /// </summary>
-    private static MemoryCache AppCache => MemoryCache.Default;
+    private static MemoryCache AppDataSourceCache => MemoryCache.Default;
 
     private static string AppCacheKey(int appId) => $"DataSourceCatalog:AppDataSource:{appId}";
 
     public List<DataSourceInfo> Get(int appId)
     {
-        if (AppCache[AppCacheKey(appId)] is List<DataSourceInfo> dataFromCache) return dataFromCache;
+        if (AppDataSourceCache[AppCacheKey(appId)] is List<DataSourceInfo> dataFromCache) return dataFromCache;
 
         var (data, policy) = _appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
-        AppCache.Set(new CacheItem(AppCacheKey(appId), data), policy);
+        AppDataSourceCache.Set(new CacheItem(AppCacheKey(appId), data), policy);
         return data;
     }
 }

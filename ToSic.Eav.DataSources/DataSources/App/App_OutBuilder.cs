@@ -10,7 +10,7 @@ using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
-public partial class App: IDataSourceReset
+partial class App: IDataSourceReset
 {
     #region Dynamic Out
 

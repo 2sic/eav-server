@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using ToSic.Eav.DataSource;
 using ToSic.Lib.Documentation;
 
@@ -12,6 +11,7 @@ namespace ToSic.Eav.DataSources;
 /// </summary>
 [PrivateApi]
 [Obsolete("Obsolete since v15.04 - will be removed ca. v17")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataTarget
 {
     // Removed from IDataTarget in 15.06

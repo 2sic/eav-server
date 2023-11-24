@@ -3,6 +3,7 @@
 namespace ToSic.Eav.DataSource.Caching;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataSourceCacheService
 {
     IListCacheSvc ListCache { get; }

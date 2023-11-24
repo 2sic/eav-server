@@ -9,7 +9,8 @@ namespace ToSic.Eav.DataSource;
 /// <summary>
 /// Various constants typically used in/for DataSources.
 /// </summary>
-[PublicApi]
+[PrivateApi("was marked as public till 16.09")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DataSourceConstants
 {
     /// <summary>

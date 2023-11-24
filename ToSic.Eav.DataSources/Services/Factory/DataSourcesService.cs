@@ -10,7 +10,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Services;
 
-public class DataSourcesService: ServiceBase, IDataSourcesService
+internal class DataSourcesService: ServiceBase, IDataSourcesService
 {
     #region Constructor / DI
 

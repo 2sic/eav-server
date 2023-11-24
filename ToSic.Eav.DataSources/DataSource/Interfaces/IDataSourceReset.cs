@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.DataSource;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public  interface IDataSourceReset
 {
     /// <summary>

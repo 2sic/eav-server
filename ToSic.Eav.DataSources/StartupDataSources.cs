@@ -14,9 +14,10 @@ public static class DataSourcesStartup
     public static IServiceCollection AddDataSources(this IServiceCollection services)
     {
         // Dependencies, new in v15
-        services.TryAddTransient<Eav.DataSource.DataSourceBase.MyServices>();
+        services.TryAddTransient<DataSourceBase.MyServices>();
         services.TryAddTransient<App.MyServices>();
         services.TryAddTransient<DataSourceConfiguration>();
+        services.TryAddTransient<IDataSourceConfiguration, DataSourceConfiguration>();
         services.TryAddTransient<DataSourceConfiguration.MyServices>();
         services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
         services.TryAddTransient<CustomDataSource.MyServices>();
@@ -30,7 +31,7 @@ public static class DataSourcesStartup
 
         services.TryAddTransient<Sql>();
         services.TryAddTransient<Sql.MyServices>();
-        services.TryAddTransient<SqlPlatformInfo, SqlPlatformInfo>();
+        services.TryAddTransient<SqlPlatformInfo>();
 
         services.TryAddTransient<DataTable>();
 

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.DataSource;
 
 [PrivateApi]
-public class ConfigMaskInfo
+internal class ConfigMaskInfo
 {
     public string Key;
     public string Token;

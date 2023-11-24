@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSource;
 ///
 /// This is internal functionality, but we show it in the docs TODO:
 /// </summary>
-public partial class DataSourceOptions: IDataSourceOptions
+partial class DataSourceOptions: IDataSourceOptions
 {
     /// <summary>
     /// Empty constructor to create new config without anything.

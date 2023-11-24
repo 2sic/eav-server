@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSource;
 
-public partial class DataSourceBase: IDataSourceLinkable
+partial class DataSourceBase: IDataSourceLinkable
 {
     /// <inheritdoc />
     public virtual IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this));

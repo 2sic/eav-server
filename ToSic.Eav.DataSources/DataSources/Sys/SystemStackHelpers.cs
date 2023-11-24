@@ -6,6 +6,7 @@ using static ToSic.Eav.Apps.AppStackConstants;
 
 namespace ToSic.Eav.DataSources.Sys;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SystemStackHelpers
 {
     public static string GetStackNameOrNull(string part)

@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSource.Streams;
 /// And otherwise just use the cache.
 /// </summary>
 [PrivateApi]
-public class DataStreamWithCustomCaching: DataStream
+internal class DataStreamWithCustomCaching: DataStream
 {
     public DataStreamWithCustomCaching(LazySvc<IDataSourceCacheService> cache, Func<ICacheInfo> cacheInfoDelegate, IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate, 
         bool enableAutoCaching, string scope)

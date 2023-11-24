@@ -5,7 +5,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSource.Catalog;
 
-public partial class DataSourceCatalog
+partial class DataSourceCatalog
 {
     /// <summary>
     /// A cache of all DataSource Types - initialized upon first access ever, then static cache.

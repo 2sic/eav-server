@@ -10,6 +10,7 @@ using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource.Query;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryDefinitionBuilder: ServiceBase
 {
     private readonly DataSourceCatalog _catalog;

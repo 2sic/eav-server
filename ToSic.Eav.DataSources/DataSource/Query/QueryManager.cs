@@ -19,6 +19,7 @@ namespace ToSic.Eav.DataSource.Query;
 /// Helpers to work with Data Queries
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryManager: ServiceBase
 {
     private readonly LazySvc<IAppStates> _appStates;

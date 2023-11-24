@@ -5,6 +5,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.DataSource;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DataSourceConnection
 {
     [JsonIgnore]    // don't try to serialize, as it's too large of an object

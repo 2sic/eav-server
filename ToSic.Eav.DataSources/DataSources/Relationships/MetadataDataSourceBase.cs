@@ -8,6 +8,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class MetadataDataSourceBase : Eav.DataSource.DataSourceBase
 {
     /// <remarks>

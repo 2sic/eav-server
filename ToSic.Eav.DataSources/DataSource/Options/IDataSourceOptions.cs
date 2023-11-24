@@ -4,6 +4,7 @@ using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSource;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataSourceOptions
 {
     IImmutableDictionary<string, string> Values { get; }

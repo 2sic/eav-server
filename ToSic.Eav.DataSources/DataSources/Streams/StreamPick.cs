@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources;
     DynamicIn = true,
     HelpLink = "https://go.2sxc.org/DsStreamPick")]
 
-public sealed class StreamPick : Eav.DataSource.DataSourceBase
+public sealed class StreamPick : DataSourceBase
 {
     #region Configuration-properties
 
