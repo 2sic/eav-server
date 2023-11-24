@@ -16,6 +16,7 @@ namespace ToSic.Eav.Data.Source;
 ///   it won't actually query the cache if the IDs are already known.
 /// </summary>
 [PrivateApi("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelatedEntitiesValue
 {
     /// <summary>

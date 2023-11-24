@@ -23,6 +23,7 @@ using CodeInfoService = ToSic.Eav.Code.InfoSystem.CodeInfoService;
 
 namespace ToSic.Eav.StartUp;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class StartUpEavCore
 {
     public static IServiceCollection AddEavCore(this IServiceCollection services)

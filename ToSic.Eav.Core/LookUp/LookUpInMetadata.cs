@@ -56,7 +56,7 @@ public class LookUpInMetadata : LookUpInEntity
                  _metaDataSource.GetMetadata(TargetTypes.Entity, _objectToProvideSettingsTo);
 
         // make sure we get the settings, but not the pipeline-parts, which may also be assigned
-        Data = md.FirstOrDefault();
+        SetData(md.FirstOrDefault());
         _initialized = true;
     }
     private bool _initialized;

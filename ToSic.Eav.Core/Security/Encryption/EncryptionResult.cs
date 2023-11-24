@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Security.Encryption;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EncryptionResult<T>
 {
     /// <summary>
@@ -20,8 +21,10 @@ public class EncryptionResult<T>
     public T Salt { get; set; }
 }
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class EncryptionResultExtensions
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static EncryptionResult<string> ToBase64(this EncryptionResult<byte[]> original)
     {
         return new EncryptionResult<string>

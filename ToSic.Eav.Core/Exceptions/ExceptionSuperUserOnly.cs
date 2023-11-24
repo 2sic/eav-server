@@ -3,9 +3,10 @@ using ToSic.Eav.Code.Help;
 
 namespace ToSic.Eav;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ExceptionSuperUserOnly: ExceptionWithHelp
 {
-    public ExceptionSuperUserOnly(/*CodeHelp help, */Exception inner = null) : base(SuperUserHelp(null), inner)
+    public ExceptionSuperUserOnly(Exception inner = null) : base(SuperUserHelp(null), inner)
     {
     }
 

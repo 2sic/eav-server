@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.SysData;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IHasRequirements
 {
     /// <summary>

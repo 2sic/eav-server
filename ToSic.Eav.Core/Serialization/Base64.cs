@@ -8,6 +8,7 @@ namespace ToSic.Eav.Serialization;
 /// https://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Base64
 {
     public static string Encode(string plainText)

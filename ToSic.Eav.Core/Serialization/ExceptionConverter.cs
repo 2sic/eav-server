@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 // Based on https://github.com/dotnet/runtime/issues/43026#issuecomment-949966701
 namespace ToSic.Eav.Serialization;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ExceptionConverter<TExceptionType> : JsonConverter<TExceptionType>
 {
     public override bool CanConvert(Type typeToConvert)

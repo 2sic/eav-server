@@ -8,6 +8,7 @@ namespace ToSic.Eav.Data;
 /// Manages relationships of an entity - to it's children and parents.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IRelationshipManager
 {
     /// <summary>

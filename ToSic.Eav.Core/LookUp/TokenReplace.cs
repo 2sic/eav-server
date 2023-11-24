@@ -12,6 +12,7 @@ namespace ToSic.Eav.LookUp;
 /// </summary>
 /// <remarks></remarks>
 [PrivateApi("we might still rename this some day...")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class TokenReplace
 {
     #region RegEx - the core formula

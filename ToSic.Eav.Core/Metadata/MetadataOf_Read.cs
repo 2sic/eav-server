@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Metadata;
 
@@ -19,7 +15,7 @@ namespace ToSic.Eav.Metadata;
 /// * Since v15.04 fully #immutable
 /// </remarks>
 [PrivateApi] // changed 2020-12-09 v11.11 from [PublicApi_Stable_ForUseInYourCode] - as this is a kind of lazy-metadata, we should change it to that
-public partial class MetadataOf<T>
+partial class MetadataOf<T>
 {
 
     #region GetBestValue

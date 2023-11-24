@@ -8,6 +8,7 @@ namespace ToSic.Eav.Data;
 /// <summary>
 /// Contains all the common constants etc. for Data-Scopes
 /// </summary>
+[System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
 public class Scopes
 {
     /// <summary>

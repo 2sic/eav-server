@@ -3,12 +3,14 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Security;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class PermissionCheckWithEnsure 
 {
     /// <summary>
     /// Run a permission check and return error if it failed
     /// </summary>
     /// <returns></returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool Ensure(this IPermissionCheck permCheck, List<Grants> grants, out string error)
     {
         var log = permCheck.Log;

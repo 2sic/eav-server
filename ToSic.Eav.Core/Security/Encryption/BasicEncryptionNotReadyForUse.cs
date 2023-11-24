@@ -12,6 +12,7 @@ namespace ToSic.Eav.Security.Encryption;
 // https://damienbod.com/2020/08/19/symmetric-and-asymmetric-encryption-in-net-core/
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class BasicEncryptionNotReadyForUse
 {
     // Remember to update encrypted settings if these parameters change

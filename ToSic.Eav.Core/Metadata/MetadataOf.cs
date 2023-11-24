@@ -20,6 +20,7 @@ namespace ToSic.Eav.Metadata;
 /// * Since v15.04 fully #immutable
 /// </remarks>
 [PrivateApi] // changed 2020-12-09 v11.11 from [PublicApi_Stable_ForUseInYourCode] - as this is a kind of lazy-metadata, we should change it to that
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamped
 {
 

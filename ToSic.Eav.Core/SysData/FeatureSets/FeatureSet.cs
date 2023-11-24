@@ -22,6 +22,7 @@ namespace ToSic.Eav.SysData;
 /// <summary>
 /// Defines a license - name, guid etc.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FeatureSet: Aspect
 {
     public const string ConditionIsLicense = "license";

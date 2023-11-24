@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Repositories;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class RepositoryBase: ServiceBase
 {
     protected RepositoryBase(bool global, bool readOnly, RepositoryTypes type) : base("RP.Info")

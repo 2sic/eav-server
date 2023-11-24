@@ -9,7 +9,8 @@ namespace ToSic.Eav.Metadata;
 /// Reference to target. Usually used on <see cref="IEntity"/> to define what thing it provides additional metadata for.
 /// Basically it contains all the references necessary to identify what it belongs to.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PrivateApi("was public till 16.09")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Target : ITarget
 {
     /// <inheritdoc/>

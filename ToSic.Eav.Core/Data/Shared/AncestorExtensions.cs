@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Shared;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class AncestorExtensions
 {
     public static bool HasAncestor(this IContentType contentType)

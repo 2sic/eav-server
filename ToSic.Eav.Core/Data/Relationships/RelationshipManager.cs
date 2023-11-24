@@ -11,7 +11,8 @@ namespace ToSic.Eav.Data;
 /// <summary>
 /// Used to get relationships between entities.
 /// </summary>
-public class RelationshipManager: IRelationshipManager
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+internal class RelationshipManager: IRelationshipManager
 {
     // special note: ATM everything is an IEntity, so EntityLight is currently not supported
 

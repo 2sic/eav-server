@@ -12,16 +12,9 @@ namespace ToSic.Eav.Metadata;
 /// but when importing data, the items should be accessed to store in the DB
 /// </summary>
 [PrivateApi("not sure yet how to publish this api, if at all")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IMetadataInternals
 {
-    ///// <summary>
-    ///// Internal API to override metadata providing, for example when creating new entities before saving.
-    ///// </summary>
-    ///// <param name="items"></param>
-    //[PrivateApi]
-    //void Use(List<IEntity> items);
-    //void Use(List<IEntity> items, bool reloadWhenAppChanges);
-
     /// <summary>
     /// The complete list of metadata items, incl. the hidden ones
     /// </summary>
@@ -35,5 +28,6 @@ public interface IMetadataInternals
     /// <returns></returns>
     IAppIdentity Context(string type);
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     (int TargetType, List<IEntity> list, IHasMetadataSource appSource, Func<IHasMetadataSource> deferredSource) GetCloneSpecs();
 }

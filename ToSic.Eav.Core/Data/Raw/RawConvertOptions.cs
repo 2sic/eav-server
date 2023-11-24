@@ -37,5 +37,5 @@ public class RawConvertOptions
     /// </summary>
     public ImmutableHashSet<string> KeysToAdd { get; }
 
-    public bool AddKey(string key) => KeysToAdd.Contains(key);
+    public bool ShouldAddKey(string key) => KeysToAdd.Contains(key);
 }

@@ -8,6 +8,7 @@ namespace ToSic.Eav.Security;
 /// This interface provides access to the information stored in the custom permissions.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IHasPermissions
 {
     /// <summary>

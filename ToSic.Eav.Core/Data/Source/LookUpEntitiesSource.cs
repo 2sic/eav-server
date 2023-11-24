@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace ToSic.Eav.Data.Source;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LookUpEntitiesSource<TKey>: IEntitiesSource, IEnumerable<IEntity>
 {
     public IImmutableList<TKey> Keys { get; }

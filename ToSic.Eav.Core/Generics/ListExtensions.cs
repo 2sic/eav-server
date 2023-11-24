@@ -5,6 +5,7 @@ namespace ToSic.Eav.Generics;
 
 public static class ListExtensions
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static List<List<T>> ChunkBy<T>(this List<T> source, int chunkSize)
     {
         return source

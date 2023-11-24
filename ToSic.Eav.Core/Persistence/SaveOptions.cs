@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Persistence;
 
+[PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SaveOptions
 {
 

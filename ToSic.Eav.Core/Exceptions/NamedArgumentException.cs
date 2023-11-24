@@ -5,6 +5,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class NamedArgumentException : ArgumentException, IExceptionWithHelp
 {
     public NamedArgumentException(string message, string intro, string paramNames, string paramsText) :

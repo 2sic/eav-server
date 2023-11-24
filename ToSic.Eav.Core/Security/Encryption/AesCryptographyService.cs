@@ -11,6 +11,7 @@ namespace ToSic.Eav.Security.Encryption;
 /// AES Cryptography
 /// Important: Must NOT use AesManaged from .net, because it's not FIPS compliant
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AesCryptographyService: ServiceBase, ICanDebug
 {
     #region Empty Constructor / DI

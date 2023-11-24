@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Serialization;
@@ -10,6 +9,7 @@ namespace ToSic.Eav.Serialization;
 /// Marks objects that can serialize EAV data like Entities or Content-Types. <br/>
 /// </summary>
 [PrivateApi("not ready for publishing")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataSerializer
 {
     /// <summary>

@@ -3,6 +3,7 @@ using System.Reflection;
 
 namespace ToSic.Eav;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EavSystemInfo
 {
     public static Version Version => _version ??= Assembly.GetExecutingAssembly().GetName().Version;

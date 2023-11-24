@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.PropertyLookup;
 
 /// <summary>
 /// Internal intermediate object when retrieving an Entity property.

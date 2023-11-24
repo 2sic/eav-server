@@ -1,6 +1,6 @@
 namespace ToSic.Eav.Persistence.Logging;
 
-public partial class Message
+partial class Message
 {
     public enum MessageTypes
     {

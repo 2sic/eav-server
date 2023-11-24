@@ -6,6 +6,7 @@ namespace ToSic.Eav.Data;
 /// Constants related to attribute metadata
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AttributeMetadata
 {
     /// <summary>

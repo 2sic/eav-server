@@ -8,6 +8,7 @@ namespace ToSic.Eav.SysData;
 /// This stores the enabled / expiry of a feature
 /// </summary>
 [PrivateApi("no good reason to publish this")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FeatureStatePersisted
 {
     /// <summary>

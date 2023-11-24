@@ -49,7 +49,7 @@ public class AppStackDataRaw: RawEntityBase
             { nameof(Type), Type },
             { nameof(TotalResults), TotalResults },
         };
-        if (options.AddKey(nameof(Value)))
+        if (options.ShouldAddKey(nameof(Value)))
             attributes[nameof(Value)] = Value;
         return attributes;
     }

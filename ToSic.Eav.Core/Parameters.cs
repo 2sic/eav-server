@@ -5,6 +5,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Parameters
 {
     public const string HelpLink = "https://go.2sxc.org/named-params";

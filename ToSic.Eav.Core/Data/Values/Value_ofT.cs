@@ -12,6 +12,7 @@ namespace ToSic.Eav.Data;
 /// </summary>
 /// <typeparam name="T">Type of the actual Value</typeparam>
 [PrivateApi("this is just fyi, always work with interface IValue<T>")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Value<T> : IValue<T>
 {
     /// <summary>

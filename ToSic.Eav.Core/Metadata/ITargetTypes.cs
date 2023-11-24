@@ -7,7 +7,8 @@ namespace ToSic.Eav.Metadata;
 /// This interface allows objects to lookup metadata-target id / name of the system. 
 /// It basically translates the <see cref="ToSic.Eav.Metadata.TargetTypes"/> to name and vica versa
 /// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi("was internal till 16.09")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ITargetTypes
 {
     /// <summary>

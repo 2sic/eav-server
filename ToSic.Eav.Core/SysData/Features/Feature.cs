@@ -9,6 +9,7 @@ using static ToSic.Eav.Internal.Features.FeatureRequirementCheck;
 namespace ToSic.Eav.SysData;
 
 [PrivateApi("no good reason to publish this")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Feature: Aspect
 {
     #region Constructors

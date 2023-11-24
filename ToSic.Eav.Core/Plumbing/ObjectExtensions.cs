@@ -5,10 +5,12 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Plumbing;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class ObjectExtensions
 {
     // https://stackoverflow.com/questions/6553183/check-to-see-if-a-given-object-reference-or-value-type-is-equal-to-its-default
     // //Adapted from https://stackoverflow.com/a/6553276/1889720
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsNullOrDefault<TObject>(this TObject argument, bool boolIsNeverDefault = true)
     {
         // deal with normal scenarios
@@ -45,9 +47,11 @@ public static class ObjectExtensions
     /// Used in EntityLight, Entity and soon also by DynamicCode // by Entity.cs, because that uses it's own GetBestValue(...)
     /// </remarks>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static T ConvertOrDefault<T>(this object value, bool numeric = false, bool truthy = false) 
         => value.TryConvert<T>(numeric: numeric, truthy: truthy).Value;
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static (bool Success, T Value) TryConvert<T>(this object value, bool numeric = false, bool truthy = false)
     {
         if (value is null) return (false, default);
@@ -99,6 +103,7 @@ public static class ObjectExtensions
 
 
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static T ConvertOrFallback<T>(this object value, T fallback, bool numeric = false, bool truthy = false, bool fallbackOnDefault = false)
     {
         if (value is null) return fallback;
@@ -116,6 +121,8 @@ public static class ObjectExtensions
         }
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsDefault<T>(this T value) => EqualityComparer<T>.Default.Equals(value, default);
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsNotDefault<T>(this T value) => !EqualityComparer<T>.Default.Equals(value, default);
 }

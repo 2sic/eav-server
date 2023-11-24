@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using static System.StringComparer;
 
 namespace ToSic.Eav.Generics;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DictionaryInvariant<T>: IDictionary<string, T>
 {
     public DictionaryInvariant() 
-        => Original = new Dictionary<string, T>(StringComparer.InvariantCultureIgnoreCase);
+        => Original = new Dictionary<string, T>(InvariantCultureIgnoreCase);
 
     public DictionaryInvariant(IDictionary<string, T> original)
     {
         // Bypass conversion if it's already using the right comparer
         if (original is Dictionary<string, T> realDictionary &&
-            Equals(realDictionary.Comparer, StringComparer.InvariantCultureIgnoreCase))
+            Equals(realDictionary.Comparer, InvariantCultureIgnoreCase))
             Original = realDictionary;
 
-        Original = new Dictionary<string, T>(original, StringComparer.InvariantCultureIgnoreCase);
+        Original = new Dictionary<string, T>(original, InvariantCultureIgnoreCase);
     }
 
     protected readonly IDictionary<string, T> Original;

@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.SysData;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FeatureSecurity
 {
     public int Impact { get; }

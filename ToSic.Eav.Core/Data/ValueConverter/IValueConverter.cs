@@ -7,6 +7,7 @@ namespace ToSic.Eav.Data;
 /// Marks objects that can convert values - like "file:22" to "/images/logo.jpg" and back.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IValueConverter
 {
     /// <summary>

@@ -97,7 +97,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
 
         // if found, initialize and get the metadata entity attached
         metadataLookUp?.Initialize();
-        var configEntity = metadataLookUp?.Data;
+        var configEntity = metadataLookUp?.GetContents();
 
         #endregion
 

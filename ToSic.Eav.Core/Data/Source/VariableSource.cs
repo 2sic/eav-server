@@ -6,6 +6,7 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.Data.Source;
 
 [PrivateApi("keep secret for now, only used in Metadata and it's not sure if we should re-use this")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class VariableSource<TSource>: ICacheExpiring, ICacheDependent where TSource : class, ICacheExpiring
 {
     public DirectEntitiesSource SourceDirect { get; }

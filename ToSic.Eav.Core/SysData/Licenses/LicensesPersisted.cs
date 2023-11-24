@@ -25,6 +25,7 @@ using static System.String;
 
 namespace ToSic.Eav.SysData;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LicensesPersisted
 {
     /// <summary>

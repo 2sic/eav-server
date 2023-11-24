@@ -7,6 +7,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data.Raw;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public sealed class RawFromAnonymous: RawEntity
 {
     public RawFromAnonymous(object original, ILog log)

@@ -4,6 +4,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.SysData;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EnterpriseFingerprint
 {
     public int Id { get; internal set; }

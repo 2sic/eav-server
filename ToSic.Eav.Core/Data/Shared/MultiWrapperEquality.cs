@@ -5,6 +5,7 @@ namespace ToSic.Eav.Data;
 /// Contains comparison methods for all Entity Wrappers
 /// This is important, because otherwise == or GroupBy see the various wrappers as different objects
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class MultiWrapperEquality
 {
     /// <summary>

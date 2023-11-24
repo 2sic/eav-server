@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Helpers;
 
-public class DataFolder
+internal class DataFolder
 {
     public static string GetDataRoot(string dataFolder)
     {

@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Data.Shared;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class WrapperEquality
 {
     /// <summary>

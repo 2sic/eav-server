@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Persistence.Versions;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ItemHistory
 {
     public DateTime TimeStamp { get; set; }

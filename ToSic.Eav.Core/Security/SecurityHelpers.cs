@@ -4,14 +4,9 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Security;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class SecurityHelpers
 {
-    //public static void ThrowIfNotAdmin(bool isAdmin, ILog log)
-    //{
-    //    log.Fn($"{nameof(isAdmin)}: {isAdmin}");
-    //    if (!isAdmin)
-    //        throw new AuthenticationException("Needs admin permissions to do this");
-    //}
     public static void ThrowIfNotSiteAdmin(IUser user, ILog log)
         => ThrowIfNot(user.IsSiteAdmin, "site-admin", log);
 

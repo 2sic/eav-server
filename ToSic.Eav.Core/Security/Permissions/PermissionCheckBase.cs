@@ -9,6 +9,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckBase.MyServices>, IPermissionCheck
 {
 

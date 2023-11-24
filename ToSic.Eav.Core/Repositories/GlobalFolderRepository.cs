@@ -14,6 +14,8 @@ namespace ToSic.Eav.Repositories;
 /// Is used by reflection, so you won't see any direct references to this anywhere
 /// </remarks>
 // ReSharper disable once UnusedMember.Global
+// TODO: UNSURE IF NOT USED OR DISCOVERED BY REFLECTION?
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class GlobalFolderRepository: FolderBasedRepository
 {
     #region DI Constructor

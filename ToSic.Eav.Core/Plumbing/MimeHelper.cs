@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Plumbing;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MimeHelper
 {
     public const string FallbackType = "application/octet-stream";

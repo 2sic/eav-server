@@ -4,7 +4,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data;
 
-public class ValueConverterUnknown: ValueConverterBase
+internal class ValueConverterUnknown: ValueConverterBase
 {
     public ValueConverterUnknown(WarnUseOfUnknown<ValueConverterUnknown> _) : base (LogConstants.FullNameUnknown) { }
 

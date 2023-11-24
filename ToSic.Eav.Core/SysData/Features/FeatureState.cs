@@ -16,6 +16,7 @@ namespace ToSic.Eav.SysData;
 /// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
 /// </summary>
 [PrivateApi("no good reason to publish this")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FeatureState: AspectState<Feature>, IHasRawEntity<IRawEntity>, IHasIdentityNameId
 {
     public FeatureState(Feature aspect, DateTime expiration, bool enabled, string msgShort, string msgLong, bool allowedByLicense, bool enabledByDefault, bool? enabledInConfiguration)

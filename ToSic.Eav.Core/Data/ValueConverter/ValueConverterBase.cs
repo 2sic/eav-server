@@ -1,6 +1,5 @@
 ﻿using System;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data;
@@ -9,6 +8,7 @@ namespace ToSic.Eav.Data;
 /// Trivial value converter - doesn't convert anything.
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class ValueConverterBase : ServiceBase, IValueConverter
 {
     public const string PrefixPage = "page";

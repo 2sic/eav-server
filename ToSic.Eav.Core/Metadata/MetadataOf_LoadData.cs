@@ -7,7 +7,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Metadata;
 
-public partial class MetadataOf<T>
+partial class MetadataOf<T>
 {
     /// <summary>
     /// All entities is internal - because it contains everything

@@ -6,7 +6,7 @@ using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Metadata;
 
-public partial class MetadataOf<T>
+partial class MetadataOf<T>
 {
 
 

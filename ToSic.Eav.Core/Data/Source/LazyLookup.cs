@@ -10,6 +10,7 @@ namespace ToSic.Eav.Data.Source;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LazyLookup<TKey, TValue> : ILookup<TKey, TValue>
 {
     public ILookup<TKey, TValue> Source => _source.Get(() => Raw.ToLookup(r => r.Key, r => r.Value));

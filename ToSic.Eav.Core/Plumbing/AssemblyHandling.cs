@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ToSic.Lib.Logging;
+using static System.StringComparison;
 
 namespace ToSic.Eav.Plumbing;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AssemblyHandling
 {
-
     /// <summary>
     /// Get all Installed DataSources
     /// </summary>
@@ -28,7 +29,7 @@ public class AssemblyHandling
     public static bool HasType(string typeFullName, ILog log = null)
     {
         var wrapLog = log.Fn<bool>(message: $"HasType {typeFullName}");
-        return wrapLog.ReturnAsOk(GetTypes(log).Any(t => (t.FullName?.IndexOf(typeFullName, StringComparison.OrdinalIgnoreCase) ?? -1) > -1));
+        return wrapLog.ReturnAsOk(GetTypes(log).Any(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
     }
 
     /// <summary>
@@ -40,7 +41,7 @@ public class AssemblyHandling
     public static Type GetTypeOrNull(string typeFullName, ILog log = null)
     {
         var wrapLog = log.Fn<Type>(message: $"HasType {typeFullName}");
-        return wrapLog.ReturnAsOk(GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, StringComparison.OrdinalIgnoreCase) ?? -1) > -1));
+        return wrapLog.ReturnAsOk(GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
     }
 
     internal static List<Type> GetTypes(ILog log = null)

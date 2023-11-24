@@ -8,10 +8,12 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.Plumbing;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class AnonymousTypesExtensions
 {
     // inspired by https://stackoverflow.com/questions/2483023/how-to-test-if-a-type-is-anonymous
     // and https://stackoverflow.com/questions/1650681/determining-whether-a-type-is-an-anonymous-type
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsAnonymous(this object typeOrObject)
     {
         if (typeOrObject == null) return false;
@@ -28,10 +30,12 @@ public static class AnonymousTypesExtensions
                && type.Attributes.HasFlag(TypeAttributes.NotPublic);
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IDictionary<string, object> ToDicInvariantInsensitive(this object a, bool mutable = false)
         => ObjectToDictionary(a, mutable, caseInsensitive: true);
 
     // inspired by https://stackoverflow.com/questions/3481923/in-c-sharp-convert-anonymous-type-into-key-value-array
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IDictionary<string, object> ObjectToDictionary(this object a, bool mutable = false, bool caseInsensitive = false)
     {
         var props = a.GetType().GetProperties();
@@ -45,6 +49,7 @@ public static class AnonymousTypesExtensions
         return dict;
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsSimpleType(this Type type)
     {
         return

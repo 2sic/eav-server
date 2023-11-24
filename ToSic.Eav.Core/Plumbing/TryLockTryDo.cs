@@ -5,6 +5,7 @@ namespace ToSic.Eav.Plumbing;
 /// <summary>
 /// Execute something if a condition is met, but do it within a lock to avoid duplicate runs
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class TryLockTryDo
 {
     public TryLockTryDo(object lockObject = null) => _loadLock = lockObject ?? new object();

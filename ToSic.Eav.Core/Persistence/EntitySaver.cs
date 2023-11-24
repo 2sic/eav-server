@@ -12,6 +12,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntitySaver : ServiceBase
 {
     public EntitySaver(DataBuilder dataBuilder) : base("Dta.Saver")

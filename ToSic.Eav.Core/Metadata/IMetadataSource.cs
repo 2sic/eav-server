@@ -11,6 +11,7 @@ namespace ToSic.Eav.Metadata;
 /// Mainly used in the Store, Cache-Systems and Apps.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IMetadataSource: 
     ICacheExpiring, 
     IAppIdentity    // this is used for creating additional metadata on this source

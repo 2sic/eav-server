@@ -5,6 +5,7 @@ using ToSic.Eav.Code.Help;
 
 namespace ToSic.Eav;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ExceptionWithHelp : Exception, IExceptionWithHelp
 {
     public ExceptionWithHelp(CodeHelp help, Exception inner = null) : base(help.ErrorMessage, inner)

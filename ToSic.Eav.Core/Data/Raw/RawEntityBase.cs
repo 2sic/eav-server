@@ -14,7 +14,8 @@ namespace ToSic.Eav.Data.Raw;
 /// <remarks>
 /// Added in 15.04
 /// </remarks>
-[PublicApi]
+[PrivateApi("was public till 16.09")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
 {
     public virtual int Id { get; set; }

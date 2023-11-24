@@ -6,6 +6,7 @@ namespace ToSic.Eav.Data;
 /// Represents a Relation between two entities, connecting a parent to a child.
 /// </summary>
 [PrivateApi("2021-09-30 hidden now, previously PublicApi_Stable_ForUseInYourCode - should probably create an interface for this")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntityRelationship
 {
     /// <summary>

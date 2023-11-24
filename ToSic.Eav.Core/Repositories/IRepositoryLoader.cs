@@ -6,6 +6,7 @@ using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Repositories;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IRepositoryLoader: IHasLog, IContentTypeLoader
 {
     /// <summary>

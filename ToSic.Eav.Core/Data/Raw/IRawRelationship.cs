@@ -9,7 +9,8 @@ namespace ToSic.Eav.Data.Raw;
 /// <remarks>
 /// Added in 15.04
 /// </remarks>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi("was internal till 16.09")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IRawRelationship
 {
 }

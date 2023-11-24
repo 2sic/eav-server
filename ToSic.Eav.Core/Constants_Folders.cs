@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav;
 
-public partial class Constants
+partial class Constants
 {
     /// <summary>
     /// Folder inside an App-folder, containing extensions and other system features

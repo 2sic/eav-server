@@ -6,6 +6,7 @@ namespace ToSic.Eav.Data;
 /// Constants related to Input Types
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class InputTypes: EntityBasedType
 {
     /// <summary>

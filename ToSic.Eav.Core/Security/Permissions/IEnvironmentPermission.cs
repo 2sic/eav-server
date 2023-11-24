@@ -4,6 +4,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Security;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IEnvironmentPermission: IHasLog
 {
     /// <summary>

@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace ToSic.Eav.Serialization;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class JsonDateTimeConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

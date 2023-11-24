@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Persistence.Logging;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ImportError
 {
     public int? LineNumber { get; private set; }

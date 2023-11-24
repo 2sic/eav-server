@@ -7,6 +7,7 @@ namespace ToSic.Eav.Data;
 /// Important to keep track of the originally wrapped item to ensure equality checks
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IMultiWrapper<out T>
 {
     /// <summary>

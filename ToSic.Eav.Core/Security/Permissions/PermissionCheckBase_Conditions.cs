@@ -6,7 +6,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security;
 
-public partial class PermissionCheckBase
+partial class PermissionCheckBase
 {
 
     /// <summary>
