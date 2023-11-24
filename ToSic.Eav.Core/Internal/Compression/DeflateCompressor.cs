@@ -1,34 +1,33 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace ToSic.Eav.Internal.Compression
+namespace ToSic.Eav.Internal.Compression;
+
+public class DeflateCompressor : ICompressor
 {
-    public class DeflateCompressor : ICompressor
+    public byte[] CompressBytes(byte[] bytes)
     {
-        public byte[] CompressBytes(byte[] bytes)
+        using (var outputStream = new MemoryStream())
+        {
+            using (var compressStream = new DeflateStream(outputStream, CompressionLevel.Optimal))
+            {
+                compressStream.Write(bytes, 0, bytes.Length);
+            }
+            return outputStream.ToArray();
+        }
+    }
+
+    public byte[] DecompressBytes(byte[] bytes)
+    {
+        using (var inputStream = new MemoryStream(bytes))
         {
             using (var outputStream = new MemoryStream())
             {
-                using (var compressStream = new DeflateStream(outputStream, CompressionLevel.Optimal))
+                using (var decompressStream = new DeflateStream(inputStream, CompressionMode.Decompress))
                 {
-                    compressStream.Write(bytes, 0, bytes.Length);
+                    decompressStream.CopyTo(outputStream);
                 }
                 return outputStream.ToArray();
-            }
-        }
-
-        public byte[] DecompressBytes(byte[] bytes)
-        {
-            using (var inputStream = new MemoryStream(bytes))
-            {
-                using (var outputStream = new MemoryStream())
-                {
-                    using (var decompressStream = new DeflateStream(inputStream, CompressionMode.Decompress))
-                    {
-                        decompressStream.CopyTo(outputStream);
-                    }
-                    return outputStream.ToArray();
-                }
             }
         }
     }

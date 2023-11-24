@@ -1,30 +1,29 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data;
+
+public partial class Entity
 {
-    public partial class Entity
-    {
-        /// <inheritdoc />
-        [PrivateApi]
-        public int RepositoryId { get; }
+    /// <inheritdoc />
+    [PrivateApi]
+    public int RepositoryId { get; }
 
-        #region Save/Update settings - needed when passing this object to the save-layer
+    #region Save/Update settings - needed when passing this object to the save-layer
 
-        /// <inheritdoc />
-        // TODO: should move the set-info to a save-options object
-        public bool IsPublished { get; set; } = true;
+    /// <inheritdoc />
+    // TODO: should move the set-info to a save-options object
+    public bool IsPublished { get; set; } = true;
 
-        internal int? PublishedEntityId { get; }
+    internal int? PublishedEntityId { get; }
 
-        // TODO: should move the set-info to a save-options object
-        [PrivateApi]
-        public bool PlaceDraftInBranch { get; set; }
+    // TODO: should move the set-info to a save-options object
+    [PrivateApi]
+    public bool PlaceDraftInBranch { get; set; }
 
-        #endregion
+    #endregion
 
 
-        /// <inheritdoc />
-        public int Version { get; }
+    /// <inheritdoc />
+    public int Version { get; }
 
-    }
 }

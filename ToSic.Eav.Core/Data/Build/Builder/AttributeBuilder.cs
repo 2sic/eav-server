@@ -1,23 +1,22 @@
 ﻿using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Data.Build
+namespace ToSic.Eav.Data.Build;
+
+public partial class AttributeBuilder: ServiceBase
 {
-    public partial class AttributeBuilder: ServiceBase
+    #region Dependency Injection
+
+    public AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilder languageBuilder) : base("Dta.AttBld")
     {
-        #region Dependency Injection
-
-        public AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilder languageBuilder) : base("Dta.AttBld")
-        {
-            ConnectServices(
-                _languageBuilder = languageBuilder,
-                ValueBuilder = valueBuilder
-            );
-
-        }
-        protected readonly ValueBuilder ValueBuilder;
-        private readonly DimensionBuilder _languageBuilder;
-
-        #endregion
+        ConnectServices(
+            _languageBuilder = languageBuilder,
+            ValueBuilder = valueBuilder
+        );
 
     }
+    protected readonly ValueBuilder ValueBuilder;
+    private readonly DimensionBuilder _languageBuilder;
+
+    #endregion
+
 }

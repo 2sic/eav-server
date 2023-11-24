@@ -1,7 +1,6 @@
-﻿namespace ToSic.Eav
+﻿namespace ToSic.Eav;
+
+public partial class Constants
 {
-    public partial class Constants
-    {
-        public const string EmptyRelationship = "null";
-    }
+    public const string EmptyRelationship = "null";
 }

@@ -1,12 +1,11 @@
-﻿namespace ToSic.Eav.Metadata
+﻿namespace ToSic.Eav.Metadata;
+
+public class CmsMetadata
 {
-    public class CmsMetadata
-    {
-        public static string SitePrefix = "site:";
-        public static string UserPrefix = "user:";
-        public static string PagePrefix = "page:";
-        public static string ModulePrefix = "module:";
-        public static string FilePrefix = "file:";
-        public static string FolderPrefix = "folder:";
-    }
+    public static string SitePrefix = "site:";
+    public static string UserPrefix = "user:";
+    public static string PagePrefix = "page:";
+    public static string ModulePrefix = "module:";
+    public static string FilePrefix = "file:";
+    public static string FolderPrefix = "folder:";
 }

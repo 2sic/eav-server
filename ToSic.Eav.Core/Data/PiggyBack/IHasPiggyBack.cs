@@ -1,10 +1,9 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data.PiggyBack
+namespace ToSic.Eav.Data.PiggyBack;
+
+[PrivateApi]
+public interface IHasPiggyBack
 {
-    [PrivateApi]
-    public interface IHasPiggyBack
-    {
-        PiggyBack PiggyBack { get; }
-    }
+    PiggyBack PiggyBack { get; }
 }

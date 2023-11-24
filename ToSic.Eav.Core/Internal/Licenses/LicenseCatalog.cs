@@ -21,40 +21,39 @@ using ToSic.Eav.SysData;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.Internal.Licenses.BuiltInLicenses;
 
-namespace ToSic.Eav.Internal.Licenses
-{
-    public class LicenseCatalog: GlobalCatalogBase<FeatureSet>
-    {
-        public LicenseCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.LicCat", new CodeRef())
-        {
-            Register(
-                CoreFree,
-                CorePlus,
-                CoreBeta,
-                PatronBasic,
-                PatronAdvancedCms,
-                PatronPerfectionist,
-                PatronSentinel,
-                PatronSuperAdmin,
-                PatronInfrastructure,
-                WebFarmCache,
-                EnterpriseCms,
+namespace ToSic.Eav.Internal.Licenses;
 
-                BuiltInLicenses.System,
-                Extension
+public class LicenseCatalog: GlobalCatalogBase<FeatureSet>
+{
+    public LicenseCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.LicCat", new CodeRef())
+    {
+        Register(
+            CoreFree,
+            CorePlus,
+            CoreBeta,
+            PatronBasic,
+            PatronAdvancedCms,
+            PatronPerfectionist,
+            PatronSentinel,
+            PatronSuperAdmin,
+            PatronInfrastructure,
+            WebFarmCache,
+            EnterpriseCms,
+
+            BuiltInLicenses.System,
+            Extension
 
 #if DEBUG
-                // disable in production
-                ,
-                CoreTesting
+            // disable in production
+            ,
+            CoreTesting
 #endif
-            );
-        }
-
-        public override FeatureSet TryGet(string name) =>
-            name == null
-                ? null
-                : base.TryGet(name)
-                  ?? Dictionary.Values.FirstOrDefault(lic => name.Equals(lic.Guid.ToString()));
+        );
     }
+
+    public override FeatureSet TryGet(string name) =>
+        name == null
+            ? null
+            : base.TryGet(name)
+              ?? Dictionary.Values.FirstOrDefault(lic => name.Equals(lic.Guid.ToString()));
 }

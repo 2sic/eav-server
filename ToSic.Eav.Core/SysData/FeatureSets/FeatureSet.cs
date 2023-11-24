@@ -17,32 +17,31 @@
 
 using System;
 
-namespace ToSic.Eav.SysData
+namespace ToSic.Eav.SysData;
+
+/// <summary>
+/// Defines a license - name, guid etc.
+/// </summary>
+public class FeatureSet: Aspect
 {
-    /// <summary>
-    /// Defines a license - name, guid etc.
-    /// </summary>
-    public class FeatureSet: Aspect
-    {
-        public const string ConditionIsLicense = "license";
+    public const string ConditionIsLicense = "license";
 
-        public FeatureSet(string nameId, int priority, string name, Guid guid, string description, bool featureLicense = false)
+    public FeatureSet(string nameId, int priority, string name, Guid guid, string description, bool featureLicense = false)
         : base(nameId ?? guid.ToString(), guid, name, description ?? "")
-        {
-            Priority = priority;
-            Requirement = new Requirement(ConditionIsLicense, guid.ToString());
-            FeatureLicense = featureLicense;
-        }
-
-        public int Priority { get; }
-
-        public bool AutoEnable { get; set; } = false;
-
-        public FeatureSet[] AlsoInheritEnabledFrom { get; set; }= Array.Empty<FeatureSet>();
-
-        public bool FeatureLicense { get; }
-
-        public Requirement Requirement { get; }
-
+    {
+        Priority = priority;
+        Requirement = new Requirement(ConditionIsLicense, guid.ToString());
+        FeatureLicense = featureLicense;
     }
+
+    public int Priority { get; }
+
+    public bool AutoEnable { get; set; } = false;
+
+    public FeatureSet[] AlsoInheritEnabledFrom { get; set; }= Array.Empty<FeatureSet>();
+
+    public bool FeatureLicense { get; }
+
+    public Requirement Requirement { get; }
+
 }

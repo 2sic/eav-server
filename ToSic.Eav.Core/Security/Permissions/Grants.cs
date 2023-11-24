@@ -1,34 +1,32 @@
-﻿namespace ToSic.Eav.Security
+﻿namespace ToSic.Eav.Security;
+
+public enum Grants
 {
-    public enum Grants
-    {
-        Create = 'c',
+    Create = 'c',
 
-        Read = 'r',
+    Read = 'r',
 
-        Update = 'u',
+    Update = 'u',
 
-        Delete = 'd',
+    Delete = 'd',
 
-        Develop = 'v',
+    Develop = 'v',
 
-        /// <summary>
-        /// Full means everything EXCEPT for develop
-        /// </summary>
-        Full = 'f',
+    /// <summary>
+    /// Full means everything EXCEPT for develop
+    /// </summary>
+    Full = 'f',
 
-        Approve = 'a',
+    Approve = 'a',
 
-        // ReSharper disable once UnusedMember.Global
-        Schema = '$',
+    // ReSharper disable once UnusedMember.Global
+    Schema = '$',
 
-        ReadDraft = 'ř',
+    ReadDraft = 'ř',
 
-        CreateDraft = 'č',
+    CreateDraft = 'č',
 
-        UpdateDraft = 'ǔ',
+    UpdateDraft = 'ǔ',
 
-        DeleteDraft = 'ď', // the "d" with caron looks a bit different
-    }
-
+    DeleteDraft = 'ď', // the "d" with caron looks a bit different
 }

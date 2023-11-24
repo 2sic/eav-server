@@ -1,23 +1,22 @@
 ﻿using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Internal.Environment
+namespace ToSic.Eav.Internal.Environment;
+
+public abstract class ServerPathsBase: IServerPaths
 {
-    public abstract class ServerPathsBase: IServerPaths
+    public abstract string FullAppPath(string virtualPath);
+
+    public abstract string FullContentPath(string virtualPath);
+
+    public string FullPathOfReference(string fileReference)
     {
-        public abstract string FullAppPath(string virtualPath);
+        if (string.IsNullOrWhiteSpace(fileReference)) return fileReference;
 
-        public abstract string FullContentPath(string virtualPath);
+        var parts = new LinkParts(fileReference);
+        if (parts.IsPage) return fileReference;
 
-        public string FullPathOfReference(string fileReference)
-        {
-            if (string.IsNullOrWhiteSpace(fileReference)) return fileReference;
-
-            var parts = new LinkParts(fileReference);
-            if (parts.IsPage) return fileReference;
-
-            return FullPathOfReference(parts.Id);
-        }
-
-        protected abstract string FullPathOfReference(int id);
+        return FullPathOfReference(parts.Id);
     }
+
+    protected abstract string FullPathOfReference(int id);
 }

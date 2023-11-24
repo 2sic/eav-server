@@ -5,14 +5,13 @@ using ToSic.Eav.Run.Unknown;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Internal.Loaders
+namespace ToSic.Eav.Internal.Loaders;
+
+public class AppLoaderUnknown: ServiceBase, IAppLoader, IIsUnknown
 {
-    public class AppLoaderUnknown: ServiceBase, IAppLoader, IIsUnknown
-    {
-        public AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _) : base("Eav.BscRnt") { }
+    public AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _) : base("Eav.BscRnt") { }
 
-        public AppState LoadFullAppState() => new(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogScopes.NotImplemented));
+    public AppState LoadFullAppState() => new(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogScopes.NotImplemented));
 
-        public void ReloadConfigEntities() { /* do nothing */ }
-    }
+    public void ReloadConfigEntities() { /* do nothing */ }
 }

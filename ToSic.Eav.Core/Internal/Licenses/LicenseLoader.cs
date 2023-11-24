@@ -32,194 +32,193 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Internal.Licenses
+namespace ToSic.Eav.Internal.Licenses;
+
+/// <summary>
+/// Will check the loaded licenses and prepare validity information for use during system runtime
+/// </summary>
+/// <remarks>Must be SEALED, to prevent inheritance and prevent injection of alternate loader</remarks>
+public sealed class LicenseLoader : LoaderBase
 {
     /// <summary>
-    /// Will check the loaded licenses and prepare validity information for use during system runtime
+    /// Constructor - for DI
     /// </summary>
-    /// <remarks>Must be SEALED, to prevent inheritance and prevent injection of alternate loader</remarks>
-    public sealed class LicenseLoader : LoaderBase
+    public LicenseLoader(
+        ILogStore logStore,
+        LicenseCatalog licenseCatalog,
+        SystemFingerprint fingerprint,
+        LazySvc<IGlobalConfiguration> globalConfiguration
+    ) : base(logStore, $"{EavLogs.Eav}LicLdr")
     {
-        /// <summary>
-        /// Constructor - for DI
-        /// </summary>
-        public LicenseLoader(
-            ILogStore logStore,
-            LicenseCatalog licenseCatalog,
-            SystemFingerprint fingerprint,
-            LazySvc<IGlobalConfiguration> globalConfiguration
-        ) : base(logStore, $"{EavLogs.Eav}LicLdr")
+        Log.A("Load Licenses");
+        ConnectServices(
+            _licenseCatalog = licenseCatalog,
+            _fingerprint = fingerprint,
+            _globalConfiguration = globalConfiguration
+        );
+    }
+
+    internal LicenseLoader Init(List<EnterpriseFingerprint> entFingerprints)
+    {
+        _fingerprint.LoadEnterpriseFingerprintsWIP(entFingerprints);
+        return this;
+    }
+
+    private readonly LicenseCatalog _licenseCatalog;
+    private readonly SystemFingerprint _fingerprint;
+    private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
+
+    /// <summary>
+    /// Pre-Load enabled / disabled global features
+    /// </summary>
+    [PrivateApi]
+    internal void LoadLicenses() => Log.Do(timer: true, action: l=>
+    {
+        var fingerprint = _fingerprint.GetFingerprint();
+        l.A($"fingerprint:{fingerprint?.Length}");
+
+        var validEntFps = _fingerprint.EnterpriseFingerprintsWIP
+            .Where(e => e.Valid)
+            .ToList();
+        l.A($"validEntFps:{validEntFps?.Count}");
+
+        try
         {
-            Log.A("Load Licenses");
-            ConnectServices(
-                _licenseCatalog = licenseCatalog,
-                _fingerprint = fingerprint,
-                _globalConfiguration = globalConfiguration
-            );
+            var licensesStored = LoadLicensesInConfigFolder();
+            l.A($"Found {licensesStored.Count} licenseStored in files");
+            var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint, validEntFps)).ToList();
+            var autoEnabled = AutoEnabledLicenses();
+            LicenseService.Update(autoEnabled.Union(licenses).ToList());
+            l.A($"Found {licenses.Count} licenses");
+            return "ok";
         }
-
-        internal LicenseLoader Init(List<EnterpriseFingerprint> entFingerprints)
+        catch (Exception ex)
         {
-            _fingerprint.LoadEnterpriseFingerprintsWIP(entFingerprints);
-            return this;
+            // Just log and ignore
+            l.Ex(ex);
+            return "error";
         }
+    });
 
-        private readonly LicenseCatalog _licenseCatalog;
-        private readonly SystemFingerprint _fingerprint;
-        private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
+    /// <summary>
+    /// Load the license JSON files
+    /// </summary>
+    /// <returns></returns>
+    private List<LicensesPersisted> LoadLicensesInConfigFolder()
+    {
+        var l = Log.Fn<List<LicensesPersisted>>();
+        // ensure that path to store files already exits
+        var configFolder = _globalConfiguration.Value.ConfigFolder;
+        Directory.CreateDirectory(configFolder);
+        l.A($"{nameof(configFolder)}: {configFolder}");
 
-        /// <summary>
-        /// Pre-Load enabled / disabled global features
-        /// </summary>
-        [PrivateApi]
-        internal void LoadLicenses() => Log.Do(timer: true, action: l=>
+        var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
+            .Select(File.ReadAllText)
+            .Select(j => JsonSerializer.Deserialize<LicensesPersisted>(j)) // should NOT use common SxcJsonSerializerOptions
+            .Where(licenses => licenses != null).ToList();
+
+        return l.Return(licensesStored, $"licensesStored: {licensesStored.Count}");
+    }
+
+    private List<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, List<EnterpriseFingerprint> validEntFps)
+    {
+        var l = Log.Fn<List<FeatureSetState>>();
+        if (licensesPersisted == null) return l.Return(new List<FeatureSetState>(), "null");
+
+        // Check signature valid
+        var resultForSignature = licensesPersisted.GenerateIdentity();
+        var validSig = false;
+        try
         {
-            var fingerprint = _fingerprint.GetFingerprint();
-            l.A($"fingerprint:{fingerprint?.Length}");
-
-            var validEntFps = _fingerprint.EnterpriseFingerprintsWIP
-                .Where(e => e.Valid)
-                .ToList();
-            l.A($"validEntFps:{validEntFps?.Count}");
-
-            try
-            {
-                var licensesStored = LoadLicensesInConfigFolder();
-                l.A($"Found {licensesStored.Count} licenseStored in files");
-                var licenses = licensesStored.SelectMany(ls => LicensesStateBuilder(ls, fingerprint, validEntFps)).ToList();
-                var autoEnabled = AutoEnabledLicenses();
-                LicenseService.Update(autoEnabled.Union(licenses).ToList());
-                l.A($"Found {licenses.Count} licenses");
-                return "ok";
-            }
-            catch (Exception ex)
-            {
-                // Just log and ignore
-                l.Ex(ex);
-                return "error";
-            }
-        });
-
-        /// <summary>
-        /// Load the license JSON files
-        /// </summary>
-        /// <returns></returns>
-        private List<LicensesPersisted> LoadLicensesInConfigFolder()
-        {
-            var l = Log.Fn<List<LicensesPersisted>>();
-            // ensure that path to store files already exits
-            var configFolder = _globalConfiguration.Value.ConfigFolder;
-            Directory.CreateDirectory(configFolder);
-            l.A($"{nameof(configFolder)}: {configFolder}");
-
-            var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
-                .Select(File.ReadAllText)
-                .Select(j => JsonSerializer.Deserialize<LicensesPersisted>(j)) // should NOT use common SxcJsonSerializerOptions
-                .Where(licenses => licenses != null).ToList();
-
-            return l.Return(licensesStored, $"licensesStored: {licensesStored.Count}");
+            var data = new UnicodeEncoding().GetBytes(resultForSignature);
+            validSig = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930,
+                licensesPersisted.Signature, data);
         }
-
-        private List<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, List<EnterpriseFingerprint> validEntFps)
+        catch (Exception ex)
         {
-            var l = Log.Fn<List<FeatureSetState>>();
-            if (licensesPersisted == null) return l.Return(new List<FeatureSetState>(), "null");
+            // Just log, and ignore
+            l.Ex(ex);
+        }
+        l.A($"Signature: {validSig}");
 
-            // Check signature valid
-            var resultForSignature = licensesPersisted.GenerateIdentity();
-            var validSig = false;
-            try
+        // Check fingerprints
+        var fps = licensesPersisted.FingerprintsArray;
+        var validFp = fps.Any(fingerprint.Equals) || validEntFps.Any(ld => fps.Any(ld.Fingerprint.Equals));
+        l.A($"Fingerprint: {validFp}");
+
+        var validVersion = licensesPersisted.Versions?
+                               .Split(',')
+                               .Select(v => v.Trim())
+                               .Any(v => int.TryParse(v, out var licVersion) && EavSystemInfo.Version.Major == licVersion)
+                           ?? false;
+
+        l.A($"Version: {validVersion}");
+
+        var validDate = DateTime.Now.CompareTo(licensesPersisted.Expires) <= 0;
+        l.A($"Expired: {validDate}");
+
+        var licenses = licensesPersisted?.Licenses ?? new List<FeatureSetDetailsPersisted>();
+        l.A($"Licenses: {licenses.Count}");
+
+
+        var licenseStates = licenses
+            .Where(storedDetails => !string.IsNullOrEmpty(storedDetails.Id))
+            .Select((storedDetails, index) =>
             {
-                var data = new UnicodeEncoding().GetBytes(resultForSignature);
-                validSig = new Sha256().VerifyBase64(FeatureConstants.FeaturesValidationSignature2Sxc930,
-                    licensesPersisted.Signature, data);
-            }
-            catch (Exception ex)
-            {
-                // Just log, and ignore
-                l.Ex(ex);
-            }
-            l.A($"Signature: {validSig}");
+                var licDef = _licenseCatalog.TryGet(storedDetails.Id);
 
-            // Check fingerprints
-            var fps = licensesPersisted.FingerprintsArray;
-            var validFp = fps.Any(fingerprint.Equals) || validEntFps.Any(ld => fps.Any(ld.Fingerprint.Equals));
-            l.A($"Fingerprint: {validFp}");
-
-            var validVersion = licensesPersisted.Versions?
-                .Split(',')
-                .Select(v => v.Trim())
-                .Any(v => int.TryParse(v, out var licVersion) && EavSystemInfo.Version.Major == licVersion)
-                ?? false;
-
-            l.A($"Version: {validVersion}");
-
-            var validDate = DateTime.Now.CompareTo(licensesPersisted.Expires) <= 0;
-            l.A($"Expired: {validDate}");
-
-            var licenses = licensesPersisted?.Licenses ?? new List<FeatureSetDetailsPersisted>();
-            l.A($"Licenses: {licenses.Count}");
-
-
-            var licenseStates = licenses
-                .Where(storedDetails => !string.IsNullOrEmpty(storedDetails.Id))
-                .Select((storedDetails, index) =>
+                // If no real license found with this ID, it's probably a single-feature activation
+                // For this we must add a virtual license for this feature only
+                if (licDef == null)
                 {
-                    var licDef = _licenseCatalog.TryGet(storedDetails.Id);
+                    licDef = new FeatureSet(BuiltInLicenses.LicenseCustom, BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
+                        Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
+                        $"Feature: {storedDetails.Comments} ({storedDetails.Id})", featureLicense: true);
+                    l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");
+                    _licenseCatalog.Register(licDef);
+                }
 
-                    // If no real license found with this ID, it's probably a single-feature activation
-                    // For this we must add a virtual license for this feature only
-                    if (licDef == null)
-                    {
-                        licDef = new FeatureSet(BuiltInLicenses.LicenseCustom, BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
-                            Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
-                            $"Feature: {storedDetails.Comments} ({storedDetails.Id})", featureLicense: true);
-                        l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");
-                        _licenseCatalog.Register(licDef);
-                    }
-
-                    return new FeatureSetState(licDef)
-                    {
-                        Title = licensesPersisted.Title,
-                        EntityGuid = licensesPersisted.GuidSalt,
-                        LicenseKey = licensesPersisted.Key ?? LicenseKeyDescription,
-                        Expiration = storedDetails.Expires ?? licensesPersisted.Expires,
-                        ExpirationIsValid = DateTime.Now.CompareTo(storedDetails.Expires ?? licensesPersisted.Expires) <= 0,
-                        FingerprintIsValid = validFp,
-                        SignatureIsValid = validSig,
-                        VersionIsValid = validVersion,
-                        Owner = licensesPersisted.Owner,
-                    };
-                })
-                .ToList();
-
-            return l.Return(licenseStates, $"count: {licenseStates.Count}");
-        }
-
-        // license key description on this system
-        private const string LicenseKeyDescription = "system license";
-
-        /// <summary>
-        /// Get list of licenses which are always auto-enabled
-        /// </summary>
-        /// <returns></returns>
-        private List<FeatureSetState> AutoEnabledLicenses()
-        {
-            var licenseStates = _licenseCatalog.List
-                .Where(ls => ls.AutoEnable)
-                .Select(ls => new FeatureSetState(ls)
+                return new FeatureSetState(licDef)
                 {
-                    Title = ls.Name,
-                    EntityGuid = Guid.Empty,
-                    LicenseKey = "always enabled",
-                    Expiration = BuiltInLicenses.UnlimitedExpiry,
-                    ExpirationIsValid = true,
-                    FingerprintIsValid = true,
-                    SignatureIsValid = true,
-                    VersionIsValid = true,
-                })
-                .ToList();
-            return licenseStates;
-        }
+                    Title = licensesPersisted.Title,
+                    EntityGuid = licensesPersisted.GuidSalt,
+                    LicenseKey = licensesPersisted.Key ?? LicenseKeyDescription,
+                    Expiration = storedDetails.Expires ?? licensesPersisted.Expires,
+                    ExpirationIsValid = DateTime.Now.CompareTo(storedDetails.Expires ?? licensesPersisted.Expires) <= 0,
+                    FingerprintIsValid = validFp,
+                    SignatureIsValid = validSig,
+                    VersionIsValid = validVersion,
+                    Owner = licensesPersisted.Owner,
+                };
+            })
+            .ToList();
+
+        return l.Return(licenseStates, $"count: {licenseStates.Count}");
+    }
+
+    // license key description on this system
+    private const string LicenseKeyDescription = "system license";
+
+    /// <summary>
+    /// Get list of licenses which are always auto-enabled
+    /// </summary>
+    /// <returns></returns>
+    private List<FeatureSetState> AutoEnabledLicenses()
+    {
+        var licenseStates = _licenseCatalog.List
+            .Where(ls => ls.AutoEnable)
+            .Select(ls => new FeatureSetState(ls)
+            {
+                Title = ls.Name,
+                EntityGuid = Guid.Empty,
+                LicenseKey = "always enabled",
+                Expiration = BuiltInLicenses.UnlimitedExpiry,
+                ExpirationIsValid = true,
+                FingerprintIsValid = true,
+                SignatureIsValid = true,
+                VersionIsValid = true,
+            })
+            .ToList();
+        return licenseStates;
     }
 }

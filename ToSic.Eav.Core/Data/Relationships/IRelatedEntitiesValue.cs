@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data;
+
+public interface IRelatedEntitiesValue
 {
-    public interface IRelatedEntitiesValue
-    {
-        IList Identifiers { get; }
-    }
+    IList Identifiers { get; }
 }

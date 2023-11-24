@@ -5,75 +5,74 @@ using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data;
+
+/// <summary>
+/// Foundation for a class which gets its data from an Entity. <br/>
+/// This is used for more type safety - because some internal objects need entities for data-storage,
+/// but when programming they should use typed objects to not accidentally access invalid properties. 
+/// </summary>
+[PublicApi_Stable_ForUseInYourCode]
+public abstract class EntityBasedType : IEntityBasedType
 {
+    /// <inheritdoc />
+    public IEntity Entity { get; protected set; }
+
+    [PrivateApi] public IEntity RootContentsForEqualityCheck => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
+    public List<IDecorator<IEntity>> Decorators => _decorators ??= (Entity as IEntityWrapper)?.Decorators ?? new List<IDecorator<IEntity>>();
+    private List<IDecorator<IEntity>> _decorators;
+
     /// <summary>
-    /// Foundation for a class which gets its data from an Entity. <br/>
-    /// This is used for more type safety - because some internal objects need entities for data-storage,
-    /// but when programming they should use typed objects to not accidentally access invalid properties. 
+    /// Create a EntityBasedType and wrap the entity provided
     /// </summary>
-    [PublicApi_Stable_ForUseInYourCode]
-    public abstract class EntityBasedType : IEntityBasedType
+    /// <param name="entity"></param>
+    protected EntityBasedType(IEntity entity) => Entity = entity;
+
+    protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
+        => LookupLanguages = languageCodes ?? Array.Empty<string>();
+
+    protected EntityBasedType(IEntity entity, string languageCode) : this(entity)
+        => LookupLanguages = languageCode != null ? new[] { languageCode } : Array.Empty<string>();
+
+    /// <inheritdoc />
+    public virtual string Title => _title ??= Entity?.GetBestTitle() ?? "";
+    private string _title;
+
+    /// <inheritdoc />
+    public int Id => Entity?.EntityId ?? 0;
+
+    /// <inheritdoc />
+    public Guid Guid => Entity?.EntityGuid ?? Guid.Empty;
+
+    /// <inheritdoc />
+    public IMetadataOf Metadata => Entity?.Metadata;
+
+    [PrivateApi]
+    protected string[] LookupLanguages { get; } = Array.Empty<string>();
+
+
+    /// <summary>
+    /// Get a value from the underlying entity. 
+    /// </summary>
+    /// <typeparam name="T">type, should only be string, decimal, bool</typeparam>
+    /// <param name="fieldName">field name</param>
+    /// <param name="fallback">fallback value</param>
+    /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
+    protected T Get<T>(string fieldName, T fallback)
     {
-        /// <inheritdoc />
-        public IEntity Entity { get; protected set; }
-
-        [PrivateApi] public IEntity RootContentsForEqualityCheck => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
-        public List<IDecorator<IEntity>> Decorators => _decorators ??= (Entity as IEntityWrapper)?.Decorators ?? new List<IDecorator<IEntity>>();
-        private List<IDecorator<IEntity>> _decorators;
-
-        /// <summary>
-        /// Create a EntityBasedType and wrap the entity provided
-        /// </summary>
-        /// <param name="entity"></param>
-        protected EntityBasedType(IEntity entity) => Entity = entity;
-
-        protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
-            => LookupLanguages = languageCodes ?? Array.Empty<string>();
-
-        protected EntityBasedType(IEntity entity, string languageCode) : this(entity)
-            => LookupLanguages = languageCode != null ? new[] { languageCode } : Array.Empty<string>();
-
-        /// <inheritdoc />
-        public virtual string Title => _title ??= Entity?.GetBestTitle() ?? "";
-        private string _title;
-
-        /// <inheritdoc />
-        public int Id => Entity?.EntityId ?? 0;
-
-        /// <inheritdoc />
-        public Guid Guid => Entity?.EntityGuid ?? Guid.Empty;
-
-        /// <inheritdoc />
-        public IMetadataOf Metadata => Entity?.Metadata;
-
-        [PrivateApi]
-        protected string[] LookupLanguages { get; } = Array.Empty<string>();
-
-
-        /// <summary>
-        /// Get a value from the underlying entity. 
-        /// </summary>
-        /// <typeparam name="T">type, should only be string, decimal, bool</typeparam>
-        /// <param name="fieldName">field name</param>
-        /// <param name="fallback">fallback value</param>
-        /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
-        protected T Get<T>(string fieldName, T fallback)
-        {
-            if (Entity == null) return fallback;
-            var result = Entity.GetBestValue<T>(fieldName, LookupLanguages);
-            if (result == null) return fallback;
-            return result;
-        }
-
-        /// <summary>
-        /// Get a value from the underlying entity, whose name matches the property requesting this.
-        /// So if your C# property is called `Birthday` it will also get the field `Birthday` in the entity.
-        /// </summary>
-        /// <typeparam name="T">Optional type, usually auto-detected because of the `fallback` value</typeparam>
-        /// <param name="fallback">Value to provide if nothing was found - required</param>
-        /// <param name="propertyName">The property name - will be auto-filled by the compiler</param>
-        /// <returns>The typed value</returns>
-        protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default) => Get(propertyName, fallback);
+        if (Entity == null) return fallback;
+        var result = Entity.GetBestValue<T>(fieldName, LookupLanguages);
+        if (result == null) return fallback;
+        return result;
     }
+
+    /// <summary>
+    /// Get a value from the underlying entity, whose name matches the property requesting this.
+    /// So if your C# property is called `Birthday` it will also get the field `Birthday` in the entity.
+    /// </summary>
+    /// <typeparam name="T">Optional type, usually auto-detected because of the `fallback` value</typeparam>
+    /// <param name="fallback">Value to provide if nothing was found - required</param>
+    /// <param name="propertyName">The property name - will be auto-filled by the compiler</param>
+    /// <returns>The typed value</returns>
+    protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default) => Get(propertyName, fallback);
 }

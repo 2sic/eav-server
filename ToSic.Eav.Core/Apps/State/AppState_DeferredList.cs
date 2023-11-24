@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Data.Source;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps
+namespace ToSic.Eav.Apps;
+
+partial class AppState : IEntitiesSource, IHasMetadataSource
 {
-	partial class AppState : IEntitiesSource, IHasMetadataSource
-    {
-        /// <inheritdoc />
-        IMetadataSource IHasMetadataSource.MetadataSource => _metadataManager;
-    }
+    /// <inheritdoc />
+    IMetadataSource IHasMetadataSource.MetadataSource => _metadataManager;
 }

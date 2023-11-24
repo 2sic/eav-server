@@ -17,16 +17,15 @@
 
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Security.Fingerprint
+namespace ToSic.Eav.Security.Fingerprint;
+
+/// <summary>
+/// Defines all classes which can provide fingerprints.
+/// For example a system fingerprint or a service fingerprint
+/// IMPORTANT: do not put in DI, as we need to be sure the fingerprint can't be injected any other way
+/// </summary>
+[PrivateApi("internal, no need to publish this")]
+public interface IFingerprint
 {
-    /// <summary>
-    /// Defines all classes which can provide fingerprints.
-    /// For example a system fingerprint or a service fingerprint
-    /// IMPORTANT: do not put in DI, as we need to be sure the fingerprint can't be injected any other way
-    /// </summary>
-    [PrivateApi("internal, no need to publish this")]
-    public interface IFingerprint
-    {
-        string GetFingerprint();
-    }
+    string GetFingerprint();
 }

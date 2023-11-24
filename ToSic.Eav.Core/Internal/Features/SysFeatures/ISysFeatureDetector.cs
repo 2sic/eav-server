@@ -1,14 +1,13 @@
 ﻿using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Internal.Features
+namespace ToSic.Eav.Internal.Features;
+
+public interface ISysFeatureDetector
 {
-    public interface ISysFeatureDetector
-    {
-        SysFeature Definition { get; }
+    SysFeature Definition { get; }
 
-        bool IsEnabled { get; }
+    bool IsEnabled { get; }
 
-        FeatureState FeatState { get; }
+    FeatureState FeatState { get; }
 
-    }
 }

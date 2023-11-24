@@ -20,30 +20,29 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.Internal.Licenses
+namespace ToSic.Eav.Internal.Licenses;
+
+public interface ILicenseService
 {
-    public interface ILicenseService
-    {
-        /// <summary>
-        /// All licenses
-        /// </summary>
-        List<FeatureSetState> All { get; }
+    /// <summary>
+    /// All licenses
+    /// </summary>
+    List<FeatureSetState> All { get; }
 
-        /// <summary>
-        /// Enabled licenses, in a dictionary to retrieve with the LicenseDefinition object
-        /// </summary>
-        IImmutableDictionary<Guid, FeatureSetState> Enabled { get; }
+    /// <summary>
+    /// Enabled licenses, in a dictionary to retrieve with the LicenseDefinition object
+    /// </summary>
+    IImmutableDictionary<Guid, FeatureSetState> Enabled { get; }
 
-        /// <summary>
-        /// Check if a license is enabled - using the real primary LicenseDefinition object as the key.
-        /// </summary>
-        /// <returns></returns>
-        bool IsEnabled(FeatureSet license);
+    /// <summary>
+    /// Check if a license is enabled - using the real primary LicenseDefinition object as the key.
+    /// </summary>
+    /// <returns></returns>
+    bool IsEnabled(FeatureSet license);
 
-        FeatureSetState State(FeatureSet license);
-        /// <summary>
-        /// Check if any license is valid.
-        /// </summary>
-        bool HaveValidLicense { get;  }
-    }
+    FeatureSetState State(FeatureSet license);
+    /// <summary>
+    /// Check if any license is valid.
+    /// </summary>
+    bool HaveValidLicense { get;  }
 }

@@ -1,30 +1,29 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Context
+namespace ToSic.Eav.Context;
+
+/// <summary>
+/// Any object implementing this interface can provide the EAV with information about the environment it's running in.
+/// </summary>
+[PrivateApi("this is not yet ready for publishing, as it's unclear what it actually is")]
+public interface IZoneCultureResolver
 {
     /// <summary>
-    /// Any object implementing this interface can provide the EAV with information about the environment it's running in.
+    /// The current language in the running system. 
+    /// This is often based on the url you are on or cookies
     /// </summary>
-    [PrivateApi("this is not yet ready for publishing, as it's unclear what it actually is")]
-    public interface IZoneCultureResolver
-    {
-        /// <summary>
-        /// The current language in the running system. 
-        /// This is often based on the url you are on or cookies
-        /// </summary>
-        /// <remarks>
-        /// By convention should always be lower case, so make sure whenever you set this it's lower-cased. 
-        /// </remarks>
-        string CurrentCultureCode { get; }
+    /// <remarks>
+    /// By convention should always be lower case, so make sure whenever you set this it's lower-cased. 
+    /// </remarks>
+    string CurrentCultureCode { get; }
 
-        /// <summary>
-        /// The primary language in the current environment. 
-        /// This is important for value-fallback, as not-translated data
-        /// will try to revert to the primary language of the environment
-        /// </summary>
-        /// <remarks>
-        /// By convention should always be lower case, so make sure whenever you set this it's lower-cased. 
-        /// </remarks>
-        string DefaultCultureCode { get; }
-    }
+    /// <summary>
+    /// The primary language in the current environment. 
+    /// This is important for value-fallback, as not-translated data
+    /// will try to revert to the primary language of the environment
+    /// </summary>
+    /// <remarks>
+    /// By convention should always be lower case, so make sure whenever you set this it's lower-cased. 
+    /// </remarks>
+    string DefaultCultureCode { get; }
 }

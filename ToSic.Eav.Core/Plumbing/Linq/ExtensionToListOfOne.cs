@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.Plumbing;
+
+public static class ExtensionToListOfOne
 {
-    public static class ExtensionToListOfOne
-    {
-        public static List<T> ToListOfOne<T>(this T original) => new() { original };
-    }
+    public static List<T> ToListOfOne<T>(this T original) => new() { original };
 }

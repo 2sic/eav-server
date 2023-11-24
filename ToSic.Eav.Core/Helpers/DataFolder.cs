@@ -1,12 +1,11 @@
-﻿namespace ToSic.Eav.Helpers
+﻿namespace ToSic.Eav.Helpers;
+
+public class DataFolder
 {
-    public class DataFolder
+    public static string GetDataRoot(string dataFolder)
     {
-        public static string GetDataRoot(string dataFolder)
-        {
-            return dataFolder?.EndsWith(Constants.FolderSystem) ?? false
-                ? dataFolder.Substring(0, dataFolder.Length - Constants.FolderSystem.Length).TrimLastSlash()
-                : dataFolder ?? string.Empty;
-        }
+        return dataFolder?.EndsWith(Constants.FolderSystem) ?? false
+            ? dataFolder.Substring(0, dataFolder.Length - Constants.FolderSystem.Length).TrimLastSlash()
+            : dataFolder ?? string.Empty;
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace ToSic.Eav.Internal.Compression
+﻿namespace ToSic.Eav.Internal.Compression;
+
+public interface ICompressor
 {
-    public interface ICompressor
-    {
-        byte[] CompressBytes(byte[] bytes);
-        byte[] DecompressBytes(byte[] bytes);
-    }
+    byte[] CompressBytes(byte[] bytes);
+    byte[] DecompressBytes(byte[] bytes);
 }

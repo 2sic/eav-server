@@ -1,9 +1,8 @@
-﻿namespace ToSic.Eav.Code.Infos
+﻿namespace ToSic.Eav.Code.Infos;
+
+public enum CodeInfoTypes
 {
-    public enum CodeInfoTypes
-    {
-        Obsolete,
-        Recommendation,
-        Warning
-    }
+    Obsolete,
+    Recommendation,
+    Warning
 }

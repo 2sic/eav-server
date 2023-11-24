@@ -1,8 +1,7 @@
 ﻿using ToSic.Lib.DI;
 
-namespace ToSic.Eav.Caching
+namespace ToSic.Eav.Caching;
+
+public interface IAppsCacheSwitchable: IAppsCache, ISwitchableService
 {
-    public interface IAppsCacheSwitchable: IAppsCache, ISwitchableService
-    {
-    }
 }

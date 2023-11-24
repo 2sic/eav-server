@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Internal.Requirements
+namespace ToSic.Eav.Internal.Requirements;
+
+public interface IRequirementsService
 {
-    public interface IRequirementsService
-    {
-        List<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements);
-    }
+    List<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements);
 }

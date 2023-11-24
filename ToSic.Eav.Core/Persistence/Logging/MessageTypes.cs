@@ -1,12 +1,11 @@
-namespace ToSic.Eav.Persistence.Logging
+namespace ToSic.Eav.Persistence.Logging;
+
+public partial class Message
 {
-    public partial class Message
+    public enum MessageTypes
     {
-        public enum MessageTypes
-        {
-            Warning,
-            Information,
-            Error
-        }
+        Warning,
+        Information,
+        Error
     }
 }

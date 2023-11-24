@@ -8,18 +8,17 @@ using ToSic.Eav.Run.Unknown;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Internal.Loaders
+namespace ToSic.Eav.Internal.Loaders;
+
+public class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader, IIsUnknown
 {
-    public class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader, IIsUnknown
+    public AppContentTypesLoaderUnknown(WarnUseOfUnknown<AppContentTypesLoaderUnknown> _) : base(LogScopes.NotImplemented + ".RepLdr") { }
+
+    public IAppContentTypesLoader Init(AppState app)
     {
-        public AppContentTypesLoaderUnknown(WarnUseOfUnknown<AppContentTypesLoaderUnknown> _) : base(LogScopes.NotImplemented + ".RepLdr") { }
-
-        public IAppContentTypesLoader Init(AppState app)
-        {
-            Log.A("Unknown App Repo loader - won't load anything");
-            return this;
-        }
-
-        public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource) => new List<IContentType>();
+        Log.A("Unknown App Repo loader - won't load anything");
+        return this;
     }
+
+    public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource) => new List<IContentType>();
 }

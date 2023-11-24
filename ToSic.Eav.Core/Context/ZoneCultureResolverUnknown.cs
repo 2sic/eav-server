@@ -2,16 +2,15 @@
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Run.Unknown
+namespace ToSic.Eav.Run.Unknown;
+
+public sealed class ZoneCultureResolverUnknown: IZoneCultureResolver, IIsUnknown
 {
-    public sealed class ZoneCultureResolverUnknown: IZoneCultureResolver, IIsUnknown
+    public ZoneCultureResolverUnknown(WarnUseOfUnknown<ZoneCultureResolverUnknown> _)
     {
-        public ZoneCultureResolverUnknown(WarnUseOfUnknown<ZoneCultureResolverUnknown> _)
-        {
 
-        }
-
-        public string DefaultCultureCode => "en-us";
-        public string CurrentCultureCode => "en-us";
     }
+
+    public string DefaultCultureCode => "en-us";
+    public string CurrentCultureCode => "en-us";
 }

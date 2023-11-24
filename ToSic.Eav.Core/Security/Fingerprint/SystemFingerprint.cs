@@ -26,62 +26,61 @@ using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Security.Fingerprint
+namespace ToSic.Eav.Security.Fingerprint;
+
+/// <summary>
+/// Class responsible for generating the fingerprint
+/// </summary>
+public sealed class SystemFingerprint: ServiceBase, IFingerprint
 {
     /// <summary>
-    /// Class responsible for generating the fingerprint
+    /// Constructor - gets Lazy PlatformInfo, because it's only used once for initial generation
     /// </summary>
-    public sealed class SystemFingerprint: ServiceBase, IFingerprint
+    public SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IDbConfiguration> dbConfigLazy): base($"{EavLogs.Eav}SysFpr")
     {
-        /// <summary>
-        /// Constructor - gets Lazy PlatformInfo, because it's only used once for initial generation
-        /// </summary>
-        public SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IDbConfiguration> dbConfigLazy): base($"{EavLogs.Eav}SysFpr")
-        {
-            ConnectServices(
-                _platform = platform,
-                _dbConfig = dbConfigLazy
-            );
-        }
-
-        private readonly LazySvc<IPlatformInfo> _platform;
-        private readonly LazySvc<IDbConfiguration> _dbConfig;
-
-        public string GetFingerprint()
-        {
-            if (_fingerprintCache != null) return _fingerprintCache;
-
-            var platform = _platform.Value;
-            var nameId = platform.Name.ToLowerInvariant();          // usually "dnn" or "oqt"
-            var systemGuid = platform.Identity.ToLowerInvariant();  // unique id of an installation
-            var sysVersion = platform.Version;                            // Major version, fingerprint should change with each
-            var dbConnection = GetDbName().ToLowerInvariant();      // Database name
-            var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
-
-            _fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
-            return _fingerprintCache = Sha256.Hash(_fingerprintKey);
-        }
-        private static string _fingerprintCache;
-
-        /// <summary>
-        /// Remember the key for debugging purposes to compare what was used to generate the fingerprint
-        /// </summary>
-        private static string _fingerprintKey;
-
-        private string GetDbName()
-        {
-            var dbConnection = _dbConfig.Value.ConnectionString;
-            const string key = "initial catalog=";
-            var dbName = dbConnection.Between(key, ";", true) ?? dbConnection;
-            return dbName;
-        }
-
-        internal static void ResetForTest() => _fingerprintCache = null;
-
-        public List<EnterpriseFingerprint> EnterpriseFingerprintsWIP => _enterpriseFingerprints;
-        private static List<EnterpriseFingerprint> _enterpriseFingerprints = new();
-
-        internal void LoadEnterpriseFingerprintsWIP(List<EnterpriseFingerprint> enterpriseFingerprints) 
-            => _enterpriseFingerprints = enterpriseFingerprints;
+        ConnectServices(
+            _platform = platform,
+            _dbConfig = dbConfigLazy
+        );
     }
+
+    private readonly LazySvc<IPlatformInfo> _platform;
+    private readonly LazySvc<IDbConfiguration> _dbConfig;
+
+    public string GetFingerprint()
+    {
+        if (_fingerprintCache != null) return _fingerprintCache;
+
+        var platform = _platform.Value;
+        var nameId = platform.Name.ToLowerInvariant();          // usually "dnn" or "oqt"
+        var systemGuid = platform.Identity.ToLowerInvariant();  // unique id of an installation
+        var sysVersion = platform.Version;                            // Major version, fingerprint should change with each
+        var dbConnection = GetDbName().ToLowerInvariant();      // Database name
+        var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
+
+        _fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
+        return _fingerprintCache = Sha256.Hash(_fingerprintKey);
+    }
+    private static string _fingerprintCache;
+
+    /// <summary>
+    /// Remember the key for debugging purposes to compare what was used to generate the fingerprint
+    /// </summary>
+    private static string _fingerprintKey;
+
+    private string GetDbName()
+    {
+        var dbConnection = _dbConfig.Value.ConnectionString;
+        const string key = "initial catalog=";
+        var dbName = dbConnection.Between(key, ";", true) ?? dbConnection;
+        return dbName;
+    }
+
+    internal static void ResetForTest() => _fingerprintCache = null;
+
+    public List<EnterpriseFingerprint> EnterpriseFingerprintsWIP => _enterpriseFingerprints;
+    private static List<EnterpriseFingerprint> _enterpriseFingerprints = new();
+
+    internal void LoadEnterpriseFingerprintsWIP(List<EnterpriseFingerprint> enterpriseFingerprints) 
+        => _enterpriseFingerprints = enterpriseFingerprints;
 }
