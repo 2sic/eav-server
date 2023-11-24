@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace ToSic.Eav.Data;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LazyFastAccess
 {
     public LazyFastAccess(IImmutableList<IEntity> list) => _list = list;

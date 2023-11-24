@@ -9,7 +9,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data.Build;
 
-public partial class AttributeBuilder
+partial class AttributeBuilder
 {
 
     /// <summary>

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data;
 
-public partial class EntityWrapper: IEquatable<IEntityWrapper>, IEquatable<IMultiWrapper<IEntity>>
+partial class EntityWrapper: IEquatable<IEntityWrapper>, IEquatable<IMultiWrapper<IEntity>>
 {
     public IEntity RootContentsForEqualityCheck { get; }
 

@@ -5,7 +5,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data;
 
-public partial class PropertyStackNavigator
+partial class PropertyStackNavigator
 {
     private PropReqResult GetResultOfAncestors(PropReqSpecs specs, ILog logOrNull, PropertyLookupPath path) => logOrNull.Func(specs.Dump(), l => 
     {

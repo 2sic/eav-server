@@ -8,6 +8,7 @@ namespace ToSic.Eav.Data;
 /// Will contain additional information for upstream processing
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropReqResult
 {
     public PropReqResult(object result, string fieldType, PropertyLookupPath path)

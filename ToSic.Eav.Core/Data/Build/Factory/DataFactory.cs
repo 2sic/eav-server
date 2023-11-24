@@ -12,7 +12,8 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
-public class DataFactory : ServiceBase, IDataFactory
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+internal class DataFactory : ServiceBase, IDataFactory
 {
     #region Constructor / DI
 

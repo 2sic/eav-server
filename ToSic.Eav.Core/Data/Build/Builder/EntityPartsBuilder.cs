@@ -5,6 +5,7 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Build;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntityPartsBuilder
 {
     private readonly Func<IEntityLight, IRelationshipManager> _getRm;

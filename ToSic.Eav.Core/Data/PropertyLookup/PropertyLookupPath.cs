@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Data.PropertyLookup;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropertyLookupPath
 {
     public PropertyLookupPath(List<string> original = null) 
@@ -12,6 +13,7 @@ public class PropertyLookupPath
 }
 
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class PropertyLookupPathExtensions
 {
     public static PropertyLookupPath KeepOrNew(this PropertyLookupPath original) 

@@ -5,15 +5,10 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data.Build;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DimensionBuilder
 {
     public Language CreateFrom(ILanguage orig, bool? readOnly) => new(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
-
-    //public IImmutableList<ILanguage> Clone(IList<ILanguage> orig) => orig
-    //    // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
-    //    //.Select(l => new Language { DimensionId = l.DimensionId, Key = l.Key } as ILanguage)
-    //    .Select(l => Clone(l, null) as ILanguage)
-    //    .ToImmutableList();
 
     // Note: can't be a new ImmutableArray<ILanguage>() because that causes problems!
     // Not sure why, but it complains that it can't tolist it

@@ -29,26 +29,4 @@ public interface IAttribute<out T> : IAttribute
     /// <param name="languageId">the language id (number)</param>
     new T this[int languageId] { get; }
 
-    #region 2dm Removed Accessors which I believe were only internal and never used!
-
-    ///// <summary>
-    ///// Gets the Value for this Languages, typed
-    ///// </summary>
-    ///// <param name="languageIds">list of languages to check</param>
-    //T this[int[] languageIds] { get; }
-
-    ///// <summary>
-    ///// Get the best/first matching value for the specified language key - typed
-    ///// </summary>
-    ///// <param name="languageKey">The language key (string) to look for</param>
-    //new T this[string languageKey] { get; }
-
-    ///// <summary>
-    ///// Get the best/first matching value for the specified language keys - typed
-    ///// </summary>
-    ///// <param name="languageKeys">list of language keys</param>
-    //new T this[string[] languageKeys] { get; }
-
-    #endregion
-
 }

@@ -5,6 +5,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Data.Debug;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropertyDumpItem
 {
     public const string Separator = ".";

@@ -4,7 +4,7 @@ using static ToSic.Eav.Data.MultiWrapperEquality;
 
 namespace ToSic.Eav.Data;
 
-public  partial class ContentTypeWrapper : IEquatable<ContentTypeWrapper>, IEquatable<IMultiWrapper<IContentType>>
+partial class ContentTypeWrapper : IEquatable<ContentTypeWrapper>, IEquatable<IMultiWrapper<IContentType>>
 {
     public IContentType RootContentsForEqualityCheck => _rootContentsForEqualityCheck.Get(() =>
     {

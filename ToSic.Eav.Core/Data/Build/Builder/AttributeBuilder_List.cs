@@ -6,7 +6,7 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Build;
 
-public partial class AttributeBuilder
+partial class AttributeBuilder
 {
     public IImmutableDictionary<string, IAttribute> Empty() => EmptyList;
     private static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableInvariant();

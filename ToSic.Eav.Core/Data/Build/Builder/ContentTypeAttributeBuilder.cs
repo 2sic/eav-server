@@ -8,6 +8,7 @@ namespace ToSic.Eav.Data.Build;
 /// <summary>
 /// Builder to create / clone <see cref="IContentTypeAttribute"/> definitions.
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentTypeAttributeBuilder: ServiceBase
 {
     public ContentTypeAttributeBuilder(): base("Eav.CtAtBl")

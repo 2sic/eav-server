@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data;
 
-public partial class PropertyStack
+partial class PropertyStack
 {
     public PropReqResult InternalGetPath(string path, ILog logOrNull = null)
         => InternalGetPath(new PropReqSpecs(path, Array.Empty<string>(), logOrNull), new PropertyLookupPath());

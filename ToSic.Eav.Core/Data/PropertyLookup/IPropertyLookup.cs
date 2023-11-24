@@ -5,6 +5,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Data.PropertyLookup;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IPropertyLookup
 {
     /// <summary>
@@ -19,6 +20,7 @@ public interface IPropertyLookup
 }
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IHasPropLookup
 {
     [PrivateApi]

@@ -14,6 +14,7 @@ using DateTime = System.DateTime;
 namespace ToSic.Eav.Data.Build;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class ValueBuilder: ServiceBase
 {
     #region Constructor

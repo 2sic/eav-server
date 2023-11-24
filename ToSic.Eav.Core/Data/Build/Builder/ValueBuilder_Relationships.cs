@@ -8,7 +8,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data.Build;
 
-public partial class ValueBuilder
+partial class ValueBuilder
 {
     public IValue Relationship(List<int?> references, IEntitiesSource app)
         => Relationship(new LazyEntitiesSource(app, references));

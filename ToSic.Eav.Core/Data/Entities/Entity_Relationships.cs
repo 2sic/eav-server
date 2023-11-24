@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ToSic.Eav.Data;
 
-public partial class Entity
+partial class Entity
 {
     /// <inheritdoc />
     public List<IEntity> Children(string field = null, string type = null)

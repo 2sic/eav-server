@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ToSic.Eav.Data;
 
-public partial class Entity
+partial class Entity
 {
     /// <inheritdoc />
     public new IAttribute Title => TitleFieldName == null

@@ -11,6 +11,7 @@ namespace ToSic.Eav.Data;
 /// * We recommend you read about the [](xref:Basics.Data.Index)
 /// </remarks>
 [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi. This is just fyi, use Interface IAttributeBase")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AttributeBase : IAttributeBase
 {
     /// <summary>
@@ -19,6 +20,7 @@ public class AttributeBase : IAttributeBase
     /// <param name="name"></param>
     /// <param name="type"></param>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     protected AttributeBase(string name, ValueTypes type)
     {
         Name = name;
@@ -28,6 +30,5 @@ public class AttributeBase : IAttributeBase
     /// <inheritdoc />
     public string Name { get; }
 
-    [PrivateApi]
     public ValueTypes Type { get; }
 }

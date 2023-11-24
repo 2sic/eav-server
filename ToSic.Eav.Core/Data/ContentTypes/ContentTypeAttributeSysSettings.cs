@@ -10,6 +10,7 @@ namespace ToSic.Eav.Data;
 /// #SharedFieldDefinition
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentTypeAttributeSysSettings
 {
     public ContentTypeAttributeSysSettings() { }

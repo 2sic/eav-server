@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Data.Build;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class AttributeBuilder: ServiceBase
 {
     #region Dependency Injection

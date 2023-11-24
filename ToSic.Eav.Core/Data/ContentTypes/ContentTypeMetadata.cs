@@ -11,6 +11,7 @@ namespace ToSic.Eav.Data;
 /// in which case the metadata must be retrieved from another "remote" location (where the original is defined). 
 /// </summary>
 [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentTypeMetadata : MetadataOf<string>
 {
     /// <summary>

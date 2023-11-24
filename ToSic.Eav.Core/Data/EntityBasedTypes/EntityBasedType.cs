@@ -12,7 +12,8 @@ namespace ToSic.Eav.Data;
 /// This is used for more type safety - because some internal objects need entities for data-storage,
 /// but when programming they should use typed objects to not accidentally access invalid properties. 
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PrivateApi("was public till 16.09")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class EntityBasedType : IEntityBasedType
 {
     /// <inheritdoc />

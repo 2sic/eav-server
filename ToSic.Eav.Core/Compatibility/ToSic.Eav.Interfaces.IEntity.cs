@@ -21,7 +21,7 @@ namespace ToSic.Eav.Interfaces
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public partial interface IEntity: IEntityLight, 
-        IPublish<Data.IEntity>, // needed to disable this for compatibility with entities - but must be typed to the new interface
+        IPublish, // needed to disable this for compatibility with entities - but must be typed to the new interface
         IHasPermissions
     {
         /// <summary>

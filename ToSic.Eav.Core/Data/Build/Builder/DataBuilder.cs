@@ -5,6 +5,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DataBuilder: ServiceBase
 {
     [PrivateApi]

@@ -25,6 +25,7 @@ namespace ToSic.Eav.Data;
 /// * And let that take over - it may in turn repeat the process again
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class PropertyStackNavigator: Wrapper<IPropertyLookup>, IPropertyStackLookup
 {
     private const int MaxAncestorSiblings = 10;

@@ -9,6 +9,7 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data.Build;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentTypeBuilder
 {
     /// <summary>

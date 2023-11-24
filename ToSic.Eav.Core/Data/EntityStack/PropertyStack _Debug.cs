@@ -7,8 +7,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data;
 
-[PrivateApi("Hide implementation")]
-public partial class PropertyStack
+partial class PropertyStack
 {
 
     [PrivateApi("Internal")]

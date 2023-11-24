@@ -3,6 +3,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data.PropertyLookup;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropReqSpecs: ICanDump
 {
     public PropReqSpecs(string field): this(field, null) { }

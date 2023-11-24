@@ -7,7 +7,7 @@ using static ToSic.Eav.Data.Attributes;
 
 namespace ToSic.Eav.Data;
 
-public partial class Entity
+partial class Entity
 {
 
     // ReSharper disable once InheritdocInvalidUsage

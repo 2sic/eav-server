@@ -7,6 +7,7 @@
 /// Added in 13.02
 /// IMPORTANT: Don't cache this object, as some info inside it can change during runtime
 /// </remarks>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentTypeDetails: EntityBasedType
 {
     public const string ContentTypeTypeName = "ContentType";

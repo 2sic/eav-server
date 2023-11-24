@@ -10,6 +10,7 @@ namespace ToSic.Eav.Data.PiggyBack;
 /// For things which shouldn't be constantly generated / looked up
 /// </summary>
 [PrivateApi("Internal, may still change a lot")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PiggyBack
 {
     private readonly ConcurrentDictionary<string, object> _cache = new(StringComparer.InvariantCultureIgnoreCase);

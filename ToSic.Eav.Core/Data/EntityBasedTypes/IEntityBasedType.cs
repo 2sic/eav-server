@@ -9,7 +9,8 @@ namespace ToSic.Eav.Data;
 /// This is used for more type safety - so you base your interfaces - like IPerson on this,
 /// otherwise you're IPerson would be missing the Title, Id, Guid
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PrivateApi("was public till 16.09")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IEntityBasedType: IEntityWrapper
 {
     /// <summary>

@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 
 namespace ToSic.Eav.Data;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ImmutableSmartList: IImmutableList<IEntity>
 {
     #region Constructors / Builders

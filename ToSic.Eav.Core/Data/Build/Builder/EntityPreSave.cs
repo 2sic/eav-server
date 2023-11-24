@@ -7,6 +7,7 @@ namespace ToSic.Eav.Data.Build;
 /// Helper commands to build an entity
 /// Should only be used by internal system data handlers - not for "public" use
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class EntityPreSave
 {
 

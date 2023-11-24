@@ -7,7 +7,8 @@ namespace ToSic.Eav.Data;
 /// </remarks>
 /// <typeparam name="T"></typeparam>
 [PrivateApi]
-public interface IPublish<out T>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public interface IPublish
 {
     /// <summary>
     /// Gets the RepositoryId - which is the ID in the database.
@@ -21,14 +22,4 @@ public interface IPublish<out T>
     /// Indicates whether this Entity is Published (true) or a Draft (false)
     /// </summary>
     bool IsPublished { get; }
-
-    ///// <summary>
-    ///// Get Draft Entity of this Entity
-    ///// </summary>
-    //T GetDraft(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
-
-    ///// <summary>
-    ///// Get Published Entity of this Entity
-    ///// </summary>
-    //T GetPublished(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
 }

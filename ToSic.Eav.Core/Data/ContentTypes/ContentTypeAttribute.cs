@@ -14,6 +14,7 @@ namespace ToSic.Eav.Data;
 /// * completely #immutable since v15.04
 /// </remarks>
 [PrivateApi("2021-09-30 changed to private, before was internal-this is just fyi, always use the interface")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentTypeAttribute : AttributeBase, IContentTypeAttribute
 {
     /// <inheritdoc />

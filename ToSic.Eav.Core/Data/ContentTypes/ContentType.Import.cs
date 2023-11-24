@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data;
 
-public partial class ContentType
+partial class ContentType
 {
 
     // special values just needed for import / save 

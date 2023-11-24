@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.Data;
 
 // ReSharper disable once InconsistentNaming
-public static partial class IEntityExtensions
+static partial class IEntityExtensions
 {
     /// <summary>
     /// Special case on entity lists v12.03
@@ -17,6 +17,7 @@ public static partial class IEntityExtensions
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static PropReqResult TryToNavigateToEntityInList(this IEntity entity, PropReqSpecs specs,
         object parentDynEntity, PropertyLookupPath path
     ) => specs.LogOrNull.Func(specs.Field, l =>

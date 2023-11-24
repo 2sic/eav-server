@@ -4,7 +4,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data;
 
-public partial class PropertyStack
+partial class PropertyStack
 {
 
     public IPropertyStack GetStack(params string[] names) => GetStack(null, names);

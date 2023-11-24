@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace ToSic.Eav.Data.PropertyLookup;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class PropReqResultExtensions
 {
     public static IEntity GetFirstResultEntity(this PropReqResult resultSet)

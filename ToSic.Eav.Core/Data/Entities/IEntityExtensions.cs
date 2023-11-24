@@ -28,6 +28,7 @@ public static partial class IEntityExtensions
     /// <param name="list"></param>
     /// <param name="id"></param>
     /// <returns></returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IEntity One(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
@@ -44,6 +45,7 @@ public static partial class IEntityExtensions
     /// <param name="list"></param>
     /// <param name="guid"></param>
     /// <returns></returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IEntity One(this IEnumerable<IEntity> list, Guid guid)
     {
 #if DEBUG
@@ -61,6 +63,7 @@ public static partial class IEntityExtensions
     /// <param name="list"></param>
     /// <param name="id"></param>
     /// <returns></returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IEntity FindRepoId(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
@@ -78,6 +81,7 @@ public static partial class IEntityExtensions
     /// <param name="list"></param>
     /// <param name="id"></param>
     /// <returns></returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool Has(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
@@ -91,9 +95,11 @@ public static partial class IEntityExtensions
 
     // Todo #OptimizeOfType
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, IContentType type)
         => list.Where(e => type.Equals(e.Type));
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, string typeName)
     {
 #if DEBUG
@@ -105,6 +111,7 @@ public static partial class IEntityExtensions
     }
 
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static Dictionary<string, object> AsDictionary(this IEntity entity)
     {
         var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v => v.Value[0]);
@@ -113,6 +120,7 @@ public static partial class IEntityExtensions
         return attributes;
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IEntity KeepOrThrowIfInvalid(this IEntity item, string contentType, object identifier)
     {
         if (item == null || contentType != null && !item.Type.Is(contentType))

@@ -7,10 +7,12 @@ namespace ToSic.Eav.Data.PiggyBack;
 
 [PrivateApi]
 // ReSharper disable once InconsistentNaming
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class IHasPiggyBackExtensions
 {
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TData GetPiggyBack<TData>(this IHasPiggyBack parent, string key, Func<TData> create) 
         => parent.PiggyBack.GetOrGenerate(key, create);
 
@@ -25,6 +27,7 @@ public static class IHasPiggyBackExtensions
     /// <param name="logOrNull"></param>
     /// <returns></returns>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TData GetOrCreateInPiggyBack<TData>(this IPropertyLookup entryPoint, string field, Func<string, TData> factory, ILog logOrNull) where TData : class
     {
         var wrapLog = logOrNull.Fn<TData>();

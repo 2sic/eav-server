@@ -10,6 +10,7 @@ namespace ToSic.Eav.Data.PropertyLookup;
 /// Test code!
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropertyLookupWithStackNavigation : Wrapper<PropertyLookupDictionary>, IPropertyLookup, IPropertyStackLookup
 {
     public PropertyLookupWithStackNavigation(PropertyLookupDictionary current, StackAddress stackAddress) : base(current) 

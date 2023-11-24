@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using ToSic.Lib.Documentation;
+﻿using System.Collections.Immutable;
 
 namespace ToSic.Eav.Data;
 
-public partial class Entity
+partial class Entity
 {
     /// <inheritdoc />
     public IImmutableDictionary<string, IAttribute> Attributes => _attributes;

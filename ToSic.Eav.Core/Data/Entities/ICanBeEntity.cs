@@ -9,6 +9,7 @@ namespace ToSic.Eav.Data;
 /// 2022-06-29 2dm - started this idea, but not completed. ATM doesn't serve a purpose yet
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICanBeEntity
 {
     IEntity Entity { get; }

@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data;
-
-public partial class Entity
+partial class Entity
 {
     /// <inheritdoc />
     public object Value(string field) => GetBestValue(field, null);

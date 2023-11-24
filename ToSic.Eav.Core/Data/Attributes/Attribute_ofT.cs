@@ -15,6 +15,7 @@ namespace ToSic.Eav.Data;
 /// </remarks>
 /// <typeparam name="T">Type of the Value</typeparam>
 [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Attribute<T> : AttributeBase, IAttribute<T>
 {
     /// <summary>
@@ -26,6 +27,7 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
     }
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public IAttribute CloneWithNewValues(IImmutableList<IValue> values)
     {
         return new Attribute<T>(Name, Type, values);
@@ -73,10 +75,12 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
 
     #region IAttribute Implementations
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     object IAttribute.this[string languageKey] => GetInternal(new [] {languageKey}, FindHavingDimensions);
 
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys)
     {
         var iVal = GetInternalValue(languageKeys, FindHavingDimensions);
@@ -84,24 +88,10 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
     }
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     object IAttribute.this[int languageId] => this[languageId];
     #endregion
 
-    #region 2dm Removed Accessors which I believe were only internal and never used!
-
-    //[PrivateApi]
-    //object IAttribute.this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
-
-    ///// <inheritdoc/>
-    //public T this[int[] languageIds] => GetInternal(languageIds, FindHavingDimensions);
-
-    ///// <inheritdoc/>
-    //public T this[string languageKey] => GetInternal(new[] { languageKey }, FindHavingDimensions);
-
-    ///// <inheritdoc/>
-    //public T this[string[] languageKeys] => GetInternal(languageKeys, FindHavingDimensions);
-
-    #endregion
 
     private T GetInternal<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
     {

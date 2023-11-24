@@ -11,6 +11,7 @@ namespace ToSic.Eav.Data.PropertyLookup;
 /// Probably just use for tests ATM
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropertyLookupDictionary: IPropertyLookup, IHasIdentityNameId
 {
     public const string SourceTypeId = "Dictionary";

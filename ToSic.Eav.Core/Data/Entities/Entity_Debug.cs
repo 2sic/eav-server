@@ -7,7 +7,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data;
 
-public partial class Entity
+partial class Entity
 {
         
     [PrivateApi]
