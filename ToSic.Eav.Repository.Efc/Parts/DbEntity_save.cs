@@ -10,7 +10,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbEntity
+    partial class DbEntity
     {
         public const int RepoIdForJsonEntities = 1;
         private const int MaxToLogDetails = 10;

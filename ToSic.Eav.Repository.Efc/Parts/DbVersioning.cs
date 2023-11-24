@@ -10,7 +10,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public  partial class DbVersioning: BllCommandBase
+    internal  partial class DbVersioning: DbPartBase
     {
         private readonly LazySvc<Compressor> _compressor;
         private const string EntitiesTableName = "ToSIC_EAV_Entities";

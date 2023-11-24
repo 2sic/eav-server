@@ -4,7 +4,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public class DbValue : BllCommandBase
+    internal class DbValue : DbPartBase
     {
         public DbValue(DbDataController db) : base(db, "Db.Values") {}
 

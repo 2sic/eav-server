@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-	public class DbDimensions: BllCommandBase
+	internal class DbDimensions: DbPartBase
 	{
         public DbDimensions(DbDataController db) : base(db, "Db.Dims") { }
 

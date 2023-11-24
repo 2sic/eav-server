@@ -3,7 +3,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbContentType: BllCommandBase
+    internal partial class DbContentType: DbPartBase
     {
         public DbContentType(DbDataController db) : base(db, "Db.Type") {}
 

@@ -9,7 +9,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public class DbRelationship: BllCommandBase
+    internal class DbRelationship: DbPartBase
     {
         public DbRelationship(DbDataController db) : base(db, "Db.Rels") {}
 

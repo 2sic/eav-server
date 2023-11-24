@@ -4,14 +4,13 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
-using System.Runtime.CompilerServices;
 
 namespace ToSic.Eav.Repository.Efc
 {
     /// <summary>
     /// Wrapper for the EfcLoader, because we also need to do write operations on PrimaryApps, but the EFC loader cannot do that
     /// </summary>
-    public class EfcRepositoryLoader: IRepositoryLoader
+    internal class EfcRepositoryLoader: IRepositoryLoader
     {
         public EfcRepositoryLoader(DbDataController dataController) 
             => _dataController = dataController.Init(null, null);

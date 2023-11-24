@@ -8,10 +8,10 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    internal class DbPublishing : BllCommandBase
+    internal class DbPublishing : DbPartBase
     {
         private readonly DataBuilder _builder;
-        public DbPublishing(DbDataController c, DataBuilder builder) : base(c, "Db.Publ")
+        public DbPublishing(DbDataController db, DataBuilder builder) : base(db, "Db.Publ")
         {
             _builder = builder;
         }

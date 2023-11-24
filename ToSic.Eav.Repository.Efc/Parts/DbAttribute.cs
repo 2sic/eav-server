@@ -8,7 +8,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbAttribute: BllCommandBase
+    internal partial class DbAttribute: DbPartBase
     {
         public DbAttribute(DbDataController db) : base(db, "Db.AttDef") {}
 

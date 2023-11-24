@@ -7,7 +7,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbContentType
+    partial class DbContentType
     {
 
         /// <summary>

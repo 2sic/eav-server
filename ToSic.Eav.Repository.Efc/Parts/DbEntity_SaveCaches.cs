@@ -7,7 +7,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbEntity
+    partial class DbEntity
     {
         private (int ContentTypeId, List<ToSicEavAttributes> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
         {

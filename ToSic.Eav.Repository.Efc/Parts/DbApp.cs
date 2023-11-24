@@ -6,7 +6,7 @@ using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public class DbApp: BllCommandBase
+    internal class DbApp: DbPartBase
     {
         public DbApp(DbDataController db) : base(db, "Db.App") {}
 

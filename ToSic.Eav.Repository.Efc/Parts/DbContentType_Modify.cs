@@ -11,7 +11,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbContentType
+    partial class DbContentType
     {
         public void AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
         {

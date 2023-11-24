@@ -5,7 +5,7 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbEntity
+    partial class DbEntity
     {
         private static bool UseJson(IEntity newEnt) => newEnt.Type.RepositoryType != RepositoryTypes.Sql;
 

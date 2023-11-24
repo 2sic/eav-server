@@ -3,7 +3,7 @@ using ToSic.Eav.ImportExport.Json;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbEntity: BllCommandBase
+    internal partial class DbEntity: DbPartBase
     {
 
         public DbEntity(DbDataController db, DataBuilder builder) : base(db, "Db.Enty")

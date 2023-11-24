@@ -6,7 +6,7 @@ using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbEntity
+    partial class DbEntity
     {
         /// <summary>
         /// Save a list of entities in one large go

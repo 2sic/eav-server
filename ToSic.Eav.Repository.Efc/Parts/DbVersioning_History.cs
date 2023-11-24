@@ -4,7 +4,7 @@ using ToSic.Eav.Persistence.Versions;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbVersioning
+    partial class DbVersioning
     {
         /// <summary>
         /// Retrieve the history-list of a specific item

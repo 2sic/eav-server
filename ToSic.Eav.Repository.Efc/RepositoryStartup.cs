@@ -8,6 +8,7 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Repository.Efc
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static class StartupRepositoryEfc
     {
         public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services)

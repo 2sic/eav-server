@@ -1,13 +1,12 @@
 ﻿using ToSic.Lib.Services;
 
-
-namespace ToSic.Eav.Repository.Efc
+namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public class BllCommandBase: HelperBase
+    internal class DbPartBase: HelperBase
     {
         protected DbDataController DbContext { get; }
 
-        internal BllCommandBase(DbDataController dataController, string logName): base(dataController.Log, logName)
+        internal DbPartBase(DbDataController dataController, string logName): base(dataController.Log, logName)
         {
             // Don't connect service - this was initialized before...
             DbContext = dataController;

@@ -5,9 +5,9 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public class DbAttributeSet : BllCommandBase
+    internal class DbAttributeSet : DbPartBase
     {
-        public DbAttributeSet(DbDataController dc) : base(dc, "Db.AttSet") { }
+        public DbAttributeSet(DbDataController db) : base(db, "Db.AttSet") { }
 
         private IQueryable<ToSicEavAttributeSets> GetSetCoreQuery(int? appId = null)
             => DbContext.SqlDb.ToSicEavAttributeSets

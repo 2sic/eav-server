@@ -9,7 +9,7 @@ using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Repository.Efc.Parts
 {
-    public partial class DbEntity
+    partial class DbEntity
     {
 
         /// <summary>

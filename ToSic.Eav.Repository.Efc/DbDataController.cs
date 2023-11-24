@@ -21,7 +21,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc
 {
-
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     {
 
