@@ -4,16 +4,15 @@ using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Security
+namespace ToSic.Eav.Apps.Security;
+
+public class EnvironmentPermissionUnknown : EnvironmentPermission
 {
-    public class EnvironmentPermissionUnknown : EnvironmentPermission
-    {
-        public EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> _) : base(LogScopes.NotImplemented)
-        { }
+    public EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> _) : base(LogScopes.NotImplemented)
+    { }
 
-        public override bool EnvironmentAllows(List<Grants> grants) => UserIsSystemAdmin();
+    public override bool EnvironmentAllows(List<Grants> grants) => UserIsSystemAdmin();
 
-        public override bool VerifyConditionOfEnvironment(string condition) 
-            => condition.Equals("SecurityAccessLevel.Anonymous", StringComparison.CurrentCultureIgnoreCase);
-    }
+    public override bool VerifyConditionOfEnvironment(string condition) 
+        => condition.Equals("SecurityAccessLevel.Anonymous", StringComparison.CurrentCultureIgnoreCase);
 }

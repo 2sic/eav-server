@@ -6,26 +6,25 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Run;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Run
+namespace ToSic.Eav.Apps.Run;
+
+public sealed class FileSystemLoaderUnknown: ServiceBase, IAppFileSystemLoader, IIsUnknown
 {
-    public sealed class FileSystemLoaderUnknown: ServiceBase, IAppFileSystemLoader, IIsUnknown
+    public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> _): base(LogConstants.FullNameUnknown)
+    { }
+
+    public IAppFileSystemLoader Init(AppState app)
     {
-        public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> _): base(LogConstants.FullNameUnknown)
-        { }
+        // do nothing
+        return this;
+    }
 
-        public IAppFileSystemLoader Init(AppState app)
-        {
-            // do nothing
-            return this;
-        }
+    public string Path { get; set; }
+    public string PathShared { get; set; }
 
-        public string Path { get; set; }
-        public string PathShared { get; set; }
-
-        public List<InputTypeInfo> InputTypes()
-        {
-            // do nothing
-            return new List<InputTypeInfo>();
-        }
+    public List<InputTypeInfo> InputTypes()
+    {
+        // do nothing
+        return new List<InputTypeInfo>();
     }
 }

@@ -1,9 +1,8 @@
-﻿namespace ToSic.Eav.Apps.Enums
+﻿namespace ToSic.Eav.Apps.Enums;
+
+public enum PublishingMode
 {
-    public enum PublishingMode
-    {
-        DraftOptional,
-        DraftRequired,
-        DraftForbidden,
-    }
+    DraftOptional,
+    DraftRequired,
+    DraftForbidden,
 }

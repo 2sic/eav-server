@@ -2,21 +2,20 @@
 using ToSic.Lib.Logging;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Context
+namespace ToSic.Eav.Context;
+
+public interface IContextResolver: IHasLog, IContextResolverUserPermissions
 {
-    public interface IContextResolver: IHasLog, IContextResolverUserPermissions
-    {
-        /// <summary>
-        /// This is the most basic kind of context. ATM you could also inject it directly,
-        /// but we want to introduce the capability of giving a static site or something
-        /// without having to write code implementing IContextOfSite
-        /// </summary>
-        /// <returns></returns>
-        IContextOfSite Site();
+    /// <summary>
+    /// This is the most basic kind of context. ATM you could also inject it directly,
+    /// but we want to introduce the capability of giving a static site or something
+    /// without having to write code implementing IContextOfSite
+    /// </summary>
+    /// <returns></returns>
+    IContextOfSite Site();
 
-        IContextOfApp SetApp(IAppIdentity appIdentity);
+    IContextOfApp SetApp(IAppIdentity appIdentity);
 
-        IContextOfApp App();
+    IContextOfApp App();
 
-    }
 }

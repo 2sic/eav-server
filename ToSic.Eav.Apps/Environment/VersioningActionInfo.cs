@@ -1,7 +1,6 @@
-﻿namespace ToSic.Eav.Apps.Environment
+﻿namespace ToSic.Eav.Apps.Environment;
+
+public class VersioningActionInfo
 {
-    public class VersioningActionInfo
-    {
-        // TODO: Add properties required (like the latest version)
-    }
+    // TODO: Add properties required (like the latest version)
 }

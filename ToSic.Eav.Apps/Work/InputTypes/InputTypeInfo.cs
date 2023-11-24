@@ -9,163 +9,162 @@ using ToSic.Lib.Logging;
 using static System.StringComparer;
 using static ToSic.Eav.Metadata.Decorators;
 
-namespace ToSic.Eav.Apps.Work
+namespace ToSic.Eav.Apps.Work;
+
+/// <summary>
+/// Describes an input field type with it's labels, abilities etc. 
+/// This is so that input fields can self-describe.
+/// </summary>
+public class InputTypeInfo
 {
-    /// <summary>
-    /// Describes an input field type with it's labels, abilities etc. 
-    /// This is so that input fields can self-describe.
-    /// </summary>
-    public class InputTypeInfo
+    public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source, IMetadataOf metadata = null)
     {
-        public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source, IMetadataOf metadata = null)
+        Type = type;
+        Label = label;
+        Description = description;
+        Assets = assets;
+        DisableI18n = disableI18N;
+        AngularAssets = ngAssets;
+        UseAdam = useAdam;
+        Source = source;
+
+        if (metadata == null) return;
+
+        if (metadata.HasType(IsObsoleteDecoratorId))
         {
-            Type = type;
-            Label = label;
-            Description = description;
-            Assets = assets;
-            DisableI18n = disableI18N;
-            AngularAssets = ngAssets;
-            UseAdam = useAdam;
-            Source = source;
-
-            if (metadata == null) return;
-
-            if (metadata.HasType(IsObsoleteDecoratorId))
-            {
-                IsObsolete = true;
-                ObsoleteMessage = metadata.GetBestValue<string>(MessageField, IsObsoleteDecoratorId);
-            }
-            if (metadata.HasType(RecommendedDecoratorId)) IsRecommended = true;
-
-            if (metadata.HasType(IsDefaultDecorator)) IsDefault = true;
-
-            var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypes.TypeForInputTypeDefinition);
-            if (typeInputTypeDef != null) ConfigTypes = new InputTypes(typeInputTypeDef).CustomConfigTypes;
+            IsObsolete = true;
+            ObsoleteMessage = metadata.GetBestValue<string>(MessageField, IsObsoleteDecoratorId);
         }
+        if (metadata.HasType(RecommendedDecoratorId)) IsRecommended = true;
 
-        /// <summary>
-        /// The type this input is for, like `String`, `string-picker` etc.
-        /// </summary>
-        public string Type { get; }
+        if (metadata.HasType(IsDefaultDecorator)) IsDefault = true;
 
-        public string Label { get; }
+        var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypes.TypeForInputTypeDefinition);
+        if (typeInputTypeDef != null) ConfigTypes = new InputTypes(typeInputTypeDef).CustomConfigTypes;
+    }
 
-        public string Description { get; }
+    /// <summary>
+    /// The type this input is for, like `String`, `string-picker` etc.
+    /// </summary>
+    public string Type { get; }
 
-        public string Assets { get; }
+    public string Label { get; }
 
-        #region new in 2sxc 10 / eav 5
+    public string Description { get; }
 
-        // ReSharper disable once InconsistentNaming
-        public bool DisableI18n { get; }
+    public string Assets { get; }
 
-        /// <summary>
-        /// Additional resources to load (js/css)
-        /// </summary>
-        public string AngularAssets { get; }
+    #region new in 2sxc 10 / eav 5
 
-        /// <summary>
-        /// Activates ADAM in the UI for this input type
-        /// </summary>
-        public bool UseAdam { get; }
+    // ReSharper disable once InconsistentNaming
+    public bool DisableI18n { get; }
 
-        /// <summary>
-        /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public bool? IsObsolete { get; set; }
+    /// <summary>
+    /// Additional resources to load (js/css)
+    /// </summary>
+    public string AngularAssets { get; }
 
-        /// <summary>
-        /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string ObsoleteMessage { get; set; }
+    /// <summary>
+    /// Activates ADAM in the UI for this input type
+    /// </summary>
+    public bool UseAdam { get; }
 
-        /// <summary>
-        /// WIP 12.10 Recommendation status
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public bool? IsRecommended { get; }
+    /// <summary>
+    /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? IsObsolete { get; set; }
 
-        /// <summary>
-        /// WIP 12.10 Default selection status
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public bool? IsDefault { get; }
+    /// <summary>
+    /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string ObsoleteMessage { get; set; }
 
-        #endregion
+    /// <summary>
+    /// WIP 12.10 Recommendation status
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? IsRecommended { get; }
 
-        #region New v16.08 / experimental
+    /// <summary>
+    /// WIP 12.10 Default selection status
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? IsDefault { get; }
 
-        /// <summary>
-        /// Just an internal info for better debugging - not meant to be used
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string Source { get; }
+    #endregion
 
-        /// <summary>
-        /// Configuration Content-Types used for this input type.
-        /// Almost always empty, in which case the logic uses defaults 
-        /// </summary>
-        /// <remarks>WIP/BETA v16.08</remarks>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string ConfigTypes { get; }
+    #region New v16.08 / experimental
 
-        /// <summary>
-        /// Internal processing to get the config-types in the format we need.
-        /// This varies a bit depending on if <see cref="ConfigTypes"/> is provided or empty.
-        ///
-        /// Note that it caches the result for the lifetime of this object, which can be quite long.
-        /// </summary>
-        /// <param name="log">Optional log to record what it does</param>
-        /// <returns></returns>
-        public IDictionary<string, bool> ConfigTypesDic(ILog log = null)
-        {
-            if (_configTypesList != null) return _configTypesList;
+    /// <summary>
+    /// Just an internal info for better debugging - not meant to be used
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string Source { get; }
 
-            var l = log.Fn<IDictionary<string, bool>>();
+    /// <summary>
+    /// Configuration Content-Types used for this input type.
+    /// Almost always empty, in which case the logic uses defaults 
+    /// </summary>
+    /// <remarks>WIP/BETA v16.08</remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string ConfigTypes { get; }
 
-            var newDic = new Dictionary<string, bool>(InvariantCultureIgnoreCase) { [AttributeMetadata.TypeGeneral] = true };
+    /// <summary>
+    /// Internal processing to get the config-types in the format we need.
+    /// This varies a bit depending on if <see cref="ConfigTypes"/> is provided or empty.
+    ///
+    /// Note that it caches the result for the lifetime of this object, which can be quite long.
+    /// </summary>
+    /// <param name="log">Optional log to record what it does</param>
+    /// <returns></returns>
+    public IDictionary<string, bool> ConfigTypesDic(ILog log = null)
+    {
+        if (_configTypesList != null) return _configTypesList;
+
+        var l = log.Fn<IDictionary<string, bool>>();
+
+        var newDic = new Dictionary<string, bool>(InvariantCultureIgnoreCase) { [AttributeMetadata.TypeGeneral] = true };
             
-            // New setup v16.08
-            // If we have custom settings, take @All and the custom settings only
-            if (ConfigTypes.HasValue())
-                try
-                {
-                    var parts = ConfigTypes
-                        .Split(',')
-                        .Select(s => s.Trim())
-                        .Where(s => s.HasValue())
-                        .ToArray();
-                    foreach (var part in parts) newDic[part] = true;
-                    return l.Return(newDic, $"custom list {newDic.Count}");
-                }
-                catch (Exception ex)
-                {
-                    l.Ex(ex);   // Just log and fall back to default
-                }
-
-            // Standard setup - this has been the default behavior since ca. v6
-            // @All, @MainType, @current-Type
-            // eg. [@All, @String, @string-url-path]
+        // New setup v16.08
+        // If we have custom settings, take @All and the custom settings only
+        if (ConfigTypes.HasValue())
             try
             {
-                var mainType = Type.Split('-')[0];
-                mainType = mainType[0].ToString().ToUpper() + mainType.Substring(1);
-                newDic["@" + mainType] = true;
-                newDic["@" + Type] = true;
+                var parts = ConfigTypes
+                    .Split(',')
+                    .Select(s => s.Trim())
+                    .Where(s => s.HasValue())
+                    .ToArray();
+                foreach (var part in parts) newDic[part] = true;
+                return l.Return(newDic, $"custom list {newDic.Count}");
             }
             catch (Exception ex)
             {
-                // Just log and fallback to the almost empty dictionary
-                l.Ex(ex);
+                l.Ex(ex);   // Just log and fall back to default
             }
 
-            return l.Return(_configTypesList = newDic, $"{newDic.Count}");
+        // Standard setup - this has been the default behavior since ca. v6
+        // @All, @MainType, @current-Type
+        // eg. [@All, @String, @string-url-path]
+        try
+        {
+            var mainType = Type.Split('-')[0];
+            mainType = mainType[0].ToString().ToUpper() + mainType.Substring(1);
+            newDic["@" + mainType] = true;
+            newDic["@" + Type] = true;
         }
-        private IDictionary<string, bool> _configTypesList;
+        catch (Exception ex)
+        {
+            // Just log and fallback to the almost empty dictionary
+            l.Ex(ex);
+        }
 
-        #endregion
-
+        return l.Return(_configTypesList = newDic, $"{newDic.Count}");
     }
+    private IDictionary<string, bool> _configTypesList;
+
+    #endregion
+
 }

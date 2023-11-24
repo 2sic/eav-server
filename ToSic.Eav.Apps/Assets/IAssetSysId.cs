@@ -1,16 +1,15 @@
-﻿namespace ToSic.Eav.Apps.Assets
+﻿namespace ToSic.Eav.Apps.Assets;
+
+/// <summary>
+/// This is to enable generic id interfaces
+/// It enhances the existing int-based IDs for other use cases which don't use ints
+/// </summary>
+/// <typeparam name="TItemId"></typeparam>
+public interface IAssetSysId<out TItemId>: IAsset
 {
     /// <summary>
-    /// This is to enable generic id interfaces
-    /// It enhances the existing int-based IDs for other use cases which don't use ints
+    /// The ID of the item, if the underlying environment uses int IDs
     /// </summary>
-    /// <typeparam name="TItemId"></typeparam>
-    public interface IAssetSysId<out TItemId>: IAsset
-    {
-        /// <summary>
-        /// The ID of the item, if the underlying environment uses int IDs
-        /// </summary>
-        /// <returns>an int with the id used by the environment to track this item</returns>
-        TItemId SysId { get; }
-    }
+    /// <returns>an int with the id used by the environment to track this item</returns>
+    TItemId SysId { get; }
 }

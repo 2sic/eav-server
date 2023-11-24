@@ -8,34 +8,32 @@ using ToSic.Lib.Logging;
 // ...and these are real errors which should blow
 // ReSharper disable PossibleNullReferenceException
 
-namespace ToSic.Eav.Apps.ImportExport
+namespace ToSic.Eav.Apps.ImportExport;
+
+public partial class XmlImportWithFiles
 {
-    public partial class XmlImportWithFiles
+    public List<Message> Messages;
+
+    public string LogError(string message)
     {
-		public List<Message> Messages;
+        Log.A(message);
+        Messages.Add(new Message(message, Message.MessageTypes.Error));
+        return "error";
+    }
 
-        public string LogError(string message)
-        {
-            Log.A(message);
-            Messages.Add(new Message(message, Message.MessageTypes.Error));
-            return "error";
-        }
-
-        /// <summary>
-        /// Maps EAV import messages to 2sxc import messages
-        /// </summary>
-        /// <param name="importLog"></param>
-        /// <returns></returns>
-        private IEnumerable<Message> GetExportImportMessagesFromImportLog(List<LogItem> importLog)
-            => importLog.Select(l => new Message(l.Message,
-                l.EntryType == EventLogEntryType.Error
-                    ? Message.MessageTypes.Error
-                    : l.EntryType == EventLogEntryType.Information
-                        ? Message.MessageTypes.Information
-                        : Message.MessageTypes.Warning
-                ));
+    /// <summary>
+    /// Maps EAV import messages to 2sxc import messages
+    /// </summary>
+    /// <param name="importLog"></param>
+    /// <returns></returns>
+    private IEnumerable<Message> GetExportImportMessagesFromImportLog(List<LogItem> importLog)
+        => importLog.Select(l => new Message(l.Message,
+            l.EntryType == EventLogEntryType.Error
+                ? Message.MessageTypes.Error
+                : l.EntryType == EventLogEntryType.Information
+                    ? Message.MessageTypes.Information
+                    : Message.MessageTypes.Warning
+        ));
 		
-
-	}
 
 }

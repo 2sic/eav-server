@@ -1,9 +1,8 @@
-﻿namespace ToSic.Eav.Apps.Languages
+﻿namespace ToSic.Eav.Apps.Languages;
+
+public interface ISiteLanguageState
 {
-    public interface ISiteLanguageState
-    {
-        string Code { get;  }
-        string Culture { get;  }
-        bool IsEnabled { get;  }
-    }
+    string Code { get;  }
+    string Culture { get;  }
+    bool IsEnabled { get;  }
 }

@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace ToSic.Eav.Apps.Environment
+namespace ToSic.Eav.Apps.Environment;
+
+public interface IEnvironmentLogger
 {
-    public interface IEnvironmentLogger
-    {
-        void LogException(Exception ex);
-    }
+    void LogException(Exception ex);
 }
