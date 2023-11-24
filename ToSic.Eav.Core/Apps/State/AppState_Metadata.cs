@@ -6,7 +6,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState: IMetadataSource, IHasMetadata
+    partial class AppState: IMetadataSource, IHasMetadata
     {
         /// <inheritdoc />
 	    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 

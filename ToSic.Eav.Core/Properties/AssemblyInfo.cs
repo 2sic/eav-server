@@ -20,13 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: Guid("ac6f31aa-c442-4d3b-9321-98349f99f524")]
 
 
-// Use the globally defined assembly version information
-//[assembly: AssemblyVersion(ToSic.Eav.AssemblyInfo.AssemblyVersion)]
-
-
-[assembly: InternalsVisibleTo("ToSic.Eav.Repository.EF4")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Core.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Testing.Shared")]
 [assembly: InternalsVisibleTo("ToSic.Sxc.WebApi")]
-[assembly: InternalsVisibleTo("ToSic.Sxc.Dnn.Core")]

@@ -7,7 +7,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState
+    partial class AppState
     {
 
         #region GetDraft and GetPublished

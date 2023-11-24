@@ -11,7 +11,8 @@ namespace ToSic.Eav.Apps
     /// But the primary purpose is to make sure the whole app is always available with everything. <br/>
     /// It also manages and caches relationships between entities of the same app.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+    [PrivateApi("this is just fyi - was marked as internal till v16.09")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
     {
 

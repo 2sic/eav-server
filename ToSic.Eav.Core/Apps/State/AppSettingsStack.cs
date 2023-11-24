@@ -4,6 +4,7 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Apps
 {
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public partial class AppSettingsStack: ServiceBase
     {
 

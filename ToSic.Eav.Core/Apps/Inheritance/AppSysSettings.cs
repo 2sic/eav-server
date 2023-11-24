@@ -7,6 +7,7 @@
     /// <remarks>
     /// New in v13.01
     /// </remarks>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public class AppSysSettings
     {
         /// <summary>

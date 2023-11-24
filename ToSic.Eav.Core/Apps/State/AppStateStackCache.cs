@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps
     /// It will handle all kinds of thing-lists incl. SystemSettings / SystemResources, Settings, Resources etc.
     /// </summary>
     [PrivateApi]
-    public class AppStateStackCache
+    internal class AppStateStackCache
     {
         internal AppStateStackCache(AppState owner, AppState ancestor, AppState siteOrNull, AppState global, AppState preset, AppThingsIdentifiers target)
         {

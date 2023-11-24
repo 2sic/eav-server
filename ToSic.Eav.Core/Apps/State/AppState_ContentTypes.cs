@@ -9,7 +9,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState
+    partial class AppState
 	{
 	    /// <summary>
 	    /// All ContentTypes in this App

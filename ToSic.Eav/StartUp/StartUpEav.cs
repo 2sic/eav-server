@@ -10,10 +10,11 @@ using ToSic.Lib;
 
 namespace ToSic.Eav.StartUp
 {
-	/// <summary>
-	/// Global Eav Configuration
-	/// </summary>
-	public static class StartUpEav
+    /// <summary>
+    /// Global Eav Configuration
+    /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public static class StartUpEav
 	{
 	    /// <summary>
 	    /// Use this to setup the new DI container

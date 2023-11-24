@@ -6,7 +6,7 @@ using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState
+    partial class AppState
     {
         /// <summary>
         /// Shows that the app is loading / building up the data.

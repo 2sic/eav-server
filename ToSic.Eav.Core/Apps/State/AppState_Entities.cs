@@ -10,7 +10,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState
+    partial class AppState
     {
         /// <summary>
         /// The simple list of <em>all</em> entities, used everywhere

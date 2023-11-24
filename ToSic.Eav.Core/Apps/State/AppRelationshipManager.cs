@@ -10,6 +10,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Apps
 {
     [PrivateApi("don't publish this - too internal, special, complicated")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public class AppRelationshipManager: SynchronizedList<EntityRelationship>
     {
         public AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))

@@ -8,6 +8,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Apps
 {
     [PrivateApi("WIP v13")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static class AppStateMetadataTargetExtensions
     {
         // 2021-11-22 2dm WIP - not used yet

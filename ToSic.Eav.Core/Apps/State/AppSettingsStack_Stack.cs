@@ -8,7 +8,7 @@ using static ToSic.Eav.Apps.AppStackConstants;
 namespace ToSic.Eav.Apps
 {
     [PrivateApi]
-    public partial class AppSettingsStack
+    partial class AppSettingsStack
     {
         public PropertyStack GetStack(string part, IEntity viewPart = null)
         {

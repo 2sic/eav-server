@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps
 {
-    public partial class AppState
+    partial class AppState
     {
         /// <summary>
         /// Important: The call to this is a bit ugly, as it must contain a service provider.

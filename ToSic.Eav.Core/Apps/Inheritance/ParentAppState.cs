@@ -10,6 +10,7 @@ namespace ToSic.Eav.Apps
     /// <summary>
     /// WIP v13 - should wrap a parent-app for re-use in a child-app
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public class ParentAppState
     {
         public ParentAppState(AppState appState, bool inheritTypes, bool inheritEntities)
