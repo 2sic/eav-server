@@ -1,69 +1,65 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace ToSic.Eav.Persistence.Efc.Diagnostics
+namespace ToSic.Eav.Persistence.Efc.Diagnostics;
+
+// this class helps debug in advanced scenarios
+// hasn't been used since ca. 2017, but keep in case we ever do deep work on the DB again
+// ReSharper disable once UnusedMember.Global
+public class EfCoreFilteredLoggerProvider : ILoggerProvider
 {
-    // this class helps debug in advanced scenarios
-    // hasn't been used since ca. 2017, but keep in case we ever do deep work on the DB again
-    // ReSharper disable once UnusedMember.Global
-#if NETFRAMEWORK
-    public class EfCoreFilteredLoggerProvider : ILoggerProvider
+    private static string[] _categories =
     {
-        private static string[] _categories =
-        {
-            typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName,
-//#if NETFRAMEWORK
-//            typeof(Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerConnection).FullName
-//#endif
-        };
+        typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName,
+    };
 
-        public ILogger CreateLogger(string categoryName)
+    public ILogger CreateLogger(string categoryName)
+    {
+        if (_categories.Contains(categoryName))
         {
-            if (_categories.Contains(categoryName))
-            {
-                return new MyLogger();
-            }
-
-            return new NullLogger();
+            return new MyLogger();
         }
 
-        public void Dispose()
-        { }
+        return new NullLogger();
+    }
 
-        private class MyLogger : ILogger
+    public void Dispose()
+    { }
+
+    private class MyLogger : ILogger
+    {
+        public bool IsEnabled(LogLevel logLevel)
         {
-            public bool IsEnabled(LogLevel logLevel)
-            {
-                return true;
-            }
-
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-            {
-                Console.WriteLine(formatter(state, exception));
-            }
-
-            public IDisposable BeginScope<TState>(TState state)
-            {
-                return null;
-            }
+            return true;
         }
 
-        private class NullLogger : ILogger
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            public bool IsEnabled(LogLevel logLevel)
-            {
-                return false;
-            }
+            Console.WriteLine(formatter(state, exception));
+        }
 
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-            { }
-
-            public IDisposable BeginScope<TState>(TState state)
-            {
-                return null;
-            }
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return null;
         }
     }
-#endif
+
+    private class NullLogger : ILogger
+    {
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return false;
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        { }
+
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return null;
+        }
+    }
 }
+#endif

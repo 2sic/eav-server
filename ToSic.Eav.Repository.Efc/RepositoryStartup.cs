@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc;
@@ -29,7 +28,7 @@ namespace ToSic.Eav.Repository.Efc
 #endif
 
             // Inner loader for use of the main RepositoryLoader
-            services.TryAddTransient<Efc11Loader, Efc11Loader>();
+            services.TryAddTransient<Efc11Loader>();
             services.TryAddTransient<IRepositoryLoader, EfcRepositoryLoader>();
 
             services.TryAddTransient<DbDataController>();

@@ -1,10 +1,9 @@
 ﻿using System;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Persistence.Efc
+namespace ToSic.Eav.Persistence.Efc;
+
+partial class Efc11Loader: IHasLog
 {
-    public partial class Efc11Loader: IHasLog
-    {
-        private TimeSpan _sqlTotalTime = new TimeSpan(0);
-    }
+    private TimeSpan _sqlTotalTime = new TimeSpan(0);
 }
