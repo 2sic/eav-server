@@ -5,6 +5,7 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.WebApi.Sys;
 // Release routes
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LogControllerReal: ServiceBase
 {
     public const string LogSuffix = "Log";

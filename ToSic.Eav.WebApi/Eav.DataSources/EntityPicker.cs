@@ -30,6 +30,7 @@ namespace ToSic.Eav.DataSources;
     // ConfigurationType = "not yet defined", // ATM we don't expect a configuration
     HelpLink = "https://go.2sxc.org/todo")]
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntityPicker : DataSourceBase
 {
     #region Configuration-properties

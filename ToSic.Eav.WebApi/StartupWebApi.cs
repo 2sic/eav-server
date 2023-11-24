@@ -20,6 +20,7 @@ using InsightsControllerReal = ToSic.Eav.WebApi.Sys.Insights.InsightsControllerR
 
 namespace ToSic.Eav.WebApi;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class StartupWebApi
 {
     public static IServiceCollection AddEavWebApi(this IServiceCollection services)
@@ -60,7 +61,7 @@ public static class StartupWebApi
         // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
         // Here we only register the dependencies, as the final converter must be registered elsewhere
         services.TryAddTransient<ConvertToEavLight.MyServices>();
-        services.TryAddTransient<ConvertToEavLight, ConvertToEavLight>();
+        services.TryAddTransient<ConvertToEavLight>();
 
         // json serialization converters eav related
         services.TryAddTransient<EavJsonConverter>();

@@ -5,7 +5,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.WebApi.ApiExplorer;
 
 [PrivateApi]
-public class ApiExplorerJs
+internal class ApiExplorerJs
 {
     /// <summary>
     /// Give common type names a simple naming and only return the original for more complex types

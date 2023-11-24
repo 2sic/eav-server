@@ -11,6 +11,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class InsightsDataSourceCache: ServiceBase
 {
     private readonly LazySvc<IDataSourceCacheService> _dsCacheSvc;

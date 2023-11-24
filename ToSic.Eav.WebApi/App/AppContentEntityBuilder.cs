@@ -12,10 +12,6 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.App;
 
-// TODO:
-// - Probably move to EAV
-// - Probably use constants for the switch-cases
-// - probably rename to AppData
 internal class AppContentEntityBuilder: HelperBase
 {
     public AppContentEntityBuilder(ILog parentLog) : base(parentLog, "Api.Bldr")

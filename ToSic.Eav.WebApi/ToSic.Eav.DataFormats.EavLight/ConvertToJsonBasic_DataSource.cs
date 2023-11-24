@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using static System.String;
@@ -14,7 +13,7 @@ namespace ToSic.Eav.DataFormats.EavLight;
 /// A helper to serialize various combinations of entities, lists of entities etc
 /// </summary>
 [PrivateApi("Hide implementation")]
-public partial class ConvertToEavLight
+partial class ConvertToEavLight
 {
     ///// <summary>
     ///// Important: this constructor is used both in inherited,

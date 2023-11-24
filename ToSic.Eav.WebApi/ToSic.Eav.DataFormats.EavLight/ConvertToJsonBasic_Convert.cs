@@ -7,7 +7,7 @@ using ToSic.Lib.Logging;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight;
 
-public partial class ConvertToEavLight
+partial class ConvertToEavLight
 {
     #region Many variations of the Convert-Statement expecting IEntity
 

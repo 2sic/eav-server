@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 
 namespace ToSic.Eav.WebApi.Serialization;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EavJsonConverterFactory : JsonConverterFactory
 {
     private readonly EavJsonConverter _eavJsonConverter;

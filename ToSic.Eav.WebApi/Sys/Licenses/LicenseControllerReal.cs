@@ -21,6 +21,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LicenseControllerReal : ServiceBase, ILicenseController
 {
     // auto-download license file

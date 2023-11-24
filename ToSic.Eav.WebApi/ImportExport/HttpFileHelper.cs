@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ToSic.Eav.WebApi.ImportExport;
 
-public static class HttpFileHelper
+internal static class HttpFileHelper
 {
     public static HttpResponseMessage GetAttachmentHttpResponseMessage(string fileName, string fileType, Stream fileContent)
     {

@@ -2,12 +2,11 @@
 using System.Reflection;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Run.Unknown;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.ApiExplorer;
 
-public class ApiInspectorUnknown: ServiceBase, IApiInspector
+internal class ApiInspectorUnknown: ServiceBase, IApiInspector
 {
     public ApiInspectorUnknown(WarnUseOfUnknown<ApiInspectorUnknown> _) : base($"{LogScopes.NotImplemented}.ApiIns")
     {

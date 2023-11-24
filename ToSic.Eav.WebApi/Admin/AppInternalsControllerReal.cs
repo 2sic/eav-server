@@ -11,6 +11,7 @@ using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Admin;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
 {
     public const string LogSuffix = "AppInternals";

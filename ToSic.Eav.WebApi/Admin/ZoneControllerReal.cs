@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.Zone;
@@ -12,6 +11,7 @@ namespace ToSic.Eav.WebApi.Admin;
 /// <summary>
 /// This one supplies portal-wide (or cross-portal) settings / configuration
 /// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZoneControllerReal : ServiceBase, IZoneController
 {
     public const string LogSuffix = "Zone";

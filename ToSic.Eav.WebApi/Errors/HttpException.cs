@@ -4,6 +4,7 @@ using ToSic.Eav.Security;
 
 namespace ToSic.Eav.WebApi.Errors;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class HttpException
 {
     /// <summary>

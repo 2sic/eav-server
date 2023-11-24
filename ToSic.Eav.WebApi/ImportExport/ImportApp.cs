@@ -18,6 +18,7 @@ using ISite = ToSic.Eav.Context.ISite;
 
 namespace ToSic.Eav.WebApi.ImportExport;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ImportApp: ServiceBase
 {
     #region DI Constructor

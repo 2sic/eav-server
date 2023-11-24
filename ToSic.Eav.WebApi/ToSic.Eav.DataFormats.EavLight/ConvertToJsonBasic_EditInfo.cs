@@ -6,7 +6,7 @@ using ToSic.Eav.WebApi.Dto;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight;
 
-public partial class ConvertToEavLight
+partial class ConvertToEavLight
 {
 
     private static void AddStatistics(IEntity entity, IDictionary<string, object> entityValues)

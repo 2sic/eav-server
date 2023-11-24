@@ -12,6 +12,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Zone;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZoneBackend: ServiceBase
 {
     public ZoneBackend(

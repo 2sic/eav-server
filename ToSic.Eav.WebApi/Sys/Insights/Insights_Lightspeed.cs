@@ -3,7 +3,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-public partial class InsightsControllerReal
+partial class InsightsControllerReal
 {
 
     private string LightSpeedStats()

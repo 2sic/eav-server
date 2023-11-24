@@ -13,6 +13,7 @@ using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class InsightsControllerReal: ServiceBase
 {
     private readonly GenWorkPlus<WorkEntities> _workEntities;

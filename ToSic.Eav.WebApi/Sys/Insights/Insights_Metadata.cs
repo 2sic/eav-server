@@ -4,7 +4,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-public partial class InsightsControllerReal
+partial class InsightsControllerReal
 {
 
     internal static string MetadataTable(string msg, List<IEntity> metadata)

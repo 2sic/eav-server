@@ -10,6 +10,7 @@ using ToSic.Eav.Apps.Work;
 
 namespace ToSic.Eav.WebApi.SaveHelpers;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SaveEntities: ServiceBase
 {
     private readonly GenWorkDb<WorkEntitySave> _workEntSave;

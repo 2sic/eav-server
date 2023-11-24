@@ -10,7 +10,7 @@ using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-public partial class InsightsControllerReal
+partial class InsightsControllerReal
 {
     private string Types(int? appId = null)
     {

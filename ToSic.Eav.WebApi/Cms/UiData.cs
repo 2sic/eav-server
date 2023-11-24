@@ -9,7 +9,7 @@ using ToSic.Eav.WebApi.Context;
 
 namespace ToSic.Eav.WebApi.Cms;
 
-public class UiData : IUiData
+internal class UiData : IUiData
 {
     public UiData(IEavFeaturesService features, IUser user)
     {

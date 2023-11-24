@@ -10,6 +10,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Admin.Features;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FeatureControllerReal : ServiceBase, IFeatureController
 {
     /// <summary>

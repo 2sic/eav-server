@@ -7,36 +7,36 @@ using System.Web;
 using Microsoft.EntityFrameworkCore.Internal;
 using ToSic.Eav.Security.Files;
 
-namespace ToSic.Eav.WebApi.Adam
+namespace ToSic.Eav.WebApi.Adam;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class HttpUploadedFile
 {
-    public class HttpUploadedFile
+    public HttpUploadedFile(HttpRequestMessage requestMessage, HttpRequest request)
     {
-        public HttpUploadedFile(HttpRequestMessage requestMessage, HttpRequest request)
-        {
-            RequestMessage = requestMessage;
-            Request = request;
-        }
+        RequestMessage = requestMessage;
+        Request = request;
+    }
 
-        public HttpRequestMessage RequestMessage { get; }
-        public HttpRequest Request { get; }
+    public HttpRequestMessage RequestMessage { get; }
+    public HttpRequest Request { get; }
 
-        public bool IsMultipart() => RequestMessage.Content.IsMimeMultipartContent();
+    public bool IsMultipart() => RequestMessage.Content.IsMimeMultipartContent();
 
-        public bool HasFiles() => Request.Files.Any();
+    public bool HasFiles() => Request.Files.Any();
 
-        public int Count => Request.Files.Count;
+    public int Count => Request.Files.Count;
 
-        public (string, Stream) GetStream(int i = 0)
-        {
-            var file = Request.Files[i];
+    public (string, Stream) GetStream(int i = 0)
+    {
+        var file = Request.Files[i];
 
-            var fileName = FileNames.SanitizeFileName(file?.FileName);
+        var fileName = FileNames.SanitizeFileName(file?.FileName);
 
-            if (FileNames.IsKnownRiskyExtension(fileName))
-                throw new Exception($"File {fileName} has risky file type.");
+        if (FileNames.IsKnownRiskyExtension(fileName))
+            throw new Exception($"File {fileName} has risky file type.");
 
-            return (fileName, file?.InputStream);
-        }
+        return (fileName, file?.InputStream);
     }
 }
 

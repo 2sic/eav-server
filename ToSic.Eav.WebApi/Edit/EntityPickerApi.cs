@@ -12,6 +12,7 @@ using ToSic.Eav.Apps.Work;
 
 namespace ToSic.Eav.WebApi;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntityPickerApi : ServiceBase
 {
 

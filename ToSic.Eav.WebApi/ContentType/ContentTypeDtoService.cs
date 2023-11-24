@@ -13,7 +13,8 @@ namespace ToSic.Eav.WebApi;
 /// <summary>
 /// Web API Controller for ContentTypes
 /// </summary>
-public /*partial*/ class ContentTypeDtoService : ServiceBase
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class ContentTypeDtoService : ServiceBase
 {
 
     #region Constructor / DI

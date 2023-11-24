@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.WebApi.Sys.Insights;
 
-public partial class InsightsControllerReal
+partial class InsightsControllerReal
 {
     private bool UrlParamsIncomplete(int? appId, out string message)
     {

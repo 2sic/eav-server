@@ -6,7 +6,7 @@ using ToSic.Eav.Serialization;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight;
 
-public partial class ConvertToEavLight
+partial class ConvertToEavLight
 {
     /// <summary>
     /// Add Id, Guid and possibly AppId (new v15)

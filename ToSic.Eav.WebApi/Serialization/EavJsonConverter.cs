@@ -6,6 +6,7 @@ using ToSic.Eav.DataFormats.EavLight;
 
 namespace ToSic.Eav.WebApi.Serialization;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EavJsonConverter : JsonConverter<IEntity>
 {
     private readonly IConvertToEavLight _convertToEavLight;

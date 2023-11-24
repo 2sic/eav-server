@@ -6,7 +6,7 @@ using ToSic.Eav.Serialization;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight;
 
-public partial class ConvertToEavLight
+partial class ConvertToEavLight
 {
     internal object CreateListOrCsvOfSubEntities(IEnumerable<IEntity> items, ISubEntitySerialization rules)
     {

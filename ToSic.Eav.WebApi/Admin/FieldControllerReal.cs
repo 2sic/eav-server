@@ -8,6 +8,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Admin;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FieldControllerReal : ServiceBase, IFieldController
 {
     public const string LogSuffix = "Field";
