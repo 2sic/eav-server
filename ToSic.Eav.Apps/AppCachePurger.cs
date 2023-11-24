@@ -5,7 +5,8 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps;
 
-class AppCachePurger: ServiceBase
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class AppCachePurger: ServiceBase
 {
     #region Constructor
 
