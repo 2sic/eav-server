@@ -10,146 +10,145 @@ using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.WebApi.App
+namespace ToSic.Eav.WebApi.App;
+
+// TODO:
+// - Probably move to EAV
+// - Probably use constants for the switch-cases
+// - probably rename to AppData
+internal class AppContentEntityBuilder: HelperBase
 {
-    // TODO:
-    // - Probably move to EAV
-    // - Probably use constants for the switch-cases
-    // - probably rename to AppData
-    internal class AppContentEntityBuilder: HelperBase
+    public AppContentEntityBuilder(ILog parentLog) : base(parentLog, "Api.Bldr")
     {
-        public AppContentEntityBuilder(ILog parentLog) : base(parentLog, "Api.Bldr")
+    }
+
+
+    /// <summary>
+    /// Construct an import-friendly, type-controlled value-dictionary to create or update an entity
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<string, object> CreateEntityDictionary(string contentType, Dictionary<string, object> newContentItem, AppState appState)
+    {
+        Log.A($"create ent dic a#{appState.AppId}, type:{contentType}");
+        // Retrieve content-type definition and check all the fields that this content-type has
+        //var appState = Eav.Apps.State.Get(appId);
+        var listOfTypes = appState.GetContentType(contentType);
+        var attribs = listOfTypes.Attributes;
+
+        var cleanedNewItem = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        foreach (var attrDef in attribs)
         {
-        }
-
-
-        /// <summary>
-        /// Construct an import-friendly, type-controlled value-dictionary to create or update an entity
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, object> CreateEntityDictionary(string contentType, Dictionary<string, object> newContentItem, AppState appState)
-        {
-            Log.A($"create ent dic a#{appState.AppId}, type:{contentType}");
-            // Retrieve content-type definition and check all the fields that this content-type has
-            //var appState = Eav.Apps.State.Get(appId);
-            var listOfTypes = appState.GetContentType(contentType);
-            var attribs = listOfTypes.Attributes;
-
-            var cleanedNewItem = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var attrDef in attribs)
+            var attrName = attrDef.Name;
+            if (!newContentItem.ContainsKey(attrName)) continue;
+            var foundValue = newContentItem[attrName];
+            switch (attrDef.Type)
             {
-                var attrName = attrDef.Name;
-                if (!newContentItem.ContainsKey(attrName)) continue;
-                var foundValue = newContentItem[attrName];
-                switch (attrDef.Type)
-                {
-                    case ValueTypes.String:
-                    case ValueTypes.Hyperlink:
-                        if (foundValue is string)
-                            cleanedNewItem.Add(attrName, foundValue.ToString());
-                        else
-                            throw ValueMappingError(attrDef, foundValue);
-                        break;
-                    case ValueTypes.Boolean:
-                        if (bool.TryParse(foundValue.ToString(), out var bolValue))
-                            cleanedNewItem.Add(attrName, bolValue);
-                        else
-                            throw ValueMappingError(attrDef, foundValue);
-                        break;
-                    case ValueTypes.DateTime:
-                        if (DateTime.TryParse(foundValue.ToString(), out var dtm))
-                            cleanedNewItem.Add(attrName, dtm);
-                        else
-                            throw ValueMappingError(attrDef, foundValue);
-                        break;
-                    case ValueTypes.Number:
-                        if (decimal.TryParse(foundValue.ToString(), out var dec))
-                            cleanedNewItem.Add(attrName, dec);
-                        else
-                            throw ValueMappingError(attrDef, foundValue);
-                        break;
-                    case ValueTypes.Entity:
-                        var relationships = new List<int>();
+                case ValueTypes.String:
+                case ValueTypes.Hyperlink:
+                    if (foundValue is string)
+                        cleanedNewItem.Add(attrName, foundValue.ToString());
+                    else
+                        throw ValueMappingError(attrDef, foundValue);
+                    break;
+                case ValueTypes.Boolean:
+                    if (bool.TryParse(foundValue.ToString(), out var bolValue))
+                        cleanedNewItem.Add(attrName, bolValue);
+                    else
+                        throw ValueMappingError(attrDef, foundValue);
+                    break;
+                case ValueTypes.DateTime:
+                    if (DateTime.TryParse(foundValue.ToString(), out var dtm))
+                        cleanedNewItem.Add(attrName, dtm);
+                    else
+                        throw ValueMappingError(attrDef, foundValue);
+                    break;
+                case ValueTypes.Number:
+                    if (decimal.TryParse(foundValue.ToString(), out var dec))
+                        cleanedNewItem.Add(attrName, dec);
+                    else
+                        throw ValueMappingError(attrDef, foundValue);
+                    break;
+                case ValueTypes.Entity:
+                    var relationships = new List<int>();
 
-                        void AddRelationshipIfNotNull(int? id) { if (id != null) relationships.Add(id.Value); }
-                        if (foundValue is IEnumerable foundEnum) // it's a list!
-                            foreach (var item in foundEnum)
-                                AddRelationshipIfNotNull(CreateSingleRelationshipItem(item));
-                        else // not a list
-                            AddRelationshipIfNotNull(CreateSingleRelationshipItem(foundValue));
+                    void AddRelationshipIfNotNull(int? id) { if (id != null) relationships.Add(id.Value); }
+                    if (foundValue is IEnumerable foundEnum) // it's a list!
+                        foreach (var item in foundEnum)
+                            AddRelationshipIfNotNull(CreateSingleRelationshipItem(item));
+                    else // not a list
+                        AddRelationshipIfNotNull(CreateSingleRelationshipItem(foundValue));
 
-                        cleanedNewItem.Add(attrName, relationships);
+                    cleanedNewItem.Add(attrName, relationships);
 
-                        break;
-                    default:
-                        throw new Exception(
-                            $"Tried to create attribute '{attrName}' but the type is not known: '{attrDef.Type}'");
-                }
-
-                // todo: maybe one day get default-values and insert them if not supplied by JS
+                    break;
+                default:
+                    throw new Exception(
+                        $"Tried to create attribute '{attrName}' but the type is not known: '{attrDef.Type}'");
             }
 
-            AddPublishState(newContentItem, cleanedNewItem);
-
-            return cleanedNewItem;
+            // todo: maybe one day get default-values and insert them if not supplied by JS
         }
 
-        // add "PublishState" in "values" (before it can be removed when there is no "PublishState" attribute)
-        private void AddPublishState(IDictionary<string, object> values, IDictionary<string, object> cleaned)
-        {
-            if (!values.ContainsKey(SaveApiAttributes.SavePublishingState)) return;
-            cleaned.Add(SaveApiAttributes.SavePublishingState, values[SaveApiAttributes.SavePublishingState]);
-        }
+        AddPublishState(newContentItem, cleanedNewItem);
 
-        /// <summary>
-        /// In case of an error, show a nicer, consistent message
-        /// </summary>
-        /// <param name="attributeDefinition"></param>
-        /// <param name="foundValue"></param>
-        private static Exception ValueMappingError(IAttributeBase attributeDefinition, object foundValue)
-            => new(
-                $"Tried to create {attributeDefinition.Name} and couldn't convert to correct {attributeDefinition.Type}: '{foundValue}'");
+        return cleanedNewItem;
+    }
 
-        /// <summary>
-        /// Takes input from JSON which could be in many formats like Category=ID or Category={id=#} 
-        /// and then converts it to an item in the relationships-list
-        /// </summary>
-        /// <param name="foundValue"></param>
-        private int? CreateSingleRelationshipItem(object foundValue)
+    // add "PublishState" in "values" (before it can be removed when there is no "PublishState" attribute)
+    private void AddPublishState(IDictionary<string, object> values, IDictionary<string, object> cleaned)
+    {
+        if (!values.ContainsKey(SaveApiAttributes.SavePublishingState)) return;
+        cleaned.Add(SaveApiAttributes.SavePublishingState, values[SaveApiAttributes.SavePublishingState]);
+    }
+
+    /// <summary>
+    /// In case of an error, show a nicer, consistent message
+    /// </summary>
+    /// <param name="attributeDefinition"></param>
+    /// <param name="foundValue"></param>
+    private static Exception ValueMappingError(IAttributeBase attributeDefinition, object foundValue)
+        => new(
+            $"Tried to create {attributeDefinition.Name} and couldn't convert to correct {attributeDefinition.Type}: '{foundValue}'");
+
+    /// <summary>
+    /// Takes input from JSON which could be in many formats like Category=ID or Category={id=#} 
+    /// and then converts it to an item in the relationships-list
+    /// </summary>
+    /// <param name="foundValue"></param>
+    private int? CreateSingleRelationshipItem(object foundValue)
+    {
+        var l = Log.Fn<int?>($"{foundValue}");
+        try
         {
-            var l = Log.Fn<int?>($"{foundValue}");
-            try
-            {
-                // the object foundNumber is either just an Id, or an Id/Title combination
-                // Try to see if it's already a number, else check if it's a JSON property
-                if (int.TryParse(foundValue.ToString(), out var foundNumber)) 
-                    return l.ReturnAndLog(foundNumber);
+            // the object foundNumber is either just an Id, or an Id/Title combination
+            // Try to see if it's already a number, else check if it's a JSON property
+            if (int.TryParse(foundValue.ToString(), out var foundNumber)) 
+                return l.ReturnAndLog(foundNumber);
                 
-                l.A("simple int-convert failed, try other formats");
-                switch (foundValue)
-                {
-                    case JsonElement jn when jn.ValueKind == JsonValueKind.Number:
-                        return l.ReturnAndLog(jn.GetInt32());
-                    case JsonObject jo:
-                    {
-                        l.A("Test cases where it's an object with 'id' property");
-
-                        foreach (var key in new [] { "Id", "id" })
-                            if (jo.TryGetPropertyValue(key, out var foundId))
-                            {
-                                l.A($"Found '{key}' - type {foundId?.GetType()} - string would be {foundId}");
-                                return l.ReturnAndLog(foundId?.ToString().ConvertOrDefault<int?>());
-                            }
-                        break;
-                    }
-                }
-                return l.ReturnNull("not found/can't convert");
-            }
-            catch (Exception ex)
+            l.A("simple int-convert failed, try other formats");
+            switch (foundValue)
             {
-                l.Ex(ex);
-                return l.ReturnNull("error");
+                case JsonElement jn when jn.ValueKind == JsonValueKind.Number:
+                    return l.ReturnAndLog(jn.GetInt32());
+                case JsonObject jo:
+                {
+                    l.A("Test cases where it's an object with 'id' property");
+
+                    foreach (var key in new [] { "Id", "id" })
+                        if (jo.TryGetPropertyValue(key, out var foundId))
+                        {
+                            l.A($"Found '{key}' - type {foundId?.GetType()} - string would be {foundId}");
+                            return l.ReturnAndLog(foundId?.ToString().ConvertOrDefault<int?>());
+                        }
+                    break;
+                }
             }
+            return l.ReturnNull("not found/can't convert");
+        }
+        catch (Exception ex)
+        {
+            l.Ex(ex);
+            return l.ReturnNull("error");
         }
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Security
+﻿namespace ToSic.Eav.WebApi.Security;
+
+public class HasPermissionsDto
 {
-    public class HasPermissionsDto
-    {
-        public int Count { get; set; }
-    }
+    public int Count { get; set; }
 }

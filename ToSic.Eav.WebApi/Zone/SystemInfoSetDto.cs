@@ -1,54 +1,53 @@
-﻿namespace ToSic.Eav.WebApi.Zone
+﻿namespace ToSic.Eav.WebApi.Zone;
+
+public class SystemInfoSetDto
 {
-    public class SystemInfoSetDto
-    {
-        public SiteStatsDto Site { get; internal set; }
+    public SiteStatsDto Site { get; internal set; }
 
-        public SystemInfoDto System { get; internal set; }
+    public SystemInfoDto System { get; internal set; }
 
-        public LicenseInfoDto License { get; internal set; }
+    public LicenseInfoDto License { get; internal set; }
 
-        public MessagesDto Messages { get; internal set; }
-    }
+    public MessagesDto Messages { get; internal set; }
+}
 
-    public class MessagesDto
-    {
-        public int WarningsOther { get; set; }
-        public int WarningsObsolete { get; set; }
-        // public int Errors { get; set; }
-    }
+public class MessagesDto
+{
+    public int WarningsOther { get; set; }
+    public int WarningsObsolete { get; set; }
+    // public int Errors { get; set; }
+}
 
-    public class SystemInfoDto
-    {
-        public string Fingerprint { get; internal set; }
+public class SystemInfoDto
+{
+    public string Fingerprint { get; internal set; }
 
-        public string EavVersion { get; internal set; }
+    public string EavVersion { get; internal set; }
 
-        public string Platform { get; internal set; }
+    public string Platform { get; internal set; }
 
-        public string PlatformVersion { get; internal set; }
+    public string PlatformVersion { get; internal set; }
 
-        public int Zones { get; internal set; }
-    }
+    public int Zones { get; internal set; }
+}
 
-    public class LicenseInfoDto
-    {
-        public string Main { get; internal set; }
+public class LicenseInfoDto
+{
+    public string Main { get; internal set; }
 
-        public int Count { get; internal set; }
+    public int Count { get; internal set; }
 
-        public string Owner { get; internal set; }
-    }
+    public string Owner { get; internal set; }
+}
     
 
-    public class SiteStatsDto
-    {
-        public int SiteId { get; internal set; }
+public class SiteStatsDto
+{
+    public int SiteId { get; internal set; }
 
-        public int ZoneId { get; internal set; }
+    public int ZoneId { get; internal set; }
 
-        public int Apps { get; internal set; }
+    public int Apps { get; internal set; }
 
-        public int Languages { get; internal set; }
-    }
+    public int Languages { get; internal set; }
 }

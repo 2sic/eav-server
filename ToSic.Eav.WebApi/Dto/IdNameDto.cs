@@ -1,9 +1,8 @@
 ﻿// ReSharper disable NotAccessedField.Global
-namespace ToSic.Eav.WebApi.Dto
+namespace ToSic.Eav.WebApi.Dto;
+
+public class IdNameDto
 {
-    public class IdNameDto
-    {
-        public int Id;
-        public string Name;
-    }
+    public int Id;
+    public string Name;
 }

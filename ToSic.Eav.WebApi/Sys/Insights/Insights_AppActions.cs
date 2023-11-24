@@ -1,15 +1,14 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Insights
+﻿namespace ToSic.Eav.WebApi.Sys.Insights;
+
+public partial class InsightsControllerReal
 {
-    public partial class InsightsControllerReal
+    private string Purge(int? appId)
     {
-        private string Purge(int? appId)
-        {
-            if (UrlParamsIncomplete(appId, out var message))
-                return message;
+        if (UrlParamsIncomplete(appId, out var message))
+            return message;
 
-            AppCachePurger.PurgeApp(appId.Value);
+        AppCachePurger.PurgeApp(appId.Value);
 
-            return $"app {appId} has been purged";
-        }
+        return $"app {appId} has been purged";
     }
 }

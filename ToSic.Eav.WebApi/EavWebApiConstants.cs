@@ -1,7 +1,6 @@
-﻿namespace ToSic.Eav.WebApi
+﻿namespace ToSic.Eav.WebApi;
+
+public class EavWebApiConstants
 {
-    public class EavWebApiConstants
-    {
-        public const string HistoryNameWebApi = "web-api";
-    }
+    public const string HistoryNameWebApi = "web-api";
 }

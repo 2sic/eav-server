@@ -2,15 +2,14 @@
 
 using System.Collections.Generic;
 
-namespace ToSic.Eav.WebApi.ApiExplorer
+namespace ToSic.Eav.WebApi.ApiExplorer;
+
+public class ApiActionDto
 {
-    public class ApiActionDto
-    {
-        public string name { get; set; }
-        public IEnumerable<string> verbs { get; set; }
-        public IEnumerable<ApiActionParamDto> parameters { get; set; }
-        public ApiSecurityDto security { get; set; }
-        public ApiSecurityDto mergedSecurity { get; set; }
-        public string returns { get; set; }
-    }
+    public string name { get; set; }
+    public IEnumerable<string> verbs { get; set; }
+    public IEnumerable<ApiActionParamDto> parameters { get; set; }
+    public ApiSecurityDto security { get; set; }
+    public ApiSecurityDto mergedSecurity { get; set; }
+    public string returns { get; set; }
 }

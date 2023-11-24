@@ -1,7 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Insights
+﻿namespace ToSic.Eav.WebApi.Sys.Insights;
+
+public partial class InsightsControllerReal
 {
-    public partial class InsightsControllerReal
-    {
-        private string IsAlive() => true.ToString();
-    }
+    private string IsAlive() => true.ToString();
 }
