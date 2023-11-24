@@ -1,17 +1,16 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource.Caching
+namespace ToSic.Eav.DataSource.Caching;
+
+[PrivateApi]
+public interface IDataSourceCacheService
 {
-    [PrivateApi]
-    public interface IDataSourceCacheService
-    {
-        IListCacheSvc ListCache { get; }
+    IListCacheSvc ListCache { get; }
 
-        bool FlushAll();
+    bool FlushAll();
 
-        bool Flush(string key);
+    bool Flush(string key);
 
-        bool Flush(IDataSource dataSource, bool cascade = false);
-        bool Flush(IDataStream stream, bool cascade = false);
-    }
+    bool Flush(IDataSource dataSource, bool cascade = false);
+    bool Flush(IDataStream stream, bool cascade = false);
 }

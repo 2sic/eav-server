@@ -7,40 +7,39 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSource.Catalog
+namespace ToSic.Eav.DataSource.Catalog;
+
+[PrivateApi]
+public partial class DataSourceCatalog: ServiceBase
 {
-    [PrivateApi]
-    public partial class DataSourceCatalog: ServiceBase
+    private readonly LazySvc<IAppDataSourcesLoader> _appDataSourcesLoader;
+    private IServiceProvider ServiceProvider { get; }
+
+    public DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader) : base("DS.DsCat")
     {
-        private readonly LazySvc<IAppDataSourcesLoader> _appDataSourcesLoader;
-        private IServiceProvider ServiceProvider { get; }
+        _appDataSourcesLoader = appDataSourcesLoader;
+        ServiceProvider = serviceProvider;
+    }
 
-        public DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader) : base("DS.DsCat")
+    /// <summary>
+    /// Create Instance of DataSource to get In- and Out-Streams
+    /// </summary>
+    /// <param name="dsInfo"></param>
+    /// <returns></returns>
+    public ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo)
+    {
+        var l = Log.Fn<ICollection<string>>();
+        try
         {
-            _appDataSourcesLoader = appDataSourcesLoader;
-            ServiceProvider = serviceProvider;
+            // This MUST use Build (not GetService<>) since that will also create objects which are not registered
+            var dataSourceInstance = ServiceProvider.Build<IDataSource>(dsInfo.Type);
+
+            // skip this if out-connections cannot be queried
+            return l.Return(dataSourceInstance.Out.Keys.ToList(), "ok");
         }
-
-        /// <summary>
-        /// Create Instance of DataSource to get In- and Out-Streams
-        /// </summary>
-        /// <param name="dsInfo"></param>
-        /// <returns></returns>
-        public ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo)
+        catch
         {
-            var l = Log.Fn<ICollection<string>>();
-            try
-            {
-                // This MUST use Build (not GetService<>) since that will also create objects which are not registered
-                var dataSourceInstance = ServiceProvider.Build<IDataSource>(dsInfo.Type);
-
-                // skip this if out-connections cannot be queried
-                return l.Return(dataSourceInstance.Out.Keys.ToList(), "ok");
-            }
-            catch
-            {
-                return l.ReturnNull("error");
-            }
+            return l.ReturnNull("error");
         }
     }
 }

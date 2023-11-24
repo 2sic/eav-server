@@ -1,12 +1,11 @@
-﻿namespace ToSic.Eav.DataSources.Sys.Types
+﻿namespace ToSic.Eav.DataSources.Sys.Types;
+
+internal enum AppType
 {
-    internal enum AppType
-    {
-        Id,
-        Name,
-        IsDefault,
-        Folder,
-        IsHidden,
-        IsPrimary,
-    }
+    Id,
+    Name,
+    IsDefault,
+    Folder,
+    IsHidden,
+    IsPrimary,
 }

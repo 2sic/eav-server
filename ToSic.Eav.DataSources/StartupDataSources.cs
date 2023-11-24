@@ -7,55 +7,54 @@ using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.Services;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources
+namespace ToSic.Eav.DataSources;
+
+public static class DataSourcesStartup
 {
-    public static class DataSourcesStartup
+    public static IServiceCollection AddDataSources(this IServiceCollection services)
     {
-        public static IServiceCollection AddDataSources(this IServiceCollection services)
-        {
-            // Dependencies, new in v15
-            services.TryAddTransient<Eav.DataSource.DataSourceBase.MyServices>();
-            services.TryAddTransient<App.MyServices>();
-            services.TryAddTransient<DataSourceConfiguration>();
-            services.TryAddTransient<DataSourceConfiguration.MyServices>();
-            services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
-            services.TryAddTransient<CustomDataSource.MyServices>();
+        // Dependencies, new in v15
+        services.TryAddTransient<Eav.DataSource.DataSourceBase.MyServices>();
+        services.TryAddTransient<App.MyServices>();
+        services.TryAddTransient<DataSourceConfiguration>();
+        services.TryAddTransient<DataSourceConfiguration.MyServices>();
+        services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
+        services.TryAddTransient<CustomDataSource.MyServices>();
 
-            services.TryAddTransient<DataSourceCatalog>();
-            services.TryAddTransient<IDataSourcesService, DataSourcesService>();
-            services.TryAddTransient<DataSourceErrorHelper>();
-            services.TryAddTransient(typeof(IDataSourceGenerator<>), typeof(DataSourceGenerator<>));
+        services.TryAddTransient<DataSourceCatalog>();
+        services.TryAddTransient<IDataSourcesService, DataSourcesService>();
+        services.TryAddTransient<DataSourceErrorHelper>();
+        services.TryAddTransient(typeof(IDataSourceGenerator<>), typeof(DataSourceGenerator<>));
 
-            services.TryAddTransient<IAppRoot, AppRoot>();
+        services.TryAddTransient<IAppRoot, AppRoot>();
 
-            services.TryAddTransient<Sql>();
-            services.TryAddTransient<Sql.MyServices>();
-            services.TryAddTransient<SqlPlatformInfo, SqlPlatformInfo>();
+        services.TryAddTransient<Sql>();
+        services.TryAddTransient<Sql.MyServices>();
+        services.TryAddTransient<SqlPlatformInfo, SqlPlatformInfo>();
 
-            services.TryAddTransient<DataTable>();
+        services.TryAddTransient<DataTable>();
 
-            services.TryAddTransient<QueryBuilder>();
-            services.TryAddTransient<QueryDefinitionBuilder>();
+        services.TryAddTransient<QueryBuilder>();
+        services.TryAddTransient<QueryDefinitionBuilder>();
 
-            services.TryAddTransient<ValueLanguages>();
+        services.TryAddTransient<ValueLanguages>();
 
-            services.TryAddTransient<ITreeMapper, TreeMapper>();
+        services.TryAddTransient<ITreeMapper, TreeMapper>();
 
-            services.TryAddTransient<ConfigurationDataLoader>();
+        services.TryAddTransient<ConfigurationDataLoader>();
 
-            services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();
-            services.TryAddTransient<IListCacheSvc, ListCacheSvc>();
+        services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();
+        services.TryAddTransient<IListCacheSvc, ListCacheSvc>();
 
-            services.AddDataSourcesFallback();
+        services.AddDataSourcesFallback();
 
-            return services;
-        }
+        return services;
+    }
 
-        public static IServiceCollection AddDataSourcesFallback(this IServiceCollection services)
-        {
-            services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
+    public static IServiceCollection AddDataSourcesFallback(this IServiceCollection services)
+    {
+        services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 
-            return services;
-        }
+        return services;
     }
 }
