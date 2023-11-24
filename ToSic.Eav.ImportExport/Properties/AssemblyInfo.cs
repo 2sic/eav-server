@@ -7,4 +7,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
+[assembly: InternalsVisibleTo("ToSic.Eav.Apps")]
 [assembly: InternalsVisibleTo("ToSic.Eav.ImportExport.Tests")]

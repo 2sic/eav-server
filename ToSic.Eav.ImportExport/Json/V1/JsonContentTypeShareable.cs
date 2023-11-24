@@ -1,12 +1,12 @@
 ﻿using System.Text.Json.Serialization;
+using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
-namespace ToSic.Eav.ImportExport.Json.V1
+namespace ToSic.Eav.ImportExport.Json.V1;
+
+public class JsonContentTypeShareable
 {
-    public class JsonContentTypeShareable
-    {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool AlwaysShare;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int ParentZoneId;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int ParentAppId;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public int? ParentId;
-    }
+    [JsonIgnore(Condition = WhenWritingDefault)] public bool AlwaysShare;
+    [JsonIgnore(Condition = WhenWritingDefault)] public int ParentZoneId;
+    [JsonIgnore(Condition = WhenWritingDefault)] public int ParentAppId;
+    [JsonIgnore(Condition = WhenWritingDefault)] public int? ParentId;
 }

@@ -141,7 +141,7 @@ namespace ToSic.Eav.WebApi.ImportExport
             var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
 
             return l.ReturnAsOk(_responseMaker.File(
-                serializer.Serialize(entity, withMetadata ? FileSystemLoader.QueryMetadataDepth : 0),
+                serializer.Serialize(entity, withMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0),
                 (prefix + (string.IsNullOrWhiteSpace(prefix) ? "" : ".")
                  + entity.GetBestTitle() + ImpExpConstants.Extension(ImpExpConstants.Files.json))
                 .RemoveNonFilenameCharacters()));
@@ -228,7 +228,7 @@ namespace ToSic.Eav.WebApi.ImportExport
                 if (bundleList.Entities == null) bundleList.Entities = new List<JsonEntity>();
 
                 var entity = appState.List.One(entityGuid);
-                bundleList.Entities.Add(serializer.ToJson(entity, export.EntitiesWithMetadata ? FileSystemLoader.QueryMetadataDepth : 0));
+                bundleList.Entities.Add(serializer.ToJson(entity, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0));
             }
 
             return l.ReturnAsOk(bundleList);

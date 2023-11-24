@@ -103,7 +103,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights
         private string GlobalTypesLog()
         {
             var msg = InsightsHtmlParts.PageStyles() + _logHtml.LogHeader(null, false);
-            var log = AppLoader.LoadLog;
+            var log = InternalAppLoader.LoadLog;
             return msg + (log == null
                 ? P("log is null").ToString()
                 : _logHtml.DumpTree("Log for Global Types loading", log));

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.ImportExport.Json.V1
+namespace ToSic.Eav.ImportExport.Json.V1;
+
+public interface IJsonWithAssets
 {
-    public interface IJsonWithAssets
-    {
-        List<JsonAsset> Assets { get; set; }
-    }
+    List<JsonAsset> Assets { get; set; }
 }

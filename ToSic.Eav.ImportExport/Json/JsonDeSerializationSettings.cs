@@ -3,17 +3,18 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.ContentTypes;
 
-namespace ToSic.Eav.ImportExport.Json
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.ImportExport.Json;
+
+/// <summary>
+/// Controls how serialization should happen, as different scenarios require different parts to be included or not.
+/// </summary>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class JsonDeSerializationSettings
 {
-    /// <summary>
-    /// Controls how serialization should happen, as different scenarios require different parts to be included or not.
-    /// </summary>
-    public class JsonDeSerializationSettings
-    {
-        public JsonDeSerializationSettings() { }
+    public JsonDeSerializationSettings() { }
 
-        public AppState CtAttributeMetadataAppState { get; set; }
+    public AppState CtAttributeMetadataAppState { get; set; }
 
-        public IDeferredContentTypeProvider EntityContentTypeProvider { get; set; }
-    }
+    public IDeferredContentTypeProvider EntityContentTypeProvider { get; set; }
 }
