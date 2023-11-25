@@ -290,12 +290,6 @@ partial class DbEntity
             publishedId: newEnt.EntityId, // set this, in case we'll create a new one
             id: existingDraftId ?? 0  // set to the draft OR 0 = new
         ) as Entity;
-        //var clone = _factory.Entity.ResetIdentifiers(newEnt,
-        //    publishedId: newEnt.EntityId, // set this, in case we'll create a new one
-        //    newId: existingDraftId ?? 0  // set to the draft OR 0 = new
-        //) as Entity;
-        //ent.SetPublishedIdForSaving(ent.EntityId); // set this, in case we'll create a new one
-        //ent.ResetEntityId(existingDraftId ?? 0); // set to the draft OR 0 = new
 
         return ((existingDraftId,
                 false, // not additional any more, as we're now pointing this as primary

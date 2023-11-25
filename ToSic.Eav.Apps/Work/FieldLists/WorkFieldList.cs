@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using Callback = System.Func<ToSic.Eav.Apps.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
 
 
@@ -23,7 +24,7 @@ public class WorkFieldList : WorkUnitBase<IAppWorkCtxWithDb>
         target = AppWorkCtx.AppState.GetDraftOrKeep(target);
         var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
         var values = callback.Invoke(lists);
-        _entityUpdate.New(AppWorkCtx).UpdatePartsFromValues(target, values, (published: !asDraft, branch: asDraft));
+        _entityUpdate.New(AppWorkCtx).UpdatePartsFromValues(target, values, new EntitySavePublishing(!asDraft, asDraft));
     }
 
     public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd, bool padWithNulls = false)

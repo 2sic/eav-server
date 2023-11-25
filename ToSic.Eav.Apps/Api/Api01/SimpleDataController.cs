@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
@@ -14,7 +13,6 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Run;
-using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using static System.StringComparer;
@@ -117,10 +115,10 @@ public partial class SimpleDataController: ServiceBase
     /// </param>
     /// <param name="target"></param>
     /// <exception cref="ArgumentException">Content-type does not exist, or an attribute in attributes</exception>
-    public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null
-    ) => Log.Func($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}", l =>
+    public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null) 
     {
-        if (multiValues == null) return (null, "attributes were null");
+        var l = Log.Fn<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
+        if (multiValues == null) return l.Return(null, "attributes were null");
 
         // ensure the type really exists
         var type = _ctxWithDb.AppState.GetContentType(contentTypeName);
@@ -134,16 +132,14 @@ public partial class SimpleDataController: ServiceBase
         // #ExtractEntitySave - verified
         var ids = _entSave.New(_ctxWithDb.AppState).Save(importEntity);
 
-        return (ids, "ok");
-    });
+        return l.Return(ids, "ok");
+    }
 
-    private (IEntity Entity, (bool ShouldPublish, bool DraftShouldBranch)? DraftAndBranch) BuildNewEntity(
-        IContentType type,
-        Dictionary<string, object> values,
-        ITarget targetOrNull,
-        bool? existingIsPublished
-    ) => Log.Func($"{type.Name}, {values?.Count}, target: {targetOrNull != null}", l =>
+    private (IEntity Entity, EntitySavePublishing Publishing) BuildNewEntity(
+        IContentType type, Dictionary<string, object> values, ITarget targetOrNull, bool? existingIsPublished) 
     {
+        var l = Log.Fn<(IEntity Entity, EntitySavePublishing Publishing)>
+            ($"{type.Name}, {values?.Count}, target: {targetOrNull != null}; {existingIsPublished}");
         // We're going to make changes to the dictionary, so we MUST copy it first, so we don't affect upstream code
         // also ensure it's case insensitive...
         values = values.ToInvariantCopy();
@@ -177,11 +173,13 @@ public partial class SimpleDataController: ServiceBase
 
         var newEntity = _builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
             attributes: _builder.Attribute.Create(attributes),
-            owner: owner, metadataFor: targetOrNull);
+            owner: owner,
+            metadataFor: targetOrNull,
+            publishing: publishing);
         if (targetOrNull != null) l.A("FYI: Set metadata target which was provided.");
 
-        return (newEntity, publishing);
-    });
+        return l.Return((newEntity, publishing));
+    }
 
 
     /// <summary>
@@ -195,13 +193,15 @@ public partial class SimpleDataController: ServiceBase
     /// </param>
     /// <exception cref="ArgumentException">Attribute in attributes does not exit</exception>
     /// <exception cref="ArgumentNullException">Entity does not exist</exception>
-    public void Update(int entityId, Dictionary<string, object> values) => Log.Do($"update i:{entityId}", () =>
+    public void Update(int entityId, Dictionary<string, object> values)
     {
+        var l = Log.Fn($"update i:{entityId}");
         var original = _ctxWithDb.AppState.List.FindRepoId(entityId);
         var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
         // #ExtractEntitySave - verified
-        _entUpdate.New(_ctxWithDb.AppState).UpdateParts(entityId, import.Entity as Entity, import.DraftAndBranch);
-    });
+        _entUpdate.New(_ctxWithDb.AppState).UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
+        l.Done();
+    }
 
 
     /// <summary>
@@ -219,9 +219,9 @@ public partial class SimpleDataController: ServiceBase
     public void Delete(Guid entityGuid) => _entDelete.New(_ctxWithDb.AppState).Delete(entityGuid);
 
 
-    private IDictionary<string, object> ConvertRelationsToNullArray(IContentType contentType,
-        IDictionary<string, object> values) => Log.Func(() =>
+    private IDictionary<string, object> ConvertRelationsToNullArray(IContentType contentType, IDictionary<string, object> values)
     {
+        var l = Log.Fn<IDictionary<string, object>>();
         // Find all attributes which are relationships
         var relationships = contentType.Attributes.Where(a => a.Type == ValueTypes.Entity).ToList();
 
@@ -265,56 +265,16 @@ public partial class SimpleDataController: ServiceBase
                     return value;
             }
         });
-        return newValues;
-    });
+        return l.Return(newValues);
+    }
 
-    private (bool ShouldPublish, bool DraftShouldBranch)? FigureOutPublishing(
-        IContentType contentType,
-        IDictionary<string, object> values,
-        bool? existingIsPublished
-    ) => Log.Func($"..., ..., attributes: {values?.Count}", l =>
-    {
-        (bool ShouldPublish, bool DraftShouldBranch)? publishAndBranch = null;
-        if (/*global::ToSic.Eav.Plumbing.Linq.IEnumerableExtensions.SafeAny(values) &&*/ values.SafeNone())
-            return (publishAndBranch, "no attributes to process");
-
-        // On update, by default preserve IsPublished state
-        var isPublished = existingIsPublished ?? true;
-
-        // Ensure WritePublished or WriteDraft user permissions. 
-        var allowed = GetWriteAndPublishAllowed(contentType);
-        if (!allowed.WriteAllowed)
-            throw new Exception("User is not allowed to do anything. Both published and draft are not allowed.");
-
-        // IsPublished becomes false when write published is not allowed.
-        if (isPublished && !allowed.PublishAllowed) isPublished = false;
-
-        // Find publishing instructions
-        // Handle special "PublishState" attribute
-        var publishKvp = values.FirstOrDefault(pair => pair.Key.EqualsInsensitive(SaveApiAttributes.SavePublishingState));
-        if (publishKvp.Key != default)  // must check key, because kvps don't have a null-default
-        {
-            publishAndBranch = GetPublishSpecs(
-                publishedState: publishKvp.Value,
-                existingIsPublished: isPublished,
-                allowed.PublishAllowed);
-
-            isPublished = publishAndBranch.Value.ShouldPublish;
-
-            l.A($"IsPublished: {isPublished}");
-        }
-            
-        return (publishAndBranch, "done");
-    });
 
     private IDictionary<string, IAttribute> BuildNewEntityValues(
-        IContentType contentType,
-        IImmutableDictionary<string, IAttribute> attributes,
-        string valuesLanguage
-    ) => Log.Func($"..., ..., attributes: {attributes?.Count}, {valuesLanguage}", l =>
+        IContentType contentType, IImmutableDictionary<string, IAttribute> attributes, string valuesLanguage)
     {
+        var l = Log.Fn<IDictionary<string, IAttribute>>($"..., ..., attributes: {attributes?.Count}, {valuesLanguage}");
         if (attributes.SafeNone())
-            return (new Dictionary<string, IAttribute>(), "null/empty");
+            return l.Return(new Dictionary<string, IAttribute>(), "null/empty");
 
         var updated = attributes.Select(keyValuePair =>
             {
@@ -342,45 +302,7 @@ public partial class SimpleDataController: ServiceBase
             })
             .Where(x => x != null)
             .ToDictionary(pair => pair.Key, pair => pair.Attribute, InvariantCultureIgnoreCase);
-        return (updated, "done");
-    });
-
-    #region Permission Checks
-
-    private (bool PublishAllowed, bool WriteAllowed) GetWriteAndPublishAllowed(IContentType targetType)
-    {
-        // skip write publish/draft permission checks for c# API
-        if (!_checkWritePermissions) return (true, true);
-
-        // this write publish/draft permission checks should happen only for REST API
-
-        // 1. Find if user may write PUBLISHED:
-        var appState = _ctxWithDb.AppState;
-
-        // 1.1. app permissions 
-        if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appState)
-            .UserMay(GrantSets.WritePublished)) return (true, true);
-
-        // 1.2. type permissions
-        if (_appPermissionCheckGenerator.New().ForType(_ctx, appState, targetType)
-            .UserMay(GrantSets.WritePublished)) return (true, true);
-
-
-        // 2. Find if user may write DRAFT:
-
-        // 2.1. app permissions 
-        if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appState)
-            .UserMay(GrantSets.WriteDraft)) return (false, true);
-
-        // 2.2. type permissions
-        if (_appPermissionCheckGenerator.New().ForType(_ctx, appState, targetType)
-            .UserMay(GrantSets.WriteDraft)) return (false, true);
-
-
-        // 3. User is not allowed to update published or draft entity.
-        return (false, false);
+        return l.Return(updated, "done");
     }
-
-
-    #endregion
+    
 }

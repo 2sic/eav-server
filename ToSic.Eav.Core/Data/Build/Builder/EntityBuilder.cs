@@ -37,8 +37,9 @@ public class EntityBuilder
         ITarget metadataFor = default,
         EntityPartsBuilder partsBuilder = default,
         // Publishing instructions
-        bool placeDraftInBranch = default,
-        int publishedId = default
+        // bool placeDraftInBranch = default,
+        int publishedId = default,
+        EntitySavePublishing publishing = default
     )
     {
         Parameters.ProtectAgainstMissingParameterNames(noParamOrder);
@@ -48,7 +49,7 @@ public class EntityBuilder
         version = version == default ? 1 : version;
 
         // Prepare the Parts-builder in case it wasn't provided
-        partsBuilder = partsBuilder ?? new EntityPartsBuilder();
+        partsBuilder ??= new EntityPartsBuilder();
 
         return new Entity(appId, entityId, repositoryId: repositoryId,
             partsBuilder: partsBuilder, 
@@ -60,9 +61,9 @@ public class EntityBuilder
             modified: modified,
             owner: owner,
             version: version,
-            isPublished: isPublished,
+            isPublished: publishing?.ShouldPublish ?? isPublished,
             metadataFor: metadataFor,
-            placeDraftInBranch: placeDraftInBranch,
+            placeDraftInBranch: publishing?.ShouldBranchDrafts ?? default,// placeDraftInBranch,
             publishedId: publishedId);
     }
 
@@ -126,14 +127,15 @@ public class EntityBuilder
             guid: guid ?? original.EntityGuid,
             contentType: type ?? original.Type,
             titleField: originalEntity.TitleFieldName, 
-            isPublished: isPublished ?? original.IsPublished,
             created: created ?? original.Created,
             modified: modified ?? original.Modified,
             owner: owner ?? original.Owner,
             version: version ?? original.Version,
             metadataFor: target ?? new Target(original.MetadataFor),
 
-            placeDraftInBranch: placeDraftInBranch ?? originalEntity?.PlaceDraftInBranch ?? default,
+            publishing: new(isPublished ?? original.IsPublished, placeDraftInBranch ?? originalEntity?.PlaceDraftInBranch ?? default),
+            // isPublished: isPublished ?? original.IsPublished,
+            // placeDraftInBranch: placeDraftInBranch ?? originalEntity?.PlaceDraftInBranch ?? default,
             publishedId: publishedId ?? originalEntity?.PublishedEntityId ?? default,
                 
             partsBuilder: entityPartsBuilder
