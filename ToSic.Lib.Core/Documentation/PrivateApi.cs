@@ -10,6 +10,7 @@ namespace ToSic.Lib.Documentation;
 /// </summary>
 [PublicApi]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PrivateApi : Attribute
 {
     /// <summary>

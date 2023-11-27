@@ -10,6 +10,7 @@ namespace ToSic.Lib.Logging;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still experimental")]
 // ReSharper disable once InconsistentNaming
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class ILog_Properties
 {
     internal const string GetPrefix = "get:";
@@ -21,6 +22,7 @@ public static class ILog_Properties
     /// <typeparam name="TProperty">Type of return value</typeparam>
     /// <returns></returns>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TProperty Getter<TProperty>(this ILog log,
         Func<TProperty> getter,
         bool timer = default,
@@ -38,6 +40,7 @@ public static class ILog_Properties
     }
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TProperty GetterL<TProperty>(this ILog log,
         Func<ILogCall, TProperty> getter,
         bool timer = default,
@@ -55,6 +58,7 @@ public static class ILog_Properties
     }
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TProperty GetterM<TProperty>(this ILog log,
         Func<ILogCall, (TProperty Result, string Message)> getter,
         bool timer = default,
@@ -73,6 +77,7 @@ public static class ILog_Properties
 
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TProperty GetterM<TProperty>(this ILog log,
         Func<(TProperty Result, string FinalMessage)> getter,
         bool timer = default,
@@ -89,6 +94,7 @@ public static class ILog_Properties
     }
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Setter(this ILog log,
         Action setter,
         bool timer = default,
@@ -106,6 +112,7 @@ public static class ILog_Properties
     }
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Setter<TProperty>(this ILog log,
         Func<TProperty> setter,
         bool timer = default,

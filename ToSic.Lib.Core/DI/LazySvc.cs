@@ -18,6 +18,7 @@ namespace ToSic.Lib.DI;
 /// </summary>
 /// <typeparam name="TService">Service type, ideally based on <see cref="ToSic.Lib.Services.ServiceBase"/></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LazySvc<TService>: ILazyLike<TService>, IHasLog, ILazyInitLog where TService : class
 {
     /// <summary>

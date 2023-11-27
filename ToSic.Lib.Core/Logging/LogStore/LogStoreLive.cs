@@ -7,6 +7,7 @@ namespace ToSic.Lib.Logging;
 
 /// <inheritdoc />
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LogStoreLive : ILogStoreLive
 {
     [PrivateApi]

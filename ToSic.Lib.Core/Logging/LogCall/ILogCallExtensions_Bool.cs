@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Lib.Logging;
 
 // ReSharper disable once InconsistentNaming
-public static partial class ILogCallExtensions
+partial class ILogCallExtensions
 {
     /// <summary>
     /// Return `true` for `ILogCall bool` objects.

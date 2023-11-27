@@ -6,6 +6,7 @@ namespace ToSic.Lib.Logging;
 /// Trivial interface just to ensure that we have debug on/off consistent
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICanDebug
 {
     /// <summary>

@@ -12,6 +12,7 @@ namespace ToSic.Lib.Helpers;
 /// </summary>
 /// <typeparam name="TResult"></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class GetOnce<TResult>
 {
     /// <summary>

@@ -9,6 +9,7 @@ namespace ToSic.Lib.DI;
 /// Reason is that this way we don't keep a list of all possible services active in memory, just the one that's been selected.
 /// </summary>
 /// <typeparam name="T"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ServiceSwitcherSingleton<T>: ServiceBase, ILazyLike<T> where T : ISwitchableService
 {
     public ServiceSwitcherSingleton(

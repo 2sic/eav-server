@@ -7,6 +7,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Lib.DI;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ServiceSwitcher<T>: ServiceBase, ILazyLike<T> where T : ISwitchableService
 {
     // TODO

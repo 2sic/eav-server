@@ -5,8 +5,10 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Lib.DI;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class StartUp
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IServiceCollection AddLibDI(this IServiceCollection services)
     {
         // Lazy objects in General

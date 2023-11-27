@@ -13,6 +13,7 @@ namespace ToSic.Lib.Logging;
 /// Normal code will never create this object, but get such an object when calling `ILog.Fn(...)` extensions <see cref="ILogExtensions"/>.
 /// </remarks>
 [PublicApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ILogCall: ILog
 {
     /// <summary>

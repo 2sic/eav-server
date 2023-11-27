@@ -4,8 +4,10 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Lib;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class StartUp
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IServiceCollection AddLibCore(this IServiceCollection services) =>
         services
             .AddLibLogging()

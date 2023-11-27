@@ -5,12 +5,14 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Lib.Logging;
 
 // ReSharper disable once InconsistentNaming
-public static partial class ILogHelperExtensions
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public static class ILogHelperExtensions
 {
     /// <summary>
     /// Dump result to an internal format - not very important in public use cases
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string Dump(
         this ILog log,
         string separator = " - ", 

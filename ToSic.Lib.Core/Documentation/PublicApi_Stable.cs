@@ -7,6 +7,7 @@ namespace ToSic.Lib.Documentation;
 /// </summary>
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
 // ReSharper disable once InconsistentNaming
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PublicApi_Stable_ForUseInYourCode : Attribute
 {
     public PublicApi_Stable_ForUseInYourCode() { }

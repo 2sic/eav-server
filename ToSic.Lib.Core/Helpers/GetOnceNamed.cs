@@ -7,6 +7,7 @@ using static System.StringComparer;
 namespace ToSic.Lib.Helpers;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Experimental")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class GetOnceNamed<TResult>
 {
     public IDictionary<string, TResult> Cache = new ConcurrentDictionary<string, TResult>(InvariantCultureIgnoreCase);

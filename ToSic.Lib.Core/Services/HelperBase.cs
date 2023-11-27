@@ -11,6 +11,7 @@ namespace ToSic.Lib.Services;
 /// They are not meant for DI, so the parent logger should be included in the initial call.
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class HelperBase: IHasLog
 {
     [PrivateApi]

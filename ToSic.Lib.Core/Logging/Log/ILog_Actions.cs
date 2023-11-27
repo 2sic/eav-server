@@ -10,6 +10,7 @@ namespace ToSic.Lib.Logging;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP")]
 // ReSharper disable once InconsistentNaming
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class ILog_Actions
 {
     /// <summary>
@@ -24,6 +25,7 @@ public static class ILog_Actions
     /// <param name="timer"></param>
     /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog log,
         Action action,
         bool timer = default,
@@ -48,6 +50,7 @@ public static class ILog_Actions
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog log,
         string parameters,
         Action action,
@@ -76,6 +79,7 @@ public static class ILog_Actions
     /// <param name="timer"></param>
     /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog log,
         Action<ILogCall> action,
         bool timer = default,
@@ -87,6 +91,7 @@ public static class ILog_Actions
     ) => log.DoLogCall(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog log,
         string parameters,
         Action<ILogCall> action,
@@ -98,6 +103,7 @@ public static class ILog_Actions
         [CallerLineNumber] int cLine = default
     ) => log.DoLogCall(parameters, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     private static void DoLogCall(this ILog log,
         string parameters,
         Action<ILogCall> action,
@@ -126,6 +132,7 @@ public static class ILog_Actions
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog log,
         Func<string> action,
         bool timer = default,
@@ -150,6 +157,7 @@ public static class ILog_Actions
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog log,
         string parameters,
         Func<string> action,
@@ -170,6 +178,7 @@ public static class ILog_Actions
     #region Func With LogCall and Message
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog log,
         Func<ILogCall, string> action,
         bool timer = default,
@@ -181,6 +190,7 @@ public static class ILog_Actions
     ) => log.Do(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog log,
         string parameters,
         Func<ILogCall, string> action,

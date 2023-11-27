@@ -8,6 +8,7 @@ namespace ToSic.Lib.DI;
 /// Lazy generator to create multiple new services/objects of a specific type.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Generator<TService>: IHasLog, ILazyInitLog
 {
     /// <summary>

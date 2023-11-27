@@ -6,6 +6,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Lib.Logging;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class Log: ILog, ILogInternal
 {
     /// <summary>

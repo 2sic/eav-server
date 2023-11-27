@@ -3,10 +3,12 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class LogCallBaseExtensions
 {
     #region DoInTimer
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void DoInTimer(this ILogCall logCall, Action action)
     {
         var skipStartingTimer = logCall?.Timer.IsRunning ?? true;
@@ -15,6 +17,7 @@ public static class LogCallBaseExtensions
         if (!skipStartingTimer) logCall.Timer.Stop();
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TResult DoInTimer<TResult>(this ILogCall logCall, Func<TResult> action)
     {
         var skipStartingTimer = logCall?.Timer.IsRunning ?? true;
@@ -28,6 +31,7 @@ public static class LogCallBaseExtensions
     #endregion
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     internal static void DoneInternal(this ILogCall logCall, string message)
     {
         if (!(logCall?.Log is Log log)) return;

@@ -5,9 +5,10 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Lib.Logging;
 
 // ReSharper disable once InconsistentNaming
-public static partial class ILog_Add
+partial class ILog_Add
 {
     [PrivateApi("not in use yet, better keep secret for now")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     internal static void ExWithCode(this ILog log,
         Exception exception,
         CodeRef codeRef
@@ -22,6 +23,7 @@ public static partial class ILog_Add
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TException Ex<TException>(this ILog log,
         TException exception,
         [CallerFilePath] string cPath = default,
@@ -40,6 +42,7 @@ public static partial class ILog_Add
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TException Ex<TException>(this ILog log,
         string message,
         TException exception,

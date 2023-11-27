@@ -13,6 +13,7 @@ namespace ToSic.Lib.Logging;
 /// This is a very internal plumbing-object important for referencing code in log entries.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("This is just FYI")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeRef
 {
     /// <summary>

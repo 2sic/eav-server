@@ -9,6 +9,7 @@ namespace ToSic.Lib.Services;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [PublicApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MyServicesBase<T>: MyServicesBase
 {
     public T ParentServices { get; }

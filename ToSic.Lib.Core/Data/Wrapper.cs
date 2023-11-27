@@ -6,6 +6,7 @@ namespace ToSic.Lib.Data;
 /// Helper base class for all wrappers
 /// </summary>
 /// <typeparam name="T"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [PrivateApi]
 public abstract class Wrapper<T>: IWrapper<T>
 {

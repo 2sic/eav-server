@@ -8,6 +8,7 @@ namespace ToSic.Lib.Logging;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 // ReSharper disable once InconsistentNaming
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class IHasLogExtensions
 {
     /// <summary>
@@ -18,6 +19,7 @@ public static class IHasLogExtensions
     /// <param name="forceConnect">Force connect the logs, even if it's an <see cref="ILogShouldNeverConnect"/></param>
     /// <returns>The same object as started this, to allow chaining</returns>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static T LinkLog<T>(this T thingWithLog, ILog parentLog, bool forceConnect = false) where T: class, IHasLog
     {
         switch (thingWithLog)

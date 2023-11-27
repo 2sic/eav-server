@@ -4,6 +4,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Lib.Logging;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LogStoreEntry
 {
     public ILog Log { get; internal set; }

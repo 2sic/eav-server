@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Lib.Logging;
 
 // ReSharper disable once InconsistentNaming
-public static partial class ILogCallExtensions
+partial class ILogCallExtensions
 {
     /// <summary>
     /// Close the log call and return a specific result, without adding any message.

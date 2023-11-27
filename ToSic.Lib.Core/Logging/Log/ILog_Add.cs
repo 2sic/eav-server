@@ -11,6 +11,7 @@ namespace ToSic.Lib.Logging;
 /// </summary>
 [PublicApi]
 // ReSharper disable once InconsistentNaming
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static partial class ILog_Add
 {
     /// <summary>
@@ -22,6 +23,7 @@ public static partial class ILog_Add
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void A(this ILog log,
         string message,
         [CallerFilePath] string cPath = default,
@@ -42,6 +44,7 @@ public static partial class ILog_Add
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void A(this ILog log,
         bool enabled, 
         string message,
@@ -60,6 +63,7 @@ public static partial class ILog_Add
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void W(this ILog log,
         string message,
         [CallerFilePath] string cPath = default,
@@ -76,6 +80,7 @@ public static partial class ILog_Add
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void E(this ILog log,
         string message,
         [CallerFilePath] string cPath = default,
@@ -84,12 +89,14 @@ public static partial class ILog_Add
     ) => log.AddInternal(LogConstants.ErrorPrefix + message, CodeRef.Create(cPath, cName, cLine));
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string Dump(this DateTime dateTime)
     {
         var utc = dateTime.ToUniversalTime();
         return $"Timestamp - Date/Time: {utc:o}; Ticks: {utc.Ticks.ToString("N0", AposThousandSeparator())}";
     }
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     private static NumberFormatInfo AposThousandSeparator()
     {
         if (_aposSeparator != null) return _aposSeparator;

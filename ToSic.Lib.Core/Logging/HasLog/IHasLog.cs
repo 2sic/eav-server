@@ -6,6 +6,7 @@ namespace ToSic.Lib.Logging;
 /// Objects which can log their activity, and share their log with other objects in the chain to produce extensive internal logging.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just FYI")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IHasLog
 {
     /// <summary>

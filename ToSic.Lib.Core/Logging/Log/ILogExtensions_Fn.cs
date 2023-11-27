@@ -5,7 +5,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Lib.Logging;
 
 // ReSharper disable once InconsistentNaming
-public static partial class ILogExtensions
+partial class ILogExtensions
 {
 
     /// <summary>
@@ -21,6 +21,7 @@ public static partial class ILogExtensions
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     /// <returns></returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static ILogCall<T> Fn<T>(this ILog log,
         string parameters = default,
         string message = default,
@@ -66,6 +67,7 @@ public static partial class ILogExtensions
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static ILogCall Fn(this ILog log,
         string parameters = default,
         string message = default,
@@ -76,6 +78,7 @@ public static partial class ILogExtensions
     ) => new LogCall(log, CodeRef.Create(cPath, cName, cLine), false, parameters, message, timer);
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     internal static ILogCall FnCode(this ILog log,
         string parameters = default,
         string message = default,
@@ -84,6 +87,7 @@ public static partial class ILogExtensions
     ) => new LogCall(log, code, false, parameters, message, timer);
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     internal static ILogCall<TResult> FnCode<TResult>(this ILog log,
         string parameters = default,
         string message = default,
@@ -99,6 +103,7 @@ public static partial class ILogExtensions
     /// <param name="errorMessage">Message to show if it fails</param>
     /// <returns></returns>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("will probably be moved elsewhere some day")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string Try(this ILog log, Func<string> messageMaker, string errorMessage = null)
     {
         try

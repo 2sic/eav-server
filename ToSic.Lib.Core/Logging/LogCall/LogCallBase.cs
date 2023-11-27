@@ -5,6 +5,7 @@ using static System.String;
 namespace ToSic.Lib.Logging;
 
 [PrivateApi("no need to publish this")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LogCallBase : ILogLike, ILogCall
 {
     /// <summary>

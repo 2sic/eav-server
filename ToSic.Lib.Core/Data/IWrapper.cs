@@ -7,7 +7,8 @@ namespace ToSic.Lib.Data;
 /// of the hosting system (environment)
 /// </summary>
 /// <typeparam name="T"></typeparam>
-[PrivateApi("probably move to Lib soon")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[PrivateApi]
 public interface IWrapper<out T>
 {
     /// <summary>

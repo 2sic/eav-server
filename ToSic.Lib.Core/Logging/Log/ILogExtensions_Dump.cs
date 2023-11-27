@@ -4,7 +4,7 @@ using System.Text;
 namespace ToSic.Lib.Logging;
 
 // ReSharper disable once InconsistentNaming
-public static partial class ILogExtensions
+partial class ILogExtensions
 {
     /// <summary>
     /// Helper to dump a byte array to the log
@@ -12,6 +12,7 @@ public static partial class ILogExtensions
     /// <param name="_"></param>
     /// <param name="bytes"></param>
     /// <returns></returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string Dump(this ILog _, byte[] bytes)
     {
         if (bytes == null || !bytes.Any()) return "[](0)";

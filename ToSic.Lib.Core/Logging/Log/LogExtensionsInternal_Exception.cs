@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib.Logging;
 
-internal static partial class LogExtensionsInternal
+partial class LogExtensionsInternal
 {
     private const int MaxExceptionRecursion = 100;
 

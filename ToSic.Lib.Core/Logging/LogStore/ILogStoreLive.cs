@@ -8,6 +8,7 @@ namespace ToSic.Lib.Logging;
 /// Log History for real-time Insights.
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ILogStoreLive: ILogStore, ILogShouldNeverConnect
 {
     [PrivateApi]

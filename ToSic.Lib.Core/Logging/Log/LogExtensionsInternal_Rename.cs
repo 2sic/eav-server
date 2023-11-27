@@ -3,7 +3,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging;
 
-internal static partial class LogExtensionsInternal
+partial class LogExtensionsInternal
 {
     /// <summary>
     /// Rename this logger - usually used when a base-class has a logger, 

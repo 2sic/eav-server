@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.SysData;
@@ -21,7 +22,7 @@ public class SysFeature: Feature, IHasRawEntity<IRawEntity>
     /// <summary>
     /// Clone constructor - optionally override some values
     /// </summary>
-    public SysFeature Clone(Lib.Coding.StableApi.NoParamOrder noParamOrder = default, 
+    public SysFeature Clone(NoParamOrder noParamOrder = default, 
         string nameId = default, Guid? guid = default, string name = default, string description = default, string link = default) =>
         new(nameId ?? NameId, guid ?? Guid, name ?? Name, description ?? Description, link ?? Link);
 

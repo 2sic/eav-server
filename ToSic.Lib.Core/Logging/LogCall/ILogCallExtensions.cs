@@ -8,6 +8,7 @@ namespace ToSic.Lib.Logging;
 /// </summary>
 [PublicApi]
 // ReSharper disable once InconsistentNaming
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static partial class ILogCallExtensions
 {
     /// <summary>

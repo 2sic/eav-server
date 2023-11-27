@@ -47,7 +47,7 @@ public class Aspect: IHasIdentityNameId
     /// </summary>
     public string Description { get; }
 
-    public virtual Aspect Clone(StableApi.NoParamOrder noParamOrder = default, string nameId = default,
+    public virtual Aspect Clone(NoParamOrder noParamOrder = default, string nameId = default,
         Guid? guid = default, string name = default, string description = default) => new(nameId ?? NameId,
         guid ?? Guid, name ?? Name, description ?? Description);
 

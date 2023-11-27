@@ -6,6 +6,7 @@ namespace ToSic.Lib.Logging;
 /// Interface to mark classes which can dump their state into the log as a string.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICanDump
 {
     /// <summary>

@@ -6,6 +6,7 @@ namespace ToSic.Lib.Logging;
 /// Interface to add <see cref="ILog"/>s to the log storage.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ILogStore
 {
     /// <summary>

@@ -4,6 +4,7 @@
 /// Base class for any service which expects a Dependencies class
 /// </summary>
 /// <typeparam name="TMyServices"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : MyServicesBase
 {
     /// <summary>

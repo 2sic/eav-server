@@ -9,6 +9,7 @@ namespace ToSic.Lib.Logging;
 /// Experimental - system to generate a code ref trail
 /// </summary>
 [PrivateApi("Experimental")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeRefTrail
 {
     public CodeRefTrail([CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
