@@ -8,6 +8,7 @@ namespace ToSic.Eav;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Parameters
 {
+    [Obsolete("use the new NoParamOrder Struct instead")] 
     public const string HelpLink = "https://go.2sxc.org/named-params";
 
     /// <summary>
@@ -17,6 +18,7 @@ public class Parameters
     /// <remarks>
     /// It must be a const, otherwise it couldn't be used in method signatures :(
     /// </remarks>
+    [Obsolete("use the new NoParamOrder Struct instead")] 
     public const string Protector = "Params must be named (" + HelpLink + ")";
 
     /// <summary>
@@ -33,12 +35,14 @@ public class Parameters
     /// <param name="paramNames">String with param-names to show, usually generated with a bunch of nameof(paramName) </param>
     /// <exception cref="Exception"></exception>
     // TODO: REPLACE MOST calls with the Protect below, which doesn't need the name of the method calling - careful - param order is different
+    [Obsolete("use the new NoParamOrder Struct instead")]
     public static void ProtectAgainstMissingParameterNames(string criticalParameter, string protectedMethod = null, string paramNames = null)
     {
         if (criticalParameter != Protector)
             throw CreateException(protectedMethod, paramNames);
     }
 
+    [Obsolete("use the new NoParamOrder Struct instead")]
     public static void Protect(
         string criticalParameter, 
         string paramNames = default,
