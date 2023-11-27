@@ -8,6 +8,7 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Caching;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -86,35 +87,26 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// <param name="options">Conversion options which are relevant for <see cref="IRawEntity"/> data</param>
     protected internal void ProvideOut(
         Func<object> data,
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions> options = default)
-    {
-        Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
+        Func<DataFactoryOptions> options = default) =>
         base.ProvideOut(() => GetAny(data, options), name);
-    }
 
     [PrivateApi]
     protected internal void ProvideOutRaw<T>(
         Func<IEnumerable<IHasRawEntity<T>>> data,
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions> options = default) where T : IRawEntity
-    {
-        Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
+        Func<DataFactoryOptions> options = default) where T : IRawEntity =>
         base.ProvideOut(() => GetHasRaw(data, options), name);
-    }
 
     [PrivateApi]
     protected internal void ProvideOutRaw<T>(
         Func<IEnumerable<T>> data,
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions> options = default) where T : IRawEntity
-    {
-        Parameters.Protect(noParamOrder, $"{nameof(name)}, {nameof(options)}");
+        Func<DataFactoryOptions> options = default) where T : IRawEntity =>
         base.ProvideOut(() => GetRaw(data, options), name);
-    }
 
     private IImmutableList<IEntity> GetAny(Func<object> source, Func<DataFactoryOptions> options)
     {

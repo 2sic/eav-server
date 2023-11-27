@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using ToSic.Eav.Context;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
@@ -128,7 +129,7 @@ public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MySer
 
     public TValue Get<TValue>(string name) => Parse(name).ConvertOrDefault<TValue>();
 
-    public TValue Get<TValue>(string name, string noParamOrder = Parameters.Protector, TValue fallback = default) =>
+    public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default) =>
         Parse(name).ConvertOrFallback(fallback);
 
 

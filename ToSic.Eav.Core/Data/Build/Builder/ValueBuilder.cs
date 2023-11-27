@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -33,7 +34,7 @@ public partial class ValueBuilder: ServiceBase
     /// </summary>
     /// <returns></returns>
     public IValue CreateFrom(IValue original,
-        string noParamOrder = Eav.Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         IImmutableList<ILanguage> languages = null)
         => languages == null ? original : original.Clone(languages);
 

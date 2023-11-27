@@ -4,6 +4,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Caching.CacheInfo;
 using ToSic.Eav.DataSources;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -71,8 +72,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// 1. Added in 2sxc 12.05
     /// 1. for more in-depth checking if a stream exists, you can access the <see cref="Out"/> which is an IDictionary
     /// </remarks>
-    IDataStream GetStream(string name = null, string noParamOrder = Parameters.Protector,
-        bool nullIfNotFound = false, bool emptyIfNotFound = false);
+    IDataStream GetStream(string name = null, NoParamOrder noParamOrder = default, bool nullIfNotFound = false, bool emptyIfNotFound = false);
 
     /// <summary>
     /// The items in the data-source - to be exact, the ones in the Default stream.

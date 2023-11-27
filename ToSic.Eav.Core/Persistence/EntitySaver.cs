@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static System.StringComparer;
@@ -34,7 +35,7 @@ public class EntitySaver : ServiceBase
         IEntity original,
         IEntity update,
         SaveOptions saveOptions,
-        string noParamOrder = Eav.Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         int? newId = default,
         IContentType newType = default,
         bool logDetails = true

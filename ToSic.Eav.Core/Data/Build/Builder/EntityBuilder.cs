@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using ToSic.Eav.Metadata;
-
+using ToSic.Lib.Coding;
 
 
 namespace ToSic.Eav.Data.Build;
@@ -24,7 +24,7 @@ public class EntityBuilder
     public Entity Create(
         int appId,
         IContentType contentType,
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         IImmutableDictionary<string, IAttribute> attributes = default,
         int entityId = default,
         int repositoryId = Constants.NullId,
@@ -42,8 +42,6 @@ public class EntityBuilder
         EntitySavePublishing publishing = default
     )
     {
-        Parameters.ProtectAgainstMissingParameterNames(noParamOrder);
-
         // If repositoryId isn't known set it it to EntityId
         repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
         version = version == default ? 1 : version;
@@ -87,7 +85,7 @@ public class EntityBuilder
     /// </summary>
     public IEntity CreateFrom(
         IEntity original,
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         int? appId = default,
         IImmutableDictionary<string, IAttribute> attributes = default,
         int? id = default,

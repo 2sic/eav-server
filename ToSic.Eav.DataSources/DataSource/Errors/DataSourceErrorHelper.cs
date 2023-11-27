@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -47,7 +48,7 @@ public class DataSourceErrorHelper
     /// <param name="streamName">The stream name. If provided, will allow the message to contain more details.</param>
     /// <returns></returns>
     public IImmutableList<IEntity> Create(
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         string title = default, 
         string message = default,
         Exception exception = default,
@@ -55,8 +56,6 @@ public class DataSourceErrorHelper
         string streamName = DataSourceConstants.StreamDefaultName
     )
     {
-        Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(Create), "various");
-
         source?.Log?.Ex(exception);
 
         // Construct the IEntity and return as Immutable
@@ -90,11 +89,8 @@ public class DataSourceErrorHelper
     /// <remarks>
     /// Added v16.01
     /// </remarks>
-    public IImmutableList<IEntity> TryGetOutFailed(string noParamOrder = Parameters.Protector, IDataSource source = default, string name = DataSourceConstants.StreamDefaultName)
-    {
-        Parameters.Protect(noParamOrder, $"{nameof(source)}, {nameof(name)}");
-        return TryGetFailed(source, false, name);
-    }
+    public IImmutableList<IEntity> TryGetOutFailed(NoParamOrder noParamOrder = default, IDataSource source = default, string name = DataSourceConstants.StreamDefaultName) 
+        => TryGetFailed(source, false, name);
 
     [PrivateApi]
     private IImmutableList<IEntity> TryGetFailed(IDataSource source, bool inStreams, string streamName)

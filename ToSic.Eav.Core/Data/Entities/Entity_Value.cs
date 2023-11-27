@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Data;
 partial class Entity
@@ -12,12 +13,12 @@ partial class Entity
 
     public object Get(string name) => GetBestValue(name, null);
 
-    public object Get(string name, string noParamOrder = Eav.Parameters.Protector, string language = default, string[] languages = default) 
+    public object Get(string name, NoParamOrder noParamOrder = default, string language = default, string[] languages = default) 
         => GetBestValue(name, HandleLanguageParams(language, languages));
 
     public TValue Get<TValue>(string name) => GetBestValue<TValue>(name, null);
 
-    public TValue Get<TValue>(string name, string noParamOrder = Eav.Parameters.Protector, TValue fallback = default, string language = default, string[] languages = default) 
+    public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default) 
         => GetBestValue(name, HandleLanguageParams(language, languages)).ConvertOrFallback(fallback);
 
     private string[] HandleLanguageParams(string language, string[] languages) 

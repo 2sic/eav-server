@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.Raw;
@@ -23,11 +24,10 @@ public class RawRelationship : IRawRelationship
     /// <param name="key">A single key - if it's just a simple `string`, `int`, etc.</param>
     /// <param name="keys">A list of keys, if you have many.</param>
     public RawRelationship(
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         object key = default,
         IEnumerable<object> keys = default)
     {
-        Parameters.Protect(noParamOrder);
         Keys = keys?.ToList()
                ?? (key == null ? null : new List<object> { key })
                ?? new List<object>();

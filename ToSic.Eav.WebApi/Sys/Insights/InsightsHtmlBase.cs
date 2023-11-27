@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Web;
+using ToSic.Lib.Coding;
 using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
 
@@ -36,11 +37,9 @@ internal class InsightsHtmlBase
 
     internal A DemoLink(string labelAndLink) => Tag.A(labelAndLink).Href(labelAndLink);
 
-    internal A LinkTo(string label, string view,
-        int? appId = null, string noParamOrder = Eav.Parameters.Protector,
+    internal A LinkTo(string label, string view, int? appId = null, NoParamOrder noParamOrder = default,
         string key = null, string type = null, string nameId = null, string more = null)
-    {
-        Eav.Parameters.Protect(noParamOrder, "...");
+    { 
         var link = UrlTo(view, appId, key: key, type: type, nameId: nameId, more: more);
         return Tag.A(label).Href(link);
     }
@@ -49,10 +48,9 @@ internal class InsightsHtmlBase
 
     protected bool NiceLink = true;
 
-    private string UrlTo(string view, int? appId = null, string noParamOrder = Eav.Parameters.Protector,
+    private string UrlTo(string view, int? appId = null, NoParamOrder noParamOrder = default,
         string key = null, string type = null, string nameId = null, string more = null)
     {
-        Eav.Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(UrlTo), "...");
         var link = (NiceLink ? $"./{view}?" : $"details?view={view}")
                    + (appId != null ? "&appid=" + appId : "")
                    + (type != null ? "&type=" + type : "")

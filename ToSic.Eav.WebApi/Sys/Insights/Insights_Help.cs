@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Lib.Coding;
+using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
 using static ToSic.Razor.Blade.Tag;
@@ -74,7 +75,7 @@ partial class InsightsControllerReal
     internal A DemoLink(string labelAndLink) => HtmlTableBuilder.DemoLink(labelAndLink);
         
     internal A LinkTo(string label, string view, 
-        int? appId = null, string noParamOrder = Eav.Parameters.Protector, 
+        int? appId = null, NoParamOrder noParamOrder = default,
         string key = null, string type = null, string nameId = null, string more = null)
     {
         return HtmlTableBuilder.LinkTo(label, view, appId, noParamOrder, key, type, nameId,more);

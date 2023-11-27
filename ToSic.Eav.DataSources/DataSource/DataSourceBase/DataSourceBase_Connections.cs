@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Streams;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
@@ -85,10 +86,9 @@ partial class DataSourceBase
 
     /// <inheritdoc />
     [PublicApi]
-    public IDataStream GetStream(string name = null, string noParamOrder = Parameters.Protector, bool nullIfNotFound = false, bool emptyIfNotFound = false)
+    public IDataStream GetStream(string name = null, NoParamOrder noParamOrder = default, bool nullIfNotFound = false, bool emptyIfNotFound = false)
     {
         var l = Log.Fn<IDataStream>($"{nameof(name)}: {name}; {nameof(nullIfNotFound)}: {nullIfNotFound}; {nameof(emptyIfNotFound)}: {emptyIfNotFound}");
-        Parameters.ProtectAgainstMissingParameterNames(noParamOrder, nameof(GetStream), $"{nameof(nullIfNotFound)}, {nameof(emptyIfNotFound)}");
 
         // Check if streamName was not provided
         if (string.IsNullOrEmpty(name)) name = DataSourceConstants.StreamDefaultName;

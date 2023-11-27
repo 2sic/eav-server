@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data;
@@ -162,14 +163,14 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     object Get(string name);
 
     [PrivateApi("wip 15.06 - not yet public/documented")]
-    object Get(string name, string noParamOrder = Eav.Parameters.Protector, string language = default, string[] languages = default);
+    object Get(string name, NoParamOrder noParamOrder = default, string language = default, string[] languages = default);
 
 
     [PrivateApi("wip 15.06 - not yet public/documented")]
     TValue Get<TValue>(string name);
 
     [PrivateApi("wip 15.06 - not yet public/documented")]
-    TValue Get<TValue>(string name, string noParamOrder = Eav.Parameters.Protector, TValue fallback = default,
+    TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default,
         string language = default, string[] languages = default);
 
 

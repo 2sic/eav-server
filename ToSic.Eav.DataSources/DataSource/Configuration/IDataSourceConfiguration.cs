@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource;
@@ -89,7 +90,7 @@ public interface IDataSourceConfiguration
     /// <param name="fallback">Fallback value if the configuration is missing or can't be parsed into the expected data format.</param>
     /// <returns></returns>
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    TValue Get<TValue>(string name, string noParamOrder = Eav.Parameters.Protector, TValue fallback = default);
+    TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default);
 
 
     #endregion

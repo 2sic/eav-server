@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data.Raw;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.Build;
@@ -35,29 +36,6 @@ public interface IDataFactory
     /// </summary>
     ILookup<object, IEntity> Relationships { get; }
 
-    ///// <summary>
-    ///// Spawn a new <see cref="IDataFactory"/> with an initial configuration.
-    ///// This returns a _new_ <see cref="IDataFactory"/> and will not modify the original/parent.
-    ///// </summary>
-    ///// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    ///// <param name="appId">The App this is virtually coming from, defaults to `0`</param>
-    ///// <param name="typeName">The name of the virtual content-type, defaults to `unspecified`</param>
-    ///// <param name="titleField">The field name to use as title, defaults to `Title`</param>
-    ///// <param name="idSeed">Default is `1`</param>
-    ///// <param name="idAutoIncrementZero">Default is `true`</param>
-    ///// <param name="relationships"></param>
-    ///// <param name="rawConvertOptions">Optional special options which create-raw might use</param>
-    ///// <returns>Itself, to make call chaining easier</returns>
-    //IDataFactory New(
-    //    string noParamOrder = Parameters.Protector,
-    //    int appId = default,
-    //    string typeName = default,
-    //    string titleField = default,
-    //    int idSeed = 1,
-    //    bool idAutoIncrementZero = default,
-    //    ILookup<object, IEntity> relationships = default,
-    //    RawConvertOptions rawConvertOptions = default);
-
     /// <summary>
     /// Spawn a new <see cref="IDataFactory"/> with an initial configuration.
     /// This returns a _new_ <see cref="IDataFactory"/> and will not modify the original/parent.
@@ -69,7 +47,7 @@ public interface IDataFactory
     /// <param name="rawConvertOptions">Optional special options which create-raw might use</param>
     /// <returns>Itself, to make call chaining easier</returns>
     IDataFactory New(
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         DataFactoryOptions options = default,
         ILookup<object, IEntity> relationships = default,
         RawConvertOptions rawConvertOptions = default);

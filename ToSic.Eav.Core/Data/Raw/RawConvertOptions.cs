@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 using static System.StringComparer;
 
@@ -18,7 +19,7 @@ namespace ToSic.Eav.Data.Raw;
 public class RawConvertOptions
 {
     public RawConvertOptions(
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         IEnumerable<string> addKeys = default
     )
     {

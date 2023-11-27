@@ -5,6 +5,7 @@ using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data;
@@ -146,7 +147,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public object Get(string name) => Entity.Get(name);
 
     /// <inheritdoc />
-    public object Get(string name, string noParamOrder = Parameters.Protector, string language = default,
+    public object Get(string name, NoParamOrder noParamOrder = default, string language = default,
         string[] languages = default) =>
         Entity.Get(name, noParamOrder, language, languages);
 
@@ -154,7 +155,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public TValue Get<TValue>(string name) => Entity.Get<TValue>(name);
 
     /// <inheritdoc />
-    public TValue Get<TValue>(string name, string noParamOrder = Parameters.Protector, TValue fallback = default,
+    public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default,
         string language = default, string[] languages = default) =>
         Entity.Get(name, noParamOrder, fallback, language, languages);
 
