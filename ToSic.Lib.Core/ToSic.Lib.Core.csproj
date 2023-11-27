@@ -15,6 +15,7 @@
     <FileVersion>0.0.1</FileVersion>
     <RootNamespace>ToSic.Lib</RootNamespace>
     <!-- end: Don't generate... -->
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <!-- Different DI for .net 4.5 (using .net core 1.1) and .net Standard 2 -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">

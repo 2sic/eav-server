@@ -1,47 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ToSic.Lib.Data
+namespace ToSic.Lib.Data;
+
+public class WrapperLazy<T>: Wrapper<T> where T : class
 {
-    public class WrapperLazy<T>: Wrapper<T> where T : class
+    public WrapperLazy(T contents) : base(contents)
     {
-        public WrapperLazy(T contents) : base(contents)
-        {
-        }
+    }
 
-        /// <summary>
-        /// Overload for lazy wrapper.
-        /// </summary>
-        /// <param name="getContents"></param>
-        protected WrapperLazy(Func<T> getContents): base(default) => _getContents = getContents;
-        private Func<T> _getContents;
+    /// <summary>
+    /// Overload for lazy wrapper.
+    /// </summary>
+    /// <param name="getContents"></param>
+    protected WrapperLazy(Func<T> getContents): base(default) => _getContents = getContents;
+    private Func<T> _getContents;
 
-        private T _unwrappedContents;
+    private T _unwrappedContents;
 
-        protected void Reset() => Wrap(default);
+    protected void Reset() => Wrap(default);
 
-        /// <summary>
-        /// Complete the wrapper, ensure the data was retrieved, and drop the getter.
-        /// </summary>
-        public T Freeze()
-        {
-            // Reset the contents to ensure final reloading
-            Wrap(default);
-            // Access the content to ensure loading
-            var result = GetContents();
-            // Kill the getter
-            _getContents = null;
-            // return the result
-            return result;
-        }
+    /// <summary>
+    /// Complete the wrapper, ensure the data was retrieved, and drop the getter.
+    /// </summary>
+    public T Freeze()
+    {
+        // Reset the contents to ensure final reloading
+        Wrap(default);
+        // Access the content to ensure loading
+        var result = GetContents();
+        // Kill the getter
+        _getContents = null;
+        // return the result
+        return result;
+    }
 
 
-        /// <inheritdoc />
-        public override T GetContents()
-        {
-            if (_unwrappedContents != default) return _unwrappedContents;
-            _unwrappedContents = base.GetContents() ?? _getContents();
-            return _unwrappedContents;
-        }
+    /// <inheritdoc />
+    public override T GetContents()
+    {
+        if (_unwrappedContents != default) return _unwrappedContents;
+        _unwrappedContents = base.GetContents() ?? _getContents();
+        return _unwrappedContents;
     }
 }

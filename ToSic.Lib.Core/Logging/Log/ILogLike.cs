@@ -1,7 +1,6 @@
-﻿namespace ToSic.Lib.Logging
+﻿namespace ToSic.Lib.Logging;
+
+internal interface ILogLike
 {
-    internal interface ILogLike
-    {
-        ILog Log { get; }
-    }
+    ILog Log { get; }
 }

@@ -1,22 +1,21 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Lib.Data
+namespace ToSic.Lib.Data;
+
+/// <summary>
+/// Helper base class for all wrappers
+/// </summary>
+/// <typeparam name="T"></typeparam>
+[PrivateApi]
+public abstract class Wrapper<T>: IWrapper<T>
 {
-    /// <summary>
-    /// Helper base class for all wrappers
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    [PrivateApi]
-    public abstract class Wrapper<T>: IWrapper<T>
-    {
-        private T _unwrappedContents;
+    private T _unwrappedContents;
 
-        /// <inheritdoc />
-        public virtual T GetContents() => _unwrappedContents;
+    /// <inheritdoc />
+    public virtual T GetContents() => _unwrappedContents;
 
-        protected Wrapper(T contents) => _unwrappedContents = contents;
+    protected Wrapper(T contents) => _unwrappedContents = contents;
 
 
-        protected void Wrap(T contents) => _unwrappedContents = contents;
-    }
+    protected void Wrap(T contents) => _unwrappedContents = contents;
 }
