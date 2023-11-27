@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.Build;
@@ -48,7 +49,7 @@ public class DataFactoryOptions
     /// <param name="idSeed">A root ID seed for numbering the items</param>
     public DataFactoryOptions(
         DataFactoryOptions original = default,
-        string noParamOrder = Eav.Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         int? appId = default,
         string typeName = default,
         string titleField = default,

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.DataSource;
 
@@ -18,7 +19,7 @@ partial class DataSourceOptions: IDataSourceOptions
 
     public DataSourceOptions(
         IDataSourceOptions original = default,
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         IAppIdentity appIdentity = default,
         IImmutableDictionary<string, string> values = default,
         ILookUpEngine lookUp = default,

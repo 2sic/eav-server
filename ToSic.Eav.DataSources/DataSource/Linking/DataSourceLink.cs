@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.DataSource;
 
@@ -8,7 +9,7 @@ namespace ToSic.Eav.DataSource;
 public class DataSourceLink : IDataSourceLink
 {
     public DataSourceLink(IDataSourceLink original,
-        string noParamOrder = Parameters.Protector,
+        NoParamOrder noParamOrder = default,
         IDataSource dataSource = default,
         IDataStream stream = default,
         string name = default,

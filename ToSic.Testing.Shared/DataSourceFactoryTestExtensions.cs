@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Testing.Shared
 {
@@ -10,7 +11,7 @@ namespace ToSic.Testing.Shared
     {
         public static TDataSource TestCreate<TDataSource>(
             this IDataSourcesService dsf,
-            string noParamOrder = Parameters.Protector,
+            NoParamOrder noParamOrder = default,
             IDataSource upstream = default,
             IAppIdentity appIdentity = default,
             ILookUpEngine configLookUp = default) where TDataSource : IDataSource
@@ -18,7 +19,7 @@ namespace ToSic.Testing.Shared
 
         public static TDataSource TestCreateNew<TDataSource>(
             this IDataSourcesService dsf,
-            string noParamOrder = Parameters.Protector,
+            NoParamOrder noParamOrder = default,
             IDataSource upstream = default,
             IAppIdentity appIdentity = default,
             object options = default) where TDataSource : IDataSource
