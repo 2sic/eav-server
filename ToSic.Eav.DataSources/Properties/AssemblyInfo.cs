@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -9,5 +8,6 @@ using System.Runtime.InteropServices;
 
 // This is needed for unit testing
 [assembly: InternalsVisibleTo("ToSic.Eav.UnitTests")]
+[assembly: InternalsVisibleTo("ToSic.Testing.Shared")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Apps")]
 [assembly: InternalsVisibleTo("ToSic.Eav.DataSources.Tests")]
