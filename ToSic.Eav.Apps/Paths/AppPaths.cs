@@ -50,7 +50,9 @@ internal class AppPaths: ServiceBase, IAppPathsMicroSvc
     /// <param name="site">The site - in some cases the site of the App can be different from the context-site, so it must be passed in</param>
     /// <param name="appState"></param>
     /// <returns></returns>
-    public IAppPaths Init(ISite site, AppState appState)
+    public IAppPaths Init(ISite site, AppState appState) => Init(site, appState.ToInterface(Log));
+
+    public IAppPaths Init(ISite site, IAppState appState)
     {
         _site = site;
         _appState = appState;
@@ -58,7 +60,7 @@ internal class AppPaths: ServiceBase, IAppPathsMicroSvc
         return this;
     }
     private ISite _site;
-    private AppState _appState;
+    private IAppState _appState;
     public bool InitDone { get; private set; }
 
     /// <summary>
@@ -82,7 +84,7 @@ internal class AppPaths: ServiceBase, IAppPathsMicroSvc
     {
         // 2022-02-07 2dm try to drop special case with site-id again, as we shouldn't need this any more
         var key = name; // + _site.Id;
-        var final = _appState.GetPiggyBack(key,
+        var final = _appState.Internal().GetPiggyBack(key,
             () =>
             {
                 var result = callIfNotFound();

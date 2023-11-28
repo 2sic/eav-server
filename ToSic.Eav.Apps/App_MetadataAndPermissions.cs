@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
@@ -29,9 +30,10 @@ partial class App: IHasPermissions
     /// <summary>
     /// Assign all kinds of metadata / resources / settings (App-Mode only)
     /// </summary>
-    protected void InitializeResourcesSettingsAndMetadata() => Log.Do(() =>
+    protected void InitializeResourcesSettingsAndMetadata()
     {
-        var appState = AppState;
+        var l = Log.Fn();
+        var appState = AppStateInt;
         Metadata = appState.Metadata;
 
         // Get the content-items describing various aspects of this app
@@ -40,18 +42,23 @@ partial class App: IHasPermissions
         AppConfiguration = appState.SettingsInApp.AppConfiguration;
         // in some cases these things may be null, if the app was created not allowing side-effects
         // This can usually happen when new apps are being created
-        Log.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");
+        l.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");
 
         // resolve some values for easier access
         Name = appState.Name ?? Constants.ErrorAppName;
         Folder = appState.Folder ?? Constants.ErrorAppName;
 
-        Hidden = AppConfiguration?.Value<bool>(AppConstants.FieldHidden) ?? false;
-        Log.A($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
-    });
+        Hidden = AppConfiguration?.Value<bool>(AppLoadConstants.FieldHidden) ?? false;
+        l.Done($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
+    }
     #endregion
 
     [PublicApi]
-    public AppState AppState => _appState ??= Services.AppStates.Get(this);
-    private AppState _appState;
+    public AppState AppState => AppStateInt.AppState; // _appState ??= Services.AppStates.Get(this);
+    // private AppState _appState;
+
+    [PrivateApi] public IAppState AppStateWIP => AppStateInt;
+
+    protected internal IAppStateInternal AppStateInt => _appStateReader ??= Services.AppStates.GetReaderInternalOrNull(this);
+    private IAppStateInternal _appStateReader;
 }

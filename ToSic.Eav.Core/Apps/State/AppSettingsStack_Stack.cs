@@ -40,27 +40,27 @@ partial class AppSettingsStack
     private AppStateStackCache GetOrGenerate(AppThingsIdentifiers target)
     {
         var l = Log.Fn<AppStateStackCache>(target.Target.ToString());
-        return l.ReturnAndLog(Owner.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target)));
+        return l.ReturnAndLog(Reader.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target)));
     }
 
     private AppStateStackCache Get(AppThingsIdentifiers target)
     {
         var l = Log.Fn<AppStateStackCache>(target.Target.ToString());
         // Site should be skipped on the global zone
-        l.A($"Owner: {Owner.Show()}");
-        var site = Owner.ZoneId == Constants.DefaultZoneId ? null : _appStates.GetPrimaryApp(Owner.ZoneId, Log);
+        l.A($"Owner: {Reader.Show()}");
+        var site = Reader.ZoneId == Constants.DefaultZoneId ? null : _appStates.GetPrimaryApp(Reader.ZoneId, Log);
         l.A($"Site: {site?.Show()}");
-        var global = _appStates.Get(Constants.GlobalIdentity);
+        var global = _appStates.GetReaderInternalOrNull(Constants.GlobalIdentity);
         l.A($"Global: {global?.Show()}");
         var preset = _appStates.GetPresetApp();
         l.A($"Preset: {preset?.Show()}");
 
         // Find the ancestor, but only use it if it's not the preset
-        var appAncestor = Owner.ParentApp.AppState;
+        var appAncestor = Reader.ParentAppState;
         var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId ? null : appAncestor;
         l.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
 
-        var stackCache = new AppStateStackCache(Owner, ancestorIfNotPreset, site, global, preset, target);
+        var stackCache = new AppStateStackCache(Reader.AppState, ancestorIfNotPreset, site, global?.AppState, preset, target);
 
         return l.ReturnAndLog(stackCache, "created");
     }

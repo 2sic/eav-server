@@ -80,7 +80,7 @@ public sealed class Attributes: DataSourceBase
 
         var type = useStream 
             ? optionalList?.FirstOrDefault()?.Type
-            : _appStates.Get(this).GetContentType(ContentTypeName);
+            : _appStates.GetReaderOrNull(this).GetContentType(ContentTypeName);
 
         // try to load from type, if it exists
         var list = type?.Attributes?

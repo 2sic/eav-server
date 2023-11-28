@@ -19,12 +19,12 @@ public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
     [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
     public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new MyServicesEmpty(), $"App.St-{id.AppId}")
     {
-        Log.A($"AppState for App {id.AppId}");
+        var l = Log.Fn($"AppState for App {id.AppId}");
         this.LinkLog(parentLog, forceConnect: true);
         InitAppBaseIds(id);
 
         ParentApp = parentApp;
-        Log.A($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
+        l.A($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
         CacheExpiryDelegate = CreateExpiryDelegate(parentApp);
 
         NameId = nameId;
@@ -35,6 +35,7 @@ public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
         CacheResetTimestamp("init", offset: -1);  // do this very early, as this number is needed elsewhere
 
         Relationships = new AppRelationshipManager(this);
+        l.Done();
     }
     [PrivateApi("WIP v13")]
     public readonly ParentAppState ParentApp;

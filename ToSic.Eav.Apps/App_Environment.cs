@@ -15,7 +15,7 @@ partial class App
     #region Paths
 
     [PrivateApi]
-    public string PhysicalPath => AppState.GetPiggyBack(nameof(PhysicalPath), () => Path.Combine(Site.AppsRootPhysicalFull, Folder));
+    public string PhysicalPath => AppStateInt.GetPiggyBack(nameof(PhysicalPath), () => Path.Combine(Site.AppsRootPhysicalFull, Folder));
 
     #endregion
 

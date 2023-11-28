@@ -160,6 +160,6 @@ public partial class App : DataSourceBase
     // TODO: cause obsolete warning when used! #Deprecated
     public IMetadataSource Metadata => AppState;
 
-    protected AppState AppState => _appState.Get(() => _services.AppStates.Get(this));
-    private readonly GetOnce<AppState> _appState = new();
+    protected IAppState AppState => _appState.Get(() => _services.AppStates.GetReaderOrNull(this));
+    private readonly GetOnce<IAppState> _appState = new();
 }

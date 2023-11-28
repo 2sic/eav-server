@@ -73,7 +73,7 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
 
         try
         {
-            var appState = _appStates.Get(this);
+            var appState = _appStates.GetReaderOrNull(this);
             var foundType = appState?.GetContentType(TypeName);
             if (foundType != null) // maybe it doesn't find it!
             {

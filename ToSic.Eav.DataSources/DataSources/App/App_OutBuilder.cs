@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Caching.CacheInfo;
 using ToSic.Eav.DataSource.Streams;
@@ -82,7 +83,7 @@ partial class App: IDataSourceReset
 
             var deferredStream = new DataStreamWithCustomCaching(
                 Services.CacheService,
-                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appState,
+                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), ((IAppStateInternal)appState).AppState,
                     $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                 this,
                 typeName,

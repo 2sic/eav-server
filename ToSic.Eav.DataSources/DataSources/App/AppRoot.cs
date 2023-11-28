@@ -1,11 +1,11 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.DataSources;
 
@@ -21,9 +21,9 @@ public class AppRoot : DataSourceBase, IAppRoot
     public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.Root")
     {
         _appStates = appStates;
-        ProvideOut(() => AppState.List);
-        ProvideOut(() => AppState.ListPublished.List, StreamPublishedName);
-        ProvideOut(() => AppState.ListNotHavingDrafts.List, StreamDraftsName);
+        ProvideOut(() => AppReader.List);
+        ProvideOut(() => AppReader.ListPublished.List, StreamPublishedName);
+        ProvideOut(() => AppReader.ListNotHavingDrafts.List, StreamDraftsName);
     }
     private readonly IAppStates _appStates;
 
@@ -41,20 +41,20 @@ public class AppRoot : DataSourceBase, IAppRoot
     private CacheKey _cacheKey;
 
     /// <summary>
-    /// Get the <see cref="AppState"/> of this app from the cache.
+    /// Get the <see cref="AppReader"/> of this app from the cache.
     /// </summary>
-    private AppState AppState => _appState ??= _appStates.Get(this);
-    private AppState _appState;
+    private IAppStateInternal AppReader => _appReader ??= _appStates.GetReaderInternalOrNull(this);
+    private IAppStateInternal _appReader;
 
     #region Cache-Chain
 
     /// <inheritdoc />
     [PrivateApi]
-    public override long CacheTimestamp => AppState.CacheTimestamp;
+    public override long CacheTimestamp => AppReader.CacheTimestamp;
 
     /// <inheritdoc />
     [PrivateApi]
-    public override bool CacheChanged(long dependentTimeStamp) => AppState.CacheChanged(dependentTimeStamp);
+    public override bool CacheChanged(long dependentTimeStamp) => AppReader.CacheChanged(dependentTimeStamp);
 
     /// <summary>
     /// Combination of the current key and all keys of upstream cached items, to create a long unique key for this context.

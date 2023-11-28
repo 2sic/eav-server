@@ -5,6 +5,7 @@ namespace ToSic.Eav.Apps.Paths
     public interface IAppPathsMicroSvc: IAppPaths
     {
         IAppPaths Init(ISite site, AppState appState);
+        IAppPaths Init(ISite site, IAppState appState);
         bool InitDone { get; }
     }
 }

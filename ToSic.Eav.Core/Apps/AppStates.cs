@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
@@ -25,6 +26,12 @@ internal class AppStates: IAppStates
 
     /// <inheritdoc />
     public AppState Get(IAppIdentity app) => AppsCacheSwitch.Value.Get(app, _loaderTools);
+
+    //public IAppReader GetReaderOrNull(IAppIdentity app)
+    //{
+    //    var state = Get(app);
+    //    return state is null ? null : new AppReader(Get(app));
+    //}
 
     /// <inheritdoc />
     public AppState Get(int appId) => AppsCacheSwitch.Value.Get(IdentityOfApp(appId), _loaderTools);

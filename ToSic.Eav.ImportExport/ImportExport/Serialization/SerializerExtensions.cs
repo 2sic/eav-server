@@ -8,10 +8,19 @@ namespace ToSic.Eav.ImportExport.Serialization;
 public static class SerializerExtensions
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static T SetApp<T>(this T serializer, AppState package) where T : SerializerBase
+    public static T SetApp<T>(this T serializer, AppState appState) where T : SerializerBase
     {
         var l = serializer.Log.Fn<T>();
-        serializer.Initialize(package);
+        serializer.Initialize(appState);
         return l.Return(serializer);
     }
+
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public static T SetApp<T>(this T serializer, IAppState appState) where T : SerializerBase
+    {
+        var l = serializer.Log.Fn<T>();
+        serializer.Initialize(appState.Internal().AppState);
+        return l.Return(serializer);
+    }
+
 }

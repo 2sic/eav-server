@@ -52,19 +52,19 @@ internal class AppWithParents: DataSourceBase
 
     private IImmutableList<IEntity> GetList() => Log.Func(() =>
     {
-        var appState = _appStates.Get(this);
+        var appState = _appStates.GetReaderInternalOrNull(this);
             
         var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appState));
         var initialLink = initialSource.Link;
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-        var parent = appState.ParentApp;
+        var parentAppState = appState.ParentAppState;
         var countRecursions = 0;
-        while (parent?.AppState != null && countRecursions++ < 5)
+        while (parentAppState != null && countRecursions++ < 5)
         {
-            var next = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: parent.AppState));
-            initialLink = initialLink.Add(next.Link.Rename(inName: $"App{parent.AppState.NameId}"));
-            parent = parent.AppState.ParentApp;
+            var next = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: parentAppState));
+            initialLink = initialLink.Add(next.Link.Rename(inName: $"App{parentAppState.NameId}"));
+            parentAppState = parentAppState.ParentApp?.AppState;
         }
 
         var merge = _mergeGenerator.New(attach: initialLink);

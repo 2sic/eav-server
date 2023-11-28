@@ -86,5 +86,8 @@ public interface IApp : IAppIdentity, IHasMetadata
     [PrivateApi]
     AppState AppState { get; }
 
+    [PrivateApi]
+    IAppState AppStateWIP { get; }
+
     #endregion
 }

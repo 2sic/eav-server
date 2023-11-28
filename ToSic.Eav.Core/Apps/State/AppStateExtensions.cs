@@ -11,6 +11,11 @@ public static class AppStateExtensions
     public static bool IsInherited(this AppState appState)
         => appState.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
+    public static bool IsInherited(this IAppState reader)
+        => reader.Internal().AppState.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
+
+    public static bool HasCustomParentApp(this IAppState reader) => reader.Internal().AppState.HasCustomParentApp();
+
     public static bool HasCustomParentApp(this AppState states)
     {
         var parentAppGuid = states?.ParentApp?.AppState?.NameId;

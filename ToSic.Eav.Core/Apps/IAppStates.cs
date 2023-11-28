@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
@@ -18,6 +17,8 @@ public interface IAppStates
     /// <param name="app">App identifier.</param>
     /// <returns>The <see cref="AppState"/> of the app.</returns>
     AppState Get(IAppIdentity app);
+
+    //IAppReader GetReaderOrNull(IAppIdentity app);
 
     /// <summary>
     /// Retrieve an app from the cache

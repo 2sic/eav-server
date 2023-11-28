@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Apps.Reader;
+using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps;
@@ -7,7 +8,6 @@ namespace ToSic.Eav.Apps;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class AppSettingsStack: ServiceBase
 {
-
     public AppSettingsStack(IAppStates appStates): base("App.Stack")
     {
         _appStates = appStates;
@@ -20,9 +20,18 @@ public partial class AppSettingsStack: ServiceBase
     /// <param name="owner"></param>
     public AppSettingsStack Init(AppState owner)
     {
-        Owner = owner;
+        //Owner = owner;
+        Reader = owner.ToInterface(Log);
         return this;
     }
 
-    private AppState Owner { get; set; }
+    /// <summary>
+    /// </summary>
+    public AppSettingsStack Init(IAppState state)
+    {
+        Reader = (IAppStateInternal)state;
+        return this;
+    }
+
+    private IAppStateInternal Reader { get; set; }
 }

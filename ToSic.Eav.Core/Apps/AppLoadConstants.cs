@@ -5,7 +5,8 @@ public class AppLoadConstants
 {
     public const string
         FieldName = "DisplayName",
-        FieldFolder = "Folder";
+        FieldFolder = "Folder",
+        FieldHidden = "Hidden";
 
     public const string TypeAppConfig = "2SexyContent-App";
     public const string TypeAppResources = "App-Resources";

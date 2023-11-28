@@ -76,7 +76,7 @@ public class MetadataTargets: MetadataDataSourceBase
     [PrivateApi]
     private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator()
     {
-        var appState = _appStates.Get(this);
+        var appState = _appStates.GetReaderOrNull(this);
         return o =>
         {
             var mdFor = o.MetadataFor;
@@ -90,8 +90,4 @@ public class MetadataTargets: MetadataDataSourceBase
             return Enumerable.Empty<IEntity>();
         };
     }
-
-    //[PrivateApi]
-    //protected override IEnumerable<IEntity> Postprocess(IEnumerable<IEntity> results) 
-    //    => FilterDuplicates ? results.Distinct() : results;
 }

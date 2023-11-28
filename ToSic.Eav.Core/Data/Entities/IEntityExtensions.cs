@@ -110,6 +110,9 @@ public static partial class IEntityExtensions
             : list.Where(e => e.Type.Is(typeName));
     }
 
+    public static IEntity IfOfType(this IEntity entity, string typeName) 
+        => entity.Type.Is(typeName) ? entity : null;
+
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static Dictionary<string, object> AsDictionary(this IEntity entity)

@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Apps.Reader;
+using ToSic.Lib.Logging;
 using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps;
@@ -28,5 +29,14 @@ public static class AppStatesExtensions
     {
         var zoneId = appStates.IdentityOfApp(appId).ZoneId;
         return appStates.GetPrimaryApp(zoneId, log);
+    }
+
+    public static IAppState GetReaderOrNull(this IAppStates appStates, IAppIdentity app) 
+        => appStates.GetReaderInternalOrNull(app);
+
+    public static IAppStateInternal GetReaderInternalOrNull(this IAppStates appStates, IAppIdentity app)
+    {
+        var state = appStates.Get(app);
+        return state is null ? null : new AppStateReader(state, /*Log */ null);
     }
 }
