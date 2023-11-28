@@ -49,7 +49,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
 
         internal static string GetJsonOfContentTypeOfItem(int eId, JsonSerializer ser)
         {
-            var x = ser.App.List.One(eId);
+            var x = ser.AppStateOrError.List.One(eId);
             var xmlEnt = ser.Serialize(x.Type);
             return xmlEnt;
         }
@@ -58,7 +58,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
             => JsonOfContentType(SerializerOfApp(appId), typeName);
 
         internal static string JsonOfContentType(JsonSerializer ser, string typeName)
-            => JsonOfContentType(ser, ser.App.GetContentType(typeName));
+            => JsonOfContentType(ser, ser.AppStateOrError.GetContentType(typeName));
 
         internal static string JsonOfContentType(JsonSerializer ser, IContentType type) 
             => ser.Serialize(type);

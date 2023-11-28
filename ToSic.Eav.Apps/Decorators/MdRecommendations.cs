@@ -169,7 +169,7 @@ public class MdRecommendations: ServiceBase
                         return false;
                     case (int)TargetTypes.Attribute:
                         if (targetName.EqualsInsensitive(targetKey)) return true;
-                        var attr = AppState.FindAttribute(targetKey);
+                        var attr = AppState.ContentTypes.FindAttribute(targetKey);
                         return keyForward.EqualsInsensitive($"{attr.Item1.NameId}/{attr.Item2.Name}")
                                || keyForward.EqualsInsensitive($"{attr.Item1.Name}/{attr.Item2.Name}");
                     // App and ContentType don't need extra conditions / specifiers

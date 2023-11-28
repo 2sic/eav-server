@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.XPath;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSource;
@@ -71,11 +72,11 @@ public class ZipExport: ServiceBase
             FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal)
         );
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appState = _appStates.Get(appIdentity);
+        _appState = _appStates.GetReaderInternalOrNull(appIdentity);
         return this;
     }
 
-    private AppState _appState;
+    private IAppStateInternal _appState;
     #endregion
 
     public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool withSiteFiles = false)
@@ -175,7 +176,7 @@ public class ZipExport: ServiceBase
             FileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
 
         // Copy global app folder only for ParentApp
-        var parentAppGuid = xmlExport.AppState.ParentApp.AppState?.NameId;
+        var parentAppGuid = xmlExport.AppState.ParentAppState?.NameId;
         if (parentAppGuid == null || AppStateExtensions.AppGuidIsAPreset(parentAppGuid))
             if (Directory.Exists(_physicalPathGlobal))
                 FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);

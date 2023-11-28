@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 
 // ReSharper disable once CheckNamespace
@@ -11,6 +12,8 @@ public interface IContextOfApp: IContextOfSite
     /// The App State which the current context has
     /// </summary>
     AppState AppState { get; }
+
+    IAppStateInternal AppStateReader { get; }
 
     /// <summary>
     /// Reset call to change what AppState is in the context.

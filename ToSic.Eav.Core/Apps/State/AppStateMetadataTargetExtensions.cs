@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
@@ -13,7 +14,7 @@ public static class AppStateMetadataTargetExtensions
 {
     // 2021-11-22 2dm WIP - not used yet
     // Idea was to be able to get Metadata Targets, but I'm not sure if it's useful at all
-    public static string FindTargetTitle(this AppState appState, int targetType, string key)
+    public static string FindTargetTitle(this IAppState appState, int targetType, string key)
     {
 
         if (!Enum.IsDefined(typeof(TargetTypes), targetType)) return null;
@@ -25,7 +26,7 @@ public static class AppStateMetadataTargetExtensions
                 return null;
             case TargetTypes.Attribute:
                 if (!int.TryParse(key, out var keyInt)) return null;
-                var attr = appState.FindAttribute(keyInt);
+                var attr = appState.ContentTypes.FindAttribute(keyInt);
                 return attr.Item1?.Metadata?.Target.Title + "/" + attr.Item2?.Metadata?.Target.Title;
             case TargetTypes.App:
                 return appState.Metadata?.Target.Title;
@@ -43,12 +44,12 @@ public static class AppStateMetadataTargetExtensions
         }
     }
 
-    public static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this AppState appState, string idString) 
-        => !int.TryParse(idString, out var keyInt) ? default : appState.FindAttribute(keyInt);
+    public static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this IEnumerable<IContentType> contentTypes, string idString) 
+        => !int.TryParse(idString, out var keyInt) ? default : contentTypes.FindAttribute(keyInt);
 
-    public static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this AppState appState, int id)
+    private static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this IEnumerable<IContentType> contentTypes, int id)
     {
-        var allLocalCts = appState.ContentTypes
+        var allLocalCts = contentTypes
             .Where(ct => !ct.HasAncestor());
         var attr = allLocalCts
             .SelectMany(ct => ct.Attributes.Select(at => (ct, at)))

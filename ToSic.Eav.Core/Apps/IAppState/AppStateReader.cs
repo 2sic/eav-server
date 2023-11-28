@@ -48,6 +48,9 @@ namespace ToSic.Eav.Apps.Reader
 
         AppStateMetadata IAppStateInternal.ResourcesInApp => _appState.ResourcesInApp;
 
+        IContentType IAppStateInternal.GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
+        ParentAppState IAppStateInternal.ParentApp => _appState.ParentApp;
+
         #endregion
 
         #region Basic Properties
@@ -62,10 +65,11 @@ namespace ToSic.Eav.Apps.Reader
 
         #region Advanced Properties
 
-        public IAppConfiguration Configuration => _appConfig.Get(() => new AppConfiguration(AppConfiguration, Log));
+        public IAppConfiguration Configuration => _appConfig.Get(() => new AppConfiguration(ConfigurationEntity, Log));
         private readonly GetOnce<IAppConfiguration> _appConfig = new();
 
-        internal IEntity AppConfiguration => _appConfiguration ??= _appState.SettingsInApp.AppConfiguration;
+        public IEntity ConfigurationEntity => _appConfiguration ??= _appState.SettingsInApp.AppConfiguration;
+
         private IEntity _appConfiguration;
 
         #endregion

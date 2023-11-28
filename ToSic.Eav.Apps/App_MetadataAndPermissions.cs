@@ -23,7 +23,6 @@ partial class App: IHasPermissions
     #endregion
 
     #region Settings, Config, Metadata
-    protected IEntity AppConfiguration;
     protected IEntity AppSettings;
     protected IEntity AppResources;
 
@@ -39,25 +38,20 @@ partial class App: IHasPermissions
         // Get the content-items describing various aspects of this app
         AppResources = appState.ResourcesInApp.MetadataItem;
         AppSettings = appState.SettingsInApp.MetadataItem;
-        AppConfiguration = appState.SettingsInApp.AppConfiguration;
         // in some cases these things may be null, if the app was created not allowing side-effects
         // This can usually happen when new apps are being created
-        l.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppConfiguration != null}");
+        l.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppStateInt.ConfigurationEntity != null}");
 
         // resolve some values for easier access
         Name = appState.Name ?? Constants.ErrorAppName;
         Folder = appState.Folder ?? Constants.ErrorAppName;
 
-        Hidden = AppConfiguration?.Value<bool>(AppLoadConstants.FieldHidden) ?? false;
+        Hidden = AppStateInt.ConfigurationEntity?.Value<bool>(AppLoadConstants.FieldHidden) ?? false;
         l.Done($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
     }
     #endregion
 
-    [PublicApi]
-    public AppState AppState => AppStateInt.AppState; // _appState ??= Services.AppStates.Get(this);
-    // private AppState _appState;
-
-    [PrivateApi] public IAppState AppStateWIP => AppStateInt;
+    [PublicApi] public IAppState AppState => AppStateInt;
 
     protected internal IAppStateInternal AppStateInt => _appStateReader ??= Services.AppStates.GetReaderInternalOrNull(this);
     private IAppStateInternal _appStateReader;

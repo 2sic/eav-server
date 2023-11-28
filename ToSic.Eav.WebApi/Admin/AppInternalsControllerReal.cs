@@ -43,7 +43,7 @@ public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
         var settingsCustomExists = systemConfiguration.Any(ct => ct.Name == "SettingsCustom");
         var resourcesCustomExists = systemConfiguration.Any(ct => ct.Name == "ResourcesCustom");
 
-        var appState = _appStates.Value.Get(appId);
+        var appState = _appStates.Value.GetReaderInternalOrNull(appId);
         var isGlobal = appState.IsGlobalSettingsApp();
         var isPrimary = appState.AppId == _appStates.Value.PrimaryAppId(appState.ZoneId);
 

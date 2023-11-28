@@ -39,8 +39,7 @@ partial class Efc11Loader
 
         #region Prepare & Extend EntityIds
 
-        if (entityIds == null)
-            entityIds = Array.Empty<int>();
+        entityIds ??= Array.Empty<int>();
 
         var filterByEntityIds = entityIds.Any();
 

@@ -18,7 +18,7 @@ public class XmlSerializer: SerializerBase
 
     public XmlSerializer(MyServices services): base(services, "IEx.XmlSer") { }
 
-    public XmlSerializer Init(Dictionary<string, int> dimensionMapping, AppState appState)
+    public XmlSerializer Init(Dictionary<string, int> dimensionMapping, IAppState appState)
     {
         Initialize(appState);
         _dimensions = dimensionMapping;

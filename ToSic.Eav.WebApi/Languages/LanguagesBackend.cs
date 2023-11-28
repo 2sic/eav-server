@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Context;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
@@ -45,11 +46,11 @@ public class LanguagesBackend: ServiceBase
         return l.Return(cultures, "found:" + cultures.Count);
     }
 
-    public List<SiteLanguageDto> GetLanguagesOfApp(AppState appState, bool withCount = false)
+    public List<SiteLanguageDto> GetLanguagesOfApp(IAppStateInternal appState, bool withCount = false)
     {
         try
         {
-            var langs = _appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appState);
+            var langs = _appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appState.AppState);
             var converted = langs.Select(l =>
                 {
                     var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };

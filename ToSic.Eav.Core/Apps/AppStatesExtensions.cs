@@ -25,10 +25,10 @@ public static class AppStatesExtensions
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static AppState GetPrimaryAppOfAppId(this IAppStates appStates, int appId, ILog log)
+    public static int GetPrimaryAppOfAppId(this IAppStates appStates, int appId, ILog log)
     {
         var zoneId = appStates.IdentityOfApp(appId).ZoneId;
-        return appStates.GetPrimaryApp(zoneId, log);
+        return appStates.GetPrimaryApp(zoneId, log).AppId;
     }
 
     public static IAppState GetReaderOrNull(this IAppStates appStates, IAppIdentity app) 
@@ -37,6 +37,11 @@ public static class AppStatesExtensions
     public static IAppStateInternal GetReaderInternalOrNull(this IAppStates appStates, IAppIdentity app)
     {
         var state = appStates.Get(app);
+        return state is null ? null : new AppStateReader(state, /*Log */ null);
+    }
+    public static IAppStateInternal GetReaderInternalOrNull(this IAppStates appStates, int appId)
+    {
+        var state = appStates.Get(appId);
         return state is null ? null : new AppStateReader(state, /*Log */ null);
     }
 }

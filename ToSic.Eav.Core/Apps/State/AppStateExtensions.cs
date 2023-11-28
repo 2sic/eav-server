@@ -16,7 +16,7 @@ public static class AppStateExtensions
 
     public static bool HasCustomParentApp(this IAppState reader) => reader.Internal().AppState.HasCustomParentApp();
 
-    public static bool HasCustomParentApp(this AppState states)
+    private static bool HasCustomParentApp(this AppState states)
     {
         var parentAppGuid = states?.ParentApp?.AppState?.NameId;
         return !string.IsNullOrEmpty(parentAppGuid) && !AppGuidIsAPreset(parentAppGuid);
@@ -27,17 +27,22 @@ public static class AppStateExtensions
            && (parentAppGuid == Constants.PresetName || parentAppGuid == Constants.GlobalPresetName);
 
     // TODO: @STV - try to use this where possible
-    public static bool IsContentApp(this AppState appState)
+    public static bool IsContentApp(this IAppState appState)
         => appState.NameId == Constants.DefaultAppGuid;
 
+
     // TODO: @STV - try to use this where possible
-    public static bool IsGlobalSettingsApp(this AppState appState)
+    public static bool IsGlobalSettingsApp(this IAppState appState)
         => appState.AppId == Constants.MetaDataAppId;
 
     // TODO: @STV - try to use this where possible
-    public static bool IsSiteSettingsApp(this AppState appState)
+    public static bool IsSiteSettingsApp(this IAppState appState)
         => appState.NameId == Constants.PrimaryAppGuid;
 
     public static IEntity GetDraftOrKeep(this AppState appState, IEntity entity) => appState.GetDraft(entity) ?? entity;
     public static IEntity GetDraftOrPublished(this AppState appState, Guid guid) => appState.GetDraftOrKeep(appState.List.One(guid));
+
+    public static IEntity GetDraftOrKeep(this IAppState appState, IEntity entity) => appState.GetDraft(entity) ?? entity;
+    public static IEntity GetDraftOrPublished(this IAppState appState, Guid guid) => appState.GetDraftOrKeep(appState.List.One(guid));
+
 }

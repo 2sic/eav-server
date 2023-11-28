@@ -19,5 +19,11 @@ namespace ToSic.Eav.Apps.Reader
         AppStateMetadata SettingsInApp { get; }
 
         AppStateMetadata ResourcesInApp { get; }
+
+        IEntity ConfigurationEntity { get; }
+
+        IContentType GetContentType(int contentTypeId);
+
+        ParentAppState ParentApp { get; }
     }
 }

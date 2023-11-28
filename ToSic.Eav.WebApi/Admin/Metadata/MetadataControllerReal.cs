@@ -82,7 +82,7 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
 
         try
         {
-            mdFor.Title = appState.FindTargetTitle(targetType, key);
+            mdFor.Title = appState.ToInterface(Log).FindTargetTitle(targetType, key);
             l.A($"title: '{mdFor.Title}'");
         }
         catch { /* experimental / ignore */ }

@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Languages;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
@@ -78,7 +79,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         set
         {
             _appIdentity = value;
-            _appState.Reset();
+            _appStateInternal.Reset();
             _appSettingsStack.Reset();
             _settings.Reset();
             _resources.Reset();
@@ -118,8 +119,11 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     }));
     private readonly GetOnce<bool> _userMayEditGet = new();
 
-    public AppState AppState => _appState.Get(() => AppIdentity == null ? null : AppServices.AppStates.Get(AppIdentity));
-    private readonly GetOnce<AppState> _appState = new();
+    public AppState AppState => AppStateReader?.AppState; // _appState.Get(() => AppIdentity == null ? null : AppServices.AppStates.Get(AppIdentity));
+    // private readonly GetOnce<AppState> _appState = new();
+
+    public IAppStateInternal AppStateReader => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppStates.GetReaderInternalOrNull(AppIdentity));
+    private readonly GetOnce<IAppStateInternal> _appStateInternal = new();
 
     #region Settings and Resources
 

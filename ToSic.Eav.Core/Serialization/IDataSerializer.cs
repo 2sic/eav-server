@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 using AppState = ToSic.Eav.Apps.AppState;
@@ -17,6 +19,8 @@ public interface IDataSerializer
     /// </summary>
     /// <param name="appState">the app which contains the data to be serialized</param>
     void Initialize(AppState appState);
+
+    void Initialize(IAppState appState);
 
     /// <summary>
     /// Serialize an entity to a string

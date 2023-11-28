@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
 using ToSic.Lib.Documentation;
@@ -19,6 +20,8 @@ public interface IDataDeserializer: IHasLog
     /// </summary>
     /// <param name="appState">the app which contains the data to be serialized</param>
     void Initialize(AppState appState);
+
+    void Initialize(IAppState appState);
 
     /// <summary>
     /// Initialize with the app. One of two possible initializers. <br/>

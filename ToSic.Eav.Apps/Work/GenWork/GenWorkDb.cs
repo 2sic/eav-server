@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.DI;
+﻿using ToSic.Eav.Apps.Reader;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Work;
@@ -32,6 +33,7 @@ public class GenWorkDb<TWork>: ServiceBase where TWork : WorkUnitBase<IAppWorkCt
     public TWork New(IAppWorkCtxWithDb ctx) => NewInternal(ctx);
 
     public TWork New(AppState appState) => NewInternal(CtxSvc.CtxWithDb(appState));
+    public TWork New(IAppStateInternal appState) => NewInternal(CtxSvc.CtxWithDb(appState.AppState));
 
     public TWork New(IAppIdentity identity) => NewInternal(_ctxSvc.Value.CtxWithDb(_ctxSvc.Value.AppStates.Get(identity)));
 

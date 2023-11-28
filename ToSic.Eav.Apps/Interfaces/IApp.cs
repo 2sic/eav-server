@@ -84,10 +84,7 @@ public interface IApp : IAppIdentity, IHasMetadata
     /// The stored / cached, read-only App State
     /// </summary>
     [PrivateApi]
-    AppState AppState { get; }
-
-    [PrivateApi]
-    IAppState AppStateWIP { get; }
+    IAppState AppState { get; }
 
     #endregion
 }

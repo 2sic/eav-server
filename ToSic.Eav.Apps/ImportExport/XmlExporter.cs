@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
@@ -36,7 +37,7 @@ public abstract class XmlExporter : ServiceBase
     public string[] EntityIDs;
     public List<Message> Messages = new();
 
-    public AppState AppState { get; private set; }
+    public IAppStateInternal AppState { get; private set; }
 
     public int ZoneId { get; private set; }
 
@@ -57,7 +58,7 @@ public abstract class XmlExporter : ServiceBase
     public XmlSerializer Serializer { get; }
     protected readonly IAppStates AppStates;
 
-    protected void Constructor(int zoneId, AppState appState, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
+    protected void Constructor(int zoneId, IAppStateInternal appState, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
     {
         ZoneId = zoneId;
         Log.A("start XML exporter using app-package");
@@ -76,12 +77,12 @@ public abstract class XmlExporter : ServiceBase
     /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
     /// </summary>
     /// <returns></returns>
-    public virtual XmlExporter Init(int zoneId, int appId, AppState appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+    public virtual XmlExporter Init(int zoneId, int appId, IAppStateInternal appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
     {
         ContextResolver.SetApp(new AppIdentity(zoneId, appId));
         var ctxOfApp = ContextResolver.App();
         PostContextInit(ctxOfApp);
-        Constructor(zoneId, appRuntime, ctxOfApp.AppState.NameId, appExport, attrSetIds, entityIds);
+        Constructor(zoneId, appRuntime, ctxOfApp.AppStateReader.NameId, appExport, attrSetIds, entityIds);
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
         InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
@@ -255,14 +256,11 @@ public abstract class XmlExporter : ServiceBase
 
     private XElement GetParentAppXElement()
     {
-        if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid)
-        {
-            if (AppState.HasCustomParentApp())
-                return new XElement(XmlConstants.ParentApp,
-                    new XAttribute(XmlConstants.Guid, AppState.ParentApp.AppState?.NameId),
-                    new XAttribute(XmlConstants.AppId, AppState.ParentApp.AppState?.AppId)
-                );
-        }
+        if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid && AppState.HasCustomParentApp())
+            return new XElement(XmlConstants.ParentApp,
+                new XAttribute(XmlConstants.Guid, AppState.ParentAppState.NameId),
+                new XAttribute(XmlConstants.AppId, AppState.ParentAppState.AppId)
+            );
         return null;
     }
 

@@ -19,7 +19,7 @@ public static class SerializerExtensions
     public static T SetApp<T>(this T serializer, IAppState appState) where T : SerializerBase
     {
         var l = serializer.Log.Fn<T>();
-        serializer.Initialize(appState.Internal().AppState);
+        serializer.Initialize(appState);
         return l.Return(serializer);
     }
 

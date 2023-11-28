@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
@@ -51,7 +52,14 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
     public void Initialize(AppState appState)
     {
-        App = appState;
+        //AppOrNull = appState;
+        AppStateOrNull = appState.ToInterface(Log);
+        AppId = appState.AppId;
+    }
+    public void Initialize(IAppState appState)
+    {
+        //AppOrNull = appState;
+        AppStateOrNull = appState.Internal();
         AppId = appState.AppId;
     }
 
@@ -66,13 +74,15 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
     #endregion
 
+    public IAppStateInternal AppStateOrError => AppStateOrNull ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+    protected IAppStateInternal AppStateOrNull { get; private set; }
 
 
-    public AppState App
-    {
-        get => AppOrNull ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
-        set => AppOrNull = value;
-    }
+    //public AppState App
+    //{
+    //    get => AppOrNull ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+    //    private set => AppOrNull = value;
+    //}
     protected AppState AppOrNull { get; private set; }
 
     public bool PreferLocalAppTypes = false;
@@ -88,7 +98,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
         // ReSharper disable once InvertIf
         if (PreferLocalAppTypes)
         {
-            var type = App.GetContentType(staticName);
+            var type = AppStateOrError.GetContentType(staticName);
             if (type != null) return (type, $"app: found");
             msg += "app: not found, ";
         }
@@ -106,7 +116,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
         else
         {
             msg += "app: ";
-            globalType = App.GetContentType(staticName);
+            globalType = AppStateOrError.GetContentType(staticName);
         }
 
         return (globalType, $"{msg}{(globalType == null ? "not " : "")}found");
@@ -118,10 +128,6 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
         return DeserializationSettings?.EntityContentTypeProvider?.LazyTypeGenerator(AppId, name, nameId, defaultTransient)
                ?? defaultTransient;
     }
-    ///// <summary>
-    ///// Ability to inject a different TransientContentTypeGenerator
-    ///// </summary>
-    //public IDeferredContentTypeProvider ContentTypeProvider { get; set; } = null;
 
     /// <summary>
     /// Ability to inject a different TransientContentTypeGenerator and other parameters
@@ -129,7 +135,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
     /// </summary>
     internal JsonDeSerializationSettings DeserializationSettings { get; set; } = null;
 
-    protected IEntity Lookup(int entityId) => App.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
+    protected IEntity Lookup(int entityId) => AppStateOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 
     public abstract string Serialize(IEntity entity);
 
@@ -139,7 +145,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
     public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 
-    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= App;
+    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppStateOrError.AppState;
     private IEntitiesSource _relList;
 
 }
