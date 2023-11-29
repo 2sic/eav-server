@@ -8,17 +8,16 @@ namespace ToSic.Eav.Apps;
 public static class AppStateExtensions
 {
 
-    public static bool IsInherited(this AppState appState)
-        => appState.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
+    //public static bool IsInherited(this AppState appState)
+    //    => appState.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
     public static bool IsInherited(this IAppState reader)
         => reader.Internal().StateCache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
-    public static bool HasCustomParentApp(this IAppState reader) => reader.Internal().StateCache.HasCustomParentApp();
-
-    private static bool HasCustomParentApp(this AppState states)
+    public static bool HasCustomParentApp(this IAppState reader)
     {
-        var parentAppGuid = states?.ParentApp?.AppState?.NameId;
+        var stateCache = reader.Internal().StateCache;
+        var parentAppGuid = stateCache?.ParentApp?.AppState?.NameId;
         return !string.IsNullOrEmpty(parentAppGuid) && !AppGuidIsAPreset(parentAppGuid);
     }
 
@@ -39,8 +38,8 @@ public static class AppStateExtensions
     public static bool IsSiteSettingsApp(this IAppState appState)
         => appState.NameId == Constants.PrimaryAppGuid;
 
-    public static IEntity GetDraftOrKeep(this AppState appState, IEntity entity) => appState.GetDraft(entity) ?? entity;
-    public static IEntity GetDraftOrPublished(this AppState appState, Guid guid) => appState.GetDraftOrKeep(appState.List.One(guid));
+    //public static IEntity GetDraftOrKeep(this AppState appState, IEntity entity) => appState.GetDraft(entity) ?? entity;
+    //public static IEntity GetDraftOrPublished(this AppState appState, Guid guid) => appState.GetDraftOrKeep(appState.List.One(guid));
 
     public static IEntity GetDraftOrKeep(this IAppState appState, IEntity entity) => appState.GetDraft(entity) ?? entity;
     public static IEntity GetDraftOrPublished(this IAppState appState, Guid guid) => appState.GetDraftOrKeep(appState.List.One(guid));

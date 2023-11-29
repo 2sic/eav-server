@@ -41,7 +41,7 @@ public class AppUserLanguageCheck: ServiceBase
     /// </summary>
     /// <param name="appStateOrNull"></param>
     /// <returns>true in most admin-cases, false if feature enabled AND permissions configured AND not allowed</returns>
-    public bool? UserRestrictedByLanguagePermissions(AppState appStateOrNull)
+    public bool? UserRestrictedByLanguagePermissions(IAppState appStateOrNull)
     {
         var l = Log.Fn<bool?>($"{appStateOrNull?.Name}({appStateOrNull?.AppId})");
         // Note: it's important that all cases where we don't detect a forbidden
@@ -59,7 +59,7 @@ public class AppUserLanguageCheck: ServiceBase
         return l.Return(currentLang?.IsAllowed, $"permission: {currentLang?.IsAllowed}");
     }
 
-    public List<AppUserLanguageState> LanguagesWithPermissions(AppState appStateOrNull) => Log.Func(l =>
+    public List<AppUserLanguageState> LanguagesWithPermissions(IAppState appStateOrNull) => Log.Func(l =>
     {
         // to solves the issue with globals settings languages that can not be saved if 
         // app languages are different from languages in global app and because global
@@ -91,8 +91,8 @@ public class AppUserLanguageCheck: ServiceBase
         if (!hasPermissions && appStateOrNull.NameId != Constants.PrimaryAppGuid)
         {
             l.A("No permissions, and not primary app - will try that");
-            var primaryId = _appStatesLazy.Value.PrimaryAppId(appStateOrNull.ZoneId);
-            var primaryApp = _appStatesLazy.Value.Get(primaryId);
+            //var primaryId = _appStatesLazy.Value.PrimaryAppId(appStateOrNull.ZoneId);
+            var primaryApp = _appStatesLazy.Value.GetPrimaryReader(appStateOrNull.ZoneId, Log); //.Get(primaryId);
             set = GetLanguagePermissions(primaryApp, languages);
             hasPermissions = set.Any(s => s.Permissions.Any());
         }
@@ -132,7 +132,7 @@ public class AppUserLanguageCheck: ServiceBase
     /// <param name="appStateOrNull">The AppState which could hold permissions - or null if the app isn't there yet (like adding new module)</param>
     /// <param name="languages"></param>
     /// <returns></returns>
-    private static List<LanguagePermission> GetLanguagePermissions(AppState appStateOrNull, List<ISiteLanguageState> languages)
+    private static List<LanguagePermission> GetLanguagePermissions(IMetadataSource appStateOrNull, List<ISiteLanguageState> languages)
     {
         var set = languages.Select(l => new LanguagePermission
         {

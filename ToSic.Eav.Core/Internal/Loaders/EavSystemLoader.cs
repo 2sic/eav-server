@@ -93,13 +93,14 @@ public class EavSystemLoader : LoaderBase
         var l = Log.Fn();
         try
         {
-            var presetApp = _appStates.GetPresetApp();
+            var presetApp = _appStates.GetPresetReader();
             l.A($"presetApp:{presetApp != null}");
 
-            var licEntities = presetApp.List
+            var licEntities = presetApp?.List
                 .OfType(LicenseEntity.TypeNameId)
                 .Select(e => new LicenseEntity(e))
-                .ToList();
+                .ToList()
+                ?? new List<LicenseEntity>(0);
             l.A($"licEnt:{licEntities?.Count}");
 
             // Check all licenses and show extra message

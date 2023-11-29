@@ -106,7 +106,7 @@ public class ContentTypeAttributeMetadata: MetadataOf<int>
     {
         // Check all the basics to ensure we can work
         if (!SysSettings.InheritMetadata) return null;
-        if (!(Source.MainSource is AppState appState)) return null;
+        if (Source.MainSource is not AppState appState) return null;
 
         // Get all the keys in the source-list except Empty (self-reference)
         var sourceKeys = SysSettings.InheritMetadataOf.Keys

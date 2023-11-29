@@ -11,9 +11,7 @@ public interface IContextOfApp: IContextOfSite
     /// <summary>
     /// The App State which the current context has
     /// </summary>
-    AppState AppState { get; }
-
-    IAppStateInternal AppStateReader { get; }
+    IAppStateInternal AppState { get; }
 
     /// <summary>
     /// Reset call to change what AppState is in the context.

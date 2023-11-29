@@ -63,23 +63,22 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
 
     public string Path { get; set; }
     public string PathShared { get; set; }
-    protected int AppId => _appState.AppId;
     protected ISite Site;
-    private AppState _appState;
+    protected IAppIdentity AppIdentity { get; private set; }
     private IAppPaths _appPaths;
 
     #region Inits
 
-    public IAppFileSystemLoader Init(AppState app)
+    public IAppFileSystemLoader Init(IAppState app)
     {
         var l = Log.Fn<IAppFileSystemLoader>($"{app.AppId}, {app.Folder}, ...");
-        _appState = app;
+        AppIdentity = app;
         _appPaths = Services.AppPathsLazy.Value?.Init(Site, app);
         InitPathAfterAppId();
         return l.Return(this);
     }
 
-    IAppContentTypesLoader IAppContentTypesLoader.Init(AppState app) => Init(app) as IAppContentTypesLoader;
+    IAppContentTypesLoader IAppContentTypesLoader.Init(IAppState app) => Init(app) as IAppContentTypesLoader;
 
     /// <summary>
     /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this
@@ -131,7 +130,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
     {
         var l = Log.Fn<IEnumerable<IContentType>>(extensionPath);
-        var fsLoader = base.Services.FslGenerator.New().Init(AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
+        var fsLoader = base.Services.FslGenerator.New().Init(AppIdentity.AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
         var types = fsLoader.ContentTypes();
         return l.Return(types);
     }

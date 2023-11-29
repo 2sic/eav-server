@@ -58,7 +58,7 @@ public sealed class AppFinder: ServiceBase
         {
             foreach (var p in _appStates.Apps(zoneId))
             {
-                var appState = _appStates.GetReaderOrNull(new AppIdentity(zoneId, p.Key));
+                var appState = _appStates.GetReader(new AppIdentity(zoneId, p.Key));
                 if (appState.Folder.EqualsInsensitive(folderName))
                     return l.Return(p.Key, "folder matched");
             }
@@ -83,7 +83,7 @@ public sealed class AppFinder: ServiceBase
 
         foreach (var p in _appStates.Apps(zoneId))
         {
-            var appState = _appStates.GetReaderOrNull(new AppIdentity(zoneId, p.Key));
+            var appState = _appStates.GetReader(new AppIdentity(zoneId, p.Key));
 
             if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
                 return (p.Key, "name matched");

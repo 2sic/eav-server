@@ -53,6 +53,6 @@ partial class App: IHasPermissions
 
     [PublicApi] public IAppState AppState => AppStateInt;
 
-    protected internal IAppStateInternal AppStateInt => _appStateReader ??= Services.AppStates.GetReaderInternalOrNull(this);
+    protected internal IAppStateInternal AppStateInt => _appStateReader ??= Services.AppStates.GetReader(this);
     private IAppStateInternal _appStateReader;
 }

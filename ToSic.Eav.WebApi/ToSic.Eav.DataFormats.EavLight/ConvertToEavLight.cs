@@ -165,8 +165,8 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
         if (WithPublishing)
         {
-            var appState = Services.AppStates.Value.GetReaderInternalOrNull(entity.AppId);
-            AddPublishingInformation(entity, entityValues, appState.StateCache);
+            var appState = Services.AppStates.Value.GetReader(entity.AppId);
+            AddPublishingInformation(entity, entityValues, appState);
         };
 
         AddMetadataAndFor(entity, entityValues, rules);

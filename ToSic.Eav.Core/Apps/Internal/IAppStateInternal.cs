@@ -10,6 +10,7 @@ namespace ToSic.Eav.Apps.Reader
 
         AppState ParentAppState { get; }
 
+        SynchronizedEntityList ListCache { get; }
 
         public SynchronizedList<IEntity> ListPublished { get; }
 

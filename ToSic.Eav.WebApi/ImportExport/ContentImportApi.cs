@@ -52,7 +52,7 @@ public class ContentImportApi : ServiceBase
     public ContentImportApi Init(int appId)
     {
         var l = Log.Fn<ContentImportApi>($"app: {appId}");
-        _appState = _appStates.GetReaderInternalOrNull(appId);
+        _appState = _appStates.GetReader(appId);
         return l.Return(this);
     }
 
@@ -101,7 +101,7 @@ public class ContentImportApi : ServiceBase
 
         using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
         {
-            var importer = _importListXml.Value.Init(_appState.StateCache, args.ContentType, contentSteam,
+            var importer = _importListXml.Value.Init(_appState, args.ContentType, contentSteam,
                 contextLanguages, args.DefaultLanguage,
                 args.ClearEntities, args.ImportResourcesReferences);
             return l.Return(importer);

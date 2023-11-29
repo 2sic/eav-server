@@ -54,10 +54,10 @@ partial class Efc11Loader
         else
         {
             // New v13 - use global app by default to share content-types
-            var globalApp = _appStates.GetPresetApp();
-            if (globalApp == null)
-                throw new Exception("Can't find global app - which is required to build any other apps. ");
-            parent = new ParentAppState(globalApp, true, false);
+            var globalApp = _appStates.GetPresetReader();
+            parent = new ParentAppState(globalApp?.StateCache ?? throw new Exception("Can't find global app - which is required to build any other apps. "),
+                true, 
+                false);
         }
 
 
@@ -113,7 +113,7 @@ partial class Efc11Loader
         if (appState.NameId == Constants.DefaultAppGuid)
             return l.Return(appState, "default app, don't auto-init");
 
-        var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState, null, codeRefTrail.WithHere(), Log)
+        var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState.ToInterface(Log), null, codeRefTrail.WithHere(), Log)
             ? LoadAppStateFromDb(appId)
             : appState;
         return l.Return(result, "with init check");

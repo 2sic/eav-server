@@ -72,7 +72,7 @@ public partial class InsightsControllerReal: ServiceBase
         if(!_user.IsSystemAdmin) throw HttpException.PermissionDenied("requires Superuser permissions");
     }
 
-    private AppState AppState(int? appId) => _appStates.Get(appId.Value);
+    private IAppState AppState(int appId) => _appStates.GetReader(appId);
 
 
 }

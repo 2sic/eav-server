@@ -61,8 +61,8 @@ partial class Efc11Loader
     {
         var wrapLog = Log.Fn<IList<IContentType>>();
         // must create a new loader for each app
-        var loader = _appFileContentTypesLoader.New().Init(app);
-        var types = loader.ContentTypes(app);
+        var loader = _appFileContentTypesLoader.New().Init(app.ToInterface(Log));
+        var types = loader.ContentTypes(entitiesSource: app);
         return wrapLog.ReturnAsOk(types);
     }
 

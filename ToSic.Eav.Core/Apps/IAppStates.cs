@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
@@ -62,17 +61,17 @@ public interface IAppStates
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class IAppStatesExtensions
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static AppState KeepOrGetStateCache(this IAppStates appStates, IAppIdentity app) => app as AppState ?? appStates.Get(app);
+    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //public static AppState KeepOrGetStateCache(this IAppStates appStates, IAppIdentity app) => app as AppState ?? appStates.Get(app);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static IAppState KeepOrGetReader(this IAppStates appStates, IAppIdentity app) => app as IAppState ?? appStates.GetReaderOrNull(app);
+    public static IAppState KeepOrGetReader(this IAppStates appStates, IAppIdentity app) => app as IAppState ?? appStates.GetReader(app);
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static AppState KeepOrGetStateCache(this LazySvc<IAppStates> appStates, IAppIdentity app) 
-        => app as AppState ?? (app is IAppStateInternal appReadInt ? appReadInt.StateCache : null) ?? appStates.Value.Get(app);
+    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //public static AppState KeepOrGetStateCache(this LazySvc<IAppStates> appStates, IAppIdentity app) 
+    //    => app as AppState ?? (app is IAppStateInternal appReadInt ? appReadInt.StateCache : null) ?? appStates.Value.Get(app);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IAppState KeepOrGetReader(this LazySvc<IAppStates> appStates, IAppIdentity app) 
-        => app as IAppState ?? appStates.Value.GetReaderOrNull(app);
+        => app as IAppState ?? appStates.Value.GetReader(app);
 }

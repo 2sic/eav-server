@@ -72,7 +72,7 @@ public class ZipExport: ServiceBase
             FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal)
         );
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appState = _appStates.GetReaderInternalOrNull(appIdentity);
+        _appState = _appStates.GetReader(appIdentity);
         return this;
     }
 

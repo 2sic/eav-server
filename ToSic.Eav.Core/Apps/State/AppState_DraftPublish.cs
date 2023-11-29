@@ -16,7 +16,7 @@ partial class AppState
     /// If entity is published and there is a draft of it, then it can be navigated through DraftEntity
     /// </summary>
     [PrivateApi]
-    public IEntity GetDraft(IEntity entity)
+    internal IEntity GetDraft(IEntity entity)
     {
         if (entity == null) return null;
         if (!entity.IsPublished) return null;
@@ -33,12 +33,12 @@ partial class AppState
     /// If entity is draft and there is a published edition, then it can be navigated through PublishedEntity
     /// </summary>
     [PrivateApi]
-    public IEntity GetPublished(IEntity entity)
+    internal IEntity GetPublished(IEntity entity)
     {
         if (entity == null) return null;
         if (entity.IsPublished) return null;
         var publishedEntityId = ((Entity)entity).EntityId;
-        return Index.ContainsKey(publishedEntityId) ? Index[publishedEntityId] : null;
+        return Index.TryGetValue(publishedEntityId, out var pub) ? pub : null;
     }
 
     #endregion
@@ -48,7 +48,7 @@ partial class AppState
     /// Get all Published Entities in this App (excluding Drafts)
     /// </summary>
     [PrivateApi("this is an optimization feature which shouldn't be used by others")]
-    public SynchronizedList<IEntity> ListPublished
+    internal SynchronizedList<IEntity> ListPublished
         => _listPublished ??= new SynchronizedEntityList(this,
             () => List.Where(e => e.IsPublished).ToImmutableList());
 
@@ -58,7 +58,7 @@ partial class AppState
     /// Get all Entities not having a Draft (Entities that are Published (not having a draft) or draft itself)
     /// </summary>
     [PrivateApi("this is an optimization feature which shouldn't be used by others")]
-    public SynchronizedList<IEntity> ListNotHavingDrafts
+    internal SynchronizedList<IEntity> ListNotHavingDrafts
         => _listNotHavingDrafts ??= new SynchronizedEntityList(this,
             () => List.Where(e => GetDraft(e) == null).ToImmutableList());
 

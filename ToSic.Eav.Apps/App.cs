@@ -96,7 +96,7 @@ public partial class App: AppBase<App.MyServices>, IApp
         Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
         // Look up name in cache
-        NameId = Services.AppStates.GetReaderOrNull(this).NameId;
+        NameId = Services.AppStates.GetReader(this).NameId;
 
         InitializeResourcesSettingsAndMetadata();
 

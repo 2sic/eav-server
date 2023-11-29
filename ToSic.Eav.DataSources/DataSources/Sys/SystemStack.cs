@@ -69,7 +69,7 @@ public class SystemStack: Eav.DataSource.DataSourceBase
     {
         Configuration.Parse();
 
-        var appState = _appStates.GetReaderOrNull(this);
+        var appState = _appStates.GetReader(this);
 
         var languages = _zoneCulture.SafeLanguagePriorityCodes();
 

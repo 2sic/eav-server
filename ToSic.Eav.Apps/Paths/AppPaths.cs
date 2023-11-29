@@ -50,8 +50,6 @@ internal class AppPaths: ServiceBase, IAppPathsMicroSvc
     /// <param name="site">The site - in some cases the site of the App can be different from the context-site, so it must be passed in</param>
     /// <param name="appState"></param>
     /// <returns></returns>
-    public IAppPaths Init(ISite site, AppState appState) => Init(site, appState.ToInterface(Log));
-
     public IAppPaths Init(ISite site, IAppState appState)
     {
         _site = site;

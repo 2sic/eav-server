@@ -15,15 +15,15 @@ public partial class AppSettingsStack: ServiceBase
 
     private readonly IAppStates _appStates;
 
-    /// <summary>
-    /// </summary>
-    /// <param name="owner"></param>
-    public AppSettingsStack Init(AppState owner)
-    {
-        //Owner = owner;
-        Reader = owner.ToInterface(Log);
-        return this;
-    }
+    ///// <summary>
+    ///// </summary>
+    ///// <param name="owner"></param>
+    //public AppSettingsStack Init(AppState owner)
+    //{
+    //    //Owner = owner;
+    //    Reader = owner.ToInterface(Log);
+    //    return this;
+    //}
 
     /// <summary>
     /// </summary>

@@ -61,7 +61,7 @@ public class AppInitializer : ServiceBase
     /// <param name="appState">The app State</param>
     /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
     /// <param name="codeRefTrail">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
-    public bool InitializeApp(AppState appState, string newAppName, CodeRefTrail codeRefTrail)
+    public bool InitializeApp(IAppState appState, string newAppName, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
         if (AppInitializedChecker.CheckIfAllPartsExist(appState, out var appConfig, out var appResources,
@@ -102,16 +102,16 @@ public class AppInitializer : ServiceBase
             addList.Add(new AddContentTypeAndOrEntityTask(TypeAppResources));
 
         // If the Types are missing, create these first
-        if (CreateAllMissingContentTypes(appState.ToInterface(Log).Internal(), addList))
+        if (CreateAllMissingContentTypes(appState.Internal(), addList))
         {
             // since the types were re-created, we must flush it from the cache
             // this is because other APIs may access the AppStates (though they shouldn't)
             CachePurger.Purge(appState);
             // get the latest app-state, but not-initialized so we can make changes
-            appState = _repoLoader.New().AppStateRaw(appState.AppId, new CodeRefTrail());
+            appState = _repoLoader.New().AppStateRaw(appState.AppId, new CodeRefTrail()).ToInterface(Log);
         }
 
-        addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState.ToInterface(Log), task));
+        addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
 
         // Reset App-State to ensure it's reloaded with the added configuration
         CachePurger.Purge(appState);
@@ -183,7 +183,7 @@ public class AppInitializer : ServiceBase
         // discuss w/2dm if you think you want to change this
         var ct = inAppType
             ? appStateRaw.GetContentType(setName)
-            : _appStates.GetPresetApp().GetContentType(setName);
+            : _appStates.GetPresetReader().GetContentType(setName);
         return ct;
     }
 

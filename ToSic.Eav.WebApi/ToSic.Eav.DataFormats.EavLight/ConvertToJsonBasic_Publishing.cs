@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataFormats.EavLight;
 
 partial class ConvertToEavLight
 {
-    private static void AddPublishingInformation(IEntity entity, IDictionary<string, object> entityValues, AppState appState)
+    private static void AddPublishingInformation(IEntity entity, IDictionary<string, object> entityValues, IAppState appState)
     {
         entityValues.Add(Attributes.RepoIdInternalField, entity.RepositoryId);
         entityValues.Add(Attributes.IsPublishedField, entity.IsPublished);

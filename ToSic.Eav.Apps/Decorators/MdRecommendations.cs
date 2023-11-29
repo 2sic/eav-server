@@ -33,14 +33,10 @@ public class MdRecommendations: ServiceBase
 
     private readonly LazySvc<MdRequirements> _requirements;
 
-    public void Init(AppState appState) => AppState = appState;
+    public void Init(IAppState appState) => _appState = appState;
 
-    public AppState AppState
-    {
-        get => _appState ?? throw new Exception("Can't use this Read class before setting AppState");
-        protected set => _appState = value;
-    }
-    private AppState _appState;
+    private IAppState AppState => _appState ?? throw new Exception("Can't use this Read class before setting AppState");
+    private IAppState _appState;
 
 
     public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string recommendedTypeName = null)

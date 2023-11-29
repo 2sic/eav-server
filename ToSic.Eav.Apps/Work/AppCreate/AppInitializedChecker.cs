@@ -24,7 +24,7 @@ public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
     #endregion
 
     /// <inheritdoc />
-    public bool EnsureAppConfiguredAndInformIfRefreshNeeded(AppState appState, string appName, CodeRefTrail codeRefTrail, ILog parentLog)
+    public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppState appState, string appName, CodeRefTrail codeRefTrail, ILog parentLog)
     {
         var log = new Log("Eav.AppChk", parentLog);
 
@@ -51,7 +51,7 @@ public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
     /// <param name="appSettings"></param>
     /// <param name="log"></param>
     /// <returns></returns>
-    internal static bool CheckIfAllPartsExist(AppState appState, out IEntity appConfig, out IEntity appResources, out IEntity appSettings, ILog log)
+    internal static bool CheckIfAllPartsExist(IAppState appState, out IEntity appConfig, out IEntity appResources, out IEntity appSettings, ILog log)
     {
         var l = log.Fn<bool>();
         appConfig = appState.GetMetadata(TargetTypes.App, appState.AppId, TypeAppConfig).FirstOrDefault();

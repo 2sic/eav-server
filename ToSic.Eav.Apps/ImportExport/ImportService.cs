@@ -101,7 +101,7 @@ public class ImportService: ServiceBase
                         {
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail());
+                            var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail()).ToInterface(Log);
                             var newTypeList = newTypes.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -122,7 +122,7 @@ public class ImportService: ServiceBase
 
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
-                            var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail());
+                            var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail()).ToInterface(Log);
 
                             // now the remaining attributeSets
                             MergeAndSaveContentTypes(appStateTemp, nonSysTypes);
@@ -138,7 +138,7 @@ public class ImportService: ServiceBase
                 l.A("Not entities to import");
             else
             {
-                var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail()); // load all entities
+                var appStateTemp = Storage.Loader.AppStateRaw(AppId, new CodeRefTrail()).ToInterface(Log); // load all entities
                 var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () => newEntities
                     .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                     .Where(e => e != null)
@@ -182,7 +182,7 @@ public class ImportService: ServiceBase
         })
     );
 
-    private void MergeAndSaveContentTypes(AppState appState, List<IContentType> contentTypes) => Log.Do(timer: true, action: () =>
+    private void MergeAndSaveContentTypes(IAppState appState, List<IContentType> contentTypes) => Log.Do(timer: true, action: () =>
     {
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appState, type));
@@ -199,7 +199,7 @@ public class ImportService: ServiceBase
             .ToList();
     }
 
-    private IContentType MergeContentTypeUpdateWithExisting(AppState appState, IContentType contentType) => Log.Func(l =>
+    private IContentType MergeContentTypeUpdateWithExisting(IAppState appState, IContentType contentType) => Log.Func(l =>
     {
 
         l.A("New CT, must reset attributes");
@@ -272,7 +272,7 @@ public class ImportService: ServiceBase
     /// <summary>
     /// Import an Entity with all values
     /// </summary>
-    private IEntity CreateMergedForSaving(Entity update, AppState appState, SaveOptions saveOptions) => Log.Func(l =>
+    private IEntity CreateMergedForSaving(IEntity update, IAppState appState, SaveOptions saveOptions) => Log.Func(l =>
     {
         _mergeCountToStopLogging++;
         var logDetails = _mergeCountToStopLogging <= LogMaxMerges;

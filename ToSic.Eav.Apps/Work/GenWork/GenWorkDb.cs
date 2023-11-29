@@ -35,7 +35,7 @@ public class GenWorkDb<TWork>: ServiceBase where TWork : WorkUnitBase<IAppWorkCt
     //public TWork New(AppState appState) => NewInternal(CtxSvc.CtxWithDb(appState));
     public TWork New(IAppStateInternal appState) => NewInternal(CtxSvc.CtxWithDb(appState));
 
-    public TWork New(IAppIdentity identity) => NewInternal(_ctxSvc.Value.CtxWithDb(_ctxSvc.Value.AppStates.GetReaderInternalOrNull(identity)));
+    public TWork New(IAppIdentity identity) => NewInternal(_ctxSvc.Value.CtxWithDb(_ctxSvc.Value.AppStates.GetReader(identity)));
 
-    public TWork New(int appId) => NewInternal(_ctxSvc.Value.CtxWithDb(_ctxSvc.Value.AppStates.GetReaderInternalOrNull(appId)));
+    public TWork New(int appId) => NewInternal(_ctxSvc.Value.CtxWithDb(_ctxSvc.Value.AppStates.GetReader(appId)));
 }

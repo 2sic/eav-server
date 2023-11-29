@@ -48,7 +48,7 @@ public partial class ImportListXml: ServiceBase
     private IContentType ContentType { get; set; }
     private List<IEntity> ExistingEntities { get; set; }
 
-    private AppState AppState { get; set; }
+    private IAppState AppState { get; set; }
 
     /// <summary>
     /// Create a xml import. The data stream passed will be imported to memory, and checked 
@@ -62,7 +62,7 @@ public partial class ImportListXml: ServiceBase
     /// <param name="deleteSetting">How to handle entities already in the repository</param>
     /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
     public ImportListXml Init(
-        AppState appState,
+        IAppState appState,
         string typeName,
         Stream dataStream, 
         IEnumerable<string> languages, 
@@ -299,7 +299,7 @@ public partial class ImportListXml: ServiceBase
         if (_deleteSetting == ImportDeleteUnmentionedItems.All)
         {
             var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
-            _entDelete.New(AppState.ToInterface(Log).Internal()).Delete(idsToDelete);
+            _entDelete.New(AppState.Internal()).Delete(idsToDelete);
         }
 
         var import = _importerLazy.Value.Init(null, _appId, false, true);

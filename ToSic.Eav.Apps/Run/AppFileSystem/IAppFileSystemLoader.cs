@@ -12,7 +12,7 @@ public interface IAppFileSystemLoader: IHasLog
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
-    IAppFileSystemLoader Init(AppState app);
+    IAppFileSystemLoader Init(IAppState app);
 
     string Path { get; set; }
     string PathShared { get; set; }

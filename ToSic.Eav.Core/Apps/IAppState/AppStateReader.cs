@@ -40,6 +40,7 @@ namespace ToSic.Eav.Apps.Reader
         
         AppState IAppStateInternal.StateCache => _appState;
         AppState IAppStateInternal.ParentAppState => _appState.ParentApp?.AppState;
+        SynchronizedEntityList IAppStateInternal.ListCache => _appState.ListCache;
 
         SynchronizedList<IEntity> IAppStateInternal.ListPublished => _appState.ListPublished;
 

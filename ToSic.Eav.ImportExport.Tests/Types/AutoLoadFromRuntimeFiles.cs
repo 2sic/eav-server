@@ -16,7 +16,7 @@ namespace ToSic.Eav.ImportExport.Tests.Types
         [TestMethod]
         public void ScanForTypesFileBased()
         {
-            var globalApp = GetService<IAppStates>().GetPresetApp();
+            var globalApp = GetService<IAppStates>().GetPresetReader();
             var types = globalApp.ContentTypes;
             var count = types.Count();
             Assert.IsTrue(TypesInFileRuntimeMin < count

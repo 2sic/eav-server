@@ -43,22 +43,15 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
     protected SerializerBase(MyServices services, string logName): base(services, logName)
     {
         MetadataTargets = services.MetadataTargets;
-        _globalApp = services.AppStates.GetPresetOrNull(); // important that it uses GlobalOrNull - because it may not be loaded yet
+        _globalApp = services.AppStates.GetPresetReaderIfAlreadyLoaded(); // important that it uses GlobalOrNull - because it may not be loaded yet
     }
-    private readonly AppState _globalApp;
+    private readonly IAppState _globalApp;
 
     public ITargetTypes MetadataTargets { get; }
 
 
-    //public void Initialize(AppState appState)
-    //{
-    //    //AppOrNull = appState;
-    //    AppStateOrNull = appState.ToInterface(Log);
-    //    AppId = appState.AppId;
-    //}
     public void Initialize(IAppState appState)
     {
-        //AppOrNull = appState;
         AppStateOrNull = appState.Internal();
         AppId = appState.AppId;
     }

@@ -50,7 +50,7 @@ public class LanguagesBackend: ServiceBase
     {
         try
         {
-            var langs = _appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appState.StateCache);
+            var langs = _appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appState);
             var converted = langs.Select(l =>
                 {
                     var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };

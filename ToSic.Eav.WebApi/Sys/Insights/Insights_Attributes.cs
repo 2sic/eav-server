@@ -14,7 +14,7 @@ partial class InsightsControllerReal
             return message;
 
         Log.A($"debug app attributes for {appId} and {type}");
-        var typ = AppState(appId).GetContentType(type);
+        var typ = AppState(appId.Value).GetContentType(type);
 
         var msg = "" + H1($"Attributes for {typ.Name} ({typ.NameId}) in {appId}\n");
         try
@@ -74,7 +74,7 @@ partial class InsightsControllerReal
             return message;
 
         Log.A($"debug app metadata for {appId} and {type}");
-        var typ = AppState(appId).GetContentType(type);
+        var typ = AppState(appId.Value).GetContentType(type);
         var att = typ.Attributes.First(a => a.Name == attribute)
                   ?? throw CreateBadRequest($"can't find attribute {attribute}");
 

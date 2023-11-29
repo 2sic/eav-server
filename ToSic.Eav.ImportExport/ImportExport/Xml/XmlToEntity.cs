@@ -29,11 +29,11 @@ public class XmlToEntity: ServiceBase
         ConnectServices(
             _dataBuilder = dataBuilder
         );
-        _presetApp = appStates.GetPresetApp();
+        _presetApp = appStates.GetPresetReader();
     }
 
     private readonly DataBuilder _dataBuilder;
-    private readonly AppState _presetApp;
+    private readonly IAppState _presetApp;
 
     public XmlToEntity Init(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
     {

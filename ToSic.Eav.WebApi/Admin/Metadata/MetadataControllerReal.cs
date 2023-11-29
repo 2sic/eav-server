@@ -50,7 +50,7 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
     {
         var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
-        var appState = _appStates.Get(appId);
+        var appState = _appStates.GetReader(appId);
 
         var (entityList, mdFor) = GetEntityListAndMd(targetType, keyType, key, contentType, appState);
 
@@ -82,7 +82,7 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
 
         try
         {
-            mdFor.Title = appState.ToInterface(Log).FindTargetTitle(targetType, key);
+            mdFor.Title = appState.FindTargetTitle(targetType, key);
             l.A($"title: '{mdFor.Title}'");
         }
         catch { /* experimental / ignore */ }

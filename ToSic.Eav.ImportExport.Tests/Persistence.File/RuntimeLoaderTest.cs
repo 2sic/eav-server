@@ -5,9 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.Types;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
@@ -17,10 +15,10 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public RuntimeLoaderTest()
         {
             _appLoader = GetService<IAppLoader>();
-            _globalAppState = GetService<IAppStates>().GetPresetApp();
+            _globalAppState = GetService<IAppStates>().GetPresetReader();
         }
         private readonly IAppLoader _appLoader;
-        private readonly AppState _globalAppState;
+        private readonly IAppState _globalAppState;
 
         private int expectedTypesSysAndJson = 5;
         [Ignore("currently work in progress - as sys/json types keep changing and testing isn't updated yet")]

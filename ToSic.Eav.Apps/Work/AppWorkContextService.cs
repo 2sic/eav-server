@@ -68,9 +68,9 @@ public class AppWorkContextService: ServiceBase
     public IAppWorkCtxPlus ContextPlus(IAppState appState, bool? showDrafts = default, IDataSource data = default)
         => new AppWorkCtxPlus(_dataSourceSvc.Value, appState, showDrafts, data);
 
-    public IAppWorkCtx Context(int appId) => new AppWorkCtx(_appStates.Value.GetReaderInternalOrNull(appId));
+    public IAppWorkCtx Context(int appId) => new AppWorkCtx(_appStates.Value.GetReader(appId));
     public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource data = default)
-        => new AppWorkCtxPlus(_dataSourceSvc.Value, appState: _appStates.Value.GetReaderInternalOrNull(appId), showDrafts, data);
+        => new AppWorkCtxPlus(_dataSourceSvc.Value, appState: _appStates.Value.GetReader(appId), showDrafts, data);
 
     public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(_appStates.Value.KeepOrGetReader(appIdentity));
     public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource data = default)

@@ -96,7 +96,7 @@ partial class InsightsControllerReal
 
     private string GlobalTypes()
     {
-        var globTypes = _appStates.GetPresetApp().ContentTypes;
+        var globTypes = _appStates.GetPresetReader().ContentTypes;
         return TypesTable(Eav.Constants.PresetAppId, globTypes, null);
     }
 
@@ -117,7 +117,7 @@ partial class InsightsControllerReal
             return message;
 
         l.A($"debug app metadata for {appId} and {type}");
-        var typ = AppState(appId).GetContentType(type);
+        var typ = AppState(appId.Value).GetContentType(type);
 
         var msg = H1($"Metadata for {typ.Name} ({typ.NameId}) in {appId}\n").ToString();
         var metadata = typ.Metadata.ToList();
@@ -133,7 +133,7 @@ partial class InsightsControllerReal
             return message;
 
         l.A($"debug app metadata for {appId} and {type}");
-        var typ = AppState(appId).GetContentType(type);
+        var typ = AppState(appId.Value).GetContentType(type);
 
         var msg = H1($"Permissions for {typ.Name} ({typ.NameId}) in {appId}\n").ToString();
         var metadata = typ.Metadata.Permissions.Select(p => p.Entity).ToList();

@@ -76,7 +76,7 @@ public class MetadataTargets: MetadataDataSourceBase
     [PrivateApi]
     private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator()
     {
-        var appState = _appStates.GetReaderOrNull(this);
+        var appState = _appStates.GetReader(this);
         return o =>
         {
             var mdFor = o.MetadataFor;

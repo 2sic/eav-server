@@ -8,43 +8,38 @@ namespace ToSic.Eav.Apps;
 public static class AppStatesExtensions
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static AppState GetPresetOrNull(this IAppStates states) =>
+    public static IAppStateInternal GetPresetReaderIfAlreadyLoaded(this IAppStates states) =>
         (states as AppStates)?.AppsCacheSwitch.Value.Has(PresetIdentity) ?? false
-            ? states.GetPresetApp()
+            ? states.GetPresetReader()
             : null;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static AppState GetPresetApp(this IAppStates states) => states.Get(PresetIdentity);
+    public static IAppStateInternal GetPresetReader(this IAppStates states) => states.GetReader(PresetIdentity);
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static AppState GetPrimaryApp(this IAppStates appStates, int zoneId, ILog log)
+    public static IAppStateInternal GetPrimaryReader(this IAppStates appStates, int zoneId, ILog log)
     {
+        var l = log.Fn<IAppStateInternal>($"{zoneId}");
         var primaryAppId = appStates.IdentityOfPrimary(zoneId);
-        log.A($"{nameof(GetPrimaryApp)}: {primaryAppId?.Show()}");
-        return appStates.Get(primaryAppId);
+        return l.Return(appStates.GetReader(primaryAppId, log), primaryAppId.Show());
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static int GetPrimaryAppOfAppId(this IAppStates appStates, int appId, ILog log)
     {
+        var l = log.Fn<int>($"{appId}");
         var zoneId = appStates.IdentityOfApp(appId).ZoneId;
-        return appStates.GetPrimaryApp(zoneId, log).AppId;
+        var primaryIdentity = appStates.IdentityOfPrimary(zoneId);
+        return l.Return(primaryIdentity.AppId, primaryIdentity.Show());
     }
 
-    public static IAppState GetReaderOrNull(this IAppStates appStates, IAppIdentity app) 
-        => appStates.GetReaderInternalOrNull(app);
-
-    public static IAppState GetReaderOrNull(this IAppStates appStates, int appId) 
-        => appStates.GetReaderInternalOrNull(appId);
-
-    public static IAppStateInternal GetReaderInternalOrNull(this IAppStates appStates, IAppIdentity app)
+    public static IAppStateInternal GetReader(this IAppStates appStates, IAppIdentity app, ILog log = default)
     {
         var state = appStates.Get(app);
-        return state is null ? null : new AppStateReader(state, /*Log */ null);
+        return state is null ? null : new AppStateReader(state, log);
     }
-    public static IAppStateInternal GetReaderInternalOrNull(this IAppStates appStates, int appId)
+    public static IAppStateInternal GetReader(this IAppStates appStates, int appId, ILog log = default)
     {
         var state = appStates.Get(appId);
-        return state is null ? null : new AppStateReader(state, /*Log */ null);
+        return state is null ? null : new AppStateReader(state, log);
     }
 }

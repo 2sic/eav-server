@@ -147,7 +147,7 @@ public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
         var l = Log.Fn<List<InputTypeInfo>>();
         try
         {
-            var appLoader = _appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppState.StateCache);
+            var appLoader = _appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppState);
             var inputTypes = appLoader.InputTypes();
             return l.Return(inputTypes, $"{inputTypes.Count}");
         }
@@ -169,7 +169,7 @@ public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
         var l = Log.Fn<List<InputTypeInfo>>(timer: true);
         if (_presetInpTypeCache != null) return l.Return(_presetInpTypeCache, $"cached {_presetInpTypeCache.Count}");
 
-        var presetApp = _appStates.Value.GetPresetApp();
+        var presetApp = _appStates.Value.GetPresetReader();
 
         var types = presetApp.ContentTypes
             .Where(p => p.NameId.StartsWith(FieldTypePrefix)

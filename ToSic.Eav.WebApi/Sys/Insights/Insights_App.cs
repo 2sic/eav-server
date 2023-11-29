@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Debug;
 using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Logging;
@@ -38,9 +37,7 @@ partial class InsightsControllerReal
                 {
                     var appIdentity = new AppIdentity(zone.Value.ZoneId, a.Key);
                     var inCache = _appStates.IsCached(appIdentity);
-                    var appState = inCache
-                        ? _appStates.GetReaderOrNull(appIdentity) as IAppStateInternal
-                        : null;
+                    var appState = inCache ? _appStates.GetReader(appIdentity) : null;
                     return new
                     {
                         Id = a.Key,
@@ -54,7 +51,7 @@ partial class InsightsControllerReal
                             : "not-loaded",
                         Hash = appState?.StateCache?.GetHashCode(),
                         TS = appState?.StateCache?.CacheTimestamp,
-                        ListTs = appState?.StateCache?.ListCache()?.CacheTimestamp,
+                        ListTs = appState?.ListCache?.CacheTimestamp,
                     };
                 })
                 .OrderBy(a => a.Id);

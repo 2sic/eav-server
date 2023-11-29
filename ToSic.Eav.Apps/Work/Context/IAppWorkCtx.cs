@@ -10,7 +10,5 @@ namespace ToSic.Eav.Apps.Work;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IAppWorkCtx : IAppIdentity
 {
-    //AppState AppState { get; }
-
     IAppStateInternal AppState { get; }
 }

@@ -12,7 +12,7 @@ namespace ToSic.Sxc.Apps;
 /// </summary>
 [PrivateApi("Note: was public till 16.08")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppConfiguration: EntityBasedWithLog, IAppConfiguration
+internal class AppConfiguration: EntityBasedWithLog, IAppConfiguration
 {
     // todo: probably move most to Eav.Apps.AppConstants
     [PrivateApi] public const string FieldAllowRazor = "AllowRazorTemplates";
