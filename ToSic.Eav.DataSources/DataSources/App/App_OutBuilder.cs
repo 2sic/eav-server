@@ -83,7 +83,7 @@ partial class App: IDataSourceReset
 
             var deferredStream = new DataStreamWithCustomCaching(
                 Services.CacheService,
-                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), ((IAppStateInternal)appState).AppState,
+                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), ((IAppStateInternal)appState).StateCache,
                     $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                 this,
                 typeName,

@@ -41,22 +41,23 @@ public class AppUserLanguageCheck: ServiceBase
     /// </summary>
     /// <param name="appStateOrNull"></param>
     /// <returns>true in most admin-cases, false if feature enabled AND permissions configured AND not allowed</returns>
-    public bool? UserRestrictedByLanguagePermissions(AppState appStateOrNull) => Log.Func($"{appStateOrNull?.Name}({appStateOrNull?.AppId})", () =>
+    public bool? UserRestrictedByLanguagePermissions(AppState appStateOrNull)
     {
+        var l = Log.Fn<bool?>($"{appStateOrNull?.Name}({appStateOrNull?.AppId})");
         // Note: it's important that all cases where we don't detect a forbidden
         // we return null, and DON'T access _ctx.UserMayEdit, as it will recurse to here again
         if (!_featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-            return (null, "feat disabled");
+            return l.ReturnNull("feat disabled");
 
         // Check if we have any language rules
         var languages = LanguagesWithPermissions(appStateOrNull);
-        if (languages == null || !languages.Any()) return (null, "no config");
+        if (languages == null || !languages.Any()) return l.ReturnNull("no config");
 
         // Check rules on current language
         var currentCode = _ctx.Site.CurrentCultureCode;
         var currentLang = languages.FirstOrDefault(lp => lp.Code.Equals(currentCode, InvariantCultureIgnoreCase));
-        return (currentLang?.IsAllowed, $"permission: {currentLang?.IsAllowed}");
-    });
+        return l.Return(currentLang?.IsAllowed, $"permission: {currentLang?.IsAllowed}");
+    }
 
     public List<AppUserLanguageState> LanguagesWithPermissions(AppState appStateOrNull) => Log.Func(l =>
     {

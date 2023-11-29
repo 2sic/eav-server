@@ -8,7 +8,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Loaders;
 
-public class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader, IIsUnknown
+internal class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader, IIsUnknown
 {
     public AppContentTypesLoaderUnknown(WarnUseOfUnknown<AppContentTypesLoaderUnknown> _) : base(LogScopes.NotImplemented + ".RepLdr") { }
 

@@ -18,7 +18,7 @@ public class WorkAttributes : WorkUnitBase<IAppWorkCtx>
     {
         var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{AppWorkCtx.Show()}, type:{staticName}");
 
-        if (!(AppWorkCtx.AppState.GetContentType(staticName) is IContentType type))
+        if (AppWorkCtx.AppState.GetContentType(staticName) is not { } type)
             return l.Return(new List<PairTypeWithAttribute>(),
                 $"error, type:{staticName} is null, it is missing or it is not a ContentType - something broke");
 

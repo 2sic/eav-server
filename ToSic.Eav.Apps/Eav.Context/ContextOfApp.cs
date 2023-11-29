@@ -94,7 +94,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         if (User.IsSystemAdmin) return (true, "super");
 
         // Case 2: No App-State
-        if (AppState == null)
+        if (AppStateReader == null)
         {
             if (base.UserMayEdit) return (true, "no app, use default checks");
 
@@ -108,18 +108,18 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
         // Case 3: From App
         var fromApp = Services.AppPermissionCheck.New()
-            .ForAppInInstance(this, AppState)
+            .ForAppInInstance(this, AppStateReader)
             .UserMay(GrantSets.WriteSomething);
 
         // Check if language permissions may alter / remove edit permissions
         if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppState) ?? true;
+            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppStateReader.StateCache) ?? true;
 
         return (fromApp, $"{fromApp}");
     }));
     private readonly GetOnce<bool> _userMayEditGet = new();
 
-    public AppState AppState => AppStateReader?.AppState; // _appState.Get(() => AppIdentity == null ? null : AppServices.AppStates.Get(AppIdentity));
+    public AppState AppState => AppStateReader?.StateCache; // _appState.Get(() => AppIdentity == null ? null : AppServices.AppStates.Get(AppIdentity));
     // private readonly GetOnce<AppState> _appState = new();
 
     public IAppStateInternal AppStateReader => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppStates.GetReaderInternalOrNull(AppIdentity));
@@ -127,7 +127,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     #region Settings and Resources
 
-    private AppSettingsStack AppSettingsStack => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppState));
+    private AppSettingsStack AppSettingsStack => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppStateReader.StateCache));
     private readonly GetOnce<AppSettingsStack> _appSettingsStack = new();
 
     public PropertyStack AppSettings => _settings.Get(() => AppSettingsStack.GetStack(RootNameSettings));

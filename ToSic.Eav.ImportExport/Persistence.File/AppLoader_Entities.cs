@@ -28,7 +28,7 @@ partial class AppLoader
                 {
                     Folder = folder,
                     Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source,
-                        appState) ?? new List<IEntity>()
+                        appState.ToInterface(Log)) ?? new List<IEntity>()
                 })
                 .ToList();
 
@@ -65,10 +65,7 @@ partial class AppLoader
         return l.ReturnAsOk(final);
     }
 
-    private List<IEntity> LoadGlobalEntitiesFromAllLoaders(
-        string groupIdentifier,
-        DirectEntitiesSource relationshipSource,
-        AppState appState) 
+    private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppState appState) 
     {
         var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}");
         if (!FsDataConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))

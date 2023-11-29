@@ -57,25 +57,25 @@ namespace ToSic.Eav.Api.Api01
             // this write publish/draft permission checks should happen only for REST API
 
             // 1. Find if user may write PUBLISHED:
-            var appState = _ctxWithDb.AppState;
+            var appStateReader = _ctxWithDb.AppState;
 
             // 1.1. app permissions 
-            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appState)
+            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appStateReader)
                 .UserMay(GrantSets.WritePublished)) return l.ReturnAndLog((true, true), "App check - all ok");
 
             // 1.2. type permissions
-            if (_appPermissionCheckGenerator.New().ForType(_ctx, appState, targetType)
+            if (_appPermissionCheckGenerator.New().ForType(_ctx, appStateReader, targetType)
                 .UserMay(GrantSets.WritePublished)) return l.ReturnAndLog((true, true), "Type check, all ok");
 
 
             // 2. Find if user may write DRAFT:
 
             // 2.1. app permissions 
-            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appState)
+            if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appStateReader)
                 .UserMay(GrantSets.WriteDraft)) return l.ReturnAndLog((false, true), "App check draft - f/t");
 
             // 2.2. type permissions
-            if (_appPermissionCheckGenerator.New().ForType(_ctx, appState, targetType)
+            if (_appPermissionCheckGenerator.New().ForType(_ctx, appStateReader, targetType)
                 .UserMay(GrantSets.WriteDraft)) return l.ReturnAndLog((false, true), "Type check draft - f/t");
 
 

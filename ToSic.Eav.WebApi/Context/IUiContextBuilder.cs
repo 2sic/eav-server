@@ -10,7 +10,7 @@ public interface IUiContextBuilder: IHasLog
     /// Initialize the context builder
     /// </summary>
     /// <returns></returns>
-    IUiContextBuilder InitApp(AppState appState);
+    IUiContextBuilder InitApp(IAppState appState);
 
     /// <summary>
     /// Get the context based on the situation

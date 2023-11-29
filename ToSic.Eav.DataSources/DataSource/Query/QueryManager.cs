@@ -42,10 +42,10 @@ public class QueryManager: ServiceBase
     /// <summary>
     /// Get a query definition from the current app
     /// </summary>
-    public QueryDefinition Get(IAppIdentity appState, int queryId)
+    public QueryDefinition Get(IAppIdentity appIdentity, int queryId)
     {
         var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
-        var app = _appStates.KeepOrGet(appState);
+        var app = _appStates.KeepOrGetReader(appIdentity);
         var qEntity = GetQueryEntity(queryId, app);
         var qDef = _queryDefBuilder.Value.Create(qEntity, app.AppId);
         return l.Return(qDef);
@@ -60,7 +60,7 @@ public class QueryManager: ServiceBase
     internal IEntity GetQueryEntity(int entityId, IAppIdentity appIdentity) => Log.Func($"{entityId}", l =>
     {
         var wrapLog = Log.Fn<IEntity>($"{entityId}");
-        var app = _appStates.KeepOrGet(appIdentity);
+        var app = _appStates.KeepOrGetReader(appIdentity);
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
@@ -98,11 +98,11 @@ public class QueryManager: ServiceBase
 
     internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app, int recurseParents = 0) => Log.Func($"App: {app.AppId}, recurse: {recurseParents}", l =>
     {
-        var appState = _appStates.KeepOrGet(app);
+        var appState = _appStates.KeepOrGetReader(app).Internal();
         var result = QueryEntities(appState);
         if (recurseParents <= 0) return (result, "ok, no recursions");
         l.A($"Try to recurse parents {recurseParents}");
-        if (appState.ParentApp?.AppState == null) return (result, "no more parents to recurse on");
+        if (appState.ParentAppState == null) return (result, "no more parents to recurse on");
         var resultFromParents = AllQueryItems(appState.ParentApp.AppState, recurseParents -1);
         result = result.Concat(resultFromParents).ToImmutableList();
         return (result, "ok");
@@ -133,7 +133,7 @@ public class QueryManager: ServiceBase
 
     // todo: move to query-read or helper
 
-    private static IImmutableList<IEntity> QueryEntities(AppState appState)
+    private static IImmutableList<IEntity> QueryEntities(IAppState appState)
         => appState.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
 
 

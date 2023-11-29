@@ -38,7 +38,7 @@ namespace ToSic.Eav.Apps.Reader
         #region Internal
 
         
-        AppState IAppStateInternal.AppState => _appState;
+        AppState IAppStateInternal.StateCache => _appState;
         AppState IAppStateInternal.ParentAppState => _appState.ParentApp?.AppState;
 
         SynchronizedList<IEntity> IAppStateInternal.ListPublished => _appState.ListPublished;
@@ -86,6 +86,8 @@ namespace ToSic.Eav.Apps.Reader
         public IContentType GetContentType(string name) => _appState.GetContentType(name);
         public IMetadataOf Metadata => _appState.Metadata;
 
+        public AppRelationshipManager Relationships => _appState.Relationships;
+
         public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
             => _appState.GetMetadata(targetType, key, contentTypeName);
 
@@ -101,6 +103,7 @@ namespace ToSic.Eav.Apps.Reader
 
         #endregion
 
-        
+
+        IMetadataOf IMetadataOfSource.GetMetadataOf<T>(TargetTypes targetType, T key, string title = null) => _appState.GetMetadataOf(targetType, key, title);
     }
 }

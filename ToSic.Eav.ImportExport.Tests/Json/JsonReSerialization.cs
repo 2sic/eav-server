@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Repositories;
@@ -70,7 +71,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         {
             var loader = _loader; 
             var app = loader.AppStateRawTA(appId);
-            var exBuilder = _jsonSerializer.SetApp(app);
+            var exBuilder = _jsonSerializer.SetApp(app.ToInterface(Log));
 
             var maxCount = 1000;
             var skip = 0;

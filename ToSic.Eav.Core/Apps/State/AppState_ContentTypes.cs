@@ -9,7 +9,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps;
 
-partial class AppState
+partial class AppState: IAppContentTypeReader
 {
     /// <summary>
     /// All ContentTypes in this App

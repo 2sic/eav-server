@@ -29,7 +29,7 @@ partial class App
     private IDictionary<string, IQuery> _queries;
 
     /// <inheritdoc />
-    public Query GetQuery(string name)
+    public IQuery GetQuery(string name)
     {
         // Try to find the local query, abort if not found
         // Not final implementation, but goal is to properly cascade from AppState to parent
@@ -37,13 +37,8 @@ partial class App
             return query;
 
         // Try to find query definition - while also checking parent apps
-        var qEntity = Services.QueryManager.Value.FindQuery(AppStateInt, name, recurseParents: 3);
-            
-        if (qEntity != null)
-            return Services.QueryGenerator.New().Init(ZoneId, AppId, qEntity, ConfigurationProvider);
+        var qEntity = Services.QueryManager.Value.GetQuery(AppStateInt, name, ConfigurationProvider, recurseParents: 3);
 
-        var isGlobal = name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix);
-        throw new Exception((isGlobal ? "Global " : "") + "Query not Found!");
-
+        return qEntity ?? throw new Exception((IsGlobalQuery(name) ? "Global " : "") + "Query not Found!");
     }
 }

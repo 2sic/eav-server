@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
-using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Serialization;
 
@@ -14,11 +12,11 @@ namespace ToSic.Eav.Serialization;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataSerializer
 {
-    /// <summary>
-    /// Initializer - necessary for most serializations
-    /// </summary>
-    /// <param name="appState">the app which contains the data to be serialized</param>
-    void Initialize(AppState appState);
+    ///// <summary>
+    ///// Initializer - necessary for most serializations
+    ///// </summary>
+    ///// <param name="appState">the app which contains the data to be serialized</param>
+    //void Initialize(AppState appState);
 
     void Initialize(IAppState appState);
 

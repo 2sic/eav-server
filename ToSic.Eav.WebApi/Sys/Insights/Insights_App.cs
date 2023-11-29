@@ -52,9 +52,9 @@ partial class InsightsControllerReal
                         Folder = inCache
                             ? appState?.Folder ?? "unknown, app-infos not json"
                             : "not-loaded",
-                        Hash = appState?.AppState?.GetHashCode(),
-                        TS = appState?.AppState?.CacheTimestamp,
-                        ListTs = appState?.AppState?.ListCache()?.CacheTimestamp,
+                        Hash = appState?.StateCache?.GetHashCode(),
+                        TS = appState?.StateCache?.CacheTimestamp,
+                        ListTs = appState?.StateCache?.ListCache()?.CacheTimestamp,
                     };
                 })
                 .OrderBy(a => a.Id);

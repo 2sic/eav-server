@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -29,6 +30,9 @@ public class DataSourceConstants
     /// </summary>
     [PrivateApi] internal const string SystemQueryPrefixPreV15 = "Eav.Queries.Global.";
     [PrivateApi] internal const string SystemQueryPrefix = "System.";
+
+    [PrivateApi]
+    internal static bool IsGlobalQuery(string name) => name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix);
 
     #endregion
 

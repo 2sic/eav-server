@@ -5,7 +5,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Loaders;
 
-public class AppLoaderUnknown: ServiceBase, IAppLoader, IIsUnknown
+internal class AppLoaderUnknown: ServiceBase, IAppLoader, IIsUnknown
 {
     public AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _) : base("Eav.BscRnt") { }
 

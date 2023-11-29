@@ -16,14 +16,14 @@ internal class CacheInfoAppAndMore: ICacheInfo
     /// <summary>
     /// The App-State which is accessed to check time-stamps
     /// </summary>
-    public readonly AppState App;
+    public readonly IAppStateCache App;
 
     /// <summary>
     /// A suffix to add to the cache key
     /// </summary>
     public readonly string More;
 
-    public CacheInfoAppAndMore(string prefix, AppState app, string more)
+    public CacheInfoAppAndMore(string prefix, IAppStateCache app, string more)
     {
         Prefix = prefix;
         App = app;

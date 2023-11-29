@@ -147,7 +147,7 @@ public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
         var l = Log.Fn<List<InputTypeInfo>>();
         try
         {
-            var appLoader = _appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppState);
+            var appLoader = _appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppState.StateCache);
             var inputTypes = appLoader.InputTypes();
             return l.Return(inputTypes, $"{inputTypes.Count}");
         }

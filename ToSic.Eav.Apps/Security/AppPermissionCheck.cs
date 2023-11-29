@@ -55,19 +55,22 @@ public class AppPermissionCheck: PermissionCheckBase
     /// <param name="ctx"></param>
     /// <param name="appIdentity">The App - in some cases (if no app exists yet) it's null</param>
     /// <returns></returns>
-    public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity) => Log.Func($"ctx, app: {appIdentity}", l =>
+    public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity)
     {
+        var l = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity}");
         var permissions = FindPermissionsOfApp(appIdentity);
         Init(ctx, appIdentity, permissions: permissions);
-        return (this, $"Permissions: {permissions?.Count}");
-    });
+        return l.Return(this, $"Permissions: {permissions?.Count}");
+    }
 
     private List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
     {
+        
         var permissions = appIdentity == null
             ? null
             : (appIdentity as IApp)?.Metadata.Permissions.ToList()
               ?? (appIdentity as AppState)?.Metadata.Permissions.ToList()
+              ?? (appIdentity as IAppState)?.Metadata.Permissions?.ToList()
               ??  _appStates.Get(appIdentity).Metadata.Permissions.ToList();
         return permissions;
     }

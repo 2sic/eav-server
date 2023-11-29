@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using AppState = ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Data;
 
@@ -25,22 +25,22 @@ internal class RelationshipManager: IRelationshipManager
     /// <summary>
     /// Initializes a new instance of the RelationshipManager class.
     /// </summary>
-    internal RelationshipManager(IEntityLight entity, AppState app, IEnumerable<EntityRelationship> fallbackRels = null)
+    internal RelationshipManager(IEntityLight entity, IAppStateCache app, IEnumerable<EntityRelationship> fallbackRels = null)
     {
         _entity = entity;
-        _app = app;
+        _appStateCache = app;
         _fallbackRels = fallbackRels;
-        if (app != null)
-            AllRelationships = app.Relationships;
+        if (app is AppState asAppState)
+            AllRelationships = asAppState.Relationships;
         else
             AllRelationships = fallbackRels ?? new List<EntityRelationship>();
     }
     private readonly IEntityLight _entity;
-    private readonly AppState _app;
+    private readonly IAppStateCache _appStateCache;
     private readonly IEnumerable<EntityRelationship> _fallbackRels;
 
     internal RelationshipManager(IEntityLight entity, RelationshipManager original)
-        : this(entity, original?._app, original?._fallbackRels) { }
+        : this(entity, original?._appStateCache, original?._fallbackRels) { }
 
     /// <inheritdoc />
     public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
@@ -52,8 +52,8 @@ internal class RelationshipManager: IRelationshipManager
         IImmutableList<EntityRelationship> GetChildrenInternal() 
             => AllRelationships.Where(r => r.Parent == _entity).ToImmutableList();
 
-        if (_app == null) return GetChildrenInternal();
-        _childRelationships = new SynchronizedList<EntityRelationship>(_app, GetChildrenInternal);
+        if (_appStateCache == null) return GetChildrenInternal();
+        _childRelationships = new SynchronizedList<EntityRelationship>(_appStateCache, GetChildrenInternal);
         return _childRelationships.List;
     }
 
@@ -71,8 +71,8 @@ internal class RelationshipManager: IRelationshipManager
 
         IImmutableList<EntityRelationship> GetParents() => AllRelationships.Where(r => r.Child == _entity).ToImmutableList();
 
-        if (_app == null) return GetParents();
-        _parentRelationships = new SynchronizedList<EntityRelationship>(_app, GetParents);
+        if (_appStateCache == null) return GetParents();
+        _parentRelationships = new SynchronizedList<EntityRelationship>(_appStateCache, GetParents);
         return _parentRelationships.List;
     }
     private SynchronizedList<EntityRelationship> _parentRelationships;

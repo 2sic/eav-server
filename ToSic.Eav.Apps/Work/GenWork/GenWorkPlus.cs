@@ -32,8 +32,8 @@ public class GenWorkPlus<TWork>: ServiceBase where TWork : WorkUnitBase<IAppWork
 
     public TWork New(IAppWorkCtxPlus ctx) => NewInternal(ctx);
 
-    public TWork New(AppState state, bool? showDrafts = default) => NewInternal(_ctxSvc.Value.ContextPlus(state, showDrafts: showDrafts));
-    public TWork New(IAppStateInternal state, bool? showDrafts = default) => NewInternal(_ctxSvc.Value.ContextPlus(state.AppState, showDrafts: showDrafts));
+    //public TWork New(AppState state, bool? showDrafts = default) => NewInternal(_ctxSvc.Value.ContextPlus(state, showDrafts: showDrafts));
+    public TWork New(IAppStateInternal state, bool? showDrafts = default) => NewInternal(_ctxSvc.Value.ContextPlus(state, showDrafts: showDrafts));
 
     public TWork New(IAppIdentity identity) => NewInternal(_ctxSvc.Value.ContextPlus(identity));
 

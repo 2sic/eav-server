@@ -79,7 +79,7 @@ public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
     }
     private JsonSerializer _ser;
 
-    internal void ResetSerializer(AppState appState)
+    internal void ResetSerializer(IAppState appState)
     {
         var serializer = _jsonSerializerGenerator.New().SetApp(appState);
         _ser = serializer;

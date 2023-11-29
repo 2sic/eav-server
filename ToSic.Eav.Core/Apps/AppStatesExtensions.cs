@@ -34,6 +34,9 @@ public static class AppStatesExtensions
     public static IAppState GetReaderOrNull(this IAppStates appStates, IAppIdentity app) 
         => appStates.GetReaderInternalOrNull(app);
 
+    public static IAppState GetReaderOrNull(this IAppStates appStates, int appId) 
+        => appStates.GetReaderInternalOrNull(appId);
+
     public static IAppStateInternal GetReaderInternalOrNull(this IAppStates appStates, IAppIdentity app)
     {
         var state = appStates.Get(app);

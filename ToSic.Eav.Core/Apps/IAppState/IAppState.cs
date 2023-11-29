@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Data;
@@ -8,7 +7,7 @@ using ToSic.Sxc.Apps;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps
 {
-    public interface IAppState: IAppIdentity, IMetadataSource, IHasIdentityNameId
+    public interface IAppState: IAppIdentity, IMetadataSource, IHasIdentityNameId, IAppContentTypeReader
     {
         #region Basic App Properties
 
@@ -32,16 +31,18 @@ namespace ToSic.Eav.Apps
 
         IEntity GetPublished(IEntity entity);
 
-        IEnumerable<IContentType> ContentTypes { get; }
+        //IEnumerable<IContentType> ContentTypes { get; }
 
-        IContentType GetContentType(string name);
+        //IContentType GetContentType(string name);
 
         #endregion
 
         #region Metadata
 
         public IMetadataOf Metadata { get; }
-        
+
         #endregion
+
+        AppRelationshipManager Relationships { get; }
     }
 }

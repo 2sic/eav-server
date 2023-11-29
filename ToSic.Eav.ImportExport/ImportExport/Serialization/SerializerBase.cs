@@ -50,12 +50,12 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
     public ITargetTypes MetadataTargets { get; }
 
 
-    public void Initialize(AppState appState)
-    {
-        //AppOrNull = appState;
-        AppStateOrNull = appState.ToInterface(Log);
-        AppId = appState.AppId;
-    }
+    //public void Initialize(AppState appState)
+    //{
+    //    //AppOrNull = appState;
+    //    AppStateOrNull = appState.ToInterface(Log);
+    //    AppId = appState.AppId;
+    //}
     public void Initialize(IAppState appState)
     {
         //AppOrNull = appState;
@@ -145,7 +145,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
     public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 
-    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppStateOrError.AppState;
+    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppStateOrError.StateCache;
     private IEntitiesSource _relList;
 
 }

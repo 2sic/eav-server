@@ -102,7 +102,7 @@ public class AppInitializer : ServiceBase
             addList.Add(new AddContentTypeAndOrEntityTask(TypeAppResources));
 
         // If the Types are missing, create these first
-        if (CreateAllMissingContentTypes(appState, addList))
+        if (CreateAllMissingContentTypes(appState.ToInterface(Log).Internal(), addList))
         {
             // since the types were re-created, we must flush it from the cache
             // this is because other APIs may access the AppStates (though they shouldn't)
@@ -111,7 +111,7 @@ public class AppInitializer : ServiceBase
             appState = _repoLoader.New().AppStateRaw(appState.AppId, new CodeRefTrail());
         }
 
-        addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
+        addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState.ToInterface(Log), task));
 
         // Reset App-State to ensure it's reloaded with the added configuration
         CachePurger.Purge(appState);
@@ -131,10 +131,10 @@ public class AppInitializer : ServiceBase
     }
 
 
-    private bool CreateAllMissingContentTypes(AppState appStateRaw, List<AddContentTypeAndOrEntityTask> newItems)
+    private bool CreateAllMissingContentTypes(IAppState appStateRaw, List<AddContentTypeAndOrEntityTask> newItems)
     {
         var l = Log.Fn<bool>($"Check for {newItems.Count}");
-        var typesMod = _contentTypesMod.New(appStateRaw);
+        var typesMod = _contentTypesMod.New(appStateRaw.Internal());
         var addedTypes = false;
         foreach (var item in newItems)
             if (item.InAppType && FindContentType(appStateRaw, item.SetName, item.InAppType) == null)
@@ -150,7 +150,7 @@ public class AppInitializer : ServiceBase
         return l.Return(addedTypes);
     }
         
-    private void MetadataEnsureTypeAndSingleEntity(AppState appStateRaw, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
+    private void MetadataEnsureTypeAndSingleEntity(IAppState appStateRaw, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
     {
         var l = Log.Fn($"{cTypeAndOrEntity.SetName} for app {appStateRaw.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
         var ct = FindContentType(appStateRaw, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
@@ -168,11 +168,11 @@ public class AppInitializer : ServiceBase
         var newEnt = _builder.Value.Entity
             .Create(appId: appStateRaw.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
 
-        _entitySave.New(appStateRaw).Save(newEnt);
+        _entitySave.New(appStateRaw.Internal()).Save(newEnt);
         l.Done();
     }
 
-    private IContentType FindContentType(AppState appStateRaw, string setName, bool inAppType)
+    private IContentType FindContentType(IAppState appStateRaw, string setName, bool inAppType)
     {
         // if it's an in-app type, it should check the app, otherwise it should check the global type
         // we're NOT asking the app for all types (which would be the normal way)

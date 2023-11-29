@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Apps.Security;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
@@ -90,7 +91,7 @@ public class EntityApi: ServiceBase
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
-    public IEnumerable<IDictionary<string, object>> GetEntities(AppState appState, string contentType, bool showDrafts) 
+    public IEnumerable<IDictionary<string, object>> GetEntities(IAppStateInternal appState, string contentType, bool showDrafts) 
         => EntityToDic.Convert(_workEntities.New(appState, showDrafts).Get(contentType));
 
     public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
@@ -142,9 +143,10 @@ public class EntityApi: ServiceBase
 
     private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
     {
-        var found = _appWorkCtxPlus.AppState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
+        var appState = _appWorkCtxPlus.AppState;
+        var found = appState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
         // if there is a draft, use that for editing - not the original
-        found = _appWorkCtxPlus.AppState.GetDraft(found) ?? found;
+        found = appState.GetDraft(found) ?? found;
 
         // If we want the original (not a copy for new) then stop here
         if (!p.DuplicateEntity.HasValue) return found;

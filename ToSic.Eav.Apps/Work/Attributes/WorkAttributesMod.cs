@@ -216,7 +216,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
 
         // 2.1 find the index for adding fields
         // - get the content-type
-        var contentType = AppWorkCtx.AppState.GetContentType(contentTypeId);/*  ContentTypes.FirstOrDefault(c => c.Id == contentTypeId)*/;
+        var contentType = AppWorkCtx.AppState.GetContentType(contentTypeId);
         if (contentType == null) return l.ReturnFalse($"error: wrong contentTypeId {contentTypeId}");
         // - make sure we have the attribute-count to add more fields
 

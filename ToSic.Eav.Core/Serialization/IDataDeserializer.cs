@@ -15,11 +15,11 @@ namespace ToSic.Eav.Serialization;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataDeserializer: IHasLog
 {
-    /// <summary>
-    /// Initialize with the app. One of two possible initializers.
-    /// </summary>
-    /// <param name="appState">the app which contains the data to be serialized</param>
-    void Initialize(AppState appState);
+    ///// <summary>
+    ///// Initialize with the app. One of two possible initializers.
+    ///// </summary>
+    ///// <param name="appState">the app which contains the data to be serialized</param>
+    //void Initialize(AppState appState);
 
     void Initialize(IAppState appState);
 

@@ -12,9 +12,9 @@ public static class AppStateExtensions
         => appState.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
     public static bool IsInherited(this IAppState reader)
-        => reader.Internal().AppState.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
+        => reader.Internal().StateCache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
-    public static bool HasCustomParentApp(this IAppState reader) => reader.Internal().AppState.HasCustomParentApp();
+    public static bool HasCustomParentApp(this IAppState reader) => reader.Internal().StateCache.HasCustomParentApp();
 
     private static bool HasCustomParentApp(this AppState states)
     {

@@ -60,7 +60,7 @@ partial class AppSettingsStack
         var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId ? null : appAncestor;
         l.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
 
-        var stackCache = new AppStateStackCache(Reader.AppState, ancestorIfNotPreset, site, global?.AppState, preset, target);
+        var stackCache = new AppStateStackCache(Reader.StateCache, ancestorIfNotPreset, site, global?.StateCache, preset, target);
 
         return l.ReturnAndLog(stackCache, "created");
     }

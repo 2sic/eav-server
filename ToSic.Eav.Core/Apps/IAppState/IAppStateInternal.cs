@@ -4,9 +4,9 @@ using ToSic.Eav.Data.PiggyBack;
 
 namespace ToSic.Eav.Apps.Reader
 {
-    public interface IAppStateInternal: IAppState, IHasPiggyBack
+    public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource
     {
-        AppState AppState { get; }
+        AppState StateCache { get; }
 
         AppState ParentAppState { get; }
 

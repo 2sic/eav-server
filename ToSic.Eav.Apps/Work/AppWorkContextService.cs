@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.Apps.Reader;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Services;
 using ToSic.Lib.DI;
@@ -60,25 +61,34 @@ public class AppWorkContextService: ServiceBase
     //}
 
 
-    public IAppWorkCtx Context(AppState appState) => new AppWorkCtx(appState);
-    public IAppWorkCtxPlus ContextPlus(AppState appState, bool? showDrafts = default, IDataSource data = default)
+    //public IAppWorkCtx Context(AppState appState) => new AppWorkCtx(appState);
+    public IAppWorkCtx Context(IAppState appState) => new AppWorkCtx(appState);
+    //public IAppWorkCtxPlus ContextPlus(AppState appState, bool? showDrafts = default, IDataSource data = default)
+    //    => new AppWorkCtxPlus(_dataSourceSvc.Value, appState, showDrafts, data);
+    public IAppWorkCtxPlus ContextPlus(IAppState appState, bool? showDrafts = default, IDataSource data = default)
         => new AppWorkCtxPlus(_dataSourceSvc.Value, appState, showDrafts, data);
 
-    public IAppWorkCtx Context(int appId) => new AppWorkCtx(_appStates.Value.Get(appId));
+    public IAppWorkCtx Context(int appId) => new AppWorkCtx(_appStates.Value.GetReaderInternalOrNull(appId));
     public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource data = default)
-        => new AppWorkCtxPlus(_dataSourceSvc.Value, appState: _appStates.Value.Get(appId), showDrafts, data);
+        => new AppWorkCtxPlus(_dataSourceSvc.Value, appState: _appStates.Value.GetReaderInternalOrNull(appId), showDrafts, data);
 
-    public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(_appStates.Value.KeepOrGet(appIdentity));
+    public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(_appStates.Value.KeepOrGetReader(appIdentity));
     public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource data = default)
-        => new AppWorkCtxPlus(_dataSourceSvc.Value, _appStates.Value.KeepOrGet(appIdentity), showDrafts, data);
+        => new AppWorkCtxPlus(_dataSourceSvc.Value, _appStates.Value.KeepOrGetReader(appIdentity), showDrafts, data);
 
     public IAppWorkCtxPlus ToCtxPlus(IAppWorkCtx appCtx, bool? showDrafts = default, IDataSource data = default)
         => new AppWorkCtxPlus(appCtx, _dataSourceSvc.Value, appCtx.AppState, showDrafts, data);
 
     public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity) => CtxWithDb(Context(identity).AppState);
 
-    public IAppWorkCtxWithDb CtxWithDb(AppState appState, DbDataController existingDb = default)
+    //public IAppWorkCtxWithDb CtxWithDb(AppState appState, DbDataController existingDb = default)
+    //    => existingDb == null
+    //        ? new AppWorkCtxWithDb(_dbGen.New().SetInit(dc => dc.Init(appState)), appState)
+    //        : new AppWorkCtxWithDb(existingDb, appState);
+
+    public IAppWorkCtxWithDb CtxWithDb(IAppStateInternal appState, DbDataController existingDb = default)
         => existingDb == null
-            ? new AppWorkCtxWithDb(_dbGen.New().SetInit(dc => dc.Init(appState)), appState)
+            ? new AppWorkCtxWithDb(_dbGen.New().SetInit(dc => dc.Init(appState.StateCache)), appState)
             : new AppWorkCtxWithDb(existingDb, appState);
+
 }

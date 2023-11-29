@@ -1,13 +1,13 @@
 ﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
-using AppState = ToSic.Eav.Apps.AppState;
+using ToSic.Eav.Apps;
 
 namespace ToSic.Eav.DataSources;
 
 /// <summary>
 /// Interface for the App Root - usually the very first node in any data-delivery or query. <br/>
-/// It's just like a normal <see cref="IDataSource"/> but will internally access the <see cref="AppState"/> from the Cache/>.
+/// It's just like a normal <see cref="IDataSource"/> but will internally access the <see cref="IAppState"/> from the Cache/>.
 /// </summary>
 [VisualQuery(
     NiceName = "App Root Cache",

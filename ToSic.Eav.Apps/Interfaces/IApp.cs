@@ -76,7 +76,7 @@ public interface IApp : IAppIdentity, IHasMetadata
     ILookUpEngine ConfigurationProvider { get; }
 
     [PrivateApi]
-    Query GetQuery(string name);
+    IQuery GetQuery(string name);
 
     // Note: was here a long time, marked as public in v14.7
     // Made private again in 15.06 because I want to create an interface IAppState

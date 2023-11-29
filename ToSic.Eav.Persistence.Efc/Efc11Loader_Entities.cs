@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
@@ -90,7 +91,7 @@ partial class Efc11Loader
         #region Build EntityModels
 
         var serializer = _dataDeserializer.New();
-        serializer.Initialize(app);
+        serializer.Initialize(app.ToInterface(Log));
 
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)

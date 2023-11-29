@@ -6,7 +6,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps;
 
-partial class AppState: ICacheExpiring, IHasPiggyBack
+partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack
 {
     /// <summary>
     /// Helper object to keep track of cache changes

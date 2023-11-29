@@ -45,12 +45,11 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
     ) => Log.Func($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true, func: () =>
     {
         // do optional type-check and if necessary, throw error
-        var appCtx = AppWorkCtx.AppState.CreateAppWorkCtx();
-        BatchCheckTypesMatch(appCtx, ids, contentType);
+        BatchCheckTypesMatch(ids, contentType);
 
         // get related metadata ids
         var metaDataIds = new List<int>();
-        foreach (var id in ids) CollectMetaDataIdsRecursively(appCtx, id, ref metaDataIds);
+        foreach (var id in ids) CollectMetaDataIdsRecursively(id, ref metaDataIds);
 
         var deleteIds = ids.ToList();
         if (metaDataIds.Any()) deleteIds.AddRange(metaDataIds);
@@ -68,18 +67,18 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
         // introduced in v15.05 to reduce work on entity delete
         // in past we PurgeApp in whole on each entity delete
         // this should be much faster, but side effects are possible.
-        AppWorkCtx.AppState.Remove(repositoryIds, true);
+        AppWorkCtx.AppState.StateCache.Remove(repositoryIds, true);
 
         return ok;
     });
 
 
-    private void CollectMetaDataIdsRecursively(IAppWorkCtx appCtx, int id, ref List<int> metaDataIds)
+    private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
     {
-        var childrenMetaDataIds = appCtx.AppState.List.FindRepoId(id).Metadata.Select(md => md.EntityId).ToList();
+        var childrenMetaDataIds = AppWorkCtx.AppState.List.FindRepoId(id).Metadata.Select(md => md.EntityId).ToList();
         if (!childrenMetaDataIds.Any()) return;
         foreach (var childrenMetadataId in childrenMetaDataIds)
-            CollectMetaDataIdsRecursively(appCtx, childrenMetadataId, ref metaDataIds);
+            CollectMetaDataIdsRecursively(childrenMetadataId, ref metaDataIds);
         metaDataIds.AddRange(childrenMetaDataIds);
     }
 
@@ -98,11 +97,11 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
         return canDeleteList;
     }
 
-    private void BatchCheckTypesMatch(IAppWorkCtx appCtx, int[] ids, string contentType)
+    private void BatchCheckTypesMatch(int[] ids, string contentType)
     {
         foreach (var id in ids)
         {
-            var found = appCtx.AppState.List.FindRepoId(id); // Parent.Read.Entities.Get(id);
+            var found = AppWorkCtx.AppState.List.FindRepoId(id); // Parent.Read.Entities.Get(id);
             if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
         }

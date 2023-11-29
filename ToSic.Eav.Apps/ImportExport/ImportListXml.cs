@@ -299,7 +299,7 @@ public partial class ImportListXml: ServiceBase
         if (_deleteSetting == ImportDeleteUnmentionedItems.All)
         {
             var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
-            _entDelete.New(AppState).Delete(idsToDelete);
+            _entDelete.New(AppState.ToInterface(Log).Internal()).Delete(idsToDelete);
         }
 
         var import = _importerLazy.Value.Init(null, _appId, false, true);

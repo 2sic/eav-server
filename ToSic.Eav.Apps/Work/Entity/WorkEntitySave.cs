@@ -66,9 +66,9 @@ public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
         // This is to avoid parallel creation of new entities
         // because sometimes the save may be executed twice before the state knows that the entity exists
         // in which case it would add it twice
-        var appState = AppWorkCtx.AppState;
+        var appReader = AppWorkCtx.AppState;
 
-        saveOptions = saveOptions ?? _environmentLazy.Value.SaveOptions(appState.ZoneId);
+        saveOptions ??= _environmentLazy.Value.SaveOptions(appReader.ZoneId);
 
         // Inner call which will be executed with the Lock of the AppState
         List<int> InnerSaveInLock()
@@ -78,9 +78,9 @@ public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
             entities = entities.Select(entity =>
             {
                 // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
-                if (!(entity is Entity e2) || e2.Type.IsDynamic || e2.Type.Attributes != null)
+                if (entity is not Entity e2 || e2.Type.IsDynamic || e2.Type.Attributes != null)
                     return entity;
-                var newType = appState.GetContentType(entity.Type.Name);
+                var newType = appReader.GetContentType(entity.Type.Name);
                 if (newType == null) return entity;
 
                 return Builder.Entity.CreateFrom(entity, type: newType);
@@ -94,20 +94,20 @@ public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
             }).ToList();
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
-            entities = AttachRelationshipResolver(entities, appState);
+            entities = AttachRelationshipResolver(entities, appReader.StateCache);
 
             List<int> intIds = null;
             var dc = AppWorkCtx.DataController;
             dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
 
             // Tell the cache to do a partial update
-            _appsCache.Value.Update(appState, intIds, Log, _appLoaderTools.Value);
+            _appsCache.Value.Update(appReader, intIds, Log, _appLoaderTools.Value);
             return intIds;
         }
 
 
         List<int> ids = null;
-        appState.DoInLock(Log, () => ids = InnerSaveInLock());
+        appReader.StateCache.DoInLock(Log, () => ids = InnerSaveInLock());
 
         return l.Return(ids, $"ids:{ids.Count}");
     }

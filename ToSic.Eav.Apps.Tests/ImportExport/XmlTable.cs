@@ -31,7 +31,7 @@ namespace ToSic.Eav.Apps.Tests.ImportExport
             var loader = GetService<IRepositoryLoader>();
             var appPackage = loader.AppStateRawTA(appId);
             var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
-            return GetService<ExportListXml>().Init(appPackage, type);
+            return GetService<ExportListXml>().Init(appPackage.ToInterface(Log).Internal(), type);
         }
     }
 }

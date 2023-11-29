@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
@@ -46,12 +47,12 @@ public class ContentImportApi : ServiceBase
     private readonly LazySvc<JsonSerializer> _jsonSerializerLazy;
     private readonly AppCachePurger _appCachePurger;
     private readonly IAppStates _appStates;
-    private AppState _appState;
+    private IAppStateInternal _appState;
 
     public ContentImportApi Init(int appId)
     {
         var l = Log.Fn<ContentImportApi>($"app: {appId}");
-        _appState = _appStates.Get(appId);
+        _appState = _appStates.GetReaderInternalOrNull(appId);
         return l.Return(this);
     }
 
@@ -100,7 +101,7 @@ public class ContentImportApi : ServiceBase
 
         using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
         {
-            var importer = _importListXml.Value.Init(_appState, args.ContentType, contentSteam,
+            var importer = _importListXml.Value.Init(_appState.StateCache, args.ContentType, contentSteam,
                 contextLanguages, args.DefaultLanguage,
                 args.ClearEntities, args.ImportResourcesReferences);
             return l.Return(importer);
