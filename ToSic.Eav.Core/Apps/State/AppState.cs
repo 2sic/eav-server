@@ -25,7 +25,7 @@ public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
 
         ParentApp = parentApp;
         l.A($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
-        CacheExpiryDelegate = CreateExpiryDelegate(parentApp);
+        CacheTimestampDelegate = CreateExpiryDelegate(parentApp, CacheTimestampPrivate);
 
         NameId = nameId;
             
@@ -37,7 +37,7 @@ public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
         Relationships = new AppRelationshipManager(this);
         l.Done();
     }
-    [PrivateApi("WIP v13")]
+    [PrivateApi]
     public readonly ParentAppState ParentApp;
 
     /// <summary>

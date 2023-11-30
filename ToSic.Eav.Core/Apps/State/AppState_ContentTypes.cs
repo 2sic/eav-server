@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Documentation;
@@ -14,8 +15,11 @@ partial class AppState: IAppContentTypeReader
     /// <summary>
     /// All ContentTypes in this App
     /// </summary>
-    public IEnumerable<IContentType> ContentTypes => _appContentTypesFromRepository.Union(ParentApp.ContentTypes);
-
+    public IEnumerable<IContentType> ContentTypes => _contentTypesList
+        ??= new SynchronizedList<IContentType>(CacheTimestampDelegate,
+            () => _appContentTypesFromRepository.Union(ParentApp.ContentTypes).ToImmutableList()
+        );
+    private SynchronizedList<IContentType> _contentTypesList;
 
     /// <summary>
     /// The second init-command

@@ -18,7 +18,7 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack
     [PrivateApi] public event EventHandler AppStateChanged;
 
     /// <inheritdoc />
-    public long CacheTimestamp => CacheExpiryDelegate.CacheTimestamp;
+    public long CacheTimestamp => CacheTimestampDelegate.CacheTimestamp;
 
     private void CacheResetTimestamp(string message, int offset = 0)
     {
@@ -52,22 +52,22 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack
     /// The App can itself be the master of expiry, or it can be that a parent-app must be included
     /// So the expiry-provider is this object, which must be initialized on AppState creation
     /// </summary>
-    private ITimestamped CacheExpiryDelegate { get; }
+    private ICacheExpiring CacheTimestampDelegate { get; }
 
     /// <summary>
     /// Store for the app-private timestamp. In inherited apps, it will be combined with the parent using the CacheExpiryDelegate
     /// </summary>
-    private Timestamped CacheTimestampPrivate { get; } = new();
+    private CacheExpiring CacheTimestampPrivate { get; } = new();
 
     /// <summary>
     /// Create an expiry source for this app.
     /// In normal mode it will only use the private timestamp.
     /// In shared mode it will merge its timestamp with the parent
     /// </summary>
-    private ITimestamped CreateExpiryDelegate(ParentAppState pApp)
-        => (pApp.InheritContentTypes || pApp.InheritEntities) && pApp.AppState != null
-            ? new CacheExpiringMultiSource(CacheTimestampPrivate, pApp.AppState) as ITimestamped
-            : CacheTimestampPrivate;
+    private static ICacheExpiring CreateExpiryDelegate(ParentAppState parent, ICacheExpiring cacheTimestampPrivate)
+        => (parent.InheritContentTypes || parent.InheritEntities) && parent.AppState != null
+            ? new CacheExpiringMultiSource(cacheTimestampPrivate, parent.AppState)
+            : cacheTimestampPrivate;
 
     [PrivateApi] 
     public PiggyBack PiggyBack => _piggyBack ??= new PiggyBack();

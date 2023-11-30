@@ -29,6 +29,6 @@ public class DirectEntitiesSource : IEntitiesSource
     /// <summary>
     /// Return false for cache changed to prevent reloading the cache unnecessarily
     /// </summary>
-    public bool CacheChanged(long dependentTimeStamp) => dependentTimeStamp < CacheTimestamp;
+    public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp > dependentTimeStamp;
 
 }
