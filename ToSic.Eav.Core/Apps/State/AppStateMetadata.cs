@@ -10,31 +10,28 @@ public class AppStateMetadata
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="target"></param>
-    internal AppStateMetadata(AppState owner, AppThingsIdentifiers target)
+    internal AppStateMetadata(IAppStateCache owner, AppThingsIdentifiers target)
     {
         Owner = owner;
         Target = target;
     }
 
-    private AppState Owner { get; }
+    private IAppStateCache Owner { get; }
     private AppThingsIdentifiers Target { get; }
 
 
-    public IEntity AppConfiguration
-        => (_appConfigSynched ??= BuildSynchedMetadata(Owner, AppLoadConstants.TypeAppConfig)).Value;
+    public IEntity AppConfiguration => (_appConfigSynched ??= BuildSynchedMetadata(Owner, AppLoadConstants.TypeAppConfig)).Value;
     private SynchronizedObject<IEntity> _appConfigSynched;
 
-    private static SynchronizedObject<IEntity> BuildSynchedMetadata(AppState parent, string staticName)
+    private static SynchronizedObject<IEntity> BuildSynchedMetadata(IAppStateCache parent, string staticName)
     {
-        var synched = new SynchronizedObject<IEntity>(parent,
-            () => parent.Metadata.FirstOrDefaultOfType(staticName));
+        var synched = new SynchronizedObject<IEntity>(parent, () => parent.Metadata.FirstOrDefaultOfType(staticName));
         return synched;
     }
 
-    private static SynchronizedObject<IEntity> BuildSynchedItem(AppState parent, string staticName)
+    private static SynchronizedObject<IEntity> BuildSynchedItem(IAppStateCache parent, string staticName)
     {
-        var synched = new SynchronizedObject<IEntity>(parent,
-            () => parent.List.FirstOrDefaultOfType(staticName));
+        var synched = new SynchronizedObject<IEntity>(parent, () => parent.List.FirstOrDefaultOfType(staticName));
         return synched;
     }
 

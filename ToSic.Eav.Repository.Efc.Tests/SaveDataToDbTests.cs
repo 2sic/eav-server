@@ -121,7 +121,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
             // load content type to start creating an item...
             var loader1 = _loader1.UseExistingDb(dbi.SqlDb);
-            var app1 = loader1.AppStateRawTA(test.AppId);
+            var app1 = loader1.AppStateReaderRawTA(test.AppId);
             var ct1 = app1.GetContentType(ctName);
 
             var newE = GetService<EntityBuilder>().TestCreate(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new Dictionary<string, object>

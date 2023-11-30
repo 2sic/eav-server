@@ -36,16 +36,16 @@ namespace ToSic.Testing.Performance.json
 
         public void LoadApp()
         {
-            AppStateCacheRaw = Loader.AppStateRawTA(TestAppId);   
+            AppStateCacheRaw = Loader.AppStateReaderRawTA(TestAppId);   
         }
 
-        internal AppState AppStateCacheRaw;
+        internal IAppState AppStateCacheRaw;
         internal List<string> EntitiesAsJson;
 
         public int SerializeAll(int repeat)
         {
             var count = 0;
-            var ser = GetService<JsonSerializer>().SetApp(AppStateCacheRaw.ToInterface(Log));
+            var ser = GetService<JsonSerializer>().SetApp(AppStateCacheRaw);
             for (var i = 0; i < repeat; i++)
             {
                 var ents = ser.Deserialize(EntitiesAsJson);
@@ -62,7 +62,7 @@ namespace ToSic.Testing.Performance.json
         /// <param name="appid"></param>
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
-            var package = Loader.AppStateRawTA(appid).ToInterface(Log);
+            var package = Loader.AppStateReaderRawTA(appid);
             var ser = GetService<JsonSerializer>().SetApp(package);
             var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 

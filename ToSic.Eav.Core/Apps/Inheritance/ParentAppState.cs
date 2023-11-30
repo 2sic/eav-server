@@ -58,7 +58,7 @@ public class ParentAppState
     private SynchronizedEntityList _entitiesCache;
 
 
-    public IContentType GetContentType(string name) => InheritContentTypes ? WrapUnwrappedContentType(AppState.GetContentType(name)) : null;
+    internal IContentType GetContentType(string name) => InheritContentTypes ? WrapUnwrappedContentType(AppState.GetContentType(name)) : null;
 
     private IEnumerable<IContentType> GetInheritedTypes()
     {

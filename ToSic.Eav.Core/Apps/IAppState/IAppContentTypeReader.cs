@@ -9,4 +9,6 @@ public interface IAppContentTypeReader
     IEnumerable<IContentType> ContentTypes { get; }
 
     IContentType GetContentType(string name);
+
+    IContentType GetContentType(int contentTypeId);
 }

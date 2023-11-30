@@ -11,7 +11,7 @@ using ToSic.Sxc.Apps;
 
 namespace ToSic.Eav.Apps.Reader
 {
-    internal class AppStateReader: HelperBase, IAppState, IAppStateInternal, IMetadataSource
+    internal class AppStateReader: HelperBase, IAppStateInternal, IMetadataSource
     {
         private readonly AppState _appState;
 
@@ -85,6 +85,9 @@ namespace ToSic.Eav.Apps.Reader
         public IEnumerable<IContentType> ContentTypes => _appState.ContentTypes;
 
         public IContentType GetContentType(string name) => _appState.GetContentType(name);
+
+        public IContentType GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
+
         public IMetadataOf Metadata => _appState.Metadata;
 
         public AppRelationshipManager Relationships => _appState.Relationships;

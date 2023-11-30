@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Lib.Documentation;
@@ -6,7 +7,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps;
 
-partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack
+partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppStateChanges
 {
     /// <summary>
     /// Helper object to keep track of cache changes
@@ -15,7 +16,13 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack
 
 
     // Custom event for LightSpeed
-    [PrivateApi] public event EventHandler AppStateChanged;
+    [PrivateApi] private event EventHandler AppStateChanged;
+    [PrivateApi]
+    event EventHandler IAppStateChanges.AppStateChanged
+    {
+        add => this.AppStateChanged += value;
+        remove => this.AppStateChanged -= value;
+    }
 
     /// <inheritdoc />
     public long CacheTimestamp => CacheTimestampDelegate.CacheTimestamp;

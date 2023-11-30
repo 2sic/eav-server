@@ -33,8 +33,8 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         protected JsonSerializer SerializerOfApp(int appId)
         {
-            var app = Loader.AppStateRawTA(appId);
-            return GetService<JsonSerializer>().SetApp(app.ToInterface(Log));
+            var app = Loader.AppStateReaderRawTA(appId);
+            return GetService<JsonSerializer>().SetApp(app);
         }
 
         #endregion

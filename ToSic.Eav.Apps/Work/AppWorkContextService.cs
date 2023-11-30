@@ -88,7 +88,7 @@ public class AppWorkContextService: ServiceBase
 
     public IAppWorkCtxWithDb CtxWithDb(IAppStateInternal appState, DbDataController existingDb = default)
         => existingDb == null
-            ? new AppWorkCtxWithDb(_dbGen.New().SetInit(dc => dc.Init(appState.StateCache)), appState)
+            ? new AppWorkCtxWithDb(_dbGen.New().SetInit(dc => dc.Init(appState)), appState)
             : new AppWorkCtxWithDb(existingDb, appState);
 
 }

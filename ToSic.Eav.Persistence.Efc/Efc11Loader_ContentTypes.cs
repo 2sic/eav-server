@@ -23,13 +23,13 @@ partial class Efc11Loader
 
     private IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
     {
-        var wrapLog = Log.Fn<IList<IContentType>>(timer: true);
+        var l = Log.Fn<IList<IContentType>>(timer: true);
         try
         {
-            if (string.IsNullOrEmpty(app.Folder)) return wrapLog.Return(dbTypes, "no path");
+            if (string.IsNullOrEmpty(app.Folder)) return l.Return(dbTypes, "no path");
 
             var fileTypes = InitFileSystemContentTypes(app);
-            if (fileTypes == null || fileTypes.Count == 0) return wrapLog.Return(dbTypes, "no app file types");
+            if (fileTypes == null || fileTypes.Count == 0) return l.Return(dbTypes, "no app file types");
 
             Log.A($"Will check {fileTypes.Count} items");
 
@@ -44,11 +44,11 @@ partial class Efc11Loader
                 typeToMerge.Add(fType);
             }
 
-            return wrapLog.Return(typeToMerge, $"before {before}, now {typeToMerge.Count} types");
+            return l.Return(typeToMerge, $"before {before}, now {typeToMerge.Count} types");
         }
         catch (System.Exception e)
         {
-            return wrapLog.Return(dbTypes, "error:" + e.Message);
+            return l.Return(dbTypes, "error:" + e.Message);
         }
     }
 
@@ -59,11 +59,11 @@ partial class Efc11Loader
     /// <returns></returns>
     private IList<IContentType> InitFileSystemContentTypes(AppState app)
     {
-        var wrapLog = Log.Fn<IList<IContentType>>();
+        var l = Log.Fn<IList<IContentType>>();
         // must create a new loader for each app
         var loader = _appFileContentTypesLoader.New().Init(app.ToInterface(Log));
         var types = loader.ContentTypes(entitiesSource: app);
-        return wrapLog.ReturnAsOk(types);
+        return l.ReturnAsOk(types);
     }
 
     /// <summary>

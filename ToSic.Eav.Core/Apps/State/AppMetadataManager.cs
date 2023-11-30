@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
@@ -28,22 +29,22 @@ internal class AppMetadataManager: IMetadataSource
     /// </summary>
     private Dictionary<int, Dictionary<string, List<IEntity>>> _string;
 
-    private readonly AppState _app;
-
     #endregion
 
     #region IAppIdentity
 
-    public int ZoneId => _app.ZoneId;
+    private readonly IAppIdentity _appIdentity;
+    public int ZoneId => _appIdentity.ZoneId;
 
-    public int AppId => _app.AppId;
+    public int AppId => _appIdentity.AppId;
 
 
     #endregion
 
-    public AppMetadataManager(AppState app)
+    public AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cacheExpiry)
     {
-        _app = app;
+        _appIdentity = appIdentity;
+        _appCacheInfo = cacheExpiry;
         // make sure the lists have a sub-list for each known relationship type
         Reset();
     }
@@ -60,8 +61,10 @@ internal class AppMetadataManager: IMetadataSource
 
     #region Cache Timestamp & Invalidation
 
-    public long CacheTimestamp => _app.CacheTimestamp;
-    public bool CacheChanged(long dependentTimeStamp) => _app.CacheChanged(dependentTimeStamp);
+    private readonly ICacheExpiring _appCacheInfo;
+
+    public long CacheTimestamp => _appCacheInfo.CacheTimestamp;
+    public bool CacheChanged(long dependentTimeStamp) => _appCacheInfo.CacheChanged(dependentTimeStamp);
 
     #endregion
 
@@ -93,7 +96,7 @@ internal class AppMetadataManager: IMetadataSource
             indexOfType = metadataIndex[mdTargetType] = new Dictionary<T, List<IEntity>>();
 
         // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) exists, otherwise create empty list
-        var list = indexOfType.ContainsKey(mdValue) ? indexOfType[mdValue] : indexOfType[mdValue] = new List<IEntity>();
+        var list = indexOfType.TryGetValue(mdValue, out var lst) ? lst : indexOfType[mdValue] = new List<IEntity>();
 
         // in case it was already in this index, remove first
         var found = list.One(entity.EntityId);
@@ -127,7 +130,7 @@ internal class AppMetadataManager: IMetadataSource
     }
 
     public IEnumerable<IEntity> GetMetadata<T>(TargetTypes targetType, T key, string contentTypeName = null) 
-        => GetMetadata<T>((int)targetType, key, contentTypeName);
+        => GetMetadata((int)targetType, key, contentTypeName);
 
     private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, List<IEntity>>> list, int targetType, T key, string contentTypeName)
     {

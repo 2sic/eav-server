@@ -16,37 +16,19 @@ public class AppWorkCtx : IAppWorkCtx
     /// <inheritdoc />
     public int AppId { get; }
 
-
-    //public AppWorkCtx(AppState appState)
-    //{
-    //    AppId = appState.AppId;
-    //    ZoneId = appState.ZoneId;
-    //    AppState = appState;
-    //    AppStateReader = appState.ToInterface(null).Internal();
-    //}
     public AppWorkCtx(IAppState appState)
     {
         AppId = appState.AppId;
         ZoneId = appState.ZoneId;
         AppState = appState.Internal();
-        //AppState = AppStateReader.StateCache;
     }
 
-    //public AppWorkCtx(IAppWorkCtx original, AppState appState = default)
-    //{
-    //    if (original == null) throw new ArgumentException(@"Original must exist", nameof(original));
-    //    AppId = appState?.AppId ?? original.AppId;
-    //    ZoneId = appState?.ZoneId ?? original.ZoneId;
-    //    AppState = appState ?? original.AppState;
-    //    AppStateReader = AppState.ToInterface(null);
-    //}
     public AppWorkCtx(IAppWorkCtx original, IAppStateInternal appState = default)
     {
         if (original == null) throw new ArgumentException(@"Original must exist", nameof(original));
         AppId = appState?.AppId ?? original.AppId;
         ZoneId = appState?.ZoneId ?? original.ZoneId;
-        var AppState = appState?.StateCache ?? original.AppState?.StateCache;
-        this.AppState = AppState.ToInterface(null);
+        AppState = appState ?? original.AppState;
     }
 
 

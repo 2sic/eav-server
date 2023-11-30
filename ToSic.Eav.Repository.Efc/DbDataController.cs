@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
@@ -111,9 +112,9 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     /// </summary>
     /// <param name="appState"></param>
     /// <returns></returns>
-    public DbDataController Init(AppState appState)
+    public DbDataController Init(IAppStateInternal appState)
     {
-        _parentAppId = appState.ParentApp?.AppState?.AppId;
+        _parentAppId = appState.ParentAppState?.AppId;
         return Init(appState.ZoneId, appState.AppId);
     }
 

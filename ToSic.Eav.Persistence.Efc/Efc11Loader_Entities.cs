@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
@@ -33,10 +34,11 @@ partial class Efc11Loader
 
     internal int AddLogCount;
 
-    private void LoadEntities(AppStateBuilder builder, AppState app, int[] entityIds = null) => Log.Do($"{app.AppId}, {entityIds?.Length ?? 0}", timer: true, action: l =>
+    private void LoadEntities(AppStateBuilder builder, AppState app, int[] entityIds = null)
     {
+        var l = Log.Fn($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
         AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
-        var appId = app.AppId;
+        var appId = builder.Reader.AppId;
 
         #region Prepare & Extend EntityIds
 
@@ -91,7 +93,7 @@ partial class Efc11Loader
         #region Build EntityModels
 
         var serializer = _dataDeserializer.New();
-        serializer.Initialize(app.ToInterface(Log));
+        serializer.Initialize(builder.Reader);
 
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)
@@ -99,7 +101,7 @@ partial class Efc11Loader
             if (AddLogCount++ == MaxLogDetailsCount)
                 l.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-            var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes, PrimaryLanguage);
+            var newEntity = BuildNewEntity(builder.Reader, rawEntity, serializer, relatedEntities, attributes, PrimaryLanguage);
 
             // If entity is a draft, also include references to Published Entity
             builder.Add(newEntity, rawEntity.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
@@ -111,11 +113,12 @@ partial class Efc11Loader
         #endregion
 
         _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
-    });
+        l.Done();
+    }
 
 
 
-    private IEntity BuildNewEntity(AppState app, TempEntity e, 
+    private IEntity BuildNewEntity(IAppStateInternal app, TempEntity e, 
         IDataDeserializer serializer,
         Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
         Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,
@@ -140,14 +143,14 @@ partial class Efc11Loader
             return clonedExtended; // fromJson;
         }
 
-        var contentType = app.ToInterface(Log).GetContentType(e.AttributeSetId);
+        var contentType = app.GetContentType(e.AttributeSetId);
         if (contentType == null)
             throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
         // Prepare relationships to add to AttributeGenerator
         var emptyValueList = new List<(string StaticName, IValue)>();
         var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
-            ? rawRels.Select(r => (r.StaticName, _dataBuilder.Value.Relationship(r.Children, app))).ToList()
+            ? rawRels.Select(r => (r.StaticName, _dataBuilder.Value.Relationship(r.Children, app.StateCache))).ToList()
             : emptyValueList;
 
         var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
@@ -176,7 +179,7 @@ partial class Efc11Loader
 
         // Get all Attributes of that Content-Type
         var newAttributes = _dataBuilder.Attribute.Create(contentType, mergedValueLookups);
-        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: app, metadata: null);
+        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: app.StateCache, metadata: null);
         var newEntity = _dataBuilder.Entity.Create(
             appId: app.AppId,
             guid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,

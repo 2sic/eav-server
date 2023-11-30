@@ -46,7 +46,6 @@ public class AppRelationshipManager: SynchronizedList<EntityRelationship>
         //var lookup = appState.Index;
         if (lookup.ContainsKey(parent) &&
             (!child.HasValue || lookup.ContainsKey(child.Value)))
-            list.Add(new EntityRelationship(lookup[parent],
-                child.HasValue ? lookup[child.Value] : null));
+            list.Add(new EntityRelationship(lookup[parent], child.HasValue ? lookup[child.Value] : null));
     }
 }

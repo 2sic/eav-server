@@ -90,15 +90,6 @@ partial class Efc11Loader
         return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
     }
 
-    ///// <inheritdoc />
-    //public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail)
-    //{
-    //    var l = Log.Fn<AppState>($"{appId}", timer: true);
-    //    codeRefTrail.WithHere();
-    //    var appState = LoadAppStateFromDb(appId);
-    //    return l.ReturnAsOk(appState);
-    //}
-
     public AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<AppStateBuilder>($"{appId}", timer: true);

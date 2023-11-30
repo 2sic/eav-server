@@ -287,7 +287,7 @@ partial class AppState
                 throw new Exception("Trying to init metadata, but App is not in loading state.");
             if (st._appContentTypesFromRepository != null)
                 throw new Exception("Can't init metadata if content-types are already set");
-            st._metadataManager = new AppMetadataManager(st);
+            st._metadataManager = new AppMetadataManager(st, st);
 
             st.Metadata = st.GetMetadataOf(TargetTypes.App, st.AppId, "App (" + st.AppId + ") " + st.Name + " (" + st.Folder + ")");
         }
