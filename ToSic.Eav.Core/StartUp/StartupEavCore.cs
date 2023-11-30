@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Code.InfoSystem;
 using ToSic.Eav.Context;
@@ -59,6 +60,7 @@ public static class StartUpEavCore
         services.TryAddSingleton<IAppsCache, AppsCache>();
         services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
         services.TryAddTransient<IAppStates, AppStates>();
+        services.TryAddTransient<AppStateBuilder>();    // new v16
         services.TryAddTransient<AppSettingsStack>();
 
         // v13 #SwitchableAppsCache

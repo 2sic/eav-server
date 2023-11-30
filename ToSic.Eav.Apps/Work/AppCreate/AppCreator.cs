@@ -55,7 +55,7 @@ public class AppCreator: ServiceBase
         var appId = CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);
 
         // must get app from DB directly, not from cache, so no State.Get(...)
-        var appState = RepositoryLoader.AppStateRaw(appId, new CodeRefTrail()).ToInterface(Log);
+        var appState = RepositoryLoader.AppStateBuilderRaw(appId, new CodeRefTrail()).Reader;
 
         _appInitGenerator.New().InitializeApp(appState, appName, new CodeRefTrail());
     }

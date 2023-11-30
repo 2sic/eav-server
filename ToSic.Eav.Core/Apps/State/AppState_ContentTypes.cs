@@ -27,7 +27,7 @@ partial class AppState: IAppContentTypeReader
     /// </summary>
     /// <param name="contentTypes"></param>
     [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
-    public void InitContentTypes(IList<IContentType> contentTypes)
+    internal void InitContentTypes(IList<IContentType> contentTypes)
     {
         var l = Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
 
@@ -47,32 +47,30 @@ partial class AppState: IAppContentTypeReader
             .ToImmutableDictionary(x => x.Id, x => x.NameId);
         _appContentTypesFromRepository = RemoveAliasesForGlobalTypes(contentTypes);
         // build types by name
-        BuildCacheForTypesByName(_appContentTypesFromRepository);
+        _appTypesByName = BuildCacheForTypesByName(_appContentTypesFromRepository, Log);
         //ContentTypesShouldBeReloaded = false;
 
         l.Done();
     }
 
 
-    private void BuildCacheForTypesByName(IImmutableList<IContentType> allTypes)
+    private static IDictionary<string, IContentType> BuildCacheForTypesByName(IImmutableList<IContentType> allTypes, ILog log)
     {
-        var l = Log.Fn(message: $"build cache for type names for {allTypes.Count} items", timer: true);
+        var l = log.Fn< IDictionary<string, IContentType>>(message: $"build cache for type names for {allTypes.Count} items", timer: true);
 
-        _appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
-
-        var keepTypes = allTypes;
+        var appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 
         // add with static name - as the primary key
-        foreach (var type in keepTypes)
-            if (!_appTypesByName.ContainsKey(type.NameId))
-                _appTypesByName.Add(type.NameId, type);
+        foreach (var type in allTypes)
+            if (!appTypesByName.ContainsKey(type.NameId))
+                appTypesByName.Add(type.NameId, type);
 
         // add with nice name, if not already added
-        foreach (var type in keepTypes)
-            if (!_appTypesByName.ContainsKey(type.Name))
-                _appTypesByName.Add(type.Name, type);
+        foreach (var type in allTypes)
+            if (!appTypesByName.ContainsKey(type.Name))
+                appTypesByName.Add(type.Name, type);
 
-        l.Done();
+        return l.Return(appTypesByName);
     }
 
     private IImmutableList<IContentType> RemoveAliasesForGlobalTypes(IList<IContentType> appTypes)
@@ -106,8 +104,8 @@ partial class AppState: IAppContentTypeReader
     /// </summary>
     /// <param name="contentTypeId">id of the type as stored in the repository</param>
     /// <returns>a type object or null if not found</returns>
-    [PublicApi]
-    public IContentType GetContentType(int contentTypeId)
+    [PrivateApi("was PublicApi till 16.09 but then it was used on IApp")]
+    internal IContentType GetContentType(int contentTypeId)
     {
         var found = _appContentTypesFromRepository.FirstOrDefault(c => c.Id == contentTypeId);
         if (found != null) return found;

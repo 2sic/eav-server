@@ -11,7 +11,7 @@ namespace ToSic.Eav.Persistence.File;
 
 partial class AppLoader
 {
-    private List<IEntity> LoadGlobalEntities(AppState appState)
+    private List<IEntity> LoadGlobalEntities(IAppState appState)
     {
         var l = Log.Fn<List<IEntity>>($"appId:{appState.AppId}");
         // Set TypeID seed for loader so each loaded type has a unique ID
@@ -27,8 +27,7 @@ partial class AppLoader
                 .Select(folder => new EntitySetsToLoad
                 {
                     Folder = folder,
-                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source,
-                        appState.ToInterface(Log)) ?? new List<IEntity>()
+                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appState) ?? new List<IEntity>()
                 })
                 .ToList();
 

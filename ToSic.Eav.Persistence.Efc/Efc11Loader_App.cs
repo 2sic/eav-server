@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
@@ -89,12 +90,21 @@ partial class Efc11Loader
         return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
     }
 
-    /// <inheritdoc />
-    public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail)
+    ///// <inheritdoc />
+    //public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail)
+    //{
+    //    var l = Log.Fn<AppState>($"{appId}", timer: true);
+    //    codeRefTrail.WithHere();
+    //    var appState = LoadAppStateFromDb(appId);
+    //    return l.ReturnAsOk(appState);
+    //}
+
+    public AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)
     {
-        var l = Log.Fn<AppState>($"{appId}", timer: true);
+        var l = Log.Fn<AppStateBuilder>($"{appId}", timer: true);
+        codeRefTrail.WithHere();
         var appState = LoadAppStateFromDb(appId);
-        return l.ReturnAsOk(appState);
+        return l.ReturnAsOk(_appStateBuilder.New().Init(appState));
     }
 
     /// <inheritdoc />
@@ -119,20 +129,22 @@ partial class Efc11Loader
         return l.Return(result, "with init check");
     }
 
-    public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null)
+    public AppState Update(AppState appStateOriginal, AppStateLoadSequence startAt, int[] entityIds = null)
     {
         var lMain = Log.Fn<AppState>(message: "What happens inside this is logged in the app-state loading log");
-            
-        var msg = $"get app data package for a#{app.AppId}, startAt: {startAt}, ids only:{entityIds != null}";
-        app.Load(() => Log.Do(timer: true, message: msg, action: l =>
+        
+        var builder = _appStateBuilder.New().Init(appStateOriginal);
+        builder.Load($"startAt: {startAt}, ids only:{entityIds != null}", state => 
         {
+            var l = Log.Fn();
             // prepare metadata lists & relationships etc.
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
-                _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(app));
-                var nameAndFolder = PreLoadAppPath(app.AppId);
-                app.Name = nameAndFolder.Name;
-                app.Folder = nameAndFolder.Path;
+                _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(builder));
+                var nameAndFolder = PreLoadAppPath(state.AppId);
+                builder.SetNameAndFolder(nameAndFolder.Name, nameAndFolder.Path);
+                //state.Name = nameAndFolder.Name;
+                //state.Folder = nameAndFolder.Path;
             }
             else
                 l.A("skipping metadata load");
@@ -144,9 +156,9 @@ partial class Efc11Loader
             if (startAt <= AppStateLoadSequence.ContentTypeLoad)
             {
                 var typeTimer = Stopwatch.StartNew();
-                var dbTypes = ContentTypes(app.AppId, app);
-                dbTypes = LoadExtensionsTypesAndMerge(app, dbTypes);
-                app.InitContentTypes(dbTypes);
+                var dbTypes = ContentTypes(state.AppId, state);
+                dbTypes = LoadExtensionsTypesAndMerge(state, dbTypes);
+                builder.InitContentTypes(dbTypes);
                 typeTimer.Stop();
                 l.A($"timers types:{typeTimer.Elapsed}");
             }
@@ -155,14 +167,14 @@ partial class Efc11Loader
 
             // load data
             if (startAt <= AppStateLoadSequence.ItemLoad)
-                LoadEntities(app, entityIds);
+                LoadEntities(builder, state, entityIds);
             else
                 l.A("skipping items load");
 
-            l.A($"timers sql:sqlAll:{_sqlTotalTime}");
-        }));
+            l.Done($"timers sql:sqlAll:{_sqlTotalTime}");
+        });
 
-        return lMain.ReturnAsOk(app);
+        return lMain.ReturnAsOk(builder.AppState);
     }
 
     /// <summary>

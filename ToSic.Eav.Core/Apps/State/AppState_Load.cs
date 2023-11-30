@@ -25,7 +25,7 @@ partial class AppState
 
 
     [PrivateApi("should be internal, but ATM also used in FileAppStateLoader")]
-    public void Load(Action loader) => Log.Do(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", timer: true, action: l =>
+    internal void Load(Action loader) => Log.Do(message: $"zone/app:{ZoneId}/{AppId} - Hash: {GetHashCode()}", timer: true, action: l =>
     {
         try
         {

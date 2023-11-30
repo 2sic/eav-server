@@ -39,7 +39,7 @@ partial class AppState
     /// Add an entity to the cache. Should only be used by EAV code
     /// </summary>
     [PrivateApi("Only internal use")]
-    public void Add(IEntity newEntity, int? publishedId, bool log)
+    internal void Add(IEntity newEntity, int? publishedId, bool log)
     {
         if (!Loading)
             throw new Exception("trying to add entity, but not in loading state. set that first!");
@@ -67,7 +67,7 @@ partial class AppState
     /// This should be much faster, but side effects are possible.
     /// </remarks>
     [PrivateApi("Only internal use")]
-    public void Remove(int[] repositoryIds, bool log)
+    internal void Remove(int[] repositoryIds, bool log)
     {
         if (repositoryIds == null || repositoryIds.Length == 0) return;
         Load(() =>
@@ -76,16 +76,7 @@ partial class AppState
             {
                 // Remove any drafts that are related if necessary
                 if (Index.TryGetValue(id, out var oldEntity))
-                {
-                    // RemoveObsoleteDraft(oldEntity, log);
-
-                    // Removes the entity from list
                     _metadataManager.Register(oldEntity, false);
-
-                    //// Removes reference to draft entity from published
-                    //if (GetPublished(oldEntity) is Entity publishEntity) 
-                    //    publishEntity.DraftEntity = null;
-                }
 
                 Index.Remove(id);
 

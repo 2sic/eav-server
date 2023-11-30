@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
@@ -33,7 +34,7 @@ partial class Efc11Loader
 
     internal int AddLogCount;
 
-    private void LoadEntities(AppState app, int[] entityIds = null) => Log.Do($"{app.AppId}, {entityIds?.Length ?? 0}", timer: true, action: l =>
+    private void LoadEntities(AppStateBuilder builder, AppState app, int[] entityIds = null) => Log.Do($"{app.AppId}, {entityIds?.Length ?? 0}", timer: true, action: l =>
     {
         AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
         var appId = app.AppId;
@@ -102,7 +103,7 @@ partial class Efc11Loader
             var newEntity = BuildNewEntity(app, rawEntity, serializer, relatedEntities, attributes, PrimaryLanguage);
 
             // If entity is a draft, also include references to Published Entity
-            app.Add(newEntity, rawEntity.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
+            builder.Add(newEntity, rawEntity.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);
         }
 
         entityTimer.Stop();
@@ -140,7 +141,7 @@ partial class Efc11Loader
             return clonedExtended; // fromJson;
         }
 
-        var contentType = app.GetContentType(e.AttributeSetId);
+        var contentType = app.ToInterface(Log).GetContentType(e.AttributeSetId);
         if (contentType == null)
             throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 

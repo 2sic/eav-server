@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
@@ -17,17 +18,19 @@ internal partial class AppLoader : ServiceBase, IAppLoader
 {
     #region Constructor and DI
 
-    public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator) : base("Eav.RunTme")
+    public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<AppStateBuilder> stateBuilder) : base("Eav.RunTme")
     {
         _serviceProvider = sp;
         ConnectServices(
-            _fslGenerator = fslGenerator
+            _fslGenerator = fslGenerator,
+            _stateBuilder = stateBuilder
         );
         // Only add the first time it's really used
         InternalAppLoader.LoadLog ??= Log;
     }
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly Generator<AppStateBuilder> _stateBuilder;
     private readonly Generator<FileSystemLoader> _fslGenerator;
 
     #endregion
@@ -72,26 +75,29 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     private List<FileSystemLoader> _loader;
 
 
-    public AppState LoadFullAppState()
+    public AppStateBuilder LoadFullAppState()
     {
-        var outerWrapLog = Log.Fn<AppState>(timer: true);
+        var outerWrapLog = Log.Fn<AppStateBuilder>(timer: true);
 
-        var appState = new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
-        var msg = $"get app data package for a#{appState.AppId}";
+        var builder = _stateBuilder.New().InitForPreset();
+        //var appState = builder.AppState;// new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
+        // var msg = $"get app data package for a#{appState.AppId}";
 
-        appState.Load(() => Log.Do(timer: true, message: msg, action: l =>
+        builder.Load("get app data package", appState =>
         {
+            var l = Log.Fn("load app data package");
             // Prepare metadata lists & relationships etc.
-            appState.InitMetadata();
-            appState.Name = Constants.PresetName;
-            appState.Folder = Constants.PresetName;
+            builder.InitMetadata();
+            builder.SetNameAndFolder(Constants.PresetName, Constants.PresetName);
+            //appState.Name = Constants.PresetName;
+            //appState.Folder = Constants.PresetName;
 
 
             l.Do(timer: true, action: () =>
             {
                 var types = LoadGlobalContentTypes(appState);
                 // Just attach all global content-types to this app, as they belong here
-                appState.InitContentTypes(types);
+                builder.InitContentTypes(types);
                 return "types loaded";
             });
 
@@ -105,24 +111,24 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                 // This should probably not cause any problems, but it's important to know
                 // We may optimize / change this some day
                 l.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
-                var appTypes = appState.ContentTypes.ToList();
+                var appTypes = builder.Reader.ContentTypes.ToList();
                 Loaders.ForEach(ldr => ldr.ResetSerializer(appTypes));
 
                 l.A("Load items");
 
-                var entities = LoadGlobalEntities(appState);
+                var entities = LoadGlobalEntities(builder.Reader);
                 l.A($"Load entity {entities.Count} items");
                 foreach (var entity in entities) 
-                    appState.Add(entity as Entity, null, true);
+                    builder.Add(entity as Entity, null, true);
             }
             catch (Exception ex)
             {
                 l.A("Error: Failed adding Entities");
                 l.Ex(ex);
             }
-        }));
+        });
 
-        return outerWrapLog.ReturnAsOk(appState);
+        return outerWrapLog.ReturnAsOk(builder);
     }
 
 }

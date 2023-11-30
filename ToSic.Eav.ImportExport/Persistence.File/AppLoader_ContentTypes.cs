@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Metadata;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Persistence.File;
 
 partial class AppLoader
 {
-    public List<IContentType> LoadGlobalContentTypes(AppState appState)
+    public List<IContentType> LoadGlobalContentTypes(IHasMetadataSource appState)
     {
         var l = Log.Fn<List<IContentType>>();
 

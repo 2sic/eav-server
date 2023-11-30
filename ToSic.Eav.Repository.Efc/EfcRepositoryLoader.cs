@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
@@ -12,15 +13,19 @@ namespace ToSic.Eav.Repository.Efc;
 /// </summary>
 internal class EfcRepositoryLoader: IRepositoryLoader
 {
-    public EfcRepositoryLoader(DbDataController dataController) 
-        => _dataController = dataController.Init(null, null);
+    public EfcRepositoryLoader(DbDataController dataController)
+    {
+        _dataController = dataController.Init(null, null);
+    }
+
     private readonly DbDataController _dataController;
 
     public ILog Log => _dataController.Loader.Log;
 
     public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) => _dataController.Loader.ContentTypes(appId, source);
 
-    public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateRaw(appId, codeRefTrail);
+    //public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateRaw(appId, codeRefTrail);
+    public AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateBuilderRaw(appId, codeRefTrail);
 
     public AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
 

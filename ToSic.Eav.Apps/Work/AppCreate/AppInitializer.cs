@@ -108,7 +108,7 @@ public class AppInitializer : ServiceBase
             // this is because other APIs may access the AppStates (though they shouldn't)
             CachePurger.Purge(appState);
             // get the latest app-state, but not-initialized so we can make changes
-            appState = _repoLoader.New().AppStateRaw(appState.AppId, new CodeRefTrail()).ToInterface(Log);
+            appState = _repoLoader.New().AppStateBuilderRaw(appState.AppId, new CodeRefTrail()).Reader;
         }
 
         addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));

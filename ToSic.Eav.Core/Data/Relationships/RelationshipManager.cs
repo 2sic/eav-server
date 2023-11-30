@@ -30,10 +30,7 @@ internal class RelationshipManager: IRelationshipManager
         _entity = entity;
         _appStateCache = app;
         _fallbackRels = fallbackRels;
-        if (app is AppState asAppState)
-            AllRelationships = asAppState.Relationships;
-        else
-            AllRelationships = fallbackRels ?? new List<EntityRelationship>();
+        AllRelationships = app?.Relationships ?? fallbackRels ?? new List<EntityRelationship>();
     }
     private readonly IEntityLight _entity;
     private readonly IAppStateCache _appStateCache;

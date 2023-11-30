@@ -79,7 +79,7 @@ public class EavSystemLoader : LoaderBase
         // Build the cache of all system-types. Must happen before everything else
         l.A("Try to load global app-state");
         var presetApp = _appStateLoader.LoadFullAppState();
-        _appsCache.Value.Add(presetApp);
+        _appsCache.Value.Add(presetApp.AppState);
 
         LoadLicenseAndFeatures();
         l.Done("ok");

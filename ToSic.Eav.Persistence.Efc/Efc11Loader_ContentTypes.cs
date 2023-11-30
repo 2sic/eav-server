@@ -18,7 +18,7 @@ partial class Efc11Loader
     /// If uses temporary caching, so if called multiple times it loads from a private field.
     /// </summary>
     public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) 
-        => LoadContentTypesIntoLocalCache(appId, source);
+        => LoadContentTypesFromDb(appId, source);
 
 
     private IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
@@ -69,7 +69,7 @@ partial class Efc11Loader
     /// <summary>
     /// Load DB content-types into loader-cache
     /// </summary>
-    private ImmutableList<IContentType> LoadContentTypesIntoLocalCache(int appId, IHasMetadataSource source)
+    private ImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSource source)
     {
         // WARNING: 2022-01-18 2dm
         // I believe there is an issue which can pop up from time to time, but I'm not sure if it's only in dev setup
@@ -84,7 +84,7 @@ partial class Efc11Loader
         // 1. Collect AppIds used in content-types and attributes here
         // 2. After loading the types, access the app-state of each of these IDs to ensure it's loaded already
 
-        var wrapLog = Log.Fn<ImmutableList<IContentType>>(timer: true);
+        var l = Log.Fn<ImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
         var query = _dbContext.ToSicEavAttributeSets
@@ -188,6 +188,6 @@ partial class Efc11Loader
 
         _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
 
-        return wrapLog.Return(newTypes.ToImmutableList());
+        return l.Return(newTypes.ToImmutableList());
     }
 }

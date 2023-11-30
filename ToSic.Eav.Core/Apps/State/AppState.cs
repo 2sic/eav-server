@@ -58,7 +58,7 @@ public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
     public string Folder
     {
         get => _folder;
-        set => _folder = ValueOrExceptionIfNotInLoadingState(value, nameof(Folder));
+        internal set => _folder = ValueOrExceptionIfNotInLoadingState(value, nameof(Folder));
     }
     private string _folder;
 
@@ -70,7 +70,7 @@ public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
     public string Name
     {
         get => _name;
-        set => _name = ValueOrExceptionIfNotInLoadingState(value, nameof(Name));
+        internal set => _name = ValueOrExceptionIfNotInLoadingState(value, nameof(Name));
     }
     private string _name;
 

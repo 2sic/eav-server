@@ -64,10 +64,10 @@ public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
         {
             if (_ser != null) return _ser;
             _ser = _jsonSerializerGenerator.New();
+
             // #SharedFieldDefinition
             // Also provide AppState if possible, for new #SharedFieldDefinition
-                
-            if (EntitiesSource is AppState withAppState)
+            if (EntitiesSource is IHasMetadataSource withAppState)
                 _ser.DeserializationSettings = new JsonDeSerializationSettings
                 {
                     CtAttributeMetadataAppState = withAppState

@@ -1,15 +1,20 @@
-﻿using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.Internal.Unknown;
-using ToSic.Lib.Logging;
+using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Loaders;
 
 internal class AppLoaderUnknown: ServiceBase, IAppLoader, IIsUnknown
 {
-    public AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _) : base("Eav.BscRnt") { }
+    private readonly Generator<AppStateBuilder> _stateBuilder;
+    public AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _, Generator<AppStateBuilder> stateBuilder) : base("Eav.BscRnt")
+    {
+        _stateBuilder = stateBuilder;
+    }
 
-    public AppState LoadFullAppState() => new(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogScopes.NotImplemented));
+    public AppStateBuilder LoadFullAppState() => _stateBuilder.New().InitForPreset(); 
+    // new(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, new Log(LogScopes.NotImplemented));
 
     public void ReloadConfigEntities() { /* do nothing */ }
 }

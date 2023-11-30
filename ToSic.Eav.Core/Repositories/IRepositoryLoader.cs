@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
 
@@ -15,7 +16,9 @@ public interface IRepositoryLoader: IHasLog, IContentTypeLoader
     /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
     /// <returns></returns>
     /// <param name="codeRefTrail">CodeRef of the original caller to know where it came from</param>
-    AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail);
+    //AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail);
+
+    AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail);
 
     /// <summary>
     /// will enforce that app settings etc. are created

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Work;
@@ -9,9 +11,11 @@ namespace ToSic.Eav.Apps.Work;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
 {
+    private readonly Generator<AppStateBuilder> _stateBuilder;
 
-    public WorkEntityDelete() : base("AWk.EntDel")
+    public WorkEntityDelete(Generator<AppStateBuilder> stateBuilder) : base("AWk.EntDel")
     {
+        ConnectServices(_stateBuilder = stateBuilder);
     }
 
     public bool Delete(Guid guid, bool force = false)
@@ -41,9 +45,9 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
     /// <param name="parentField"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null
-    ) => Log.Func($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true, func: () =>
+    public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null) 
     {
+        var l = Log.Fn<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true);
         // do optional type-check and if necessary, throw error
         BatchCheckTypesMatch(ids, contentType);
 
@@ -67,10 +71,11 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
         // introduced in v15.05 to reduce work on entity delete
         // in past we PurgeApp in whole on each entity delete
         // this should be much faster, but side effects are possible.
-        AppWorkCtx.AppState.StateCache.Remove(repositoryIds, true);
+        var builder = _stateBuilder.New().Init(AppWorkCtx.AppState.StateCache);
+        builder.RemoveEntities(repositoryIds, true);
 
-        return ok;
-    });
+        return l.Return(ok);
+    }
 
 
     private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)

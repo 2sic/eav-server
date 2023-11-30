@@ -167,14 +167,15 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     #region Update
 
     /// <inheritdoc />
-    public virtual AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools) => log.Func(() =>
+    public virtual AppState Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
     {
+        var l = log.Fn<AppState>($"{appIdentity}, {entities.Count()} entities");
         // if it's not cached yet, ignore the request as partial update won't be necessary
-        if (!Has(app)) return (null, "not cached, won't update");
-        var appState = Get(app, tools);
+        if (!Has(appIdentity)) return l.ReturnNull("not cached, won't update");
+        var appState = Get(appIdentity, tools);
         tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
-        return (appState, "ok");
-    });
+        return l.ReturnAsOk(appState);
+    }
 
     #endregion
 

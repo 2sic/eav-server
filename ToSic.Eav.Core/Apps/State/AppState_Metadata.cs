@@ -25,7 +25,7 @@ partial class AppState: IMetadataSource, IHasMetadata, IMetadataOfSource
     /// it's needed, so the metadata knows what lookup types are supported
     /// </summary>
     [PrivateApi("internal use only")]
-    public void InitMetadata()
+    internal void InitMetadata()
     {
         if (!Loading)
             throw new Exception("Trying to init metadata, but App is not in loading state.");
