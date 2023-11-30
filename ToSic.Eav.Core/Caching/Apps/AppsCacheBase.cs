@@ -88,13 +88,13 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     /// Sets the CacheItem with specified CacheKey
     /// </summary>
     [PrivateApi("only important for developers, and they have intellisense")]
-    protected abstract void Set(string key, AppState item);
+    protected abstract void Set(string key, IAppStateCache item);
 
     /// <summary>
     /// Get CacheItem with specified CacheKey
     /// </summary>
     [PrivateApi("only important for developers, and they have intellisense")]
-    protected abstract AppState Get(string key);
+    protected abstract IAppStateCache Get(string key);
 
     /// <summary>
     /// Remove the CacheItem with specified CacheKey
@@ -103,26 +103,26 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     protected abstract void Remove(string key);
 
     [PrivateApi]
-    public void Add(AppState appState) => Set(CacheKey(appState), appState);
+    public void Add(IAppStateCache appState) => Set(CacheKey(appState), appState);
 
     #endregion
 
     /// <inheritdoc />
-    public AppState Get(IAppIdentity app, IAppLoaderTools tools) => GetOrBuild(tools, app);
+    public IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools) => GetOrBuild(tools, app);
 
 
     /// <inheritdoc />
     public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools) => GetOrBuild(tools, app, primaryLanguage);
 
 
-    private AppState GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string primaryLanguage = null)
+    private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string primaryLanguage = null)
     {
         if (appIdentity.ZoneId == 0 || appIdentity.AppId == Constants.AppIdEmpty)
             return null;
 
         var cacheKey = CacheKey(appIdentity);
 
-        AppState appState = null;
+        IAppStateCache appState = null;
         if (Has(cacheKey)) appState = Get(cacheKey);
         if (appState != null) return appState;
 
@@ -167,9 +167,9 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     #region Update
 
     /// <inheritdoc />
-    public virtual AppState Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
+    public virtual IAppStateCache Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
     {
-        var l = log.Fn<AppState>($"{appIdentity}, {entities.Count()} entities");
+        var l = log.Fn<IAppStateCache>($"{appIdentity}, {entities.Count()} entities");
         // if it's not cached yet, ignore the request as partial update won't be necessary
         if (!Has(appIdentity)) return l.ReturnNull("not cached, won't update");
         var appState = Get(appIdentity, tools);

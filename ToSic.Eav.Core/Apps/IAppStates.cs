@@ -16,13 +16,13 @@ public interface IAppStates
     /// Retrieve an app from the cache
     /// </summary>
     /// <param name="app">App identifier.</param>
-    AppState Get(IAppIdentity app);
+    IAppStateCache Get(IAppIdentity app);
 
     /// <summary>
     /// Retrieve an app from the cache
     /// </summary>
     /// <param name="appId">App id if zone unknown.</param>
-    AppState Get(int appId);
+    IAppStateCache GetCacheState(int appId);
 
     #endregion
 
@@ -58,19 +58,10 @@ public interface IAppStates
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class IAppStatesExtensions
 {
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    //public static AppState KeepOrGetStateCache(this IAppStates appStates, IAppIdentity app) => app as AppState ?? appStates.Get(app);
-
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IAppState KeepOrGetReader(this IAppStates appStates, IAppIdentity app, ILog log = default)
-    {
-        return (app is AppState stateCache ? stateCache.ToInterface(log) : null)
-            ?? app as IAppState ?? appStates.GetReader(app);
-    }
-
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    //public static AppState KeepOrGetStateCache(this LazySvc<IAppStates> appStates, IAppIdentity app) 
-    //    => app as AppState ?? (app is IAppStateInternal appReadInt ? appReadInt.StateCache : null) ?? appStates.Value.Get(app);
+        => (app is IAppStateCache stateCache ? stateCache.ToInterface(log) : null)
+           ?? app as IAppState ?? appStates.GetReader(app);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IAppState KeepOrGetReader(this LazySvc<IAppStates> appStates, IAppIdentity app) 

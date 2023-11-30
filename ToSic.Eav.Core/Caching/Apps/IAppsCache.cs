@@ -6,7 +6,7 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.Caching;
 
 /// <summary>
-/// Marks the objects which are responsible for caching <see cref="AppState"/> in memory. <br/>
+/// Marks the objects which are responsible for caching <see cref="IAppStateCache"/> in memory. <br/>
 /// This is a very powerful system ensuring performance and more. 
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
@@ -20,8 +20,8 @@ public interface IAppsCache: ILogShouldNeverConnect
     /// </summary>
     /// <param name="app">App identifier.</param>
     /// <param name="tools">Current service provider, in case the app must be retrieved / generated</param>
-    /// <returns>The <see cref="AppState"/> of the app.</returns>
-    AppState Get(IAppIdentity app, IAppLoaderTools tools);
+    /// <returns>The <see cref="IAppStateCache"/> of the app.</returns>
+    IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools);
 
     #endregion
 
@@ -73,11 +73,11 @@ public interface IAppsCache: ILogShouldNeverConnect
     /// <param name="entities">List of entities which need to be updates.</param>
     /// <param name="log">Log object to log what's happening.</param>
     /// <param name="tools"></param>
-    /// <returns>The updated <see cref="AppState"/> or null, if it wasn't in the cache so didn't need updating.</returns>
-    AppState Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools);
+    /// <returns>The updated <see cref="IAppStateCache"/> or null, if it wasn't in the cache so didn't need updating.</returns>
+    IAppStateCache Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools);
 
     [PrivateApi("wip 12.10+")]
-    void Add(AppState appState);
+    void Add(IAppStateCache appState);
 
     #endregion
 

@@ -4,16 +4,15 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Apps.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
 {
-    private readonly Generator<AppStateBuilder> _stateBuilder;
+    private readonly Generator<IAppStateBuilder> _stateBuilder;
 
-    public WorkEntityDelete(Generator<AppStateBuilder> stateBuilder) : base("AWk.EntDel")
+    public WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder) : base("AWk.EntDel")
     {
         ConnectServices(_stateBuilder = stateBuilder);
     }

@@ -27,7 +27,7 @@ public class EntityPartsBuilder
     /// <param name="source"></param>
     /// <param name="metadata"></param>
     /// <returns></returns>
-    public static EntityPartsBuilder ForAppAndOptionalMetadata(AppState source = default, List<IEntity> metadata = default)
+    public static EntityPartsBuilder ForAppAndOptionalMetadata(IAppStateCache source = default, List<IEntity> metadata = default)
         => new(
             entity => new RelationshipManager(entity, source),
             getMetadataOf: metadata != default

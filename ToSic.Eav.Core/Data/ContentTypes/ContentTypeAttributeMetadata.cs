@@ -106,7 +106,7 @@ public class ContentTypeAttributeMetadata: MetadataOf<int>
     {
         // Check all the basics to ensure we can work
         if (!SysSettings.InheritMetadata) return null;
-        if (Source.MainSource is not AppState appState) return null;
+        if (Source.MainSource is not IAppStateCache appState) return null;
 
         // Get all the keys in the source-list except Empty (self-reference)
         var sourceKeys = SysSettings.InheritMetadataOf.Keys
@@ -115,7 +115,7 @@ public class ContentTypeAttributeMetadata: MetadataOf<int>
             .ToArray();
 
         // Get all attributes in all content-types of the App and keep the ones we need
-        var appAttribs = appState.ContentTypes.SelectMany(ct => ct.Attributes);
+        var appAttribs = appState.ToInterface(log: null).ContentTypes.SelectMany(ct => ct.Attributes);
         return appAttribs.Where(a => sourceKeys.Contains(a.Guid)).ToList();
     });
     private readonly GetOnce<List<IContentTypeAttribute>> _sourceAttributes = new();

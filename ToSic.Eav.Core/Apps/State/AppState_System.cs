@@ -14,6 +14,6 @@ partial class AppState
     private AppStateMetadata _resourcesInApp;
 
     [PrivateApi]
-    internal AppStateMetadata ThingInApp(AppThingsToStack target) =>
+    AppStateMetadata IAppStateCache.ThingInApp(AppThingsToStack target) =>
         target == AppThingsToStack.Settings ? SettingsInApp : ResourcesInApp;
 }

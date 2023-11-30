@@ -2,13 +2,12 @@
 using System.Diagnostics;
 using ToSic.Eav.Apps;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc;
 
 partial class Efc11Loader
 {
-    private TimeSpan InitMetadataLists(AppStateBuilder builder)
+    private TimeSpan InitMetadataLists(IAppStateBuilder builder)
     {
         var l = Log.Fn<TimeSpan>($"{builder.AppState.Show()}");
         var sqlTime = Stopwatch.StartNew();

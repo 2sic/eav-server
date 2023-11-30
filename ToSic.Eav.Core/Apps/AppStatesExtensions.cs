@@ -39,7 +39,7 @@ public static class AppStatesExtensions
     }
     public static IAppStateInternal GetReader(this IAppStates appStates, int appId, ILog log = default)
     {
-        var state = appStates.Get(appId);
+        var state = appStates.GetCacheState(appId);
         return state is null ? null : new AppStateReader(state, log);
     }
 }

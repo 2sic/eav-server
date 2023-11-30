@@ -9,14 +9,13 @@ using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class Efc11Loader: ServiceBase, IRepositoryLoader
 {
-    private readonly Generator<AppStateBuilder> _appStateBuilder;
+    private readonly Generator<IAppStateBuilder> _appStateBuilder;
     private readonly Generator<IAppContentTypesLoader> _appFileContentTypesLoader;
     private readonly Generator<IDataDeserializer> _dataDeserializer;
 
@@ -32,7 +31,7 @@ public partial class Efc11Loader: ServiceBase, IRepositoryLoader
         DataBuilder dataBuilder,
         Generator<IDataDeserializer> dataDeserializer,
         Generator<IAppContentTypesLoader> appFileContentTypesLoader,
-        Generator<AppStateBuilder> appStateBuilder) : base("Db.Efc11")
+        Generator<IAppStateBuilder> appStateBuilder) : base("Db.Efc11")
     {
         ConnectServices(
             _dbContext = dbContext,

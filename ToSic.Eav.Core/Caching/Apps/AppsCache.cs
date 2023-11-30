@@ -41,13 +41,13 @@ internal class AppsCache: AppsCacheBase, IAppsCacheSwitchable
 
     #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
 
-    private static readonly IDictionary<string, AppState> Caches = new Dictionary<string, AppState>();
+    private static readonly IDictionary<string, IAppStateCache> Caches = new Dictionary<string, IAppStateCache>();
 
     /// <inheritdoc />
     protected override bool Has(string cacheKey) => Caches.ContainsKey(cacheKey);
 
     /// <inheritdoc />
-    protected override void Set(string key, AppState item)
+    protected override void Set(string key, IAppStateCache item)
     {
         try
         {
@@ -67,7 +67,7 @@ internal class AppsCache: AppsCacheBase, IAppsCacheSwitchable
     }
 
     /// <inheritdoc />
-    protected override AppState Get(string key) => Caches[key];
+    protected override IAppStateCache Get(string key) => Caches[key];
 
     /// <inheritdoc />
     protected override void Remove(string key) => Caches.Remove(key);    // returns false if key was not found (no Exception)

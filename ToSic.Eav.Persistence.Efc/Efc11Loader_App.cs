@@ -8,7 +8,6 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
-using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc;
 
@@ -27,11 +26,11 @@ partial class Efc11Loader
     /// </summary>
     /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
     /// <returns>An object with everything which an app has, usually for caching</returns>
-    private AppState LoadAppStateFromDb(int appId)
+    private IAppStateBuilder LoadAppStateFromDb(int appId)
     {
         _logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
-        var wrapLog = Log.Fn<AppState>($"AppId: {appId}");
+        var wrapLog = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
         var appIdentity =_appStates.IdentityOfApp(appId);
         var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
 
@@ -49,7 +48,7 @@ partial class Efc11Loader
                     $"The App {appIdentity.Show()} has an ancestor {ancestorAppId}. " +
                     $"This implies that it has an ancestor. 0 was expected, otherwise you need the feature.");
 
-            var testParentApp = _appStates.Get(ancestorAppId);
+            var testParentApp = _appStates.GetCacheState(ancestorAppId);
             parent = new ParentAppState(testParentApp, true, true);
         }
         else
@@ -61,10 +60,10 @@ partial class Efc11Loader
                 false);
         }
 
+        var builder = _appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);
+        Update(builder.AppState, AppStateLoadSequence.Start);
 
-        var appState = Update(new AppState(parent, appIdentity, appGuidName, Log), AppStateLoadSequence.Start);
-
-        return wrapLog.ReturnAsOk(appState);
+        return wrapLog.ReturnAsOk(builder);
     }
 
     private int GetAncestorAppIdOrZero(int appId)
@@ -90,16 +89,16 @@ partial class Efc11Loader
         return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
     }
 
-    public AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)
+    public IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)
     {
-        var l = Log.Fn<AppStateBuilder>($"{appId}", timer: true);
+        var l = Log.Fn<IAppStateBuilder>($"{appId}", timer: true);
         codeRefTrail.WithHere();
-        var appState = LoadAppStateFromDb(appId);
-        return l.ReturnAsOk(_appStateBuilder.New().Init(appState));
+        var builder = LoadAppStateFromDb(appId);
+        return l.ReturnAsOk(builder);
     }
 
     /// <inheritdoc />
-    public AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail)
+    public IAppStateCache AppStateInitialized(int appId, CodeRefTrail codeRefTrail)
     {
         // Note: Ignore ensureInitialized on the content app
         // The reason is that this app - even when empty - is needed in the cache before data is imported
@@ -107,22 +106,22 @@ partial class Efc11Loader
         // Note that to ensure the Content app works, we must perform the same check again in the 
         // API Endpoint which will edit this data
 
-        var l = Log.Fn<AppState>($"{appId}", timer: true);
+        var l = Log.Fn<IAppStateCache>($"{appId}", timer: true);
 
-        var appState = LoadAppStateFromDb(appId);
+        var builder = LoadAppStateFromDb(appId);
 
-        if (appState.NameId == Constants.DefaultAppGuid)
-            return l.Return(appState, "default app, don't auto-init");
+        if (builder.Reader.NameId == Constants.DefaultAppGuid)
+            return l.Return(builder.AppState, "default app, don't auto-init");
 
-        var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(appState.ToInterface(Log), null, codeRefTrail.WithHere(), Log)
-            ? LoadAppStateFromDb(appId)
-            : appState;
+        var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log)
+            ? LoadAppStateFromDb(appId).AppState
+            : builder.AppState;
         return l.Return(result, "with init check");
     }
 
-    public AppState Update(AppState appStateOriginal, AppStateLoadSequence startAt, int[] entityIds = null)
+    public IAppStateCache Update(IAppStateCache appStateOriginal, AppStateLoadSequence startAt, int[] entityIds = null)
     {
-        var lMain = Log.Fn<AppState>(message: "What happens inside this is logged in the app-state loading log");
+        var lMain = Log.Fn<IAppStateCache>(message: "What happens inside this is logged in the app-state loading log");
         
         var builder = _appStateBuilder.New().Init(appStateOriginal);
         builder.Load($"startAt: {startAt}, ids only:{entityIds != null}", state => 
@@ -156,7 +155,7 @@ partial class Efc11Loader
 
             // load data
             if (startAt <= AppStateLoadSequence.ItemLoad)
-                LoadEntities(builder, state, entityIds);
+                LoadEntities(builder, entityIds);
             else
                 l.A("skipping items load");
 

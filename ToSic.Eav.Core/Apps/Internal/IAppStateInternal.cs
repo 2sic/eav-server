@@ -6,9 +6,9 @@ namespace ToSic.Eav.Apps.Reader
 {
     public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource
     {
-        AppState StateCache { get; }
+        IAppStateCache StateCache { get; }
 
-        AppState ParentAppState { get; }
+        IAppStateCache ParentAppState { get; }
 
         SynchronizedEntityList ListCache { get; }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
@@ -9,7 +10,6 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.File;
 
@@ -17,7 +17,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
 {
     #region Constructor and DI
 
-    public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<AppStateBuilder> stateBuilder) : base("Eav.RunTme")
+    public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<IAppStateBuilder> stateBuilder) : base("Eav.RunTme")
     {
         _serviceProvider = sp;
         ConnectServices(
@@ -29,7 +29,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     }
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly Generator<AppStateBuilder> _stateBuilder;
+    private readonly Generator<IAppStateBuilder> _stateBuilder;
     private readonly Generator<FileSystemLoader> _fslGenerator;
 
     #endregion
@@ -74,9 +74,9 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     private List<FileSystemLoader> _loader;
 
 
-    public AppStateBuilder LoadFullAppState()
+    public IAppStateBuilder LoadFullAppState()
     {
-        var outerWrapLog = Log.Fn<AppStateBuilder>(timer: true);
+        var outerWrapLog = Log.Fn<IAppStateBuilder>(timer: true);
 
         var builder = _stateBuilder.New().InitForPreset();
         //var appState = builder.AppState;// new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);

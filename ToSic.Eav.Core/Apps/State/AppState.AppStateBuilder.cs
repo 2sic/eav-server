@@ -19,7 +19,7 @@ partial class AppState
     /// <summary>
     /// The builder must be a sub-class of AppState, so it can access its private properties
     /// </summary>
-    public class AppStateBuilder : ServiceBase
+    internal class AppStateBuilder : ServiceBase, IAppStateBuilder
     {
         #region Constructor / DI / Init (2 variants)
 
@@ -27,22 +27,29 @@ partial class AppState
         {
         }
 
-        public AppStateBuilder Init(AppState appState)
+        public IAppStateBuilder Init(IAppStateCache appState)
         {
             _appState = appState;
             _reader = new AppStateReader(AppState, Log);
             return this;
         }
 
-        public AppStateBuilder InitForPreset()
+        public IAppStateBuilder InitForPreset()
         {
             _appState = new AppState(new ParentAppState(null, false, false), PresetIdentity, PresetName, Log);
             _reader = new AppStateReader(AppState, Log);
             return this;
         }
 
-        public AppState AppState => _appState ?? throw new Exception("Can't use before calling some init");
-        private AppState _appState;
+        public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog)
+        {
+            _appState = new AppState(parentApp, id, nameId, parentLog);
+            _reader = new AppStateReader(AppState, Log);
+            return this;
+        }
+
+        public IAppStateCache AppState => _appState ?? throw new Exception("Can't use before calling some init");
+        private IAppStateCache _appState;
 
         public IAppStateInternal Reader => _reader ?? throw new Exception("Can't use before calling some init");
         private IAppStateInternal _reader;
@@ -52,9 +59,9 @@ partial class AppState
         #region Loading
 
 
-        public void Load(string message, Action<AppState> loader)
+        public void Load(string message, Action<IAppStateCache> loader)
         {
-            var st = AppState;
+            var st = (AppState)AppState;
             var msg = $"zone/app:{st.Show()} - Hash: {st.GetHashCode()}";
             var l = Log.Fn($"{msg} {message}", timer: true);
             var lState = st.Log.Fn(message, timer: true);
@@ -94,13 +101,14 @@ partial class AppState
 
         public void SetNameAndFolder(string name, string folder)
         {
-            AppState.Name = name;
-            AppState.Folder = folder;
+            var st = (AppState)AppState;
+            st.Name = name;
+            st.Folder = folder;
         }
 
         private bool EnsureNameAndFolderInitialized()
         {
-            var st = AppState;
+            var st = (AppState)AppState;
             var l = st.Log.Fn<bool>();
             // Before we do anything, check primary App
             // Otherwise other checks (like is name empty) will fail, because it's not empty
@@ -148,7 +156,7 @@ partial class AppState
         /// <param name="log">To optionally disable logging, in case it would overfill what we're seeing!</param>
         private void RemoveObsoleteDraft(IEntity newEntity, bool log)
         {
-            var st = AppState;
+            var st = (AppState)AppState;
             var l = log ? st.Log.Fn() : null;
             var previous = st.Index.TryGetValue(newEntity.EntityId, out var prev) ? prev : null;
             var draftEnt = st.GetDraft(previous);
@@ -209,14 +217,14 @@ partial class AppState
         /// </summary>
         public void RemoveAllItems()
         {
-            var state = AppState;
-            var l = Log.Fn($"for a#{state.AppId}");
+            var st = (AppState)AppState;
+            var l = Log.Fn($"for a#{st.AppId}");
             //AppState.RemoveAllItems();
-            if (!state.Loading)
+            if (!st.Loading)
                 throw new Exception("trying to init metadata, but not in loading state. set that first!");
-            state.Log.A("remove all items");
-            state.Index.Clear();
-            state._metadataManager.Reset();
+            st.Log.A("remove all items");
+            st.Index.Clear();
+            st._metadataManager.Reset();
             l.Done();
         }
 
@@ -236,13 +244,14 @@ partial class AppState
             if (repositoryIds == null || repositoryIds.Length == 0) return;
             Load("", appState =>
             {
+                var st = (AppState)appState;
                 foreach (var id in repositoryIds)
                 {
                     // Remove any drafts that are related if necessary
-                    if (appState.Index.TryGetValue(id, out var oldEntity))
-                        appState._metadataManager.Register(oldEntity, false);
+                    if (st.Index.TryGetValue(id, out var oldEntity))
+                        st._metadataManager.Register(oldEntity, false);
 
-                    appState.Index.Remove(id);
+                    st.Index.Remove(id);
 
                     if (log) Log.A($"removed entity {id}");
                 }
@@ -254,7 +263,7 @@ partial class AppState
         /// </summary>
         public void Add(IEntity newEntity, int? publishedId, bool log)
         {
-            var st = AppState;
+            var st = (AppState)AppState;
             if (!st.Loading)
                 throw new Exception("trying to add entity, but not in loading state. set that first!");
 
@@ -269,7 +278,7 @@ partial class AppState
             if (st.FirstLoadCompleted)
                 st.DynamicUpdatesCount++;
 
-            if (log) st.Log.A($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{AppState.DynamicUpdatesCount}");
+            if (log) st.Log.A($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{st.DynamicUpdatesCount}");
         }
 
         #endregion
@@ -282,7 +291,7 @@ partial class AppState
         /// </summary>
         public void InitMetadata()
         {
-            var st = AppState;
+            var st = (AppState)AppState;
             if (!st.Loading)
                 throw new Exception("Trying to init metadata, but App is not in loading state.");
             if (st._appContentTypesFromRepository != null)
@@ -302,7 +311,7 @@ partial class AppState
         /// </summary>
         public void InitContentTypes(IList<IContentType> contentTypes)
         {
-            var st = AppState;
+            var st = (AppState)AppState;
             var l = st.Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
 
             if (!st.Loading)

@@ -13,11 +13,11 @@ namespace ToSic.Eav.Apps;
 /// </summary>
 [PrivateApi("this is just fyi - was marked as internal till v16.09")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
+internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
 {
 
     [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-    public AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new MyServicesEmpty(), $"App.St-{id.AppId}")
+    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new MyServicesEmpty(), $"App.St-{id.AppId}")
     {
         var l = Log.Fn($"AppState for App {id.AppId}");
         this.LinkLog(parentLog, forceConnect: true);
@@ -38,7 +38,7 @@ public partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
         l.Done();
     }
     [PrivateApi]
-    public readonly ParentAppState ParentApp;
+    public ParentAppState ParentApp { get; }
 
     /// <summary>
     /// Manages all relationships between Entities

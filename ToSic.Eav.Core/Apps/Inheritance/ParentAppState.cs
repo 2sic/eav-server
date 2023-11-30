@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ParentAppState
 {
-    public ParentAppState(AppState appState, bool inheritTypes, bool inheritEntities)
+    public ParentAppState(IAppStateCache appState, bool inheritTypes, bool inheritEntities)
     {
         AppState = appState;
         InheritContentTypes = inheritTypes;
@@ -23,7 +23,7 @@ public class ParentAppState
     /// <summary>
     /// The parent App
     /// </summary>
-    public AppState AppState { get; }
+    public IAppStateCache AppState { get; }
 
     /// <summary>
     /// Determine if we should inherit ContentTypes or not
@@ -58,13 +58,13 @@ public class ParentAppState
     private SynchronizedEntityList _entitiesCache;
 
 
-    internal IContentType GetContentType(string name) => InheritContentTypes ? WrapUnwrappedContentType(AppState.GetContentType(name)) : null;
+    internal IContentType GetContentType(string name) => InheritContentTypes ? WrapUnwrappedContentType(AppState.ToInterface(null).GetContentType(name)) : null;
 
     private IEnumerable<IContentType> GetInheritedTypes()
     {
         if (!InheritContentTypes || AppState == null) return new List<IContentType>(0);
 
-        var types = AppState.ContentTypes.Select(WrapUnwrappedContentType);
+        var types = AppState.ToInterface(null).ContentTypes.Select(WrapUnwrappedContentType);
 
         return types;
     }

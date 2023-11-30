@@ -19,7 +19,7 @@ partial class InsightsControllerReal
             return l.Return("please add appid to the url parameters");
 
         l.A($"debug app types for {appId}");
-        var pkg = _appStates.Get(appId.Value);
+        var pkg = _appStates.GetReader(appId.Value);
 
         var msg = TypesTable(appId.Value, pkg.ContentTypes, pkg.List);
 

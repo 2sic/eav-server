@@ -101,7 +101,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
 
         if (!id.HasValue) return l.Return(query, "no id, empty");
 
-        var appState = Services.AppStates.New().Get(appId);
+        var appState = Services.AppStates.New().GetReader(appId);
         var qDef = Services.QueryManager.Value.Get(appState, id.Value);
 
         #region Deserialize some Entity-Values

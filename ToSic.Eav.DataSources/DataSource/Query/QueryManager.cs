@@ -103,7 +103,7 @@ public class QueryManager: ServiceBase
         if (recurseParents <= 0) return (result, "ok, no recursions");
         l.A($"Try to recurse parents {recurseParents}");
         if (appState.ParentAppState == null) return (result, "no more parents to recurse on");
-        var resultFromParents = AllQueryItems(appState.ParentApp.AppState, recurseParents -1);
+        var resultFromParents = AllQueryItems(appState.ParentAppState, recurseParents -1);
         result = result.Concat(resultFromParents).ToImmutableList();
         return (result, "ok");
     });

@@ -19,7 +19,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var test = new SpecsTestExportSerialize();
 
             var loader = GetService<IRepositoryLoader>();
-            var app = loader.AppStateRawTA(test.AppId);
+            var app = loader.AppStateReaderRawTA(test.AppId);
 
 
             var cts = app.ContentTypes;

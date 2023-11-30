@@ -25,16 +25,10 @@ internal class AppStates: IAppStates
     internal readonly AppsCacheSwitch AppsCacheSwitch;
 
     /// <inheritdoc />
-    public AppState Get(IAppIdentity app) => AppsCacheSwitch.Value.Get(app, _loaderTools);
-
-    //public IAppReader GetReaderOrNull(IAppIdentity app)
-    //{
-    //    var state = Get(app);
-    //    return state is null ? null : new AppReader(Get(app));
-    //}
+    public IAppStateCache Get(IAppIdentity app) => AppsCacheSwitch.Value.Get(app, _loaderTools);
 
     /// <inheritdoc />
-    public AppState Get(int appId) => AppsCacheSwitch.Value.Get(IdentityOfApp(appId), _loaderTools);
+    public IAppStateCache GetCacheState(int appId) => AppsCacheSwitch.Value.Get(IdentityOfApp(appId), _loaderTools);
 
     public bool IsCached(IAppIdentity appId) => AppsCacheSwitch.Value.Has(appId);
 

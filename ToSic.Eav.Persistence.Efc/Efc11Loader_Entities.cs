@@ -11,7 +11,6 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Serialization;
 using static System.StringComparer;
-using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc;
 
@@ -34,7 +33,7 @@ partial class Efc11Loader
 
     internal int AddLogCount;
 
-    private void LoadEntities(AppStateBuilder builder, AppState app, int[] entityIds = null)
+    private void LoadEntities(IAppStateBuilder builder, int[] entityIds = null)
     {
         var l = Log.Fn($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
         AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries

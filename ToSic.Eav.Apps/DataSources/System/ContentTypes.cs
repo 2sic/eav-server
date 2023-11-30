@@ -94,7 +94,7 @@ public sealed class ContentTypes: CustomDataSource
         var appId = OfAppId;
         var scp = Scope.UseFallbackIfNoValue(Data.Scopes.Default);
 
-        var types = _appStates.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
+        var types = _appStates.GetReader(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
 
         // Deduplicate, in case we have identical types on current app and inherited
         var deDuplicate = types

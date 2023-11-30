@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps;
 [PrivateApi]
 internal class AppStateStackCache
 {
-    internal AppStateStackCache(AppState owner, AppState ancestor, AppState siteOrNull, AppState global, AppState preset, AppThingsIdentifiers target)
+    internal AppStateStackCache(IAppStateCache owner, IAppStateCache ancestor, IAppStateCache siteOrNull, IAppStateCache global, IAppStateCache preset, AppThingsIdentifiers target)
     {
         Owner = owner;
         Ancestor = ancestor;
@@ -22,15 +22,15 @@ internal class AppStateStackCache
         Preset = preset;
         Target = target;
     }
-    private AppState Owner { get; }
-    private AppState Ancestor { get; }
+    private IAppStateCache Owner { get; }
+    private IAppStateCache Ancestor { get; }
 
     /// <summary>
     /// Site can be null, if we're on the global App, which doesn't have a site-app...
     /// </summary>
-    private AppState SiteOrNull { get; }
-    private AppState Global { get; }
-    private AppState Preset { get; }
+    private IAppStateCache SiteOrNull { get; }
+    private IAppStateCache Global { get; }
+    private IAppStateCache Preset { get; }
     public readonly AppThingsIdentifiers Target;
 
     #region Full Stack

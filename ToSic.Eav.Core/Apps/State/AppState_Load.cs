@@ -15,6 +15,6 @@ partial class AppState
     /// <summary>
     /// Show how many times the app has been Dynamically updated - in case we run into cache rebuild problems.
     /// </summary>
-    public int DynamicUpdatesCount;
+    public int DynamicUpdatesCount { get; private set; }
     
 }

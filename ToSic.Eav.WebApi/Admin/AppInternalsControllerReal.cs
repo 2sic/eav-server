@@ -120,7 +120,7 @@ public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
         => _ctApiLazy.Value/*.Init(appId)*/.List(appId, scope, withStatistics);
 
     private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
-        => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething)
+        => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType, excludeAncestor);
 
     private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
@@ -17,7 +16,7 @@ partial class InsightsControllerReal
 
         Log.A($"debug app-load {appId}");
         return InsightsHtmlParts.PageStyles() + _logHtml.DumpTree($"2sxc load log for app {appId}",
-            _appStates.Get(appId.Value).Log);
+            _appStates.GetCacheState(appId.Value).Log);
     }
 
     private string Cache()
@@ -90,7 +89,7 @@ partial class InsightsControllerReal
 
         Log.A($"debug app-internals for {appId}");
         //var appRead = AppRt(appId);
-        var pkg = _appStates.Get(appId.Value);
+        var pkg = _appStates.GetCacheState(appId.Value);
 
         var msg = H1($"App internals for {appId}").ToString();
         try

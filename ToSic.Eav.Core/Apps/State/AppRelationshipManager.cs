@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppRelationshipManager: SynchronizedList<EntityRelationship>
 {
-    public AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))
+    internal AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))
     {
     }
 

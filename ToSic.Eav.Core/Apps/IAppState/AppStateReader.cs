@@ -15,9 +15,9 @@ namespace ToSic.Eav.Apps.Reader
     {
         private readonly AppState _appState;
 
-        public AppStateReader(AppState appState, ILog parentLog): base(parentLog, "App.Reader")
+        public AppStateReader(IAppStateCache appState, ILog parentLog): base(parentLog, "App.Reader")
         {
-            _appState = appState;
+            _appState = appState as AppState;
         }
 
         #region Identity
@@ -37,9 +37,9 @@ namespace ToSic.Eav.Apps.Reader
 
         #region Internal
 
-        
-        AppState IAppStateInternal.StateCache => _appState;
-        AppState IAppStateInternal.ParentAppState => _appState.ParentApp?.AppState;
+
+        IAppStateCache IAppStateInternal.StateCache => _appState;
+        IAppStateCache IAppStateInternal.ParentAppState => _appState.ParentApp?.AppState;
         SynchronizedEntityList IAppStateInternal.ListCache => _appState.ListCache;
 
         SynchronizedList<IEntity> IAppStateInternal.ListPublished => _appState.ListPublished;

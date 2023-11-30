@@ -51,7 +51,7 @@ public class EntityControllerReal : ServiceBase, IEntityController
 
     /// <inheritdoc/>
     public IEnumerable<Dictionary<string, object>> List(int appId, string contentType)
-        => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.ReadSomething)
+        => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType);
 
 
@@ -59,9 +59,9 @@ public class EntityControllerReal : ServiceBase, IEntityController
     public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null,
         string parentField = null)
     {
-        if (id.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething)
+        if (id.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
             .Delete(contentType, id.Value, force, parentId, parentField);
-        else if (guid.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.Get(appId), contentType, GrantSets.DeleteSomething)
+        else if (guid.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
             .Delete(contentType, guid.Value, force, parentId, parentField);
         else
             throw new Exception($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");

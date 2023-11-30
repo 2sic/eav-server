@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Repositories;
 
@@ -18,7 +17,7 @@ public interface IRepositoryLoader: IHasLog, IContentTypeLoader
     /// <param name="codeRefTrail">CodeRef of the original caller to know where it came from</param>
     //AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail);
 
-    AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail);
+    IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail);
 
     /// <summary>
     /// will enforce that app settings etc. are created
@@ -26,9 +25,9 @@ public interface IRepositoryLoader: IHasLog, IContentTypeLoader
     /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
     /// <param name="codeRefTrail">CodeRef of the original caller to know where it came from</param>
     /// <returns></returns>
-    AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail);
+    IAppStateCache AppStateInitialized(int appId, CodeRefTrail codeRefTrail);
 
-    AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null);
+    IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, int[] entityIds = null);
 
 
     IDictionary<int, Zone> Zones();

@@ -21,7 +21,7 @@ partial class Efc11Loader
         => LoadContentTypesFromDb(appId, source);
 
 
-    private IList<IContentType> LoadExtensionsTypesAndMerge(AppState app, IList<IContentType> dbTypes)
+    private IList<IContentType> LoadExtensionsTypesAndMerge(IAppStateCache app, IList<IContentType> dbTypes)
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         try
@@ -57,7 +57,7 @@ partial class Efc11Loader
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
-    private IList<IContentType> InitFileSystemContentTypes(AppState app)
+    private IList<IContentType> InitFileSystemContentTypes(IAppStateCache app)
     {
         var l = Log.Fn<IList<IContentType>>();
         // must create a new loader for each app
@@ -152,7 +152,7 @@ partial class Efc11Loader
                         id: a.AttributeId,
                         sortOrder: a.SortOrder,
                         // Must get own MetaSourceFinder since they come from other apps
-                        metaSourceFinder: () => _appStates.Get(s.AppId),
+                        metaSourceFinder: () => _appStates.GetCacheState(s.AppId),
                         // #SharedFieldDefinition
                         //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
                         sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)))
@@ -181,7 +181,7 @@ partial class Efc11Loader
                 configZoneId: set.ZoneId,
                 configAppId: set.AppId,
                 isAlwaysShared: set.ConfigIsOmnipresent,
-                metaSourceFinder: (() => notGhost ? source : _appStates.Get(new AppIdentity(set.ZoneId, set.AppId))),
+                metaSourceFinder: () => notGhost ? source : _appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
                 attributes: ctAttributes
             );
         });

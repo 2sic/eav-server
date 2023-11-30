@@ -44,7 +44,7 @@ public sealed class Scopes : CustomDataSource
 
     private IEnumerable<IRawEntity> GetList() => Log.Func(l =>
     {
-        var scopes = _appStates.Get(AppId).ContentTypes.GetAllScopesWithLabels();
+        var scopes = _appStates.GetReader(AppId).ContentTypes.GetAllScopesWithLabels();
         var list = scopes
             .Select(s => new RawEntity(new Dictionary<string, object>
             {

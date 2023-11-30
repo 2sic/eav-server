@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Source;
 
 namespace ToSic.Eav.Apps;
 
@@ -29,7 +30,7 @@ public class AppStateMetadata
         return synched;
     }
 
-    private static SynchronizedObject<IEntity> BuildSynchedItem(IAppStateCache parent, string staticName)
+    private static SynchronizedObject<IEntity> BuildSynchedItem(IEntitiesSource parent, string staticName)
     {
         var synched = new SynchronizedObject<IEntity>(parent, () => parent.List.FirstOrDefaultOfType(staticName));
         return synched;

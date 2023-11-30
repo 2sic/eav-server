@@ -12,7 +12,8 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppState
     /// <summary>
     /// Helper object to keep track of cache changes
     /// </summary>
-    [PrivateApi] public ICacheStatistics CacheStatistics = new CacheStatistics();
+    [PrivateApi]
+    ICacheStatistics IAppStateCache.CacheStatistics { get; } = new CacheStatistics();
 
 
     // Custom event for LightSpeed
@@ -37,9 +38,9 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppState
         if (prevTimeStamp == CacheTimestampPrivate.CacheTimestamp)
             CacheTimestampPrivate.CacheTimestamp++;
 
-        CacheStatistics.Update(CacheTimestamp, Index.Count, message);
+        (this as IAppStateCache).CacheStatistics.Update(CacheTimestamp, Index.Count, message);
         Log.A($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
-        Log.A($"Stats: ItemCount: {Index.Count}; ResetCount: {CacheStatistics.ResetCount}  Message: '{message}'");
+        Log.A($"Stats: ItemCount: {Index.Count}; ResetCount: {(this as IAppStateCache).CacheStatistics.ResetCount}  Message: '{message}'");
 
         AppStateChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
     }
@@ -49,7 +50,8 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppState
     /// to ensure that dependent object are notified.  
     /// </summary>
     // IMPORTANT: This is called by the farm cache, which is not part of this solution. That's why you don't have any access-counts
-    [PrivateApi] internal void PreRemove() => CacheResetTimestamp("AppState object will be destroyed and recreated as new object", 1);
+    [PrivateApi]
+    void IAppStateCache.PreRemove() => CacheResetTimestamp("AppState object will be destroyed and recreated as new object", 1);
 
 
     /// <inheritdoc />

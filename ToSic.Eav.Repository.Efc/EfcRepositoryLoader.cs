@@ -4,7 +4,6 @@ using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
-using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Repository.Efc;
 
@@ -25,11 +24,11 @@ internal class EfcRepositoryLoader: IRepositoryLoader
     public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) => _dataController.Loader.ContentTypes(appId, source);
 
     //public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateRaw(appId, codeRefTrail);
-    public AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateBuilderRaw(appId, codeRefTrail);
+    public IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateBuilderRaw(appId, codeRefTrail);
 
-    public AppState AppStateInitialized(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
+    public IAppStateCache AppStateInitialized(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
 
-    public AppState Update(AppState app, AppStateLoadSequence startAt, int[] entityIds = null) => _dataController.Loader.Update(app, startAt, entityIds);
+    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, int[] entityIds = null) => _dataController.Loader.Update(app, startAt, entityIds);
 
     public IDictionary<int, Zone> Zones()
     {
