@@ -26,5 +26,8 @@ namespace ToSic.Eav.Apps.Reader
         IContentType GetContentType(int contentTypeId);
 
         ParentAppState ParentApp { get; }
+
+        AppRelationshipManager Relationships { get; }
+
     }
 }

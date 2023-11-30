@@ -8,8 +8,10 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps
 {
-    public interface IAppStateCache: IHasMetadata, IHasPiggyBack, IAppIdentity, IHasMetadataSource, IHasIdentityNameId, IEntitiesSource, IHasLog
+    public interface IAppStateCache: ICacheExpiring, IHasMetadata, IHasPiggyBack, IAppIdentity, IHasMetadataSource, IHasIdentityNameId, 
+        IEntitiesSource, IHasLog
     {
+
         string Folder { get; }
 
         AppRelationshipManager Relationships { get; }

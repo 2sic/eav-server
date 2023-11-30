@@ -135,6 +135,10 @@
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Apps\StateCache\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
     <!--<DefineConstants>NETCORE</DefineConstants>-->
     <DefineConstants>NETSTANDARD</DefineConstants>

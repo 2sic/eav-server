@@ -47,6 +47,5 @@ namespace ToSic.Eav.Apps
 
         #endregion
 
-        AppRelationshipManager Relationships { get; }
     }
 }

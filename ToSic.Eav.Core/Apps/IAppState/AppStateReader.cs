@@ -52,6 +52,8 @@ namespace ToSic.Eav.Apps.Reader
         IContentType IAppStateInternal.GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
         ParentAppState IAppStateInternal.ParentApp => _appState.ParentApp;
 
+        AppRelationshipManager IAppStateInternal.Relationships => _appState.Relationships;
+
         #endregion
 
         #region Basic Properties
@@ -89,8 +91,6 @@ namespace ToSic.Eav.Apps.Reader
         public IContentType GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
 
         public IMetadataOf Metadata => _appState.Metadata;
-
-        public AppRelationshipManager Relationships => _appState.Relationships;
 
         public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
             => _appState.GetMetadata(targetType, key, contentTypeName);
