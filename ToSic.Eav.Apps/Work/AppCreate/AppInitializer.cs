@@ -64,7 +64,7 @@ public class AppInitializer : ServiceBase
     public bool InitializeApp(IAppState appState, string newAppName, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
-        if (AppInitializedChecker.CheckIfAllPartsExist(appState, out var appConfig, out var appResources,
+        if (AppInitializedChecker.CheckIfAllPartsExist(appState, codeRefTrail, out var appConfig, out var appResources,
                 out var appSettings, Log))
             return l.ReturnTrue("ok");
 
