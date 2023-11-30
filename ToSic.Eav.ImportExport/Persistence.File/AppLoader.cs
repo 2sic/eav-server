@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
@@ -11,6 +9,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.File;
 
@@ -89,9 +88,6 @@ internal partial class AppLoader : ServiceBase, IAppLoader
             // Prepare metadata lists & relationships etc.
             builder.InitMetadata();
             builder.SetNameAndFolder(Constants.PresetName, Constants.PresetName);
-            //appState.Name = Constants.PresetName;
-            //appState.Folder = Constants.PresetName;
-
 
             l.Do(timer: true, action: () =>
             {

@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Plumbing;
@@ -114,7 +115,7 @@ public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
 
 
     [PrivateApi]
-    public List<IEntity> AttachRelationshipResolver(List<IEntity> entities, AppState appState)
+    public List<IEntity> AttachRelationshipResolver(List<IEntity> entities, IEntitiesSource appState)
     {
         var updated = entities.Select(e =>
         {

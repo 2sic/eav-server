@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Lib.Logging;
 
@@ -18,7 +17,7 @@ public interface IRepositoryLoader: IHasLog, IContentTypeLoader
     /// <param name="codeRefTrail">CodeRef of the original caller to know where it came from</param>
     //AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail);
 
-    AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail);
+    AppState.AppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail);
 
     /// <summary>
     /// will enforce that app settings etc. are created

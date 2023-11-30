@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
@@ -11,7 +10,7 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Serialization;
 using static System.StringComparer;
-using AppState = ToSic.Eav.Apps.AppState;
+using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc;
 
@@ -47,7 +46,7 @@ partial class Efc11Loader
 
         // if the app already exists and is being reloaded, remove all existing data
         if (!filterByEntityIds)
-            app.RemoveAllItems();
+            builder.RemoveAllItems();
 
         // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
         var sqlTime = Stopwatch.StartNew();

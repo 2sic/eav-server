@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
+using static ToSic.Eav.Apps.AppState;
 
 namespace ToSic.Eav.Persistence.Efc;
 
@@ -143,8 +143,6 @@ partial class Efc11Loader
                 _sqlTotalTime = _sqlTotalTime.Add(InitMetadataLists(builder));
                 var nameAndFolder = PreLoadAppPath(state.AppId);
                 builder.SetNameAndFolder(nameAndFolder.Name, nameAndFolder.Path);
-                //state.Name = nameAndFolder.Name;
-                //state.Folder = nameAndFolder.Path;
             }
             else
                 l.A("skipping metadata load");
