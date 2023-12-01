@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps;
 /// <summary>
 /// Contains all the basic infos about a Zone - usually cached
 /// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
+[PrivateApi("was Internal till 16.09, but no need to show implementation")]
 public class Zone: IZoneIdentity
 {
     public Zone(int zoneId, int primaryAppId, int contentAppId, Dictionary<int, string> apps, List<DimensionDefinition> languages)

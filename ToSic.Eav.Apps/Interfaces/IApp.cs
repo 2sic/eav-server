@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
