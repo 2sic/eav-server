@@ -137,7 +137,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Apps\IAppState\" />
+    <Folder Include="Apps\State\Managers\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
     <!--<DefineConstants>NETCORE</DefineConstants>-->

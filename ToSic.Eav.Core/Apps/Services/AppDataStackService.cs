@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Reader;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Documentation;
@@ -7,7 +7,7 @@ using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Apps.AppStackConstants;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Services;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 
-namespace ToSic.Eav.Apps.Reader
+namespace ToSic.Eav.Apps.State
 {
     public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource
     {

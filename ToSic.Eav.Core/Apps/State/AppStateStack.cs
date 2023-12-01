@@ -4,7 +4,7 @@ using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 /// <summary>
 /// This object creates caches for Settings or Resources

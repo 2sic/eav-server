@@ -3,7 +3,7 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 /// <summary>
 /// A complete App state - usually cached in memory. <br/>

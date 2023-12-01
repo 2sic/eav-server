@@ -9,7 +9,7 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.DataSources;
 
 /// <summary>
 /// The Data object on an App. It's also a data-source of type <see cref="Eav.DataSources.App"/>,
@@ -17,15 +17,15 @@ namespace ToSic.Eav.Apps;
 /// The special feature is that it also has methods for data-manipulation,
 /// including Create, Update and Delete
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public sealed class AppData: Eav.DataSources.App, IAppData
+public sealed class AppDataWithCrud: Eav.DataSources.App, IAppData
 {
     private readonly LazySvc<IDataSourceCacheService> _dsCacheSvc;
 
     #region Constructor stuff
 
-    public AppData(MyServices services, LazySvc<SimpleDataController> dataController, LazySvc<IDataSourceCacheService> dsCacheSvc) : base(services)
+    public AppDataWithCrud(MyServices services, LazySvc<SimpleDataController> dataController, LazySvc<IDataSourceCacheService> dsCacheSvc) : base(services)
     {
         ConnectServices(
             DataController = dataController.SetInit(dc => dc.Init(ZoneId, AppId, false)),

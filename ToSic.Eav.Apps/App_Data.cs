@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Eav.Apps.DataSources;
 using ToSic.Eav.DataSource;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
@@ -46,7 +47,7 @@ partial class App
 
         // Note: ModulePermissionController does not work when indexing, return false for search
         var initialSource = Services.DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: this, lookUp: ConfigurationProvider, showDrafts: AppDataConfig?.ShowDrafts));
-        var appDataWithCreate = Services.DataSourceFactory.Create<AppData>(attach: initialSource);
+        var appDataWithCreate = Services.DataSourceFactory.Create<AppDataWithCrud>(attach: initialSource);
 
         return appDataWithCreate;
     });

@@ -7,7 +7,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 [PrivateApi("internal use only")]
 internal class AppMetadataManager: IMetadataSource

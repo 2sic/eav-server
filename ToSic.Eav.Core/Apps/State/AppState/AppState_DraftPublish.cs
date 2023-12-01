@@ -4,7 +4,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 partial class AppState
 {

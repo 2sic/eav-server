@@ -7,7 +7,7 @@ using ToSic.Eav.Data.Source;
 using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 [PrivateApi("don't publish this - too internal, special, complicated")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

@@ -1,11 +1,10 @@
 ﻿using System;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppStateChanges
 {

@@ -5,7 +5,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 /// <summary>
 /// WIP v13 - should wrap a parent-app for re-use in a child-app

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 public interface IAppStateBuilder: IHasLog
 {

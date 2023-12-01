@@ -6,7 +6,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Lib.Data;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps
+namespace ToSic.Eav.Apps.State
 {
     public interface IAppStateCache: ICacheExpiring, IHasMetadata, IHasPiggyBack, IAppIdentity, IHasMetadataSource, IHasIdentityNameId, 
         IEntitiesSource, IHasLog

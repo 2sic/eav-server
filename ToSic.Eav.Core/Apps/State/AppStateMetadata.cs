@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.State;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppStateMetadata
