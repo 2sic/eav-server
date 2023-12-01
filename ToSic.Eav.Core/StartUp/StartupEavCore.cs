@@ -63,7 +63,7 @@ public static class StartUpEavCore
         services.TryAddTransient<IAppStates, AppStates>();
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
         services.TryAddTransient<AppStateDataService>();
-        services.TryAddTransient<AppSettingsStack>();
+        services.TryAddTransient<AppDataStackService>();
 
         // v13 #SwitchableAppsCache
         services.AddSingleton<IAppsCacheSwitchable, AppsCache>();

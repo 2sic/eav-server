@@ -5,7 +5,6 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
@@ -34,6 +33,26 @@ namespace ToSic.Eav.Apps.Services
 
         public int AppId => _appState.AppId;
 
+        #endregion
+
+        #region Basic Properties
+
+        public string Name => _appState.Name;
+
+        public string Folder => _appState.Folder;
+
+        public string NameId => _appState.NameId;
+
+        #endregion
+
+        #region Advanced Properties
+
+        public IAppConfiguration Configuration => _appConfig.Get(() => new AppConfiguration(ConfigurationEntity, Log));
+        private readonly GetOnce<IAppConfiguration> _appConfig = new();
+
+        public IEntity ConfigurationEntity => _appConfiguration ??= _appState.SettingsInApp.AppConfiguration;
+
+        private IEntity _appConfiguration;
 
         #endregion
 
@@ -57,33 +76,13 @@ namespace ToSic.Eav.Apps.Services
 
         AppStateMetadata IAppStateInternal.ResourcesInApp => _appState.ResourcesInApp;
 
-        IContentType IAppStateInternal.GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
         ParentAppState IAppStateInternal.ParentApp => _appState.ParentApp;
 
         AppRelationshipManager IAppStateInternal.Relationships => _appState.Relationships;
 
         #endregion
 
-        #region Basic Properties
 
-        public string Name => _appState.Name;
-
-        public string Folder => _appState.Folder;
-
-        public string NameId => _appState.NameId;
-
-        #endregion
-
-        #region Advanced Properties
-
-        public IAppConfiguration Configuration => _appConfig.Get(() => new AppConfiguration(ConfigurationEntity, Log));
-        private readonly GetOnce<IAppConfiguration> _appConfig = new();
-
-        public IEntity ConfigurationEntity => _appConfiguration ??= _appState.SettingsInApp.AppConfiguration;
-
-        private IEntity _appConfiguration;
-
-        #endregion
 
 
         public IImmutableList<IEntity> List => _appState.List;

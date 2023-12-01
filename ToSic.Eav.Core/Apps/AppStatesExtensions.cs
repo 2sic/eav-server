@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.Constants;
 
@@ -43,4 +43,14 @@ public static class AppStatesExtensions
         var state = appStates.GetCacheState(appId);
         return state is null ? null : appStates.ToReader(state, log);
     }
+
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public static IAppState KeepOrGetReader(this IAppStates appStates, IAppIdentity app, ILog log = default)
+        => (app is IAppStateCache stateCache ? appStates.ToReader(stateCache) : null)
+           ?? app as IAppState ?? appStates.GetReader(app);
+
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public static IAppState KeepOrGetReader(this LazySvc<IAppStates> appStates, IAppIdentity app)
+        => app as IAppState ?? appStates.Value.GetReader(app);
+
 }

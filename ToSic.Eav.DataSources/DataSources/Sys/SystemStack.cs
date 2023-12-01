@@ -45,10 +45,10 @@ public class SystemStack: Eav.DataSource.DataSourceBase
     private readonly IDataFactory _dataFactory;
     private readonly IAppStates _appStates;
     private readonly IZoneCultureResolver _zoneCulture;
-    private readonly AppSettingsStack _settingsStack;
+    private readonly AppDataStackService _dataStackService;
 
     public SystemStack(MyServices services,
-        AppSettingsStack settingsStack,
+        AppDataStackService dataStackService,
         IAppStates appStates,
         IZoneCultureResolver zoneCulture,
         IDataFactory dataFactory
@@ -57,7 +57,7 @@ public class SystemStack: Eav.DataSource.DataSourceBase
         ConnectServices(
             _appStates = appStates,
             _zoneCulture = zoneCulture,
-            _settingsStack = settingsStack,
+            _dataStackService = dataStackService,
             _dataFactory = dataFactory
         );
         ProvideOut(GetStack);
@@ -78,7 +78,7 @@ public class SystemStack: Eav.DataSource.DataSourceBase
 
         // TODO: option to get multiple stacks /etc.
         // Build Sources List
-        var settings = _settingsStack.Init(appState).GetStack(stackName);
+        var settings = _dataStackService.Init(appState).GetStack(stackName);
 
         // Dump results
         var dump = settings._Dump(new PropReqSpecs(null, languages, Log), null);

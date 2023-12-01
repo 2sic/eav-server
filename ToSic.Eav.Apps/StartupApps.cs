@@ -13,8 +13,6 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
-using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Repositories;
 using ToSic.Eav.Run;
 using ToSic.Eav.Security;
 
@@ -75,7 +73,7 @@ public static class StartupApps
         services.TryAddTransient<IContextOfApp, ContextOfApp>();
         services.TryAddTransient<ContextOfApp.MyServices>();
         services.TryAddTransient<ContextOfSite.MyServices>();
-
+        services.TryAddTransient<IAppPathsMicroSvc, AppPaths>(); // WIP trying to remove direct access to AppPaths
 
         // File System Loaders (note: Dnn will introduce it's own to work around a DI issue)
         services.TryAddTransient<IAppFileSystemLoader, AppFileSystemLoader>();
@@ -88,8 +86,8 @@ public static class StartupApps
         services.TryAddTransient<IAppInitializedChecker, AppInitializedChecker>();
         services.TryAddTransient<AppInitializedChecker>();
         services.TryAddTransient<AppInitializer>();
-        //services.TryAddTransient<AppPaths>();
-        services.TryAddTransient<IAppPathsMicroSvc, AppPaths>(); // WIP trying to remove direct access to AppPaths
+        
+        
 
         // export import stuff
         services.TryAddScoped<ExportListXml>();

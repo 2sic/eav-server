@@ -10,8 +10,6 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using static System.IO.Path;
 
-
-
 namespace ToSic.Eav.Apps.Paths;
 
 /// <summary>
@@ -73,16 +71,10 @@ internal class AppPaths: ServiceBase, IAppPathsMicroSvc
         l.A($"{property}: {result}");
     });
 
-    private string InterceptAndLog(string name, string result)
-    {
-        if (Debug) Log.A($"Intercept AppPath {name}: {result}");
-        return result;
-    }
-
     private string GetInternal(string name, Func<string> callIfNotFound)
     {
         // 2022-02-07 2dm try to drop special case with site-id again, as we shouldn't need this any more
-        var key = name; // + _site.Id;
+        var key = $"AppPath-{name}"; // + _site.Id;
         var final = _appState.Internal().GetPiggyBack(key,
             () =>
             {
@@ -90,12 +82,12 @@ internal class AppPaths: ServiceBase, IAppPathsMicroSvc
                 if (Debug) LogAppPathDetails(nameof(Path), result);
                 return result;
             });
-        if (Debug) InterceptAndLog(name, final);
+        if (Debug) Log.A($"{name}: {final}");
         return final;
     }
 
     public string Path => GetInternal(nameof(Path), 
-        () => _site.AppAssetsLinkTemplate.Replace(AppConstants.AppFolderPlaceholder, _appState.Folder)
+        () => _site.AppAssetsLinkTemplate.Replace(AppLoadConstants.AppFolderPlaceholder, _appState.Folder)
             .ToAbsolutePathForwardSlash());
 
     public string PathShared => GetInternal(nameof(PathShared), 

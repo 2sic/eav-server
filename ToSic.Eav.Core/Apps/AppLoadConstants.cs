@@ -12,4 +12,5 @@ public class AppLoadConstants
     public const string TypeAppResources = "App-Resources";
     public const string TypeAppSettings = "App-Settings";
 
+    public const string AppFolderPlaceholder = "[AppFolder]";
 }

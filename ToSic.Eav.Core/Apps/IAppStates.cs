@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
-using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -57,17 +56,4 @@ public interface IAppStates
     #endregion
 
     bool IsCached(IAppIdentity appId);
-}
-
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public static class IAppStatesExtensions
-{
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static IAppState KeepOrGetReader(this IAppStates appStates, IAppIdentity app, ILog log = default)
-        => (app is IAppStateCache stateCache ? appStates.ToReader(stateCache) : null)
-           ?? app as IAppState ?? appStates.GetReader(app);
-
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static IAppState KeepOrGetReader(this LazySvc<IAppStates> appStates, IAppIdentity app) 
-        => app as IAppState ?? appStates.Value.GetReader(app);
 }

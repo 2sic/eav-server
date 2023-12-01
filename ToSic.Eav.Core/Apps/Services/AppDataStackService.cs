@@ -11,16 +11,16 @@ namespace ToSic.Eav.Apps.Services;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppSettingsStack: ServiceBase
+public class AppDataStackService: ServiceBase
 {
-    public AppSettingsStack(IAppStates appStates): base("App.Stack")
+    public AppDataStackService(IAppStates appStates): base("App.Stack")
     {
         _appStates = appStates;
     }
 
     private readonly IAppStates _appStates;
 
-    public AppSettingsStack Init(IAppState state)
+    public AppDataStackService Init(IAppState state)
     {
         Reader = (IAppStateInternal)state;
         return this;

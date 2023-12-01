@@ -34,7 +34,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
             LazySvc<IEavFeaturesService> features,
             LazySvc<AppUserLanguageCheck> langChecks,
             Generator<IEnvironmentPermission> environmentPermissions,
-            LazySvc<AppSettingsStack> settingsStack
+            LazySvc<AppDataStackService> settingsStack
         ): base(siteServices)
         {
             ConnectServices(
@@ -49,7 +49,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         public IAppStates AppStates { get; }
         public LazySvc<IEavFeaturesService> Features { get; }
         public LazySvc<AppUserLanguageCheck> LangChecks { get; }
-        public LazySvc<AppSettingsStack> SettingsStack { get; }
+        public LazySvc<AppDataStackService> SettingsStack { get; }
         internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions;
     }
 
@@ -125,12 +125,12 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     #region Settings and Resources
 
-    private AppSettingsStack AppSettingsStack => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppState));
-    private readonly GetOnce<AppSettingsStack> _appSettingsStack = new();
+    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppState));
+    private readonly GetOnce<AppDataStackService> _appSettingsStack = new();
 
-    public PropertyStack AppSettings => _settings.Get(() => AppSettingsStack.GetStack(RootNameSettings));
+    public PropertyStack AppSettings => _settings.Get(() => AppDataStackService.GetStack(RootNameSettings));
     private readonly GetOnce<PropertyStack> _settings = new();
-    public PropertyStack AppResources => _resources.Get(() => AppSettingsStack.GetStack(RootNameResources));
+    public PropertyStack AppResources => _resources.Get(() => AppDataStackService.GetStack(RootNameResources));
     private readonly GetOnce<PropertyStack> _resources = new();
 
     #endregion

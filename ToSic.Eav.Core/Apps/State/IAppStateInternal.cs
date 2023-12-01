@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps.State
 
         IEntity ConfigurationEntity { get; }
 
-        IContentType GetContentType(int contentTypeId);
+        //IContentType GetContentType(int contentTypeId);
 
         ParentAppState ParentApp { get; }
 
