@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps;
 /// A <em>single-use</em> app-object providing quick simple api to access
 /// name, folder, data, metadata etc.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PrivateApi("Hide implementation - was PublicApi_Stable_ForUseInYourCode till 16.09")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class App: AppBase<App.MyServices>, IApp
 {
@@ -78,7 +78,7 @@ public partial class App: AppBase<App.MyServices>, IApp
     [PrivateApi]
     public string AppGuid => NameId;
 
-    protected internal App Init(IAppIdentity appIdentity, Func<App, IAppDataConfiguration> buildConfiguration)
+    protected internal App Init(IAppIdentityPure appIdentity, Func<App, IAppDataConfiguration> buildConfiguration)
     {
         // Env / Tenant must be re-checked here
         if (Site == null) throw new Exception("no site/portal received");
@@ -90,7 +90,7 @@ public partial class App: AppBase<App.MyServices>, IApp
 
         // if zone is missing, try to find it - but always assume current context
         if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
-            appIdentity = new AppIdentity(Site.ZoneId, appIdentity.AppId);
+            appIdentity = new AppIdentityPure(Site.ZoneId, appIdentity.AppId);
             
         InitAppBaseIds(appIdentity);
         Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");

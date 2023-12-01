@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Data;
 
 // ReSharper disable once CheckNamespace
@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataFormats.EavLight;
 
 partial class ConvertToEavLight
 {
-    private static void AddPublishingInformation(IEntity entity, IDictionary<string, object> entityValues, IAppState appState)
+    private static void AddPublishingInformation(IEntity entity, IDictionary<string, object> entityValues, IAppEntityService appState)
     {
         entityValues.Add(Attributes.RepoIdInternalField, entity.RepositoryId);
         entityValues.Add(Attributes.IsPublishedField, entity.IsPublished);

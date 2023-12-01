@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
@@ -123,7 +124,7 @@ public class AppInitializer : ServiceBase
     {
         if (eavAppName == Constants.DefaultAppGuid)
             return Constants.ContentAppFolder;
-        if (eavAppName == Constants.PrimaryAppGuid || eavAppName == Constants.PrimaryAppName)
+        if (eavAppName is Constants.PrimaryAppGuid or Constants.PrimaryAppName)
             return Constants.PrimaryAppName;
         return string.IsNullOrEmpty(newAppName)
             ? eavAppName

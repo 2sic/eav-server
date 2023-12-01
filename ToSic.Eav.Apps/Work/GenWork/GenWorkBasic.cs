@@ -28,13 +28,12 @@ public class GenWorkBasic<TWork>: ServiceBase where TWork : WorkUnitBase<IAppWor
         return fresh;
     }
 
-    public TWork New(IAppWorkCtx ctx) => NewInternal(ctx);
-
-    //public TWork New(AppState appState) => NewInternal(_ctxSvc.Value.Context(appState));
 
     public TWork New(IAppState appState) => NewInternal(_ctxSvc.Value.Context(appState));
 
-    public TWork New(IAppIdentity identity) => NewInternal(_ctxSvc.Value.Context(identity));
-
     public TWork New(int appId) => NewInternal(_ctxSvc.Value.Context(appId));
+
+    // These signatures are not used ATM, but might be useful in the future
+    //public TWork New(IAppWorkCtx ctx) => NewInternal(ctx);
+    //public TWork New(IAppIdentity identity) => NewInternal(_ctxSvc.Value.Context(identity));
 }

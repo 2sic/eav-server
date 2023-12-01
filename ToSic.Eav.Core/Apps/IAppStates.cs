@@ -29,10 +29,10 @@ public interface IAppStates
 
     #region Look up IDs
 
-    IAppIdentity IdentityOfApp(int appId);
+    IAppIdentityPure IdentityOfApp(int appId);
 
-    IAppIdentity IdentityOfPrimary(int zoneId);
-    IAppIdentity IdentityOfDefault(int zoneId);
+    IAppIdentityPure IdentityOfPrimary(int zoneId);
+    IAppIdentityPure IdentityOfDefault(int zoneId);
 
     string AppIdentifier(int zoneId, int appId);
 

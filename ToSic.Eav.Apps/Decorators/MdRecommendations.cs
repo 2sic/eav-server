@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Eav.Helpers;
@@ -33,10 +34,10 @@ public class MdRecommendations: ServiceBase
 
     private readonly LazySvc<MdRequirements> _requirements;
 
-    public void Init(IAppState appState) => _appState = appState;
+    public void Init(IAppDataAndMetadataService appState) => _appState = appState;
 
-    private IAppState AppState => _appState ?? throw new Exception("Can't use this Read class before setting AppState");
-    private IAppState _appState;
+    private IAppDataAndMetadataService AppState => _appState ?? throw new Exception("Can't use this Read class before setting AppState");
+    private IAppDataAndMetadataService _appState;
 
 
     public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string recommendedTypeName = null)

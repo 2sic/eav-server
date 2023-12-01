@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Data;
 using ToSic.Lib.DI;
 using ToSic.Eav.Generics;
@@ -272,7 +273,7 @@ public class ImportService: ServiceBase
     /// <summary>
     /// Import an Entity with all values
     /// </summary>
-    private IEntity CreateMergedForSaving(IEntity update, IAppState appState, SaveOptions saveOptions) => Log.Func(l =>
+    private IEntity CreateMergedForSaving(IEntity update, IAppDataService appState, SaveOptions saveOptions) => Log.Func(l =>
     {
         _mergeCountToStopLogging++;
         var logDetails = _mergeCountToStopLogging <= LogMaxMerges;

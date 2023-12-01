@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -99,7 +100,7 @@ public class QueryManager: ServiceBase
     internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app, int recurseParents = 0) => Log.Func($"App: {app.AppId}, recurse: {recurseParents}", l =>
     {
         var appState = _appStates.KeepOrGetReader(app).Internal();
-        var result = QueryEntities(appState);
+        var result = appState.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
         if (recurseParents <= 0) return (result, "ok, no recursions");
         l.A($"Try to recurse parents {recurseParents}");
         if (appState.ParentAppState == null) return (result, "no more parents to recurse on");
@@ -131,14 +132,7 @@ public class QueryManager: ServiceBase
         return l.Return(result, result == null ? "null" : "ok");
     }
 
-    // todo: move to query-read or helper
-
-    private static IImmutableList<IEntity> QueryEntities(IAppState appState)
-        => appState.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
-
-
-    // todo: move to query-read or helper, or make private
-
+    
     private static IEntity FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
         queries.FirstOrDefault(
             q => q.Value<string>("Name").EqualsInsensitive(nameOrGuid)

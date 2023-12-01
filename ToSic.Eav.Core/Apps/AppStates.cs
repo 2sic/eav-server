@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
@@ -33,12 +32,12 @@ internal class AppStates: IAppStates
 
     public bool IsCached(IAppIdentity appId) => AppsCacheSwitch.Value.Has(appId);
 
-    public IAppIdentity IdentityOfApp(int appId) =>
-        new AppIdentity(AppsCacheSwitch.Value.ZoneIdOfApp(appId, _loaderTools), appId);
+    public IAppIdentityPure IdentityOfApp(int appId) =>
+        new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, _loaderTools), appId);
 
-    public IAppIdentity IdentityOfPrimary(int zoneId) => new AppIdentity(zoneId, PrimaryAppId(zoneId));
+    public IAppIdentityPure IdentityOfPrimary(int zoneId) => new AppIdentityPure(zoneId, PrimaryAppId(zoneId));
 
-    public IAppIdentity IdentityOfDefault(int zoneId) => new AppIdentity(zoneId, DefaultAppId(zoneId));
+    public IAppIdentityPure IdentityOfDefault(int zoneId) => new AppIdentityPure(zoneId, DefaultAppId(zoneId));
 
     public string AppIdentifier(int zoneId, int appId) => AppsCacheSwitch.Value.Zones(_loaderTools)[zoneId].Apps[appId];
 

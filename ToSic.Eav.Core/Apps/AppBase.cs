@@ -27,10 +27,9 @@ public abstract class AppBase<TServices>: ServiceBase<TServices>, IAppIdentity w
     /// App identity containing zone/app combination
     /// </summary>
     /// <param name="app">the identity</param>
-    protected AppBase<TServices> InitAppBaseIds(IAppIdentity app) => Log.Func(() =>
+    protected void InitAppBaseIds(IAppIdentity app)
     {
         ZoneId = app.ZoneId;
         AppId = app.AppId;
-        return this;
-    });
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Security;
@@ -22,8 +23,8 @@ public class MultiPermissionsTypes: MultiPermissionsApp
     private readonly LazySvc<IAppStates> _appStates;
 
     // Note: AppState must be public, as we have some extension methods that need it
-    public IAppState AppState => _appState ??= _appStates.Value.KeepOrGetReader(App);
-    private IAppState _appState;
+    public IAppDataService AppState => _appState ??= _appStates.Value.KeepOrGetReader(App);
+    private IAppDataService _appState;
 
     public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
     {

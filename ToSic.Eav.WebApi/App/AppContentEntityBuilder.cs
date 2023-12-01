@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Api.Api01;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
@@ -23,7 +24,7 @@ internal class AppContentEntityBuilder: HelperBase
     /// Construct an import-friendly, type-controlled value-dictionary to create or update an entity
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, object> CreateEntityDictionary(string contentType, Dictionary<string, object> newContentItem, IAppState appState)
+    public Dictionary<string, object> CreateEntityDictionary<T>(string contentType, Dictionary<string, object> newContentItem, T appState) where T: IAppIdentity, IAppDataService
     {
         Log.A($"create ent dic a#{appState.AppId}, type:{contentType}");
         // Retrieve content-type definition and check all the fields that this content-type has

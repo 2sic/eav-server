@@ -94,7 +94,7 @@ public sealed class Apps: CustomDataSource
                 string error = null;
                 try
                 {
-                    appObj = appGenerator.New().Init(new AppIdentity(zone.ZoneId, app.Key), null);
+                    appObj = appGenerator.New().Init(new AppIdentityPure(zone.ZoneId, app.Key), null);
                     // this will get the guid, if the identity is not "default"
                     if (Guid.TryParse(appObj.NameId, out var g)) guid = g;
                 }

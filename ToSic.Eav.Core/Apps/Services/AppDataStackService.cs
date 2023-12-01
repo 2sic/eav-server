@@ -53,15 +53,15 @@ public class AppSettingsStack: ServiceBase
 
     public const string PiggyBackId = "app-stack-";
 
-    private AppStateStackCache GetOrGenerate(AppThingsIdentifiers target)
+    private AppStateStack GetOrGenerate(AppThingsIdentifiers target)
     {
-        var l = Log.Fn<AppStateStackCache>(target.Target.ToString());
+        var l = Log.Fn<AppStateStack>(target.Target.ToString());
         return l.ReturnAndLog(Reader.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target)));
     }
 
-    private AppStateStackCache Get(AppThingsIdentifiers target)
+    private AppStateStack Get(AppThingsIdentifiers target)
     {
-        var l = Log.Fn<AppStateStackCache>(target.Target.ToString());
+        var l = Log.Fn<AppStateStack>(target.Target.ToString());
         // Site should be skipped on the global zone
         l.A($"Owner: {Reader.Show()}");
         var site = Reader.ZoneId == Constants.DefaultZoneId ? null : _appStates.GetPrimaryReader(Reader.ZoneId, Log);
@@ -76,7 +76,7 @@ public class AppSettingsStack: ServiceBase
         var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId ? null : appAncestor;
         l.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
 
-        var stackCache = new AppStateStackCache(Reader.StateCache, ancestorIfNotPreset, site?.StateCache, global?.StateCache, preset?.StateCache, target);
+        var stackCache = new AppStateStack(Reader.StateCache, ancestorIfNotPreset, site?.StateCache, global?.StateCache, preset?.StateCache, target);
 
         return l.ReturnAndLog(stackCache, "created");
     }

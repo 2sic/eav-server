@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Apps.State;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
@@ -52,7 +51,8 @@ partial class App: IHasPermissions
     }
     #endregion
 
-    [PublicApi] public IAppState AppState => AppStateInt;
+    [PrivateApi("kind of slipped into public till 16.09, but only on the object, never on the IApp, so probably never discovered")]
+    public IAppState AppState => AppStateInt;
 
     protected internal IAppStateInternal AppStateInt => _appStateReader ??= Services.AppStates.GetReader(this);
     private IAppStateInternal _appStateReader;
