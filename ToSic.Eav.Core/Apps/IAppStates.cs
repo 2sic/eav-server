@@ -25,6 +25,8 @@ public interface IAppStates
     /// <param name="appId">App id if zone unknown.</param>
     IAppStateCache GetCacheState(int appId);
 
+    IAppStateInternal ToReader(IAppStateCache state, ILog log = default);
+
     #endregion
 
     #region Look up IDs
@@ -32,6 +34,7 @@ public interface IAppStates
     IAppIdentityPure IdentityOfApp(int appId);
 
     IAppIdentityPure IdentityOfPrimary(int zoneId);
+
     IAppIdentityPure IdentityOfDefault(int zoneId);
 
     string AppIdentifier(int zoneId, int appId);
@@ -61,7 +64,7 @@ public static class IAppStatesExtensions
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IAppState KeepOrGetReader(this IAppStates appStates, IAppIdentity app, ILog log = default)
-        => (app is IAppStateCache stateCache ? stateCache.ToInterface(log) : null)
+        => (app is IAppStateCache stateCache ? appStates.ToReader(stateCache) : null)
            ?? app as IAppState ?? appStates.GetReader(app);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

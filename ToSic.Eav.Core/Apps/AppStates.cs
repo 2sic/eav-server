@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps;
 
@@ -15,20 +18,24 @@ namespace ToSic.Eav.Apps;
 [PrivateApi("internal")]
 internal class AppStates: IAppStates
 {
-    public AppStates(IAppLoaderTools loaderTools, AppsCacheSwitch appsCacheSwitch)
+    public AppStates(IAppLoaderTools loaderTools, AppsCacheSwitch appsCacheSwitch, Generator<AppStateDataService> appStateGenerator)
     {
         _loaderTools = loaderTools;
         AppsCacheSwitch = appsCacheSwitch;
+        _appStateGenerator = appStateGenerator;
     }
 
     private readonly IAppLoaderTools _loaderTools;
     internal readonly AppsCacheSwitch AppsCacheSwitch;
+    private readonly Generator<AppStateDataService> _appStateGenerator;
 
     /// <inheritdoc />
     public IAppStateCache Get(IAppIdentity app) => AppsCacheSwitch.Value.Get(app, _loaderTools);
 
     /// <inheritdoc />
     public IAppStateCache GetCacheState(int appId) => AppsCacheSwitch.Value.Get(IdentityOfApp(appId), _loaderTools);
+
+    public IAppStateInternal ToReader(IAppStateCache state, ILog log = default) => _appStateGenerator.New().Init(state, log);
 
     public bool IsCached(IAppIdentity appId) => AppsCacheSwitch.Value.Has(appId);
 

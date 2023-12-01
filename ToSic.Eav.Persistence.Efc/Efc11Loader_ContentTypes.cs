@@ -22,14 +22,14 @@ partial class Efc11Loader
         => LoadContentTypesFromDb(appId, source);
 
 
-    private IList<IContentType> LoadExtensionsTypesAndMerge(IAppStateCache app, IList<IContentType> dbTypes)
+    private IList<IContentType> LoadExtensionsTypesAndMerge(IAppStateInternal appReader, IList<IContentType> dbTypes)
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         try
         {
-            if (string.IsNullOrEmpty(app.Folder)) return l.Return(dbTypes, "no path");
+            if (string.IsNullOrEmpty(appReader.Folder)) return l.Return(dbTypes, "no path");
 
-            var fileTypes = InitFileSystemContentTypes(app);
+            var fileTypes = InitFileSystemContentTypes(appReader);
             if (fileTypes == null || fileTypes.Count == 0) return l.Return(dbTypes, "no app file types");
 
             Log.A($"Will check {fileTypes.Count} items");
@@ -56,14 +56,13 @@ partial class Efc11Loader
     /// <summary>
     /// Will load file based app content-types.
     /// </summary>
-    /// <param name="app"></param>
     /// <returns></returns>
-    private IList<IContentType> InitFileSystemContentTypes(IAppStateCache app)
+    private IList<IContentType> InitFileSystemContentTypes(IAppStateInternal appReader)
     {
         var l = Log.Fn<IList<IContentType>>();
         // must create a new loader for each app
-        var loader = _appFileContentTypesLoader.New().Init(app.ToInterface(Log));
-        var types = loader.ContentTypes(entitiesSource: app);
+        var loader = _appFileContentTypesLoader.New().Init(appReader);
+        var types = loader.ContentTypes(entitiesSource: appReader.StateCache);
         return l.ReturnAsOk(types);
     }
 

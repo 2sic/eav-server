@@ -5,21 +5,28 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using ToSic.Sxc.Apps;
 
-namespace ToSic.Eav.Apps.Reader
+namespace ToSic.Eav.Apps.Services
 {
-    internal class AppStateReader: HelperBase, IAppStateInternal, IMetadataSource
+    internal class AppStateDataService: ServiceBase, IAppStateInternal, IMetadataSource
     {
-        private readonly AppState _appState;
 
-        public AppStateReader(IAppStateCache appState, ILog parentLog): base(parentLog, "App.Reader")
+        public AppStateDataService(): base("App.Reader")
+        {
+        }
+
+        internal AppStateDataService Init(IAppStateCache appState, ILog parentLog)
         {
             _appState = appState as AppState;
+            this.LinkLog(parentLog);
+            return this;
         }
+        private AppState _appState;
 
         #region Identity
 

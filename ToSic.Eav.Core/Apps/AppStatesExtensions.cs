@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Reader;
+﻿using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.Constants;
@@ -36,11 +36,11 @@ public static class AppStatesExtensions
     public static IAppStateInternal GetReader(this IAppStates appStates, IAppIdentity app, ILog log = default)
     {
         var state = appStates.Get(app);
-        return state is null ? null : new AppStateReader(state, log);
+        return state is null ? null : appStates.ToReader(state, log);
     }
     public static IAppStateInternal GetReader(this IAppStates appStates, int appId, ILog log = default)
     {
         var state = appStates.GetCacheState(appId);
-        return state is null ? null : new AppStateReader(state, log);
+        return state is null ? null : appStates.ToReader(state, log);
     }
 }

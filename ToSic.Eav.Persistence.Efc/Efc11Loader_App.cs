@@ -146,7 +146,7 @@ partial class Efc11Loader
             {
                 var typeTimer = Stopwatch.StartNew();
                 var dbTypes = ContentTypes(state.AppId, state);
-                dbTypes = LoadExtensionsTypesAndMerge(state, dbTypes);
+                dbTypes = LoadExtensionsTypesAndMerge(builder.Reader, dbTypes);
                 builder.InitContentTypes(dbTypes);
                 typeTimer.Stop();
                 l.A($"timers types:{typeTimer.Elapsed}");

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Apps.Reader;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata;
@@ -21,30 +21,33 @@ partial class AppState
     /// </summary>
     internal class AppStateBuilder : ServiceBase, IAppStateBuilder
     {
+        private readonly IAppStates _appStates;
+
         #region Constructor / DI / Init (2 variants)
 
-        public AppStateBuilder() : base("App.SttBld")
+        public AppStateBuilder(IAppStates appStates) : base("App.SttBld")
         {
+            _appStates = appStates;
         }
 
         public IAppStateBuilder Init(IAppStateCache appState)
         {
             _appState = appState;
-            _reader = new AppStateReader(AppState, Log);
+            _reader = _appStates.ToReader(AppState, Log);
             return this;
         }
 
         public IAppStateBuilder InitForPreset()
         {
             _appState = new AppState(new ParentAppState(null, false, false), PresetIdentity, PresetName, Log);
-            _reader = new AppStateReader(AppState, Log);
+            _reader = _appStates.ToReader(AppState, Log);
             return this;
         }
 
         public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog)
         {
             _appState = new AppState(parentApp, id, nameId, parentLog);
-            _reader = new AppStateReader(AppState, Log);
+            _reader = _appStates.ToReader(AppState, Log);
             return this;
         }
 

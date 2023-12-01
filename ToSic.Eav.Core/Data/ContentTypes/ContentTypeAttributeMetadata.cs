@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -116,7 +115,7 @@ public class ContentTypeAttributeMetadata: MetadataOf<int>
             .ToArray();
 
         // Get all attributes in all content-types of the App and keep the ones we need
-        var appAttribs = appState.ToInterface(log: null).ContentTypes.SelectMany(ct => ct.Attributes);
+        var appAttribs = ((AppState)appState).ContentTypes.SelectMany(ct => ct.Attributes);
         return appAttribs.Where(a => sourceKeys.Contains(a.Guid)).ToList();
     });
     private readonly GetOnce<List<IContentTypeAttribute>> _sourceAttributes = new();

@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps.Paths;
 

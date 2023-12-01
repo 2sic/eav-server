@@ -1,8 +1,6 @@
 ﻿using System;
-using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.State;
 
@@ -10,9 +8,6 @@ namespace ToSic.Eav.Apps.State;
 public static class AppStateExtensions
 {
     public static IAppStateInternal Internal(this IAppState appState) => appState as IAppStateInternal;
-
-
-    public static IAppStateInternal ToInterface(this IAppStateCache appState, ILog log) => new AppStateReader(appState, log);
 
     public static bool IsInherited(this IAppState reader)
         => reader.Internal().StateCache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
