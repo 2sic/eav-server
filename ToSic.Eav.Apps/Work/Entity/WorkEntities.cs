@@ -55,9 +55,9 @@ public class WorkEntities: WorkUnitBase<IAppWorkCtxPlus>
     public IEntity Get(Guid entityGuid) => AppWorkCtx.AppState.List.One(entityGuid);
 
 
-    public IEnumerable<IEntity> Get(string contentTypeName)
+    public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus overrideWorkCtx = default)
     {
-        var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(attach: AppWorkCtx.Data); // need to go to cache, to include published & unpublished
+        var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(attach: (overrideWorkCtx ?? AppWorkCtx).Data); // need to go to cache, to include published & unpublished
         typeFilter.TypeName = contentTypeName;
         return typeFilter.List;
     }
@@ -68,7 +68,7 @@ public class WorkEntities: WorkUnitBase<IAppWorkCtxPlus>
         var l = Log.Fn<IEnumerable<IEntity>>($"{nameof(contentTypeName)}: {contentTypeName}");
         var appWithParents = _dataSourceFactory.Value.Create<AppWithParents>(attach: AppWorkCtx.Data);
         var newCtx = AppWorkCtx.NewWithPresetData(data: appWithParents);
-        return l.Return(Get(contentTypeName));
+        return l.Return(Get(contentTypeName, newCtx));
     }
 
 }
