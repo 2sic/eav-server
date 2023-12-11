@@ -117,6 +117,7 @@ partial class Efc11Loader
         var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log)
             ? LoadAppStateFromDb(appId).AppState
             : builder.AppState;
+
         return l.Return(result, "with init check");
     }
 
@@ -173,7 +174,7 @@ partial class Efc11Loader
     /// <returns></returns>
     private (string Name, string Path) PreLoadAppPath(int appId)
     {
-        var l = Log.Fn<(string Name, string Path)>(appId.ToString());
+        var l = Log.Fn<(string Name, string Path)>($"{nameof(appId)}: {appId}");
         var nullTuple = (null as string, null as string);
         try
         {

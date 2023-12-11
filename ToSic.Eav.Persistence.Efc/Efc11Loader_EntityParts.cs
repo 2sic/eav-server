@@ -27,24 +27,20 @@ partial class Efc11Loader
     }
 
 
-    private List<TempEntity> GetRawEntities(int[] entityIds, int appId, bool filterByEntityIds, string filterByType = null)
+    private List<TempEntity> GetRawEntities(int[] entityIds, int appId, bool filterIds, string filterType = null)
     {
-        var wrapLog =
-            Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterByEntityIds}");
+        var wrapLog = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterType)}: '{filterType}'");
         var query = _dbContext.ToSicEavEntities
             .Include(e => e.AttributeSet)
-            // 2020-11-13 2dm - believe we're loading data here that is never used, as it's not in the returned data
-            //.Include(e => e.ToSicEavValues)
-            //.ThenInclude(v => v.ToSicEavValuesDimensions)
-            .Where(e => !e.ChangeLogDeleted.HasValue &&
-                        e.AppId == appId &&
-                        e.AttributeSet.ChangeLogDeleted == null &&
-                        (
-                            // filter by EntityIds (if set)
-                            !filterByEntityIds || entityIds.Contains(e.EntityId)
-                        ));
-        if (filterByType != null)
-            query = query.Where(e => e.ContentType == filterByType);
+            .Where(e => e.AppId == appId)
+            .Where(e => e.ChangeLogDeleted == null && e.AttributeSet.ChangeLogDeleted == null);
+
+        // filter by EntityIds (if set)
+        if (filterIds)
+            query = query.Where(e => entityIds.Contains(e.EntityId));
+
+        if (filterType != null)
+            query = query.Where(e => e.ContentType == filterType);
 
         var rawEntities = query
             .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
@@ -63,7 +59,8 @@ partial class Efc11Loader
                 Json = e.Json,
             })
             .ToList();
-        return wrapLog.ReturnAsOk(rawEntities);
+
+        return wrapLog.Return(rawEntities, $"found: {rawEntities.Count}");
     }
 
     private Dictionary<int, IEnumerable<TempAttributeWithValues>> GetAttributesOfEntityChunk(List<int> entityIdsFound)

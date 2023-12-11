@@ -53,9 +53,9 @@ public class ContentTypeDtoService : ServiceBase
 
     #region Content-Type Get, Delete, Save
 
-    public IEnumerable<ContentTypeDto> List(int appId, string scope = null, bool withStatistics = false)
+    public IList<ContentTypeDto> List(int appId, string scope = null, bool withStatistics = false)
     {
-        var l = Log.Fn<IEnumerable<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
+        var l = Log.Fn<IList<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
         var appCtxPlus = _workEntities.CtxSvc.ContextPlus(appId);
 
         // 2023-11-08 Will disable this now, as I believe there is no case
@@ -81,7 +81,8 @@ public class ContentTypeDtoService : ServiceBase
 
         var filteredType = allTypes.Where(t => t.Scope == scope)
             .OrderBy(t => t.Name)
-            .Select(t => _convTypeDto.Convert(t, appEntities.Get(t.Name).Count()));
+            .Select(t => _convTypeDto.Convert(t, appEntities.Get(t.Name).Count()))
+            .ToList(); // must convert to list, otherwise it happens late when DI isn't available any more
         return l.ReturnAsOk(filteredType);
     }
         
