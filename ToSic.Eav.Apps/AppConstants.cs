@@ -15,10 +15,11 @@ public static class AppConstants
     public const string AppIconFile = "app-icon.png";
     public const string AppPrimaryIconFile = "app-primary.png";
 
-    /// <summary>
-    /// This is used in rare cases where the Zone should be auto-retrieved from the current context zone
-    /// </summary>
-    public const int AutoLookupZone = -1;
+    // #RemoveAutoLookupZone
+    ///// <summary>
+    ///// This is used in rare cases where the Zone should be auto-retrieved from the current context zone
+    ///// </summary>
+    //public const int AutoLookupZone = -1;
 
     public static readonly string ContentGroupRefTypeName = "ContentGroupReference";
 

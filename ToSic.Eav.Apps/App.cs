@@ -88,9 +88,11 @@ public partial class App: AppBase<App.MyServices>, IApp
             appIdentity.AppId != AppConstants.AppIdNotFound)
             Site = Services.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
-        // if zone is missing, try to find it - but always assume current context
-        if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
-            appIdentity = new AppIdentityPure(Site.ZoneId, appIdentity.AppId);
+        // 2023-12-12 2dm removed autolookup Zone - must happen before this #RemoveAutoLookupZone
+        // leave in till 2024-Q2 and remove if all works
+        //// if zone is missing, try to find it - but always assume current context
+        //if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
+        //    appIdentity = new AppIdentityPure(Site.ZoneId, appIdentity.AppId);
             
         InitAppBaseIds(appIdentity);
         Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");

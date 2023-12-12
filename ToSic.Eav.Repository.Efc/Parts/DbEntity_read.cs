@@ -81,12 +81,15 @@ partial class DbEntity
     /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuid)
+    internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuids)
         // GetEntity should never return a draft entity that has a published version
     {
         var callLog = Log.Fn<Dictionary<Guid, int>>(timer: true);
-        var result = GetEntitiesByGuid(entityGuid)
-            .ToList() // necessary for EF 3 - before GroupBy
+
+        var getEntityQuery = GetEntitiesByGuid(entityGuids);
+        var dbEntityList = getEntityQuery.ToList(); // necessary for EF 3 - before GroupBy so it's then done in memory and not in SQL
+
+        var result = dbEntityList
             .GroupBy(e => e.EntityGuid)
             .ToDictionary(
                 g => g.Key,
@@ -97,8 +100,8 @@ partial class DbEntity
     // 2020-10-07 2dm experiment with fewer requests
     internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid[] entityGuid)
         => EntityQuery.Where(e => entityGuid.Contains(e.EntityGuid)
-                                  && !e.ChangeLogDeleted.HasValue
-                                  && !e.AttributeSet.ChangeLogDeleted.HasValue
+                                  && e.ChangeLogDeleted == null
+                                  && e.AttributeSet.ChangeLogDeleted == null
                                   && DbContext.AppIds.Contains(e.AppId));
 
 
