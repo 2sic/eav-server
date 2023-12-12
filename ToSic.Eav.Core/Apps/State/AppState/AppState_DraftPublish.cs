@@ -34,10 +34,8 @@ partial class AppState
     [PrivateApi]
     internal IEntity GetPublished(IEntity entity)
     {
-        if (entity == null) return null;
-        if (entity.IsPublished) return null;
-        var publishedEntityId = ((Entity)entity).EntityId;
-        return Index.TryGetValue(publishedEntityId, out var pub) ? pub : null;
+        if (entity == null || entity.IsPublished) return null;
+        return Index.TryGetValue(entity.EntityId, out var pub) && pub.IsPublished ? pub : null;
     }
 
     #endregion
