@@ -23,7 +23,7 @@ public interface ISite: IZoneIdentity, IZoneCultureResolver, ILogShouldNeverConn
 
     /// <summary>
     /// The Id of the site in systems like DNN and Oqtane.
-    /// In DNN this is the same as the PortalId
+    /// In DNN this is the same as the `PortalId`, in Oqtane the `SiteId`
     /// </summary>
     int Id { get; }
 

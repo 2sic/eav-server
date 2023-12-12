@@ -80,6 +80,7 @@ public partial class App: AppBase<App.MyServices>, IApp
 
     protected internal App Init(IAppIdentityPure appIdentity, Func<App, IAppDataConfiguration> buildConfiguration)
     {
+        var l = Log.Fn<App>();
         // Env / Tenant must be re-checked here
         if (Site == null) throw new Exception("no site/portal received");
             
@@ -95,7 +96,7 @@ public partial class App: AppBase<App.MyServices>, IApp
         //    appIdentity = new AppIdentityPure(Site.ZoneId, appIdentity.AppId);
             
         InitAppBaseIds(appIdentity);
-        Log.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
+        l.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
 
         // Look up name in cache
         NameId = Services.AppStates.GetReader(this).NameId;
@@ -105,6 +106,6 @@ public partial class App: AppBase<App.MyServices>, IApp
         // for deferred initialization as needed
         _dataConfigurationBuilder = buildConfiguration;
 
-        return this;
+        return l.Return(this);
     }
 }
