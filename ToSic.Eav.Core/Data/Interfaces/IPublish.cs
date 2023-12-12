@@ -16,6 +16,7 @@ public interface IPublish
     /// because when both a draft and published Entity exist, the have the same EntityId,
     /// but are stored with an own RepositoryId.
     /// </summary>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
     int RepositoryId { get; }
 
     /// <summary>
