@@ -19,7 +19,7 @@ namespace ToSic.Eav.Apps.DataSources;
 /// </summary>
 [PublicApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public sealed class AppDataWithCrud: Eav.DataSources.App, IAppData
+public class AppDataWithCrud: Eav.DataSources.App, IAppData
 {
     private readonly LazySvc<IDataSourceCacheService> _dsCacheSvc;
 
@@ -57,7 +57,7 @@ public sealed class AppDataWithCrud: Eav.DataSources.App, IAppData
         return l.Return(created, $"{created?.EntityId}/{created?.EntityGuid}");
     }
 
-    private static void ProvideOwnerInValues(Dictionary<string, object> values, string userIdentityToken)
+    private static void ProvideOwnerInValues(IDictionary<string, object> values, string userIdentityToken)
     {
         // userIdentityToken is not simple 'userName' string, but 2sxc user IdentityToken structure (eg 'dnn:user=N')
         if (values.ContainsKey(Attributes.EntityFieldOwner)) return;
@@ -125,4 +125,5 @@ public sealed class AppDataWithCrud: Eav.DataSources.App, IAppData
     /// <inheritdoc />
     public IEnumerable<IEntity> GetCustomMetadata<TKey>(TKey key, string contentTypeName = null)
         => AppState.GetMetadata(TargetTypes.Custom, key, contentTypeName);
+
 }

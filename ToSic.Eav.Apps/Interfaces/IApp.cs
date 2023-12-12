@@ -77,12 +77,10 @@ public interface IApp : IAppIdentity, IHasMetadata
     [PrivateApi]
     IQuery GetQuery(string name);
 
-    // Note: was here a long time, marked as public in v14.7
-    // Made private again in 15.06 because I want to create an interface IAppState
     /// <summary>
     /// The stored / cached, read-only App State
     /// </summary>
-    [PrivateApi]
+    [PrivateApi("Was public till 14.7 but probably never communicated / used except internally. Made Private again in 15.06. Till then was AppState, not interface")]
     IAppState AppState { get; }
 
     #endregion

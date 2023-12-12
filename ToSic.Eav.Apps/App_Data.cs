@@ -35,22 +35,23 @@ partial class App
 
 
     /// <inheritdoc />
-    public IAppData Data => _data ??= BuildData();
+    public IAppData Data => _data ??= BuildData<AppDataWithCrud, IAppData>();
     private IAppData _data;
 
     [PrivateApi]
-    protected virtual IAppData BuildData() => Log.Func(l =>
+    protected TResult BuildData<TDataSource, TResult>() where TDataSource : TResult where TResult : class, IDataSource
     {
+        var l = Log.Fn<TResult>();
         if (ConfigurationProvider == null)
             throw new Exception("Cannot provide Data for the object App as crucial information is missing. " +
                                 "Please call InitData first to provide this data.");
 
         // Note: ModulePermissionController does not work when indexing, return false for search
         var initialSource = Services.DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: this, lookUp: ConfigurationProvider, showDrafts: AppDataConfig?.ShowDrafts));
-        var appDataWithCreate = Services.DataSourceFactory.Create<AppDataWithCrud>(attach: initialSource);
+        var appDataWithCreate = Services.DataSourceFactory.Create<TDataSource>(attach: initialSource) as TResult;
 
-        return appDataWithCreate;
-    });
+        return l.Return(appDataWithCreate);
+    }
 
     #endregion
 }
