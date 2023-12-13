@@ -162,16 +162,46 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     [PrivateApi("wip 15.06 - not yet public/documented")]
     object Get(string name);
 
-    [PrivateApi("wip 15.06 - not yet public/documented")]
+    /// <summary>
+    /// Get a value typed as object from this entity.
+    /// </summary>
+    /// <param name="name">the field/attribute name</param>
+    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="language">optional language eg `en-us`</param>
+    /// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// * Introduced as beta in 15.06, published in v17
+    /// * If you want to supply a `fallback` it will automatically use the generic version of this method
+    /// </remarks>
+    [PublicApi]
     object Get(string name, NoParamOrder noParamOrder = default, string language = default, string[] languages = default);
 
-
-    [PrivateApi("wip 15.06 - not yet public/documented")]
+    /// <summary>
+    /// Get a value in the expected type from this entity.
+    /// </summary>
+    /// <typeparam name="TValue">The type to try-convert the result to</typeparam>
+    /// <param name="name">the field/attribute name</param>
+    /// <returns></returns>
+    [PublicApi]
     TValue Get<TValue>(string name);
 
-    [PrivateApi("wip 15.06 - not yet public/documented")]
-    TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default,
-        string language = default, string[] languages = default);
+    /// <summary>
+    /// Get a value in the expected type from this entity - or a fallback value instead.
+    /// </summary>
+    /// <typeparam name="TValue">The type to try-convert the result to</typeparam>
+    /// <param name="name">the field/attribute name</param>
+    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="fallback">value to be returned if finding or conversion it didn't succeed</param>
+    /// <param name="language">optional language eg `en-us`</param>
+    /// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// * Introduced as beta in 15.06, published in v17
+    /// * If you want to supply a `fallback` it will automatically use the generic version of this method
+    /// </remarks>
+    [PublicApi]
+    TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default);
 
 
 
