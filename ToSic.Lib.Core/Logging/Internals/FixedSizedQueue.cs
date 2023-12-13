@@ -4,15 +4,10 @@ namespace ToSic.Lib.Logging.Internals;
 // code found here https://stackoverflow.com/questions/5852863/fixed-size-queue-which-automatically-dequeues-old-values-upon-new-enques
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class FixedSizedQueue<T> : ConcurrentQueue<T>
+public class FixedSizedQueue<T>(int size) : ConcurrentQueue<T>
 {
 
-    public int Size { get; }
-
-    public FixedSizedQueue(int size)
-    {
-        Size = size;
-    }
+    public int Size { get; } = size;
 
     //private readonly object _syncObject = new object();
     public new void Enqueue(T obj)

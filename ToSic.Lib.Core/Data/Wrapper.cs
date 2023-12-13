@@ -8,15 +8,11 @@ namespace ToSic.Lib.Data;
 /// <typeparam name="T"></typeparam>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [PrivateApi]
-public abstract class Wrapper<T>: IWrapper<T>
+public abstract class Wrapper<T>(T unwrappedContents) : IWrapper<T>
 {
-    private T _unwrappedContents;
-
     /// <inheritdoc />
-    public virtual T GetContents() => _unwrappedContents;
-
-    protected Wrapper(T contents) => _unwrappedContents = contents;
+    public virtual T GetContents() => unwrappedContents;
 
 
-    protected void Wrap(T contents) => _unwrappedContents = contents;
+    protected void Wrap(T contents) => unwrappedContents = contents;
 }

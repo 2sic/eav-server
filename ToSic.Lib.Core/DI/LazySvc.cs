@@ -50,7 +50,7 @@ public class LazySvc<TService>: ILazyLike<TService>, IHasLog, ILazyInitLog where
         _initCall?.Invoke(value);
         return value;
     });
-    private readonly GetOnce<TService> _valueGet = new GetOnce<TService>();
+    private readonly GetOnce<TService> _valueGet = new();
 
     public bool IsValueCreated => _valueGet.IsValueCreated;
 

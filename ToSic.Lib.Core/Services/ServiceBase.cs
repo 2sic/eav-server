@@ -12,15 +12,13 @@ namespace ToSic.Lib.Services;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class ServiceBase: IHasLog
+[method: PrivateApi]
+public abstract class ServiceBase(string logName) : IHasLog
 {
-    [PrivateApi]
-    protected ServiceBase(string logName) => Log = new Log(logName);
-
     /// <inheritdoc />
     [JsonIgnore]
     [IgnoreDataMember]
-    public ILog Log { get; }
+    public ILog Log { get; } = new Log(logName);
 
     /// <summary>
     /// Connect Log of all dependencies listed in <see cref="services"/>

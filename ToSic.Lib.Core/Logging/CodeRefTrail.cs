@@ -29,7 +29,7 @@ public class CodeRefTrail
         return this;
     }
 
-    public List<CodeRef> CodeRefs { get; } = new List<CodeRef>();
+    public List<CodeRef> CodeRefs { get; } = new();
 
     public override string ToString() => CodeRefs == null ? "" : string.Join("\n", CodeRefs.Select(cr => cr.ToString()));
 }

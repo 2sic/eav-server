@@ -10,12 +10,12 @@ internal class DependencyLogs
     /// <summary>
     /// Collects all objects which support `SetLog(Log)` for LazyInitLogs
     /// </summary>
-    internal List<ILazyInitLog> LazyInitLogs { get; } = new List<ILazyInitLog>();
+    internal List<ILazyInitLog> LazyInitLogs { get; } = new();
 
     /// <summary>
     /// Collects all objects which support `Init(Log)`
     /// </summary>
-    internal List<IHasLog> HasLogs { get; } = new List<IHasLog>();
+    internal List<IHasLog> HasLogs { get; } = new();
 
     /// <summary>
     /// Add objects to various queues to be auto-initialized when <see cref="SetLog"/> is called later on

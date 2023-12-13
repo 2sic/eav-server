@@ -19,7 +19,7 @@ public abstract class MyServicesBase: ILazyInitLog
     /// <summary>
     /// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
     /// </summary>
-    internal DependencyLogs DependencyLogs { get; } = new DependencyLogs();
+    internal DependencyLogs DependencyLogs { get; } = new();
 
     /// <summary>
     /// Add objects to various queues to be auto-initialized when <see cref="ServiceDependenciesExtensions.ConnectServices{TDependencies}"/> is called later on

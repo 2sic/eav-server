@@ -12,14 +12,11 @@ namespace ToSic.Lib.Services;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class HelperBase: IHasLog
+[method: PrivateApi]
+public abstract class HelperBase(ILog parentLog, string logName) : IHasLog
 {
-    [PrivateApi]
-    protected HelperBase(ILog parentLog, string logName) => Log = new Log(logName, parentLog);
-
     /// <inheritdoc />
     [JsonIgnore]
     [IgnoreDataMember]
-    public ILog Log { get; }
-        
+    public ILog Log { get; } = new Log(logName, parentLog);
 }

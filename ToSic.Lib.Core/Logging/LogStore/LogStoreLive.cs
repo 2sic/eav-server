@@ -23,8 +23,7 @@ public class LogStoreLive : ILogStoreLive
 
     /// <inheritdoc />
     public ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> Segments => StaticSegments;
-    private static readonly ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> StaticSegments 
-        = new ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>>();
+    private static readonly ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> StaticSegments = new();
 
     #region Pause
 

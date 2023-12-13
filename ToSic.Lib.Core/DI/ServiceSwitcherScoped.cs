@@ -7,9 +7,5 @@ namespace ToSic.Lib.DI;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ServiceSwitcherScoped<T> : ServiceSwitcher<T> where T : ISwitchableService
-{
-    public ServiceSwitcherScoped(IEnumerable<T> allServices) : base(allServices)
-    {
-    }
-}
+public class ServiceSwitcherScoped<T>(IEnumerable<T> allServices) : ServiceSwitcher<T>(allServices)
+    where T : ISwitchableService;

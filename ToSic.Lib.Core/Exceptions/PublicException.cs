@@ -6,10 +6,8 @@ namespace ToSic.Lib.Exceptions;
 /// Exception to throw in scenarios where it may be shown to any user, and we want to be sure the stack trace is secret.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PublicException: Exception
+public class PublicException(string message) : Exception(message)
 {
-    public PublicException(string message) : base(message) { }
-
     /// <summary>
     /// Don't display call stack as it's irrelevant
     /// </summary>

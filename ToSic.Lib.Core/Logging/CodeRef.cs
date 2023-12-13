@@ -53,7 +53,7 @@ public class CodeRef
     /// </summary>
     /// <returns>A new <see cref="CodeRef"/> object.</returns>
     // ReSharper disable ExplicitCallerInfoArgument
-    public static CodeRef Create(string cPath, string cName, int cLine) => new CodeRef(cPath, cName, cLine);
+    public static CodeRef Create(string cPath, string cName, int cLine) => new(cPath, cName, cLine);
     // ReSharper restore ExplicitCallerInfoArgument
 
     /// <summary>

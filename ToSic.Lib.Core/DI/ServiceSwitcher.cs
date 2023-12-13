@@ -8,21 +8,17 @@ using ToSic.Lib.Services;
 namespace ToSic.Lib.DI;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ServiceSwitcher<T>: ServiceBase, ILazyLike<T> where T : ISwitchableService
+public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{LogScopes.Lib}.SrvSwt"), ILazyLike<T>
+    where T : ISwitchableService
 {
     // TODO
     // - add to global log history when regenerating incl. choice
 
-    public ServiceSwitcher(IEnumerable<T> allServices) : base($"{LogScopes.Lib}.SrvSwt")
-    {
-        AllServices = allServices?.ToList();
-    }
-
-    public readonly List<T> AllServices;
+    public readonly List<T> AllServices = allServices?.ToList();
 
 
     public T Value => _preferredService.Get(FindServiceInSwitcher);
-    private readonly GetOnce<T> _preferredService = new GetOnce<T>();
+    private readonly GetOnce<T> _preferredService = new();
 
     private T FindServiceInSwitcher()
     {

@@ -12,10 +12,4 @@ namespace ToSic.Lib.DI;
 /// <typeparam name="TService"></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LazyImplementation<TService> : Lazy<TService>
-{
-    public LazyImplementation(IServiceProvider sp) : base(sp.Build<TService>)
-    {
-    }
-
-}
+public class LazyImplementation<TService>(IServiceProvider sp) : Lazy<TService>(sp.Build<TService>);

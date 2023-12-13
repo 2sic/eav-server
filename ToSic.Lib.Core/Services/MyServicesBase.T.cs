@@ -10,13 +10,9 @@ namespace ToSic.Lib.Services;
 /// <typeparam name="T"></typeparam>
 [PublicApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MyServicesBase<T>: MyServicesBase
+public class MyServicesBase<T>(T parentServices) : MyServicesBase
 {
-    public T ParentServices { get; }
-    public MyServicesBase(T parentServices)
-    {
-        // Note: don't add these to log queue, as they will be handled by the base class which needs these dependencies
-        ParentServices = parentServices;
-    }
+    public T ParentServices { get; } = parentServices;
 
+    // Note: don't add these to log queue, as they will be handled by the base class which needs these dependencies
 }

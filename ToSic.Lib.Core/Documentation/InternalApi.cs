@@ -9,8 +9,8 @@ namespace ToSic.Lib.Documentation;
 /// </summary>
 [PublicApi]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
-// ReSharper disable once InconsistentNaming
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+// ReSharper disable once InconsistentNaming
 public class InternalApi_DoNotUse_MayChangeWithoutNotice: Attribute
 {
     public InternalApi_DoNotUse_MayChangeWithoutNotice() { }

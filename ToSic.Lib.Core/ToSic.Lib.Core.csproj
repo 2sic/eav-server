@@ -15,7 +15,7 @@
     <FileVersion>0.0.1</FileVersion>
     <RootNamespace>ToSic.Lib</RootNamespace>
     <!-- end: Don't generate... -->
-    <LangVersion>default</LangVersion>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
