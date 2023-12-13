@@ -27,6 +27,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// An object OR a null - for example when retrieving the title and no title exists
     /// the object is string, int or even a EntityRelationship
     /// </returns>
+    [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
 #if NETFRAMEWORK
     new 
 #endif
@@ -43,6 +44,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// An object OR a null - for example when retrieving the title and no title exists
     /// the object is string, int or even a EntityRelationship
     /// </returns>
+    [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
 #if NETFRAMEWORK
     new
 #endif
@@ -159,7 +161,15 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
 
     #region Get (new replacement for Value - more consistent API)
 
-    [PrivateApi("wip 15.06 - not yet public/documented")]
+    /// <summary>
+    /// Get a value typed as object from this entity.
+    /// </summary>
+    /// <param name="name">the field/attribute name</param>
+    /// <remarks>
+    /// * Introduced as beta in 15.06, published in v17
+    /// * If you want to supply a `fallback` it will automatically use the generic version of this method
+    /// </remarks>
+    [PublicApi]
     object Get(string name);
 
     /// <summary>
@@ -183,6 +193,10 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// <typeparam name="TValue">The type to try-convert the result to</typeparam>
     /// <param name="name">the field/attribute name</param>
     /// <returns></returns>
+    /// <remarks>
+    /// * Introduced as beta in 15.06, published in v17
+    /// * If you want to supply a `fallback` it will automatically use the other version of this method
+    /// </remarks>
     [PublicApi]
     TValue Get<TValue>(string name);
 
