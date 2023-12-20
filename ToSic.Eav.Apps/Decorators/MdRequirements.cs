@@ -46,6 +46,19 @@ public class MdRequirements: ServiceBase, IRequirementsService
             : l.Return(notOk.Cast<RequirementStatus>().ToList(), $"a few not ok: {notOk.Count}");
     }
 
+    public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements)
+    {
+        var l = Log.Fn<List<RequirementStatus>>();
+        if (requirements.SafeNone()) return l.Return(new List<RequirementStatus>());
+
+        var reqStatus = requirements
+            .Select(r => VerifySysCap(r.NameId))
+            .Where(pair => !pair.IsEnabled)
+            .Select(pair => new RequirementStatus(false, pair.Aspect))
+            .ToList();
+        return l.Return(reqStatus, $"not ok count: {reqStatus.Count}");
+    }
+
     public (bool Approved, string FeatureId) RequirementMet(IEnumerable<IEntity> requirement)
     {
         var l = Log.Fn<(bool, string)>();
@@ -85,15 +98,10 @@ public class MdRequirements: ServiceBase, IRequirementsService
         return l.Return((false, reqStatus.Where(r => !r.IsOk).ToList()), "some didn't work");
     }
 
-    internal class ReqStatusPrivate: RequirementStatus
+    internal class ReqStatusPrivate(RequirementDecorator decorator, string nameId, bool approved, Aspect aspect = default)
+        : RequirementStatus(approved, aspect ?? SysData.Aspect.None.Clone(nameId: nameId))
     {
-        public ReqStatusPrivate(RequirementDecorator decorator, string nameId, bool approved, Aspect aspect = default)
-            : base(approved, aspect ?? SysData.Aspect.None.Clone(nameId: nameId))
-        {
-            Decorator = decorator;
-        }
-
-        public RequirementDecorator Decorator;
+        public RequirementDecorator Decorator = decorator;
     }
 
     internal ReqStatusPrivate RequirementMet(IEntity requirement)
@@ -118,10 +126,11 @@ public class MdRequirements: ServiceBase, IRequirementsService
         }
     }
 
-    private (bool, Aspect) VerifyPlatform(RequirementDecorator reqObj)
+    private (bool IsEnabled, Aspect Aspect) VerifyPlatform(RequirementDecorator reqObj) => VerifyPlatform(reqObj.Platform?.Trim());
+
+    private (bool IsEnabled, Aspect Aspect) VerifyPlatform(string platform)
     {
-        var platform = reqObj.Platform?.Trim();
-        var l = Log.Fn<(bool, Aspect)>($"name: {platform}");
+        var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {platform}");
         if (platform.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. platform");
 
         var enabled = _platInfo.Value.Name.EqualsInsensitive(platform);
@@ -129,10 +138,11 @@ public class MdRequirements: ServiceBase, IRequirementsService
     }
 
 
-    private (bool, Aspect) VerifyFeature(RequirementDecorator reqObj)
+    private (bool IsEnabled, Aspect Aspect) VerifyFeature(RequirementDecorator reqObj) => VerifyFeature(reqObj.Feature?.Trim());
+
+    private (bool IsEnabled, Aspect Aspect) VerifyFeature(string feat)
     {
-        var feat = reqObj.Feature?.Trim();
-        var l = Log.Fn<(bool, Aspect)>($"name: {feat}");
+        var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {feat}");
         if (feat.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. feature");
 
         var enabled = _featsService.Value.IsEnabled(feat);
@@ -141,10 +151,11 @@ public class MdRequirements: ServiceBase, IRequirementsService
     }
 
 
-    private (bool, Aspect) VerifySysCap(RequirementDecorator reqObj)
+    private (bool IsEnabled, Aspect Aspect) VerifySysCap(RequirementDecorator reqObj) => VerifySysCap(reqObj.SystemCapability?.Trim());
+
+    private (bool IsEnabled, Aspect Aspect) VerifySysCap(string sysCap)
     {
-        var sysCap = reqObj.SystemCapability?.Trim();
-        var l = Log.Fn<(bool, Aspect)>($"name: {sysCap}");
+        var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {sysCap}");
         if (sysCap.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. feature");
 
         var enabled = _sysCapSvc.Value.IsEnabled(sysCap);
@@ -153,17 +164,17 @@ public class MdRequirements: ServiceBase, IRequirementsService
     }
 
 
+    private (bool IsEnabled, Aspect Aspect) VerifyLicense(RequirementDecorator reqObj) => VerifyLicense(reqObj.License?.Trim());
 
-    private (bool, Aspect) VerifyLicense(RequirementDecorator reqObj)
+    private (bool IsEnabled, Aspect Aspect) VerifyLicense(string license)
     {
-        var license = reqObj.License?.Trim();
-        var l = Log.Fn<(bool, Aspect)>($"name: {license}");
+        var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {license}");
         if (license.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. license");
 
         Aspect GenAspectFromLicense() => Aspect.Custom(license, Guid.TryParse(license, out var lic) ? lic : Guid.Empty);
 
         // find license
-        var matchingLic = _licenseCatalog.TryGet(reqObj.License.Trim());
+        var matchingLic = _licenseCatalog.TryGet(license);
         if (matchingLic == null) return l.Return((false, GenAspectFromLicense()), "unknown license");
 
         var enabled = _licenseService.Value.IsEnabled(matchingLic);

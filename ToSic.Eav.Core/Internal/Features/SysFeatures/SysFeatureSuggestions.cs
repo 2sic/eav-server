@@ -5,27 +5,32 @@ namespace ToSic.Eav.Internal.Features;
 
 public static class SysFeatureSuggestions
 {
+    // Only DNN will ever need to install Cs8, so we'll keep this link here
+    private static readonly string LinkDnnCs8 = "https://r.2sxc.org/dnn-roslyn";
     private static readonly string CsDescription = "C# Language Support when Compiling Razor and other code for C# v";
 
     public static SysFeature CSharp06 { get; } = new(
         "CSharp06",
         new Guid("9057e8a4-342f-4574-9cdd-216bfbcc36cc"),
         "CSharp v6",
-        CsDescription + "6"
+        CsDescription + "6",
+        link: LinkDnnCs8
     );
 
     public static SysFeature CSharp07 { get; } = new(
         "CSharp07",
         new Guid("686f54b2-5464-4eed-8faf-c30a36899b42"),
         "CSharp v7 (7.3)",
-        CsDescription + "7"
+        CsDescription + "7",
+        link: LinkDnnCs8
     );
 
     public static SysFeature CSharp08 { get; } = new(
         "CSharp08",
         new Guid("a7a88eae-4ec0-4f87-8ab2-40e281031a34"),
         "CSharp v8",
-        CsDescription + "8"
+        CsDescription + "8",
+        link: LinkDnnCs8
     );
         
     public static SysFeature CSharp09 { get; } = new(

@@ -9,15 +9,11 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.SysData;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class SysFeature: Feature, IHasRawEntity<IRawEntity>
+public class SysFeature(string nameId, Guid guid, string name, string description = default, string link = default)
+    : Feature(EnsurePrefix(nameId), guid, name, isPublic: false, ui: false, description, FeatureSecurity.Unknown,
+        BuiltInFeatures.SystemEnabled), IHasRawEntity<IRawEntity>
 {
     public const string Prefix = "System";
-
-    public SysFeature(string nameId, Guid guid, string name, string description = default, string link = default)
-        : base(EnsurePrefix(nameId), guid, name, isPublic: false, ui: false, description, FeatureSecurity.Unknown, BuiltInFeatures.SystemEnabled)
-    {
-        _link = link;
-    }
 
     /// <summary>
     /// Clone constructor - optionally override some values
@@ -29,8 +25,7 @@ public class SysFeature: Feature, IHasRawEntity<IRawEntity>
     private static string EnsurePrefix(string original) 
         => original.IsEmptyOrWs() ? Prefix + "-Error-No-Name" : original.StartsWith(Prefix) ? original : $"{Prefix}-{original}";
 
-    public override string Link => _link.UseFallbackIfNoValue($"{Constants.GoUrl}/sysfeats");
-    private readonly string _link;
+    public override string Link => link.UseFallbackIfNoValue(Constants.GoUrlSysFeats);
 
     public override bool IsConfigurable => false;
 
