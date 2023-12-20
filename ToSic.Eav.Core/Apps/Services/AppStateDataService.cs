@@ -115,6 +115,6 @@ namespace ToSic.Eav.Apps.Services
         #endregion
 
 
-        IMetadataOf IMetadataOfSource.GetMetadataOf<T>(TargetTypes targetType, T key, string title = null) => _appState.GetMetadataOf(targetType, key, title);
+        IMetadataOf IMetadataOfSource.GetMetadataOf<T>(TargetTypes targetType, T key, string title) => _appState.GetMetadataOf(targetType, key, title);
     }
 }
