@@ -19,35 +19,28 @@ partial class AppState
     /// <summary>
     /// The builder must be a sub-class of AppState, so it can access its private properties
     /// </summary>
-    internal class AppStateBuilder : ServiceBase, IAppStateBuilder
+    internal class AppStateBuilder(IAppStates appStates) : ServiceBase("App.SttBld"), IAppStateBuilder
     {
-        private readonly IAppStates _appStates;
-
         #region Constructor / DI / Init (2 variants)
-
-        public AppStateBuilder(IAppStates appStates) : base("App.SttBld")
-        {
-            _appStates = appStates;
-        }
 
         public IAppStateBuilder Init(IAppStateCache appState)
         {
             _appState = appState;
-            _reader = _appStates.ToReader(AppState, Log);
+            _reader = appStates.ToReader(AppState, Log);
             return this;
         }
 
         public IAppStateBuilder InitForPreset()
         {
             _appState = new AppState(new ParentAppState(null, false, false), PresetIdentity, PresetName, Log);
-            _reader = _appStates.ToReader(AppState, Log);
+            _reader = appStates.ToReader(AppState, Log);
             return this;
         }
 
         public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog)
         {
             _appState = new AppState(parentApp, id, nameId, parentLog);
-            _reader = _appStates.ToReader(AppState, Log);
+            _reader = appStates.ToReader(AppState, Log);
             return this;
         }
 
@@ -131,7 +124,9 @@ partial class AppState
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
             l.A("Trying to load Name/Folder from App package entity");
-            var config = st.List.FirstOrDefault(md => md.Type.NameId == AppLoadConstants.TypeAppConfig);
+            // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
+            // so the OfType().OrderBy() should ensure that we really only take the oldest one.
+            var config = st.List.OfType(AppLoadConstants.TypeAppConfig).OrderBy(e => e.EntityId).FirstOrDefault();
             if (st.Name.IsEmptyOrWs()) st.Name = config?.Value<string>(AppLoadConstants.FieldName);
             if (st.Folder.IsEmptyOrWs()) st.Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
 
