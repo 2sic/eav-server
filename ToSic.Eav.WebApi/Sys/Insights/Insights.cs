@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Insights;
 using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.WebApi.Errors;
+using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
@@ -16,6 +19,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class InsightsControllerReal: ServiceBase
 {
+    private readonly IEnumerable<IInsightsProvider> _insightsProviders;
     private readonly GenWorkPlus<WorkEntities> _workEntities;
     private readonly LazySvc<InsightsDataSourceCache> _dsCache;
     private readonly LazySvc<LicenseCatalog> _licenseCatalog;
@@ -35,7 +39,8 @@ public partial class InsightsControllerReal: ServiceBase
         IUser user, 
         LightSpeedStats lightSpeedStats,
         Generator<JsonSerializer> jsonSerializer,
-        LazySvc<InsightsDataSourceCache> dsCache)
+        LazySvc<InsightsDataSourceCache> dsCache,
+        IEnumerable<IInsightsProvider> insightsProviders)
         : base("Api.SysIns")
     {
         ConnectServices(
@@ -49,7 +54,8 @@ public partial class InsightsControllerReal: ServiceBase
             _lightSpeedStats = lightSpeedStats,
             _jsonSerializer = jsonSerializer,
             _dsCache = dsCache,
-            AppCachePurger = appCachePurger
+            AppCachePurger = appCachePurger,
+            _insightsProviders = insightsProviders
         );
         _logHtml = new InsightsHtmlLog(_logStore);
     }
@@ -73,6 +79,5 @@ public partial class InsightsControllerReal: ServiceBase
     }
 
     private IAppState AppState(int appId) => _appStates.GetReader(appId);
-
 
 }

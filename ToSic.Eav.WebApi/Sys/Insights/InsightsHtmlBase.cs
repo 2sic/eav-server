@@ -2,13 +2,14 @@
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Web;
+using ToSic.Eav.Apps.Insights;
 using ToSic.Lib.Coding;
 using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsHtmlBase
+public class InsightsHtmlBase: IInsightsLinker
 {
     internal static string HtmlEncode(string text)
     {
@@ -43,6 +44,17 @@ internal class InsightsHtmlBase
         var link = UrlTo(view, appId, key: key, type: type, nameId: nameId, more: more);
         return Tag.A(label).Href(link);
     }
+
+    public string LinkTo(string name, NoParamOrder protector = default, string label = default, string parameters = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    string IInsightsLinker.LinkBack() => LinkBack().ToString();
+
+    string IInsightsLinker.LinkTo(string label, string view, int? appId, NoParamOrder noParamOrder, string key,
+        string type, string nameId, string more) =>
+        LinkTo(label, view, appId, noParamOrder, key, type, nameId, more).ToString();
 
     internal A LinkBack() => Tag.A( HtmlEncode("🔙 Back")).On("click", "history.back();");
 

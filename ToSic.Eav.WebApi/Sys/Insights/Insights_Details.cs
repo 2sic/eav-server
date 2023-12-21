@@ -1,9 +1,20 @@
-﻿using ToSic.Eav.Plumbing;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ToSic.Eav.Apps.Insights;
+using ToSic.Eav.Plumbing;
+using ToSic.Lib.Logging;
+using ToSic.Razor.Blade;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
 partial class InsightsControllerReal
 {
+    private IInsightsProvider FindProvider(string name)
+    {
+        var provider = _insightsProviders.FirstOrDefault(p => p.Name.EqualsInsensitive(name));
+        return provider;
+    }
+
     /// <summary>
     /// WIP
     /// Trying to simplify access to all the features of Insights
@@ -13,18 +24,48 @@ partial class InsightsControllerReal
     /// <returns></returns>
     public string Details(string view, int? appId, string key, int? position, string type, bool? toggle, string nameId, string filter)
     {
+        var l = Log.Fn<string>($"view:{view}, appId:{appId}, key:{key}, position:{position}, type:{type}, toggle:{toggle}, nameId:{nameId}, filter:{filter}");
         // This is really important
         ThrowIfNotSystemAdmin();
 
         view = view.ToLowerInvariant();
 
+        var provider = FindProvider(view);
+        if (provider != null)
+        {
+            l.A($"found provider {provider.Name}");
+            provider.SetContext(HtmlTableBuilder, appId, new Dictionary<string, object>
+            {
+                {"key", key},
+                {"position", position},
+                {"type", type},
+                {"toggle", toggle},
+                {"nameId", nameId},
+                {"filter", filter}
+            });
+            var result = provider.HtmlBody();
+
+            var wrapper = Tag.Custom("html",
+                Tag.Head(
+                    Tag.Custom("title", $"Insights: {provider.Name}")
+                ),
+                "\n",
+                Tag.H1(provider.Title),
+                "\n",
+                Tag.Custom("body",
+                    result
+                )
+            );
+            return l.ReturnAsOk(wrapper.ToString());
+        }
+
         if (view.EqualsInsensitive(nameof(Help))) return Help();
 
         if (view.EqualsInsensitive(nameof(Licenses))) return Licenses();
 
-        if (view.EqualsInsensitive(nameof(IsAlive))) return IsAlive();
+        //if (view.EqualsInsensitive(nameof(IsAlive))) return IsAlive();
 
-        if (view.EqualsInsensitive(nameof(GlobalTypes))) return GlobalTypes();
+        //if (view.EqualsInsensitive(nameof(GlobalTypes))) return GlobalTypes();
         if (view.EqualsInsensitive(nameof(GlobalTypesLog))) return GlobalTypesLog();
 
         if (view.EqualsInsensitive(nameof(Logs)))
@@ -41,7 +82,7 @@ partial class InsightsControllerReal
         if (view.EqualsInsensitive(nameof(Cache))) return Cache();
         if (view.EqualsInsensitive(nameof(LoadLog))) return LoadLog(appId);
         if (view.EqualsInsensitive(nameof(Stats))) return Stats(appId);
-        if (view.EqualsInsensitive(nameof(Types))) return Types(appId);
+        //if (view.EqualsInsensitive(nameof(Types))) return Types(appId);
         if (view.EqualsInsensitive(nameof(Purge))) return Purge(appId);
 
         // DataSourceCache

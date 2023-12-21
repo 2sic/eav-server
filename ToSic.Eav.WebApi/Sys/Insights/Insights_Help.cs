@@ -1,4 +1,6 @@
-﻿using ToSic.Lib.Coding;
+﻿using System.Linq;
+using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
@@ -18,43 +20,58 @@ partial class InsightsControllerReal
         const string attribMeta = "attributemetadata?appid=&type=&attribute=";
         const string attribPerms = "attributepermissions?appid=&type=&attribute=";
 
-        var result =
-                H1("2sxc Insights - Commands")
-                + P(
+        var providersWithCategory = _insightsProviders
+            .Where(p => !p.Name.EqualsInsensitive(nameof(Help)))
+            .Where(p => p.Category.HasValue())
+            .GroupBy(p => p.Category)
+            .OrderBy(g => g.Key)
+            .ToList();
+
+        var extras = providersWithCategory
+            .Select(g =>
+                H2(g.Key)
+                + Ol(g.Select(p => Li(LinkTo(p.Title, p.Name))))
+            )
+            .ToList();
+
+        var result = RawHtml(
+                H1("2sxc Insights - Commands"),
+                P(
                     "In most cases you'll just browse the cache and use the links from there. "
                     + "The other links are listed here so you know what they would be, "
                     + "in case something is preventing you from browsing the normal way. "
                     + "Read more about 2sxc insights in the "
                     + Tag.A("blog post").Href("https://2sxc.org/en/blog/post/using-2sxc-insights").Target("_blank")
-                )
+                ),
 
-                + H2("Most used")
-                + Ol(
+                H2("Most used"),
+                Ol(
                     Li(LinkTo("Help (this screen", nameof(Help))),
                     Li(LinkTo("All Logs", nameof(Logs))),
                     Li(LinkTo("In Memory Cache", nameof(Cache))),
                     Li(LinkTo("In Memory DataSource Cache", nameof(_dsCache.Value.DataSourceCache))),
-                    Li(LinkTo("ping the system / IsAlive", nameof(IsAlive)))
-                )
+                    Li(LinkTo("ping the system / IsAlive", ProviderName(nameof(InsightsIsAlive))))
+                ),
 
-                + H2("Global Data &amp; Types")
-                + Ol(
-                    Li(LinkTo("Global Types in cache", nameof(GlobalTypes))),
+                H2("Global Data &amp; Types"),
+                Ol(
+                    Li(LinkTo("Global Types in cache", ProviderName(nameof(InsightsGlobalTypes)))),
                     Li(LinkTo("Global Types loading log", nameof(GlobalTypesLog))),
                     Li(LinkTo("Global logs", nameof(Logs), key: Lib.Logging.LogNames.LogStoreStartUp)),
                     Li(LinkTo("Licenses &amp; Features", nameof(Licenses))),
                     Li(LinkTo("LightSpeed stats", nameof(LightSpeedStats)))
-                )
+                ),
+                RawHtml(extras.Cast<object>().ToArray()),
 
-                + H2("Manual links to access debug information")
-                + Ol(
+                H2("Manual links to access debug information"),
+                Ol(
                     Li("flush an app cache: " + DemoLink("purge?appid=")),
                     Li(
                         $"look at the load-log of an app-cache: <a href='{nameof(LoadLog)}?appid='>{nameof(LoadLog)}?appid=</a>"),
                     Li(
                         $"look at the cache-stats of an app: <a href='{nameof(Stats)}?appid='>{nameof(Stats)}?appid=</a>"),
                     Li(
-                        $"look at the content-types of an app: <a href='{nameof(Types)}?appid='>{nameof(Types)}?appid=</a>"),
+                        $"look at the content-types of an app: <a href='{ProviderName(nameof(InsightsTypes))}?appid='>{ProviderName(nameof(InsightsTypes))}?appid=</a>"),
                     Li("look at attributes of a type: " + DemoLink(typeattribs)),
                     Li("look at type metadata:" + DemoLink(typeMeta)),
                     Li("look at type permissions:" + DemoLink(typePerms)),
@@ -66,11 +83,14 @@ partial class InsightsControllerReal
                     Li("look at entity metadata using entity-id:" +
                        DemoLink($"{nameof(EntityMetadata)}?appid=&entity=")),
                     Li("look at entity permissions using entity-id:" +
-                       DemoLink($"{nameof(EntityPermissions)}?appid=&entity="))
-                )
+                       DemoLink($"{nameof(EntityPermissions)}?appid=&entity=")
+                    )
+                ))
             ;
         return l.ReturnAsOk(result.ToString());
     }
+
+    private static string ProviderName(string longName) => longName.Replace("Insights", "").Replace("Provider", "").Trim();
 
     internal A DemoLink(string labelAndLink) => HtmlTableBuilder.DemoLink(labelAndLink);
         

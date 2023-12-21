@@ -4,10 +4,11 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsHtmlTable: InsightsHtmlBase
+public class InsightsHtmlTable: InsightsHtmlBase
 {
     internal static IHtmlTag HeadFieldsLeft(params object[] fields) 
         => HeadFieldsImplementation(fields.Select(f => f is SpecialField fs ? fs : SpecialField.Left(f)).ToArray());
+
 
     internal static IHtmlTag HeadFields(params object[] fields)
         => HeadFieldsImplementation(fields);
@@ -38,7 +39,7 @@ internal class InsightsHtmlTable: InsightsHtmlBase
         }
 
         var contents = (data ?? "").ToString();
-        if (encode) contents = HtmlEncode(contents);
+        if (encode) contents = InsightsHtmlBase.HtmlEncode(contents);
         var cell = isHeader ? Th(contents) as IHtmlTag : Td(contents);
         if (special?.Styles != null)
             cell.Style(special.Styles);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.Insights;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Admin.Features;
@@ -82,6 +83,10 @@ public static class StartupWebApi
         // Insights, the most important core backend
         services.TryAddTransient<InsightsControllerReal>();
         services.TryAddTransient<InsightsDataSourceCache>();
+
+        services.AddTransient<IInsightsProvider, InsightsIsAlive>();
+        services.AddTransient<IInsightsProvider, InsightsTypes>();
+        services.AddTransient<IInsightsProvider, InsightsGlobalTypes>();
 
         return services;
     }

@@ -65,7 +65,7 @@ partial class InsightsControllerReal
                     app.InCache ? "yes" : "no",
                     app.Name,
                     app.Folder,
-                    $"{LinkTo("stats", nameof(Stats), app.Id)} | {LinkTo("load log", nameof(LoadLog), app.Id)} | {LinkTo("types", nameof(Types), app.Id)}",
+                    $"{LinkTo("stats", nameof(Stats), app.Id)} | {LinkTo("load log", nameof(LoadLog), app.Id)} | {LinkTo("types", ProviderName(nameof(InsightsTypes)), app.Id)}",
                     Tag.Details(
                         Summary("show actions"),
                         app.Id != Eav.Constants.PresetAppId ? LinkTo("purge", nameof(Purge), app.Id) : null
@@ -88,7 +88,7 @@ partial class InsightsControllerReal
             return message;
 
         Log.A($"debug app-internals for {appId}");
-        //var appRead = AppRt(appId);
+        
         var pkg = _appStates.GetCacheState(appId.Value);
 
         var msg = H1($"App internals for {appId}").ToString();
