@@ -2,74 +2,73 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSource.Query;
-using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.DataSource.Debug
+namespace ToSic.Eav.DataSource.Debug;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class DataSourceInfo
 {
-    public class DataSourceInfo
+    /// <summary>
+    /// DS Guid for identification
+    /// </summary>
+    public Guid Guid { get; }
+
+    /// <summary>
+    /// Internal type
+    /// </summary>
+    public string Type { get; }
+
+    /// <summary>
+    /// The resolved values used from the settings/config of the data source
+    /// </summary>
+    public IReadOnlyDictionary<string, string> Configuration { get; }
+
+    /// <summary>
+    /// Error state
+    /// </summary>
+    public bool Error { get; set; }
+
+    public Dictionary<string, object> Definition;
+
+    public List<OutDto> Out;
+
+    public DataSourceConnections Connections { get; set; }
+
+    public DataSourceInfo(IDataSource ds)
     {
-        /// <summary>
-        /// DS Guid for identification
-        /// </summary>
-        public Guid Guid { get; }
-
-        /// <summary>
-        /// Internal type
-        /// </summary>
-        public string Type { get; }
-
-        /// <summary>
-        /// The resolved values used from the settings/config of the data source
-        /// </summary>
-        public IReadOnlyDictionary<string, string> Configuration { get; }
-
-        /// <summary>
-        /// Error state
-        /// </summary>
-        public bool Error { get; set; }
-
-        public Dictionary<string, object> Definition;
-
-        public List<OutDto> Out;
-
-        public DataSourceConnections Connections { get; set; }
-
-        public DataSourceInfo(IDataSource ds)
+        try
         {
+            Guid = ds.Guid;
+            Type = ds.GetType().Name;
+            Connections = (ds as DataSourceBase)?.Connections;
+            Configuration = ds.Configuration.Values;
+
             try
             {
-                Guid = ds.Guid;
-                Type = ds.GetType().Name;
-                Connections = (ds as DataSourceBase)?.Connections;
-                Configuration = ds.Configuration.Values;
-
-                try
-                {
-                    Out = ds.Out.Select(o => new OutDto { Name = o.Key, Scope = o.Value.Scope })
-                        .ToList();
-                }
-                catch { /* ignore */ }
+                Out = ds.Out.Select(o => new OutDto { Name = o.Key, Scope = o.Value.Scope })
+                    .ToList();
             }
-            catch (Exception)
-            {
-                Error = true;
-            }
+            catch { /* ignore */ }
         }
-
-        public DataSourceInfo WithQueryDef(QueryDefinition queryDefinition)
+        catch (Exception)
         {
-            // find this item in the query def
-            var partDef = queryDefinition.Parts.FirstOrDefault(p => p.Guid == Guid);
-            if(partDef is null) return this;
-
-            Definition = partDef.AsDictionary();
-            return this;
+            Error = true;
         }
     }
 
-    public class OutDto
+    public DataSourceInfo WithQueryDef(QueryDefinition queryDefinition)
     {
-        public string Name { get; set; }
-        public string Scope { get; set; }
+        // find this item in the query def
+        var partDef = queryDefinition.Parts.FirstOrDefault(p => p.Guid == Guid);
+        if(partDef is null) return this;
+
+        Definition = partDef.AsDictionary();
+        return this;
     }
+}
+
+public class OutDto
+{
+    public string Name { get; set; }
+    public string Scope { get; set; }
 }

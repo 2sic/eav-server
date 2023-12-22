@@ -3,48 +3,47 @@ using System.Collections;
 using System.Collections.Generic;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data;
+
+/// <inheritdoc />
+/// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>
+[PrivateApi]
+internal class EntityEnumerator : IEnumerator<IEntity>
 {
-    /// <inheritdoc />
-    /// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>
-    [PrivateApi]
-    internal class EntityEnumerator : IEnumerator<IEntity>
+    private readonly List<IEntity> _entities;
+    private int _position = -1;
+
+    public EntityEnumerator(List<IEntity> entities)
     {
-        private readonly List<IEntity> _entities;
-        private int _position = -1;
+        _entities = entities;
+    }
 
-        public EntityEnumerator(List<IEntity> entities)
+    public void Dispose()
+    {
+    }
+
+    public bool MoveNext()
+    {
+        _position++;
+        return _position < _entities.Count;
+    }
+
+    public void Reset() => _position = -1;
+
+    public IEntity Current
+    {
+        get
         {
-            _entities = entities;
-        }
-
-        public void Dispose()
-        {
-        }
-
-        public bool MoveNext()
-        {
-            _position++;
-            return _position < _entities.Count;
-        }
-
-        public void Reset() => _position = -1;
-
-        public IEntity Current
-        {
-            get
+            try
             {
-                try
-                {
-                    return _entities[_position];
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    throw new InvalidOperationException();
-                }
+                return _entities[_position];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                throw new InvalidOperationException();
             }
         }
-
-        object IEnumerator.Current => Current;
     }
+
+    object IEnumerator.Current => Current;
 }

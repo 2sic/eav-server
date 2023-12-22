@@ -1,24 +1,23 @@
 ﻿using System.IO;
 using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.WebApi.Assets
+namespace ToSic.Eav.WebApi.Assets;
+
+public class FileUploadDto
 {
-    public class FileUploadDto
+    public string Name;
+    public Stream Stream;
+
+    [JsonIgnore]
+    public string Contents 
     {
-        public string Name;
-        public Stream Stream;
-
-        [JsonIgnore]
-        public string Contents 
+        get
         {
-            get
-            {
-                if (_contents != null) return _contents;
-                using (var fileStreamReader = new StreamReader(Stream)) _contents = fileStreamReader.ReadToEnd();
-                return _contents;
-            }
+            if (_contents != null) return _contents;
+            using (var fileStreamReader = new StreamReader(Stream)) _contents = fileStreamReader.ReadToEnd();
+            return _contents;
         }
-
-        private string _contents;
     }
+
+    private string _contents;
 }

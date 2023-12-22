@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Configuration;
 using ToSic.Eav.Serialization;
+using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Core.Tests.Configuration
 {
@@ -13,22 +13,22 @@ namespace ToSic.Eav.Core.Tests.Configuration
         [TestMethod]
         public void Features_Export_Test()
         {
-            var x = new FeatureListStored();
-            x.Features.Add(new FeatureConfig
+            var x = new FeatureStatesPersisted();
+            x.Features.Add(new FeatureStatePersisted
             {
                 Id = new Guid(),
                 Enabled = true,
                 Expires = DateTime.Today
             });
 
-            x.Features.Add(new FeatureConfig
+            x.Features.Add(new FeatureStatePersisted
             {
                 Id = new Guid(),
                 Enabled = false,
                 Expires = DateTime.Today
             });
 
-            x.Features.Add(new FeatureConfig
+            x.Features.Add(new FeatureStatePersisted
             {
                 Id = new Guid(),
                 Enabled = false,

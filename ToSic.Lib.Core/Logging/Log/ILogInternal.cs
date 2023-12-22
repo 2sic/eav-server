@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Lib.Logging
+namespace ToSic.Lib.Logging;
+
+internal interface ILogInternal
 {
-    internal interface ILogInternal
-    {
-        List<Entry> Entries { get; }
+    List<Entry> Entries { get; }
 
-        Entry CreateAndAdd(string message, CodeRef code, EntryOptions options = default);
+    Entry CreateAndAdd(string message, CodeRef code, EntryOptions options = default);
 
-    }
 }

@@ -1,9 +1,9 @@
-﻿namespace ToSic.Eav.Code.Infos
+﻿namespace ToSic.Eav.Code.Infos;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public enum CodeInfoTypes
 {
-    public enum CodeInfoTypes
-    {
-        Obsolete,
-        Recommendation,
-        Warning
-    }
+    Obsolete,
+    Recommendation,
+    Warning
 }

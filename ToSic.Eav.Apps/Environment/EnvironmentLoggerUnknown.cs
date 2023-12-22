@@ -1,16 +1,14 @@
 ﻿using System;
-using ToSic.Eav.Run;
-using ToSic.Eav.Run.Unknown;
+using ToSic.Eav.Internal.Unknown;
 
-namespace ToSic.Eav.Apps.Environment
+namespace ToSic.Eav.Apps.Environment;
+
+internal sealed class EnvironmentLoggerUnknown: IEnvironmentLogger, IIsUnknown
 {
-    public sealed class EnvironmentLoggerUnknown: IEnvironmentLogger, IIsUnknown
-    {
-        public EnvironmentLoggerUnknown(WarnUseOfUnknown<EnvironmentLoggerUnknown> _) { }
+    public EnvironmentLoggerUnknown(WarnUseOfUnknown<EnvironmentLoggerUnknown> _) { }
 
-        public void LogException(Exception ex)
-        {
-            // do nothing
-        }
+    public void LogException(Exception ex)
+    {
+        // do nothing
     }
 }

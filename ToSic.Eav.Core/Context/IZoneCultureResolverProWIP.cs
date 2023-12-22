@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Context
+namespace ToSic.Eav.Context;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public interface IZoneCultureResolverProWIP
 {
-    public interface IZoneCultureResolverProWIP
-    {
-        List<string> CultureCodesWithFallbacks { get; }
-    }
+    List<string> CultureCodesWithFallbacks { get; }
 }

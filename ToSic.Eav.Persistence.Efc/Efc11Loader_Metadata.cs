@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Diagnostics;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Lib.Logging;
-using AppState = ToSic.Eav.Apps.AppState;
 
-namespace ToSic.Eav.Persistence.Efc
+namespace ToSic.Eav.Persistence.Efc;
+
+partial class Efc11Loader
 {
-    public partial class Efc11Loader
+    private TimeSpan InitMetadataLists(IAppStateBuilder builder)
     {
-        private TimeSpan InitMetadataLists(AppState app)
-        {
-            var l = Log.Fn<TimeSpan>($"{(app as IAppIdentity).Show()}");
-            var sqlTime = Stopwatch.StartNew();
+        var l = Log.Fn<TimeSpan>($"{builder.AppState.Show()}");
+        var sqlTime = Stopwatch.StartNew();
 
-            app.InitMetadata();
-            sqlTime.Stop();
+        builder.InitMetadata();
+        sqlTime.Stop();
 
-            return l.Return(sqlTime.Elapsed);
-        }
+        return l.Return(sqlTime.Elapsed);
     }
 }

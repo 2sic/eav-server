@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Security
+namespace ToSic.Eav.Security;
+
+public interface IPermissionCheck: IHasLog
 {
-    public interface IPermissionCheck: IHasLog
-    {
-        bool HasPermissions { get; }
+    bool HasPermissions { get; }
 
 
-        bool UserMay(List<Grants> grants);
+    bool UserMay(List<Grants> grants);
 
-        Conditions GrantedBecause { get; }
-    }
+    Conditions GrantedBecause { get; }
 }

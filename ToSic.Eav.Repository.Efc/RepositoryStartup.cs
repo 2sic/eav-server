@@ -1,39 +1,38 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.Repository.Efc
-{
-    public static class StartupRepositoryEfc
-    {
-        public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services)
-        {
-            services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
+namespace ToSic.Eav.Repository.Efc;
 
-            // transient lifetime is important, otherwise 2-3x slower!
-            // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public static class StartupRepositoryEfc
+{
+    public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services)
+    {
+        services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
+
+        // transient lifetime is important, otherwise 2-3x slower!
+        // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
 #if NETFRAMEWORK
             //services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient);
             services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
 #else
-            // DbContextOptions optionsLifetime is Singleton (in efcore 3.1+, aka oqtane) to fix issue
-            // "Cannot resolve 'ToSic.Eav.Repositories.IRepositoryLoader' from root provider because it
-            // requires scoped service 'Microsoft.EntityFrameworkCore.DbContextOptions`1[ToSic.Eav.Persistence.Efc.Models.EavDbContext]'"
-            // Transient, or Scoped for optionsLifetime is not working.
-            services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
+        // DbContextOptions optionsLifetime is Singleton (in efcore 3.1+, aka oqtane) to fix issue
+        // "Cannot resolve 'ToSic.Eav.Repositories.IRepositoryLoader' from root provider because it
+        // requires scoped service 'Microsoft.EntityFrameworkCore.DbContextOptions`1[ToSic.Eav.Persistence.Efc.Models.EavDbContext]'"
+        // Transient, or Scoped for optionsLifetime is not working.
+        services.AddDbContext<EavDbContext>(contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
 #endif
 
-            // Inner loader for use of the main RepositoryLoader
-            services.TryAddTransient<Efc11Loader, Efc11Loader>();
-            services.TryAddTransient<IRepositoryLoader, EfcRepositoryLoader>();
+        // Inner loader for use of the main RepositoryLoader
+        services.TryAddTransient<Efc11Loader>();
+        services.TryAddTransient<IRepositoryLoader, EfcRepositoryLoader>();
 
-            services.TryAddTransient<DbDataController>();
+        services.TryAddTransient<DbDataController>();
 
-            return services;
-        }
+        return services;
     }
 }

@@ -1,5 +1,4 @@
 ﻿#if NETFRAMEWORK
-using System;
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
@@ -19,8 +18,9 @@ namespace ToSic.Eav.Interfaces
     /// versioning, publishing etc.
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public partial interface IEntity: IEntityLight, 
-        IPublish<Data.IEntity>, // needed to disable this for compatibility with entities - but must be typed to the new interface
+        IPublish, // needed to disable this for compatibility with entities - but must be typed to the new interface
         IHasPermissions
     {
         /// <summary>
@@ -33,6 +33,7 @@ namespace ToSic.Eav.Interfaces
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
+        [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")] 
         object GetBestValue(string attributeName, string[] languages);
 
 
@@ -47,6 +48,7 @@ namespace ToSic.Eav.Interfaces
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
+        [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
         T GetBestValue<T>(string attributeName, string[] languages);
 
 

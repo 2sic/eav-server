@@ -24,7 +24,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
 
 
-        private DimensionBuilder LanguageBuilder => _langBuilder ?? (_langBuilder = new DimensionBuilder());
+        private DimensionBuilder LanguageBuilder => _langBuilder ??= new DimensionBuilder();
         private DimensionBuilder _langBuilder;
         private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageBuilder.CreateFrom(orig, readOnly);
 
@@ -148,7 +148,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             { "Image", "file:403" }
         }, titleField: Attributes.TitleNiceName);
 
-        private Entity ProductEntityEn => _prodEn ?? (_prodEn = GetProdEn());
+        private Entity ProductEntityEn => _prodEn ??= GetProdEn();
         private Entity _prodEn;
         private Entity GetProdEn() 
         {
@@ -175,7 +175,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
 
 
-        private Entity ProductEntityMl => _prodMl ?? (_prodMl = GetProductEntityMl());
+        private Entity ProductEntityMl => _prodMl ??= GetProductEntityMl();
         private Entity _prodMl;
 
         private Entity GetProductEntityMl()

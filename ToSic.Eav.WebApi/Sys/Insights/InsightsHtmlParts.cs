@@ -1,22 +1,22 @@
 ﻿using ToSic.Razor.Blade;
 
-namespace ToSic.Eav.WebApi.Sys.Insights
+namespace ToSic.Eav.WebApi.Sys.Insights;
+
+internal class InsightsHtmlParts
 {
-    internal class InsightsHtmlParts
-    {
-        #region Table / Sort
+    #region Table / Sort
 
-        internal const string JsTableSortCdn = "https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/";
+    internal const string JsTableSortCdn = "https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/";
 
-        internal static IHtmlTag JsTableSort(string id = "table")
-            => Tag.Script().Src(JsTableSortCdn + "tablesort.min.js")
-               + Tag.Script().Src(JsTableSortCdn + "sorts/tablesort.number.min.js")
-               + Tag.Script($"new Tablesort(document.getElementById('{id}'));") as IHtmlTag;
+    internal static IHtmlTag JsTableSort(string id = "table")
+        => Tag.Script().Src(JsTableSortCdn + "tablesort.min.js")
+           + Tag.Script().Src(JsTableSortCdn + "sorts/tablesort.number.min.js")
+           + Tag.Script($"new Tablesort(document.getElementById('{id}'));") as IHtmlTag;
 
-        #endregion
+    #endregion
 
-        internal static string PageStyles() =>
-    @"
+    internal static string PageStyles() =>
+        @"
 <style>
 .logIds {
     color: darkgray;
@@ -166,5 +166,4 @@ span.log-line:hover {
 }
 
 </style>";
-    }
 }

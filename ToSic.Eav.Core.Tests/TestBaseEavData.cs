@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Core.Tests
 {
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Core.Tests
             this EntityBuilder entityBuilder,
             int appId,
             IContentType contentType,
-            string noParamOrder = Eav.Parameters.Protector,
+            NoParamOrder noParamOrder = default,
             Dictionary<string, object> values = default,
             Dictionary<string, IAttribute> typedValues = default,
             int entityId = default,

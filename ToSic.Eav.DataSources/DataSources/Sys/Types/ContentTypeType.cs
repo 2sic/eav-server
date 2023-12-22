@@ -1,16 +1,13 @@
-﻿namespace ToSic.Eav.DataSources.Sys.Types
+﻿namespace ToSic.Eav.DataSources.Sys.Types;
+
+internal enum ContentTypeType
 {
-    internal enum ContentTypeType
-    {
-        Name,
-        StaticName,
-        Scope,
-        Description,
-        IsDynamic,
-        AttributesCount,
-        RepositoryType,
-        RepositoryAddress
-    }
-
-
+    Name,
+    StaticName,
+    Scope,
+    Description,
+    IsDynamic,
+    AttributesCount,
+    RepositoryType,
+    RepositoryAddress
 }

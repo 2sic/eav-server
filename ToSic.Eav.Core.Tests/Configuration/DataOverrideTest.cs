@@ -36,7 +36,7 @@ namespace ToSic.Eav.Core.Tests.Configuration
         private void TestWebResourcesExistsOnceAndMayHaveValue(Guid guid, bool expected)
         {
             var appStates = GetService<IAppStates>();
-            var primaryApp = appStates.GetPresetApp();
+            var primaryApp = appStates.GetPresetReader();
 
             // Verify there is only one with this guid
             var entities = primaryApp.List.Where(e => e.EntityGuid == guid);

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Configuration;
+using ToSic.Eav.Internal.Features;
 
-namespace ToSic.Eav.WebApi.Admin.Features
+namespace ToSic.Eav.WebApi.Admin.Features;
+
+public interface IFeatureController
 {
-    public interface IFeatureController
-    {
-        bool SaveNew(List<FeatureManagementChange> changes);
-    }
+    bool SaveNew(List<FeatureManagementChange> changes);
 }

@@ -1,8 +1,10 @@
-﻿namespace ToSic.Eav.Apps.Decorators
+﻿using ToSic.Eav.Apps.Services;
+
+namespace ToSic.Eav.Apps.Decorators;
+
+public static class AppStateDecoratorExtensions
 {
-    public static class AppStateDecoratorExtensions
-    {
-        public static bool IsShared(this AppState appState)
-            => appState.Metadata.HasType(Metadata.Decorators.IsSharedDecoratorId);
-    }
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public static bool IsShared(this IAppDataAndMetadataService appState)
+        => appState.Metadata.HasType(Metadata.Decorators.IsSharedDecoratorId);
 }

@@ -1,11 +1,17 @@
-﻿using System;
+﻿using ToSic.Eav.SysData;
 
-namespace ToSic.Eav.WebApi.Context
+namespace ToSic.Eav.WebApi.Context;
+
+public class FeatureDto
 {
-    public class FeatureDto
+    public FeatureDto(FeatureState state)
     {
-        public string NameId { get; set; }
-        public bool Enabled { get; set; }
-        public string Name { get; set; }
+        NameId = state.NameId;
+        IsEnabled = state.IsEnabled;
+        Name = state.Aspect.Name;
     }
+
+    public string NameId { get; }
+    public bool IsEnabled { get; }
+    public string Name { get; }
 }

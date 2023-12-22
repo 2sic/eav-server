@@ -1,20 +1,20 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Lib.Data
+namespace ToSic.Lib.Data;
+
+/// <summary>
+/// This is for any object which does something, but caries with it an original object which is the type
+/// of the hosting system (environment)
+/// </summary>
+/// <typeparam name="T"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[PrivateApi]
+public interface IWrapper<out T>
 {
     /// <summary>
-    /// This is for any object which does something, but caries with it an original object which is the type
-    /// of the hosting system (environment)
+    /// The underlying, original object. Helpful for external objects which need the real, underlying item.
+    /// <br/>
+    /// Avoid using this property for use inside the real object, but create another property for this, so it's easier to spot dependencies.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    [PrivateApi("probably move to Lib soon")]
-    public interface IWrapper<out T>
-    {
-        /// <summary>
-        /// The underlying, original object. Helpful for external objects which need the real, underlying item.
-        /// <br/>
-        /// Avoid using this property for use inside the real object, but create another property for this, so it's easier to spot dependencies.
-        /// </summary>
-        T GetContents();
-    }
+    T GetContents();
 }

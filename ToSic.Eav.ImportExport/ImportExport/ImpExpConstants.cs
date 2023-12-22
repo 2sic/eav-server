@@ -1,15 +1,15 @@
-﻿namespace ToSic.Eav.ImportExport
+﻿namespace ToSic.Eav.ImportExport;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class ImpExpConstants
 {
-    public class ImpExpConstants
+    // ReSharper disable InconsistentNaming
+    public enum Files
     {
-        // ReSharper disable InconsistentNaming
-        public enum Files
-        {
-            json
-        }
-        // ReSharper restore InconsistentNaming
-
-        public static string Extension(Files ext) => $".{ext}";
-
+        json
     }
+    // ReSharper restore InconsistentNaming
+
+    public static string Extension(Files ext) => $".{ext}";
+
 }

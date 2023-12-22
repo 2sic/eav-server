@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.Configuration.Licenses;
+using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.Configuration

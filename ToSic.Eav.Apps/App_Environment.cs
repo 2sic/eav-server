@@ -3,21 +3,20 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Apps
+namespace ToSic.Eav.Apps;
+
+partial class App
 {
-    public partial class App
-    {
-        /// <inheritdoc />
-        [PrivateApi]
-        public ISite Site { get; protected set; }
+    /// <inheritdoc />
+    [PrivateApi]
+    public ISite Site { get; protected set; }
 
 
-        #region Paths
+    #region Paths
 
-        [PrivateApi]
-        public string PhysicalPath => AppState.GetPiggyBack(nameof(PhysicalPath), () => Path.Combine(Site.AppsRootPhysicalFull, Folder));
+    [PrivateApi]
+    public string PhysicalPath => AppStateInt.GetPiggyBack(nameof(PhysicalPath), () => Path.Combine(Site.AppsRootPhysicalFull, Folder));
 
-        #endregion
+    #endregion
 
-    }
 }

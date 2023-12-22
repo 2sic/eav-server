@@ -1,8 +1,6 @@
-﻿namespace ToSic.Eav.DataSources.Sys.Types
-{
+﻿namespace ToSic.Eav.DataSources.Sys.Types;
 
-    internal enum StreamsType
-    {
-        Name
-    }
+internal enum StreamsType
+{
+    Name
 }

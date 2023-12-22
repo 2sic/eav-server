@@ -1,22 +1,22 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Lib.Logging
+namespace ToSic.Lib.Logging;
+
+/// <summary>
+/// Interface to add <see cref="ILog"/>s to the log storage.
+/// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public interface ILogStore
 {
     /// <summary>
-    /// Interface to add <see cref="ILog"/>s to the log storage.
+    /// Add a log to the current history.
     /// </summary>
-    [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    public interface ILogStore
-    {
-        /// <summary>
-        /// Add a log to the current history.
-        /// </summary>
-        /// <param name="segment">Segment name, like `webapi` or `module`</param>
-        /// <param name="log"></param>
-        LogStoreEntry Add(string segment, ILog log);
+    /// <param name="segment">Segment name, like `webapi` or `module`</param>
+    /// <param name="log"></param>
+    LogStoreEntry Add(string segment, ILog log);
 
-        [PrivateApi]
-        LogStoreEntry ForceAdd(string key, ILog log);
+    [PrivateApi]
+    LogStoreEntry ForceAdd(string key, ILog log);
 
-    }
 }

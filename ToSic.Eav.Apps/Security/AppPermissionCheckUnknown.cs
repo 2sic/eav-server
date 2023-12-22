@@ -1,11 +1,9 @@
-﻿using ToSic.Eav.Run;
-using ToSic.Eav.Run.Unknown;
+﻿using ToSic.Eav.Internal.Unknown;
 
-namespace ToSic.Eav.Apps.Security
+namespace ToSic.Eav.Apps.Security;
+
+internal sealed class AppPermissionCheckUnknown: AppPermissionCheck, IIsUnknown
 {
-    public sealed class AppPermissionCheckUnknown: AppPermissionCheck, IIsUnknown
-    {
-        public AppPermissionCheckUnknown(IAppStates appStates, MyServices services, WarnUseOfUnknown<AppPermissionCheckUnknown> _) 
-            : base(appStates, services) { }
-    }
+    public AppPermissionCheckUnknown(IAppStates appStates, MyServices services, WarnUseOfUnknown<AppPermissionCheckUnknown> _) 
+        : base(appStates, services) { }
 }

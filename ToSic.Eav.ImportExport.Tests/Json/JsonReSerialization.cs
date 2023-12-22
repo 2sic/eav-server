@@ -1,10 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
-using ToSic.Lib.Logging;
+using ToSic.Testing.Shared;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.json
@@ -68,7 +67,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         private void Test_DoubleExportAllOfAnApp(int appId)
         {
             var loader = _loader; 
-            var app = loader.AppState(appId, false);
+            var app = loader.AppStateReaderRawTA(appId);
             var exBuilder = _jsonSerializer.SetApp(app);
 
             var maxCount = 1000;

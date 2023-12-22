@@ -1,14 +1,13 @@
-﻿namespace ToSic.Eav.Context
+﻿namespace ToSic.Eav.Context;
+
+internal class ContextResolverUserPermissions: IContextResolverUserPermissions
 {
-    public class ContextResolverUserPermissions: IContextResolverUserPermissions
+    private readonly IContextOfUserPermissions _userPermissions;
+
+    public ContextResolverUserPermissions(IContextOfUserPermissions userPermissions)
     {
-        private readonly IContextOfUserPermissions _userPermissions;
-
-        public ContextResolverUserPermissions(IContextOfUserPermissions userPermissions)
-        {
-            _userPermissions = userPermissions;
-        }
-
-        public IContextOfUserPermissions UserPermissions() => _userPermissions;
+        _userPermissions = userPermissions;
     }
+
+    public IContextOfUserPermissions UserPermissions() => _userPermissions;
 }

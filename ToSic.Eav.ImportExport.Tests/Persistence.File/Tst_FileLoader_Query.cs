@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Configuration;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;

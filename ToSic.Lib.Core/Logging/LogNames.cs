@@ -1,8 +1,8 @@
-﻿namespace ToSic.Lib.Logging
+﻿namespace ToSic.Lib.Logging;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class LogNames
 {
-    public class LogNames
-    {
-        public static string LogStoreStartUp = "global-start-up";
-        public static string LogStoreInstallation = "global-installation";
-    }
+    public static string LogStoreStartUp = "global-start-up";
+    public static string LogStoreInstallation = "global-installation";
 }

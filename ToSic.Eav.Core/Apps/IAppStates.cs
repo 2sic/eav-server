@@ -1,56 +1,59 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps
+namespace ToSic.Eav.Apps;
+
+[PrivateApi("WIP")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public interface IAppStates
 {
-    [PrivateApi("WIP")]
-    public interface IAppStates
-    {
-        #region Get an App
+    #region Get an App
 
-        /// <summary>
-        /// Retrieve an app from the cache
-        /// </summary>
-        /// <param name="app">App identifier.</param>
-        /// <returns>The <see cref="AppState"/> of the app.</returns>
-        AppState Get(IAppIdentity app);
+    /// <summary>
+    /// Retrieve an app from the cache
+    /// </summary>
+    /// <param name="app">App identifier.</param>
+    IAppStateCache Get(IAppIdentity app);
 
-        /// <summary>
-        /// Retrieve an app from the cache
-        /// </summary>
-        /// <param name="appId">App id if zone unknown.</param>
-        /// <returns>The <see cref="AppState"/> of the app.</returns>
-        AppState Get(int appId);
+    /// <summary>
+    /// Retrieve an app from the cache
+    /// </summary>
+    /// <param name="appId">App id if zone unknown.</param>
+    IAppStateCache GetCacheState(int appId);
 
-        #endregion
+    IAppStateInternal ToReader(IAppStateCache state, ILog log = default);
 
-        #region Look up IDs
+    #endregion
 
-        IAppIdentity IdentityOfApp(int appId);
+    #region Look up IDs
 
-        IAppIdentity IdentityOfPrimary(int zoneId);
-        IAppIdentity IdentityOfDefault(int zoneId);
+    IAppIdentityPure IdentityOfApp(int appId);
 
-        string AppIdentifier(int zoneId, int appId);
+    IAppIdentityPure IdentityOfPrimary(int zoneId);
 
-        #endregion
+    IAppIdentityPure IdentityOfDefault(int zoneId);
 
-        #region Zone Stuff
+    string AppIdentifier(int zoneId, int appId);
 
-        int DefaultAppId(int zoneId);
+    #endregion
 
-        int PrimaryAppId(int zoneId);
+    #region Zone Stuff
+
+    int DefaultAppId(int zoneId);
+
+    int PrimaryAppId(int zoneId);
 
 
-        IDictionary<int, string> Apps(int zoneId);
+    IDictionary<int, string> Apps(int zoneId);
 
-        List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false);
+    List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false);
 
-        IReadOnlyDictionary<int, Zone> Zones { get; }
+    IReadOnlyDictionary<int, Zone> Zones { get; }
 
-        #endregion
+    #endregion
 
-        bool IsCached(IAppIdentity appId);
-    }
+    bool IsCached(IAppIdentity appId);
 }

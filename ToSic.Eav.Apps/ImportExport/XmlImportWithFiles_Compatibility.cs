@@ -9,33 +9,31 @@ using ToSic.Eav.Persistence.Logging;
 // ...and these are real errors which should blow
 // ReSharper disable PossibleNullReferenceException
 
-namespace ToSic.Eav.Apps.ImportExport
+namespace ToSic.Eav.Apps.ImportExport;
+
+partial class XmlImportWithFiles
 {
-    public partial class XmlImportWithFiles
+    public bool IsCompatible(XDocument doc)
     {
-		public bool IsCompatible(XDocument doc)
-		{
-		    Log.A("is compatible check");
-		    var rns = doc.Elements(XmlConstants.RootNode);
-		    var rn = doc.Element(XmlConstants.RootNode);
-			// Return if no Root Node "SexyContent"
-			if (!rns.Any() || rn == null)
-			{
-				Messages.Add(new Message("The XML file you specified does not seem to be a 2sxc/EAV Export.", Message.MessageTypes.Error));
-				return false;
-			}
-			// Return if Version does not match
-			if (rn.Attributes().All(a => a.Name != XmlConstants.MinEnvVersion) || new Version(rn.Attribute(XmlConstants.MinEnvVersion).Value) > new Version(base.Services.Environment.ModuleVersion))
-			{
-				Messages.Add(new Message("This template or app requires version " + rn.Attribute(XmlConstants.MinEnvVersion).Value + " in order to work, you have version " + base.Services.Environment.ModuleVersion + " installed.", Message.MessageTypes.Error));
-				return false;
-			}
+        Log.A("is compatible check");
+        var rns = doc.Elements(XmlConstants.RootNode);
+        var rn = doc.Element(XmlConstants.RootNode);
+        // Return if no Root Node "SexyContent"
+        if (!rns.Any() || rn == null)
+        {
+            Messages.Add(new Message("The XML file you specified does not seem to be a 2sxc/EAV Export.", Message.MessageTypes.Error));
+            return false;
+        }
+        // Return if Version does not match
+        if (rn.Attributes().All(a => a.Name != XmlConstants.MinEnvVersion) || new Version(rn.Attribute(XmlConstants.MinEnvVersion).Value) > new Version(base.Services.Environment.ModuleVersion))
+        {
+            Messages.Add(new Message("This template or app requires version " + rn.Attribute(XmlConstants.MinEnvVersion).Value + " in order to work, you have version " + base.Services.Environment.ModuleVersion + " installed.", Message.MessageTypes.Error));
+            return false;
+        }
 
-		    Log.A("is compatible completed");
-            return true;
-		}
+        Log.A("is compatible completed");
+        return true;
+    }
 
-
-	}
 
 }

@@ -1,8 +1,7 @@
-﻿namespace ToSic.Eav.DataSources
+﻿namespace ToSic.Eav.DataSources;
+
+internal class LanguageToField
 {
-    internal class LanguageToField
-    {
-        public string Language;
-        public string OriginalField;
-    }
+    public string Language;
+    public string OriginalField;
 }

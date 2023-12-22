@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace ToSic.Eav.WebApi.Dto
+namespace ToSic.Eav.WebApi.Dto;
+
+public class IdentifierDto
 {
-    public class IdentifierDto
-    {
-        public int Id;
-        public Guid Guid;
-    }
+    public int Id;
+    public Guid Guid;
 }

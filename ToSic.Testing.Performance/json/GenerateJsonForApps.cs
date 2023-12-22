@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Lib.Logging;
+using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Persistence.Efc.Tests;
-using AppState = ToSic.Eav.Apps.AppState;
+using ToSic.Testing.Shared;
 
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -34,16 +34,16 @@ namespace ToSic.Testing.Performance.json
 
         public void LoadApp()
         {
-            Package = Loader.AppState(TestAppId, false);   
+            AppStateCacheRaw = Loader.AppStateReaderRawTA(TestAppId);   
         }
 
-        internal AppState Package;
+        internal IAppState AppStateCacheRaw;
         internal List<string> EntitiesAsJson;
 
         public int SerializeAll(int repeat)
         {
             var count = 0;
-            var ser = GetService<JsonSerializer>().SetApp(Package);
+            var ser = GetService<JsonSerializer>().SetApp(AppStateCacheRaw);
             for (var i = 0; i < repeat; i++)
             {
                 var ents = ser.Deserialize(EntitiesAsJson);
@@ -60,7 +60,7 @@ namespace ToSic.Testing.Performance.json
         /// <param name="appid"></param>
         private void GenerateJsonForAllEntitiesOfApp(int appid)
         {
-            var package = Loader.AppState(appid, false);
+            var package = Loader.AppStateReaderRawTA(appid);
             var ser = GetService<JsonSerializer>().SetApp(package);
             var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 

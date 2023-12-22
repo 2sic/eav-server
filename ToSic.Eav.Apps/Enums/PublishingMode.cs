@@ -1,9 +1,9 @@
-﻿namespace ToSic.Eav.Apps.Enums
+﻿namespace ToSic.Eav.Apps.Enums;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public enum PublishingMode
 {
-    public enum PublishingMode
-    {
-        DraftOptional,
-        DraftRequired,
-        DraftForbidden,
-    }
+    DraftOptional,
+    DraftRequired,
+    DraftForbidden,
 }

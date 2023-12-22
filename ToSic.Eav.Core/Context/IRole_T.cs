@@ -1,10 +1,8 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Lib.Data;
+﻿using ToSic.Lib.Data;
 
-namespace ToSic.Eav.Context
+namespace ToSic.Eav.Context;
+
+public interface IRole<out T>: IRole, IWrapper<T>
 {
-    public interface IRole<out T>: IRole, IWrapper<T>
-    {
 
-    }
 }

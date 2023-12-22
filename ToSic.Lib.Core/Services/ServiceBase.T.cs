@@ -1,32 +1,32 @@
-﻿namespace ToSic.Lib.Services
+﻿namespace ToSic.Lib.Services;
+
+/// <summary>
+/// Base class for any service which expects a Dependencies class
+/// </summary>
+/// <typeparam name="TMyServices"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : MyServicesBase
 {
     /// <summary>
-    /// Base class for any service which expects a Dependencies class
+    /// Constructor for normal case, with services
     /// </summary>
-    /// <typeparam name="TMyServices"></typeparam>
-    public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : MyServicesBase
+    /// <param name="services"></param>
+    /// <param name="logName"></param>
+    protected ServiceBase(TMyServices services, string logName) : base(logName)
     {
-        /// <summary>
-        /// Constructor for normal case, with services
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="logName"></param>
-        protected ServiceBase(TMyServices services, string logName) : base(logName)
-        {
-            Services = services.ConnectServices(Log);
-        }
-
-        /// <summary>
-        /// Constructor for passing on service dependencies which are extended by a inheriting dependencies.
-        /// </summary>
-        /// <param name="extendedServices"></param>
-        /// <param name="logName"></param>
-        protected ServiceBase(MyServicesBase<TMyServices> extendedServices, string logName) : this(extendedServices.ParentServices, logName)
-        {
-            // Ensure the extended copy also has SetLog run
-            extendedServices.ConnectServices(Log);
-        }
-
-        protected readonly TMyServices Services;
+        Services = services.ConnectServices(Log);
     }
+
+    /// <summary>
+    /// Constructor for passing on service dependencies which are extended by a inheriting dependencies.
+    /// </summary>
+    /// <param name="extendedServices"></param>
+    /// <param name="logName"></param>
+    protected ServiceBase(MyServicesBase<TMyServices> extendedServices, string logName) : this(extendedServices.ParentServices, logName)
+    {
+        // Ensure the extended copy also has SetLog run
+        extendedServices.ConnectServices(Log);
+    }
+
+    protected readonly TMyServices Services;
 }

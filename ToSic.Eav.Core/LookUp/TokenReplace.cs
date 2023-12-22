@@ -3,21 +3,22 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.LookUp
+namespace ToSic.Eav.LookUp;
+
+/// <summary>
+/// The BaseTokenReplace class provides the tokenization of tokens formatted  
+/// [object:property] or [object:property|format|ifEmpty] or [custom:no] within a string
+/// with the appropriate current property/custom values.
+/// </summary>
+/// <remarks></remarks>
+[PrivateApi("we might still rename this some day...")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class TokenReplace
 {
-	/// <summary>
-	/// The BaseTokenReplace class provides the tokenization of tokens formatted  
-	/// [object:property] or [object:property|format|ifEmpty] or [custom:no] within a string
-	/// with the appropriate current property/custom values.
-	/// </summary>
-	/// <remarks></remarks>
-	[PrivateApi("we might still rename this some day...")]
-	public class TokenReplace
-    {
-        #region RegEx - the core formula
-        // Commented Regular Expression which doesn't capture non-tokens
-        // language=regex
-        private const string RegExFindAllTokens = @"
+    #region RegEx - the core formula
+    // Commented Regular Expression which doesn't capture non-tokens
+    // language=regex
+    private const string RegExFindAllTokens = @"
 
 # start by defining a group, but don't give it an own capture-name
 (?:
@@ -47,102 +48,101 @@ namespace ToSic.Eav.LookUp
 
 ";
 
-        #endregion
+    #endregion
 
-        #region constructor
+    #region constructor
 
-        private ILookUp FindSource(string key) => LookupEngine.FindSource(key);
+    private ILookUp FindSource(string key) => LookupEngine.FindSource(key);
 
-        public ILookUpEngine LookupEngine { get; }
-	    public TokenReplace(ILookUpEngine lookupEngine)
-	    {
-            LookupEngine = lookupEngine ?? throw new Exception("Can't initialize TokenReplace without engine");
-        }
-        #endregion
-
-
-
-		/// <summary>
-		/// Gets the Regular expression for the token to be replaced
-		/// </summary>
-		/// <value>A regular Expression</value>   
-		public static Regex Tokenizer { get; } = new Regex(RegExFindAllTokens, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
-
-        /// <summary>
-        /// Checks for present [Object:Property] tokens
-        /// </summary>
-        /// <param name="sourceText">String with [Object:Property] tokens</param>
-        /// <returns></returns>
-        public static bool ContainsTokens(string sourceText)
-        {
-            if (string.IsNullOrEmpty(sourceText)) return false;
-            foreach (Match currentMatch in Tokenizer.Matches(sourceText))
-                if (currentMatch.Result("${object}").Length > 0)
-                    return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Replace all tokens in a string. 
-        /// </summary>
-        /// <param name="sourceText"></param>
-        /// <param name="repeat"></param>
-        /// <returns></returns>
-        public virtual string ReplaceTokens(string sourceText, int repeat = 0)
-        {
-            if (string.IsNullOrEmpty(sourceText))
-                return string.Empty;
-
-            var result = new StringBuilder();
-            var charProgress = 0;
-            var matches = Tokenizer.Matches(sourceText);
-            
-            // If no matches found, just return the sourceText
-            if (matches.Count <= 0) return sourceText;
-
-            foreach (Match curMatch in matches)
-            {
-                // Get characters before the first match
-                if (curMatch.Index > charProgress)
-                    result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
-                charProgress = curMatch.Index + curMatch.Length;
-
-                // get the infos we need to retrieve the value, get it. 
-                var strObjectName = curMatch.Result("${object}");
-                if (string.IsNullOrEmpty(strObjectName)) continue;
-
-                var strPropertyName = curMatch.Result("${property}");
-                var strFormat = curMatch.Result("${format}");
-                var strIfEmptyReplacement = curMatch.Result("${ifEmpty}");
-                var strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
-
-                var useFallback = string.IsNullOrEmpty(strConversion);
-                if (useFallback)
-                    strConversion = strIfEmptyReplacement; 
-                        
-                if (repeat > 0 || useFallback) // note: when using fallback, always re-run tokens, even if no repeat left
-                    strConversion = ReplaceTokens(strConversion, repeat - 1);
-
-                result.Append(strConversion);
-            }
-
-            // attach the rest of the text (after the last match)
-            result.Append(sourceText.Substring(charProgress));
-                
-            // Ready to finish, but first, ensure repeating if desired
-            var finalResult = result.ToString();
-            return finalResult;
-
-        }
-
-        /// <summary>
-        /// Get a token value by checking all attached libraries of values and getting the right one
-        /// </summary>
-        /// <param name="sourceName"></param>
-        /// <param name="key"></param>
-        /// <param name="format"></param>
-        /// <returns></returns>
-        protected string RetrieveTokenValue(string sourceName, string key, string format) 
-            => FindSource(sourceName)?.Get(key, format) ?? string.Empty;
+    public ILookUpEngine LookupEngine { get; }
+    public TokenReplace(ILookUpEngine lookupEngine)
+    {
+        LookupEngine = lookupEngine ?? throw new Exception("Can't initialize TokenReplace without engine");
     }
+    #endregion
+
+
+
+    /// <summary>
+    /// Gets the Regular expression for the token to be replaced
+    /// </summary>
+    /// <value>A regular Expression</value>   
+    public static Regex Tokenizer { get; } = new(RegExFindAllTokens, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
+
+    /// <summary>
+    /// Checks for present [Object:Property] tokens
+    /// </summary>
+    /// <param name="sourceText">String with [Object:Property] tokens</param>
+    /// <returns></returns>
+    public static bool ContainsTokens(string sourceText)
+    {
+        if (string.IsNullOrEmpty(sourceText)) return false;
+        foreach (Match currentMatch in Tokenizer.Matches(sourceText))
+            if (currentMatch.Result("${object}").Length > 0)
+                return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Replace all tokens in a string. 
+    /// </summary>
+    /// <param name="sourceText"></param>
+    /// <param name="repeat"></param>
+    /// <returns></returns>
+    public virtual string ReplaceTokens(string sourceText, int repeat = 0)
+    {
+        if (string.IsNullOrEmpty(sourceText))
+            return string.Empty;
+
+        var result = new StringBuilder();
+        var charProgress = 0;
+        var matches = Tokenizer.Matches(sourceText);
+            
+        // If no matches found, just return the sourceText
+        if (matches.Count <= 0) return sourceText;
+
+        foreach (Match curMatch in matches)
+        {
+            // Get characters before the first match
+            if (curMatch.Index > charProgress)
+                result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
+            charProgress = curMatch.Index + curMatch.Length;
+
+            // get the infos we need to retrieve the value, get it. 
+            var strObjectName = curMatch.Result("${object}");
+            if (string.IsNullOrEmpty(strObjectName)) continue;
+
+            var strPropertyName = curMatch.Result("${property}");
+            var strFormat = curMatch.Result("${format}");
+            var strIfEmptyReplacement = curMatch.Result("${ifEmpty}");
+            var strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
+
+            var useFallback = string.IsNullOrEmpty(strConversion);
+            if (useFallback)
+                strConversion = strIfEmptyReplacement; 
+                        
+            if (repeat > 0 || useFallback) // note: when using fallback, always re-run tokens, even if no repeat left
+                strConversion = ReplaceTokens(strConversion, repeat - 1);
+
+            result.Append(strConversion);
+        }
+
+        // attach the rest of the text (after the last match)
+        result.Append(sourceText.Substring(charProgress));
+                
+        // Ready to finish, but first, ensure repeating if desired
+        var finalResult = result.ToString();
+        return finalResult;
+
+    }
+
+    /// <summary>
+    /// Get a token value by checking all attached libraries of values and getting the right one
+    /// </summary>
+    /// <param name="sourceName"></param>
+    /// <param name="key"></param>
+    /// <param name="format"></param>
+    /// <returns></returns>
+    protected string RetrieveTokenValue(string sourceName, string key, string format) 
+        => FindSource(sourceName)?.Get(key, format) ?? string.Empty;
 }

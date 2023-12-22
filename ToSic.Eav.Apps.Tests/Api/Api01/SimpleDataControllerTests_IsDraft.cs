@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Api.Api01;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Tests.Api.Api01
 {
@@ -7,8 +8,12 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
     // ReSharper disable once InconsistentNaming
     public class SimpleDataControllerTests_IsDraft
     {
-        private static (bool ShouldPublish, bool ShouldBranchDrafts) TestGetPublishSpecs(object publishedState, bool? existingIsPublished, bool writePublishAllowed) 
-            => SimpleDataController.GetPublishSpecs(publishedState, existingIsPublished, writePublishAllowed);
+        private static (bool ShouldPublish, bool ShouldBranchDrafts) TestGetPublishSpecs(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
+        {
+            var r = SimpleDataController.GetPublishSpecs(publishedState, existingIsPublished, writePublishAllowed,
+                new Log("test"));
+            return (r.ShouldPublish, r.ShouldBranchDrafts);
+        }
 
         /// <summary>
         /// Scenarios when creating new.

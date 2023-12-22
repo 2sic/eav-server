@@ -1,28 +1,27 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource.VisualQuery
+namespace ToSic.Eav.DataSource.VisualQuery;
+
+/// <summary>
+/// Describes what a DataSource is for in the visual query (for logical grouping)
+/// </summary>
+[PublicApi]
+public enum DataSourceType
 {
     /// <summary>
-    /// Describes what a DataSource is for in the visual query (for logical grouping)
+    /// DataSources of Type App only exist on the app.
     /// </summary>
-    [PublicApi]
-    public enum DataSourceType
-    {
-        /// <summary>
-        /// DataSources of Type App only exist on the app.
-        /// </summary>
-        App,
+    App,
 
-        Cache,
-        Filter,
-        Logic,
-        Lookup,
-        Modify,
-        Security,
-        Sort,
-        Source,
-        Target,
-        Debug,
-        System
-    }
+    Cache,
+    Filter,
+    Logic,
+    Lookup,
+    Modify,
+    Security,
+    Sort,
+    Source,
+    Target,
+    Debug,
+    System
 }

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Compression;
+using ToSic.Eav.Internal.Compression;
 
 namespace ToSic.Eav.Core.Tests.Compression
 {

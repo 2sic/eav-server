@@ -1,40 +1,40 @@
 ﻿using System.Collections.Generic;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data;
+
+/// <summary>
+/// A dictionary-style children accessor containing all fields which have child-entities. <br/>
+/// Used on the <see cref="IEntity"/> Children property.
+/// </summary>
+[PrivateApi("this is for the Relationship.Children API, not recommended for others")]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class RelationshipChildren : IRelationshipChildren
 {
+    private readonly IReadOnlyDictionary<string, IAttribute> _attributes;
+
     /// <summary>
-    /// A dictionary-style children accessor containing all fields which have child-entities. <br/>
-    /// Used on the <see cref="IEntity"/> Children property.
+    /// Initializes a new instance of the Children class.
     /// </summary>
-    [PrivateApi("this is for the Relationship.Children API, not recommended for others")]
-    public class RelationshipChildren : IRelationshipChildren
+    /// <param name="attributes"></param>
+    internal RelationshipChildren(IReadOnlyDictionary<string, IAttribute> attributes)
     {
-        private readonly IReadOnlyDictionary<string, IAttribute> _attributes;
+        _attributes = attributes;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the Children class.
-        /// </summary>
-        /// <param name="attributes"></param>
-        internal RelationshipChildren(IReadOnlyDictionary<string, IAttribute> attributes)
+    /// <inheritdoc />
+    /// <summary>
+    /// Get Children of a specified Attribute Name
+    /// </summary>
+    /// <param name="attributeName">Attribute Name</param>
+    public IEnumerable<IEntity> this[string attributeName]
+    {
+        get
         {
-            _attributes = attributes;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Get Children of a specified Attribute Name
-        /// </summary>
-        /// <param name="attributeName">Attribute Name</param>
-        public IEnumerable<IEntity> this[string attributeName]
-        {
-            get
-            {
-                if (_attributes == null) return new List<IEntity>();
-                return _attributes.ContainsKey(attributeName) 
-                    ? (_attributes[attributeName] as Attribute<IEnumerable<IEntity>>)?.TypedContents 
-                    : new List<IEntity>();
-            }
+            if (_attributes == null) return new List<IEntity>();
+            return _attributes.ContainsKey(attributeName) 
+                ? (_attributes[attributeName] as Attribute<IEnumerable<IEntity>>)?.TypedContents 
+                : new List<IEntity>();
         }
     }
 }

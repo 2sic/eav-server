@@ -4,9 +4,8 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.Types;
-using ToSic.Lib.Logging;
+using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Run;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File
 {
@@ -15,11 +14,11 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
     {
         public RuntimeLoaderTest()
         {
-            _runtime = GetService<IRuntime>();
-            _globalAppState = GetService<IAppStates>().GetPresetApp();
+            _appLoader = GetService<IAppLoader>();
+            _globalAppState = GetService<IAppStates>().GetPresetReader();
         }
-        private readonly IRuntime _runtime;
-        private readonly AppState _globalAppState;
+        private readonly IAppLoader _appLoader;
+        private readonly IAppState _globalAppState;
 
         private int expectedTypesSysAndJson = 5;
         [Ignore("currently work in progress - as sys/json types keep changing and testing isn't updated yet")]
@@ -83,7 +82,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         {
             // set loader root path, based on test environment
             TestGlobalFolderRepository.PathToUse = TestingPath40;
-            var loader = (Runtime)_runtime;
+            var loader = (AppLoader)_appLoader;
             var time = Stopwatch.StartNew();
             for (var i = 0; i < 10; i++)
             {

@@ -4,26 +4,25 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataFormats.EavLight
+namespace ToSic.Eav.DataFormats.EavLight;
+
+partial class ConvertToEavLight
 {
-    public partial class ConvertToEavLight
+    private void AddMetadataAndFor(IEntity entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
     {
-        private void AddMetadataAndFor(IEntity entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
-        {
-            // if rules.MetadataFor are not set, then respect WithMetadataFor
-            // otherwise the rules should be applied, but default to false
-            var itemForRules = MetadataForSerialization.Stabilize(rules?.SerializeMetadataFor, MetadataFor);
-            if (itemForRules.Serialize /*?? MetadataFor.Serialize*/ ?? false)
-                if (entity.MetadataFor.IsMetadata)
-                    entityValues.Add(Attributes.JsonKeyMetadataFor, entity.MetadataFor);
+        // if rules.MetadataFor are not set, then respect WithMetadataFor
+        // otherwise the rules should be applied, but default to false
+        var itemForRules = MetadataForSerialization.Stabilize(rules?.SerializeMetadataFor, MetadataFor);
+        if (itemForRules.Serialize /*?? MetadataFor.Serialize*/ ?? false)
+            if (entity.MetadataFor.IsMetadata)
+                entityValues.Add(Attributes.JsonKeyMetadataFor, entity.MetadataFor);
 
-            var itemMdRules = SubEntitySerialization.Stabilize(rules?.SerializeMetadata, Metadata);
+        var itemMdRules = SubEntitySerialization.Stabilize(rules?.SerializeMetadata, Metadata);
             
-            if (itemMdRules.Serialize != true || !entity.Metadata.Any()) return;
+        if (itemMdRules.Serialize != true || !entity.Metadata.Any()) return;
 
-            entityValues.Add(Attributes.JsonKeyMetadata, CreateListOfSubEntities(entity.Metadata, itemMdRules));
-        }
-
-
+        entityValues.Add(Attributes.JsonKeyMetadata, CreateListOfSubEntities(entity.Metadata, itemMdRules));
     }
+
+
 }

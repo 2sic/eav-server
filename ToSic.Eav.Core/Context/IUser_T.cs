@@ -1,10 +1,8 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Lib.Data;
+﻿using ToSic.Lib.Data;
 
-namespace ToSic.Eav.Context
+namespace ToSic.Eav.Context;
+
+public interface IUser<out T>: IUser, IWrapper<T>
 {
-    public interface IUser<out T>: IUser, IWrapper<T>
-    {
 
-    }
 }

@@ -2,10 +2,10 @@
 using System.Runtime.Caching;
 using ToSic.Eav.DataSource.VisualQuery;
 
-namespace ToSic.Eav.DataSource.Catalog
+namespace ToSic.Eav.DataSource.Catalog;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public interface IAppDataSourcesLoader
 {
-    public interface IAppDataSourcesLoader
-    {
-        (List<DataSourceInfo> data, CacheItemPolicy policy) CompileDynamicDataSources(int appId);
-    }
+    (List<DataSourceInfo> data, CacheItemPolicy policy) CompileDynamicDataSources(int appId);
 }

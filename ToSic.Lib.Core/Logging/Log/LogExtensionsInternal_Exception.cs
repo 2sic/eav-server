@@ -1,47 +1,46 @@
 ﻿using System;
 
-namespace ToSic.Lib.Logging
+namespace ToSic.Lib.Logging;
+
+partial class LogExtensionsInternal
 {
-    internal static partial class LogExtensionsInternal
+    private const int MaxExceptionRecursion = 100;
+
+    internal static TException ExceptionInternal<TException>(this ILog log, TException ex, CodeRef codeRef) where TException : Exception
     {
-        private const int MaxExceptionRecursion = 100;
+        // Null-check
+        if (!(log.GetRealLog() is Log realLog)) return ex;
 
-        internal static TException ExceptionInternal<TException>(this ILog log, TException ex, CodeRef codeRef) where TException : Exception
+        var wrapLog = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
+        var recursion = 1;
+        Exception loopEx = ex;
+        while (true)
         {
-            // Null-check
-            if (!(log.GetRealLog() is Log realLog)) return ex;
-
-            var wrapLog = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
-            var recursion = 1;
-            Exception loopEx = ex;
-            while (true)
+            // avoid infinite loops
+            if (recursion >= MaxExceptionRecursion)
             {
-                // avoid infinite loops
-                if (recursion >= MaxExceptionRecursion)
-                {
-                    wrapLog.Done("max-depth reached");
-                    return ex;
-                }
-                
-                if (ex == null)
-                {
-                    wrapLog.Done("Exception is null");
-                    return ex;
-                }
-
-                realLog.A($"Depth {recursion} in {loopEx.Source}: {loopEx}"); // use the default ToString of an exception
-
-                if (loopEx.InnerException != null)
-                {
-                    loopEx = loopEx.InnerException;
-                    recursion++;
-                    continue;
-                }
-
-                break;
+                wrapLog.Done("max-depth reached");
+                return ex;
             }
-            wrapLog.Done();
-            return ex;
+                
+            if (ex == null)
+            {
+                wrapLog.Done("Exception is null");
+                return ex;
+            }
+
+            realLog.A($"Depth {recursion} in {loopEx.Source}: {loopEx}"); // use the default ToString of an exception
+
+            if (loopEx.InnerException != null)
+            {
+                loopEx = loopEx.InnerException;
+                recursion++;
+                continue;
+            }
+
+            break;
         }
+        wrapLog.Done();
+        return ex;
     }
 }

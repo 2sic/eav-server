@@ -23,7 +23,9 @@ namespace ToSic.Lib.Core.Tests.LoggingTests
 
 
         [TestMethod] public void Func_ReturnNull() => 
+#pragma warning disable CS8625
             Func_ReturnValue_Assert<string>(ThisMethodName(), log => log.Func(() => null as string)!, null, 2);
+#pragma warning restore CS8625
 
         [TestMethod] public void Func_ReturnValue() => 
             Func_ReturnValue_Assert(ThisMethodName(), log => log.Func(() => 7), 7, 2);

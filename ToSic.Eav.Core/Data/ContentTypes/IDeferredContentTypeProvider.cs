@@ -1,7 +1,6 @@
-﻿namespace ToSic.Eav.Data.ContentTypes
+﻿namespace ToSic.Eav.Data.ContentTypes;
+
+public interface IDeferredContentTypeProvider
 {
-    public interface IDeferredContentTypeProvider
-    {
-        IContentType LazyTypeGenerator(int appId, string name, string nameId, IContentType fallback);
-    }
+    IContentType LazyTypeGenerator(int appId, string name, string nameId, IContentType fallback);
 }

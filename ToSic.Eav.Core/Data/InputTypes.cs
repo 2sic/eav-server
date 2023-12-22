@@ -1,27 +1,40 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Data
+namespace ToSic.Eav.Data;
+
+/// <summary>
+/// Constants related to Input Types
+/// </summary>
+[PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class InputTypes: EntityBasedType
 {
     /// <summary>
-    /// Constants related to Input Types
+    /// Name of the content-type which describes Input-Types
     /// </summary>
-    [PrivateApi]
-    public class InputTypes
+    public const string TypeForInputTypeDefinition = "ContentType-InputType";
+
+    public InputTypes(IEntity entity) : base(entity)
     {
-        /// <summary>
-        /// Name of the content-type which describes Input-Types
-        /// </summary>
-        public const string TypeForInputTypeDefinition = "ContentType-InputType";
-
-
-        public const string InputTypeType = "Type";
-        public const string InputTypeLabel = "Label";
-        public const string InputTypeDescription = "Description";
-        public const string InputTypeAssets = "Assets";
-        public const string InputTypeDisableI18N = "DisableI18n";
-        public const string InputTypeAngularAssets = "AngularAssets";
-        public const string InputTypeUseAdam = "UseAdam";
-
-        public static string InputTypeWysiwyg = "string-wysiwyg";
     }
+
+    /// <summary>
+    /// Optional CSV of custom configuration types instead of the default cascade
+    /// </summary>
+    public string CustomConfigTypes => GetThis(null as string);
+
+    public string Label => GetThis(null as string);
+
+    public string Description => GetThis(null as string);
+
+    public string Assets => GetThis(null as string);
+
+    public bool UseAdam => GetThis(false);
+
+    public string AngularAssets => GetThis(null as string);
+
+    // ReSharper disable once InconsistentNaming
+    public bool DisableI18n => GetThis(false);
+
+    public string Type => GetThis(null as string);
 }

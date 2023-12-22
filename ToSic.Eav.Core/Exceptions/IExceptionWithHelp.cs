@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.Code.Help;
 
-namespace ToSic.Eav
+namespace ToSic.Eav;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public interface IExceptionWithHelp
 {
-    public interface IExceptionWithHelp
-    {
-        List<CodeHelp> Helps { get; }
-    }
+    List<CodeHelp> Helps { get; }
 }

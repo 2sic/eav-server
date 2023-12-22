@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.WebApi.Dto;
 
-namespace ToSic.Eav.WebApi.PublicApi
+namespace ToSic.Eav.WebApi.PublicApi;
+
+public interface IContentImportController
 {
-    public interface IContentImportController
-    {
-        bool Import(EntityImportDto args);
-    }
+    bool Import(EntityImportDto args);
 }

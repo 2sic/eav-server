@@ -1,26 +1,26 @@
 ﻿using System;
 
-namespace ToSic.Eav.Plumbing
+namespace ToSic.Eav.Plumbing;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public abstract class TypeWithMetadataBase<T> where T: class
 {
-    public abstract class TypeWithMetadataBase<T> where T: class
+    protected TypeWithMetadataBase(Type dsType)
     {
-        protected TypeWithMetadataBase(Type dsType)
+        Type = dsType;
+
+        // must put this in a try/catch, in case other DLLs have incompatible attributes
+        try
         {
-            Type = dsType;
-
-            // must put this in a try/catch, in case other DLLs have incompatible attributes
-            try
-            {
-                TypeMetadata = dsType.GetDirectlyAttachedAttribute<T>();
-            }
-            catch {  /*ignore */ }
+            TypeMetadata = dsType.GetDirectlyAttachedAttribute<T>();
         }
-
-        public abstract string Name { get; }
-
-        public Type Type { get; }
-
-        public T TypeMetadata { get; }
-
+        catch {  /*ignore */ }
     }
+
+    public abstract string Name { get; }
+
+    public Type Type { get; }
+
+    public T TypeMetadata { get; }
+
 }

@@ -1,47 +1,46 @@
-﻿using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource.Query
+namespace ToSic.Eav.DataSource.Query;
+
+/// <summary>
+/// Constants used by Queries / VisualQuery
+/// </summary>
+[PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class QueryConstants
 {
+    #region Params
+
+
     /// <summary>
-    /// Constants used by Queries / VisualQuery
+    /// A special property added to the `Params` source to find out if the current user can see drafts.
     /// </summary>
-    [PrivateApi]
-    public class QueryConstants
-    {
-        #region Params
+    [PrivateApi] public const string ParamsShowDraftsKey = "ShowDrafts";
+
+    /// <summary>
+    /// Default for `ShowDrafts` is `false`
+    /// </summary>
+    [PrivateApi] public const bool ParamsShowDraftsDefault = false;
+
+    #endregion
+
+    [PrivateApi] internal const string PartAssemblyAndType = "PartAssemblyAndType";
+
+    [PrivateApi] internal const string VisualDesignerData = "VisualDesignerData";
 
 
-        /// <summary>
-        /// A special property added to the `Params` source to find out if the current user can see drafts.
-        /// </summary>
-        [PrivateApi] public const string ParamsShowDraftsKey = "ShowDrafts";
+    #region Query terms - used for DataSources but also the App project which has a Query Manager
 
-        /// <summary>
-        /// Default for `ShowDrafts` is `false`
-        /// </summary>
-        [PrivateApi] public const bool ParamsShowDraftsDefault = false;
+    /// <summary>content type name of the query AttributeSet</summary>
+    [PrivateApi] internal static readonly string QueryTypeName = "DataPipeline";
 
-        #endregion
+    /// <summary>content-type name of the queryPart AttributeSet</summary>
+    [PrivateApi] internal static readonly string QueryPartTypeName = "DataPipelinePart";
 
-        [PrivateApi] internal const string PartAssemblyAndType = "PartAssemblyAndType";
+    #endregion
 
-        [PrivateApi] internal const string VisualDesignerData = "VisualDesignerData";
-
-
-        #region Query terms - used for DataSources but also the App project which has a Query Manager
-
-        /// <summary>content type name of the query AttributeSet</summary>
-        [PrivateApi] internal static readonly string QueryTypeName = "DataPipeline";
-
-        /// <summary>content-type name of the queryPart AttributeSet</summary>
-        [PrivateApi] internal static readonly string QueryPartTypeName = "DataPipelinePart";
-
-        #endregion
-
-        /// <summary>
-        /// Attribute Name on the query-Entity describing the Stream-Wiring
-        /// </summary>
-        [PrivateApi] public const string QueryStreamWiringAttributeName = "StreamWiring";
-    }
+    /// <summary>
+    /// Attribute Name on the query-Entity describing the Stream-Wiring
+    /// </summary>
+    [PrivateApi] public const string QueryStreamWiringAttributeName = "StreamWiring";
 }

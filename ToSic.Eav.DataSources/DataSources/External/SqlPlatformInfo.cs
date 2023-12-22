@@ -1,15 +1,15 @@
-﻿namespace ToSic.Eav.DataSources
+﻿namespace ToSic.Eav.DataSources;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class SqlPlatformInfo
 {
-    public class SqlPlatformInfo
+    public const string DefaultConnectionPlaceholder = "(default)";
+
+    public virtual string DefaultConnectionStringName => "unknown-server-please-override-SqlPlatformInfo";
+
+    public virtual string FindConnectionString(string name)
     {
-        public const string DefaultConnectionPlaceholder = "(default)";
-
-        public virtual string DefaultConnectionStringName => "unknown-server-please-override-SqlPlatformInfo";
-
-        public virtual string FindConnectionString(string name)
-        {
-            return System.Configuration.ConfigurationManager.ConnectionStrings[name].ConnectionString;
-        }
-
+        return System.Configuration.ConfigurationManager.ConnectionStrings[name].ConnectionString;
     }
+
 }

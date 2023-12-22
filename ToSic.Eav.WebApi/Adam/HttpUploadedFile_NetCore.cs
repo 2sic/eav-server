@@ -6,32 +6,32 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using ToSic.Eav.Security.Files;
 
-namespace ToSic.Eav.WebApi.Adam
+namespace ToSic.Eav.WebApi.Adam;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class HttpUploadedFile
 {
-    public class HttpUploadedFile
+    public HttpUploadedFile(HttpRequest request) => Request = request;
+    public HttpRequest Request { get; }
+
+    // https://stackoverflow.com/questions/45871479/net-core-2-how-to-check-if-the-request-is-mime-multipart-content
+    public bool IsMultipart() => Request.GetMultipartBoundary() != null;
+
+    public bool HasFiles() => Request.Form.Files.Any();
+
+    public int Count => Request.Form.Files.Count;
+
+    public (string, Stream) GetStream(int i = 0)
     {
-        public HttpUploadedFile(HttpRequest request) => Request = request;
-        public HttpRequest Request { get; }
+        var file = Request.Form.Files[i];
 
-        // https://stackoverflow.com/questions/45871479/net-core-2-how-to-check-if-the-request-is-mime-multipart-content
-        public bool IsMultipart() => Request.GetMultipartBoundary() != null;
+        var fileName = FileNames.SanitizeFileName(file?.FileName);
 
-        public bool HasFiles() => Request.Form.Files.Any();
+        if (FileNames.IsKnownRiskyExtension(fileName))
+            throw new Exception($"File {fileName} has risky file type.");
 
-        public int Count => Request.Form.Files.Count;
-
-        public (string, Stream) GetStream(int i = 0)
-        {
-            var file = Request.Form.Files[i];
-
-            var fileName = FileNames.SanitizeFileName(file?.FileName);
-
-            if (FileNames.IsKnownRiskyExtension(fileName))
-                throw new Exception($"File {fileName} has risky file type.");
-
-            return (fileName, file.OpenReadStream());
-        }
-
+        return (fileName, file.OpenReadStream());
     }
+
 }
 #endif

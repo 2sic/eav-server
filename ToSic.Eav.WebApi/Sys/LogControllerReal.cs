@@ -2,22 +2,21 @@
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.WebApi.Sys
+namespace ToSic.Eav.WebApi.Sys;
+// Release routes
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class LogControllerReal: ServiceBase
 {
-    // Release routes
+    public const string LogSuffix = "Log";
 
-    public class LogControllerReal: ServiceBase
+    public LogControllerReal() : base($"{EavLogs.WebApi}.{LogSuffix}Rl") { }
+
+    public string EnableDebug(Func<int, string> activateForDuration, int duration = 1)
     {
-        public const string LogSuffix = "Log";
-
-        public LogControllerReal() : base($"{EavLogs.WebApi}.{LogSuffix}Rl") { }
-
-        public string EnableDebug(Func<int, string> activateForDuration, int duration = 1)
-        {
-            Log.A("Extended logging will set for duration:" + duration);
-            var msg = activateForDuration(duration);
-            Log.A(msg);
-            return msg;
-        }
+        Log.A("Extended logging will set for duration:" + duration);
+        var msg = activateForDuration(duration);
+        Log.A(msg);
+        return msg;
     }
 }

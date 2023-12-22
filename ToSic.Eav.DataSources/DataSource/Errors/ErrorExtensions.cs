@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.DataSource
+namespace ToSic.Eav.DataSource;
+
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public static class ErrorExtensions
 {
-    public static class ErrorExtensions
+    public static bool IsError(this IDataSource ds)
     {
-        public static bool IsError(this IDataSource ds)
-        {
-            var firstItem = ds.List?.FirstOrDefault();
-            return firstItem?.Type?.Name == DataConstants.ErrorTypeName;
-        }
+        var firstItem = ds.List?.FirstOrDefault();
+        return firstItem?.Type?.Name == DataConstants.ErrorTypeName;
     }
 }

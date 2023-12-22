@@ -1,12 +1,11 @@
-﻿namespace ToSic.Eav.Security
+﻿namespace ToSic.Eav.Security;
+
+public enum Conditions
 {
-    public enum Conditions
-    {
-        Undefined,
-        Owner,
-        Identity,
-        Group,
-        EnvironmentInstance,
-        EnvironmentGlobal,
-    }
+    Undefined,
+    Owner,
+    Identity,
+    Group,
+    EnvironmentInstance,
+    EnvironmentGlobal,
 }

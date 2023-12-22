@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Persistence.Efc.Models;
@@ -32,7 +33,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         protected JsonSerializer SerializerOfApp(int appId)
         {
-            var app = Loader.AppState(appId, false);
+            var app = Loader.AppStateReaderRawTA(appId);
             return GetService<JsonSerializer>().SetApp(app);
         }
 
