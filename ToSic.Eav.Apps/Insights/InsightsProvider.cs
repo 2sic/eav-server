@@ -4,9 +4,9 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Insights;
 
-public abstract class InsightsProvider(string name, NoParamOrder protect = default, string teaser = default, string category = default): ServiceBase($"Ins.{name}"), IInsightsProvider
+public abstract class InsightsProvider(string name, NoParamOrder protect = default, string teaser = default, string helpCategory = default): ServiceBase($"Ins.{name}"), IInsightsProvider
 {
-    public string Category => category;
+    public string HelpCategory => helpCategory;
 
     public string Name => name;
 

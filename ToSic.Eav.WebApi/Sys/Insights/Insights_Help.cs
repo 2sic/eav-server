@@ -22,8 +22,8 @@ partial class InsightsControllerReal
 
         var providersWithCategory = _insightsProviders
             .Where(p => !p.Name.EqualsInsensitive(nameof(Help)))
-            .Where(p => p.Category.HasValue())
-            .GroupBy(p => p.Category)
+            .Where(p => p.HelpCategory.HasValue())
+            .GroupBy(p => p.HelpCategory)
             .OrderBy(g => g.Key)
             .ToList();
 

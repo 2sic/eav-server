@@ -4,7 +4,7 @@ namespace ToSic.Eav.Apps.Insights;
 
 public interface IInsightsProvider
 {
-    string Category { get; }
+    string HelpCategory { get; }
 
     string Name { get; }
 

@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.Insights;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
+using static System.StringComparer;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
@@ -34,7 +35,7 @@ partial class InsightsControllerReal
         if (provider != null)
         {
             l.A($"found provider {provider.Name}");
-            provider.SetContext(HtmlTableBuilder, appId, new Dictionary<string, object>
+            provider.SetContext(HtmlTableBuilder, appId, new Dictionary<string, object>(InvariantCultureIgnoreCase)
             {
                 {"key", key},
                 {"position", position},
