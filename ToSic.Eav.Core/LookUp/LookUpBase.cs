@@ -10,7 +10,7 @@ namespace ToSic.Eav.LookUp;
 /// Base Class to create your own LookUp Class - used by all Look-Ups. <br/>
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public abstract class LookUpBase : ILookUp
 {
     #region default methods of interface

@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
 /// History
 /// * v12.10 added new Out streams `Distinct` removes duplicates, `And` keeps items which are in _all_ streams and `Xor` keeps items which are only in one stream
 /// </remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Merge Streams",
     UiHint = "Combine multiple streams into one",

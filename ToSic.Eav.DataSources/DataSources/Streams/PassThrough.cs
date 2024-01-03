@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// A DataSource that forwards all `In` Connections. It's more for internal use.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 
 [VisualQuery(
     NiceName = "Pass-Through",

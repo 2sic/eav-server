@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// A DataSource that filters Entities by Ids. Can handle multiple IDs if comma-separated.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Item Id Filter",
     UiHint = "Find items based on one or more IDs",

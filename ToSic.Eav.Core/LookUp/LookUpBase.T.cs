@@ -3,7 +3,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.LookUp;
 
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public abstract class LookUpIn<T>: LookUpBase, IWrapper<T>
 {
     protected T Data { get; private set; }

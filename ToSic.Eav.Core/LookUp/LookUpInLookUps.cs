@@ -9,7 +9,7 @@ namespace ToSic.Eav.LookUp;
 /// It's mainly used to override values which are given, by a special situation. <br/>
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public class LookUpInLookUps: LookUpBase
 {
     [PrivateApi]

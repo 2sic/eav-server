@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// DataSource to rename attributes. Will help to change internal field names to something which is more appropriate for your JS or whatever.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Rename Attribute/Property",
     UiHint = "Rename some attributes / properties",

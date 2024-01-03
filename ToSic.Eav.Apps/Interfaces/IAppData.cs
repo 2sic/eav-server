@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps;
 /// <summary>
 /// An App-DataSource which also provides direct commands to edit/update/delete data.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IAppData: IDataSource, IMetadataSource
 {
     /// <summary>

@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Filter entities to show Drafts or only Published Entities
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 
 [VisualQuery(
     NiceName = "Publishing Filter",

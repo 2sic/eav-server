@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Do Paging to only return a limited amount of results + show how many such pages exist and which Page we are on.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Paging",
     UiHint = "Split data into pages and forward just one batch",

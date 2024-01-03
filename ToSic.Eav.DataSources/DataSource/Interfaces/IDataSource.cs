@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSource;
 /// <summary>
 /// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IHasLog
 #pragma warning disable CS0618
     , IDataTarget

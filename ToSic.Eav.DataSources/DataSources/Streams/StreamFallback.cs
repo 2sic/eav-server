@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// A DataSource that returns the first stream which has content
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Stream Fallback",
     UiHint = "Find the first stream which has data",

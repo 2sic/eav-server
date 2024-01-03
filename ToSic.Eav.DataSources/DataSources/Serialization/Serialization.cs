@@ -19,7 +19,7 @@ namespace ToSic.Eav.DataSources;
 /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
 /// * Renamed to `SerializationConfiguration` from `SerializationConfiguration` in 15.05
 /// </remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Serialization Configuration",
     UiHint = "Determine how this data is Serialized",

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data;
 /// <summary>
 /// Represents a Value in the EAV system. Values belong to an attribute and can belong to multiple languages. 
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IValue
 {
     /// <summary>

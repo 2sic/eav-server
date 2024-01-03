@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
 /// All the data inside an App. <br/>
 /// For example, it has a variable amount of Out-streams, one for each content-type in the app.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "App",
     UiHint = "All data in an app with streams for type",

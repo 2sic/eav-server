@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Sort Entity by values in specified Attributes / Properties
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Value Sort",
     UiHint = "Sort items by a property",

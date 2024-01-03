@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp;
 /// Look Up values from a .net dictionary. Case-Insensitive. <br/>
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public class LookUpInDictionary : LookUpBase
 {
     /// <summary>

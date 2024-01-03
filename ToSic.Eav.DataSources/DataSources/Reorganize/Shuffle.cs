@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Shuffle / Randomize the order of items in a Stream.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Shuffle",
     UiHint = "Mix/randomize the order of items",

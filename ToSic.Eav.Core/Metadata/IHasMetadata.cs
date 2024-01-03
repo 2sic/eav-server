@@ -6,7 +6,7 @@ namespace ToSic.Eav.Metadata;
 /// Anything with this interface has a property `Metadata` which can give us more
 /// information about that object. 
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IHasMetadata
 {
     /// <summary>

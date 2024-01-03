@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources;
 /// Usually this will be configured through [Params:SomeName]
 /// </summary>
 /// <remarks>Introduced in 10.26</remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Pick Stream",
     UiHint = "Choose a stream",

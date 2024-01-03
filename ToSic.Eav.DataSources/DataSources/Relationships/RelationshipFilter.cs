@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
 /// Filter Entities by Value in a Related Entity. For example:
 /// Find all Books (desired Entity), whose Authors (related Entity) have a Country (Attribute) with 'Switzerland' (Value). 
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Relationship Filter",
     UiHint = "Keep items having a relationship matching a criteria",

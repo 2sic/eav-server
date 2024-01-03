@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// DataSource to only pass through configured AttributeNames - other attributes/properties are removed from the entities.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Remove Attribute/Property",
     UiHint = "Remove attributes/properties to limit what is available",

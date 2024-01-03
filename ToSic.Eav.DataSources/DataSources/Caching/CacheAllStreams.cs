@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources.Caching;
         "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources"
     },
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public class CacheAllStreams : DataSourceBase
 {
     #region Configuration-properties

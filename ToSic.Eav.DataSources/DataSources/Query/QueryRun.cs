@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Run another query and provide the resulting data. The settings will provide the params for the inner query.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Query Run",
     UiHint = "Get data from another Query",

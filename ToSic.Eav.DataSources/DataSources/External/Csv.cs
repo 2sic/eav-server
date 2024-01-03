@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources;
 /// <remarks>
 /// * Renamed from `CsvDataSource` to `Csv` in v15.06 for consistency. Believe this should not affect anybody.
 /// </remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "CSV Data",
     UiHint = "Load data from a CSV file",

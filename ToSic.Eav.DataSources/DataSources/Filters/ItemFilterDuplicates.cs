@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// A DataSource that removes duplicate items in a Stream. Often used after a StreamMerge.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Filter duplicates",
     UiHint = "Remove items which occur multiple times",

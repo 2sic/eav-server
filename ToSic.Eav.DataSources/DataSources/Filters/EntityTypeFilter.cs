@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Keep only entities of a specific content-type
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Type-Filter",
     UiHint = "Only keep items of the specified type",

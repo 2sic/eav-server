@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Provide Entities from a SQL Server
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "SQL Data",
     UiHint = "Get data from a database using SQL",

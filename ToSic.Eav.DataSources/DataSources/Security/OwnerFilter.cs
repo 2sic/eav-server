@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Filter entities to show only these belonging to a specific user. 
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Owner Filter",
     UiHint = "Keep only item created by a specified user",

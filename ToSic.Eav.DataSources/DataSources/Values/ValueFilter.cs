@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Return only Entities having a specific value in an Attribute/Property
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Value Filter",
     UiHint = "Keep items which have a property with the expected value",
