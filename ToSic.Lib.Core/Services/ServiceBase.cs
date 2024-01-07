@@ -11,7 +11,8 @@ namespace ToSic.Lib.Services;
 /// Also has an API to auto-connect the logs of child-services.
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+// #NoEditorBrowsableBecauseOfInheritance
+//[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [method: PrivateApi]
 public abstract class ServiceBase(string logName) : IHasLog
 {
