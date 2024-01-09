@@ -97,7 +97,8 @@ public interface IDataSourceConfiguration
 }
 
 [PrivateApi]
-internal static class DataSourceConfigurationObsoleteExtensions
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public static class DataSourceConfigurationObsoleteExtensions
 {
     /// <summary>
     /// Set a configuration value for a specific property.
@@ -110,6 +111,8 @@ internal static class DataSourceConfigurationObsoleteExtensions
     /// <param name="config"></param>
     /// <remarks>Added in v15.04</remarks>
 #pragma warning disable CS0618
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     internal static void SetThisObsolete<T>(this IDataSourceConfiguration config, T value, [CallerMemberName] string name = default)
         => ((DataSourceConfiguration)config).SetThisObsolete(value, name);
 #pragma warning restore CS0618
