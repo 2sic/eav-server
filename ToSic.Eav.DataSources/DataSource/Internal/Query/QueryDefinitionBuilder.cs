@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryDefinitionBuilder: ServiceBase

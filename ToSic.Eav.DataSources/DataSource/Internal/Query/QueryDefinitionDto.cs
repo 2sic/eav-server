@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryDefinitionDto

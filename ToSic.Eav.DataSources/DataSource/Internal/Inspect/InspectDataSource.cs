@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Query;
 
 namespace ToSic.Eav.DataSource.Internal.Inspect;
 
@@ -65,10 +65,4 @@ public class InspectDataSource
         Definition = partDef.AsDictionary();
         return this;
     }
-}
-
-public class OutDto
-{
-    public string Name { get; set; }
-    public string Scope { get; set; }
 }

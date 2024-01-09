@@ -12,7 +12,7 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 
 /// <summary>
 /// Factory to create a Data Query

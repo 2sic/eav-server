@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;

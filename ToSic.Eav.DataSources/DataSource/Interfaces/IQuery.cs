@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource;

@@ -11,7 +11,7 @@ using static System.String;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 
 /// <summary>
 /// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 

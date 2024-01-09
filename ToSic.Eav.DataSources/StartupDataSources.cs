@@ -5,7 +5,7 @@ using ToSic.Eav.DataSource.Internal.AppDataSources;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.Internal.Configuration;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.Services;
 
 // ReSharper disable once CheckNamespace

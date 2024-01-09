@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using static System.StringComparer;
-using Connection = ToSic.Eav.DataSource.Query.Connection;
-using Connections = ToSic.Eav.DataSource.Query.Connections;
+using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
+using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
 
 namespace ToSic.Eav.Apps.Work;
 

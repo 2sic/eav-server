@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 using ToSic.Eav.Data;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 // TODO: this is the old untyped implementation - should be replaced with a clean Dto version
 // Note that the DTO already exists in another file...
 

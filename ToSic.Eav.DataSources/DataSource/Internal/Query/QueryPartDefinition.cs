@@ -4,7 +4,7 @@ using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 
 /// <summary>
 /// The configuration / definition of a query part. The <see cref="QueryDefinition"/> uses a bunch of these together to build a query. 

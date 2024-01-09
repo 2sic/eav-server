@@ -5,7 +5,7 @@ using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 
 partial class QueryDefinition
 {

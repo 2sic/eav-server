@@ -14,7 +14,7 @@ using ToSic.Lib.Services;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 
 /// <summary>
 /// Helpers to work with Data Queries

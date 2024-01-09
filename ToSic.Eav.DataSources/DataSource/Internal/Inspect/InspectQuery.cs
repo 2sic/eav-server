@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
@@ -49,7 +49,7 @@ public class InspectQuery: ServiceBase
             // Try to add the target to Data-Source-Stats;
             try
             {
-                var di = new InspectDataSource(target as IDataSource);
+                var di = new InspectDataSource(target);
                 if (!Sources.ContainsKey(di.Guid))
                     Sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
             }

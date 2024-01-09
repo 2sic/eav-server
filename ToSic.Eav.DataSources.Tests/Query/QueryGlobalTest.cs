@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Testing.Shared;

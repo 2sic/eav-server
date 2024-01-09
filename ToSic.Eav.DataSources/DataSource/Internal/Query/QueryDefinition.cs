@@ -4,7 +4,7 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSource.Query;
+namespace ToSic.Eav.DataSource.Internal.Query;
 
 /// <summary>
 /// This contains the structure / definition of a query, which was originally stored in an <see cref="IEntity"/>
@@ -52,7 +52,7 @@ public partial class QueryDefinition: EntityBasedWithLog
     /// <summary>
     /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
     /// </summary>
-    public IList<Connection> Connections => _connections ??= Eav.DataSource.Query.Connections.Deserialize(ConnectionsRaw);
+    public IList<Connection> Connections => _connections ??= Internal.Query.Connections.Deserialize(ConnectionsRaw);
     private IList<Connection> _connections;
 
     /// <summary>

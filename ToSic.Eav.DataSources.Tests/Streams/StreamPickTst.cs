@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.LookUp;

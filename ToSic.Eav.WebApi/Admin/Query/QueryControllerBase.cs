@@ -9,7 +9,7 @@ using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.Internal.Inspect;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
@@ -19,7 +19,7 @@ using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using Connection = ToSic.Eav.DataSource.Query.Connection;
+using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using SystemJsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Admin.Query;
