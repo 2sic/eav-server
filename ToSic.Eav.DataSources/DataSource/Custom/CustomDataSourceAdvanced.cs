@@ -19,17 +19,19 @@ namespace ToSic.Eav.DataSource;
 /// This has changed a lot in v15 (breaking change).
 /// Read about it in the docs.
 /// </remarks>
-[PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[PublicApi]
 public abstract class CustomDataSourceAdvanced: DataSourceBase
 {
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public new class MyServices: DataSourceBase.MyServices
     {
         [PrivateApi]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public IDataFactory DataFactory { get; }
 
         [PrivateApi]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public MyServices(
             IDataSourceConfiguration configuration,
             LazySvc<DataSourceErrorHelper> errorHandler,
@@ -37,9 +39,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
             LazySvc<IDataSourceCacheService> cacheService,
             IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, cacheService)
         {
-            ConnectServices(
-                DataFactory = dataFactory
-            );
+            DataFactory = ConnectService(dataFactory);
         }
     }
 
