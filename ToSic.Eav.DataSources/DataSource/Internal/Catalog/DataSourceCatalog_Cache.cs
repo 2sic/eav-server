@@ -3,7 +3,7 @@ using System.Linq;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.DataSource.Catalog;
+namespace ToSic.Eav.DataSource.Internal.Catalog;
 
 partial class DataSourceCatalog
 {

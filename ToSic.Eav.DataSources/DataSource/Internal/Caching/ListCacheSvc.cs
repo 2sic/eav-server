@@ -7,7 +7,7 @@ using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSource.Caching;
+namespace ToSic.Eav.DataSource.Internal.Caching;
 
 /// <summary>
 /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.

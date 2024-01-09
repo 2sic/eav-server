@@ -4,7 +4,7 @@ using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSource.Catalog;
+namespace ToSic.Eav.DataSource.Internal.Catalog;
 
 partial class DataSourceCatalog
 {

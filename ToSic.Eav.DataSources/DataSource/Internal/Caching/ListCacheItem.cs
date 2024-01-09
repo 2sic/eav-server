@@ -4,7 +4,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource.Caching;
+namespace ToSic.Eav.DataSource.Internal.Caching;
 
 /// <summary>
 /// Cache Item in the List-Cache. 

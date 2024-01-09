@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource.Caching;
-using ToSic.Eav.DataSource.Caching.CacheInfo;
+using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.DataSource.Internal.Caching.CacheInfo;
 
 namespace ToSic.Eav.DataSource.Streams;
 

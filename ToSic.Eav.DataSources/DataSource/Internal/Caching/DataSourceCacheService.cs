@@ -7,7 +7,7 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSource.Caching;
+namespace ToSic.Eav.DataSource.Internal.Caching;
 
 [PrivateApi]
 internal class DataSourceCacheService: ServiceBase, IDataSourceCacheService

@@ -1,19 +1,12 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource.Caching;
+using ToSic.Eav.DataSource.Internal.Caching;
 
 namespace ToSic.Eav.DataSources;
 
-internal class AppRootCacheKey: CacheKey
+internal class AppRootCacheKey(AppRoot appRoot) : CacheKey(appRoot)
 {
-    public AppRootCacheKey(AppRoot appRoot) : base(appRoot)
-    {
-        _appRoot = appRoot;
-    }
-
-    private readonly AppRoot _appRoot;
-
     /// <inheritdoc />
-    public override string CachePartialKey => base.CachePartialKey + AppCacheKey(_appRoot);
+    public override string CachePartialKey => base.CachePartialKey + AppCacheKey(appRoot);
 
     /// <inheritdoc />
     public override string CacheFullKey => CachePartialKey;

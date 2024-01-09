@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Caching.CacheInfo;
+using ToSic.Eav.DataSource.Internal.Caching.CacheInfo;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;

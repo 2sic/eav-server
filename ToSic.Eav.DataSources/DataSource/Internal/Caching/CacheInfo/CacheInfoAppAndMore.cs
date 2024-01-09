@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.State;
 
-namespace ToSic.Eav.DataSource.Caching.CacheInfo;
+namespace ToSic.Eav.DataSource.Internal.Caching.CacheInfo;
 
 /// <summary>
 /// Custom Cache Information which only check the app-state for time-stamp.

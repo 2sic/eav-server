@@ -6,18 +6,12 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal.Configuration;
 
 [PrivateApi("Internal helper")]
-public class ConfigurationDataLoader: ServiceBase
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class ConfigurationDataLoader() : ServiceBase(EavLogs.Eav + "CnfLdr")
 {
-    #region Constructor / DI
-
-    public ConfigurationDataLoader() : base(EavLogs.Eav + "CnfLdr")
-    {
-    }
-
-    #endregion
 
     #region Get List From Cache or Generate
 

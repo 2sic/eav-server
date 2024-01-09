@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSource.Caching;
+﻿using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.DataSource.Internal.Configuration;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Services;

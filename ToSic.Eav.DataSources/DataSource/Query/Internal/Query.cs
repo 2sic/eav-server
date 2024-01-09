@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ToSic.Eav.DataSource.Caching;
+using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.DI;

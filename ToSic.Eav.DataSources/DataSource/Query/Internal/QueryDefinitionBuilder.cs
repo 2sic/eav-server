@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Catalog;
+using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;

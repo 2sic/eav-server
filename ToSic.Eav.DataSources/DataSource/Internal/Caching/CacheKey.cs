@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Caching;
 
-namespace ToSic.Eav.DataSource.Caching;
+namespace ToSic.Eav.DataSource.Internal.Caching;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CacheKey: ICacheKeyManager
+public class CacheKey(IDataSource dataSource) : ICacheKeyManager
 {
-    public readonly IDataSource DataSource;
-    public CacheKey(IDataSource dataSource) => DataSource = dataSource;
+    public readonly IDataSource DataSource = dataSource;
 
 
     /// <inheritdoc />

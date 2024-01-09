@@ -2,7 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Data;
-using ToSic.Eav.DataSource.Caching;
+using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.DI;

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Caching;
 
-namespace ToSic.Eav.DataSource.Caching.CacheInfo;
+namespace ToSic.Eav.DataSource.Internal.Caching.CacheInfo;
 
 /// <summary>
 /// This marks an object that can provide everything necessary to

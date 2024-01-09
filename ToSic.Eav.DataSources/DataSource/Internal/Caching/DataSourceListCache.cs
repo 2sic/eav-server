@@ -2,7 +2,7 @@
 using System.Runtime.Caching;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource.Caching;
+namespace ToSic.Eav.DataSource.Internal.Caching;
 
 /// <summary>
 /// Internal cache for the data-sources
