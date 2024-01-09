@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSourceTests.Streams
 {

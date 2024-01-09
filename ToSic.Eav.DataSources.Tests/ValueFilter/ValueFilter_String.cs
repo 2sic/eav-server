@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.DataSources.Internal;
 using ToSic.Testing.Shared;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using static ToSic.Eav.DataSources.CompareOperators;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 using static ToSic.Eav.DataSourceTests.ValueSortShared;

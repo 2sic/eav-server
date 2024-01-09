@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Configuration;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
@@ -33,7 +34,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(Shuffle));
             AreEqual(1, masks.Count);
-            AreEqual($"[{ToSic.Eav.DataSource.DataSourceConstants.MyConfigurationSourceName}:Take||0]", masks.First().Token);
+            AreEqual($"[{DataSourceConstants.MyConfigurationSourceName}:Take||0]", masks.First().Token);
         }
 
         [TestMethod]
@@ -42,7 +43,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(Children));
             AreEqual(3, masks.Count);
-            AreEqual($"[{ToSic.Eav.DataSource.DataSourceConstants.MyConfigurationSourceName}:{nameof(Children.FieldName)}]", masks.Skip(1).First().Token);
+            AreEqual($"[{DataSourceConstants.MyConfigurationSourceName}:{nameof(Children.FieldName)}]", masks.Skip(1).First().Token);
         }
 
         [TestMethod]
@@ -51,7 +52,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(RelationshipFilter));
             AreEqual(6, masks.Count);
-            AreEqual($"[{ToSic.Eav.DataSource.DataSourceConstants.MyConfigurationSourceName}:Direction||{RelationshipFilter.DefaultDirection}]", masks.First(m => m.Key == nameof(RelationshipFilter.ChildOrParent)).Token);
+            AreEqual($"[{DataSourceConstants.MyConfigurationSourceName}:Direction||{RelationshipFilter.DefaultDirection}]", masks.First(m => m.Key == nameof(RelationshipFilter.ChildOrParent)).Token);
         }
 
         [TestMethod]
@@ -60,7 +61,7 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests
             var findConfigs = GetService<ConfigurationDataLoader>();
             var masks = findConfigs.GetTokens(typeof(RelationshipFilter));
             AreEqual(6, masks.Count);
-            AreEqual($"[{ToSic.Eav.DataSource.DataSourceConstants.MyConfigurationSourceName}:Comparison||contains]", masks.First(m => m.Key == nameof(RelationshipFilter.CompareMode)).Token);
+            AreEqual($"[{DataSourceConstants.MyConfigurationSourceName}:Comparison||contains]", masks.First(m => m.Key == nameof(RelationshipFilter.CompareMode)).Token);
         }
 
         [TestMethod]

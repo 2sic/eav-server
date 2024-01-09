@@ -37,9 +37,9 @@ public sealed class StreamMerge: DataSourceBase
     /// <remarks>
     /// New in v12.10
     /// </remarks>
-    [PrivateApi] public const string DistinctStream = "Distinct";
-    [PrivateApi] public const string AndStream = "And";
-    [PrivateApi] public const string XorStream = "Xor";
+    [PrivateApi] internal const string DistinctStream = "Distinct";
+    [PrivateApi] internal const string AndStream = "And";
+    [PrivateApi] internal const string XorStream = "Xor";
 
 
     /// <inheritdoc />

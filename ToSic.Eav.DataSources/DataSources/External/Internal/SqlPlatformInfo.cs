@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources;
+﻿namespace ToSic.Eav.DataSources.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SqlPlatformInfo

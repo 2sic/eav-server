@@ -14,6 +14,7 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.DataSources.Internal;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -46,8 +47,7 @@ public class Sql : CustomDataSourceAdvanced
 {
     // Note: of the standard SQL-terms, I will only allow exec|execute|select
     // Everything else shouldn't be allowed
-    [PrivateApi]
-    public static Regex ForbiddenTermsInSelect = new(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore|sp_executesql)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    internal static Regex ForbiddenTermsInSelect = new(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore|sp_executesql)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     #region Configuration-properties
 
@@ -113,17 +113,16 @@ public class Sql : CustomDataSourceAdvanced
 
     #endregion
 
-    #region Special SQL specific properties to prevent SQL Injection
-        
-    [PrivateApi] public const string ExtractedParamPrefix = "AutoExtractedParam";
+    /// <summary>
+    /// Special SQL specific properties to prevent SQL Injection
+    /// </summary>
+    internal const string ExtractedParamPrefix = "AutoExtractedParam";
 
-    #endregion
+    /// <summary>
+    /// Error Constants
+    /// </summary>
+    internal const string ErrorTitleForbiddenSql = "Forbidden SQL words";
 
-    #region Error Constants
-
-    [PrivateApi] public const string ErrorTitleForbiddenSql = "Forbidden SQL words";
-
-    #endregion
 
     #region Constructor
 
@@ -171,7 +170,7 @@ public class Sql : CustomDataSourceAdvanced
     /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
     /// </remarks>
     [PrivateApi]
-    public Sql Setup(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
+    internal Sql Setup(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
     {
         ConnectionString = connectionString;
         SelectCommand = selectCommand;

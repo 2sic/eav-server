@@ -4,7 +4,7 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSources;
+namespace ToSic.Eav.DataSources.Internal;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -41,7 +41,7 @@ public class ValueLanguages : ServiceBase
         // if null, not ok - continue to error
         // if String.Empty, then we just want the default, so use empty array (faster)
         if (resolved != null)
-            return (resolved == string.Empty ? Array.Empty<string>() : new[] { resolved }, resolved);
+            return (resolved == string.Empty ? Array.Empty<string>() : [resolved], resolved);
 
 
         l.E($"Error - can't figure out '{lang}'");

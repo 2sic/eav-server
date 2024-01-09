@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
     HelpLink = "https://go.2sxc.org/DsPaging")]
 
-public sealed class Paging: Eav.DataSource.DataSourceBase
+public sealed class Paging: DataSourceBase
 {
     private readonly IDataFactory _pagingFactory;
 
@@ -67,11 +67,6 @@ public sealed class Paging: Eav.DataSource.DataSourceBase
         set => Configuration.SetThisObsolete(value);
     }
 
-    #endregion
-
-    #region Debug-Properties
-    [PrivateApi]
-    public string ReturnedStreamName { get; private set; }
     #endregion
 
 

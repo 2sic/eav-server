@@ -31,7 +31,7 @@ public sealed class StreamFallback : DataSourceBase
 
     #region Debug-Properties
     [PrivateApi]
-    public string ReturnedStreamName { get; private set; }
+    internal string ReturnedStreamName { get; private set; }
     #endregion
 
 
