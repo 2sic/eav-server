@@ -4,7 +4,7 @@ namespace ToSic.Eav.DataSource;
 
 /// <summary>
 /// Icon names for use in code.
-/// They should be managed here so we know where to update things if necessary.
+/// They should be managed here, so we know where to update things if necessary.
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

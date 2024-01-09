@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSource;
 partial class DataSourceBase
 {
     /// <inheritdoc />
-    public IDataSourceConfiguration Configuration => _config.Get(() => Services.Configuration.Attach(this));
+    public IDataSourceConfiguration Configuration => _config.Get(() => ((DataSourceConfiguration)Services.Configuration).Attach(this));
 
     private readonly GetOnce<IDataSourceConfiguration> _config = new();
 

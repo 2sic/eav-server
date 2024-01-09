@@ -97,7 +97,7 @@ public interface IDataSourceConfiguration
 }
 
 [PrivateApi]
-public static class DataSourceConfigurationObsoleteExtensions
+internal static class DataSourceConfigurationObsoleteExtensions
 {
     /// <summary>
     /// Set a configuration value for a specific property.

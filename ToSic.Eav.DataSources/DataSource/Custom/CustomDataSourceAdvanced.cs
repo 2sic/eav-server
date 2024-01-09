@@ -28,7 +28,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
 
         [PrivateApi]
         public MyServices(
-            DataSourceConfiguration configuration,
+            IDataSourceConfiguration configuration,
             LazySvc<DataSourceErrorHelper> errorHandler,
             ConfigurationDataLoader configDataLoader,
             LazySvc<IDataSourceCacheService> cacheService,

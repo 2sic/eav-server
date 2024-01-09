@@ -14,10 +14,14 @@ using static System.StringComparer;
 namespace ToSic.Eav.DataSource;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MyServices>, IDataSourceConfiguration
+[method: PrivateApi]
+internal class DataSourceConfiguration(DataSourceConfiguration.MyServices services)
+    : ServiceBase<DataSourceConfiguration.MyServices>(services, $"{DataSourceConstants.LogPrefix}.Config"),
+        IDataSourceConfiguration
 {
     #region Dependencies - Must be in DI
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public class MyServices: MyServicesBase
     {
         public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; }
@@ -32,12 +36,7 @@ public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MySer
 
     #endregion
 
-    #region Constructor (non DI)
-
-    [PrivateApi]
-    public DataSourceConfiguration(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Config")
-    {
-    }
+    #region Constructor
 
     internal DataSourceConfiguration Attach(DataSourceBase ds)
     {

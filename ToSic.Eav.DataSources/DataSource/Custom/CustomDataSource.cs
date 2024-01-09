@@ -30,18 +30,14 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// Otherwise compiled code would break when we need additional dependencies just for the CustomDataSource.
     /// </summary>
     [PrivateApi]
-    public new class MyServices : CustomDataSourceAdvanced.MyServices
-    {
-        [PrivateApi]
-        public MyServices(
-            DataSourceConfiguration configuration,
-            LazySvc<DataSourceErrorHelper> errorHandler,
-            ConfigurationDataLoader configDataLoader,
-            LazySvc<IDataSourceCacheService> cacheService,
-            IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, cacheService, dataFactory)
-        {
-        }
-    }
+    [method: PrivateApi]
+    public new class MyServices(
+        IDataSourceConfiguration configuration,
+        LazySvc<DataSourceErrorHelper> errorHandler,
+        ConfigurationDataLoader configDataLoader,
+        LazySvc<IDataSourceCacheService> cacheService,
+        IDataFactory dataFactory)
+        : CustomDataSourceAdvanced.MyServices(configuration, errorHandler, configDataLoader, cacheService, dataFactory);
 
     /// <summary>
     /// Constructor for creating a Custom DataSource.

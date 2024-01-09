@@ -16,7 +16,7 @@ public static class DataSourcesStartup
         // Dependencies, new in v15
         services.TryAddTransient<DataSourceBase.MyServices>();
         services.TryAddTransient<App.MyServices>();
-        services.TryAddTransient<DataSourceConfiguration>();
+        //services.TryAddTransient<DataSourceConfiguration>();
         services.TryAddTransient<IDataSourceConfiguration, DataSourceConfiguration>();
         services.TryAddTransient<DataSourceConfiguration.MyServices>();
         services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
