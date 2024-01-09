@@ -13,30 +13,18 @@ namespace ToSic.Eav.LookUp;
 /// It will take the first <see cref="IEntity"/> in a source and look up properties/attributes in that. <br/>
 /// Normally this is used in Queries, where you want to get a parameter from the <em>In</em> stream.
 /// </summary>
+/// <param name="dataSource">the data-target, of which it will use the In-Stream</param>
+/// <param name="cultureResolver">culture resolver for multi-language scenarios</param>
 [PrivateApi("Was PublicApi till v17, previously called LookUpInDataTarget / renamed to LookUpInDataSource")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LookUpInDataSource : LookUpBase
+public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cultureResolver) : LookUpBase(InStreamName)
 {
     /// <summary>
     /// The stream name to read when finding the entity which is the source of this.
     /// </summary>
     public const string InStreamName = "In";
 
-    /// <summary>
-    /// Constructor expecting the data-target, of which it will use the In-Stream
-    /// </summary>
-    private readonly IDataSource _dataSource;
-    private readonly IZoneCultureResolver _cultureResolver;
-
-    public LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cultureResolver)
-    {
-        _dataSource = dataSource;
-        _cultureResolver = cultureResolver;
-
-        Name = InStreamName;
-    }
-
-    private string[] Dimensions => _dimensions ??= _cultureResolver.SafeLanguagePriorityCodes();
+    private string[] Dimensions => _dimensions ??= cultureResolver.SafeLanguagePriorityCodes();
 
     private string[] _dimensions;
 
@@ -53,10 +41,10 @@ public class LookUpInDataSource : LookUpBase
         if (!subTokens.HasSubtoken) return string.Empty;
 
         // check if this stream exists
-        if (!_dataSource.In.ContainsKey(subTokens.Source)) return string.Empty;
+        if (!dataSource.In.ContainsKey(subTokens.Source)) return string.Empty;
 
         // check if any entities exist in this specific in-stream
-        var entityStream = _dataSource.In[subTokens.Source];
+        var entityStream = dataSource.In[subTokens.Source];
         if (!entityStream.List.Any()) return string.Empty;
 
         // Create an LookUpInEntity based on the first item, return its Get
