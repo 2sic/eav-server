@@ -20,6 +20,7 @@ namespace ToSic.Eav.DataSource;
 /// Read about it in the docs.
 /// </remarks>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class CustomDataSourceAdvanced: DataSourceBase
 {
     [PrivateApi]

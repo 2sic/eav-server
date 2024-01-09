@@ -22,12 +22,12 @@ public class LookUpInDataSource : LookUpBase
     /// </summary>
     public const string InStreamName = "In";
 
-    private readonly IDataSource _dataSource;
-    private readonly IZoneCultureResolver _cultureResolver;
-
     /// <summary>
     /// Constructor expecting the data-target, of which it will use the In-Stream
     /// </summary>
+    private readonly IDataSource _dataSource;
+    private readonly IZoneCultureResolver _cultureResolver;
+
     public LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cultureResolver)
     {
         _dataSource = dataSource;

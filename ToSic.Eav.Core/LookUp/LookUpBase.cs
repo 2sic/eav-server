@@ -13,6 +13,17 @@ namespace ToSic.Eav.LookUp;
 [PublicApi]
 public abstract class LookUpBase : ILookUp
 {
+    #region Experimental
+
+    protected LookUpBase() { }
+
+    protected LookUpBase(string name)
+    {
+        Name = name;
+    }
+
+    #endregion
+
     #region default methods of interface
     /// <inheritdoc/>
     public string Name { get; protected set; }
