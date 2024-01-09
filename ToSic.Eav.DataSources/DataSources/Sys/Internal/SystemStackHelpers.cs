@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Plumbing;
 using static ToSic.Eav.Apps.AppStackConstants;
 
-namespace ToSic.Eav.DataSources.Sys;
+namespace ToSic.Eav.DataSources.Sys.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SystemStackHelpers
