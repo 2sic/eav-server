@@ -9,7 +9,7 @@ using ToSic.Eav.Apps.Parts;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
-using ToSic.Sxc.Apps.ImportExport;
+using ToSic.Sxc.Apps.Internal.ImportExport;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Repository.Efc.Tests
