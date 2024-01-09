@@ -4,7 +4,7 @@ using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSource.Catalog;
+namespace ToSic.Eav.DataSource.Internal.AppDataSources;
 
 internal class AppDataSourcesLoaderUnknown : ServiceBase, IIsUnknown, IAppDataSourcesLoader
 {

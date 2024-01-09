@@ -5,17 +5,17 @@ using ToSic.Eav.DataSource.Query;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.DataSource.Debug;
+namespace ToSic.Eav.DataSource.Internal.Inspect;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class QueryInfo: ServiceBase
+public class InspectQuery: ServiceBase
 {
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public QueryInfo() : base("Qry.Info") { }
+    public InspectQuery() : base("Qry.Info") { }
         
-    public QueryInfo BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
+    public InspectQuery BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
     {
         QueryDefinition = queryDef;
         GetStreamInfosRecursive(queryResult);
@@ -23,8 +23,8 @@ public class QueryInfo: ServiceBase
     }
 
     public QueryDefinition QueryDefinition;
-    public List<StreamInfo> Streams = new();
-    public Dictionary<Guid, DataSourceInfo> Sources = new();
+    public List<InspectStream> Streams = [];
+    public Dictionary<Guid, InspectDataSource> Sources = [];
 
     /// <summary>
     /// Provide an array of infos related to a stream and data source
@@ -36,7 +36,7 @@ public class QueryInfo: ServiceBase
             // First get all the streams (do this first so they stay together)
             try
             {
-                var stmInfo = new StreamInfo(stream.Value, target, stream.Key);
+                var stmInfo = new InspectStream(stream.Value, target, stream.Key);
                 if (Streams.Any(existing => existing.Equals(stmInfo)))
                     continue;
                 Streams.Add(stmInfo);
@@ -49,7 +49,7 @@ public class QueryInfo: ServiceBase
             // Try to add the target to Data-Source-Stats;
             try
             {
-                var di = new DataSourceInfo(target as IDataSource);
+                var di = new InspectDataSource(target as IDataSource);
                 if (!Sources.ContainsKey(di.Guid))
                     Sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
             }
@@ -61,7 +61,7 @@ public class QueryInfo: ServiceBase
             // Try to add the source to the data-source-stats
             try
             {
-                var di = new DataSourceInfo(stream.Value.Source);
+                var di = new InspectDataSource(stream.Value.Source);
                 if (!Sources.ContainsKey(di.Guid))
                     Sources.Add(di.Guid, di.WithQueryDef(QueryDefinition));
             }

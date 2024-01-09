@@ -2,7 +2,7 @@
 using System.Runtime.Caching;
 using ToSic.Eav.DataSource.VisualQuery;
 
-namespace ToSic.Eav.DataSource.Catalog;
+namespace ToSic.Eav.DataSource.Internal.AppDataSources;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IAppDataSourcesLoader

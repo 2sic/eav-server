@@ -4,10 +4,10 @@ using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Streams;
 
-namespace ToSic.Eav.DataSource.Debug;
+namespace ToSic.Eav.DataSource.Internal.Inspect;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class StreamInfo
+public class InspectStream
 {
     public Guid Target;
     public Guid Source;
@@ -29,7 +29,7 @@ public class StreamInfo
     [JsonIgnore]
     protected readonly IDataStream Stream;
 
-    public StreamInfo(IDataStream stream, IDataSource target, string inName)
+    public InspectStream(IDataStream stream, IDataSource target, string inName)
     {
         try
         {
@@ -54,7 +54,7 @@ public class StreamInfo
     }
 
 
-    public bool Equals(StreamInfo comparison) =>
+    public bool Equals(InspectStream comparison) =>
         comparison.Target == Target
         && comparison.Source == Source
         && comparison.TargetIn == TargetIn

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSource.Query;
 
-namespace ToSic.Eav.DataSource.Debug;
+namespace ToSic.Eav.DataSource.Internal.Inspect;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class DataSourceInfo
+public class InspectDataSource
 {
     /// <summary>
     /// DS Guid for identification
@@ -34,7 +34,7 @@ public class DataSourceInfo
 
     public DataSourceConnections Connections { get; set; }
 
-    public DataSourceInfo(IDataSource ds)
+    public InspectDataSource(IDataSource ds)
     {
         try
         {
@@ -56,7 +56,7 @@ public class DataSourceInfo
         }
     }
 
-    public DataSourceInfo WithQueryDef(QueryDefinition queryDefinition)
+    public InspectDataSource WithQueryDef(QueryDefinition queryDefinition)
     {
         // find this item in the query def
         var partDef = queryDefinition.Parts.FirstOrDefault(p => p.Guid == Guid);

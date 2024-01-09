@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Catalog;
+using ToSic.Eav.DataSource.Internal.AppDataSources;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.Internal.Configuration;

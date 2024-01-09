@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal.Errors;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;

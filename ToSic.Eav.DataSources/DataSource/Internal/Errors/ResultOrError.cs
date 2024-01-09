@@ -2,21 +2,14 @@
 using ToSic.Eav.Data;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal.Errors;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ResultOrError<T>
+public class ResultOrError<T>(bool isOk, T result, IImmutableList<IEntity> errors = null)
 {
-    public bool IsOk { get; }
+    public bool IsOk { get; } = isOk;
     public bool IsError => !IsOk;
-    public T Result { get; }
+    public T Result { get; } = result;
 
-    public ResultOrError(bool isOk, T result, IImmutableList<IEntity> errors = null)
-    {
-        Errors = errors?? EmptyList;
-        IsOk = isOk;
-        Result = result;
-    }
-
-    public IImmutableList<IEntity> Errors { get; }
+    public IImmutableList<IEntity> Errors { get; } = errors?? EmptyList;
 }
