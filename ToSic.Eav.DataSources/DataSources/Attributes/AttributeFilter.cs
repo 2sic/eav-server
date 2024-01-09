@@ -32,8 +32,8 @@ public class AttributeFilter : Eav.DataSource.DataSourceBase
 {
     #region Constants
 
-    [PrivateApi] public const string ModeKeep = "+";
-    [PrivateApi] public const string ModeRemove = "-";
+    [PrivateApi] internal const string ModeKeep = "+";
+    [PrivateApi] internal const string ModeRemove = "-";
 
     #endregion
         

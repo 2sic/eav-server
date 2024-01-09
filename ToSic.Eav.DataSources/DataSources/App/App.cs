@@ -78,6 +78,7 @@ public partial class App : DataSourceBase
     /// * Uses the[immutable convention](xref:NetCode.Conventions.Immutable).
     /// </remarks>
     [PrivateApi("WIP and not sure if this should ever become public")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [Configuration(Fallback = false)]
     public bool WithAncestors => Configuration.GetThis(false);
 
@@ -156,10 +157,11 @@ public partial class App : DataSourceBase
 
     private bool _attachOtherDataSourceRunning = false;
 
-    [PrivateApi]
-    [Obsolete("Will probably be removed in v14")]
-    // TODO: cause obsolete warning when used! #Deprecated
-    public IMetadataSource Metadata => AppState;
+    // 2024-01-09 2dm Removed for v17.01 - should have been removed a long time ago
+    //[PrivateApi]
+    //[Obsolete("Will probably be removed in v14")]
+    //// TODO: cause obsolete warning when used! #Deprecated
+    //public IMetadataSource Metadata => AppState;
 
     protected IAppState AppState => _appState.Get(() => _services.AppStates.GetReader(this));
     private readonly GetOnce<IAppState> _appState = new();

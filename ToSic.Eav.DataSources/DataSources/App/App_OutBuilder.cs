@@ -20,7 +20,11 @@ partial class App: IDataSourceReset
     private bool _requiresRebuildOfOut = true;
 
     [PrivateApi]
-    public void Reset() => _requiresRebuildOfOut = true;
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    void IDataSourceReset.Reset() => _requiresRebuildOfOut = true;
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    protected void Reset() => _requiresRebuildOfOut = true;
 
     /// <inheritdoc/>
     public override IReadOnlyDictionary<string, IDataStream> Out

@@ -36,8 +36,8 @@ public partial class Serialization : DataSourceBase
 {
     #region Constants
 
-    [PrivateApi("not sure how to document, doesn't seem to be in use")] public static string KeepAll = "*";
-    [PrivateApi("not sure how to document, doesn't seem to be in use")] public static string KeepNone = "-";
+    [PrivateApi("not sure how to document, doesn't seem to be in use")] internal static string KeepAll = "*";
+    [PrivateApi("not sure how to document, doesn't seem to be in use")] internal static string KeepNone = "-";
 
     #endregion
     #region Configuration-properties

@@ -3,12 +3,11 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSources;
+namespace ToSic.Eav.DataSources.Internal;
 
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class MetadataDataSourceBase : Eav.DataSource.DataSourceBase
 {
     /// <remarks>

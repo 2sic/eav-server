@@ -4,9 +4,10 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSources;
+namespace ToSic.Eav.DataSources.Internal;
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ITreeMapper
 {
     IImmutableList<IEntity> AddParentChild(

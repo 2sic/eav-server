@@ -103,7 +103,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
     /// </remarks>
     [PrivateApi]
-    public DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+    internal DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
     {
         Source = source;
         // Only set the values if they were explicitly provided

@@ -12,8 +12,10 @@ using ToSic.Eav.Services;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources;
 
-public static class DataSourcesStartup
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public static class StartupDataSources
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IServiceCollection AddDataSources(this IServiceCollection services)
     {
         // Dependencies, new in v15
@@ -55,6 +57,7 @@ public static class DataSourcesStartup
         return services;
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IServiceCollection AddDataSourcesFallback(this IServiceCollection services)
     {
         services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();

@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
@@ -32,7 +33,6 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-
 public class MetadataTargets: MetadataDataSourceBase
 {
     /// <summary>

@@ -39,7 +39,7 @@ public class Csv : CustomDataSourceAdvanced
 {
     #region Known errors
     [PrivateApi]
-    public const string ErrorIdNaN = "ID is not a number";
+    internal const string ErrorIdNaN = "ID is not a number";
 
     #endregion
 

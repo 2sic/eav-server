@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.DataSources.Internal;
 using ToSic.Lib.Documentation;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
@@ -28,7 +29,7 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsChildren")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-public class Children : RelationshipDataSourceBase
+public class Children(DataSourceBase.MyServices services) : RelationshipDataSourceBase(services, $"{LogPrefix}.Child")
 {
     /// <summary>
     /// Name of the field pointing to the children.
@@ -43,10 +44,6 @@ public class Children : RelationshipDataSourceBase
     /// Can usually be left empty (recommended).
     /// </summary>
     public override string ContentTypeName => Configuration.GetThis();
-
-    public Children(MyServices services) : base(services, $"{LogPrefix}.Child")
-    {
-    }
 
     /// <summary>
     /// Construct function for the get of the related items

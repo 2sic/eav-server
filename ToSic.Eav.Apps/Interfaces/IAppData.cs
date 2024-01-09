@@ -52,14 +52,15 @@ public interface IAppData: IDataSource, IMetadataSource
     /// <param name="userName">the current user name - will be logged as the author of the change</param>
     void Delete(int entityId, string userName = null);
 
-    /// <summary>
-    /// Metadata is an important feature of apps. <br/>
-    /// So the App DataSource automatically provides direct access to the metadata system.
-    /// This allows users of the App to query metadata directly through this object. 
-    /// </summary>
-    [PrivateApi]
-    [Obsolete("This shouldn't be available any more, will be removed ca. v14")]
-    IMetadataSource Metadata { get; }
+    // 2024-01-09 2dm Removed for v17.01 - should have been removed a long time ago
+    ///// <summary>
+    ///// Metadata is an important feature of apps. <br/>
+    ///// So the App DataSource automatically provides direct access to the metadata system.
+    ///// This allows users of the App to query metadata directly through this object. 
+    ///// </summary>
+    //[PrivateApi]
+    //[Obsolete("This shouldn't be available any more, will be removed ca. v14")]
+    //IMetadataSource Metadata { get; }
 
     /// <summary>
     /// Get metadata of TargetType.Custom - which is the most common way your code will need Metadata.

@@ -7,7 +7,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSources;
+namespace ToSic.Eav.DataSources.Internal;
 
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code
