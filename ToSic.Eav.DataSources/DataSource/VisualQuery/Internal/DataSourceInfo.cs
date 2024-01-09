@@ -2,7 +2,7 @@
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.DataSource.VisualQuery;
+namespace ToSic.Eav.DataSource.VisualQuery.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>

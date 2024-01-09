@@ -119,7 +119,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     private IDictionary<string, ILookUp> OverrideLookUps 
         => _overrideLookUps.Get(() => new Dictionary<string, ILookUp>
         {
-            { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSourceForIn, base.Services.ZoneCultureResolverLazy.Value) }
+            { "In".ToLowerInvariant(), new LookUpInDataSource(DataSourceForIn, base.Services.ZoneCultureResolverLazy.Value) }
         });
     private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new();
 

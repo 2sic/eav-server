@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.DataSource.VisualQuery.Internal;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 

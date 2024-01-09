@@ -41,7 +41,6 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     /// <summary>
     /// Load all [Configuration] attributes and ensure we have the config masks.
     /// </summary>
-    [PrivateApi]
     internal void AutoLoadAllConfigMasks(Type type)
     {
         // Load all config masks which are defined on attributes
@@ -52,15 +51,18 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
 
     /// <inheritdoc />
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public string Name => GetType().Name;
 
     [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public string Label { get; private set; }
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public virtual bool Immutable { get; private set; }
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public void DoWhileOverrideImmutable(Action action)
     {
         _overrideImmutable = true;
@@ -71,6 +73,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     private bool _overrideImmutable;
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public void AddDebugInfo(Guid? guid, string label)
     {
         Guid = guid ?? Guid;

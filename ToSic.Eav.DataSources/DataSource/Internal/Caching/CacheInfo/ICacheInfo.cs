@@ -7,6 +7,4 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// provide information about caching
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public interface ICacheInfo: ICacheKey, ICacheExpiring
-{
-}
+public interface ICacheInfo: ICacheKey, ICacheExpiring;
