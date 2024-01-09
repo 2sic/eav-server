@@ -3,20 +3,18 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class DataSourceConnections
+public class DataSourceConnections(DataSourceBase parent)
 {
-    public List<DataSourceConnection> In = new();
-    public List<DataSourceConnection> Out = new();
+    public List<DataSourceConnection> In = [];
+    public List<DataSourceConnection> Out = [];
 
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
-    public DataSourceBase Parent { get; }
+    public DataSourceBase Parent { get; } = parent;
 
-        
-    public DataSourceConnections(DataSourceBase parent) => Parent = parent;
 
     public void AddIn(DataSourceConnection connection)
     {

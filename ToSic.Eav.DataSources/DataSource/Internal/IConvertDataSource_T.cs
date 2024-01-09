@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal;
 
 /// <summary>
 /// Marks objects which can convert a DataSource to another format.
@@ -10,18 +10,19 @@ namespace ToSic.Eav.DataSource;
 /// Usually used in serialization scenarios.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IConvertDataSource<T>
 {
     /// <summary>
-    /// Returns an converted IDataSource, but is serializable.
+    /// Returns a converted IDataSource, but is serializable.
     /// </summary>
     /// <param name="source">the source</param>
     /// <param name="streams">names of streams to publish. if null, will return all streams</param>
     IDictionary<string, IEnumerable<T>> Convert(IDataSource source, IEnumerable<string> streams = null);
 
     /// <summary>
-    /// Returns an converted IDataSource, but is serializable.
+    /// Returns a converted IDataSource, but is serializable.
     /// </summary>
     /// <param name="source">the source</param>
     /// <param name="streams">names of streams to publish. if null, will return all streams</param>
@@ -29,6 +30,7 @@ public interface IConvertDataSource<T>
 
 
     [PrivateApi("not public yet, as the signature is not final yet")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     IDictionary<string, IEnumerable<T>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids);
 
 }

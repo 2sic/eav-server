@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Lib.Documentation;
 
@@ -57,7 +58,9 @@ public interface IQuery: IDataSource, IDataSourceReset
     IDictionary<string, string> Params();
 
 
-
-    [PrivateApi]
-    IDataSource Source { get; }
+    ///// <summary>
+    ///// Inner source - mainly for debugging etc.
+    ///// </summary>
+    //[PrivateApi]
+    //IDataSource Source { get; }
 }

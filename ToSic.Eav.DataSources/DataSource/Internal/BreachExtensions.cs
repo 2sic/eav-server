@@ -13,6 +13,8 @@ namespace ToSic.Eav.DataSource.Internal;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class BreachExtensions
 {
+    public static IDataSourceLink CreateEmptyLink(IDataSource ds) => new DataSourceLink(null, dataSource: ds);
+
     public static CustomDataSource CustomDataSourceLight(CustomDataSource.MyServices services,
         IDataSource wrapper,
         NoParamOrder noParamOrder = default,

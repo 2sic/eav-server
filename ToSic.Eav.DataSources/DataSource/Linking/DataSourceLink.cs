@@ -3,32 +3,27 @@ using System.Linq;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
+using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource;
 
+[PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class DataSourceLink : IDataSourceLink
+internal class DataSourceLink(IDataSourceLink original,
+    NoParamOrder noParamOrder = default,
+    IDataSource dataSource = default,
+    IDataStream stream = default,
+    string name = default,
+    string outName = default,
+    string inName = default,
+    IEnumerable<IDataSourceLink> more = default) : IDataSourceLink
 {
-    public DataSourceLink(IDataSourceLink original,
-        NoParamOrder noParamOrder = default,
-        IDataSource dataSource = default,
-        IDataStream stream = default,
-        string name = default,
-        string outName = default,
-        string inName = default,
-        IEnumerable<IDataSourceLink> more = default)
-    {
-        More = more ?? original?.More;
-        DataSource = dataSource ?? original?.DataSource;
-        Stream = stream ?? original?.Stream;
-        OutName = name ?? outName ?? original?.OutName ?? DataSourceConstants.StreamDefaultName;
-        InName = name ?? inName ?? original?.InName ?? DataSourceConstants.StreamDefaultName;
-    }
-    public IDataSource DataSource { get; }
-    public string OutName { get; }
-    public string InName { get; }
-    public IDataStream Stream { get; }
-    public IEnumerable<IDataSourceLink> More { get; }
+    public IDataSource DataSource { get; } = dataSource ?? original?.DataSource;
+    public string OutName { get; } = name ?? outName ?? original?.OutName ?? DataSourceConstants.StreamDefaultName;
+    public string InName { get; } = name ?? inName ?? original?.InName ?? DataSourceConstants.StreamDefaultName;
+    public IDataStream Stream { get; } = stream ?? original?.Stream;
+    public IEnumerable<IDataSourceLink> More { get; } = more ?? original?.More;
+
     public IDataSourceLink Rename(string name = default, string outName = default, string inName = default) =>
         // Check if no names provided
         !$"{name}{outName}{inName}".HasValue() ? this : new DataSourceLink(this, name: name, outName: outName, inName: inName);

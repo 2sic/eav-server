@@ -52,6 +52,9 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
     #region Internal Source - mainly for debugging or advanced uses of a query
 
+    /// <summary>
+    /// Inner source - mainly for debugging etc.
+    /// </summary>
     [PrivateApi]
     public IDataSource Source
     {

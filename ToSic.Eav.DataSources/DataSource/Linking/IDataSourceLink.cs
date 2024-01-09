@@ -10,18 +10,23 @@ namespace ToSic.Eav.DataSource;
 public interface IDataSourceLink : IDataSourceLinkable
 {
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     IDataSource DataSource { get; }
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     string OutName { get; }
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     string InName { get; }
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     IDataStream Stream { get; }
 
     /// <summary>
     /// Internal use only.
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     IEnumerable<IDataSourceLink> More { get; }
 
     /// <summary>
@@ -34,6 +39,7 @@ public interface IDataSourceLink : IDataSourceLinkable
     IDataSourceLink Rename(string name = default, string outName = default, string inName = default);
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     IDataSourceLink AddStream(string name = default, string outName = default, string inName = default);
 
     /// <summary>
@@ -49,5 +55,6 @@ public interface IDataSourceLink : IDataSourceLinkable
     /// <param name="recursion"></param>
     /// <returns></returns>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     IEnumerable<IDataSourceLink> Flatten(int recursion = 0);
 }

@@ -8,9 +8,10 @@ namespace ToSic.Eav.DataSource;
 /// <summary>
 /// Provide setup configuration for a new data source.
 ///
-/// This is internal functionality, but we show it in the docs TODO:
+/// This is internal functionality
 /// </summary>
-partial class DataSourceOptions: IDataSourceOptions
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public partial class DataSourceOptions: IDataSourceOptions
 {
     /// <summary>
     /// Empty constructor to create new config without anything.
@@ -40,23 +41,12 @@ partial class DataSourceOptions: IDataSourceOptions
     public bool? ShowDrafts { get; }
     public bool Immutable { get; }
 
-    #region General Setter - like a constructor
-
-        
-
-    #endregion
 
     #region Value Setters
 
     public DataSourceOptions Values(IImmutableDictionary<string, string> values) => new(this, values: values);
         
         
-    #endregion
-
-    #region AppIdentitySetters
-
-        
-
     #endregion
 
 }

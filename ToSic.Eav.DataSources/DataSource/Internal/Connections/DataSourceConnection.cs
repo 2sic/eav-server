@@ -2,24 +2,25 @@
 using System.Text.Json.Serialization;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class DataSourceConnection
+public class DataSourceConnection(IDataSource source, string sourceStream, IDataSource target, string targetStream)
 {
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
-    public IDataSource DataSource;
+    public IDataSource DataSource = source;
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
-    public IDataSource DataTarget;
+    public IDataSource DataTarget = target;
         
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
-    public string SourceStream { get; }
+    public string SourceStream { get; } = sourceStream;
+
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
-    public string TargetStream { get; }
-        
+    public string TargetStream { get; } = targetStream;
+
     /// <summary>
-    /// Temporary safety net - unsure if usefull
+    /// Temporary safety net - unsure if useful
     /// </summary>
     [JsonIgnore]
     public IDataStream DirectlyAttachedStream { get; }
@@ -31,39 +32,19 @@ public class DataSourceConnection
 
     #endregion
 
-    public DataSourceConnection(IDataStream sourceStream, IDataSource target, string targetStream)
+    public DataSourceConnection(IDataStream sourceStream, IDataSource target, string targetStream) : this(sourceStream.Source, sourceStream.Name, target, targetStream)
     {
         DirectlyAttachedStream = sourceStream;
-        DataSource = sourceStream.Source;
-        SourceStream = sourceStream.Name;
-        DataTarget = target;
-        TargetStream = targetStream;
-    }
-
-
-    public DataSourceConnection(IDataSource source, string sourceStream, IDataSource target, string targetStream)
-    {
-        DataSource = source;
-        DataTarget = target;
-        SourceStream = sourceStream;
-        TargetStream = targetStream;
     }
 }
     
     
 [PrivateApi]
-public class QuickSourceInfo 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public class QuickSourceInfo(IDataSource data, string streamName)
 {
-    public QuickSourceInfo(IDataSource data, string streamName)
-    {
-        Label = data?.Label;
-        Guid = data?.Guid;
-        Name = data?.Name;
-        Stream = streamName;
-    }
-        
-    public string Label { get; }
-    public Guid? Guid { get; }
-    public string Name { get; }
-    public string Stream { get; }
+    public string Label { get; } = data?.Label;
+    public Guid? Guid { get; } = data?.Guid;
+    public string Name { get; } = data?.Name;
+    public string Stream { get; } = streamName;
 }

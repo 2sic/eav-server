@@ -33,15 +33,18 @@ public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLi
     string Name { get; }
 
     /// <summary>
-    /// A special scope category for the stream. Important to hide system data types to the normal developer
+    /// A special scope category for the stream.
+    /// Important to hide system data types to the normal developer
     /// </summary>
     [PrivateApi("New / WIP 12.10")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     string Scope { get; }
 
     /// <summary>
     /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     DataStreamCacheStatus Caching { get; }
 
     /// <summary>
@@ -49,5 +52,6 @@ public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLi
     /// It will not flush the up-stream caches.
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     void ResetStream();
 }

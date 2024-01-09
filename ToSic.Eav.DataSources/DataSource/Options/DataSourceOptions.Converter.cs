@@ -9,7 +9,6 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class DataSourceOptions
 {
     /// <summary>
