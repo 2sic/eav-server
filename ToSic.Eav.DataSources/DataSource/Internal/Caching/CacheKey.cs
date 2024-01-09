@@ -8,10 +8,12 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CacheKey(IDataSource dataSource) : ICacheKeyManager
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
     public readonly IDataSource DataSource = dataSource;
 
 
     /// <inheritdoc />
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public virtual string CachePartialKey
     {
         get
@@ -33,6 +35,7 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
         }
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
     public virtual string CacheFullKey => _fullKey ??= string.Join(">", SubKeys.Distinct());
 
 
@@ -42,12 +45,12 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
     /// <returns></returns>
     private List<IDataSource> UniqueSources()
     {
-        if (!(DataSource is IDataSource target)) return new List<IDataSource>();
+        if (DataSource == null) return [];
 
-        if (target.In == null || target.In.Count == 0)
-            return new List<IDataSource>();
+        if (DataSource.In == null || DataSource.In.Count == 0)
+            return [];
 
-        return target.In
+        return DataSource.In
             .Select(pairs => pairs.Value?.Source)
             .Where(stream => stream != null)
             .Distinct()
@@ -55,6 +58,7 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
     }
 
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public string[] SubKeys
     {
         get
@@ -65,7 +69,7 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
                 .SelectMany(inStream => inStream.CacheKey.SubKeys)
                 .ToList();
             keys.Add(CachePartialKey);
-            _dependentPartials = keys.ToArray();
+            _dependentPartials = [.. keys];
             return _dependentPartials;
         }
     }

@@ -7,21 +7,14 @@ namespace ToSic.Eav.DataSource.Streams;
 /// Provides information of how to cache a stream.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class DataStreamCacheStatus: CacheKey, ICacheExpiring
+public class DataStreamCacheStatus(ICacheInfo cacheInfoProvider, IDataSource dataSource, string cacheSuffix)
+    : CacheKey(dataSource), ICacheExpiring
 {
-    public DataStreamCacheStatus(ICacheInfo cacheInfoProvider, IDataSource dataSource, string cacheSuffix) 
-        : base(dataSource)
-    {
-        _cacheInfoProvider = cacheInfoProvider;
-        _cacheSuffix = cacheSuffix;
-    }
+    public override string CacheFullKey => cacheInfoProvider.CacheFullKey + "&Stream=" + cacheSuffix;
 
-    private readonly ICacheInfo _cacheInfoProvider;
-    private readonly string _cacheSuffix;
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public long CacheTimestamp => cacheInfoProvider.CacheTimestamp;
 
-    public override string CacheFullKey => _cacheInfoProvider.CacheFullKey + "&Stream=" + _cacheSuffix;
-
-    public long CacheTimestamp => _cacheInfoProvider.CacheTimestamp;
-
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public bool CacheChanged(long dependentTimeStamp) => DataSource.CacheChanged(dependentTimeStamp);
 }
