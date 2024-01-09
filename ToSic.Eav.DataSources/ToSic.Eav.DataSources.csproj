@@ -49,8 +49,4 @@
     <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" /><!-- from Oqtane.Server.csproj -->
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DataSource\VisualQuery\Internal\" />
-  </ItemGroup>
 </Project>

@@ -15,12 +15,14 @@ public enum Audience
     /// Audience not defined, avoid using
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
     Undefined = 0,
 
     /// <summary>
     /// Everyone - ATM not in use, avoid using for now
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
     Everyone = 10,
 
     /// <summary>
@@ -37,11 +39,13 @@ public enum Audience
     /// Admins only - ATM not in use, avoid using for now.
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
     Admin = 1000,
 
     /// <summary>
     /// System level only - ATM not in use, avoid using for now
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
     System = 10000
 }
