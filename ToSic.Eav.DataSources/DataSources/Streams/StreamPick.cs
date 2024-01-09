@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Pick Stream",
     UiHint = "Choose a stream",
-    Icon = Icons.Merge,
+    Icon = DataSourceIcons.Merge,
     Type = DataSourceType.Logic,
     NameId = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
     ConfigurationType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",

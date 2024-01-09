@@ -1,11 +1,12 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -18,7 +19,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Stream Fallback",
     UiHint = "Find the first stream which has data",
-    Icon = Icons.Merge,
+    Icon = DataSourceIcons.Merge,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
     DynamicOut = false,

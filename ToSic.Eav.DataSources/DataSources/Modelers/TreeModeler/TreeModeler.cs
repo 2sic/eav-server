@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources;
     NameId = "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
     NiceName = "Relationship/Tree Modeler",
     UiHint = "Connect items to create relationships or trees",
-    Icon = Icons.Tree,
+    Icon = DataSourceIcons.Tree,
     NameIds = new[]
     {
         "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",

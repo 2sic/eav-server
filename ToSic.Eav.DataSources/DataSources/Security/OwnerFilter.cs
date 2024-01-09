@@ -1,10 +1,11 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -17,7 +18,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Owner Filter",
     UiHint = "Keep only item created by a specified user",
-    Icon = Icons.PersonCircled,
+    Icon = DataSourceIcons.PersonCircled,
     Type = DataSourceType.Security,
     NameId = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
     DynamicOut = false,

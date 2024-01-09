@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 
@@ -14,7 +15,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Pass-Through",
     UiHint = "Technical DataSource, doesn't do anything",
-    Icon = Icons.CopyAll,
+    Icon = DataSourceIcons.CopyAll,
     Type = DataSourceType.Source, 
     Audience = Audience.Advanced,
     NameId = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",

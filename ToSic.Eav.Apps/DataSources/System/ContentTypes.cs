@@ -6,6 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
@@ -28,7 +29,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "Content Types",
     UiHint = "Types of an App",
-    Icon = Icons.Dns,
+    Icon = DataSourceIcons.Dns,
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
     Audience = Audience.Advanced,

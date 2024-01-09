@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
@@ -12,7 +13,7 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -30,7 +31,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "DataSources",
     UiHint = "List the DataSources available in the system",
-    Icon = Icons.ArrowUpBoxed,
+    Icon = DataSourceIcons.ArrowUpBoxed,
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
     Audience = Audience.Advanced,

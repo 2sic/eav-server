@@ -8,6 +8,7 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using static ToSic.Eav.Apps.AppStackConstants;
@@ -18,7 +19,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "System Stacks",
     UiHint = "Settings and/or Resources as a Stack",
-    Icon = Icons.Dns, // todo
+    Icon = DataSourceIcons.Dns, // todo
     Type = DataSourceType.System,
     NameId = "60806cb1-0c76-4c1e-8dfe-dcec94726f8d",
     Audience = Audience.Advanced,

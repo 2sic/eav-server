@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Shuffle",
     UiHint = "Mix/randomize the order of items",
-    Icon = Icons.Shuffle,
+    Icon = DataSourceIcons.Shuffle,
     Type = DataSourceType.Sort, 
     NameId = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
     DynamicOut = false,

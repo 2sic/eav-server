@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Metadata;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "App",
     UiHint = "All data in an app with streams for type",
-    Icon = Icons.TableChart,
+    Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
     DynamicOut = true,

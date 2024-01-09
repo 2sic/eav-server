@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Merge Streams",
     UiHint = "Combine multiple streams into one",
-    Icon = Icons.MergeLeft,
+    Icon = DataSourceIcons.MergeLeft,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
     DynamicOut = false,

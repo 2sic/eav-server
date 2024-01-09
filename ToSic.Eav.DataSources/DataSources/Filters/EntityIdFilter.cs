@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Errors;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Item Id Filter",
     UiHint = "Find items based on one or more IDs",
-    Icon = Icons.Fingerprint,
+    Icon = DataSourceIcons.Fingerprint,
     Type = DataSourceType.Filter, 
     NameId = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
     DynamicOut = false,

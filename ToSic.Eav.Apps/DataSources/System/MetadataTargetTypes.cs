@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "Metadata Target Types",
     UiHint = "Get Target Types which determine what kind of thing/target the metadata is for.",
-    Icon = Icons.MetadataTargetTypes,
+    Icon = DataSourceIcons.MetadataTargetTypes,
     Type = DataSourceType.System,
     NameId = "fba0d40d-f6af-4593-9ccb-54cfd73d8217", // new generated
     Audience = Audience.Advanced,

@@ -5,11 +5,12 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -25,7 +26,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "Attributes of Type",
     UiHint = "Attributes/fields of a Content-Type",
-    Icon = Icons.Dns,
+    Icon = DataSourceIcons.Dns,
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
     Audience = Audience.Advanced,

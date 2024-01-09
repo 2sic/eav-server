@@ -5,10 +5,11 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Paging",
     UiHint = "Split data into pages and forward just one batch",
-    Icon = Icons.Stories,
+    Icon = DataSourceIcons.Stories,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
     DynamicOut = false,

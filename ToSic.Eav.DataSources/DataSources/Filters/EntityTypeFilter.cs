@@ -4,10 +4,11 @@ using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Type-Filter",
     UiHint = "Only keep items of the specified type",
-    Icon = Icons.RouteAlt,
+    Icon = DataSourceIcons.RouteAlt,
     Type = DataSourceType.Filter, 
     NameId = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
     DynamicOut = false,

@@ -7,7 +7,7 @@ using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 

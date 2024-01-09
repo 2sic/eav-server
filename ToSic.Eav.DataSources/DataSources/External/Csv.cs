@@ -10,6 +10,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Lib.Logging;
@@ -28,7 +29,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "CSV Data",
     UiHint = "Load data from a CSV file",
-    Icon = Icons.Description,
+    Icon = DataSourceIcons.Description,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
     DynamicOut = false,

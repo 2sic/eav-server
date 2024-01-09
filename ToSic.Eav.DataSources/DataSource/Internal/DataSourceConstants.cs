@@ -1,11 +1,10 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal;
 
 /// <summary>
 /// Various constants typically used in/for DataSources.

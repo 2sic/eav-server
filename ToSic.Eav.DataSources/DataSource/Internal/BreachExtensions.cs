@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Lib.Coding;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal;
 
 /// <summary>
 /// Special - very internal - helper to breach internal APIs in edge cases where they are needed outside.

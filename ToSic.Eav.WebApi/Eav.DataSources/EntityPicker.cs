@@ -5,6 +5,7 @@ using ToSic.Eav.Apps.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Entity-Picker (internal)",
     UiHint = "Special DataSource for the standard Entity-Picker",
-    Icon = Icons.RouteAlt,
+    Icon = DataSourceIcons.RouteAlt,
     Type = DataSourceType.Filter,
     Audience = Audience.Advanced,
     NameId = "32369814-8f6d-47d8-a648-ce5372de78a8",

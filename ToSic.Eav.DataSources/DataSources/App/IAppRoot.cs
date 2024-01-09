@@ -2,6 +2,7 @@
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Eav.Apps;
+using ToSic.Eav.DataSource.Internal;
 
 namespace ToSic.Eav.DataSources;
 
@@ -12,7 +13,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "App Root Cache",
     UiHint = "All App data from the Cache",
-    Icon = Icons.TableChart,
+    Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.Source,
     Audience = Audience.Advanced,
     NameId = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",

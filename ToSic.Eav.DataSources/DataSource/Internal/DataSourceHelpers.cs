@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal;
 
 internal static class DataSourceHelpers
 {

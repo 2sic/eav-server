@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
@@ -18,7 +19,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Children",
     UiHint = "Get the item's children",
-    Icon = Icons.ParentChild,
+    Icon = DataSourceIcons.ParentChild,
     Type = DataSourceType.Lookup,
     NameId = "9f8de7ee-d1aa-4055-9bf9-8f183259cb05",
     In = new[] { InStreamDefaultRequired },

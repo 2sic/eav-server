@@ -5,6 +5,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources;
     NameId = "f390e460-46ff-4a6e-883f-f50fdeb363ee",
     NiceName = "Language Modeler",
     UiHint = "Combine values to multi-language values",
-    Icon = Icons.Translate,
+    Icon = DataSourceIcons.Translate,
     NameIds = new[]
     {
         "f390e460-46ff-4a6e-883f-f50fdeb363ee",

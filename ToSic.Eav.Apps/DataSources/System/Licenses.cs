@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Lib.Documentation;
@@ -16,7 +17,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "Licenses",
     UiHint = "List all licenses",
-    Icon = Icons.TableChart,
+    Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.System,
     NameId = "402fa226-5584-46d1-a763-e63ba0774c31",
     Audience = Audience.Advanced,

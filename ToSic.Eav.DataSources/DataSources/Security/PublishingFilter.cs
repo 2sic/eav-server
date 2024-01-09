@@ -1,11 +1,12 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Publishing Filter",
     UiHint = "Keep data based on user roles (editor sees draft items)",
-    Icon = Icons.Eye, 
+    Icon = DataSourceIcons.Eye, 
     Type = DataSourceType.Security, 
     NameId = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
     In = new []{ StreamPublishedName + "*", StreamDefaultName + "*",  StreamDraftsName + "*" },

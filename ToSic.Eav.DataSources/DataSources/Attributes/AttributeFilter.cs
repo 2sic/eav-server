@@ -2,11 +2,12 @@
 using System.Linq;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using static System.StringComparer;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Remove Attribute/Property",
     UiHint = "Remove attributes/properties to limit what is available",
-    Icon = Icons.Delete,
+    Icon = DataSourceIcons.Delete,
     Type = DataSourceType.Modify, 
     NameId = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
     DynamicOut = false,

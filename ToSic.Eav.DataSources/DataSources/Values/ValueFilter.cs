@@ -4,12 +4,13 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Value Filter",
     UiHint = "Keep items which have a property with the expected value",
-    Icon = Icons.FilterList,
+    Icon = DataSourceIcons.FilterList,
     Type = DataSourceType.Filter,
     NameId = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
     In = new[] { InStreamDefaultRequired, StreamFallbackName },

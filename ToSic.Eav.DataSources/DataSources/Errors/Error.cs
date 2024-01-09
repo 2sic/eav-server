@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -17,7 +18,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Error DataSource",
     UiHint = "Generate an error - primarily for debugging",
-    Icon = Icons.Warning,
+    Icon = DataSourceIcons.Warning,
     Type = DataSourceType.Debug,
     Audience = Audience.Advanced,
     NameId = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid

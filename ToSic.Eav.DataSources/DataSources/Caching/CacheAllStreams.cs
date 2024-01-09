@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
@@ -23,7 +24,7 @@ namespace ToSic.Eav.DataSources.Caching;
 [VisualQuery(
     NiceName = "Cache Streams",
     UiHint = "Cache all streams based on some rules",
-    Icon = Icons.HistoryOff,
+    Icon = DataSourceIcons.HistoryOff,
     Type = DataSourceType.Cache, 
     NameId = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
     DynamicOut = true,

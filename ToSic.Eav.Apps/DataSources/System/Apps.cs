@@ -5,11 +5,12 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;
@@ -26,7 +27,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "Apps",
     UiHint = "Apps of a Zone",
-    Icon = Icons.Apps,
+    Icon = DataSourceIcons.Apps,
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
     DynamicOut = false,

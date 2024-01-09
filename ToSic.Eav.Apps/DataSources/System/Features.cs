@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Documentation;
@@ -16,7 +17,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "Features",
     UiHint = "List all features",
-    Icon = Icons.TableChart,
+    Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.System,
     NameId = "398d0b9f-044f-48f7-83ef-307872f7ed93",
     Audience = Audience.Advanced,

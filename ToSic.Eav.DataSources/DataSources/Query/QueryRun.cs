@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Query Run",
     UiHint = "Get data from another Query",
-    Icon = Icons.Launch,
+    Icon = DataSourceIcons.Launch,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
     DynamicOut = true,

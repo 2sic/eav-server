@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
@@ -30,7 +31,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "SQL Data",
     UiHint = "Get data from a database using SQL",
-    Icon = Icons.FormDyn,
+    Icon = DataSourceIcons.FormDyn,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
     DynamicOut = false,

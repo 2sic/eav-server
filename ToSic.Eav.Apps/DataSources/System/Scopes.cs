@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     ConfigurationType = "",
     NameId = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
-    Icon = Icons.Scopes,
+    Icon = DataSourceIcons.Scopes,
     NiceName = "Data Scopes",
     Type = DataSourceType.System,
     UiHint = "Data Scopes group Content-Types by topic",

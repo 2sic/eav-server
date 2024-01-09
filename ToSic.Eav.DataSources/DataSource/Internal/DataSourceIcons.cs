@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.DataSource;
+namespace ToSic.Eav.DataSource.Internal;
 
 /// <summary>
 /// Icon names for use in code.
@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Icons
+public class DataSourceIcons
 {
     public const string Apps = "apps";
 

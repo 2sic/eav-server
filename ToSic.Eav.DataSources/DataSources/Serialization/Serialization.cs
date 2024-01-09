@@ -2,6 +2,7 @@
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
@@ -23,7 +24,7 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Serialization Configuration",
     UiHint = "Determine how this data is Serialized",
-    Icon = Icons.HtmlDotDotDot,
+    Icon = DataSourceIcons.HtmlDotDotDot,
     Type = DataSourceType.Modify, 
     NameId = "2952e680-4aaa-4a12-adf7-325cb2854358",
     DynamicOut = true,
