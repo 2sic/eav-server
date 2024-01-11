@@ -12,11 +12,9 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
-using ToSic.Eav.ImportExport.Environment;
-using ToSic.Eav.ImportExport.Xml;
+using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Persistence.Xml;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.ImportExport;
+﻿namespace ToSic.Eav.ImportExport.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Settings

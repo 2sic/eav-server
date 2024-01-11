@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Persistence.Xml;
+using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
 using ToSic.Testing.Shared;

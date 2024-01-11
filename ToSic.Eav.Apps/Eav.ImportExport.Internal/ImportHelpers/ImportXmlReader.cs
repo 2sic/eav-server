@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 

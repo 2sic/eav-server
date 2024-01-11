@@ -4,6 +4,7 @@ using System;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Internal;
+using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Testing.Shared;
 using ToSic.Testing.Shared.Mocks;
 

@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Apps.Internal;
+﻿using ToSic.Eav.ImportExport.Internal;
+
+namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class AppConstants
@@ -46,6 +48,6 @@ public static class AppConstants
     /// <summary>
     /// The type name used to store templates in the eav-system
     /// </summary>
-    public static string TemplateContentType = Eav.ImportExport.Settings.TemplateContentType;
+    public static string TemplateContentType = Settings.TemplateContentType;
 
 }

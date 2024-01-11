@@ -4,8 +4,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Serialization.Internal;
 using ToSic.Testing.Shared;
 using ToSic.Lib.Logging;
 

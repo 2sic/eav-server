@@ -1,25 +1,20 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using ToSic.Eav.Helpers;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Security.Files;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.ImportExport.Zip;
+namespace ToSic.Eav.ImportExport.Internal.Zip;
 
 internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 {
     public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
     {
-        using (var stream = new MemoryStream())
-        {
-            using (var zipStream = new ZipArchive(stream, ZipArchiveMode.Create, true))
-            {
-                ZipFolder(zipDirectory, zipDirectory, zipStream);
-            }
-            return stream;
-        }
+        using var stream = new MemoryStream();
+        using var zipStream = new ZipArchive(stream, ZipArchiveMode.Create, true);
+        ZipFolder(zipDirectory, zipDirectory, zipStream);
+        return stream;
     }
 
     public void ZipFolder(string rootFolder, string currentFolder, ZipArchive zStream)
@@ -49,45 +44,43 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     public void ExtractZipFile(Stream zipStream, string outFolder, bool allowCodeImport
     ) => Log.Do($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}", l =>
     {
-        using (var file = new ZipArchive(zipStream))
+        using var file = new ZipArchive(zipStream);
+        foreach (var entry in file.Entries)
         {
-            foreach (var entry in file.Entries)
+            // check for illegal file paths in zip
+            CheckZipEntry(entry);
+
+            var fullPath = Path.Combine(outFolder, entry.FullName);
+            var directoryName = Path.GetDirectoryName(fullPath);
+            if (!string.IsNullOrEmpty(directoryName))
             {
-                // check for illegal file paths in zip
-                CheckZipEntry(entry);
-
-                var fullPath = Path.Combine(outFolder, entry.FullName);
-                var directoryName = Path.GetDirectoryName(fullPath);
-                if (!string.IsNullOrEmpty(directoryName))
-                {
-                    if (!Directory.Exists(directoryName))
-                        l.A($"Create temp path:{directoryName} (len:{directoryName.Length})");
-                    Directory.CreateDirectory(directoryName);
-                }
-
-                if (fullPath.Length > 240)
-                    l.W($"file name is very long - could cause trouble:{fullPath}");
-
-                // enhanced security check
-                var isCode = FileNames.IsKnownCodeExtension(entry.Name);
-                if (isCode)
-                {
-                    l.A($"code file detected:{fullPath}");
-                    if (!allowCodeImport)
-                    {
-                        l.A("Code file import not permitted - will throw error");
-                        l.Done("error - will throw exception");
-                        throw new(
-                            "Importing code files is not permitted - you need super-user permissions to do this. " +
-                            $"The process was stopped on the file '{entry.FullName}'");
-                    }
-                }
-
-                // Unzip File
-                entry.ExtractToFile(fullPath);
+                if (!Directory.Exists(directoryName))
+                    l.A($"Create temp path:{directoryName} (len:{directoryName.Length})");
+                Directory.CreateDirectory(directoryName);
             }
-            return "ok";
+
+            if (fullPath.Length > 240)
+                l.W($"file name is very long - could cause trouble:{fullPath}");
+
+            // enhanced security check
+            var isCode = FileNames.IsKnownCodeExtension(entry.Name);
+            if (isCode)
+            {
+                l.A($"code file detected:{fullPath}");
+                if (!allowCodeImport)
+                {
+                    l.A("Code file import not permitted - will throw error");
+                    l.Done("error - will throw exception");
+                    throw new(
+                        "Importing code files is not permitted - you need super-user permissions to do this. " +
+                        $"The process was stopped on the file '{entry.FullName}'");
+                }
+            }
+
+            // Unzip File
+            entry.ExtractToFile(fullPath);
         }
+        return "ok";
     });
 
     // Check for illegal zip file path

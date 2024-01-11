@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Serialization;
+using ToSic.Eav.Serialization.Internal;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;

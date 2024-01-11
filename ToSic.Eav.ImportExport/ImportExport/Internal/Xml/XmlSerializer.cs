@@ -3,13 +3,11 @@ using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport;
-using ToSic.Eav.Serialization;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Serialization.Internal;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Persistence.Xml;
+namespace ToSic.Eav.ImportExport.Internal.Xml;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(services, "IEx.XmlSer")

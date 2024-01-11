@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Serialization;
+﻿using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Lib.Logging;
 
 

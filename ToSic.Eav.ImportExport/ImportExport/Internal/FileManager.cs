@@ -11,7 +11,7 @@ using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static System.IO.Path;
 
-namespace ToSic.Eav.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FileManager() : ServiceBase(EavLogs.Eav + ".FileMn")

@@ -9,7 +9,7 @@ using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Internal.XmlList;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Serialization;
+using ToSic.Eav.Serialization.Internal;
 using ToSic.Lib.Logging;
 using ToSic.Eav.WebApi.Dto;
 using ToSic.Lib.DI;

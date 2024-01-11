@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Json.V1;
 
-namespace ToSic.Eav.ImportExport.Serialization;
+namespace ToSic.Eav.ImportExport.Internal.Xml;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class BundleEntityWithAssets

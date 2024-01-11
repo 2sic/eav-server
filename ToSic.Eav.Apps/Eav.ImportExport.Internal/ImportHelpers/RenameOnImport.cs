@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 

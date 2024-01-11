@@ -4,7 +4,6 @@ using System.IO;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.ImportExport.Internal.ImportHelpers;
-using ToSic.Eav.ImportExport.Zip;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.DI;

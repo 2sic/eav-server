@@ -1,16 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Internal;
+using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Xml;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Persistence.Xml;
 using ToSic.Eav.Serialization;
+using ToSic.Eav.Serialization.Internal;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport;
+namespace ToSic.Eav.Integration;
 
-public static class StartupImportExport
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public static class StartupEavImportExport
 {
     public static IServiceCollection AddImportExport(this IServiceCollection services)
     {

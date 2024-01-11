@@ -2,7 +2,7 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ExportDecorator(IEntity entity) : EntityBasedType(entity)

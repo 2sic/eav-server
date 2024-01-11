@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.ImportExport.Environment;
+﻿namespace ToSic.Eav.ImportExport.Internal;
 
 /// <summary>
 /// Helper class to manage file references from the original Id

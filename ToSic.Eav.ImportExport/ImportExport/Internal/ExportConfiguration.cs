@@ -4,7 +4,7 @@ using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal;
 
 /// <summary>
 /// Metadata decorator for entities / content-types to mark them for export in a bundle

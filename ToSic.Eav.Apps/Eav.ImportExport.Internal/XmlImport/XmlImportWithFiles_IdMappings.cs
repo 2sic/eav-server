@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Lib.Logging;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 

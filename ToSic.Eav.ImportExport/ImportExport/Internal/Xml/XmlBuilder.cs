@@ -1,9 +1,9 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Validation;
 
-namespace ToSic.Eav.ImportExport.Xml;
+namespace ToSic.Eav.ImportExport.Internal.Xml;
 
-internal class XmlBuilder
+public class XmlBuilder
 {
 
     public XDocument BuildDocument(params object[] content) => new(new("1.0", "UTF-8", "yes"), content);

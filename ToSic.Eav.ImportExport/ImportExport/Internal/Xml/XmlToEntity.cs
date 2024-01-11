@@ -7,11 +7,11 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.ImportExport.Xml;
+namespace ToSic.Eav.ImportExport.Internal.Xml;
 
 /// <summary>
 /// Import EAV Data from XML Format

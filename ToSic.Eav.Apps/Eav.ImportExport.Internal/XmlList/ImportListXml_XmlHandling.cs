@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Logging;

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.ImportExport.Internal.Options;
+using ToSic.Eav.ImportExport.Internal.Xml;
 
 namespace ToSic.Eav.ImportExport.Internal.XmlList;
 
