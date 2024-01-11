@@ -4,14 +4,12 @@ using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;
 
 /// <summary>

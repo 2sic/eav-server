@@ -12,7 +12,6 @@ using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;
 
 /// <inheritdoc />

@@ -6,7 +6,6 @@ using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Lib.Documentation;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;
 
 /// <inheritdoc />
