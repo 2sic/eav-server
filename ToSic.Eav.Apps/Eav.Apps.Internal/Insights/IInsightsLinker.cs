@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Coding;
 
-namespace ToSic.Eav.Apps.Insights;
+namespace ToSic.Eav.Apps.Internal.Insights;
 
 public interface IInsightsLinker
 {

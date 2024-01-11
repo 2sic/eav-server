@@ -19,12 +19,11 @@ using ToSic.Eav.Security;
 using ToSic.Eav.WebApi.Infrastructure;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using ToSic.Eav.Apps.Internal.Work;
 #if NETFRAMEWORK
 using System.Web.Http;
-using ToSic.Eav.Apps.Work;
 #else
 using Microsoft.AspNetCore.Mvc;
-using ToSic.Eav.Apps.Work;
 #endif
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;

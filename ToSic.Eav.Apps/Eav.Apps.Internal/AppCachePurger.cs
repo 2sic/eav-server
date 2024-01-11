@@ -3,16 +3,11 @@ using ToSic.Eav.Caching;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppCachePurger(IAppStates appStates, AppsCacheSwitch appsCache) : ServiceBase("App.SysMng")
 {
-    #region Constructor
-
-    #endregion
-
-
 
     #region purge cache stuff
 

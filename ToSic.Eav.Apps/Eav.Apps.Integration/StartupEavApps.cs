@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Api.Api01;
-using ToSic.Eav.Apps.Decorators;
 using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Apps.Integration;
-using ToSic.Eav.Apps.Paths;
-using ToSic.Eav.Apps.Work;
+using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.MetadataDecorators;
+using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Integration;
@@ -17,9 +16,9 @@ using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Internal;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Integration;
 
-public static class StartupApps
+public static class StartupEavApps
 {
     public static IServiceCollection AddEavApps(this IServiceCollection services)
     {
@@ -68,7 +67,7 @@ public static class StartupApps
         services.TryAddTransient<ZipFromUrlImport>();
 
         // App Dependencies
-        services.TryAddTransient<App.MyServices>();
+        services.TryAddTransient<EavApp.MyServices>();
 
         // Context
         services.TryAddTransient<IContextOfApp, ContextOfApp>();

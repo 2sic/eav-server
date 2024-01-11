@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Context;
 
-namespace ToSic.Eav.Apps.Paths;
+namespace ToSic.Eav.Apps.Integration;
 
 public interface IAppPathsMicroSvc: IAppPaths
 {

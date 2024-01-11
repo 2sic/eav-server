@@ -7,7 +7,7 @@ using ToSic.Lib.Services;
 using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
 using DicNameObj = System.Collections.Generic.Dictionary<string, object>;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// This is responsible for managing / changing list-pairs of entities.

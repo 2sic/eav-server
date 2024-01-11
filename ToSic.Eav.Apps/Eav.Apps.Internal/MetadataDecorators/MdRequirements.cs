@@ -6,14 +6,14 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Requirements;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
-using static ToSic.Eav.Apps.Decorators.RequirementDecorator;
+using static ToSic.Eav.Apps.Internal.MetadataDecorators.RequirementDecorator;
 
-namespace ToSic.Eav.Apps.Decorators;
+namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MdRequirements: ServiceBase, IRequirementsService

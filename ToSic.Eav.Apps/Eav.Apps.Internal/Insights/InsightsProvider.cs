@@ -2,7 +2,7 @@
 using ToSic.Lib.Coding;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Insights;
+namespace ToSic.Eav.Apps.Internal.Insights;
 
 public abstract class InsightsProvider(string name, NoParamOrder protect = default, string teaser = default, string helpCategory = default): ServiceBase($"Ins.{name}"), IInsightsProvider
 {

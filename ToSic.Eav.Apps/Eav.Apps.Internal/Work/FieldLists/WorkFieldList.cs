@@ -3,10 +3,10 @@ using System.Linq;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using Callback = System.Func<ToSic.Eav.Apps.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
+using Callback = System.Func<ToSic.Eav.Apps.Internal.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
 
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkFieldList : WorkUnitBase<IAppWorkCtxWithDb>

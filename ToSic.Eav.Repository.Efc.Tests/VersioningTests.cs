@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Work;
+using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Versions;

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class AppConstants

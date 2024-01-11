@@ -3,13 +3,13 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Lib.Documentation;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Internal;
 
-partial class App
+partial class EavApp
 {
     /// <inheritdoc />
     [PrivateApi]
-    public ISite Site { get; protected set; }
+    public ISite Site { get; protected set; } = services.Site;
 
 
     #region Paths

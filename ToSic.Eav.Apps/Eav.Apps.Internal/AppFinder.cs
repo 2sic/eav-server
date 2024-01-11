@@ -4,15 +4,11 @@ using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
 {
-    #region Constructor / DI
-
-    #endregion
-
     /// <summary>
     /// Find the app id from the app-name (usually a guid or "Default").
     /// Can also check the folder name

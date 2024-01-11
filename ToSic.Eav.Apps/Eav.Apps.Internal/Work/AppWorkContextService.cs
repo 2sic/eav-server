@@ -5,7 +5,7 @@ using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Helper to prepare the work context of any Unit of Work

@@ -8,7 +8,7 @@ using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// WIP - meant as a replacement of EntityRuntime with clean architecture

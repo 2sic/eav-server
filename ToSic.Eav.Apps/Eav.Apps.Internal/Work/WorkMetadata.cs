@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Metadata;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkMetadata : WorkUnitBase<IAppWorkCtxWithDb>

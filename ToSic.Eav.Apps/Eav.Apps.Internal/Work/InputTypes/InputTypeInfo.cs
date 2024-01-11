@@ -9,7 +9,7 @@ using ToSic.Lib.Logging;
 using static System.StringComparer;
 using static ToSic.Eav.Metadata.Decorators;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Describes an input field type with it's labels, abilities etc. 

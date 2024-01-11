@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
+using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkEntityUpdate : WorkUnitBase<IAppWorkCtxWithDb>

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppDataConfiguration(ILookUpEngine configuration, bool? showDrafts = null) : IAppDataConfiguration

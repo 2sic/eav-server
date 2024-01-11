@@ -5,12 +5,12 @@ using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Lib.Logging;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static System.IO.Path;
 
-namespace ToSic.Eav.Apps.Paths;
+namespace ToSic.Eav.Apps.Integration;
 
 /// <summary>
 /// Find the App Paths for a specific App in a site

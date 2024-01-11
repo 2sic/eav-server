@@ -13,7 +13,7 @@ using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Apps.AppLoadConstants;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// The AppInitializer is responsible for ensuring that an App-object has all the properties / metadata it needs. Specifically:

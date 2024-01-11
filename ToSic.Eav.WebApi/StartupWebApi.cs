@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.Insights;
+using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Admin.Features;

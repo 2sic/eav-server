@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Insights;
+using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;

@@ -8,7 +8,7 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using static ToSic.Eav.Data.InputTypes;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>

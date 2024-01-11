@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Internal.Query;
+using ToSic.Eav.Metadata;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Metadata;
 using static System.StringComparer;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>

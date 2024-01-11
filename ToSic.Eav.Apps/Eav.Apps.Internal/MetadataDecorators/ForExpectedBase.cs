@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps.Decorators;
+namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
 internal abstract class ForExpectedBase(IEntity entity) : EntityBasedType(entity)
 {

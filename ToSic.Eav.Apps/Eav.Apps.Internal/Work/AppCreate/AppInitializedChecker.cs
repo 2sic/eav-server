@@ -6,7 +6,7 @@ using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Apps.AppLoadConstants;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Metadata;
-using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
-using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
-using System.Collections.Immutable;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.Generics;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
+using ToSic.Eav.Metadata;
+using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
+using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
+using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Extended context to work with App Data.

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps.Services;
 
-namespace ToSic.Eav.Apps.Decorators;
+namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
 public static class AppStateDecoratorExtensions
 {

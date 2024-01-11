@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using ToSic.Eav.Apps.Work;
+using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.SysData;
 using ToSic.Eav.WebApi.Formats;

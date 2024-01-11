@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Apps.Insights;
+namespace ToSic.Eav.Apps.Internal.Insights;
 
 public interface IInsightsProvider
 {

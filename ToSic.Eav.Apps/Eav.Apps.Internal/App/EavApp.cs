@@ -2,21 +2,26 @@
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.Integration;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Services;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps;
+// NOTE 2023-01-11 refactoring - was previously ToSic.Eav.Apps.App - renamed to ToSic.Eav.Apps.Internal.EavApp
+// Could be a breaking change
+
+namespace ToSic.Eav.Apps.Internal;
 
 /// <summary>
 /// A <em>single-use</em> app-object providing quick simple api to access
 /// name, folder, data, metadata etc.
 /// </summary>
+/// <param name="services">All the dependencies of this app, managed by this app</param>
+/// <param name="logName">must be null by default, because of DI</param>
 [PrivateApi("Hide implementation - was PublicApi_Stable_ForUseInYourCode till 16.09")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class App: AppBase<App.MyServices>, IApp
+public partial class EavApp(EavApp.MyServices services, string logName = null) : AppBase<EavApp.MyServices>(services, logName ?? "Eav.App"), IApp
 {
     #region Constructor / DI
 
@@ -51,16 +56,6 @@ public partial class App: AppBase<App.MyServices>, IApp
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="services">All the dependencies of this app, managed by this app</param>
-    /// <param name="logName">must be null by default, because of DI</param>
-    public App(MyServices services, string logName = null): base(services, logName ?? "Eav.App")
-    {
-        Site = services.Site;
-    }
-
     #endregion
 
     /// <inheritdoc />
@@ -78,9 +73,9 @@ public partial class App: AppBase<App.MyServices>, IApp
     [PrivateApi]
     public string AppGuid => NameId;
 
-    protected internal App Init(IAppIdentityPure appIdentity, Func<App, IAppDataConfiguration> buildConfiguration)
+    protected internal EavApp Init(IAppIdentityPure appIdentity, Func<EavApp, IAppDataConfiguration> buildConfiguration)
     {
-        var l = Log.Fn<App>();
+        var l = Log.Fn<EavApp>();
         // Env / Tenant must be re-checked here
         if (Site == null) throw new Exception("no site/portal received");
             

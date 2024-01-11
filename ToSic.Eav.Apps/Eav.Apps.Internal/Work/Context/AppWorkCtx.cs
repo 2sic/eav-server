@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Apps.State;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Context object for performing App modifications.

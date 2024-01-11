@@ -2,7 +2,7 @@
 using ToSic.Eav.DataSource;
 using ToSic.Eav.Services;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus

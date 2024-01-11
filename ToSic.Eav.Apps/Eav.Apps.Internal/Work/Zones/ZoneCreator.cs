@@ -2,7 +2,7 @@
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Special tool just to create an app.

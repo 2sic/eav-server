@@ -1,14 +1,14 @@
 ﻿using System;
 using ToSic.Eav.Apps.DataSources;
 using ToSic.Eav.DataSource;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Internal;
 
-partial class App
+partial class EavApp
 {
     [PrivateApi]
     public ILookUpEngine ConfigurationProvider => _configurationProvider.Get(() => AppDataConfig.Configuration);
@@ -28,7 +28,7 @@ partial class App
 
     });
     private readonly GetOnce<IAppDataConfiguration> _appDataConfigOnce = new();
-    private Func<App, IAppDataConfiguration> _dataConfigurationBuilder;
+    private Func<EavApp, IAppDataConfiguration> _dataConfigurationBuilder;
 
     #region Data
 

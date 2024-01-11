@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Data;
-using ToSic.Lib.DI;
 using ToSic.Eav.Helpers;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static System.String;
-using static ToSic.Eav.Apps.Decorators.MetadataRecommendation;
+using static ToSic.Eav.Apps.Internal.MetadataDecorators.MetadataRecommendation;
 
-namespace ToSic.Eav.Apps.Decorators;
+namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
 /// <summary>
 /// Figure out all the recommendations for a Metadata Target

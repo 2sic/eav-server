@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Apps.Decorators;
+namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
 /// <summary>
 /// Important: also used as DTO, so don't just rename the parameters

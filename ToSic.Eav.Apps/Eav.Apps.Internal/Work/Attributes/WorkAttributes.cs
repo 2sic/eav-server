@@ -4,7 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Shared;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("ApS.InpGet")

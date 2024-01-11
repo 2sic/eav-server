@@ -2,7 +2,7 @@
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Work;
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Helper to generate a App Work Unit class to get a single / simple thing done.
