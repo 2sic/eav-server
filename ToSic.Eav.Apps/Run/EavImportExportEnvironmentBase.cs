@@ -11,14 +11,14 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Apps.Run;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class ImportExportEnvironmentBase: ServiceBase, IImportExportEnvironment
+public abstract class EavImportExportEnvironmentBase: ServiceBase, IImportExportEnvironment
 {
     #region constructor / DI
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    protected ImportExportEnvironmentBase(ISite site, IAppStates appStates, string logName) : base(logName)
+    protected EavImportExportEnvironmentBase(ISite site, IAppStates appStates, string logName) : base(logName)
     {
         Site = site;
         _appStates = appStates;

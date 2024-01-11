@@ -18,5 +18,5 @@ internal sealed class FileSystemLoaderUnknown: ServiceBase, IAppFileSystemLoader
     public string PathShared { get; set; }
 
     // do nothing
-    public List<InputTypeInfo> InputTypes() => new();
+    public List<InputTypeInfo> InputTypes() => [];
 }

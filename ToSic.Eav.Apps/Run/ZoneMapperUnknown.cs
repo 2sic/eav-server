@@ -21,5 +21,5 @@ internal class ZoneMapperUnknown: ZoneMapperBase, IIsUnknown
         
     public override ISite SiteOfZone(int zoneId) => _site.New().Init(zoneId, null);
 
-    public override List<ISiteLanguageState> CulturesWithState(ISite site) => new();
+    public override List<ISiteLanguageState> CulturesWithState(ISite site) => [];
 }

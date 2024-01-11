@@ -143,7 +143,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     {
         var l = Log.Fn<List<InputTypeInfo>>();
         var di = new DirectoryInfo(path);
-        if (!di.Exists) return l.Return(new List<InputTypeInfo>(), "directory not found");
+        if (!di.Exists) return l.Return([], "directory not found");
         var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
         Log.A($"found {inputFolders.Length} field-directories");
 
@@ -185,7 +185,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     {
         var l = Log.Fn<List<string>>();
         var dir = new DirectoryInfo(Path);
-        if (!dir.Exists) return l.Return(new List<string>(), $"directory do not exist: {dir}");
+        if (!dir.Exists) return l.Return([], $"directory do not exist: {dir}");
         var sub = dir.GetDirectories();
         var subDirs = sub.SelectMany(
             s => 

@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Run;
 
-internal class ImportExportEnvironmentUnknown: ImportExportEnvironmentBase, IIsUnknown
+internal class ImportExportEnvironmentUnknown: EavImportExportEnvironmentBase, IIsUnknown
 {
     public ImportExportEnvironmentUnknown(ISite site, IAppStates appStates, WarnUseOfUnknown<ImportExportEnvironmentUnknown> _) 
         : base(site, appStates, $"{LogScopes.NotImplemented}.IExEnv") { }
@@ -16,7 +16,7 @@ internal class ImportExportEnvironmentUnknown: ImportExportEnvironmentBase, IIsU
     public override List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
     {
         // don't do anything
-        return new List<Message>();
+        return [];
     }
 
     public override Version TenantVersion => new(0,0,0);
