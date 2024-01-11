@@ -8,15 +8,8 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.ImportExport.ImportHelpers;
 
-internal class VersionCheck: HelperBase
+internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : HelperBase(parentLog, "Imp.VerChk")
 {
-    private readonly IImportExportEnvironment _environment;
-
-    public VersionCheck(IImportExportEnvironment env, ILog parentLog) : base(parentLog, "Imp.VerChk")
-    {
-        _environment = env;
-    }
-
     internal void EnsureVersions(XElement appConfig) => Log.Do(() =>
     {
         var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode)
@@ -34,7 +27,7 @@ internal class VersionCheck: HelperBase
     {
         if (reqVersionNode != null)
         {
-            var vEav = Version.Parse(_environment.ModuleVersion);
+            var vEav = Version.Parse(env.ModuleVersion);
             var reqEav = Version.Parse(reqVersionNode);
             if (reqEav.CompareTo(vEav) == 1) // required is bigger
                 throw new Exception("this app requires eav/2sxc version " + reqVersionNode +
@@ -44,7 +37,7 @@ internal class VersionCheck: HelperBase
 
         if (reqVersionNodePlatform != null)
         {
-            var vHost = _environment.TenantVersion;
+            var vHost = env.TenantVersion;
             var reqHost = Version.Parse(reqVersionNodePlatform);
             if (reqHost.CompareTo(vHost) == 1) // required is bigger
                 throw new Exception("this app requires host/dnn version " + reqVersionNodePlatform +

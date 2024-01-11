@@ -3,10 +3,8 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Decorators;
 
-internal abstract class ForExpectedBase: EntityBasedType
+internal abstract class ForExpectedBase(IEntity entity) : EntityBasedType(entity)
 {
-    protected ForExpectedBase(IEntity entity) : base(entity) { }
-
     /// <summary>
     /// How may of this decorator should be applied to the target, default is 1
     /// </summary>

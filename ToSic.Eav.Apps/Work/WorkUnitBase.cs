@@ -8,13 +8,9 @@ namespace ToSic.Eav.Apps.Work;
 /// </summary>
 /// <typeparam name="TContext"></typeparam>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class WorkUnitBase<TContext> : ServiceBase where TContext : class, IAppWorkCtx
+public abstract class WorkUnitBase<TContext>(string logName) : ServiceBase(logName)
+    where TContext : class, IAppWorkCtx
 {
-
-    protected WorkUnitBase(string logName): base(logName)
-    {
-    }
-
     /// <summary>
     /// The current work context
     /// </summary>

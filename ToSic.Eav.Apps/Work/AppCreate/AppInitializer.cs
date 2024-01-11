@@ -196,17 +196,13 @@ public class AppInitializer : ServiceBase
     }
 
 
-    private class AddContentTypeAndOrEntityTask
+    private class AddContentTypeAndOrEntityTask(
+        string setName,
+        Dictionary<string, object> values = null,
+        bool inAppType = true)
     {
-        public readonly string SetName;
-        public readonly Dictionary<string, object> Values;
-        public readonly bool InAppType;
-
-        public AddContentTypeAndOrEntityTask(string setName, Dictionary<string, object> values = null, bool inAppType = true)
-        {
-            SetName = setName;
-            Values = values;
-            InAppType = inAppType;
-        }
+        public readonly string SetName = setName;
+        public readonly Dictionary<string, object> Values = values;
+        public readonly bool InAppType = inAppType;
     }
 }

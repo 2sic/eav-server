@@ -8,11 +8,10 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Apps.Security;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MultiPermissionsItems: MultiPermissionsApp
+public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
+    : MultiPermissionsApp(services, "Sec.MpItms")
 {
     #region Constructors and DI / Init
-
-    public MultiPermissionsItems(MyServices services): base(services, "Sec.MpItms") { }
 
     public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
     {

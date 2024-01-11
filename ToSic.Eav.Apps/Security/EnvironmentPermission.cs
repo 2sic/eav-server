@@ -8,7 +8,8 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Apps.Security;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class EnvironmentPermission : ServiceBase, IEnvironmentPermission
+public abstract class EnvironmentPermission(string logPrefix)
+    : ServiceBase($"{logPrefix}.EnvPrm"), IEnvironmentPermission
 {
     // Constant keys for security, historic from Dnn
     protected const string SalPrefix = "SecurityAccessLevel";
@@ -18,8 +19,6 @@ public abstract class EnvironmentPermission : ServiceBase, IEnvironmentPermissio
     protected const string SalSiteAdmin = SalPrefix + ".Admin";
     protected const string SalSystemUser = SalPrefix + ".Host";
 
-
-    protected EnvironmentPermission(string logPrefix) : base($"{logPrefix}.EnvPrm") { }
 
     public IEnvironmentPermission Init<TContext>(TContext context, IAppIdentity appIdentityOrNull)
     {

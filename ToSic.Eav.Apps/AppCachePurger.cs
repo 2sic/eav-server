@@ -6,17 +6,9 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Apps;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppCachePurger: ServiceBase
+public class AppCachePurger(IAppStates appStates, AppsCacheSwitch appsCache) : ServiceBase("App.SysMng")
 {
     #region Constructor
-
-    public AppCachePurger(IAppStates appStates, AppsCacheSwitch appsCache): base("App.SysMng")
-    {
-        _appStates = appStates;
-        _appsCache = appsCache;
-    }
-    private readonly IAppStates _appStates;
-    private readonly AppsCacheSwitch _appsCache;
 
     #endregion
 
@@ -46,16 +38,16 @@ public class AppCachePurger: ServiceBase
     public void Purge(IAppIdentity appIdentity, bool global = false) => Log.Do($"{appIdentity.Show()}, {global}", () =>
     {
         if (global)
-            _appsCache.Value.PurgeZones();
+            appsCache.Value.PurgeZones();
         else
-            _appsCache.Value.Purge(appIdentity);
+            appsCache.Value.Purge(appIdentity);
     });
 
     /// <summary>
     /// Purge the cache of one app
     /// </summary>
     /// <param name="appId"></param>
-    public void PurgeApp(int appId) => Log.Do($"{appId}", () => Purge(_appStates.IdentityOfApp(appId)));
+    public void PurgeApp(int appId) => Log.Do($"{appId}", () => Purge(appStates.IdentityOfApp(appId)));
 
     /// <summary>
     /// Run some code and then purge the cache after that for full rebuild

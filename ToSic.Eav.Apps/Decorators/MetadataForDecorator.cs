@@ -2,12 +2,10 @@
 
 namespace ToSic.Eav.Apps.Decorators;
 
-internal class MetadataForDecorator: ForExpectedBase
+internal class MetadataForDecorator(IEntity entity) : ForExpectedBase(entity)
 {
     public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     public static string ContentTypeName = "MetadataForDecorator";
-
-    public MetadataForDecorator(IEntity entity) : base(entity) { }
 
     /// <summary>
     /// An optional name to specify more exactly what it is.

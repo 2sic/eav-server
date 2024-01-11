@@ -11,15 +11,11 @@ namespace ToSic.Eav.Apps.ImportExport;
 /// For exporting a content-type into xml, either just the schema or with data
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ExportImportValueConversion : ServiceBase
+public class ExportImportValueConversion(IValueConverter valueConverter) : ServiceBase("App.EXValC")
 {
     #region Dependency Injection
 
-    public ExportImportValueConversion(IValueConverter valueConverter) : base("App.EXValC")
-    {
-        ValueConverter = valueConverter;
-    }
-    public IValueConverter ValueConverter { get; }
+    public IValueConverter ValueConverter { get; } = valueConverter;
 
     #endregion
 

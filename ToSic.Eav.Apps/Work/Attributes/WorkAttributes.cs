@@ -7,13 +7,8 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.Apps.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkAttributes : WorkUnitBase<IAppWorkCtx>
+public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("ApS.InpGet")
 {
-
-    public WorkAttributes() : base("ApS.InpGet")
-    {
-    }
-
     public List<PairTypeWithAttribute> GetFields(string staticName)
     {
         var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{AppWorkCtx.Show()}, type:{staticName}");

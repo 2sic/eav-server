@@ -11,10 +11,8 @@ namespace ToSic.Eav.Context;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [PrivateApi]
-public abstract class Site<T>: ServiceBase, ISite, IWrapper<T>
+public abstract class Site<T>(string logPrefix) : ServiceBase($"{logPrefix}.Site"), ISite, IWrapper<T>
 {
-    protected Site(string logPrefix): base($"{logPrefix}.Site") { }
-
     /// <inheritdoc />
     public abstract ISite Init(int siteId, ILog parentLog);
 

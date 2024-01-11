@@ -11,17 +11,15 @@ namespace ToSic.Eav.Apps.Assets;
 /// Added in v14.04
 /// </remarks>
 [PublicApi]
-public class SizeInfo
+[method: PrivateApi]
+public class SizeInfo(int bytes)
 {
     private const int Factor = 1024;
-
-    [PrivateApi]
-    public SizeInfo(int bytes) => Bytes = bytes;
 
     /// <summary>
     /// Size in bytes
     /// </summary>
-    public int Bytes { get; }
+    public int Bytes { get; } = bytes;
 
     /// <summary>
     /// Size in KB

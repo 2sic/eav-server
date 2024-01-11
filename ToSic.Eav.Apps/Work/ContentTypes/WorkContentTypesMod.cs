@@ -4,13 +4,8 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.Apps.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkContentTypesMod : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkContentTypesMod() : WorkUnitBase<IAppWorkCtxWithDb>("ApS.InpGet")
 {
-    public WorkContentTypesMod() : base("ApS.InpGet")
-    {
-    }
-
-
     public void Create(string nameId, string scope)
     {
         var l = Log.Fn();

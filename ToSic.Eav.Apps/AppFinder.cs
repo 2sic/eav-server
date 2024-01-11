@@ -7,13 +7,9 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Apps;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public sealed class AppFinder: ServiceBase
+public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
 {
     #region Constructor / DI
-
-    public AppFinder(IAppStates appStates) : base("App.ZoneRt") => _appStates = appStates;
-
-    private readonly IAppStates _appStates;
 
     #endregion
 
@@ -30,7 +26,7 @@ public sealed class AppFinder: ServiceBase
                 return l.Return(Constants.AppIdEmpty, "no name");
 
             var nameLower = appName.ToLowerInvariant();
-            var appId = _appStates.Apps(zoneId)
+            var appId = appStates.Apps(zoneId)
                 .Where(p => p.Value.EqualsInsensitive(nameLower))
                 .Select(p => p.Key).FirstOrDefault();
 
@@ -56,9 +52,9 @@ public sealed class AppFinder: ServiceBase
         var l = Log.Fn<int>($"{nameof(zoneId)}: {zoneId}; {nameof(folderName)}: {folderName}");
         try
         {
-            foreach (var p in _appStates.Apps(zoneId))
+            foreach (var p in appStates.Apps(zoneId))
             {
-                var appState = _appStates.GetReader(new AppIdentity(zoneId, p.Key));
+                var appState = appStates.GetReader(new AppIdentity(zoneId, p.Key));
                 if (appState.Folder.EqualsInsensitive(folderName))
                     return l.Return(p.Key, "folder matched");
             }
@@ -81,9 +77,9 @@ public sealed class AppFinder: ServiceBase
     {
         var nameLower = appName.ToLowerInvariant();
 
-        foreach (var p in _appStates.Apps(zoneId))
+        foreach (var p in appStates.Apps(zoneId))
         {
-            var appState = _appStates.GetReader(new AppIdentity(zoneId, p.Key));
+            var appState = appStates.GetReader(new AppIdentity(zoneId, p.Key));
 
             if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
                 return (p.Key, "name matched");

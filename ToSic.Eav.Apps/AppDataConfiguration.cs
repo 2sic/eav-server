@@ -3,17 +3,10 @@
 namespace ToSic.Eav.Apps;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppDataConfiguration: IAppDataConfiguration
+public class AppDataConfiguration(ILookUpEngine configuration, bool? showDrafts = null) : IAppDataConfiguration
 {
-    public AppDataConfiguration(ILookUpEngine configuration, bool? showDrafts = null)
-    {
-        ShowDrafts = showDrafts;
-        Configuration = configuration;
-    }
-
-    public bool? ShowDrafts { get; }
+    public bool? ShowDrafts { get; } = showDrafts;
 
 
-    public ILookUpEngine Configuration { get; }
-
+    public ILookUpEngine Configuration { get; } = configuration;
 }

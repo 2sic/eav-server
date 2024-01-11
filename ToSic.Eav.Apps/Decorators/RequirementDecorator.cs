@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Decorators;
 
-internal class RequirementDecorator: EntityBasedType
+internal class RequirementDecorator(IEntity entity) : EntityBasedType(entity)
 {
     // Marks Requirements Metadata 13.00
     public static string TypeName = "19655377-6626-4986-aea0-ec3c187186ad";
@@ -13,8 +13,6 @@ internal class RequirementDecorator: EntityBasedType
     public const string ReqSysCap = "systemcapability";
     public const string ReqNone = "none";
     public const string ReqUnknown = "unknown";
-
-    public RequirementDecorator(IEntity entity) : base(entity) { }
 
     public string RequirementType => GetThis("");
 
