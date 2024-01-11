@@ -15,7 +15,7 @@ public class JsonAsset
     public string Storage = StorageApp;
 
     public const string StorageApp = "app";
-    public static string[] Storages = {StorageApp};
+    public static string[] Storages = [StorageApp];
 
     /// <summary>
     /// The file name, required.
@@ -35,7 +35,7 @@ public class JsonAsset
 
     public const string EncodingNone = "none";
     public const string EncodingBase64 = "base64";
-    public static string[] Encodings = {EncodingNone, EncodingBase64};
+    public static string[] Encodings = [EncodingNone, EncodingBase64];
 
     /// <summary>
     /// The file contents.

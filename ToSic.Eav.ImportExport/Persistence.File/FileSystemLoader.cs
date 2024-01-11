@@ -68,7 +68,7 @@ public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
             // #SharedFieldDefinition
             // Also provide AppState if possible, for new #SharedFieldDefinition
             if (EntitiesSource is IHasMetadataSource withAppState)
-                _ser.DeserializationSettings = new JsonDeSerializationSettings
+                _ser.DeserializationSettings = new()
                 {
                     CtAttributeMetadataAppState = withAppState
                 };

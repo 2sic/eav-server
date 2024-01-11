@@ -29,7 +29,7 @@ partial class JsonSerializer
 
         JsonMetadataFor jsonFor = null;
         if (entity.MetadataFor.IsMetadata)
-            jsonFor = new JsonMetadataFor
+            jsonFor = new()
             {
                 // #TargetTypeIdInsteadOfTarget - the Target should become obsolete
                 Target = MetadataTargets.GetName(entity.MetadataFor.TargetType),
@@ -94,7 +94,7 @@ partial class JsonSerializer
             Id = entity.EntityId,
             Guid = entity.EntityGuid,
             Version = entity.Version,
-            Type = new JsonType(entity, withMap: true),
+            Type = new(entity, withMap: true),
             Attributes = attribs,
             Owner = entity.Owner,
             For = jsonFor,

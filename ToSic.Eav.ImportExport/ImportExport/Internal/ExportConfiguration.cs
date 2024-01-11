@@ -10,14 +10,10 @@ namespace ToSic.Eav.ImportExport;
 /// Metadata decorator for entities / content-types to mark them for export in a bundle
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ExportConfiguration : EntityBasedType
+public class ExportConfiguration(IEntity entity) : EntityBasedType(entity)
 {
     public const string ContentTypeId = "d7f2e4fa-5306-41bb-a3cd-d9529c838879";
     public const string ContentTypeName = "🧑‍💻SystemExportConfiguration";
-        
-    public ExportConfiguration(IEntity entity) : base(entity)
-    {
-    }
 
     /// <summary>
     /// Name of the configuration - just fyi

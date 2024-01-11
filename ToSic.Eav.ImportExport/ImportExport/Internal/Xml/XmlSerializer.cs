@@ -12,11 +12,9 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Persistence.Xml;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class XmlSerializer: SerializerBase
+public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(services, "IEx.XmlSer")
 {
     private Dictionary<string, int> _dimensions;
-
-    public XmlSerializer(MyServices services): base(services, "IEx.XmlSer") { }
 
     public XmlSerializer Init(Dictionary<string, int> dimensionMapping, IAppState appState)
     {

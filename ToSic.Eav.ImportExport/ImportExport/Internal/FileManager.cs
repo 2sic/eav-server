@@ -14,11 +14,9 @@ using static System.IO.Path;
 namespace ToSic.Eav.ImportExport;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class FileManager : ServiceBase
+public class FileManager() : ServiceBase(EavLogs.Eav + ".FileMn")
 {
     private const char Separator = ';';
-
-    public FileManager() : base(EavLogs.Eav + ".FileMn") { }
 
 
     public FileManager SetFolder(string sourceFolder, string subFolder = null)
@@ -63,7 +61,7 @@ public class FileManager : ServiceBase
                 var alreadyExistsMsg = "File '" + GetFileName(destinationFilePath) +
                                        "' not copied because it already exists";
                 Log.A($"warning: {alreadyExistsMsg}");
-                messages.Add(new Message(alreadyExistsMsg, Message.MessageTypes.Warning));
+                messages.Add(new(alreadyExistsMsg, Message.MessageTypes.Warning));
             }
         }
     });
@@ -76,12 +74,12 @@ public class FileManager : ServiceBase
     {
         // validate source folder
         if (!Directory.Exists(_sourceFolder))
-            return (new List<string>(), $"warning, can't find source folder '{_sourceFolder}'");
+            return ([], $"warning, can't find source folder '{_sourceFolder}'");
 
         // validate app.json content
         var jsonString = File.ReadAllText(GetPathToDotAppJson(_sourceFolder));
         if (string.IsNullOrEmpty(jsonString))
-            return (new List<string>(), $"warning, '{Constants.AppJson}' is empty");
+            return ([], $"warning, '{Constants.AppJson}' is empty");
 
         // deserialize app.json
         try
@@ -97,7 +95,7 @@ public class FileManager : ServiceBase
         catch (Exception e)
         {
             l.Ex(e);
-            return (new List<string>(), $"warning, json is not valid in '{Constants.AppJson}'");
+            return ([], $"warning, json is not valid in '{Constants.AppJson}'");
         }
     }));
     private readonly GetOnce<List<string>> _excludeSearchPatterns = new();
@@ -188,7 +186,7 @@ public class FileManager : ServiceBase
     public IEnumerable<string> AllFiles(string searchPattern = "*.*") =>
         Directory.Exists(_root)
             ? searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateFiles(_root, s, SearchOption.AllDirectories)).ToList()
-            : new List<string>();
+            : [];
 
 
     /// <summary>
@@ -198,7 +196,7 @@ public class FileManager : ServiceBase
     public IEnumerable<string> AllFolders(string searchPattern = "*.*") =>
         Directory.Exists(_root)
             ? searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateDirectories(_root, s, SearchOption.AllDirectories)).ToList()
-            : new List<string>();
+            : [];
 
 
     /// <summary>
@@ -211,7 +209,7 @@ public class FileManager : ServiceBase
     {
         // validate folderPath
         if (!Directory.Exists(root))
-            return (new List<string>(), $"warning, can't find root folder path '{root}'");
+            return ([], $"warning, can't find root folder path '{root}'");
 
         // validate exclude search patterns
         if (!ExcludeSearchPatterns.Any())
@@ -240,7 +238,7 @@ public class FileManager : ServiceBase
     {
         // validate folderPath
         if (!Directory.Exists(root))
-            return (new List<string>(), $"warning, can't find folder path '{_sourceFolder}'");
+            return ([], $"warning, can't find folder path '{_sourceFolder}'");
 
         // validate exclude search patterns
         if (!ExcludeSearchPatterns.Any())
@@ -274,7 +272,7 @@ public class FileManager : ServiceBase
 
     private List<string> GetFoldersRecursion(string folderPath, List<string> excludeSearchPatterns, List<string> allFolders = null, string searchPattern = "*.*")
     {
-        if (allFolders == null) allFolders = new List<string>();
+        if (allFolders == null) allFolders = [];
 
         foreach (var folder in ExcludeFolders(folderPath, excludeSearchPatterns).ToList())
         {

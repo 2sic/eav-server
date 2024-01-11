@@ -47,11 +47,11 @@ partial class JsonSerializer
             var l = Log.Fn<IContentType>();
             try
             {
-                var directEntities = json.Entities?.Select(ConvertPart).ToList() ?? new List<IEntity>();
+                var directEntities = json.Entities?.Select(ConvertPart).ToList() ?? [];
                 relationships.List?.AddRange(directEntities);
 
                 // Verify that it has a Json ContentType
-                var jsonType = json.ContentType ?? throw new Exception(
+                var jsonType = json.ContentType ?? throw new(
                     "Tried to import JSON ContentType but JSON file didn't have any ContentType. Are you trying to import an Entity?");
 
                 // Prepare ContentType Attributes
@@ -65,7 +65,7 @@ partial class JsonSerializer
                         var attrSysSettings = jsonAttr.SysSettings?.ToSysSettings();
                         var mdEntities = attrSysSettings?.InheritMetadata == true
                             ? null
-                            : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
+                            : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? [];
 
                         var appSourceForMd = DeserializationSettings?.CtAttributeMetadataAppState;
 
@@ -95,7 +95,7 @@ partial class JsonSerializer
 
                 // Prepare Content-Type Metadata
                 l.A("deserialize metadata");
-                var ctMeta = jsonType.Metadata?.Select(ConvertPart).ToList() ?? new List<IEntity>();
+                var ctMeta = jsonType.Metadata?.Select(ConvertPart).ToList() ?? [];
                 relationships.List?.AddRange(ctMeta);
 
                 // Create the Content Type

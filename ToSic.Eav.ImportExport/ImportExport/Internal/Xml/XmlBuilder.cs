@@ -6,7 +6,7 @@ namespace ToSic.Eav.ImportExport.Xml;
 internal class XmlBuilder
 {
 
-    public XDocument BuildDocument(params object[] content) => new(new XDeclaration("1.0", "UTF-8", "yes"), content);
+    public XDocument BuildDocument(params object[] content) => new(new("1.0", "UTF-8", "yes"), content);
 
     public XElement BuildRootNode(params object[] content) => new(XmlConstants.Root, content);
 
@@ -20,8 +20,7 @@ internal class XmlBuilder
 
     public XElement BuildEntity(object elementGuid, object elementLanguage, string contentTypeName)
     {
-        return new XElement
-        (
+        return new(
             XmlConstants.Entity,
             new XAttribute(XmlConstants.EntityTypeAttribute, contentTypeName.RemoveSpecialCharacters()),
             new XElement(XmlConstants.EntityGuid, elementGuid),

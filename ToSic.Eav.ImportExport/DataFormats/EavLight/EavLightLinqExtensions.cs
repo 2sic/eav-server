@@ -23,7 +23,7 @@ public static class EavLightLinqExtensions
 
         if (source is ICollection<TSource> collection)
         {
-            if (collection.Count == 0) return new EavLightEntity();
+            if (collection.Count == 0) return new();
 
             if (collection is TSource[] array) return ToEavLight(array, keySelector);
 
@@ -60,7 +60,7 @@ public static class EavLightLinqExtensions
         if (source is ICollection<TSource> collection)
         {
             if (collection.Count == 0)
-                return new EavLightEntity();
+                return new();
 
             if (collection is TSource[] array) return ToEavLight(array, keySelector, elementSelector);
 

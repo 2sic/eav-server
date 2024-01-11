@@ -16,16 +16,13 @@ namespace ToSic.Eav.Persistence.File;
 /// Basically the idea is that all generated Entities only have a wrapper ContentType,
 /// which will retrieve it's data from this source once they are completely generated. 
 /// </summary>
-internal class DeferredContentTypeProvider: HelperBase, IDeferredContentTypeProvider
+internal class DeferredContentTypeProvider(ILog parentLog)
+    : HelperBase(parentLog, "Eav.LdrCTP"), IDeferredContentTypeProvider
 {
-    public DeferredContentTypeProvider(ILog parentLog): base(parentLog, "Eav.LdrCTP")
-    {
-    }
-
     /// <summary>
     /// The master list of content-types which is available for assigning later on.
     /// </summary>
-    public List<IContentType> Source { get; } = new();
+    public List<IContentType> Source { get; } = [];
 
     protected IDictionary<string, IContentType> Lookup =>
         _lookup.Get(() => Source.ToDictionary(t => t.NameId, t => t, InvariantCultureIgnoreCase));

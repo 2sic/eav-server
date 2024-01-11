@@ -45,7 +45,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
             if (_paths != null) return _paths;
             var wrapLog = Log.Fn<List<string>>(message: "start building path-list");
 
-            _paths = new List<string>();
+            _paths = [];
             // find all RepositoryInfoOfFolder and let them tell us what paths to use
             var types = AssemblyHandling.FindInherited(typeof(FolderBasedRepository), Log).ToList();
             Log.A($"found {types.Count} Path providers");

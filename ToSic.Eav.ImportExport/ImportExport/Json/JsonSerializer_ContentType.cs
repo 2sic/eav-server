@@ -61,7 +61,7 @@ partial class JsonSerializer
 
     // Note: only seems to be used in a test...
     public JsonContentType ToJson(IContentType contentType)
-        => ToJson(contentType, /*false,*/ new JsonSerializationSettings { CtIncludeInherited = false, CtAttributeIncludeInheritedMetadata = true });
+        => ToJson(contentType, /*false,*/ new() { CtIncludeInherited = false, CtAttributeIncludeInheritedMetadata = true });
 
     private JsonContentType ToJson(IContentType contentType, JsonSerializationSettings settings)
     {
@@ -109,7 +109,7 @@ partial class JsonSerializer
             // if it's a shared type, flush definition as we won't include it
             if (ancestorDecorator.Id != 0) attribs = null;
 
-            jctShare = new JsonContentTypeShareable
+            jctShare = new()
             {
                 AlwaysShare = sharableCt.AlwaysShareConfiguration,
                 ParentAppId = ancestorDecorator.AppId,

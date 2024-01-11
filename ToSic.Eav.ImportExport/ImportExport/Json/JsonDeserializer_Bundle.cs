@@ -18,7 +18,7 @@ public partial class JsonSerializer
     public string SerializeJsonBundle(JsonBundle bundleList, int indentation) =>
         System.Text.Json.JsonSerializer.Serialize(new JsonFormat
         {
-            Bundles = new List<JsonBundle> { bundleList }
+            Bundles = [bundleList]
         }, new JsonSerializerOptions(JsonOptions.UnsafeJsonWithoutEncodingHtml)
         {
             WriteIndented = indentation != 0
@@ -27,7 +27,7 @@ public partial class JsonSerializer
     public List<IContentType> GetContentTypesFromBundles(JsonFormat package)
     {
         var l = Log.Fn<List<IContentType>>();
-        if (package.Bundles.SafeNone()) return l.Return(new List<IContentType>(), "none found");
+        if (package.Bundles.SafeNone()) return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
         var bundlesWithTypes = package.Bundles
@@ -48,7 +48,7 @@ public partial class JsonSerializer
     public List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null)
     {
         var l = Log.Fn<List<IEntity>>();
-        if (package.Bundles.SafeNone()) return l.Return(new List<IEntity>(), "none found");
+        if (package.Bundles.SafeNone()) return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
         var bundlesWithEntities = package.Bundles

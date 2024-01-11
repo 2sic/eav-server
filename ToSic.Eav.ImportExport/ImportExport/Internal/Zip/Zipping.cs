@@ -8,13 +8,8 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.ImportExport.Zip;
 
-internal class Zipping : HelperBase
+internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 {
-
-    public Zipping(ILog parentLog) : base(parentLog, "Zip.Abstrc")
-    {
-    }
-
     public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
     {
         using (var stream = new MemoryStream())
@@ -82,7 +77,7 @@ internal class Zipping : HelperBase
                     {
                         l.A("Code file import not permitted - will throw error");
                         l.Done("error - will throw exception");
-                        throw new Exception(
+                        throw new(
                             "Importing code files is not permitted - you need super-user permissions to do this. " +
                             $"The process was stopped on the file '{entry.FullName}'");
                     }
@@ -100,7 +95,7 @@ internal class Zipping : HelperBase
     {
         var fullName = input.FullName.ForwardSlash();
         if (fullName.StartsWith("..") || fullName.Contains("/../"))
-            throw new Exception("Illegal Zip File Path");
+            throw new("Illegal Zip File Path");
     }
 
     #endregion

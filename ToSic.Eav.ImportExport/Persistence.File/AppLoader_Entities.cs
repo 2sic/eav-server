@@ -27,7 +27,7 @@ partial class AppLoader
                 .Select(folder => new EntitySetsToLoad
                 {
                     Folder = folder,
-                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appState) ?? new List<IEntity>()
+                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appState) ?? []
                 })
                 .ToList();
 

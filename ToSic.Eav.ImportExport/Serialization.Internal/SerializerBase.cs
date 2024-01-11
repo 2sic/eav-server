@@ -67,7 +67,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
     #endregion
 
-    public IAppStateInternal AppStateOrError => AppStateOrNull ?? throw new Exception("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+    public IAppStateInternal AppStateOrError => AppStateOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
     protected IAppStateInternal AppStateOrNull { get; private set; }
 
     public bool PreferLocalAppTypes = false;

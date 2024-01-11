@@ -116,7 +116,7 @@ partial class JsonSerializer
     private Target DeserializeEntityTarget(JsonEntity jEnt)
     {
         var l = Log.Fn<Target>();
-        if (jEnt.For == null) return l.Return(new Target(), "no for found");
+        if (jEnt.For == null) return l.Return(new(), "no for found");
 
         var mdFor = jEnt.For;
         var target = new Target(

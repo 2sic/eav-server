@@ -21,7 +21,7 @@ public class XmlToEntity: ServiceBase
 {
     private class TargetLanguageToSourceLanguage: DimensionDefinition
     {
-        public List<DimensionDefinition> PrioritizedDimensions = new();
+        public List<DimensionDefinition> PrioritizedDimensions = [];
     }
 
     public XmlToEntity(IAppStates appStates, DataBuilder dataBuilder) : base("Imp.XmlEnt")
@@ -73,15 +73,16 @@ public class XmlToEntity: ServiceBase
                 EnvironmentKey = envDefLang,
                 Name = "Default"
             };
-            result = new List<TargetLanguageToSourceLanguage>
-            {
+            result =
+            [
                 new()
                 {
                     Active = true,
                     EnvironmentKey = envDefLang,
-                    PrioritizedDimensions = FindPriorizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang)
+                    PrioritizedDimensions =
+                        FindPriorizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang)
                 }
-            };
+            ];
         }
 
         return wrapLog.Return(result, $"LanguageMap has {result.Count} items");
@@ -258,7 +259,7 @@ public class XmlToEntity: ServiceBase
         }
         else
         {
-            tempTargetValues.Add(new ImportValue
+            tempTargetValues.Add(new()
             {
                 Dimensions = dimensionsToAdd,
                 XmlValue = sourceValueNode
