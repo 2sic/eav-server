@@ -1,7 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Apps;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
 partial class ContextResolver

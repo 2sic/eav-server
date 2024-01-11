@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Languages;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
+using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Logging;
@@ -13,8 +13,6 @@ using ToSic.Lib.Services;
 using static ToSic.Eav.Apps.AppStackConstants;
 
 
-
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

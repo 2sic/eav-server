@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Languages;
+﻿namespace ToSic.Eav.Cms.Internal.Languages;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ISiteLanguageState

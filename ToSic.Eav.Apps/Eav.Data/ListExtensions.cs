@@ -4,12 +4,12 @@ using System.Linq;
 using ListIntNull = System.Collections.Generic.List<int?>;
 using DicNameInt = System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<int?>>>;
 
-namespace ToSic.Eav.Apps.Parts;
+namespace ToSic.Eav.Data;
 
 // todo: maybe move to something like ToSic.Eav.Generics
 internal static class ListExtensions
 {
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]    internal static void EnsureListLength<T>(this List<T> listMain, int length)
+    internal static void EnsureListLength<T>(this List<T> listMain, int length)
     {
         if (listMain.Count < length)
             listMain.AddRange(Enumerable.Repeat(default(T), length - listMain.Count));

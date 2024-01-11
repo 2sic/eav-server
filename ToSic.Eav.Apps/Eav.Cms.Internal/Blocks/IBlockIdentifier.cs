@@ -1,6 +1,7 @@
 ﻿using System;
+using ToSic.Eav.Apps;
 
-namespace ToSic.Eav.Apps.Run;
+namespace ToSic.Eav.Cms.Internal;
 
 /// <summary>
 /// Identifies a content-block with all the parameters necessary to find it in the system

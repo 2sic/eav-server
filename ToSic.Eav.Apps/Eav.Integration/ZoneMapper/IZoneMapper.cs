@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Languages;
+using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Run;
+namespace ToSic.Eav.Integration;
 
 /// <summary>
 /// This helps find Zone information of a Site and the other way around. 

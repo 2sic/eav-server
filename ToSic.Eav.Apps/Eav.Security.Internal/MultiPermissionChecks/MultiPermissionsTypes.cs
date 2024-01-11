@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Security;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Security;
+namespace ToSic.Eav.Security.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MultiPermissionsTypes: MultiPermissionsApp

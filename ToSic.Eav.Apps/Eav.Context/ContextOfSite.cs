@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Apps.Security;
+﻿using ToSic.Eav.Security.Internal;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
 /// <summary>

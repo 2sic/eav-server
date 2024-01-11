@@ -2,7 +2,6 @@
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

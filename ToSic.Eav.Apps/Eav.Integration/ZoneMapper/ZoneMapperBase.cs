@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Languages;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Run;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Run;
+namespace ToSic.Eav.Integration;
 
 /// <summary>
 /// Base class for other zone mappers.

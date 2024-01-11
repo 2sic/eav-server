@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.Internal.Unknown;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Internal.Unknown;
 
-namespace ToSic.Eav.Apps.Security;
+namespace ToSic.Eav.Security.Internal;
 
 internal sealed class AppPermissionCheckUnknown: AppPermissionCheck, IIsUnknown
 {

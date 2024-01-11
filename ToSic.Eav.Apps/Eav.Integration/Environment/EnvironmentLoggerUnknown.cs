@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Internal.Unknown;
 
-namespace ToSic.Eav.Apps.Environment;
+namespace ToSic.Eav.Integration.Environment;
 
 internal sealed class EnvironmentLoggerUnknown: IEnvironmentLogger, IIsUnknown
 {

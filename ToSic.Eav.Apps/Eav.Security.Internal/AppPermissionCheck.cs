@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.Integration.Security;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Security;
 
-namespace ToSic.Eav.Apps.Security;
+namespace ToSic.Eav.Security.Internal;
 
 /// <summary>
 /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.

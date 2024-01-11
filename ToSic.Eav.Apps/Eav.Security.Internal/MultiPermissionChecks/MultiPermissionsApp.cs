@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.Integration;
 using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Run;
-using ToSic.Eav.Security;
 using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Apps.Security;
+namespace ToSic.Eav.Security.Internal;
 
 /// <summary>
 /// Do consolidated permission checks on a set of permissions

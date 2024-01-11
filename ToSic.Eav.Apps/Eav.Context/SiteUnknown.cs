@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.Logging;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Context;
 
 internal class SiteUnknown: ISite, IIsUnknown

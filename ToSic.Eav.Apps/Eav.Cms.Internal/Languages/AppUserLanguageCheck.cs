@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Security;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
+using ToSic.Eav.Integration;
 using ToSic.Eav.Internal.Features;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Run;
 using ToSic.Eav.Security;
+using ToSic.Eav.Security.Internal;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using static System.StringComparison;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
-namespace ToSic.Eav.Apps.Languages;
+namespace ToSic.Eav.Cms.Internal.Languages;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppUserLanguageCheck: ServiceBase
@@ -59,7 +60,7 @@ public class AppUserLanguageCheck: ServiceBase
         return l.Return(currentLang?.IsAllowed, $"permission: {currentLang?.IsAllowed}");
     }
 
-    public List<AppUserLanguageState> LanguagesWithPermissions(IAppState appStateOrNull) => Log.Func(l =>
+    public List<AppUserLanguageState> LanguagesWithPermissions(IAppState appStateOrNull) => Log.Func<List<AppUserLanguageState>>(l =>
     {
         // to solves the issue with globals settings languages that can not be saved if 
         // app languages are different from languages in global app and because global
@@ -78,7 +79,7 @@ public class AppUserLanguageCheck: ServiceBase
         if (allowAllLanguages || appStateOrNull == null)
         {
             var noAppResult = languages
-                .Select(lng => new AppUserLanguageState(lng, true, -1))
+                .Select<ISiteLanguageState, AppUserLanguageState>(lng => new AppUserLanguageState(lng, true, -1))
                 .ToList();
             return (noAppResult, $"no-app {noAppResult.Count}");
         }

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Lib.Logging;
-using ToSic.Eav.Security;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Security;
+namespace ToSic.Eav.Security.Internal;
 
 /// <summary>
 /// A permission checker which is initialized with various items which must be checked

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Environment;
+﻿namespace ToSic.Eav.Cms.Internal;
 
 public class VersioningActionInfo
 {

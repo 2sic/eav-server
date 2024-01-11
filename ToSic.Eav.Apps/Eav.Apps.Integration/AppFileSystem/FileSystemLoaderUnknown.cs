@@ -4,7 +4,7 @@ using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Run;
+namespace ToSic.Eav.Apps.Integration;
 
 internal sealed class FileSystemLoaderUnknown: ServiceBase, IAppFileSystemLoader, IIsUnknown
 {

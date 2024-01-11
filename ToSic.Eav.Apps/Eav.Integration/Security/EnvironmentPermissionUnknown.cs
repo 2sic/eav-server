@@ -4,7 +4,7 @@ using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.Security;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Security;
+namespace ToSic.Eav.Integration.Security;
 
 internal class EnvironmentPermissionUnknown : EnvironmentPermission
 {
