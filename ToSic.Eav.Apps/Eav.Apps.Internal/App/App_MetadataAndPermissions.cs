@@ -46,8 +46,9 @@ partial class EavApp: IHasPermissions
         Name = appState.Name ?? Constants.ErrorAppName;
         Folder = appState.Folder ?? Constants.ErrorAppName;
 
-        Hidden = AppStateInt.ConfigurationEntity?.Value<bool>(AppLoadConstants.FieldHidden) ?? false;
-        l.Done($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
+        // 2024-01-11 2dm - #RemoveIApp.Hidden for v17 - kill code ca. 2024-07 (Q3)
+        //Hidden = AppStateInt.ConfigurationEntity?.Value<bool>(AppLoadConstants.FieldHidden) ?? false;
+        //l.Done($"Name: {Name}, Folder: {Folder}, Hidden: {Hidden}");
     }
     #endregion
 

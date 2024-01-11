@@ -83,7 +83,7 @@ public class QueryManager: ServiceBase
     /// ...but will be auto-assembled the moment they are accessed
     /// </summary>
     /// <returns></returns>
-    internal Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine lookUps) => Log.Func(() =>
+    public Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine lookUps) => Log.Func(() =>
     {
         var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entQuery in AllQueryItems(app))

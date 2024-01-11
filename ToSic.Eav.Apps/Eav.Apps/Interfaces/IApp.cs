@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Documentation;
@@ -26,13 +24,14 @@ public interface IApp : IAppIdentity, IHasMetadata
     /// <returns>The folder as configured in the app configuration.</returns>
     string Folder { get; }
 
-    /// <summary>
-    /// If the app should be hidden from the normal app-picker.
-    /// Important to configure apps once and then hide from normal users. 
-    /// </summary>
-    /// <returns>The hidden-state as configured in the app configuration.</returns>
-    [PrivateApi("Made private in 16.04, previously public, but don't think that's how it should be.")]
-    bool Hidden { get; }
+    // 2024-01-11 2dm - #RemoveIApp.Hidden for v17 - kill code ca. 2024-07 (Q3)
+    ///// <summary>
+    ///// If the app should be hidden from the normal app-picker.
+    ///// Important to configure apps once and then hide from normal users. 
+    ///// </summary>
+    ///// <returns>The hidden-state as configured in the app configuration.</returns>
+    //[PrivateApi("Made private in 16.04, previously public, but don't think that's how it should be.")]
+    //bool Hidden { get; }
 
     /// <summary>
     /// NameId of the App - usually a string-GUID
@@ -41,18 +40,13 @@ public interface IApp : IAppIdentity, IHasMetadata
 
     [PrivateApi]
     [Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     string AppGuid { get; }
 
     /// <summary>
     /// Data of the app
     /// </summary>
     IAppData Data { get; }
-
-    /// <summary>
-    /// All queries of the app, to access like App.Query["name"]
-    /// </summary>
-    /// <returns>A dictionary with all queries. Internally the dictionary will not be built unless accessed.</returns>
-    IDictionary<string, IQuery> Query { get; }
 
     /// <summary>
     /// The app metadata - like settings, resources etc.
@@ -68,19 +62,23 @@ public interface IApp : IAppIdentity, IHasMetadata
     /// The tenant this app belongs to - for example, a DNN portal
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [Obsolete("Don't use any more, use NameId instead, will be removed ca. v17")]
     ISite Site { get; }
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
     // TODO: MARK as #Deprecated and log access
     ILookUpEngine ConfigurationProvider { get; }
 
-    [PrivateApi]
-    IQuery GetQuery(string name);
 
     /// <summary>
     /// The stored / cached, read-only App State
     /// </summary>
     [PrivateApi("Was public till 14.7 but probably never communicated / used except internally. Made Private again in 15.06. Till then was AppState, not interface")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
     IAppState AppState { get; }
 
     #endregion

@@ -1,10 +1,11 @@
-﻿namespace ToSic.Eav.Apps.Assets;
+﻿namespace ToSic.Eav.Apps.Assets.Internal;
 
 /// <summary>
 /// This is to enable generic id interfaces
 /// It enhances the existing int-based IDs for other use cases which don't use ints
 /// </summary>
 /// <typeparam name="TParentSysId"></typeparam>
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IAssetWithParentSysId<out TParentSysId>: IAsset
 {
     /// <summary>

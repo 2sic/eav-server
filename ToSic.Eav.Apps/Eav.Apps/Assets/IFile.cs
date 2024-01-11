@@ -49,5 +49,5 @@ public interface IFile: IAsset
     /// <remarks>
     /// Added in v14.04
     /// </remarks>
-    SizeInfo SizeInfo { get; }
+    ISizeInfo SizeInfo { get; }
 }

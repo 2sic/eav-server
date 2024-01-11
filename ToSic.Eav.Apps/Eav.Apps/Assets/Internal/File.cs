@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Apps.Assets;
+namespace ToSic.Eav.Apps.Assets.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
@@ -39,8 +39,8 @@ public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
 
     public int Size { get; set; }
 
-    public SizeInfo SizeInfo => _sizeInfo.Get(() => new SizeInfo(Size));
-    private readonly GetOnce<SizeInfo> _sizeInfo = new();
+    public ISizeInfo SizeInfo => _sizeInfo.Get(() => new SizeInfo(Size));
+    private readonly GetOnce<ISizeInfo> _sizeInfo = new();
 
     [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
     public string PhysicalPath { get; set; }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.Apps.Assets;
+namespace ToSic.Eav.Apps.Assets.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFileId>

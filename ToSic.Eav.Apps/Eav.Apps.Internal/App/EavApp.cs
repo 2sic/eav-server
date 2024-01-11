@@ -62,8 +62,10 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
     public string Name { get; private set; }
     /// <inheritdoc />
     public string Folder { get; private set; }
-    /// <inheritdoc />
-    public bool Hidden { get; private set; }
+
+    // 2024-01-11 2dm - #RemoveIApp.Hidden for v17 - kill code ca. 2024-07 (Q3)
+    ///// <inheritdoc />
+    //public bool Hidden { get; private set; }
 
     /// <inheritdoc />
     public string NameId { get; private set; }

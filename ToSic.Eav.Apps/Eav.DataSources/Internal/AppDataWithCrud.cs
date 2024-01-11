@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Internal.Caching;
@@ -9,7 +10,7 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.DataSources;
+namespace ToSic.Eav.DataSources.Internal;
 
 /// <summary>
 /// The Data object on an App. It's also a data-source of type <see cref="Eav.DataSources.App"/>,
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Apps.DataSources;
 /// The special feature is that it also has methods for data-manipulation,
 /// including Create, Update and Delete
 /// </summary>
-[PublicApi]
+[PrivateApi("May have been visible before v17, but probably not really, name was also different. Published through the IAppData interface.")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppDataWithCrud: Eav.DataSources.App, IAppData
 {

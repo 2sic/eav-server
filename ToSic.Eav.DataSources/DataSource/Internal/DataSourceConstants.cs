@@ -31,7 +31,7 @@ public class DataSourceConstants
     [PrivateApi] internal const string SystemQueryPrefix = "System.";
 
     [PrivateApi]
-    internal static bool IsGlobalQuery(string name) => name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix);
+    public static bool IsGlobalQuery(string name) => name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix);
 
     #endregion
 
