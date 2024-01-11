@@ -8,7 +8,7 @@ using ToSic.Eav.ImportExport.Xml;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal.XmlList;
 
 /// <summary>
 /// For exporting a content-type into xml, either just the schema or with data

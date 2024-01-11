@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Apps.Api.Api01;
 
 /// <summary>
-/// 
+/// Special keys / values used in the dictionary to save, based on which the system will decide how to handle drafts/publishing
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SaveApiAttributes

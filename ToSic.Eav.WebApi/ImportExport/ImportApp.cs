@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Apps.ImportExport.ImportHelpers;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Context;
 using ToSic.Eav.Identity;
+using ToSic.Eav.ImportExport.Internal;
+using ToSic.Eav.ImportExport.Internal.ImportHelpers;
+using ToSic.Eav.ImportExport.Internal.Zip;
 using ToSic.Eav.Integration.Environment;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Features;

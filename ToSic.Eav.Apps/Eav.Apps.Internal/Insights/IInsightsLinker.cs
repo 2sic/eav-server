@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Apps.Internal.Insights;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IInsightsLinker
 {
     string LinkTo(string label, string view, int? appId = null, NoParamOrder noParamOrder = default,

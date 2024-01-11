@@ -10,13 +10,17 @@ namespace ToSic.Eav.Context;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class Site<T>(string logPrefix) : ServiceBase($"{logPrefix}.Site"), ISite, IWrapper<T>
 {
     /// <inheritdoc />
     public abstract ISite Init(int siteId, ILog parentLog);
 
     public virtual T GetContents() => UnwrappedSite;
-    [PrivateApi] protected virtual T UnwrappedSite { get; set; }
+
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    protected virtual T UnwrappedSite { get; set; }
 
     /// <inheritdoc />
     public abstract string CurrentCultureCode { get; }
@@ -35,13 +39,20 @@ public abstract class Site<T>(string logPrefix) : ServiceBase($"{logPrefix}.Site
     public abstract string UrlRoot { get; }
 
     /// <inheritdoc />
-    [PrivateApi] public abstract string AppsRootPhysical { get; }
-
-    [PrivateApi] public abstract string AppsRootPhysicalFull { get; }
-
-    [PrivateApi] public abstract string AppAssetsLinkTemplate { get; }
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public abstract string AppsRootPhysical { get; }
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public abstract string AppsRootPhysicalFull { get; }
+
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public abstract string AppAssetsLinkTemplate { get; }
+
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public abstract string ContentPath { get; }
 
 

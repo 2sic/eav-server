@@ -2,12 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Validation;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal.XmlList;
 
 partial class ImportListXml
 {

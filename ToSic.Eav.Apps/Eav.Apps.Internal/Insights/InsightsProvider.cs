@@ -4,6 +4,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Internal.Insights;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class InsightsProvider(string name, NoParamOrder protect = default, string teaser = default, string helpCategory = default): ServiceBase($"Ins.{name}"), IInsightsProvider
 {
     public string HelpCategory => helpCategory;

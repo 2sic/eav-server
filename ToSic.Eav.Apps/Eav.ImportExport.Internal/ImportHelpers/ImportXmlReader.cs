@@ -2,11 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.ImportExport;
+using ToSic.Eav.Apps;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.ImportExport.ImportHelpers;
+namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
 
 /// <summary>
 /// Read an xml file, check for headers and verify all the parts to better process the import

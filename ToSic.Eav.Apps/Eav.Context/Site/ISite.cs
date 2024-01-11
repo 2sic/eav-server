@@ -8,6 +8,7 @@ namespace ToSic.Eav.Context;
 /// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
 /// </summary>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ISite: IZoneIdentity, IZoneCultureResolver, ILogShouldNeverConnect
 {
     #region Constructor Helper
@@ -35,13 +36,20 @@ public interface ISite: IZoneIdentity, IZoneCultureResolver, ILogShouldNeverConn
     /// <summary>
     /// The root path of the tenant for accessing files using server code
     /// </summary>
-    [PrivateApi] string AppsRootPhysical { get; }
-
-    [PrivateApi] string AppsRootPhysicalFull { get; }
-
-    [PrivateApi] string AppAssetsLinkTemplate { get; }
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    string AppsRootPhysical { get; }
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    string AppsRootPhysicalFull { get; }
+
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    string AppAssetsLinkTemplate { get; }
+
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     string ContentPath { get; }
 
 

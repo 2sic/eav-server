@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Apps.ImportExport.ImportHelpers;
+namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
 
 /// <summary>
 /// Helpers to handle attribute languages during the import

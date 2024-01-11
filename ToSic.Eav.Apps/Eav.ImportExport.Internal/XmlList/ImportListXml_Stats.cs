@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal.XmlList;
 
 partial class ImportListXml
 {

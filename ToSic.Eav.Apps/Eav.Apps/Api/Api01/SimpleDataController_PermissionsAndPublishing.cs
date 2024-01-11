@@ -8,7 +8,6 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.Logging;
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Api.Api01;
 
 partial class SimpleDataController

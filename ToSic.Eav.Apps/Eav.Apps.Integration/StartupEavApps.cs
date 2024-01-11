@@ -1,12 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Api.Api01;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
+using ToSic.Eav.Context.Internal;
+using ToSic.Eav.ImportExport.Internal;
+using ToSic.Eav.ImportExport.Internal.XmlList;
+using ToSic.Eav.ImportExport.Internal.Zip;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Integration.Environment;
 using ToSic.Eav.Integration.Security;
@@ -18,6 +21,7 @@ using ToSic.Eav.Security.Internal;
 
 namespace ToSic.Eav.Apps.Integration;
 
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class StartupEavApps
 {
     public static IServiceCollection AddEavApps(this IServiceCollection services)

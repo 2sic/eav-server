@@ -3,7 +3,7 @@ using ToSic.Lib.DI;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Eav.Context.Internal;
 
 /// <summary>
 /// Context of site - fully DI compliant

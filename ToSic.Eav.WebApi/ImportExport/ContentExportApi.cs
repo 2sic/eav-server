@@ -10,7 +10,6 @@ using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Plumbing;
 using System.Collections.Generic;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Serialization;
@@ -20,6 +19,7 @@ using ToSic.Eav.WebApi.Infrastructure;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using ToSic.Eav.Apps.Internal.Work;
+using ToSic.Eav.ImportExport.Internal.XmlList;
 #if NETFRAMEWORK
 using System.Web.Http;
 #else

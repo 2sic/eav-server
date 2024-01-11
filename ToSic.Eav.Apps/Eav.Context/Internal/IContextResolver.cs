@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Eav.Context.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IContextResolver: IHasLog, IContextResolverUserPermissions

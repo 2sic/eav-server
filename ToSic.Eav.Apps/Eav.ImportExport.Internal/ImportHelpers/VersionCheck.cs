@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.ImportExport.ImportHelpers;
+namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
 
 internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : HelperBase(parentLog, "Imp.VerChk")
 {

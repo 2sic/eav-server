@@ -4,13 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Options;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal.XmlList;
 
 partial class ImportListXml
 {

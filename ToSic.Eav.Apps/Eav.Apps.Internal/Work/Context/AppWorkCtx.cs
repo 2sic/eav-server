@@ -36,8 +36,3 @@ public class AppWorkCtx : IAppWorkCtx
     public IAppStateInternal AppState { get; }
 
 }
-
-public static class AppWorkExtensions
-{
-    public static IAppWorkCtx CreateAppWorkCtx(this IAppState appState) => new AppWorkCtx(appState);
-}

@@ -1,7 +1,7 @@
 ﻿using System;
 using ToSic.Eav.Apps;
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Eav.Context.Internal;
 
 partial class ContextResolver
 {

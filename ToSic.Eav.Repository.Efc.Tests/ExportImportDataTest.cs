@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.ImportExport;
+using ToSic.Eav.ImportExport.Internal;
 using ToSic.Lib.Logging;
 
 using ToSic.Testing.Shared;

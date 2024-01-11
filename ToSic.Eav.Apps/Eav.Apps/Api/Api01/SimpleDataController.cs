@@ -24,7 +24,6 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // like code to build attributes, or convert id-relationships to guids
 // this should be in the AttributeBuilder or similar
 
-// ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Api.Api01;
 
 /// <summary>

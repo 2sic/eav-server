@@ -1,14 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Identity;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Lib.Logging;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal.Zip;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZipFromUrlImport: ZipImport

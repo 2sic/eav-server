@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -11,7 +12,7 @@ using ToSic.Eav.Repository.Efc;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles.MyServices>

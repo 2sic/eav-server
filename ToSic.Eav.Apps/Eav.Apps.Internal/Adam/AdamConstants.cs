@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal;
-
-namespace ToSic.Eav.Apps.Adam;
+﻿namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AdamConstants

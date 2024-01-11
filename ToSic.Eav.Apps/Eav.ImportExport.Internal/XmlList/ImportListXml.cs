@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using ToSic.Eav.Apps.ImportExport.ImportHelpers;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Lib.DI;
-using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Internal.ImportHelpers;
 using ToSic.Eav.ImportExport.Options;
 using ToSic.Eav.ImportExport.Xml;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal.XmlList;
 
 /// <summary>
 /// Import a virtual table of content-items

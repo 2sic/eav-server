@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.ImportExport;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport.Internal.XmlList;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Lib.Logging;
@@ -100,13 +100,11 @@ public class ContentImportApi : ServiceBase
         var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
         var contextLanguages = _appStates.Languages(_appState.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
 
-        using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
-        {
-            var importer = _importListXml.Value.Init(_appState, args.ContentType, contentSteam,
-                contextLanguages, args.DefaultLanguage,
-                args.ClearEntities, args.ImportResourcesReferences);
-            return l.Return(importer);
-        }
+        using var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64));
+        var importer = _importListXml.Value.Init(_appState, args.ContentType, contentSteam,
+            contextLanguages, args.DefaultLanguage,
+            args.ClearEntities, args.ImportResourcesReferences);
+        return l.Return(importer);
     }
 
     [HttpPost]

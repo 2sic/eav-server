@@ -3,13 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using ToSic.Eav.Apps.Adam;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.ImportExport.ImportHelpers;
+namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
 
 internal class RenameOnImport: HelperBase
 {

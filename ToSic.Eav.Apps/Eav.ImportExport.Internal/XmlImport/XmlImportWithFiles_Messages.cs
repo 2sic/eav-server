@@ -8,7 +8,7 @@ using ToSic.Lib.Logging;
 // ...and these are real errors which should blow
 // ReSharper disable PossibleNullReferenceException
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal;
 
 partial class XmlImportWithFiles
 {

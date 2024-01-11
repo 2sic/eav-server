@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Internal.XmlList;
 using ToSic.Lib.Services;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Apps.ImportExport;
+namespace ToSic.Eav.ImportExport.Internal;
 
 /// <summary>
 /// For exporting a content-type into xml, either just the schema or with data

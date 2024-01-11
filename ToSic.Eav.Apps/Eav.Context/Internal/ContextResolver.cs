@@ -2,7 +2,7 @@
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Eav.Context.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class ContextResolver: ServiceBase
