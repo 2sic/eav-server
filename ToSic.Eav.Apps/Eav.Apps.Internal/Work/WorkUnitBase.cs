@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Services;
-
-namespace ToSic.Eav.Apps.Internal.Work;
+﻿namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Base class for all app-work helpers.

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.WebApi.Dto;
+﻿using ToSic.Eav.DataSource.Internal.Query;
 
 namespace ToSic.Eav.WebApi.PublicApi;
 

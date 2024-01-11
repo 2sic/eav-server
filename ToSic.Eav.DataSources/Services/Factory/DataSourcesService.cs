@@ -1,13 +1,6 @@
-﻿using System;
-using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.LookUp;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Services;
 

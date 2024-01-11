@@ -1,8 +1,4 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Lib.Logging;
-using ToSic.Eav.WebApi.Dto;
-
-namespace ToSic.Eav.WebApi.Context;
+﻿namespace ToSic.Eav.WebApi.Context;
 
 public interface IUiContextBuilder: IHasLog
 {

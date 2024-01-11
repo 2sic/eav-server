@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps.Integration;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using static ToSic.Eav.Data.InputTypes;
 
 namespace ToSic.Eav.Apps.Internal.Work;

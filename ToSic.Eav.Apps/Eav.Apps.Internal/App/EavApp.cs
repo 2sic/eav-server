@@ -1,12 +1,7 @@
-﻿using System;
-using ToSic.Eav.Context;
+﻿using ToSic.Eav.Context;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Services;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
 // NOTE 2023-01-11 refactoring - was previously ToSic.Eav.Apps.App - renamed to ToSic.Eav.Apps.Internal.EavApp
 // Could be a breaking change

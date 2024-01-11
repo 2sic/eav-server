@@ -1,9 +1,4 @@
-﻿using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Metadata;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+﻿using ToSic.Eav.Metadata;
 using static ToSic.Eav.Apps.AppLoadConstants;
 
 namespace ToSic.Eav.Apps.Internal.Work;

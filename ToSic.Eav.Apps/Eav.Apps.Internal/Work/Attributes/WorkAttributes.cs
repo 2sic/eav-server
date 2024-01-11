@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Shared;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Data.Shared;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

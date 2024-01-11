@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Repositories;
-
-namespace ToSic.Eav.Repository.Efc.Parts;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbEntity
 {
@@ -31,6 +26,6 @@ partial class DbEntity
     {
         // in update scenarios, the old data could have been a db-model, so clear that
         ClearAttributesInDbModel(newEnt.EntityId);
-        DbContext.Relationships.FlushChildrenRelationships(new List<int> { newEnt.EntityId });
+        DbContext.Relationships.FlushChildrenRelationships([newEnt.EntityId]);
     }
 }

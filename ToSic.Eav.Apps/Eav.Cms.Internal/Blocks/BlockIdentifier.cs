@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Cms.Internal;
+﻿namespace ToSic.Eav.Cms.Internal;
 
 /// <inheritdoc />
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

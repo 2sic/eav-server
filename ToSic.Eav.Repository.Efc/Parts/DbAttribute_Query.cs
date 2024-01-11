@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using ToSic.Eav.Persistence.Efc.Models;
-
-namespace ToSic.Eav.Repository.Efc.Parts;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbAttribute
 {

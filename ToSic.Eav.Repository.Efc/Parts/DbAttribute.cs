@@ -1,10 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Data;
-using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Persistence.Logging;
+﻿using System.Diagnostics;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 

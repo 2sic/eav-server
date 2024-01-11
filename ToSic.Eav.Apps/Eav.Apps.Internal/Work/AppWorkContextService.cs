@@ -2,8 +2,6 @@
 using ToSic.Eav.DataSource;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Services;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

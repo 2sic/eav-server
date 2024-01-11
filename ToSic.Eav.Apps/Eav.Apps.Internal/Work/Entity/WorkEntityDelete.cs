@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Apps.State;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

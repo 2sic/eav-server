@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.LookUp;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps.Internal;
 

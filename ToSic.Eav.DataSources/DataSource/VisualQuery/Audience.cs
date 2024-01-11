@@ -1,7 +1,5 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-using ToSic.Lib.Documentation;
-
 namespace ToSic.Eav.DataSource.VisualQuery;
 
 /// <summary>

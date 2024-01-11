@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Caching;
+﻿using System.Runtime.Caching;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
 using ToSic.Eav.Internal.Unknown;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSource.Internal.AppDataSources;
 

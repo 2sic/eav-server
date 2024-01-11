@@ -1,11 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Reflection;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.WebApi.Infrastructure;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
 #else

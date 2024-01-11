@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
-using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
+﻿using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
 using DicNameObj = System.Collections.Generic.Dictionary<string, object>;
 
 namespace ToSic.Eav.Apps.Internal.Work;

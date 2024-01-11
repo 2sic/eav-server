@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Plumbing;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

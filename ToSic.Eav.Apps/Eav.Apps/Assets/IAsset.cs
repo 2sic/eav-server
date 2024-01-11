@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Apps.Assets;
+﻿namespace ToSic.Eav.Apps.Assets;
 
 /// <summary>
 /// Any asset (file/folder) of the EAV App System. <br/>

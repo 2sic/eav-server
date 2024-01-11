@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSources.Internal;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.DataSources.Internal;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;

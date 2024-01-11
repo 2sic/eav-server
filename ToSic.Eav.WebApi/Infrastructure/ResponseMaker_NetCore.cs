@@ -1,11 +1,9 @@
 ﻿#if !NETFRAMEWORK
-using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.WebApi.Infrastructure;
 

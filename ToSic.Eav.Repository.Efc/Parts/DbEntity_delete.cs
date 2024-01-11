@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence.Efc.Models;
-
-namespace ToSic.Eav.Repository.Efc.Parts;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbEntity
 {
@@ -11,7 +6,7 @@ partial class DbEntity
     /// Delete an Entity
     /// </summary>
     internal bool DeleteEntity(int repositoryId, bool autoSave = true, bool removeFromParents = false) 
-        => DeleteEntity(new[] {repositoryId}, autoSave, removeFromParents);
+        => DeleteEntity([repositoryId], autoSave, removeFromParents);
 
     internal bool DeleteEntity(int[] repositoryId, bool autoSave = true, bool removeFromParents = false)
     {

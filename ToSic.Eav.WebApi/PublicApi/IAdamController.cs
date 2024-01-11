@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.WebApi.Dto;
-
-namespace ToSic.Eav.WebApi.PublicApi;
+﻿namespace ToSic.Eav.WebApi.PublicApi;
 
 /// <summary>
 /// Contract for WebApi controllers supporting ADAM calls

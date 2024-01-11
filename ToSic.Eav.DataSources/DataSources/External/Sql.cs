@@ -1,25 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-#if NETFRAMEWORK
+﻿#if NETFRAMEWORK
 using System.Data.SqlClient;
 #else
 using Microsoft.Data.SqlClient;
 #endif
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Internal;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Services;
 using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 

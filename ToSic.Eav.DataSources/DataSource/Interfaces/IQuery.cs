@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.DataSource.Internal.Query;
 
 namespace ToSic.Eav.DataSource;
 

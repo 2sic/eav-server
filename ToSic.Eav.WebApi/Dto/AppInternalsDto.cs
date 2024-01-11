@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.WebApi.Admin.Metadata;
+﻿using ToSic.Eav.WebApi.Admin.Metadata;
 
 namespace ToSic.Eav.WebApi.Dto;
 

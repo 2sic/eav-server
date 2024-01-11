@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.DataSource;
+﻿namespace ToSic.Eav.DataSource;
 
 /// <summary>
 /// This interface marks objects which can provide links to DataSources.

@@ -1,13 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
-using ToSic.Eav.Data.Shared;
+﻿using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Security;
-using ToSic.Lib.DI;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi;

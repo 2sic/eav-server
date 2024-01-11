@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data;
-
-namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
+﻿namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
 internal class MetadataForDecorator(IEntity entity) : ForExpectedBase(entity)
 {

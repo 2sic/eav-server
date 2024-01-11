@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Data;
-using static System.Text.Json.Serialization.JsonIgnoreCondition;
+﻿using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
 namespace ToSic.Eav.WebApi.Dto;
 

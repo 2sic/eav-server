@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Apps.Internal.Ui;
+﻿namespace ToSic.Eav.Apps.Internal.Ui;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public struct ContentTypeUiInfo

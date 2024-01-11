@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Serialization.Internal;
+﻿namespace ToSic.Eav.Serialization.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class SerializerExtensions

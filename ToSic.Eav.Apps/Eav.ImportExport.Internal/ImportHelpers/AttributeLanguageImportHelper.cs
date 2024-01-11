@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using ToSic.Eav.Data;
+﻿using System.Text.RegularExpressions;
 
 namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
 

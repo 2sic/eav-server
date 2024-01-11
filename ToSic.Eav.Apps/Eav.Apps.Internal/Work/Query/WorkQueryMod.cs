@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource.Internal.Query;
+﻿using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using static System.StringComparer;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;

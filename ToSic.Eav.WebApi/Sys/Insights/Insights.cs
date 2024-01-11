@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal;
+﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Lib.Coding;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;

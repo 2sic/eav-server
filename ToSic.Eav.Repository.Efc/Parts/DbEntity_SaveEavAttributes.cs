@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence;
-using ToSic.Eav.Persistence.Efc.Models;
-
-namespace ToSic.Eav.Repository.Efc.Parts;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbEntity
 {
@@ -127,7 +118,7 @@ partial class DbEntity
 
     // ReSharper disable once RedundantDefaultMemberInitializer
     private bool _attributeQueueActive = false;
-    private readonly List<Action> _attributeUpdateQueue = new List<Action>();
+    private readonly List<Action> _attributeUpdateQueue = [];
 
     private void AttributeQueueAdd(Action next) => _attributeUpdateQueue.Add(next);
 

@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Apps.Assets;
+﻿namespace ToSic.Eav.Apps.Assets;
 
 /// <summary>
 /// Describes a folder as provided by the underlying environment (like DNN)

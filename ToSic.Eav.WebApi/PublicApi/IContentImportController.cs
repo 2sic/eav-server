@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.WebApi.Dto;
-
-namespace ToSic.Eav.WebApi.PublicApi;
+﻿namespace ToSic.Eav.WebApi.PublicApi;
 
 public interface IContentImportController
 {

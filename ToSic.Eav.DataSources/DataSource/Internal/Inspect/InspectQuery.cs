@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+﻿using ToSic.Eav.DataSource.Internal.Query;
 
 namespace ToSic.Eav.DataSource.Internal.Inspect;
 

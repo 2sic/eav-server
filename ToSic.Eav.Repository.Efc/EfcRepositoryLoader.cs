@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Metadata;
-using ToSic.Eav.Repositories;
+﻿using ToSic.Eav.Apps.State;
 
 namespace ToSic.Eav.Repository.Efc;
 

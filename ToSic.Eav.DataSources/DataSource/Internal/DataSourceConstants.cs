@@ -1,8 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Raw;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Data.Raw;
 
 namespace ToSic.Eav.DataSource.Internal;
 

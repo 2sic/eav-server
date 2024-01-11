@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using ToSic.Eav.Plumbing;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+﻿using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.Internal;
 

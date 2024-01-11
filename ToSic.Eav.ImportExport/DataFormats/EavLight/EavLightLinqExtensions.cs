@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ToSic.Eav.DataFormats.EavLight;
+﻿namespace ToSic.Eav.DataFormats.EavLight;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class EavLightLinqExtensions

@@ -1,6 +1,4 @@
 ﻿using ToSic.Eav.Repository.Efc;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

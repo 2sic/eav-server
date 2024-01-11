@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Apps.Internal.Insights;
 using static ToSic.Razor.Blade.Tag;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 

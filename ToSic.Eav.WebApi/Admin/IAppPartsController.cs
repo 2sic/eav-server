@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.WebApi.Dto;
-#if NETFRAMEWORK
+﻿#if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
 #else
 using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;

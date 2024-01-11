@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Internal.Work;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Apps.Internal.Work;
 
 namespace ToSic.Eav.Apps.Integration;
 

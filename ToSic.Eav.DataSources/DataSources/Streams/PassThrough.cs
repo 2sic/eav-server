@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.DataSources;
+﻿namespace ToSic.Eav.DataSources;
 
 /// <inheritdoc />
 /// <summary>

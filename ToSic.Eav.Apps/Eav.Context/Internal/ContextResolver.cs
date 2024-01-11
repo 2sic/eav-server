@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.DI;
-using ToSic.Lib.Helpers;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Context.Internal;
 

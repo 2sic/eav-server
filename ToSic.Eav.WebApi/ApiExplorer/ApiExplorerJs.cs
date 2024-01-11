@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.WebApi.ApiExplorer;
 

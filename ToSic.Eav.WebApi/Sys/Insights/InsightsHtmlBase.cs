@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Text.Encodings.Web;
 using System.Web;
 using ToSic.Eav.Apps.Internal.Insights;

@@ -1,13 +1,10 @@
 ﻿#if !NETFRAMEWORK
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ToSic.Eav.Code;
-using ToSic.Lib.Logging;
-using ToSic.Lib.DI;
 
 namespace ToSic.Eav.WebApi.Helpers;
 

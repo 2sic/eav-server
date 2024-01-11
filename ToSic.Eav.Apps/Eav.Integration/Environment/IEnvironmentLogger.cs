@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Integration.Environment;
+﻿namespace ToSic.Eav.Integration.Environment;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IEnvironmentLogger

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.WebApi.Dto;
+﻿namespace ToSic.Eav.WebApi.Dto;
 
 public class AdamItemDto<TFolderId, TItemId>: AdamItemDto
 {

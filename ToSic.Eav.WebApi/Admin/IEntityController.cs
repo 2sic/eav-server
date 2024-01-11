@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.ImportExport.Internal.Options;
-using ToSic.Eav.WebApi.Dto;
+﻿using ToSic.Eav.ImportExport.Internal.Options;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
 #else

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
-using static System.StringComparison;
+﻿using static System.StringComparison;
 using static ToSic.Eav.DataSources.CompareOperators;
 
 namespace ToSic.Eav.DataSources;

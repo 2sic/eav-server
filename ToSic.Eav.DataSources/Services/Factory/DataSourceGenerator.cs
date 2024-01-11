@@ -1,8 +1,4 @@
-﻿using ToSic.Eav.DataSource;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-
-namespace ToSic.Eav.Services;
+﻿namespace ToSic.Eav.Services;
 
 internal class DataSourceGenerator<TDataSource>: ServiceBase, IDataSourceGenerator<TDataSource> where TDataSource : IDataSource
 {

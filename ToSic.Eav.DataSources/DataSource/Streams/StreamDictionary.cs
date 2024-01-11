@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.Generics;
-using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSource.Streams;

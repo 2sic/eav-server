@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+﻿using System.Collections.Concurrent;
 
 namespace ToSic.Eav.DataSource.Internal.Configuration;
 

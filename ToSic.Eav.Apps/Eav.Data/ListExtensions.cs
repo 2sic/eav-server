@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ListIntNull = System.Collections.Generic.List<int?>;
+﻿using ListIntNull = System.Collections.Generic.List<int?>;
 using DicNameInt = System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<int?>>>;
 
 namespace ToSic.Eav.Data;

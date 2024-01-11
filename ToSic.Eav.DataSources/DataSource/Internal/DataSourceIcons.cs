@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.DataSource.Internal;
+﻿namespace ToSic.Eav.DataSource.Internal;
 
 /// <summary>
 /// Icon names for use in code.

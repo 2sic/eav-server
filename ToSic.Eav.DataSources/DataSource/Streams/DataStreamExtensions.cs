@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace ToSic.Eav.DataSource.Streams;
+﻿namespace ToSic.Eav.DataSource.Streams;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 internal static class DataStreamExtensions

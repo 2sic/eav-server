@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.WebApi.Cms;
+﻿namespace ToSic.Eav.WebApi.Cms;
 
 public interface IListController
 {

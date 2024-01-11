@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.DataSource.Internal.Query;
+﻿namespace ToSic.Eav.DataSource.Internal.Query;
 
 /// <summary>
 /// Constants used by Queries / VisualQuery

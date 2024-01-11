@@ -1,8 +1,4 @@
-﻿using System;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
-
-namespace ToSic.Eav.WebApi.Sys;
+﻿namespace ToSic.Eav.WebApi.Sys;
 // Release routes
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

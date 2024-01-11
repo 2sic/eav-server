@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.DataSource.Internal.Caching;
 
 namespace ToSic.Eav.DataSource.Streams;
 

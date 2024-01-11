@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.Sys.Types;
+﻿using ToSic.Eav.DataSources.Sys.Types;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;

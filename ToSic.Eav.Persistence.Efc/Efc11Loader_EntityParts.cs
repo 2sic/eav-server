@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Data;
-using ToSic.Eav.Metadata;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence.Efc.Intermediate;
+﻿using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc;

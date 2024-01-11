@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

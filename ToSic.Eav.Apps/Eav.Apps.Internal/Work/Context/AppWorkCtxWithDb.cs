@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

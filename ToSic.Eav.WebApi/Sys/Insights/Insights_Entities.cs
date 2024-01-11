@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Globalization;
-using System.Linq;
-using ToSic.Eav.Data;
 using ToSic.Eav.Serialization.Internal;
-using ToSic.Lib.Logging;
 using ToSic.Razor.Blade;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;

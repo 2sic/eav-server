@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Plumbing;
-using static ToSic.Razor.Blade.Tag;
+﻿using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 

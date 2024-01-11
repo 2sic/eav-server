@@ -1,11 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
+﻿using System.Collections.ObjectModel;
 using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static System.StringComparer;
 

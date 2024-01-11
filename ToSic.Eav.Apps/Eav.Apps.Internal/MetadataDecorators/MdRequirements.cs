@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Context;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.SysData;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 using static ToSic.Eav.Apps.Internal.MetadataDecorators.RequirementDecorator;
 
 namespace ToSic.Eav.Apps.Internal.MetadataDecorators;

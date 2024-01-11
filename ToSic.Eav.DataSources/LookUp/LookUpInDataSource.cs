@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using ToSic.Eav.Context;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Context;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.LookUp;

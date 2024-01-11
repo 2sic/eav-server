@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text.Json.Serialization;
-using ToSic.Eav.Data;
+﻿using System.Text.Json.Serialization;
 using ToSic.Eav.DataSource.Streams;
 
 namespace ToSic.Eav.DataSource.Internal.Inspect;

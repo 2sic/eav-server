@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.WebApi.App;
+﻿namespace ToSic.Eav.WebApi.App;
 
 /// <summary>
 /// Direct access to app-content items, simple manipulations etc.

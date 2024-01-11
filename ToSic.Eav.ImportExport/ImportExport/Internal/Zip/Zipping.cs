@@ -2,8 +2,6 @@
 using System.IO.Compression;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Security.Files;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.ImportExport.Internal.Zip;
 

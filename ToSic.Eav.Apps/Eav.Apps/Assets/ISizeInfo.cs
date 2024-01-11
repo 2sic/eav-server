@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Apps.Assets;
+﻿namespace ToSic.Eav.Apps.Assets;
 
 /// <summary>
 /// Size information for files

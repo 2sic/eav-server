@@ -1,8 +1,4 @@
-﻿using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource.Internal;
+﻿using ToSic.Eav.Apps;
 
 namespace ToSic.Eav.DataSources;
 

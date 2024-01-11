@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Apps;
 

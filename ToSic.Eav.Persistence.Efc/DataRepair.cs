@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data;
-
-namespace ToSic.Eav.Persistence.Efc
+﻿namespace ToSic.Eav.Persistence.Efc
 {
     internal class DataRepair
     {

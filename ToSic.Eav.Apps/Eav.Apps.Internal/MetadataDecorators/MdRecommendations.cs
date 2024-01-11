@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 using static System.String;
 using static ToSic.Eav.Apps.Internal.MetadataDecorators.MetadataRecommendation;
 

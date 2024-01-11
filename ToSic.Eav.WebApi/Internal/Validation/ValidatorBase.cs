@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Logging;
-using ToSic.Eav.WebApi.Errors;
-using ToSic.Lib.Services;
+﻿using ToSic.Eav.WebApi.Errors;
 
 namespace ToSic.Eav.WebApi.Validation;
 

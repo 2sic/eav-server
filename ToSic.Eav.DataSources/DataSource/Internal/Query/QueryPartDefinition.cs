@@ -1,9 +1,4 @@
-﻿using System;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSource.VisualQuery.Internal;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.DataSource.VisualQuery.Internal;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 

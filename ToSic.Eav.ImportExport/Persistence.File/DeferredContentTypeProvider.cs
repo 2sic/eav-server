@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Lib.Helpers;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Persistence.File;

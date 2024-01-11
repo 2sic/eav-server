@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Lib.Coding;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Apps.Internal.Insights;
 

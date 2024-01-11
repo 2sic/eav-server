@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Net;
 using System.Text.Json;
 using ToSic.Eav.Internal.Configuration;
@@ -9,15 +6,12 @@ using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Security.Fingerprint;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
 using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
 using ToSic.Eav.WebApi.Validation;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses;
 

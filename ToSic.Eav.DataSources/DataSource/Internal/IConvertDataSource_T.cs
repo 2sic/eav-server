@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.DataSource.Internal;
+﻿namespace ToSic.Eav.DataSource.Internal;
 
 /// <summary>
 /// Marks objects which can convert a DataSource to another format.

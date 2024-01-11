@@ -1,7 +1,5 @@
 ﻿#if !NETFRAMEWORK
-using System;
 using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using ToSic.Eav.Security.Files;

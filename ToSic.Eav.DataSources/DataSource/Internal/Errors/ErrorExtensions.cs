@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using ToSic.Eav.Data;
-
-namespace ToSic.Eav.DataSource.Internal.Errors;
+﻿namespace ToSic.Eav.DataSource.Internal.Errors;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class ErrorExtensions

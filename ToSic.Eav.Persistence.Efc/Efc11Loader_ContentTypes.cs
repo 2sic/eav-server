@@ -1,13 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Metadata;
+﻿using System.Diagnostics;
 
 namespace ToSic.Eav.Persistence.Efc;
 

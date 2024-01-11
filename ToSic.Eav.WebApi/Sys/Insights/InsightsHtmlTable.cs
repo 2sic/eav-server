@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ToSic.Razor.Blade;
+﻿using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;

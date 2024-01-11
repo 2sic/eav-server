@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ToSic.Eav.WebApi.Sys.Licenses;
+﻿namespace ToSic.Eav.WebApi.Sys.Licenses;
 
 public class LicenseDto
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Persistence.Logging;
+﻿using System.Diagnostics;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 

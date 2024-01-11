@@ -1,6 +1,4 @@
 ﻿using ToSic.Eav.Apps.State;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

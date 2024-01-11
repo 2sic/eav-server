@@ -1,12 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using ToSic.Eav.Internal.Compression;
-using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
@@ -88,5 +81,5 @@ internal  partial class DbVersioning: DbPartBase
         _queue.Clear();
     });
 
-    private readonly List<ToSicEavDataTimeline> _queue = new List<ToSicEavDataTimeline>();
+    private readonly List<ToSicEavDataTimeline> _queue = [];
 }

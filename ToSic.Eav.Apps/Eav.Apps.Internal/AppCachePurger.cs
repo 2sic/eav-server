@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Eav.Caching;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+﻿using ToSic.Eav.Caching;
 
 namespace ToSic.Eav.Apps.Internal;
 

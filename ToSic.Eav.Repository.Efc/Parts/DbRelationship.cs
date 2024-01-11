@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence;
-using ToSic.Eav.Persistence.Efc.Models;
-using IEntity = ToSic.Eav.Data.IEntity;
-
-namespace ToSic.Eav.Repository.Efc.Parts;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
 internal class DbRelationship: DbPartBase
 {
@@ -35,7 +26,7 @@ internal class DbRelationship: DbPartBase
 
     private bool _isOutermostCall = true;
 
-    private readonly List<RelationshipToSave> _saveQueue = new List<RelationshipToSave>();
+    private readonly List<RelationshipToSave> _saveQueue = [];
 
 
 
@@ -145,7 +136,7 @@ internal class DbRelationship: DbPartBase
                     var entity = parents.Single(e => e.EntityId == relationship.ParentEntityId);
 
                     // start with the ID list - or if it doesn't exist, a new list
-                    var childEntityIds = relationship.ChildEntityIds ?? new List<int?>();
+                    var childEntityIds = relationship.ChildEntityIds ?? [];
 
                     // if additional / alternative guids were specified, use those
                     if (childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)

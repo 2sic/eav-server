@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace ToSic.Eav.DataSources;
+﻿namespace ToSic.Eav.DataSources;
 
 /// <summary>
 /// This will parse a line of configuration like this:

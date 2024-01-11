@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Apps.Integration;
+﻿namespace ToSic.Eav.Apps.Integration;
 
 /// <summary>
 /// Internal interface to enable helpers to switch between paths on both the App and AppPaths

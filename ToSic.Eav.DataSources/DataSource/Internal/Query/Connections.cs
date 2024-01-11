@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using ToSic.Lib.Documentation;
+﻿using System.Text.RegularExpressions;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 

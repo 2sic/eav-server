@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource.Internal.Catalog;
-using ToSic.Eav.DataSource.VisualQuery;
+﻿using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource.Internal.Query;

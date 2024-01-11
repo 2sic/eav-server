@@ -1,16 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSource.Internal.Query;
+﻿using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.LookUp;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources;
 

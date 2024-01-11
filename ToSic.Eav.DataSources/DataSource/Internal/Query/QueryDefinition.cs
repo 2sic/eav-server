@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using IEntity = ToSic.Eav.Data.IEntity;
+﻿using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 

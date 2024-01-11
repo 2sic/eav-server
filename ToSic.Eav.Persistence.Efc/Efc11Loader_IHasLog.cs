@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Persistence.Efc;
+﻿namespace ToSic.Eav.Persistence.Efc;
 
 partial class Efc11Loader: IHasLog
 {
