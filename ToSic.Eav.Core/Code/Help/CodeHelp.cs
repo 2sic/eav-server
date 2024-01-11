@@ -3,7 +3,14 @@
 namespace ToSic.Eav.Code.Help;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CodeHelp
+public class CodeHelp(
+    CodeHelp original,
+    string name = default,
+    string detect = default,
+    string linkCode = default,
+    bool? detectRegex = default,
+    string uiMessage = default,
+    string detailsHtml = default)
 {
     public const string ErrHelpPre = "Error in your code. ";
     private const string ErrHelpLink = "https://go.2sxc.org/{0}";
@@ -15,25 +22,17 @@ public class CodeHelp
         : this(original: null, name: name, detect: detect, linkCode: linkCode, detectRegex: detectRegex, uiMessage: uiMessage, detailsHtml: detailsHtml)
     { }
 
-    public CodeHelp(CodeHelp original, string name = default, string detect = default, string linkCode = default, bool? detectRegex = default, string uiMessage = default, string detailsHtml = default)
-    {
-        Name = name ?? original?.Name;
-        LinkCode = linkCode ?? original?.LinkCode;
-        Detect = detect ?? original?.Detect;
-        DetectRegex = detectRegex ?? original?.DetectRegex ?? false;
-        UiMessage = uiMessage ?? original?.UiMessage;
-        DetailsHtml = detailsHtml ?? original?.DetailsHtml;
-    }
     /// <summary>
     /// Name for internal use to better understand what this is for
     /// </summary>
-    public string Name { get; }
-    public string Detect { get; }
-    public bool DetectRegex { get; }
-    public string UiMessage { get; }
-    public string DetailsHtml { get; }
+    public string Name { get; } = name ?? original?.Name;
 
-    public readonly string LinkCode;
+    public string Detect { get; } = detect ?? original?.Detect;
+    public bool DetectRegex { get; } = detectRegex ?? original?.DetectRegex ?? false;
+    public string UiMessage { get; } = uiMessage ?? original?.UiMessage;
+    public string DetailsHtml { get; } = detailsHtml ?? original?.DetailsHtml;
+
+    public readonly string LinkCode = linkCode ?? original?.LinkCode;
     public string Link => !LinkCode.HasValue() ? "" : LinkCode.Contains("http") ? LinkCode : string.Format(ErrHelpLink, LinkCode);
 
     public string LinkMessage => LinkCode.HasValue() ? string.Format(ErrLinkMessage, Link) : "";
