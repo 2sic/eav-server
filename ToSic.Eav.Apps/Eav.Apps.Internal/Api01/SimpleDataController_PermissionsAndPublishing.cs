@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Apps.Api.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Api.Api01;
+namespace ToSic.Eav.Apps.Internal.Api01;
 
-partial class SimpleDataController
+partial class SimpleDataEditService
 {
 
     private EntitySavePublishing? FigureOutPublishing(IContentType contentType, IDictionary<string, object> values, bool? existingIsPublished)

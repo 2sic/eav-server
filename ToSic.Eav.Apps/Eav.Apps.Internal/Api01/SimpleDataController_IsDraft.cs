@@ -1,11 +1,11 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
-using static ToSic.Eav.Apps.Api.Api01.SaveApiAttributes;
+using static ToSic.Eav.Apps.Internal.Api01.SaveApiAttributes;
 
-namespace ToSic.Eav.Api.Api01;
+namespace ToSic.Eav.Apps.Internal.Api01;
 
-partial class SimpleDataController
+partial class SimpleDataEditService
 {
     public static EntitySavePublishing GetPublishSpecs(object publishedState, bool? existingIsPublished, bool writePublishAllowed, ILog log)
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Api.Api01;
+using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;

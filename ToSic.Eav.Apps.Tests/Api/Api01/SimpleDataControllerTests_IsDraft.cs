@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Api.Api01;
+using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Tests.Api.Api01
@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.Tests.Api.Api01
     {
         private static (bool ShouldPublish, bool ShouldBranchDrafts) TestGetPublishSpecs(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
         {
-            var r = SimpleDataController.GetPublishSpecs(publishedState, existingIsPublished, writePublishAllowed,
+            var r = SimpleDataEditService.GetPublishSpecs(publishedState, existingIsPublished, writePublishAllowed,
                 new Log("test"));
             return (r.ShouldPublish, r.ShouldBranchDrafts);
         }

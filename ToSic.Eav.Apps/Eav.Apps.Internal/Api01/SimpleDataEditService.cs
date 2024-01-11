@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Integration;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Internal;
 using ToSic.Lib.DI;
+using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -24,20 +23,22 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // like code to build attributes, or convert id-relationships to guids
 // this should be in the AttributeBuilder or similar
 
-namespace ToSic.Eav.Api.Api01;
+namespace ToSic.Eav.Apps.Internal.Api01;
 
 /// <summary>
-/// This is a simple controller with some Create, Update and Delete commands. 
+/// This is a simple controller with some Create, Update and Delete commands.
+///
+/// Used to be called SimpleDataController before v17
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class SimpleDataController: ServiceBase
+public partial class SimpleDataEditService: ServiceBase
 {
     #region Constructor / DI
 
     /// <summary>
     /// Used for DI - must always call Init to use
     /// </summary>
-    public SimpleDataController(
+    public SimpleDataEditService(
         DataBuilder builder,
         IZoneMapper zoneMapper,
         IContextOfSite ctx,
@@ -75,9 +76,9 @@ public partial class SimpleDataController: ServiceBase
     /// <param name="zoneId">Zone ID</param>
     /// <param name="appId">App ID</param>
     /// <param name="checkWritePermissions"></param>
-    public SimpleDataController Init(int zoneId, int appId, bool checkWritePermissions = true)
+    public SimpleDataEditService Init(int zoneId, int appId, bool checkWritePermissions = true)
     {
-        var l = Log.Fn<SimpleDataController>($"{zoneId}, {appId}");
+        var l = Log.Fn<SimpleDataEditService>($"{zoneId}, {appId}");
         _appId = appId;
 
         // when zoneId is not that same as in current context, we need to set right site for provided zoneId

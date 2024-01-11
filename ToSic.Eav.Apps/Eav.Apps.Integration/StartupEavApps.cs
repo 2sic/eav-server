@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Api.Api01;
 using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Cms.Internal.Languages;
@@ -100,7 +100,7 @@ public static class StartupEavApps
         services.TryAddTransient<XmlImportWithFiles.MyServices>();
 
         // Simple DataController - registration was missing
-        services.TryAddTransient<SimpleDataController>();
+        services.TryAddTransient<SimpleDataEditService>();
 
         // App Permission Check moved to this project as the implementations are now all identical
         services.TryAddTransient<AppPermissionCheck>();

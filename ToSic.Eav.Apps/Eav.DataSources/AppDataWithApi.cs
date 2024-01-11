@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Api.Api01;
+using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.Generics;
@@ -25,7 +25,7 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
 
     #region Constructor stuff
 
-    public AppDataWithCrud(MyServices services, LazySvc<SimpleDataController> dataController, LazySvc<IDataSourceCacheService> dsCacheSvc) : base(services)
+    public AppDataWithCrud(MyServices services, LazySvc<SimpleDataEditService> dataController, LazySvc<IDataSourceCacheService> dsCacheSvc) : base(services)
     {
         ConnectServices(
             DataController = dataController.SetInit(dc => dc.Init(ZoneId, AppId, false)),
@@ -39,7 +39,7 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
     /// Get a correctly instantiated instance of the simple data controller once needed.
     /// </summary>
     /// <returns>An data controller to create, update and delete entities</returns>
-    private LazySvc<SimpleDataController> DataController { get; }
+    private LazySvc<SimpleDataEditService> DataController { get; }
 
     /// <inheritdoc />
     public IEntity Create(string contentTypeName, Dictionary<string, object> values, string userName = default, ITarget target = default)
