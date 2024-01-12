@@ -4,17 +4,12 @@ using ToSic.Eav.Internal.Features;
 
 namespace ToSic.Eav.Internal.Compression;
 
-public class Compressor
+public class Compressor(IEavFeaturesService features = null)
 {
-    private readonly bool _featureEnabled;
-    private ICompressor _compressor;
+    private readonly bool _featureEnabled = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;
+    private ICompressor _compressor = CompressorFactory();
 
-    public Compressor(IEavFeaturesService features = null)
-    {
-        // TODO: review with 2DM, because fallback is to "true" (used by unit testing)
-        _featureEnabled = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;
-        _compressor = CompressorFactory();
-    }
+    // TODO: review with 2DM, because fallback is to "true" (used by unit testing)
 
     public Compressor InitCompressor(CompressorType compressorType)
     {

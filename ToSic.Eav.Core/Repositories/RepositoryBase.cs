@@ -3,19 +3,11 @@
 namespace ToSic.Eav.Repositories;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class RepositoryBase: ServiceBase
+public abstract class RepositoryBase(bool global, bool readOnly, RepositoryTypes type) : ServiceBase("RP.Info")
 {
-    protected RepositoryBase(bool global, bool readOnly, RepositoryTypes type) : base("RP.Info")
-    {
-        Global = global;
-        ReadOnly = readOnly;
-        Type = type;
-    }
-        
+    public bool Global { get; } = global;
 
-    public bool Global { get; }
+    public RepositoryTypes Type { get; } = type;
 
-    public RepositoryTypes Type { get; }
-
-    public bool ReadOnly { get; }
+    public bool ReadOnly { get; } = readOnly;
 }

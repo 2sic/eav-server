@@ -10,11 +10,9 @@ namespace ToSic.Eav.Caching;
 /// in a signature that have ultra-fast lookups. 
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class SynchronizedEntityList: SynchronizedList<IEntity>
+public class SynchronizedEntityList(ICacheExpiring upstream, Func<IImmutableList<IEntity>> rebuild)
+    : SynchronizedList<IEntity>(upstream, rebuild)
 {
-    public SynchronizedEntityList(ICacheExpiring upstream, Func<IImmutableList<IEntity>> rebuild) 
-        : base(upstream, rebuild) { }
-
     /// <summary>
     /// Retrieves the list - either the cache one, or if timestamp has changed, rebuild and return that
     /// </summary>

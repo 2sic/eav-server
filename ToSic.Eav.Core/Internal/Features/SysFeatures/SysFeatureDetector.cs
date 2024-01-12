@@ -2,17 +2,11 @@
 
 namespace ToSic.Eav.Internal.Features;
 
-public abstract class SysFeatureDetector: ISysFeatureDetector
+public abstract class SysFeatureDetector(SysFeature definition, bool isEnabled = default) : ISysFeatureDetector
 {
-    protected SysFeatureDetector(SysFeature definition, bool isEnabled = default)
-    {
-        Definition = definition;
-        IsEnabled = isEnabled;
-    }
+    public SysFeature Definition { get; } = definition;
 
-    public SysFeature Definition { get; }
-
-    public virtual bool IsEnabled { get; }
+    public virtual bool IsEnabled { get; } = isEnabled;
 
     public FeatureState FeatState => FeatureState.SysFeatureState(Definition, IsEnabled);
 }

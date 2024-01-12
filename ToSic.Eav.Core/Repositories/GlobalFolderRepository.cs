@@ -16,12 +16,9 @@ namespace ToSic.Eav.Repositories;
 // ReSharper disable once UnusedMember.Global
 // TODO: UNSURE IF NOT USED OR DISCOVERED BY REFLECTION?
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class GlobalFolderRepository: FolderBasedRepository
+public class GlobalFolderRepository(IGlobalConfiguration config) : FolderBasedRepository
 {
     #region DI Constructor
-
-    public GlobalFolderRepository(IGlobalConfiguration config) => _config = config;
-    private readonly IGlobalConfiguration _config;
 
     #endregion
 
@@ -29,12 +26,12 @@ public class GlobalFolderRepository: FolderBasedRepository
     {
         get
         {
-            if (_config.DataFolder == null) return new();
+            if (config.DataFolder == null) return new();
             var result = new List<string>
             {
-                _config.DataFolder,
-                _config.DataBetaFolder,
-                _config.DataCustomFolder
+                config.DataFolder,
+                config.DataBetaFolder,
+                config.DataCustomFolder
             };
             return result;
         }

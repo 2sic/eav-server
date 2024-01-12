@@ -10,13 +10,8 @@ namespace ToSic.Eav.Caching.CachingMonitors;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
 {
-    private readonly Hashtable _dirMonitors;
-    private readonly object _lock;
-    public FolderChangeNotificationSystem()
-    {
-        _dirMonitors = Hashtable.Synchronized(new(StringComparer.OrdinalIgnoreCase));
-        _lock = new();
-    }
+    private readonly Hashtable _dirMonitors = Hashtable.Synchronized(new(StringComparer.OrdinalIgnoreCase));
+    private readonly object _lock = new();
 
     public class DirectoryMonitor
     {

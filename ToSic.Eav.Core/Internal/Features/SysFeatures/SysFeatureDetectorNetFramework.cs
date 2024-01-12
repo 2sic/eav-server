@@ -3,7 +3,7 @@ using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Internal.Features;
 
-public class SysFeatureDetectorNetFramework: SysFeatureDetector
+public class SysFeatureDetectorNetFramework() : SysFeatureDetector(DefStatic, true)
 {
 
     public static SysFeature DefStatic { get; } = new(
@@ -13,7 +13,6 @@ public class SysFeatureDetectorNetFramework: SysFeatureDetector
     );
 
 #if NETFRAMEWORK
-        public SysFeatureDetectorNetFramework() : base(DefStatic, true) { }
 #else
     public SysFeatureDetectorNetFramework() : base(DefStatic, false) { }
 #endif

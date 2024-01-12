@@ -8,16 +8,12 @@ namespace ToSic.Eav.Caching;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CacheExpiringMultiSource: ICacheExpiring
+public class CacheExpiringMultiSource(params ITimestamped[] sources) : ICacheExpiring
 {
-    private readonly ITimestamped[] _sources;
-
-    public CacheExpiringMultiSource(params ITimestamped[] sources) => _sources = sources;
-
     /// <summary>
     /// Assume that the relevant timestamp is the largest timestamp available on any of the sources.
     /// </summary>
-    public long CacheTimestamp => _sources.Max(s => s.CacheTimestamp);
+    public long CacheTimestamp => sources.Max(s => s.CacheTimestamp);
 
     /// <inheritdoc />
     public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp != dependentTimeStamp;

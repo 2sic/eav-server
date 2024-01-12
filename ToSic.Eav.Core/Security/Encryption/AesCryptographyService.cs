@@ -12,16 +12,9 @@ namespace ToSic.Eav.Security.Encryption;
 /// Important: Must NOT use AesManaged from .net, because it's not FIPS compliant
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AesCryptographyService: ServiceBase, ICanDebug
+public class AesCryptographyService(Rfc2898Generator keyGen) : ServiceBase("Eav.EncAes"), ICanDebug
 {
     #region Empty Constructor / DI
-
-    private readonly Rfc2898Generator _keyGen;
-
-    public AesCryptographyService(Rfc2898Generator keyGen) : base("Eav.EncAes")
-    {
-        _keyGen = keyGen;
-    }
 
     #endregion
 
@@ -38,7 +31,7 @@ public class AesCryptographyService: ServiceBase, ICanDebug
         using (var cipher = new T { Mode = CipherMode.CBC })
             try
             {
-                using (var encryption = cipher.CreateEncryptor(_keyGen.GetKeyBytes(configuration), cipher.IV))
+                using (var encryption = cipher.CreateEncryptor(keyGen.GetKeyBytes(configuration), cipher.IV))
                 using (var memoryStream = new MemoryStream())
                 using (var writer = new CryptoStream(memoryStream, encryption, CryptoStreamMode.Write))
                 {
@@ -79,7 +72,7 @@ public class AesCryptographyService: ServiceBase, ICanDebug
         using (var cipher = new T { Mode = CipherMode.CBC })
             try
             {
-                using (var decryptor = cipher.CreateDecryptor(_keyGen.GetKeyBytes(configuration), configuration.InitializationVectorBytes()))
+                using (var decryptor = cipher.CreateDecryptor(keyGen.GetKeyBytes(configuration), configuration.InitializationVectorBytes()))
                 using (var from = new MemoryStream(value))
                 using (var reader = new CryptoStream(from, decryptor, CryptoStreamMode.Read))
                 using (StreamReader srDecrypt = new StreamReader(reader))

@@ -41,7 +41,7 @@ partial class CodeInfoService
 
             // New 16.02 - on WebAPIs we should have the entry point to mark the specific use
             if (useCaseId.IsEmpty())
-                useCaseId = _scope.Value.EntryPoint;
+                useCaseId = scope.Value.EntryPoint;
 
             // Count how often this case has already been logged
             var thing = change.NameId;

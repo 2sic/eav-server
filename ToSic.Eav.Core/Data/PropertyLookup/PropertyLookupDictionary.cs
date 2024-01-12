@@ -12,18 +12,13 @@ namespace ToSic.Eav.Data.PropertyLookup;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PropertyLookupDictionary: IPropertyLookup, IHasIdentityNameId
+public class PropertyLookupDictionary(string nameId, IDictionary<string, object> values)
+    : IPropertyLookup, IHasIdentityNameId
 {
     public const string SourceTypeId = "Dictionary";
-    public string NameId { get; }
+    public string NameId { get; } = nameId;
 
-    public PropertyLookupDictionary(string nameId, IDictionary<string, object> values)
-    {
-        NameId = nameId;
-        Values = values.ToInvariant();
-    }
-
-    public IDictionary<string, object> Values { get; }
+    public IDictionary<string, object> Values { get; } = values.ToInvariant();
 
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {

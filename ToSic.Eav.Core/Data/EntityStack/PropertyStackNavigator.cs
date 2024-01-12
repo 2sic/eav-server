@@ -26,7 +26,8 @@ namespace ToSic.Eav.Data;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class PropertyStackNavigator: Wrapper<IPropertyLookup>, IPropertyStackLookup
+public partial class PropertyStackNavigator(IPropertyLookup child, StackAddress stackAddress)
+    : Wrapper<IPropertyLookup>(child), IPropertyStackLookup
 {
     private const int MaxAncestorSiblings = 10;
 
@@ -35,9 +36,7 @@ public partial class PropertyStackNavigator: Wrapper<IPropertyLookup>, IProperty
 
     private static string MaxLookupError = $"Error finding value in Stack - too many cycles used (> {MaxLookupCycles}. This is probably a bug in EAV property stack";
 
-    public PropertyStackNavigator(IPropertyLookup child, StackAddress stackAddress): base(child) 
-        => StackAddress = stackAddress;
-    public StackAddress StackAddress { get; }
+    public StackAddress StackAddress { get; } = stackAddress;
 
 
     public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path)

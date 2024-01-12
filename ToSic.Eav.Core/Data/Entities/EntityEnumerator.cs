@@ -8,15 +8,9 @@ namespace ToSic.Eav.Data;
 /// <inheritdoc />
 /// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>
 [PrivateApi]
-internal class EntityEnumerator : IEnumerator<IEntity>
+internal class EntityEnumerator(List<IEntity> entities) : IEnumerator<IEntity>
 {
-    private readonly List<IEntity> _entities;
     private int _position = -1;
-
-    public EntityEnumerator(List<IEntity> entities)
-    {
-        _entities = entities;
-    }
 
     public void Dispose()
     {
@@ -25,7 +19,7 @@ internal class EntityEnumerator : IEnumerator<IEntity>
     public bool MoveNext()
     {
         _position++;
-        return _position < _entities.Count;
+        return _position < entities.Count;
     }
 
     public void Reset() => _position = -1;
@@ -36,7 +30,7 @@ internal class EntityEnumerator : IEnumerator<IEntity>
         {
             try
             {
-                return _entities[_position];
+                return entities[_position];
             }
             catch (IndexOutOfRangeException)
             {

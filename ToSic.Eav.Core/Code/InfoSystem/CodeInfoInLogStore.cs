@@ -7,14 +7,8 @@ namespace ToSic.Eav.Code.InfoSystem;
 /// Package to hold the log-entry in the history/store together with the code use itself.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CodeInfoInLogStore
+public class CodeInfoInLogStore(CodeUse use, LogStoreEntry entry = default)
 {
-    public CodeInfoInLogStore(CodeUse use, LogStoreEntry entry = default)
-    {
-        Use = use;
-        EntryOrNull = entry;
-    }
-
-    public CodeUse Use { get; }
-    public LogStoreEntry EntryOrNull { get; }
+    public CodeUse Use { get; } = use;
+    public LogStoreEntry EntryOrNull { get; } = entry;
 }

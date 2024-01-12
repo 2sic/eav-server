@@ -9,16 +9,11 @@ namespace ToSic.Eav.Data;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class ValueConverterBase : ServiceBase, IValueConverter
+public abstract class ValueConverterBase(string logName) : ServiceBase(logName), IValueConverter
 {
     public const string PrefixPage = "page";
     public const string PrefixFile = "file";
     public const string Separator = ":";
-
-
-    protected ValueConverterBase(string logName) : base(logName)
-    {
-    }
 
 
     public virtual string ToReference(string value) => value;

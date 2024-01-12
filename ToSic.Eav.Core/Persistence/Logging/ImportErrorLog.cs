@@ -7,10 +7,8 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Persistence.Logging;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ImportErrorLog : HelperBase, IEnumerable<ImportError>
+public class ImportErrorLog(ILog parentLog) : HelperBase(parentLog, "Imp.ErrLog"), IEnumerable<ImportError>
 {
-    public ImportErrorLog(ILog parentLog) : base(parentLog, "Imp.ErrLog") { }
-
     public ImportError this[int index] => Errors[index];
 
     public List<ImportError> Errors { get; } = new();

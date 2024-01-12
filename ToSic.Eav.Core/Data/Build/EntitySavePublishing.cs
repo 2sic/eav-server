@@ -1,17 +1,11 @@
 ﻿namespace ToSic.Eav.Data.Build
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public class EntitySavePublishing
+    public class EntitySavePublishing(bool shouldPublish, bool shouldBranchDrafts)
     {
-        public EntitySavePublishing(bool shouldPublish, bool shouldBranchDrafts)
-        {
-            ShouldPublish = shouldPublish;
-            ShouldBranchDrafts = shouldBranchDrafts;
-        }
+        public bool ShouldPublish { get; } = shouldPublish;
 
-        public bool ShouldPublish { get; }
-
-        public bool ShouldBranchDrafts { get; }
+        public bool ShouldBranchDrafts { get; } = shouldBranchDrafts;
 
         public override string ToString() => $"ShouldPublish: {ShouldPublish}; ShouldBranchDrafts: {ShouldBranchDrafts}";
     }

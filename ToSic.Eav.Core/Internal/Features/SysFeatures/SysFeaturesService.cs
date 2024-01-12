@@ -8,15 +8,8 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Features;
 
-public class SysFeaturesService: ServiceBase
+public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap")
 {
-    private readonly IServiceProvider _sp;
-
-    public SysFeaturesService(IServiceProvider sp) : base("Eav.SysCap")
-    {
-        _sp = sp;
-    }
-
     public List<SysFeature> Definitions => _list ??= LoadCapabilities().Defs;
     private static List<SysFeature> _list;
 
@@ -27,7 +20,7 @@ public class SysFeaturesService: ServiceBase
     private (List<SysFeature> Defs, List<FeatureState> States) LoadCapabilities()
     {
         var services = AssemblyHandling.FindInherited(typeof(ISysFeatureDetector));
-        var objects = services.Select(s => _sp.Build<ISysFeatureDetector>(s));
+        var objects = services.Select(s => sp.Build<ISysFeatureDetector>(s));
         var definitions = objects.Select(isco => isco.Definition).ToList();
         var states = objects.Select(isco => isco.FeatState).ToList();
         return (definitions, states);

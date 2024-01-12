@@ -8,19 +8,12 @@ namespace ToSic.Eav.Data.PropertyLookup;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PropReqResult
+public class PropReqResult(object result, string fieldType, PropertyLookupPath path)
 {
-    public PropReqResult(object result, string fieldType, PropertyLookupPath path)
-    {
-        Result = result;
-        FieldType = fieldType;
-        Path = path;
-    }
-
     /// <summary>
     /// The result of the request - null if not found
     /// </summary>
-    public object Result;
+    public object Result = result;
 
     /// <summary>
     /// Debug property to see if a result was wrapped to create something else
@@ -35,7 +28,7 @@ public class PropReqResult
     /// <summary>
     /// A field type, like "Hyperlink" or "Entity" etc.
     /// </summary>
-    public string FieldType;
+    public string FieldType = fieldType;
         
     /// <summary>
     /// The entity which returned this property
@@ -47,7 +40,7 @@ public class PropReqResult
     /// </summary>
     public string Name;
 
-    public readonly PropertyLookupPath Path;
+    public readonly PropertyLookupPath Path = path;
 
     public int SourceIndex = -1;
 

@@ -7,12 +7,10 @@ namespace ToSic.Eav.Data;
 /// </summary>
 [PrivateApi("WIP v15")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class EntityBasedService<T>: EntityBasedWithLog where T : EntityBasedService<T>
+public abstract class EntityBasedService<T>(string logName)
+    : EntityBasedWithLog(null, null, logName ?? $"{EavLogs.Eav}.EntSrv")
+    where T : EntityBasedService<T>
 {
-    protected EntityBasedService(string logName) : base(null, null, logName ?? $"{EavLogs.Eav}.EntSrv")
-    {
-    }
-
     public T Init(IEntity entity)
     {
         Entity = entity;

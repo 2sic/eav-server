@@ -7,16 +7,12 @@ namespace ToSic.Eav.Data;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class InputTypes: EntityBasedType
+public class InputTypes(IEntity entity) : EntityBasedType(entity)
 {
     /// <summary>
     /// Name of the content-type which describes Input-Types
     /// </summary>
     public const string TypeForInputTypeDefinition = "ContentType-InputType";
-
-    public InputTypes(IEntity entity) : base(entity)
-    {
-    }
 
     /// <summary>
     /// Optional CSV of custom configuration types instead of the default cascade

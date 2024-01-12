@@ -8,10 +8,5 @@ namespace ToSic.Eav.Data.Source;
 /// this is an immutable list.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ImmutableEntitiesSource : DirectEntitiesSource
-{
-    public ImmutableEntitiesSource(IImmutableList<IEntity> entities = null)
-        : base(entities ?? ImmutableList<IEntity>.Empty)
-    {
-    }
-}
+public class ImmutableEntitiesSource(IImmutableList<IEntity> entities = null)
+    : DirectEntitiesSource(entities ?? ImmutableList<IEntity>.Empty);

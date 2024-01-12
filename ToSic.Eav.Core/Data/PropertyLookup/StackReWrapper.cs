@@ -9,10 +9,9 @@ namespace ToSic.Eav.Data.PropertyLookup;
 /// <summary>
 /// Code to re-wrap stuff inside a stack, so it could navigate through stacks again if necessary
 /// </summary>
-internal class StackReWrapper: HelperBase
+internal class StackReWrapper(StackAddress stackAddress, ILog parentLog) : HelperBase(parentLog, "Eav.StkWrp")
 {
-    public StackReWrapper(StackAddress stackAddress, ILog parentLog): base(parentLog, "Eav.StkWrp") => StackAddress = stackAddress;
-    public StackAddress StackAddress { get; }
+    public StackAddress StackAddress { get; } = stackAddress;
 
     public PropReqResult ReWrapIfPossible(PropReqResult reqResult) => Log.Func(l =>
     {

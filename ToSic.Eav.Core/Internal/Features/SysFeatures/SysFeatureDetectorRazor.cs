@@ -3,7 +3,7 @@ using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Internal.Features;
 
-public class SysFeatureDetectorRazor: SysFeatureDetector
+public class SysFeatureDetectorRazor() : SysFeatureDetector(DefStatic, true)
 {
 
     private static readonly SysFeature DefStatic = new(
@@ -11,7 +11,4 @@ public class SysFeatureDetectorRazor: SysFeatureDetector
         new("1301aa40-45e0-4349-8a23-2f05ed4120da"),
         "Razor"
     );
-
-    public SysFeatureDetectorRazor(): base(DefStatic, true) { }
-
 }

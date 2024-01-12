@@ -3,7 +3,7 @@ using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Internal.Features;
 
-public class SysFeatureDetectorNetCore: SysFeatureDetector
+public class SysFeatureDetectorNetCore() : SysFeatureDetector(DefStatic, false)
 {
 
     private static readonly SysFeature DefStatic = new(
@@ -13,7 +13,6 @@ public class SysFeatureDetectorNetCore: SysFeatureDetector
     );
 
 #if NETFRAMEWORK
-    public SysFeatureDetectorNetCore(): base(DefStatic, false) { }
 #else
         public SysFeatureDetectorNetCore(): base(DefStatic, true) { }
 #endif

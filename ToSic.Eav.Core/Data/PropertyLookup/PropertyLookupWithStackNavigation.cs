@@ -11,11 +11,10 @@ namespace ToSic.Eav.Data.PropertyLookup;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PropertyLookupWithStackNavigation : Wrapper<PropertyLookupDictionary>, IPropertyLookup, IPropertyStackLookup
+public class PropertyLookupWithStackNavigation(PropertyLookupDictionary current, StackAddress stackAddress)
+    : Wrapper<PropertyLookupDictionary>(current), IPropertyLookup, IPropertyStackLookup
 {
-    public PropertyLookupWithStackNavigation(PropertyLookupDictionary current, StackAddress stackAddress) : base(current) 
-        => Navigator = new(current, stackAddress);
-    internal readonly PropertyStackNavigator Navigator;
+    internal readonly PropertyStackNavigator Navigator = new(current, stackAddress);
 
 
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)

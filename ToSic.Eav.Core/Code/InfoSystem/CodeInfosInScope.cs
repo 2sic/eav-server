@@ -8,13 +8,9 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.Code.InfoSystem;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CodeInfosInScope
+public class CodeInfosInScope(CodeInfoStats codeInfoStats)
 {
-    public readonly CodeInfoStats CodeInfoStats;
-    public CodeInfosInScope(CodeInfoStats codeInfoStats)
-    {
-        CodeInfoStats = codeInfoStats;
-    }
+    public readonly CodeInfoStats CodeInfoStats = codeInfoStats;
 
     public IEnumerable<CodeInfoInLogStore> GetObsoletes() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Obsolete) ?? new List<CodeInfoInLogStore>();
     public IEnumerable<CodeInfoInLogStore> GetWarnings() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Warning) ?? new List<CodeInfoInLogStore>();

@@ -3,12 +3,9 @@
 namespace ToSic.Eav.Data.PropertyLookup;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PropertyLookupPath
+public class PropertyLookupPath(List<string> original = null)
 {
-    public PropertyLookupPath(List<string> original = null) 
-        => Parts = original == null ? new() : new List<string>(original);
-
-    public List<string> Parts;
+    public List<string> Parts = original == null ? new() : new List<string>(original);
 
 }
 

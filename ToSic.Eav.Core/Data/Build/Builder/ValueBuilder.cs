@@ -16,16 +16,9 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ValueBuilder: ServiceBase
+public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : ServiceBase("Eav.ValBld")
 {
     #region Constructor
-
-    public ValueBuilder(LazySvc<IValueConverter> valueConverter): base("Eav.ValBld")
-    {
-        _valueConverter = valueConverter;
-    }
-
-    private readonly LazySvc<IValueConverter> _valueConverter;
 
     #endregion
 
@@ -152,7 +145,7 @@ public partial class ValueBuilder: ServiceBase
             throw new ArgumentException($"Value must be a simple value but it's an {nameof(IAttribute)}");
         if (resolveHyperlink && valueType == ValueTypes.Hyperlink && value is string stringValue)
         {
-            var converted = _valueConverter.Value.ToReference(stringValue);
+            var converted = valueConverter.Value.ToReference(stringValue);
             return (converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'");
         }
         return (value, "unmodified");

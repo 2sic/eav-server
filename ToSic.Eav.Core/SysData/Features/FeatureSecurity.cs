@@ -1,17 +1,11 @@
 ﻿namespace ToSic.Eav.SysData;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class FeatureSecurity
+public class FeatureSecurity(int impact, string message = "")
 {
-    public int Impact { get; }
+    public int Impact { get; } = impact;
 
-    public string Message { get; }
-
-    public FeatureSecurity(int impact, string message = "")
-    {
-        Impact = impact;
-        Message = message;
-    }
+    public string Message { get; } = message;
 
     /// <summary>
     /// For fallback in null-cases, probably not used ATM

@@ -6,14 +6,10 @@ namespace ToSic.Eav.SysData;
 /// License entity - usually stored in the global / preset App
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class LicenseEntity: EntityBasedType
+internal class LicenseEntity(IEntity entity) : EntityBasedType(entity)
 {
     public static string TypeNameId = "57248ccb-24f1-44c6-9c6c-085e44ebb0cb";
     public static string ContentTypeName = "⚙️License";
-
-    public LicenseEntity(IEntity entity) : base(entity)
-    {
-    }
 
     public string Fingerprint => GetThis("");
 
