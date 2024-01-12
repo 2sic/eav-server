@@ -16,6 +16,8 @@ namespace ToSic.Lib.Logging;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeRef
 {
+    public const string Message = "Message";
+
     /// <summary>
     /// Path to the code file
     /// </summary>
@@ -35,9 +37,9 @@ public class CodeRef
     /// Automatic constructor.
     /// It should be called without params, so that the compiler automatically injects all values.
     /// </summary>
-    /// <param name="cPath">auto pre filled by the compiler - path to the code file</param>
-    /// <param name="cName">auto pre filled by the compiler - method name</param>
-    /// <param name="cLine">auto pre filled by the compiler - code line number</param>
+    /// <param name="cPath">auto pre-filled by the compiler - path to the code file</param>
+    /// <param name="cName">auto pre-filled by the compiler - method name</param>
+    /// <param name="cLine">auto pre-filled by the compiler - code line number</param>
     public CodeRef([CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
     {
         Path = cPath;
@@ -45,7 +47,9 @@ public class CodeRef
         Line = cLine;
     }
 
-    public override string ToString() => $"Caller: {Name}; Line: {Line}; File: {Path}";
+    public override string ToString() => Path == Message
+        ? $"Message: {Name}; Number: {Line}"
+        : $"Caller: {Name}; Line: {Line}; File: {Path}";
 
     /// <summary>
     /// Manually create a <see cref="CodeRef"/> using an already available set of path/name/line.

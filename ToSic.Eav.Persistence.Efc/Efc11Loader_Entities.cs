@@ -26,8 +26,9 @@ partial class Efc11Loader
 
     internal int AddLogCount;
 
-    private void LoadEntities(IAppStateBuilder builder, int[] entityIds = null)
+    private void LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds = null)
     {
+        codeRefTrail.WithHere();
         var l = Log.Fn($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
         AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
         var appId = builder.Reader.AppId;
@@ -69,7 +70,7 @@ partial class Efc11Loader
         var relatedEntities = GroupUniqueRelationships(allChunks);
 
         l.A($"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
-
+        codeRefTrail.AddMessage($"Raw entities: {rawEntities.Count}");
         #region load attributes & values
 
         var chunkedAttributes = entityIdChunks.Select(GetAttributesOfEntityChunk);

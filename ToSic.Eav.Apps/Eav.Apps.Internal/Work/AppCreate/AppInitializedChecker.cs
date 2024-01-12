@@ -22,6 +22,7 @@ public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
     public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppState appState, string appName, CodeRefTrail codeRefTrail, ILog parentLog)
     {
         var log = new Log("Eav.AppChk", parentLog);
+        codeRefTrail.WithHere();
 
         var l = log.Fn<bool>($"..., {appName}");
 
@@ -29,7 +30,7 @@ public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
             return l.ReturnFalse("ok");
 
         // something is missing, so we must build them
-        _appInitGenerator.New().InitializeApp(appState, appName, codeRefTrail.WithHere());
+        _appInitGenerator.New().InitializeApp(appState, appName, codeRefTrail.WithHere().AddMessage("Add Requested"));
 
         return l.ReturnTrue();
     }
@@ -50,6 +51,7 @@ public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
     internal static bool CheckIfAllPartsExist(IAppState appState, CodeRefTrail codeRefTrail, out IEntity appConfig, out IEntity appResources, out IEntity appSettings, ILog log)
     {
         var l = log.Fn<bool>();
+        codeRefTrail.WithHere().AddMessage($"App: {appState.AppId}");
         appConfig = appState.GetMetadata(TargetTypes.App, appState.AppId, TypeAppConfig).FirstOrDefault();
         appResources = appState.GetMetadata(TargetTypes.App, appState.AppId, TypeAppResources).FirstOrDefault();
         appSettings = appState.GetMetadata(TargetTypes.App, appState.AppId, TypeAppSettings).FirstOrDefault();

@@ -28,7 +28,7 @@ public interface IRepositoryLoader: IHasLog, IContentTypeLoader
     /// <returns></returns>
     IAppStateCache AppStateInitialized(int appId, CodeRefTrail codeRefTrail);
 
-    IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, int[] entityIds = null);
+    IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds = null);
 
 
     IDictionary<int, Zone> Zones();

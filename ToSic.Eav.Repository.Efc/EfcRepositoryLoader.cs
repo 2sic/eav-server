@@ -21,8 +21,8 @@ internal class EfcRepositoryLoader(DbDataController dataController) : IRepositor
     public IAppStateCache AppStateInitialized(int appId, CodeRefTrail codeRefTrail)
         => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
 
-    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, int[] entityIds = null)
-        => _dataController.Loader.Update(app, startAt, entityIds);
+    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds = null)
+        => _dataController.Loader.Update(app, startAt, codeRefTrail, entityIds);
 
     public IDictionary<int, Zone> Zones()
     {

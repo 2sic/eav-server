@@ -59,9 +59,12 @@ public class AppInitializer : ServiceBase
     public bool InitializeApp(IAppState appState, string newAppName, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
+        codeRefTrail.WithHere().AddMessage($"App: {appState.AppId}");
         if (AppInitializedChecker.CheckIfAllPartsExist(appState, codeRefTrail, out var appConfig, out var appResources,
                 out var appSettings, Log))
             return l.ReturnTrue("ok");
+
+        codeRefTrail.AddMessage($"Some parts missing: {nameof(appConfig)}: {appConfig}; {nameof(appResources)}: {appResources}: {nameof(appSettings)}; {appSettings}");
 
         // Get appName from cache - stop if it's a "Default" app
         var appName = appState.NameId;
@@ -83,7 +86,7 @@ public class AppInitializer : ServiceBase
                     { "Version", $"00.00.{EavSystemInfo.Version.Major:00}" },
                     { "OriginalId", "" },
                     // 2023-11-08 2dm - https://github.com/2sic/2sxc/issues/3203
-                    { "DebugLog", codeRefTrail?.ToString() },
+                    { "DebugLog", codeRefTrail.ToString() },
                 },
                 false));
 
@@ -103,7 +106,7 @@ public class AppInitializer : ServiceBase
             // this is because other APIs may access the AppStates (though they shouldn't)
             CachePurger.Purge(appState);
             // get the latest app-state, but not-initialized so we can make changes
-            appState = _repoLoader.New().AppStateBuilderRaw(appState.AppId, new()).Reader;
+            appState = _repoLoader.New().AppStateBuilderRaw(appState.AppId, codeRefTrail.WithHere()).Reader;
         }
 
         addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));

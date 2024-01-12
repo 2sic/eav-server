@@ -13,6 +13,7 @@ public interface IAppInitializedChecker
     /// </summary>
     /// <param name="appIdentity"></param>
     /// <param name="appName"></param>
+    /// <param name="codeRefTrail"></param>
     /// <param name="parentLog"></param>
     /// <returns></returns>
     bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppState appIdentity, string appName, CodeRefTrail codeRefTrail, ILog parentLog);
