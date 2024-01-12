@@ -18,7 +18,7 @@ public static class TypeExtensions
             : t;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool IsNumeric(this object o) => !(o is null) && o.GetType().IsNumeric();
+    public static bool IsNumeric(this object o) => o is not null && o.GetType().IsNumeric();
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsNumeric(this Type t)

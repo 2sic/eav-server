@@ -53,7 +53,7 @@ public class LookUpInEntity : LookUpIn<IEntity>
             return string.Empty;
 
         // Finally: Handle child-Entity-Field (sorted list of related entities)
-        if (!(valueObject is IEnumerable<IEntity> relationshipList))
+        if (valueObject is not IEnumerable<IEntity> relationshipList)
             return string.Empty;
         var first = relationshipList.FirstOrDefault();
         return first == null

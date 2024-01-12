@@ -87,7 +87,7 @@ public class ContentTypeAttributeMetadata(
         var source = SourceAttributes?.FirstOrDefault(a => a.Guid == guid);
 
         // Null-Check & cast inner source to this type, so we can access it's private .Source later on
-        if (!(source?.Metadata is ContentTypeAttributeMetadata sourceMd)) return null;
+        if (source?.Metadata is not ContentTypeAttributeMetadata sourceMd) return null;
 
         var md = (
             sourceMd.Source.SourceDirect?.List

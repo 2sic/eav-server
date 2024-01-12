@@ -69,7 +69,7 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
         if (onChangedCallback == null) throw new ArgumentNullException(nameof(onChangedCallback));
             
         var directoryInfo = new DirectoryInfo(dirPath);
-        if (!(_dirMonitors[dirPath] is DirectoryMonitor dirMon))
+        if (_dirMonitors[dirPath] is not DirectoryMonitor dirMon)
         {
             lock (_lock)
             {
@@ -113,8 +113,8 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
     {
         if (dirPath == null) throw new ArgumentNullException(nameof(dirPath));
         if (state == null) throw new ArgumentNullException(nameof(state));
-        if (!(state is FolderChangeEventTarget target)) throw new ArgumentException("target is null");
-        if (!(_dirMonitors[dirPath] is DirectoryMonitor dirMon)) return;
+        if (state is not FolderChangeEventTarget target) throw new ArgumentException("target is null");
+        if (_dirMonitors[dirPath] is not DirectoryMonitor dirMon) return;
         lock (dirMon)
         {
             dirMon.FileSystemWatcher.Changed -= target.ChangedHandler;

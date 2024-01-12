@@ -41,7 +41,7 @@ public sealed class RawFromAnonymous: RawEntity
         if (dic.ContainsKey(nameof(RelationshipKeys)))
         {
             var maybeRels = dic[nameof(RelationshipKeys)];
-            if (maybeRels is IEnumerable rels && !(rels is string))
+            if (maybeRels is IEnumerable rels && rels is not string)
                 try
                 {
                     _relationshipKeys = rels.Cast<object>().ToList();
@@ -72,7 +72,7 @@ public sealed class RawFromAnonymous: RawEntity
                 
             // If we only have on object / string, use it as key
             // if we have an ienumerable use the list as the keys
-            var keys = relsTemp is IEnumerable relsList && !(relsTemp is string)
+            var keys = relsTemp is IEnumerable relsList && relsTemp is not string
                 ? relsList.Cast<object>().ToList()
                 : new() { relsTemp };
             dic[key] = new RawRelationship(keys: keys);

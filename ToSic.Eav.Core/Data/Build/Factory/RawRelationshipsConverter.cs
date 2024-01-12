@@ -18,7 +18,7 @@ internal class RawRelationshipsConverter(DataBuilder builder, ILog parentLog) : 
             v => v.Key,
             v =>
             {
-                if (!(v.Value is RawRelationship rawRelationship)) return v.Value;
+                if (v.Value is not RawRelationship rawRelationship) return v.Value;
                 var lookupSource =
                     new LookUpEntitiesSource<object>(rawRelationship.Keys, relationships);
                 var relAttr = builder.Attribute.Relationship(v.Key, lookupSource);

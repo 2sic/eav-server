@@ -34,7 +34,7 @@ public static class IHasPiggyBackExtensions
         var advProperty = entryPoint.FindPropertyInternal(new(field), null);
 
         // Skip if nothing to process
-        if (!(advProperty?.Result is string valString) || string.IsNullOrWhiteSpace(valString))
+        if (advProperty?.Result is not string valString || string.IsNullOrWhiteSpace(valString))
             return wrapLog.ReturnNull("empty / not found");
 
         // If our source has a PiggyBack cache, use this
