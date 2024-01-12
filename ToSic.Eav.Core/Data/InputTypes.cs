@@ -17,7 +17,7 @@ public class InputTypes(IEntity entity) : EntityBasedType(entity)
     /// <summary>
     /// Optional CSV of custom configuration types instead of the default cascade
     /// </summary>
-    public string CustomConfigTypes => GetThis(null as string);
+    public string ConfigTypes => GetThis(null as string);
 
     public string Label => GetThis(null as string);
 

@@ -36,7 +36,7 @@ public class InputTypeInfo
         if (metadata.HasType(IsDefaultDecorator)) IsDefault = true;
 
         var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypes.TypeForInputTypeDefinition);
-        if (typeInputTypeDef != null) ConfigTypes = new InputTypes(typeInputTypeDef).CustomConfigTypes;
+        if (typeInputTypeDef != null) ConfigTypes = new InputTypes(typeInputTypeDef).ConfigTypes;
     }
 
     /// <summary>
@@ -108,20 +108,27 @@ public class InputTypeInfo
     public string ConfigTypes { get; }
 
     /// <summary>
+    /// Create a fresh dictionary with the minimum config-types
+    /// all inputs need. 
+    /// </summary>
+    /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
+    public static Dictionary<string, bool> NewDefaultConfigTypesDic() => new(InvariantCultureIgnoreCase) { [AttributeMetadata.TypeGeneral] = true };
+
+    /// <summary>
     /// Internal processing to get the config-types in the format we need.
     /// This varies a bit depending on if <see cref="ConfigTypes"/> is provided or empty.
     ///
     /// Note that it caches the result for the lifetime of this object, which can be quite long.
     /// </summary>
     /// <param name="log">Optional log to record what it does</param>
-    /// <returns></returns>
+    /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
     public IDictionary<string, bool> ConfigTypesDic(ILog log = null)
     {
         if (_configTypesList != null) return _configTypesList;
 
         var l = log.Fn<IDictionary<string, bool>>();
 
-        var newDic = new Dictionary<string, bool>(InvariantCultureIgnoreCase) { [AttributeMetadata.TypeGeneral] = true };
+        var newDic = NewDefaultConfigTypesDic();
             
         // New setup v16.08
         // If we have custom settings, take @All and the custom settings only
@@ -163,4 +170,8 @@ public class InputTypeInfo
 
     #endregion
 
+    /// <summary>
+    /// For better debugging
+    /// </summary>
+    public override string ToString() => $"{Type} - {Label}";
 }
