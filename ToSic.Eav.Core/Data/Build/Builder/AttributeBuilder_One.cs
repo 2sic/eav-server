@@ -20,31 +20,26 @@ partial class AttributeBuilder
     public IAttribute Create(string name, ValueTypes type, IList<IValue> values = null)
     {
         var imValues = values?.ToImmutableList();
-        switch (type)
+        return type switch
         {
-            case ValueTypes.Boolean:
-                return new Attribute<bool?>(name, type, imValues);
-            case ValueTypes.DateTime:
-                return new Attribute<DateTime?>(name, type, imValues);
-            case ValueTypes.Number:
-                return new Attribute<decimal?>(name, type, imValues);
-            case ValueTypes.Entity:
+            ValueTypes.Boolean => new Attribute<bool?>(name, type, imValues),
+            ValueTypes.DateTime => new Attribute<DateTime?>(name, type, imValues),
+            ValueTypes.Number => new Attribute<decimal?>(name, type, imValues),
+            ValueTypes.Entity =>
                 // Note 2023-02-24 2dm - up until now the values were never used
                 // in this case, so relationships created here were always empty
                 // Could break something, but I don't think it will
-                return new Attribute<IEnumerable<IEntity>>(name, type,
-                    imValues.SafeAny() ? imValues : ValueBuilder.NewEmptyRelationshipValues);
+                new Attribute<IEnumerable<IEntity>>(name, type,
+                    imValues.SafeAny() ? imValues : ValueBuilder.NewEmptyRelationshipValues),
             // ReSharper disable RedundantCaseLabel
-            case ValueTypes.String:
-            case ValueTypes.Hyperlink:
-            case ValueTypes.Custom:
-            case ValueTypes.Json:
-            case ValueTypes.Undefined:
-            case ValueTypes.Empty:
-            default:
-                return new Attribute<string>(name, type, imValues);
-            // ReSharper restore RedundantCaseLabel
-        }
+            ValueTypes.String => new Attribute<string>(name, type, imValues),
+            ValueTypes.Hyperlink => new Attribute<string>(name, type, imValues),
+            ValueTypes.Custom => new Attribute<string>(name, type, imValues),
+            ValueTypes.Json => new Attribute<string>(name, type, imValues),
+            ValueTypes.Undefined => new Attribute<string>(name, type, imValues),
+            ValueTypes.Empty => new Attribute<string>(name, type, imValues),
+            _ => new Attribute<string>(name, type, imValues)
+        };
     }
 
 

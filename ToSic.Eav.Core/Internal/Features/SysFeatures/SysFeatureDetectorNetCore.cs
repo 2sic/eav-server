@@ -1,9 +1,9 @@
-﻿using System;
-using ToSic.Eav.SysData;
+﻿using ToSic.Eav.SysData;
+// ReSharper disable ConvertToPrimaryConstructor
 
 namespace ToSic.Eav.Internal.Features;
 
-public class SysFeatureDetectorNetCore() : SysFeatureDetector(DefStatic, false)
+public class SysFeatureDetectorNetCore : SysFeatureDetector
 {
 
     private static readonly SysFeature DefStatic = new(
@@ -13,6 +13,8 @@ public class SysFeatureDetectorNetCore() : SysFeatureDetector(DefStatic, false)
     );
 
 #if NETFRAMEWORK
+    public SysFeatureDetectorNetCore() : base(DefStatic, false) { }
+
 #else
         public SysFeatureDetectorNetCore(): base(DefStatic, true) { }
 #endif

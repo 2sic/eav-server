@@ -100,23 +100,32 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
         var stringValue = value as string;
         try
         {
-            switch (type)
+            return type switch
             {
-                case ValueTypes.Boolean: return Bool(value, langs);
-                case ValueTypes.DateTime: return DateTime(value, langs);
-                case ValueTypes.Number: return Number(value, langs);
-                case ValueTypes.Entity: return RelationshipWip(value, null);
+                ValueTypes.Boolean => Bool(value, langs),
+                ValueTypes.DateTime => DateTime(value, langs),
+                ValueTypes.Number => Number(value, langs),
+                ValueTypes.Entity => RelationshipWip(value, null),
                 // ReSharper disable RedundantCaseLabel
-                case ValueTypes.String:     // most common case
-                case ValueTypes.Empty:      // empty - should actually not contain anything!
-                case ValueTypes.Custom:     // custom value, currently just parsed as string for manual processing as needed
-                case ValueTypes.Json:
-                case ValueTypes.Hyperlink:  // special case, handled as string
-                case ValueTypes.Undefined:  // backup case, where it's not known...
-                default:
-                    return String(stringValue, langs);// new Value<string>(stringValue, langs);
-                // ReSharper restore RedundantCaseLabel
-            }
+                ValueTypes.String => // most common case
+                    String(stringValue, langs) // new Value<string>(stringValue, langs);
+                ,
+                ValueTypes.Empty => // empty - should actually not contain anything!
+                    String(stringValue, langs) // new Value<string>(stringValue, langs);
+                ,
+                ValueTypes.Custom => // custom value, currently just parsed as string for manual processing as needed
+                    String(stringValue, langs) // new Value<string>(stringValue, langs);
+                ,
+                ValueTypes.Json => String(stringValue, langs) // new Value<string>(stringValue, langs);
+                ,
+                ValueTypes.Hyperlink => // special case, handled as string
+                    String(stringValue, langs) // new Value<string>(stringValue, langs);
+                ,
+                ValueTypes.Undefined => // backup case, where it's not known...
+                    String(stringValue, langs) // new Value<string>(stringValue, langs);
+                ,
+                _ => String(stringValue, langs)
+            };
         }
         catch
         {

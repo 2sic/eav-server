@@ -86,31 +86,54 @@ public abstract class LookUpBase(string name) : ILookUp
     /// <returns></returns>
     protected string FormatValue(object valueObject, string format, string[] dimensions)
     {
-        switch (Type.GetTypeCode(valueObject.GetType()))
+        return Type.GetTypeCode(valueObject.GetType()) switch
         {
-            case TypeCode.String:
-                return FormatString((string)valueObject, format);
-            case TypeCode.Boolean:
-                return Format((bool)valueObject);
-            case TypeCode.DateTime:
+            TypeCode.String => FormatString((string)valueObject, format),
+            TypeCode.Boolean => Format((bool)valueObject),
+            TypeCode.DateTime =>
                 // make sure datetime is converted as universal time with the correct format specifier if no format is given
-                return !string.IsNullOrWhiteSpace(format)
-                    ? ((DateTime)valueObject).ToString(format, IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
-                    : Format((DateTime)valueObject);
-            case TypeCode.Double:
-            case TypeCode.Single:
-            case TypeCode.Int16:
-            case TypeCode.Int32:
-            case TypeCode.Int64:
-            case TypeCode.Decimal:
+                !string.IsNullOrWhiteSpace(format)
+                    ? ((DateTime)valueObject).ToString(format,
+                        IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
+                    : Format((DateTime)valueObject),
+            TypeCode.Double =>
                 // make sure it's converted to a neutral number format with "." notation if no format was given
-                return !string.IsNullOrWhiteSpace(format)
+                !string.IsNullOrWhiteSpace(format)
                     ? ((IFormattable)valueObject).ToString(format,
                         IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
-                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture);
-            default:
-                return FormatString(valueObject.ToString(), format);
-        }
+                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
+            TypeCode.Single =>
+                // make sure it's converted to a neutral number format with "." notation if no format was given
+                !string.IsNullOrWhiteSpace(format)
+                    ? ((IFormattable)valueObject).ToString(format,
+                        IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
+                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
+            TypeCode.Int16 =>
+                // make sure it's converted to a neutral number format with "." notation if no format was given
+                !string.IsNullOrWhiteSpace(format)
+                    ? ((IFormattable)valueObject).ToString(format,
+                        IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
+                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
+            TypeCode.Int32 =>
+                // make sure it's converted to a neutral number format with "." notation if no format was given
+                !string.IsNullOrWhiteSpace(format)
+                    ? ((IFormattable)valueObject).ToString(format,
+                        IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
+                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
+            TypeCode.Int64 =>
+                // make sure it's converted to a neutral number format with "." notation if no format was given
+                !string.IsNullOrWhiteSpace(format)
+                    ? ((IFormattable)valueObject).ToString(format,
+                        IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
+                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
+            TypeCode.Decimal =>
+                // make sure it's converted to a neutral number format with "." notation if no format was given
+                !string.IsNullOrWhiteSpace(format)
+                    ? ((IFormattable)valueObject).ToString(format,
+                        IZoneCultureResolverExtensions.SafeCultureInfo(dimensions))
+                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
+            _ => FormatString(valueObject.ToString(), format)
+        };
     }
 
     #endregion

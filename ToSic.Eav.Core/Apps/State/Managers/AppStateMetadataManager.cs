@@ -118,15 +118,12 @@ internal class AppMetadataManager: IMetadataSource
         if (type == typeof(Guid))
             return Lookup(_guid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);
 
-        switch (Type.GetTypeCode(type))
+        return Type.GetTypeCode(type) switch
         {
-            case TypeCode.Int32:
-                return Lookup(_number, targetType, key as int? ?? 0, contentTypeName);
-            case TypeCode.String:
-                return Lookup(_string, targetType, key as string, contentTypeName);
-            default:
-                return Lookup(_string, targetType, key.ToString(), contentTypeName);
-        }
+            TypeCode.Int32 => Lookup(_number, targetType, key as int? ?? 0, contentTypeName),
+            TypeCode.String => Lookup(_string, targetType, key as string, contentTypeName),
+            _ => Lookup(_string, targetType, key.ToString(), contentTypeName)
+        };
     }
 
     public IEnumerable<IEntity> GetMetadata<T>(TargetTypes targetType, T key, string contentTypeName = null) 

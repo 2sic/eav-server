@@ -19,23 +19,14 @@ public class Compressor(IEavFeaturesService features = null)
 
     private static ICompressor CompressorFactory(CompressorType compressorType = CompressorType.GZip)
     {
-        switch (compressorType)
+        return compressorType switch
         {
-            case CompressorType.NoCompression:
-                return null;
-
-            case CompressorType.Deflate:
-                return new DeflateCompressor();
-
-            case CompressorType.GZip:
-                return new GZipCompressor();
-
-            case CompressorType.Brotli:
-                return new BrotliCompressor();
-
-            default:
-                throw new ArgumentOutOfRangeException(nameof(compressorType), compressorType, null);
-        }
+            CompressorType.NoCompression => null,
+            CompressorType.Deflate => new DeflateCompressor(),
+            CompressorType.GZip => new GZipCompressor(),
+            CompressorType.Brotli => new BrotliCompressor(),
+            _ => throw new ArgumentOutOfRangeException(nameof(compressorType), compressorType, null)
+        };
     }
 
     public bool IsEnabled => _featureEnabled && _compressor != null;

@@ -23,23 +23,21 @@ public static class TypeExtensions
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsNumeric(this Type t)
     {
-        switch (Type.GetTypeCode(t))
+        return Type.GetTypeCode(t) switch
         {
-            case TypeCode.Byte:
-            case TypeCode.SByte:
-            case TypeCode.UInt16:
-            case TypeCode.UInt32:
-            case TypeCode.UInt64:
-            case TypeCode.Int16:
-            case TypeCode.Int32:
-            case TypeCode.Int64:
-            case TypeCode.Decimal:
-            case TypeCode.Double:
-            case TypeCode.Single:
-                return true;
-            default:
-                return false;
-        }
+            TypeCode.Byte => true,
+            TypeCode.SByte => true,
+            TypeCode.UInt16 => true,
+            TypeCode.UInt32 => true,
+            TypeCode.UInt64 => true,
+            TypeCode.Int16 => true,
+            TypeCode.Int32 => true,
+            TypeCode.Int64 => true,
+            TypeCode.Decimal => true,
+            TypeCode.Double => true,
+            TypeCode.Single => true,
+            _ => false
+        };
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

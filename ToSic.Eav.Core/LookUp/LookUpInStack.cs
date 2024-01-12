@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 
