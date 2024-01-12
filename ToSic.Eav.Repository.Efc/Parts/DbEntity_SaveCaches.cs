@@ -33,7 +33,7 @@ partial class DbEntity
         return l.Return((contentTypeId, attributes), $"{contentTypeId} / attribDefs⋮{attributes.Count}");
     }
 
-    private readonly Dictionary<string, int> _ctNameIdCache = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-    private readonly Dictionary<int, List<ToSicEavAttributes>> _ctCache = new Dictionary<int, List<ToSicEavAttributes>>();
+    private readonly Dictionary<string, int> _ctNameIdCache = new(StringComparer.InvariantCultureIgnoreCase);
+    private readonly Dictionary<int, List<ToSicEavAttributes>> _ctCache = new();
     private void FlushTypeAttributesCache() => _ctCache.Clear();
 }

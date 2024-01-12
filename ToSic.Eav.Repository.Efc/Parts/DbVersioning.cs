@@ -60,7 +60,7 @@ internal  partial class DbVersioning: DbPartBase
     /// Save an entity to versioning, which is already serialized
     /// </summary>
     internal void AddToHistoryQueue(int entityId, Guid entityGuid, string serialized)
-        => _queue.Add(new ToSicEavDataTimeline
+        => _queue.Add(new()
         {
             SourceTable = EntitiesTableName,
             Operation = Constants.DataTimelineEntityJson,

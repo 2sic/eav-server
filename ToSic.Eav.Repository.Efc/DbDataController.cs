@@ -158,7 +158,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
     {
         if (_appId == Constants.AppIdEmpty)
-            throw new Exception("SaveChanges with AppId 0 not allowed.");
+            throw new("SaveChanges with AppId 0 not allowed.");
 
         Versioning.GetChangeLogId();
 

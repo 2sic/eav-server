@@ -17,18 +17,18 @@ partial class DbEntity
         if (newEnt == null) throw new ArgumentNullException(nameof(newEnt));
 
         if (newEnt.Type == null)
-            throw new Exception("trying to save entity without known content-type, cannot continue");
+            throw new("trying to save entity without known content-type, cannot continue");
 
         #region Test what languages are given, and check if they exist in the target system
 
         // continue here - must ensure that the languages are passed in, cached - or are cached on the DbEntity... for multiple saves
         if (_zoneLangs == null)
-            _zoneLangs = so.Languages ?? throw new Exception("languages missing in save-options. cannot continue");
+            _zoneLangs = so.Languages ?? throw new("languages missing in save-options. cannot continue");
 
         var usedLanguages = newEnt.GetUsedLanguages();
         if (usedLanguages.Count > 0)
             if (!usedLanguages.All(lang => _zoneLangs.Any(zl => zl.Matches(lang.Key))))
-                throw new Exception(
+                throw new(
                     $"entity has languages which are not in zone - entity has {usedLanguages.Count} zone has {_zoneLangs.Count} " +
                     $"used-list: '{string.Join(",", usedLanguages.Select(lang => lang.Key).ToArray())}'");
 
@@ -91,7 +91,7 @@ partial class DbEntity
 
                     dbEnt = CreateDbRecord(newEnt, changeLogId, contentTypeId);
                     // update the ID - for versioning and/or json persistence
-                    newEnt = _builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
+                    newEnt = builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
                     //newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
 
                     // prepare export for save json OR versioning later on
@@ -148,7 +148,7 @@ partial class DbEntity
                     // increase version
                     dbEnt.Version++;
                     //newEnt = _factory.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
-                    newEnt = _builder.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
+                    newEnt = builder.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
 
                     // prepare export for save json OR versioning later on
                     jsonExport = Serializer.Serialize(newEnt);
@@ -199,7 +199,7 @@ partial class DbEntity
             #region Step 6: Ensure versioning
 
             if (jsonExport == null)
-                throw new Exception("trying to save version history entry, but jsonexport isn't ready");
+                throw new("trying to save version history entry, but jsonexport isn't ready");
             DbContext.Versioning.AddToHistoryQueue(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
 
             #endregion
@@ -241,9 +241,9 @@ partial class DbEntity
         // find a draft of this - note that it won't find anything, if the item itself is the draft
         // new 2020-10-08 2dm - use cache
         if (EntityDraftMapCache == null)
-            throw new Exception("Needs cached list of draft-branches, but list is null");
+            throw new("Needs cached list of draft-branches, but list is null");
         if (!EntityDraftMapCache.ContainsKey(newEnt.EntityId))
-            throw new Exception("Expected item to be preloaded in draft-branching map, but not found");
+            throw new("Expected item to be preloaded in draft-branching map, but not found");
         var existingDraftId = EntityDraftMapCache[newEnt.EntityId];
 
         // only true, if there is an "attached" draft; false if the item itself is draft
@@ -276,7 +276,7 @@ partial class DbEntity
         }
 
         if (logDetails) l.A("original is published, so we'll draft in a branch");
-        var clone = _builder.Entity.CreateFrom(newEnt,
+        var clone = builder.Entity.CreateFrom(newEnt,
             publishedId: newEnt.EntityId, // set this, in case we'll create a new one
             id: existingDraftId ?? 0  // set to the draft OR 0 = new
         ) as Entity;

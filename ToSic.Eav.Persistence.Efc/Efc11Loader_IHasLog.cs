@@ -2,5 +2,5 @@
 
 partial class Efc11Loader: IHasLog
 {
-    private TimeSpan _sqlTotalTime = new TimeSpan(0);
+    private TimeSpan _sqlTotalTime = new(0);
 }

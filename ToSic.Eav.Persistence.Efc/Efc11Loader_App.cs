@@ -43,13 +43,13 @@ partial class Efc11Loader
                     $"This implies that it has an ancestor. 0 was expected, otherwise you need the feature.");
 
             var testParentApp = _appStates.GetCacheState(ancestorAppId);
-            parent = new ParentAppState(testParentApp, true, true);
+            parent = new(testParentApp, true, true);
         }
         else
         {
             // New v13 - use global app by default to share content-types
             var globalApp = _appStates.GetPresetReader();
-            parent = new ParentAppState(globalApp?.StateCache ?? throw new Exception("Can't find global app - which is required to build any other apps. "),
+            parent = new(globalApp?.StateCache ?? throw new("Can't find global app - which is required to build any other apps. "),
                 true, 
                 false);
         }

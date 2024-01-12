@@ -1,13 +1,7 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
-internal class DbPublishing : DbPartBase
+internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBase(db, "Db.Publ")
 {
-    private readonly DataBuilder _builder;
-    public DbPublishing(DbDataController db, DataBuilder builder) : base(db, "Db.Publ")
-    {
-        _builder = builder;
-    }
-
     /// <summary>
     /// Publish a Draft-Entity
     /// </summary>
@@ -51,7 +45,7 @@ internal class DbPublishing : DbPartBase
             {
                 l.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
                 // update the content-id
-                var cloneWithPublishedId = _builder.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
+                var cloneWithPublishedId = builder.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
                 //draftToPublishForJson.ResetEntityId(publishedId);
 
                 var serializer = DbContext.JsonSerializerGenerator.New();
@@ -129,7 +123,4 @@ internal class DbPublishing : DbPartBase
 }
     
 
-internal class EntityAlreadyPublishedException : Exception {
-    public EntityAlreadyPublishedException(string message): base(message)
-    {}
-}
+internal class EntityAlreadyPublishedException(string message) : Exception(message);

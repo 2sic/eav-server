@@ -1,9 +1,7 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
-internal class DbAttributeSet : DbPartBase
+internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
 {
-    public DbAttributeSet(DbDataController db) : base(db, "Db.AttSet") { }
-
     private IQueryable<ToSicEavAttributeSets> GetSetCoreQuery(int? appId = null)
         => DbContext.SqlDb.ToSicEavAttributeSets
             .Include(a => a.ToSicEavAttributesInSets)
@@ -38,13 +36,13 @@ internal class DbAttributeSet : DbPartBase
                     .ToList();
 
             if (found.Count != 1)
-                throw new Exception($"too many or too few content types found for the content-type {name} - found {found.Count}");
+                throw new($"too many or too few content types found for the content-type {name} - found {found.Count}");
 
             return found.First().AttributeSetId;
         }
         catch (InvalidOperationException ex)
         {
-            throw new Exception($"Unable to get Content-Type/AttributeSet with StaticName \"{name}\" in app {DbContext.AppId}", ex);
+            throw new($"Unable to get Content-Type/AttributeSet with StaticName \"{name}\" in app {DbContext.AppId}", ex);
         }
     }
 
@@ -66,7 +64,7 @@ internal class DbAttributeSet : DbPartBase
         {
             if (skipExisting)
                 return null;
-            throw new Exception("An AttributeSet with StaticName \"" + nameId + "\" already exists.");
+            throw new("An AttributeSet with StaticName \"" + nameId + "\" already exists.");
         }
 
         var newSet = new ToSicEavAttributeSets

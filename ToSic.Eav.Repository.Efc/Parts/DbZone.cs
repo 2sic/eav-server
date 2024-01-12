@@ -1,9 +1,7 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
-internal class DbZone: DbPartBase
+internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
 {
-    public DbZone(DbDataController db) : base(db, "Db.Zone") {}
-       
     /// <summary>
     /// Creates a new Zone with a default App and Culture-Root-Dimension
     /// </summary>

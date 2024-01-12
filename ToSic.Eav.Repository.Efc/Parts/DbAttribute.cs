@@ -2,10 +2,8 @@
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
-internal partial class DbAttribute: DbPartBase
+internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.AttDef")
 {
-    public DbAttribute(DbDataController db) : base(db, "Db.AttDef") {}
-
     /// <summary>
     /// Set an Attribute as Title on an AttributeSet
     /// </summary>
@@ -32,7 +30,7 @@ internal partial class DbAttribute: DbPartBase
         }
         else
         {
-            DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
+            DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
             destAttribId = AttributeId(contentTypeId, newAtt.Name);
         }
         return destAttribId;
@@ -51,7 +49,7 @@ internal partial class DbAttribute: DbPartBase
         }
         catch (Exception ex)
         {
-            throw new Exception("error getting attribute - content-type/setid: " + attributeSetId + "; optional attributeId: " + attributeId + "; optional name: " + name, ex);
+            throw new("error getting attribute - content-type/setid: " + attributeSetId + "; optional attributeId: " + attributeId + "; optional name: " + name, ex);
         }
     }
 
@@ -64,7 +62,7 @@ internal partial class DbAttribute: DbPartBase
     public void RenameAttribute(int attributeId, int attributeSetId, string newName)
     {
         if(string.IsNullOrWhiteSpace(newName))
-            throw new Exception("can't rename to something empty");
+            throw new("can't rename to something empty");
 
         // ensure that it's in the set
         var attr = DbContext.SqlDb.ToSicEavAttributesInSets
@@ -101,7 +99,7 @@ internal partial class DbAttribute: DbPartBase
         var attributeSet = DbContext.AttribSet.GetDbAttribSet(attributeSetId);
 
         if (!Attributes.StaticNameValidation.IsMatch(staticName))
-            throw new Exception("Attribute static name \"" + staticName + "\" is invalid. " + Attributes.StaticNameErrorMessage);
+            throw new("Attribute static name \"" + staticName + "\" is invalid. " + Attributes.StaticNameErrorMessage);
 
         // Prevent Duplicate Name
         if (AttributeExistsInSet(attributeSet.AttributeSetId, staticName))

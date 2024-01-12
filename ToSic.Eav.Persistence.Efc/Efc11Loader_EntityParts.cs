@@ -42,7 +42,7 @@ partial class Efc11Loader
                 EntityGuid = e.EntityGuid,
                 Version = e.Version,
                 AttributeSetId = e.AttributeSetId,
-                MetadataFor = new Target(e.AssignmentObjectTypeId, null, e.KeyString, e.KeyNumber, e.KeyGuid),
+                MetadataFor = new(e.AssignmentObjectTypeId, null, e.KeyString, e.KeyNumber, e.KeyGuid),
                 IsPublished = e.IsPublished,
                 PublishedEntityId = e.PublishedEntityId,
                 Owner = e.Owner,

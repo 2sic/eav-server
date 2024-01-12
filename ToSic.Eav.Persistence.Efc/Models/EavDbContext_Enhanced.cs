@@ -21,12 +21,12 @@ partial class EavDbContext
     {
         if (AlternateSaveHandler != null)
             return AlternateSaveHandler(acceptAllChangesOnSuccess, base.SaveChanges);
-        throw new Exception("the save should never happen without an alternate save handler registered");
+        throw new("the save should never happen without an alternate save handler registered");
     }
 
     internal int SaveChanges(string testingOnly, bool acceptAllChangesOnSuccess)
     {
-        if(testingOnly != "testingOnly") throw new Exception("this is meant for testing only");
+        if(testingOnly != "testingOnly") throw new("this is meant for testing only");
         return base.SaveChanges(acceptAllChangesOnSuccess);
     }
 

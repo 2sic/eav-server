@@ -51,10 +51,10 @@ partial class DbContentType
         // to use existing attribute Set, do some minimal conflict-checking
         else
         {
-            DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information, $"AttributeSet already exists{contentType.NameId}|{contentType.Name}"));
+            DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information, $"AttributeSet already exists{contentType.NameId}|{contentType.Name}"));
             if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
             {
-                DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.NameId));
+                DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.NameId));
                 return null;
             }
         }
@@ -123,7 +123,7 @@ partial class DbContentType
     {
         // Verify AttributeId before we continue
         if (attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
-            throw new Exception($"trying to add metadata to attribute {attributeId} but attribute isn't saved yet");
+            throw new($"trying to add metadata to attribute {attributeId} but attribute isn't saved yet");
             
         var entities = new List<IEntity>();
         // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
@@ -154,7 +154,7 @@ partial class DbContentType
     {
         // Verify AttributeId before we continue
         if (string.IsNullOrEmpty(staticName)) //  attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
-            throw new Exception($"trying to add metadata to content-type {staticName} but name is useless");
+            throw new($"trying to add metadata to content-type {staticName} but name is useless");
             
         var entities = new List<IEntity>();
         // if possible, try to get the complete list which is usually hidden in IMetadataOfItem

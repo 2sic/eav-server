@@ -2,14 +2,7 @@
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
-internal partial class DbEntity: DbPartBase
+internal partial class DbEntity(DbDataController db, DataBuilder builder) : DbPartBase(db, "Db.Enty")
 {
-
-    public DbEntity(DbDataController db, DataBuilder builder) : base(db, "Db.Enty")
-    {
-        _builder = builder;
-        Serializer = db.JsonSerializerGenerator.New();
-    }
-    private JsonSerializer Serializer { get; }
-    private readonly DataBuilder _builder;
+    private JsonSerializer Serializer { get; } = db.JsonSerializerGenerator.New();
 }
