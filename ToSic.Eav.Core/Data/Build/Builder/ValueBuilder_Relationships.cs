@@ -36,12 +36,12 @@ partial class ValueBuilder
         var entityIds = (value as IEnumerable<int?>)?.ToList()
                         ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
         if (entityIds != null)
-            return new LazyEntitiesSource(fullLookupList, entityIds);
+            return new(fullLookupList, entityIds);
         if (value is IRelatedEntitiesValue relList)
-            return new LazyEntitiesSource(fullLookupList, relList.Identifiers);
+            return new(fullLookupList, relList.Identifiers);
         if (value is List<Guid?> guids)
-            return new LazyEntitiesSource(fullLookupList, guids);
-        return new LazyEntitiesSource(fullLookupList, GuidCsvToList(value));
+            return new(fullLookupList, guids);
+        return new(fullLookupList, GuidCsvToList(value));
     }
 
 
@@ -56,7 +56,7 @@ partial class ValueBuilder
             var v = x?.ToString().Trim();
             // this is the case when an export contains a list with nulls as a special code
             if (v == null || v == Constants.EmptyRelationship)
-                return new Guid?();
+                return new();
             var guid = Guid.Parse(v);
             return guid == Guid.Empty ? new Guid?() : guid;
         }).ToList() ?? new List<Guid?>();

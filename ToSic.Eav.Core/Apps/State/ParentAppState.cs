@@ -50,7 +50,7 @@ public class ParentAppState
         {
             if (!InheritEntities || AppState == null) return new List<IEntity>(0);
             if (_entitiesCache != null) return _entitiesCache.List;
-            _entitiesCache = new SynchronizedEntityList(AppState,
+            _entitiesCache = new(AppState,
                 () => AppState.List.Select(WrapUnwrappedEntity).ToImmutableList());
             return _entitiesCache.List;
         }

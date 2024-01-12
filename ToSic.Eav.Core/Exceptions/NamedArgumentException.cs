@@ -20,7 +20,7 @@ public class NamedArgumentException : ArgumentException, IExceptionWithHelp
             uiMessage: " ",
             detailsHtml: intro.Replace("\n", "<br>") +
                          (paramNames.HasValue() ? $"<br>Param Names: <code>{paramNames}</code>" : ""));
-        Helps = new List<CodeHelp> { help };
+        Helps = new() { help };
     }
 
     public string Intro { get; }

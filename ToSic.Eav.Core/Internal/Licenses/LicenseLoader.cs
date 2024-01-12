@@ -122,7 +122,7 @@ public sealed class LicenseLoader : LoaderBase
     private List<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, List<EnterpriseFingerprint> validEntFps)
     {
         var l = Log.Fn<List<FeatureSetState>>();
-        if (licensesPersisted == null) return l.Return(new List<FeatureSetState>(), "null");
+        if (licensesPersisted == null) return l.Return(new(), "null");
 
         // Check signature valid
         var resultForSignature = licensesPersisted.GenerateIdentity();
@@ -170,7 +170,7 @@ public sealed class LicenseLoader : LoaderBase
                 // For this we must add a virtual license for this feature only
                 if (licDef == null)
                 {
-                    licDef = new FeatureSet(BuiltInLicenses.LicenseCustom, BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
+                    licDef = new(BuiltInLicenses.LicenseCustom, BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
                         Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
                         $"Feature: {storedDetails.Comments} ({storedDetails.Id})", featureLicense: true);
                     l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");

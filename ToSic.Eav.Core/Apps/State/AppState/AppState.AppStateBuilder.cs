@@ -32,7 +32,7 @@ partial class AppState
 
         public IAppStateBuilder InitForPreset()
         {
-            _appState = new AppState(new ParentAppState(null, false, false), PresetIdentity, PresetName, Log);
+            _appState = new AppState(new(null, false, false), PresetIdentity, PresetName, Log);
             _reader = appStates.ToReader(AppState, Log);
             return this;
         }
@@ -44,10 +44,10 @@ partial class AppState
             return this;
         }
 
-        public IAppStateCache AppState => _appState ?? throw new Exception("Can't use before calling some init");
+        public IAppStateCache AppState => _appState ?? throw new("Can't use before calling some init");
         private IAppStateCache _appState;
 
-        public IAppStateInternal Reader => _reader ?? throw new Exception("Can't use before calling some init");
+        public IAppStateInternal Reader => _reader ?? throw new("Can't use before calling some init");
         private IAppStateInternal _reader;
 
         #endregion
@@ -219,7 +219,7 @@ partial class AppState
             var l = Log.Fn($"for a#{st.AppId}");
             //AppState.RemoveAllItems();
             if (!st.Loading)
-                throw new Exception("trying to init metadata, but not in loading state. set that first!");
+                throw new("trying to init metadata, but not in loading state. set that first!");
             st.Log.A("remove all items");
             st.Index.Clear();
             st._metadataManager.Reset();
@@ -263,10 +263,10 @@ partial class AppState
         {
             var st = (AppState)AppState;
             if (!st.Loading)
-                throw new Exception("trying to add entity, but not in loading state. set that first!");
+                throw new("trying to add entity, but not in loading state. set that first!");
 
             if (newEntity.RepositoryId == 0)
-                throw new Exception("Entities without real ID not supported yet");
+                throw new("Entities without real ID not supported yet");
 
             RemoveObsoleteDraft(newEntity, log);
             _ = MapDraftToPublished(newEntity as Entity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
@@ -291,10 +291,10 @@ partial class AppState
         {
             var st = (AppState)AppState;
             if (!st.Loading)
-                throw new Exception("Trying to init metadata, but App is not in loading state.");
+                throw new("Trying to init metadata, but App is not in loading state.");
             if (st._appContentTypesFromRepository != null)
-                throw new Exception("Can't init metadata if content-types are already set");
-            st._metadataManager = new AppMetadataManager(st, st);
+                throw new("Can't init metadata if content-types are already set");
+            st._metadataManager = new(st, st);
 
             st.Metadata = st.GetMetadataOf(TargetTypes.App, st.AppId, "App (" + st.AppId + ") " + st.Name + " (" + st.Folder + ")");
         }
@@ -313,10 +313,10 @@ partial class AppState
             var l = st.Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
 
             if (!st.Loading)
-                throw new Exception("trying to set content-types, but not in loading state. set that first!");
+                throw new("trying to set content-types, but not in loading state. set that first!");
 
             if (st._metadataManager == null || st.Index.Any())
-                throw new Exception(
+                throw new(
                     "can't set content types before setting Metadata manager, or after entities-list already exists");
 
             if (contentTypes == null)

@@ -34,7 +34,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
         // Because very small apps are loaded so quickly that otherwise it won't change the number after loading
         CacheResetTimestamp("init", offset: -1);  // do this very early, as this number is needed elsewhere
 
-        Relationships = new AppRelationshipManager(this);
+        Relationships = new(this);
         l.Done();
     }
     [PrivateApi]
@@ -76,7 +76,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
 
     private string ValueOrExceptionIfNotInLoadingState(string value, string property)
     {
-        if (!Loading) throw new Exception($"Can't set AppState.{property} when not in loading state");
+        if (!Loading) throw new($"Can't set AppState.{property} when not in loading state");
         return value;
     }
 }

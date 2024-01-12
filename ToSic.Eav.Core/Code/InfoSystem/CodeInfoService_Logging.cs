@@ -59,11 +59,11 @@ partial class CodeInfoService
 
             // Don't log to normal warnings if it's been reported already
             if (countGeneral > CodeInfoConstants.MaxGeneralToLog || countSpecific > CodeInfoConstants.MaxSpecificToLog)
-                return l.Return(new CodeInfoInLogStore(use));
+                return l.Return(new(use));
 
             // Now we know that we'll keep it
             var logEntry = new LogStoreLive().ForceAdd(CodeInfoConstants.ObsoleteNameInHistory, logWrapper);
-            infoInLogStore = new CodeInfoInLogStore(use, logEntry);
+            infoInLogStore = new(use, logEntry);
 
             var msg = $"Obsolete: {longId} is deprecated in v{change.From} "
                       + (change.To == null ? "and has been removed." : $"and will be removed in {change.To}.");
@@ -76,7 +76,7 @@ partial class CodeInfoService
                 {
                     l.A("Additional Info:", options: NoCodeDetails);
                     foreach (var s in use.More)
-                        l.A(s, options: new EntryOptions { ShowNewLines = true, HideCodeReference = true });
+                        l.A(s, options: new() { ShowNewLines = true, HideCodeReference = true });
                 }
                 else
                     l.A("No additional info.", options: NoCodeDetails);
@@ -93,7 +93,7 @@ partial class CodeInfoService
                 foreach (var razorFile in stackInfo.AllCshtml)
                     l.A(razorFile, options: NoCodeDetails);
 
-                l.A("Entire Stack for additional debugging \n" + stackInfo.Stack, options: new EntryOptions { ShowNewLines = true, HideCodeReference = true });
+                l.A("Entire Stack for additional debugging \n" + stackInfo.Stack, options: new() { ShowNewLines = true, HideCodeReference = true });
             }
             catch (Exception ex)
             {

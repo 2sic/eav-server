@@ -12,7 +12,7 @@ namespace ToSic.Eav.Internal.Features
 
         public static readonly Feature TestingFeature001 = new(
             nameof(TestingFeature001),
-            new Guid("f6cad4f7-f7ad-4205-9887-f7e28443ea8f"),
+            new("f6cad4f7-f7ad-4205-9887-f7e28443ea8f"),
             "Just for testing!",
             false,
             false,

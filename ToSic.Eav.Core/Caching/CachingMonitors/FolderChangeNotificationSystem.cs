@@ -14,8 +14,8 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
     private readonly object _lock;
     public FolderChangeNotificationSystem()
     {
-        _dirMonitors = Hashtable.Synchronized(new Hashtable(StringComparer.OrdinalIgnoreCase));
-        _lock = new object();
+        _dirMonitors = Hashtable.Synchronized(new(StringComparer.OrdinalIgnoreCase));
+        _lock = new();
     }
 
     public class DirectoryMonitor
@@ -34,9 +34,9 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
         {
             //_folderName = folderName;
             _onChangedCallback = onChangedCallback;
-            ChangedHandler = new FileSystemEventHandler(this.OnChanged);
-            ErrorHandler = new ErrorEventHandler(this.OnError);
-            RenamedHandler = new RenamedEventHandler(this.OnRenamed);
+            ChangedHandler = new(this.OnChanged);
+            ErrorHandler = new(this.OnError);
+            RenamedHandler = new(this.OnRenamed);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -80,7 +80,7 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
             {
                 dirMon = _dirMonitors[dirPath] as DirectoryMonitor ?? new DirectoryMonitor
                 {
-                    FileSystemWatcher = new FileSystemWatcher(dirPath)
+                    FileSystemWatcher = new(dirPath)
                     {
                         NotifyFilter = NotifyFilters.FileName
                                        | NotifyFilters.DirectoryName

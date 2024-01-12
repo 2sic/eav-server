@@ -17,7 +17,7 @@ partial class PropertyStack
         {
             var s = GetSource(name);
             l.A($"Add stack {name}, found: {s != null}");
-            if (s != null) newSources.Add(new KeyValuePair<string, IPropertyLookup>(name, s));
+            if (s != null) newSources.Add(new(name, s));
         }
 
         var newStack = new PropertyStack();

@@ -12,7 +12,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature SqlCompressDataTimeline = new(
         nameof(SqlCompressDataTimeline),
-        new Guid("87325de8-d671-4731-bd58-186ff6de6329"),
+        new("87325de8-d671-4731-bd58-186ff6de6329"),
         "Shrink your DB size by up to 80%. Enables compressed JSON for the change-history which is rarely accessed.",
         false,
         true,

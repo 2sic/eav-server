@@ -21,7 +21,7 @@ public class ImportErrorLog : HelperBase, IEnumerable<ImportError>
 
     public void Add(ImportErrorCode errorCode, string errorDetail = null, int? lineNumber = null, string lineDetail = null)
     {
-        Errors.Add(new ImportError(errorCode, errorDetail, lineNumber, lineDetail));
+        Errors.Add(new(errorCode, errorDetail, lineNumber, lineDetail));
         Log.A($"Imp-Err {errorCode} on line {lineDetail} details {lineDetail} msg: {errorDetail}");
     }
 

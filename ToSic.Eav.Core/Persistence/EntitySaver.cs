@@ -47,10 +47,10 @@ public class EntitySaver : ServiceBase
         #region Step 0: initial error checks / content-type
 
         if (update == null)
-            throw new Exception("can't prepare entities for saving, no new item with attributes provided");
+            throw new("can't prepare entities for saving, no new item with attributes provided");
 
         var ct = (original ?? update).Type;
-        if (ct == null) throw new Exception("unknown content-type");
+        if (ct == null) throw new("unknown content-type");
 
         #endregion
 
@@ -109,7 +109,7 @@ public class EntitySaver : ServiceBase
             if ((!saveOptions.Languages?.Any() ?? true)
                 || string.IsNullOrWhiteSpace(saveOptions.PrimaryLanguage)
                 || saveOptions.Languages.All(lang => !lang.Matches(saveOptions.PrimaryLanguage)))
-                throw new Exception(
+                throw new(
                     "primary language must exist in languages, cannot continue preparation to save with unclear language setup");
 
 

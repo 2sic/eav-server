@@ -19,7 +19,7 @@ public class LookUpInDictionary(string name, IDictionary<string, string> valueLi
     public IDictionary<string, string> Properties { get; }
         // either take existing dic or create new, but always make sure it's case-insensitive
         = valueList != null
-            ? new Dictionary<string, string>(valueList, StringComparer.InvariantCultureIgnoreCase)
+            ? new(valueList, StringComparer.InvariantCultureIgnoreCase)
             : new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
     /// <inheritdoc/>

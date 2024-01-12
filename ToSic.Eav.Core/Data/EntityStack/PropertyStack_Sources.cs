@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data;
 public partial class PropertyStack
 {
     public IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources
-        => _sources ?? throw new Exception($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
+        => _sources ?? throw new($"Can't access {nameof(IPropertyStack)}.{nameof(Sources)} as it hasn't been initialized yet.");
     private IImmutableList<KeyValuePair<string, IPropertyLookup>> _sources;
 
     public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal => _sourcesReal.Get(GeneratorSourcesReal);

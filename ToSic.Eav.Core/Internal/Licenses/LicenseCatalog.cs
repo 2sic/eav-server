@@ -25,7 +25,7 @@ namespace ToSic.Eav.Internal.Licenses;
 
 public class LicenseCatalog: GlobalCatalogBase<FeatureSet>
 {
-    public LicenseCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.LicCat", new CodeRef())
+    public LicenseCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.LicCat", new())
     {
         Register(
             CoreFree,

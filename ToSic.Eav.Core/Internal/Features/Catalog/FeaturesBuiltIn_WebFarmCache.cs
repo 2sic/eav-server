@@ -12,7 +12,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature WebFarmCache = new(
         "WebFarmCache",
-        new Guid("11c0fedf-16a7-4596-900c-59e860b47965"),
+        new("11c0fedf-16a7-4596-900c-59e860b47965"),
         "Web Farm Cache",
         false,
         false,
@@ -22,7 +22,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature WebFarmCacheDebug = new(
         "WebFarmCacheDebug",
-        new Guid("031cf718-271e-41de-89ca-d1dd4ecfe602"),
+        new("031cf718-271e-41de-89ca-d1dd4ecfe602"),
         "Web Farm Cache with verbose debugging",
         false,
         false,

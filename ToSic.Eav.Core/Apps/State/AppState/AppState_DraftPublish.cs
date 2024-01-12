@@ -46,7 +46,7 @@ partial class AppState
     /// </summary>
     [PrivateApi("this is an optimization feature which shouldn't be used by others")]
     internal SynchronizedList<IEntity> ListPublished => _listPublished
-        ??= new SynchronizedEntityList(this, () => List.Where(e => e.IsPublished).ToImmutableList());
+        ??= new(this, () => List.Where(e => e.IsPublished).ToImmutableList());
 
     private SynchronizedEntityList _listPublished;
 
@@ -55,7 +55,7 @@ partial class AppState
     /// </summary>
     [PrivateApi("this is an optimization feature which shouldn't be used by others")]
     internal SynchronizedList<IEntity> ListNotHavingDrafts => _listNotHavingDrafts 
-        ??= new SynchronizedEntityList(this, () => List.Where(e => GetDraft(e) == null).ToImmutableList());
+        ??= new(this, () => List.Where(e => GetDraft(e) == null).ToImmutableList());
 
     private SynchronizedEntityList _listNotHavingDrafts;
 
@@ -65,7 +65,7 @@ partial class AppState
     /// </summary>
     [PrivateApi("this is an optimization feature which shouldn't be used by others")]
     private SynchronizedObject<ImmutableDictionary<int, IEntity>> ListDrafts => _listDrafts
-        ??= new SynchronizedObject<ImmutableDictionary<int, IEntity>>(this, () =>
+        ??= new(this, () =>
         {
             var unpublished = List.Where(e => e.IsPublished == false);
             // there are rare cases where the main item is unpublished and it also has a draft which points to it

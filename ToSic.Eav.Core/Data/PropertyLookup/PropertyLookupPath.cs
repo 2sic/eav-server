@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data.PropertyLookup;
 public class PropertyLookupPath
 {
     public PropertyLookupPath(List<string> original = null) 
-        => Parts = original == null ? new List<string>() : new List<string>(original);
+        => Parts = original == null ? new() : new List<string>(original);
 
     public List<string> Parts;
 
@@ -22,7 +22,7 @@ public static class PropertyLookupPathExtensions
     public static PropertyLookupPath Add(this PropertyLookupPath original, string next)
     {
         if (original == null) return null;
-        original = new PropertyLookupPath(original.Parts);
+        original = new(original.Parts);
         original.Parts.Add(next);
         return original;
     }

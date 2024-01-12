@@ -28,7 +28,7 @@ internal class LocalizedDescriptionAttribute : DescriptionAttribute
 
     public LocalizedDescriptionAttribute(string resourceKey, Type resourceType, string resourceFolder)
     {
-        _resourceManager = new ResourceManager(resourceFolder + "." + resourceType.Name, resourceType.Assembly);
+        _resourceManager = new(resourceFolder + "." + resourceType.Name, resourceType.Assembly);
         _resourceKey = resourceKey;
     }
 

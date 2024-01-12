@@ -10,7 +10,7 @@ public class CodeInfoWarning: CodeInfo
     }
 
     public static ICodeInfo Warn(string nameId, string link = default, string message = default) =>
-        new CodeInfoWarning(nameId: nameId, from: new Version(), to: new Version(), link: link, message: message);
+        new CodeInfoWarning(nameId: nameId, from: new(), to: new(), link: link, message: message);
 
 
 }

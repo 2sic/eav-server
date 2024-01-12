@@ -31,7 +31,7 @@ public class FeatureSet: Aspect
         : base(nameId ?? guid.ToString(), guid, name, description ?? "")
     {
         Priority = priority;
-        Requirement = new Requirement(ConditionIsLicense, guid.ToString());
+        Requirement = new(ConditionIsLicense, guid.ToString());
         FeatureLicense = featureLicense;
     }
 

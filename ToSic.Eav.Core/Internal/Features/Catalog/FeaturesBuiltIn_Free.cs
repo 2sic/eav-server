@@ -20,12 +20,12 @@ public partial class BuiltInFeatures
 
     public static readonly Feature WysiwygPasteFormatted = new(
         "WysiwygPasteFormatted",
-        new Guid("1b13e0e6-a346-4454-a1e6-2fb18c047d20"),
+        new("1b13e0e6-a346-4454-a1e6-2fb18c047d20"),
         "Paste Formatted Text",
         Public,
         ForUi,
         "Paste formatted text into WYSIWYG TinyMCE",
-        new FeatureSecurity(2,
+        new(2,
             "Should not affect security, unless a TinyMCE bug allows adding script tags or similar which could result in XSS."),
         ForAllEnabled
     );
@@ -35,7 +35,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature EditUiShowNotes = new(
         "EditUiShowNotes",
-        new Guid("945320af-9ba9-4117-87cb-d63815e99fd4"),
+        new("945320af-9ba9-4117-87cb-d63815e99fd4"),
         "Edit UI: Show notes button",
         Public,
         ForUi,
@@ -46,7 +46,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature EditUiShowMetadataFor = new(
         "EditUiShowMetadataFor",
-        new Guid("717b5d0a-07b1-41ec-a670-ec9665cd4af1"),
+        new("717b5d0a-07b1-41ec-a670-ec9665cd4af1"),
         "Edit UI: Show information if something is Metadata-For",
         Public,
         ForUi,

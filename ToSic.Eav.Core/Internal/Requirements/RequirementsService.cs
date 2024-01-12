@@ -32,7 +32,7 @@ public class RequirementsService: ServiceBase
 
     public List<RequirementError> Check(List<Requirement> requirements)
     {
-        if (requirements == null || requirements.Count == 0) return new List<RequirementError>();
+        if (requirements == null || requirements.Count == 0) return new();
         return requirements.Select(Check).Where(c => c != null).ToList();
     }
 
@@ -50,7 +50,7 @@ public class RequirementsService: ServiceBase
 
         if (checker.IsOk(requirement)) return null;
 
-        return new RequirementError(requirement,
+        return new(requirement,
             $"Condition '{requirement.Type}.{requirement.NameId}' is not met. " + checker.InfoIfNotOk(requirement));
     }
 }

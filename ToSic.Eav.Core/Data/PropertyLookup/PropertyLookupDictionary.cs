@@ -29,7 +29,7 @@ public class PropertyLookupDictionary: IPropertyLookup, IHasIdentityNameId
     {
         path = path?.Add(SourceTypeId, NameId, specs.Field);
         return Values.TryGetValue(specs.Field, out var result)
-            ? new PropReqResult(result: result, fieldType: Attributes.FieldIsDynamic /* I believe this would only be used for certain follow up work */, path: path)
+            ? new(result: result, fieldType: Attributes.FieldIsDynamic /* I believe this would only be used for certain follow up work */, path: path)
             {
                 Value = null,
                 Source = this,
@@ -38,5 +38,5 @@ public class PropertyLookupDictionary: IPropertyLookup, IHasIdentityNameId
     }
 
     public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
-        => new() { new PropertyDumpItem { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" } };
+        => new() { new() { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" } };
 }

@@ -40,7 +40,7 @@ public class EavFeaturesService: IEavFeaturesService
     /// <summary>
     /// List of all enabled features with their guids and nameIds
     /// </summary>
-    internal HashSet<string> EnabledFeatures => _enabledFeatures ??= new HashSet<string>(All
+    internal HashSet<string> EnabledFeatures => _enabledFeatures ??= new(All
             .Where(f => f.IsEnabled)
             .SelectMany(f => new[] { f.NameId, f.Aspect.Guid.ToString() })
             .Distinct(InvariantCultureIgnoreCase),
@@ -156,7 +156,7 @@ public class EavFeaturesService: IEavFeaturesService
         // Find additional, un matching features which are not known in the catalog
         var missingFeatures = config?.Features
             .Where(f => featuresCat.All(fd => fd.Guid != f.Id))
-            .Select(f => new FeatureState(new Feature(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
+            .Select(f => new FeatureState(new(f.Id), f.Expires, f.Enabled, "configuration", "Configured manually", 
                 allowedByLicense: false, enabledByDefault: false,  enabledInConfiguration: f.Enabled));
 
         var final = (missingFeatures == null ? allFeats : allFeats.Union(missingFeatures)).ToList();

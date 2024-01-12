@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data.PropertyLookup;
 public class PropertyLookupWithStackNavigation : Wrapper<PropertyLookupDictionary>, IPropertyLookup, IPropertyStackLookup
 {
     public PropertyLookupWithStackNavigation(PropertyLookupDictionary current, StackAddress stackAddress) : base(current) 
-        => Navigator = new PropertyStackNavigator(current, stackAddress);
+        => Navigator = new(current, stackAddress);
     internal readonly PropertyStackNavigator Navigator;
 
 

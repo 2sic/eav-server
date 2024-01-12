@@ -57,7 +57,7 @@ public class TokenReplace
     public ILookUpEngine LookupEngine { get; }
     public TokenReplace(ILookUpEngine lookupEngine)
     {
-        LookupEngine = lookupEngine ?? throw new Exception("Can't initialize TokenReplace without engine");
+        LookupEngine = lookupEngine ?? throw new("Can't initialize TokenReplace without engine");
     }
     #endregion
 

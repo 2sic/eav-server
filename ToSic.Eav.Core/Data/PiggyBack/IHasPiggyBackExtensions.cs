@@ -31,7 +31,7 @@ public static class IHasPiggyBackExtensions
     public static TData GetOrCreateInPiggyBack<TData>(this IPropertyLookup entryPoint, string field, Func<string, TData> factory, ILog logOrNull) where TData : class
     {
         var wrapLog = logOrNull.Fn<TData>();
-        var advProperty = entryPoint.FindPropertyInternal(new PropReqSpecs(field), null);
+        var advProperty = entryPoint.FindPropertyInternal(new(field), null);
 
         // Skip if nothing to process
         if (!(advProperty?.Result is string valString) || string.IsNullOrWhiteSpace(valString))

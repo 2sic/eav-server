@@ -131,7 +131,7 @@ public class ContentTypeBuilder
         }
 
         metadata = metadata ?? (metadataItems != default
-            ? new ContentTypeMetadata(original.NameId, metadataItems, null, original.Name)
+            ? new(original.NameId, metadataItems, null, original.Name)
             : original.Metadata);
 
         return Create(

@@ -15,7 +15,7 @@ partial class Entity
     [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
     public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks)
     {
-        var set = FindPropertyInternal(new PropReqSpecs(attributeName, languages), null);
+        var set = FindPropertyInternal(new(attributeName, languages), null);
         return set.Result;
     }
 

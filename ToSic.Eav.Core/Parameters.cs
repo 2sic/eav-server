@@ -60,6 +60,6 @@ public class Parameters
         var see = $"See {HelpLink} ";
         var paramsText = paramNames == null ? "" : $". This command expects these parameters: '{paramNames}'.";
         var msg = intro + see + paramsText + addMessage;
-        return new NamedArgumentException(msg, intro, paramNames, paramsText);
+        return new(msg, intro, paramNames, paramsText);
     }
 }

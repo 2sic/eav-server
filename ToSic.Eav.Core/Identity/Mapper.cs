@@ -19,7 +19,7 @@ public static class Mapper
     {
         var base64 = shortGuid.Replace('-', '+').Replace('_', '/') + "==";
         var bytes = Convert.FromBase64String(base64);
-        return new Guid(bytes);
+        return new(bytes);
     }
 
 }

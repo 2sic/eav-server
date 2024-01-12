@@ -55,7 +55,7 @@ public sealed class RawFromAnonymous: RawEntity
                 }
         }
         else
-            _relationshipKeys = new List<object>();
+            _relationshipKeys = new();
 
         _relationshipKeys.Add(Id);
 
@@ -74,7 +74,7 @@ public sealed class RawFromAnonymous: RawEntity
             // if we have an ienumerable use the list as the keys
             var keys = relsTemp is IEnumerable relsList && !(relsTemp is string)
                 ? relsList.Cast<object>().ToList()
-                : new List<object> { relsTemp };
+                : new() { relsTemp };
             dic[key] = new RawRelationship(keys: keys);
         }
 

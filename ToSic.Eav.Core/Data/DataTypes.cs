@@ -36,7 +36,7 @@ public class DataTypes
             value is List<int?>)
             return ValueTypes.Entity;
         if (value is int[] || value is int?[])
-            throw new Exception(
+            throw new(
                 "Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
         return ValueTypes.String;
     }

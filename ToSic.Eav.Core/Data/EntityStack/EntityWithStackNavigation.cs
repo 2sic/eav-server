@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data;
 internal class EntityWithStackNavigation: EntityWrapper, IPropertyStackLookup
 {
     public EntityWithStackNavigation(IEntity entity, StackAddress stackAddress) : base(entity) 
-        => Navigator = new PropertyStackNavigator(entity, stackAddress);
+        => Navigator = new(entity, stackAddress);
     internal readonly PropertyStackNavigator Navigator;
 
     public override PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path) =>

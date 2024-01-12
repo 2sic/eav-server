@@ -78,7 +78,7 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppState
             : cacheTimestampPrivate;
 
     [PrivateApi] 
-    public PiggyBack PiggyBack => _piggyBack ??= new PiggyBack();
+    public PiggyBack PiggyBack => _piggyBack ??= new();
     private PiggyBack _piggyBack;
 
 }

@@ -32,7 +32,7 @@ public class GlobalConfiguration : IGlobalConfiguration
     /// <inheritdoc />
     public string GlobalFolder
     {
-        get => _globalFolder ?? throw new Exception(ErrorMessage(nameof(GlobalFolder)));
+        get => _globalFolder ?? throw new(ErrorMessage(nameof(GlobalFolder)));
         set => _globalFolder = CorrectFolderOrErrorIfInvalid(value, nameof(GlobalFolder));
     }
 
@@ -46,14 +46,14 @@ public class GlobalConfiguration : IGlobalConfiguration
     /// <inheritdoc />
     public string SharedAppsFolder
     {
-        get => _globalSiteFolder ?? throw new Exception(ErrorMessage(nameof(SharedAppsFolder)));
+        get => _globalSiteFolder ?? throw new(ErrorMessage(nameof(SharedAppsFolder)));
         set => _globalSiteFolder = CorrectFolderOrErrorIfInvalid(value, nameof(SharedAppsFolder));
     }
 
     /// <inheritdoc />
     public string AssetsVirtualUrl
     {
-        get => _assetsVirtualUrl ?? throw new Exception(ErrorMessage(nameof(AssetsVirtualUrl)));
+        get => _assetsVirtualUrl ?? throw new(ErrorMessage(nameof(AssetsVirtualUrl)));
         set => _assetsVirtualUrl = CorrectFolderOrErrorIfInvalid(value, nameof(AssetsVirtualUrl));
     }
 
@@ -79,7 +79,7 @@ public class GlobalConfiguration : IGlobalConfiguration
     }
 
     private static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) 
-        => value?.Backslash().TrimLastSlash() ?? throw new Exception(ErrorMessage(fieldName));
+        => value?.Backslash().TrimLastSlash() ?? throw new(ErrorMessage(fieldName));
 
     private static string ErrorMessage(string fieldName) 
         => $"ISystemFoldersConfiguration.{fieldName} cannot be null. Make sure it's set upon initial creation of the dependencies etc.";

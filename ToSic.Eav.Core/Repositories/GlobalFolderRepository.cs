@@ -29,7 +29,7 @@ public class GlobalFolderRepository: FolderBasedRepository
     {
         get
         {
-            if (_config.DataFolder == null) return new List<string>();
+            if (_config.DataFolder == null) return new();
             var result = new List<string>
             {
                 _config.DataFolder,

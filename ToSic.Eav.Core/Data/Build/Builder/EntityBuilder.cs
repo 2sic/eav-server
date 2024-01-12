@@ -47,9 +47,9 @@ public class EntityBuilder
         version = version == default ? 1 : version;
 
         // Prepare the Parts-builder in case it wasn't provided
-        partsBuilder ??= new EntityPartsBuilder();
+        partsBuilder ??= new();
 
-        return new Entity(appId, entityId, repositoryId: repositoryId,
+        return new(appId, entityId, repositoryId: repositoryId,
             partsBuilder: partsBuilder, 
             contentType: contentType,
             values: attributes ?? Attribute.Empty(),
