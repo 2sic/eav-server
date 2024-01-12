@@ -148,7 +148,7 @@ public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
         catch (Exception e)
         {
             l.Ex(e);
-            return l.Return(new List<InputTypeInfo>(), "error");
+            return l.Return(new(), "error");
         }
     }
 

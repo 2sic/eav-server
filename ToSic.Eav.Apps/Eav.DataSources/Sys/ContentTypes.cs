@@ -76,7 +76,7 @@ public sealed class ContentTypes: CustomDataSource
             _appStates = appStates
         );
         var options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
-        ProvideOut(GetList, options: () => new DataFactoryOptions(options, appId: OfAppId));
+        ProvideOut(GetList, options: () => new(options, appId: OfAppId));
     }
     private readonly IAppStates _appStates;
 

@@ -211,7 +211,7 @@ public class ZipExport: ServiceBase
             }
             catch (Exception e)
             {
-                throw new Exception("Error on " + fullPath + " (" + fullPath.Length + ")", e);
+                throw new("Error on " + fullPath + " (" + fullPath.Length + ")", e);
             }
         }
     }

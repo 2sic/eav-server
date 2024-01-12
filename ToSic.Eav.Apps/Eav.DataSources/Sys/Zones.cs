@@ -46,7 +46,7 @@ public sealed class Zones: Eav.DataSource.DataSourceBase
         ConnectServices(
             _zoneMapper = zoneMapper,
             _appStates = appStates,
-            _dataFactory = dataFactory.New(options: new DataFactoryOptions(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
+            _dataFactory = dataFactory.New(options: new(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
         );
         ProvideOut(GetList);
     }

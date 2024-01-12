@@ -71,8 +71,8 @@ public class AppInitializer : ServiceBase
 
         var addList = new List<AddContentTypeAndOrEntityTask>();
         if (appConfig == null)
-            addList.Add(new AddContentTypeAndOrEntityTask(TypeAppConfig,
-                values: new Dictionary<string, object>
+            addList.Add(new(TypeAppConfig,
+                values: new()
                 {
                     { "DisplayName", newAppName.UseFallbackIfNoValue(appName) },
                     { "Folder", folder },
@@ -90,11 +90,11 @@ public class AppInitializer : ServiceBase
 
         // Add new (empty) ContentType for Settings
         if (appSettings == null)
-            addList.Add(new AddContentTypeAndOrEntityTask(TypeAppSettings));
+            addList.Add(new(TypeAppSettings));
 
         // add new (empty) ContentType for Resources
         if (appResources == null)
-            addList.Add(new AddContentTypeAndOrEntityTask(TypeAppResources));
+            addList.Add(new(TypeAppResources));
 
         // If the Types are missing, create these first
         if (CreateAllMissingContentTypes(appState.Internal(), addList))
@@ -103,7 +103,7 @@ public class AppInitializer : ServiceBase
             // this is because other APIs may access the AppStates (though they shouldn't)
             CachePurger.Purge(appState);
             // get the latest app-state, but not-initialized so we can make changes
-            appState = _repoLoader.New().AppStateBuilderRaw(appState.AppId, new CodeRefTrail()).Reader;
+            appState = _repoLoader.New().AppStateBuilderRaw(appState.AppId, new()).Reader;
         }
 
         addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));

@@ -21,7 +21,7 @@ partial class XmlImportWithFiles
     private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId
     ) => Log.Func($"for {entities?.Count}; type {assignmentObjectTypeId}", () =>
     {
-        if (entities == null) return (new List<IEntity>(), "empty");
+        if (entities == null) return (new(), "empty");
         var result = entities.Select(e => BuildEntity(e, assignmentObjectTypeId)).ToList();
         return (result, $"found {result.Count}");
     });
@@ -97,7 +97,7 @@ partial class XmlImportWithFiles
                 break;
             case (int)TargetTypes.CmsItem:
                 if (keyString == null)
-                    throw new Exception("found CmsItem but couldn't find metadata-key of type string, will abort");
+                    throw new("found CmsItem but couldn't find metadata-key of type string, will abort");
                 keyString = GetMappedLink(keyString) ?? keyString;
                 break;
         }

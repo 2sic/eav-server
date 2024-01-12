@@ -22,7 +22,7 @@ public class WorkFieldList : WorkUnitBase<IAppWorkCtxWithDb>
         target = AppWorkCtx.AppState.GetDraftOrKeep(target);
         var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
         var values = callback.Invoke(lists);
-        _entityUpdate.New(AppWorkCtx).UpdatePartsFromValues(target, values, new EntitySavePublishing(!asDraft, asDraft));
+        _entityUpdate.New(AppWorkCtx).UpdatePartsFromValues(target, values, new(!asDraft, asDraft));
     }
 
     public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd, bool padWithNulls = false)

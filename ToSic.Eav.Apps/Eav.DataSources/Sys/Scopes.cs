@@ -33,7 +33,7 @@ public sealed class Scopes : CustomDataSource
     public Scopes(MyServices services, IAppStates appStates) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
     {
         ConnectServices(_appStates = appStates);
-        ProvideOutRaw(GetList, options: () => new DataFactoryOptions(typeName: "Scope", titleField: "Name", autoId: false));
+        ProvideOutRaw(GetList, options: () => new(typeName: "Scope", titleField: "Name", autoId: false));
     }
     private readonly IAppStates _appStates;
 
@@ -41,7 +41,7 @@ public sealed class Scopes : CustomDataSource
     {
         var scopes = _appStates.GetReader(AppId).ContentTypes.GetAllScopesWithLabels();
         var list = scopes
-            .Select(s => new RawEntity(new Dictionary<string, object>
+            .Select(s => new RawEntity(new()
             {
                 { Data.Attributes.NameIdNiceName, s.Key },
                 { "Name", s.Value }

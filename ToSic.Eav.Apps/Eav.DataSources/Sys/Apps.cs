@@ -64,7 +64,7 @@ public sealed class Apps: CustomDataSource
         ConnectServices(appStates);
         ProvideOutRaw(
             () => GetDefault(appStates),
-            options: () => new DataFactoryOptions(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+            options: () => new(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
         );
     }
 

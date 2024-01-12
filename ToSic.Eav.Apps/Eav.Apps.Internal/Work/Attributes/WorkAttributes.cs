@@ -10,7 +10,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("ApS.InpGet")
         var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{AppWorkCtx.Show()}, type:{staticName}");
 
         if (AppWorkCtx.AppState.GetContentType(staticName) is not { } type)
-            return l.Return(new List<PairTypeWithAttribute>(),
+            return l.Return(new(),
                 $"error, type:{staticName} is null, it is missing or it is not a ContentType - something broke");
 
         var fields = type.Attributes.OrderBy(a => a.SortOrder);
@@ -35,7 +35,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("ApS.InpGet")
                 .FirstOrDefault();
                 
             if (attribute == null)
-                return l.Return(new List<PairTypeWithAttribute>(), $"attribute {attributeId} not found");
+                return l.Return(new(), $"attribute {attributeId} not found");
 
             attributeType = attribute.Type;
         }

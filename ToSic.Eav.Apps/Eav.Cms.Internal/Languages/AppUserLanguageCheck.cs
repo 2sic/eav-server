@@ -62,7 +62,7 @@ public class AppUserLanguageCheck: ServiceBase
         // in other cases we get the languages from the app state or from context (http headers)
         var zoneMapper = _zoneMapperLazy.Value;
         var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : _ctx.Site;
-        if (site == null) return (new List<AppUserLanguageState>(), "null site");
+        if (site == null) return (new(), "null site");
 
         var languages = zoneMapper.CulturesWithState(site);
 
@@ -73,7 +73,7 @@ public class AppUserLanguageCheck: ServiceBase
         if (allowAllLanguages || appStateOrNull == null)
         {
             var noAppResult = languages
-                .Select<ISiteLanguageState, AppUserLanguageState>(lng => new AppUserLanguageState(lng, true, -1))
+                .Select<ISiteLanguageState, AppUserLanguageState>(lng => new(lng, true, -1))
                 .ToList();
             return (noAppResult, $"no-app {noAppResult.Count}");
         }

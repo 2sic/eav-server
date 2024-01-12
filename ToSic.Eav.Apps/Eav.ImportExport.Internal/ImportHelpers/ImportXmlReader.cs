@@ -19,7 +19,7 @@ public class ImportXmlReader: HelperBase
         XmlDoc = XDocument.Parse(FileContents);
 
         if (!importer.IsCompatible(XmlDoc))
-            throw new Exception("The app / package is not compatible with this version of eav and the 2sxc-host.");
+            throw new("The app / package is not compatible with this version of eav and the 2sxc-host.");
 
 
         Root = XmlDoc.Element(XmlConstants.RootNode)
@@ -98,6 +98,6 @@ public class ImportXmlReader: HelperBase
 
     private void ThrowErrorIfNotAppImport()
     {
-        if (!IsAppImport) throw new Exception("not app import, this shouldn't be accessed!");
+        if (!IsAppImport) throw new("not app import, this shouldn't be accessed!");
     }
 }

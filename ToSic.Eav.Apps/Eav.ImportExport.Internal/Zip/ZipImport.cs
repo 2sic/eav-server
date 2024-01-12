@@ -55,7 +55,7 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
             _appCachePurger = appCachePurger,
             Env = environment
         );
-        Messages = new List<Message>();
+        Messages = new();
     }
 
     public ZipImport Init(int zoneId, int? appId, bool allowCode)
@@ -106,13 +106,13 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
             // The app could not be installed because the app-folder already exists. Install app in different folder?
             finalException = e;
             // Add error message and return false, but use MessageTypes.Warning so we can prompt user for new different rename
-            messages.Add(new Message("Could not import the app / package: " + e.Message, Message.MessageTypes.Warning));
+            messages.Add(new("Could not import the app / package: " + e.Message, Message.MessageTypes.Warning));
         }
         catch (Exception e)
         {
             finalException = e;
             // Add error message and return false
-            messages.Add(new Message("Could not import the app / package: " + e.Message, Message.MessageTypes.Error));
+            messages.Add(new("Could not import the app / package: " + e.Message, Message.MessageTypes.Error));
         }
         finally
         {

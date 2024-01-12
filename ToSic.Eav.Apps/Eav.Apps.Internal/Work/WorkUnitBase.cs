@@ -13,7 +13,7 @@ public abstract class WorkUnitBase<TContext>(string logName) : ServiceBase(logNa
     /// </summary>
     public TContext AppWorkCtx
     {
-        get => _appWorkCtx ?? throw new Exception($"Can't use this before {nameof(AppWorkCtx)} is set - pls use a Work-Generator.");
+        get => _appWorkCtx ?? throw new($"Can't use this before {nameof(AppWorkCtx)} is set - pls use a Work-Generator.");
         private set => _appWorkCtx = value;
     }
     private TContext _appWorkCtx;

@@ -160,7 +160,7 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
         }
 
         if (canDeleteList.Count != ids.Length)
-            throw new Exception("Delete check failed, results doesn't match request");
+            throw new("Delete check failed, results doesn't match request");
 
         return canDeleteList;
     }

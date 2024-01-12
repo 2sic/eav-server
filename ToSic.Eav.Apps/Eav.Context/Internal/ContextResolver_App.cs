@@ -18,6 +18,6 @@ partial class ContextResolver
     }
 
     public IContextOfApp App()
-        => LatestAppContext ?? throw new Exception($"To call {nameof(App)} you must first call {nameof(SetApp)}");
+        => LatestAppContext ?? throw new($"To call {nameof(App)} you must first call {nameof(SetApp)}");
 
 }

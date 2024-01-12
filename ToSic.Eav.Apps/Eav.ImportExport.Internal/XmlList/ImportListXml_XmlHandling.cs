@@ -59,7 +59,7 @@ partial class ImportListXml
         {
             const string msg = "can't import - document doesn't have a root element";
             Log.A(msg);
-            throw new Exception(msg);
+            throw new(msg);
         }
 
         // #2 make sure it has elements to import

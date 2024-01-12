@@ -170,7 +170,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
             inherit: null,
             inheritName: false,
             inheritMetadata: false,
-            inheritMetadataOf: new Dictionary<Guid, string> { [inheritMetadataOf] = "" });
+            inheritMetadataOf: new() { [inheritMetadataOf] = "" });
 
         var serializer = _dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);

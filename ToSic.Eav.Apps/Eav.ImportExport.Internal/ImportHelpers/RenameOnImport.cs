@@ -30,7 +30,7 @@ internal class RenameOnImport: HelperBase
 
         // save original AppId (because soon will be rewritten with empty string)
         var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute(Attributes.GuidNiceName);
-        if(appGuidNode == null) throw new Exception("app guid node not found - totally unexpected");
+        if(appGuidNode == null) throw new("app guid node not found - totally unexpected");
         var originalAppId = appGuidNode.Value;
         Log.A($"original AppID:{originalAppId}");
 

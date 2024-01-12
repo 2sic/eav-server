@@ -64,7 +64,7 @@ public partial class ImportListXml: ServiceBase
         ImportDeleteUnmentionedItems deleteSetting, 
         ImportResolveReferenceMode resolveLinkMode)
     {
-        ErrorLog = new ImportErrorLog(Log);
+        ErrorLog = new(Log);
         var contentType = appState.GetContentType(typeName);
 
         AppState = appState;

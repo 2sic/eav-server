@@ -93,7 +93,7 @@ public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
 
         DeletedRemovedParts(newDsGuids, addedSources.Values, qdef);
 
-        headerValues = new Dictionary<string, object>(headerValues, InvariantCultureIgnoreCase);
+        headerValues = new(headerValues, InvariantCultureIgnoreCase);
         RemoveIdAndGuidFromValues(headerValues);
         SaveHeader(queryId, headerValues, wirings, addedSources);
     }
@@ -184,7 +184,7 @@ public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
 
         // Validate Stream Wirings, as we should never save bad wirings
         foreach (var wireInfo in wirings.Where(wireInfo => wirings.Count(w => w.To == wireInfo.To && w.In == wireInfo.In) > 1))
-            throw new Exception(
+            throw new(
                 $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
         // add to new object...then send to save/update

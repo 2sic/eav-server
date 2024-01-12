@@ -92,7 +92,7 @@ public abstract class XmlExporter : ServiceBase
     private void EnsureThisIsInitialized()
     {
         if (Serializer == null || string.IsNullOrEmpty(_appStaticName))
-            throw new Exception("Xml Exporter is not initialized - this is required before trying to export");
+            throw new("Xml Exporter is not initialized - this is required before trying to export");
     }
 
     #endregion
@@ -250,7 +250,7 @@ public abstract class XmlExporter : ServiceBase
     private XElement GetParentAppXElement()
     {
         if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid && AppState.HasCustomParentApp())
-            return new XElement(XmlConstants.ParentApp,
+            return new(XmlConstants.ParentApp,
                 new XAttribute(XmlConstants.Guid, AppState.ParentAppState.NameId),
                 new XAttribute(XmlConstants.AppId, AppState.ParentAppState.AppId)
             );
@@ -273,7 +273,7 @@ public abstract class XmlExporter : ServiceBase
         }
         catch (Exception ex)
         {
-            throw new Exception("failed on entity id '" + entityId + "' of set-type '" + contentTypeName + "'", ex);
+            throw new("failed on entity id '" + entityId + "' of set-type '" + contentTypeName + "'", ex);
         }
 
         foreach (var value in entityXElement.Elements(XmlConstants.ValueNode))
@@ -312,7 +312,7 @@ public abstract class XmlExporter : ServiceBase
 
     private XElement GetFoldersXElements()
     {
-        return new XElement(XmlConstants.FolderGroup,
+        return new(XmlConstants.FolderGroup,
             ReferencedFolderIds.Distinct().Select(GetFolderXElement)
         );
     }
@@ -327,7 +327,7 @@ public abstract class XmlExporter : ServiceBase
 
         ReferencedFiles.Add(file);
 
-        return new XElement(XmlConstants.FileNode,
+        return new(XmlConstants.FileNode,
             new XAttribute(XmlConstants.FileIdAttr, file.Id),
             new XAttribute(XmlConstants.FolderNodePath, file.RelativePath)
         );
@@ -341,7 +341,7 @@ public abstract class XmlExporter : ServiceBase
 
         if (path != null)
         {
-            return new XElement(XmlConstants.Folder,
+            return new(XmlConstants.Folder,
                 new XAttribute(XmlConstants.FolderNodeId, folderId),
                 new XAttribute(XmlConstants.FolderNodePath, path)
             );

@@ -29,7 +29,7 @@ public class MdRecommendations: ServiceBase
 
     public void Init(IAppDataAndMetadataService appState) => _appState = appState;
 
-    private IAppDataAndMetadataService AppState => _appState ?? throw new Exception("Can't use this Read class before setting AppState");
+    private IAppDataAndMetadataService AppState => _appState ?? throw new("Can't use this Read class before setting AppState");
     private IAppDataAndMetadataService _appState;
 
 
@@ -223,7 +223,7 @@ public class MdRecommendations: ServiceBase
                 // todo: maybe improve?
                 return l.ReturnNull("zone or CmsObject not supported");
         }
-        return l.Return(new List<MetadataRecommendation>(), "ok");
+        return l.Return(new(), "ok");
     }
 
     /// <summary>
@@ -239,7 +239,7 @@ public class MdRecommendations: ServiceBase
         var l = Log.Fn<List<MetadataRecommendation>>();
         var all = md.OfType(MetadataExpectedDecorator.ContentTypeNameId).ToList();
         if (meantFor > 0) all = all.Where(r => meantFor == new MetadataForDecorator(r).TargetType).ToList();
-        if (!all.Any()) return l.Return(new List<MetadataRecommendation>(), "no recommendations");
+        if (!all.Any()) return l.Return(new(), "no recommendations");
 
         var resultAll = all.SelectMany(rEntity =>
             {
@@ -275,7 +275,7 @@ public class MdRecommendations: ServiceBase
         var type = AppState.GetContentType(name);
         return type == null
             ? l.ReturnNull("name not found")
-            : l.Return(new MetadataRecommendation(type, null, null, debug, priority)
+            : l.Return(new(type, null, null, debug, priority)
                 { DeleteWarning = delWarning }, "use existing name");
     }
 

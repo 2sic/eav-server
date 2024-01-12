@@ -23,7 +23,7 @@ public class CoupledIdLists: HelperBase
         SyncListLengths();
 
         if(Lists.Count == 0)
-            throw new Exception("Lists Modifier needs at least 1 list, can't continue");
+            throw new("Lists Modifier needs at least 1 list, can't continue");
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public class CoupledIdLists: HelperBase
             foreach (var index in newSequence)
             {
                 if (copy[index] == usedMarker)
-                    throw new Exception($"Error: Cancelled re-order because index {index} was re-used");
+                    throw new($"Error: Cancelled re-order because index {index} was re-used");
                 var primaryId = copy[index];
                 copy[index] = usedMarker;
                 lst.Add(primaryId);
@@ -109,7 +109,7 @@ public class CoupledIdLists: HelperBase
     public DicNameObj Replace(int index, (bool, int?)[] values) => Log.Func($"index: {index}", () =>
     {
         if (index == -1)
-            throw new Exception("Sort order is never -1 any more; deprecated");
+            throw new("Sort order is never -1 any more; deprecated");
 
         // if necessary, increase length on all
         var i = 0;

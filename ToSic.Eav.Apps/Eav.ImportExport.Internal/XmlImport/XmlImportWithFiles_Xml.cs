@@ -42,7 +42,7 @@ partial class XmlImportWithFiles
 
         var sourceDefaultDimensionId = sourceDimensions.Any() ?
             sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
-            : new int?();
+            : new();
 
         Log.A($"source def dim:{sourceDefaultDimensionId}");
 

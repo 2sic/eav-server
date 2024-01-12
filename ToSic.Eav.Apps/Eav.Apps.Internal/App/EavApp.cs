@@ -74,7 +74,7 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
     {
         var l = Log.Fn<EavApp>();
         // Env / Tenant must be re-checked here
-        if (Site == null) throw new Exception("no site/portal received");
+        if (Site == null) throw new("no site/portal received");
             
         // in case the DI gave a bad tenant, try to look up
         if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&

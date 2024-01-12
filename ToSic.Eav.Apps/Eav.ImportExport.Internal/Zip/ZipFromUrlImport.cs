@@ -59,7 +59,7 @@ public class ZipFromUrlImport: ZipImport
             }
             catch (WebException e)
             {
-                throw new Exception("Could not download app package from '" + packageUrl + "'.", e);
+                throw new("Could not download app package from '" + packageUrl + "'.", e);
             }
             finally
             {

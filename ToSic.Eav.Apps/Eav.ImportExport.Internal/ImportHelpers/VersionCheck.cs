@@ -26,9 +26,9 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
             var vEav = Version.Parse(env.ModuleVersion);
             var reqEav = Version.Parse(reqVersionNode);
             if (reqEav.CompareTo(vEav) == 1) // required is bigger
-                throw new Exception("this app requires eav/2sxc version " + reqVersionNode +
-                                    ", installed is " + vEav +
-                                    ". cannot continue. see also 2sxc.org/en/help?tag=app");
+                throw new("this app requires eav/2sxc version " + reqVersionNode +
+                          ", installed is " + vEav +
+                          ". cannot continue. see also 2sxc.org/en/help?tag=app");
         }
 
         if (reqVersionNodePlatform != null)
@@ -36,9 +36,9 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
             var vHost = env.TenantVersion;
             var reqHost = Version.Parse(reqVersionNodePlatform);
             if (reqHost.CompareTo(vHost) == 1) // required is bigger
-                throw new Exception("this app requires host/dnn version " + reqVersionNodePlatform +
-                                    ", installed is " + vHost +
-                                    ". cannot continue. see also 2sxc.org/en/help?tag=app");
+                throw new("this app requires host/dnn version " + reqVersionNodePlatform +
+                          ", installed is " + vHost +
+                          ". cannot continue. see also 2sxc.org/en/help?tag=app");
         }
     });
 

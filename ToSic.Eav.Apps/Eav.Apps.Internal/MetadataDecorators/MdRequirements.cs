@@ -35,14 +35,14 @@ public class MdRequirements: ServiceBase, IRequirementsService
 
         var (ok, notOk) = CheckRequirements(requirements);
         return ok 
-            ? l.Return(new List<RequirementStatus>(), "all ok")
+            ? l.Return(new(), "all ok")
             : l.Return(notOk.Cast<RequirementStatus>().ToList(), $"a few not ok: {notOk.Count}");
     }
 
     public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements)
     {
         var l = Log.Fn<List<RequirementStatus>>();
-        if (requirements.SafeNone()) return l.Return(new List<RequirementStatus>());
+        if (requirements.SafeNone()) return l.Return(new());
 
         var reqStatus = requirements
             .Select(r => VerifySysCap(r.NameId))
@@ -101,11 +101,11 @@ public class MdRequirements: ServiceBase, IRequirementsService
     {
         var l = Log.Fn<ReqStatusPrivate>();
         // No requirement, all is ok
-        if (requirement == null) return l.Return(new ReqStatusPrivate(null, ReqNone, true), ReqNone);
+        if (requirement == null) return l.Return(new(null, ReqNone, true), ReqNone);
         var reqObj = new RequirementDecorator(requirement);
 
         ReqStatusPrivate BuildAndRet((bool approved, Aspect aspect) check, string nameId, string reason) 
-            => l.Return(new ReqStatusPrivate(reqObj, nameId, check.approved, check.aspect), reason);
+            => l.Return(new(reqObj, nameId, check.approved, check.aspect), reason);
 
         // Check requirement type
         switch (reqObj.RequirementType)

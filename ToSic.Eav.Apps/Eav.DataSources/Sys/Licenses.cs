@@ -35,6 +35,6 @@ public sealed class Licenses : CustomDataSource
     public Licenses(MyServices services, ILicenseService licenseService) : base(services, $"{DataSourceConstants.LogPrefix}.Lics")
     {
         ConnectServices(licenseService);
-        ProvideOutRaw(() => licenseService.All.OrderBy(l => l.Aspect?.Priority ?? 0), options: () => new DataFactoryOptions(typeName: "License"));
+        ProvideOutRaw(() => licenseService.All.OrderBy(l => l.Aspect?.Priority ?? 0), options: () => new(typeName: "License"));
     }
 }

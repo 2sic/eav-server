@@ -96,7 +96,7 @@ public class ImportService: ServiceBase
                         {
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new CodeRefTrail()).Reader;
+                            var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
                             var newTypeList = newTypes.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -117,7 +117,7 @@ public class ImportService: ServiceBase
 
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
-                            var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new CodeRefTrail()).Reader;
+                            var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
 
                             // now the remaining attributeSets
                             MergeAndSaveContentTypes(appStateTemp, nonSysTypes);
@@ -133,7 +133,7 @@ public class ImportService: ServiceBase
                 l.A("Not entities to import");
             else
             {
-                var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new CodeRefTrail()).Reader; // load all entities
+                var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader; // load all entities
                 var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () => newEntities
                     .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                     .Where(e => e != null)
@@ -280,7 +280,7 @@ public class ImportService: ServiceBase
 
         if (contentType == null) // AttributeSet not Found
         {
-            Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Error, $"ContentType not found for {update.Type.NameId}"));
+            Storage.ImportLogToBeRefactored.Add(new(EventLogEntryType.Error, $"ContentType not found for {update.Type.NameId}"));
             return (null, "error");
         }
 
@@ -300,7 +300,7 @@ public class ImportService: ServiceBase
         if (existingEntities == null || !existingEntities.Any())
             return (_dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
-        Storage.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Information,
+        Storage.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information,
             $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
 
         // now update (main) entity id from existing - since it already exists
