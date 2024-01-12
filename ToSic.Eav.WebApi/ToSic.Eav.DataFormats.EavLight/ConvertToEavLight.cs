@@ -65,7 +65,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     {
         WithGuid = true;
         WithPublishing = true;
-        MetadataFor = new MetadataForSerialization { Serialize = true };
+        MetadataFor = new() { Serialize = true };
         Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
         WithEditInfos = true;
     }

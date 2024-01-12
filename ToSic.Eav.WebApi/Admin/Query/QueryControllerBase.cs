@@ -21,7 +21,11 @@ namespace ToSic.Eav.WebApi.Admin.Query;
 /// It's just a base controller, because some methods need to be added at the SXC level which don't exist in the EAV.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerBase<TImplementation>.MyServices> where TImplementation : QueryControllerBase<TImplementation>
+public abstract class QueryControllerBase<TImplementation>(
+    QueryControllerBase<TImplementation>.MyServices services,
+    string logName)
+    : ServiceBase<QueryControllerBase<TImplementation>.MyServices>(services, logName)
+    where TImplementation : QueryControllerBase<TImplementation>
 {
 
     #region Constructor / DI / Services
@@ -72,12 +76,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
     }
 
 
-
-    protected QueryControllerBase(MyServices services, string logName) : base(services, logName)
-    {
-        QueryBuilder = services.QueryBuilder;
-    }
-    private QueryBuilder QueryBuilder { get; }
+    private QueryBuilder QueryBuilder { get; } = services.QueryBuilder;
 
     #endregion
 
@@ -171,11 +170,11 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
         {
             // Find the DataSource
             if (!builtQuery.Item2.ContainsKey(from))
-                throw new Exception($"Can't find source with name '{from}'");
+                throw new($"Can't find source with name '{from}'");
 
             var source = builtQuery.Item2[from];
             if (!source.Out.ContainsKey(streamName))
-                throw new Exception($"Can't find stream '{streamName}' on source '{from}'");
+                throw new($"Can't find stream '{streamName}' on source '{from}'");
 
             var resultStream = source.Out[streamName];
                 
@@ -227,7 +226,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
                 })
                 .ToList(),
             Sources = debugInfo.Sources,
-            QueryTimer = new QueryTimerDto
+            QueryTimer = new()
             {
                 Milliseconds = timer.ElapsedMilliseconds,
                 Ticks = timer.ElapsedTicks
@@ -259,7 +258,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
         catch (Exception ex)
         {
             l.Ex(ex);
-            throw new Exception($"Couldn't import - {ex?.Message ?? "probably bad file format"}.", ex);
+            throw new($"Couldn't import - {ex?.Message ?? "probably bad file format"}.", ex);
         }
     }
 

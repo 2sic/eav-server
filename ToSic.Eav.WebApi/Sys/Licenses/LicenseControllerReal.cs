@@ -118,14 +118,14 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
     {
         var l = Log.Fn<LicenseFileResultDto>();
         if (!uploadInfo.HasFiles())
-            return l.ReturnAndLog(new LicenseFileResultDto { Success = false, Message = "no file in upload" },
+            return l.ReturnAndLog(new() { Success = false, Message = "no file in upload" },
                 "no file in upload");
 
         var files = new List<FileUploadDto>();
         for (var i = 0; i < uploadInfo.Count; i++)
         {
             var (fileName, stream) = uploadInfo.GetStream(i);
-            files.Add(new FileUploadDto { Name = fileName, Stream = stream });
+            files.Add(new() { Name = fileName, Stream = stream });
         }
 
         foreach (var file in files) SaveLicenseFile(file);
@@ -133,7 +133,7 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
         // reload license and features
         _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-        return l.ReturnAndLog(new LicenseFileResultDto { Success = true, Message = "ok" }, "ok");
+        return l.ReturnAndLog(new() { Success = true, Message = "ok" }, "ok");
     }
 
 
@@ -171,7 +171,7 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
             catch (WebException e)
             {
                 Log.Ex(e);
-                throw new Exception("Could not download license file from '" + url + "'.", e);
+                throw new("Could not download license file from '" + url + "'.", e);
             }
             finally
             {
@@ -184,7 +184,7 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
         // reload license and features
         _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-        return l.ReturnAndLog(new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
+        return l.ReturnAndLog(new() { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
     }
 
     private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);

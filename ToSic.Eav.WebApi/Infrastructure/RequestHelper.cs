@@ -9,31 +9,24 @@ namespace ToSic.Eav.WebApi.Infrastructure;
 /// Used as input to build current context.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class RequestHelper
+public class RequestHelper(IHttpContextAccessor httpContextAccessor)
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public RequestHelper(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     public T GetTypedHeader<T>(string headerName, T fallback)
     {
-        var valueString = _httpContextAccessor.HttpContext?.Request.Headers[headerName] ?? StringValues.Empty;
+        var valueString = httpContextAccessor.HttpContext?.Request.Headers[headerName] ?? StringValues.Empty;
         return ReturnTypedResultOrFallback(valueString, fallback);
     }
 
     public T GetQueryString<T>(string key, T fallback)
     {
-        var valueString = _httpContextAccessor.HttpContext?.Request.Query[key] ?? StringValues.Empty;
+        var valueString = httpContextAccessor.HttpContext?.Request.Query[key] ?? StringValues.Empty;
         return ReturnTypedResultOrFallback(valueString, fallback);
     }
 
     public T GetRouteValuesString<T>(string key, T fallback)
     {
         // TODO: stv - this looks wrong, don't think valueString is of this type
-        var valueString = $"{_httpContextAccessor.HttpContext?.Request.RouteValues[key]}";
+        var valueString = $"{httpContextAccessor.HttpContext?.Request.RouteValues[key]}";
         return ReturnTypedResultOrFallback(valueString, fallback);
     }
 

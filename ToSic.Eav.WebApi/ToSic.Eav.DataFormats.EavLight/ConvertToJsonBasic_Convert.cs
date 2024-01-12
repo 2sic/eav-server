@@ -44,7 +44,7 @@ partial class ConvertToEavLight
                 if (c is IEntity ent) entity = ent;
                 else if (c is ICanBeEntity dynEnt) entity = dynEnt.Entity;
                 if (entity == null)
-                    throw new Exception("tried to convert an item, but it was not a known Entity-type");
+                    throw new("tried to convert an item, but it was not a known Entity-type");
                 return GetDictionaryFromEntity(entity);
             })
             .ToList();

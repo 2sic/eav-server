@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.WebApi.Security;
 using static ToSic.Eav.Data.AttributeMetadata;
 
 
@@ -61,14 +60,14 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
             AttributeId = a.AttributeId,
             Metadata = inputConfigs.InputMetadata,
             InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
-            Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
+            Permissions = new() { Count = a.Metadata.Permissions.Count() },
 
             // new in 12.01
             IsEphemeral = a.Metadata.GetBestValue<bool>(MetadataFieldAllIsEphemeral, TypeGeneral),
             HasFormulas = a.HasFormulas(Log),
 
             // Read-Only new in v13
-            EditInfo = new EditInfoAttributeDto(type, a),
+            EditInfo = new(type, a),
 
             // #SharedFieldDefinition
             Guid = a.Guid,

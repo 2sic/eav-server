@@ -6,13 +6,8 @@ using ToSic.Eav.Apps.Services;
 
 namespace ToSic.Eav.WebApi.App;
 
-internal class AppContentEntityBuilder: HelperBase
+internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "Api.Bldr")
 {
-    public AppContentEntityBuilder(ILog parentLog) : base(parentLog, "Api.Bldr")
-    {
-    }
-
-
     /// <summary>
     /// Construct an import-friendly, type-controlled value-dictionary to create or update an entity
     /// </summary>
@@ -72,7 +67,7 @@ internal class AppContentEntityBuilder: HelperBase
 
                     break;
                 default:
-                    throw new Exception(
+                    throw new(
                         $"Tried to create attribute '{attrName}' but the type is not known: '{attrDef.Type}'");
             }
 

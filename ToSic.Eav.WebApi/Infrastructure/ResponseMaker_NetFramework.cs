@@ -21,7 +21,7 @@ internal class ResponseMaker: IResponseMaker
     private System.Web.Http.ApiController _apiController;
 
     private System.Web.Http.ApiController ApiController
-        => _apiController ?? throw new Exception(
+        => _apiController ?? throw new(
             $"Accessing the {nameof(ApiController)} in the {nameof(ResponseMaker)} requires it to be Init first.");
 
     public virtual HttpResponseMessage InternalServerError(string message)
@@ -58,25 +58,25 @@ internal class ResponseMaker: IResponseMaker
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(fileContent) };
         response.Content.Headers.ContentLength = fileContent.Length;
-        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+        response.Content.Headers.ContentDisposition = new("attachment")
         {
             FileName = fileName
         };
-        response.Content.Headers.ContentType = new MediaTypeHeaderValue(fileType);
+        response.Content.Headers.ContentType = new(fileType);
         return response;
     }
 
     public HttpResponseMessage File(string fileContent, string fileName)
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(fileContent) };
-        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+        response.Content.Headers.ContentDisposition = new("attachment")
         {
             FileName = fileName
         };
         if (fileName.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue(MimeHelper.Json);
+            response.Content.Headers.ContentType = new(MimeHelper.Json);
         else if (fileName.EndsWith(".xml", StringComparison.InvariantCultureIgnoreCase))
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue(MimeHelper.Xml);
+            response.Content.Headers.ContentType = new(MimeHelper.Xml);
 
         return response;
     }

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Json.V1;
-
-namespace ToSic.Eav.WebApi.Dto;
+﻿namespace ToSic.Eav.WebApi.Dto;
 
 public class EditPrefetchDto
 {

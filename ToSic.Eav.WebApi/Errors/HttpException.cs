@@ -15,7 +15,7 @@ public class HttpException
     private static HttpExceptionAbstraction WithLink(HttpStatusCode httpStatusCode, string message, string tags = "")
     {
         var helpText = message + " See http://2sxc.org/help" + (tags == "" ? "" : "?tag=" + tags);
-        return new HttpExceptionAbstraction(httpStatusCode, helpText);
+        return new(httpStatusCode, helpText);
     }
 
     public static HttpExceptionAbstraction BadRequest(string message) => new(HttpStatusCode.BadRequest, message);

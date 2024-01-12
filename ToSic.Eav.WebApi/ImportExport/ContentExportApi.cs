@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Context;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Persistence.File;
@@ -86,7 +85,7 @@ public class ContentExportApi : ServiceBase
         }
         catch (Exception e)
         {
-            throw new Exception("trouble finding selected IDs to export", e);
+            throw new("trouble finding selected IDs to export", e);
         }
 
         var tableExporter = _exportListXmlGenerator.New().Init(_appCtx.AppState, contentType);
@@ -115,7 +114,7 @@ public class ContentExportApi : ServiceBase
         var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
             .RemoveNonFilenameCharacters();
 
-        var typeJson = serializer.Serialize(type, new JsonSerializationSettings
+        var typeJson = serializer.Serialize(type, new()
         {
             CtIncludeInherited = false,
             CtAttributeIncludeInheritedMetadata = false
@@ -183,7 +182,7 @@ public class ContentExportApi : ServiceBase
             throw exception;
         }
         
-        return l.ReturnAsOk(new ExportConfiguration(systemExportConfiguration));
+        return l.ReturnAsOk(new(systemExportConfiguration));
     }
 
     private JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer)
@@ -201,11 +200,11 @@ public class ContentExportApi : ServiceBase
         var appState = _appCtx.AppState;
         foreach (var contentTypeName in export.ContentTypes)
         {
-            if (bundleList.ContentTypes == null) bundleList.ContentTypes = new List<JsonContentTypeSet>();
+            if (bundleList.ContentTypes == null) bundleList.ContentTypes = new();
 
             var contentType = appState.GetContentType(contentTypeName);
             var jsonType = serializer.ToPackage(contentType, serSettings);
-            bundleList.ContentTypes.Add(new JsonContentTypeSet
+            bundleList.ContentTypes.Add(new()
             {
                 ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType),
                 Entities = jsonType.Entities
@@ -216,7 +215,7 @@ public class ContentExportApi : ServiceBase
         l.A($"count export entities:{export.Entities.Count}");
         foreach (var entityGuid in export.Entities)
         {
-            if (bundleList.Entities == null) bundleList.Entities = new List<JsonEntity>();
+            if (bundleList.Entities == null) bundleList.Entities = new();
 
             var entity = appState.List.One(entityGuid);
             bundleList.Entities.Add(serializer.ToJson(entity, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0));

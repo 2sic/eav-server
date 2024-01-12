@@ -3,53 +3,36 @@ using ToSic.Eav.WebApi.Context;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses;
 
-public class FeatureStateDto: FeatureDto
+public class FeatureStateDto(FeatureState state) : FeatureDto(state)
 {
+    //License = state.License?.Name;
+    //LicenseEnabled = state.AllowedByLicense;
 
-    public FeatureStateDto(FeatureState state) : base(state)
-    {
-        Guid = state.Aspect.Guid;
-        Description = state.Aspect.Description;
-        EnabledReason = state.EnabledReason;
-        EnabledReasonDetailed = state.EnabledReasonDetailed;
-        EnabledByDefault = state.EnabledByDefault;
-        EnabledInConfiguration = state.EnabledInConfiguration;
-        Expiration = state.Expiration;
-        //License = state.License?.Name;
-        //LicenseEnabled = state.AllowedByLicense;
+    public Guid Guid { get; } = state.Aspect.Guid;
 
-        Security = state.Security;
-        Link = state.Aspect.Link;
-        IsConfigurable = state.Aspect.IsConfigurable;
-    }
+    public string Description { get; } = state.Aspect.Description;
 
-    public Guid Guid { get; }
+    public string EnabledReason { get; } = state.EnabledReason;
 
-    public string Description { get; }
+    public string EnabledReasonDetailed { get; } = state.EnabledReasonDetailed;
 
-    public string EnabledReason { get; }
+    public bool EnabledByDefault { get; } = state.EnabledByDefault;
 
-    public string EnabledReasonDetailed { get; }
+    public bool? EnabledInConfiguration { get; } = state.EnabledInConfiguration;
 
-    public bool EnabledByDefault { get; }
-
-    public bool? EnabledInConfiguration { get; }
-
-    public DateTime Expiration { get; }
+    public DateTime Expiration { get; } = state.Expiration;
 
     //public string License { get; }
 
     //public bool LicenseEnabled { get; }
 
-    public FeatureSecurity Security { get; }
+    public FeatureSecurity Security { get; } = state.Security;
 
     //public bool Public { get; }
 
     //public bool Ui { get; }
 
-    public string Link { get; }
+    public string Link { get; } = state.Aspect.Link;
 
-    public bool IsConfigurable { get; }
-
-
+    public bool IsConfigurable { get; } = state.Aspect.IsConfigurable;
 }

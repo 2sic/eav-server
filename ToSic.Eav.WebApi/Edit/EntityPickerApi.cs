@@ -39,7 +39,7 @@ public class EntityPickerApi : ServiceBase
             contentType = appEnts.AppWorkCtx.AppState.GetContentType(contentTypeName);
             l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
             if (contentType == null)
-                return l.Return(new List<EntityForPickerDto>(),
+                return l.Return(new(),
                     "A type was specified but not found, will return empty list");
         }
 

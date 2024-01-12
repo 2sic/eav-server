@@ -125,7 +125,7 @@ public class EntityApi: ServiceBase
 
         // Add EditInfo for read-only data
         foreach (var bundle in list) 
-            bundle.Header.EditInfo = new EditInfoDto(bundle.Entity);
+            bundle.Header.EditInfo = new(bundle.Entity);
 
         return list;
     }
@@ -185,7 +185,7 @@ public class EntityApi: ServiceBase
             if (ct == null)
             {
                 if (!itm.ContentTypeName.StartsWith("@"))
-                    throw new Exception("Can't find content type " + itm.ContentTypeName);
+                    throw new("Can't find content type " + itm.ContentTypeName);
                 items.Remove(itm);
                 continue;
             }
@@ -225,7 +225,7 @@ public class EntityApi: ServiceBase
 
     private object Truncate(object value, int length)
     {
-        if (!(value is string asTxt))
+        if (value is not string asTxt)
             return value;
 
         if (asTxt.Length > length)

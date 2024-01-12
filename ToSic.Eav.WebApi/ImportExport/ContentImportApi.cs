@@ -55,7 +55,7 @@ public class ContentImportApi : ServiceBase
 
         var import = GetXmlImport(args);
         var result = import.ErrorLog.HasErrors
-            ? new ContentImportResultDto(!import.ErrorLog.HasErrors, import.ErrorLog.Errors)
+            ? new(!import.ErrorLog.HasErrors, import.ErrorLog.Errors)
             : new ContentImportResultDto(!import.ErrorLog.HasErrors, new ImportStatisticsDto
             {
                 AmountOfEntitiesCreated = import.Info_AmountOfEntitiesCreated,
@@ -82,7 +82,7 @@ public class ContentImportApi : ServiceBase
             _appCachePurger.PurgeApp(args.AppId);
         }
 
-        return l.Return(new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
+        return l.Return(new(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
     }
 
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
@@ -120,7 +120,7 @@ public class ContentImportApi : ServiceBase
         catch (Exception ex)
         {
             l.Ex(ex);
-            throw new Exception("Couldn't import - probably bad file format", ex);
+            throw new("Couldn't import - probably bad file format", ex);
         }
     }
 }

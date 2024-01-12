@@ -44,7 +44,7 @@ public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
 
         var isGlobalOrPrimary = isGlobal || isPrimary;
 
-        return new AppInternalsDto
+        return new()
         {
             // 1. .../api/2sxc/admin/type/list?appId=999&scope=System.Configuration
             //SystemConfiguration = systemConfiguration,

@@ -2,7 +2,6 @@
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Integration;
-using ToSic.Eav.WebApi.Security;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Languages;
@@ -47,7 +46,7 @@ public class LanguagesBackend: ServiceBase
             var converted = langs.Select(l =>
                 {
                     var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };
-                    if (withCount) dto.Permissions = new HasPermissionsDto { Count = l.PermissionCount };
+                    if (withCount) dto.Permissions = new() { Count = l.PermissionCount };
                     return dto;
                 })
                 .ToList();
@@ -56,7 +55,7 @@ public class LanguagesBackend: ServiceBase
         catch (Exception ex)
         {
             Log.Ex(ex);
-            return new List<SiteLanguageDto>();
+            return new();
         }
 
     }

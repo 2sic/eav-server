@@ -2,11 +2,9 @@
 // Release routes
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LogControllerReal: ServiceBase
+public class LogControllerReal() : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl")
 {
     public const string LogSuffix = "Log";
-
-    public LogControllerReal() : base($"{EavLogs.WebApi}.{LogSuffix}Rl") { }
 
     public string EnableDebug(Func<int, string> activateForDuration, int duration = 1)
     {

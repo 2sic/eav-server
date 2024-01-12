@@ -10,16 +10,10 @@ using ToSic.Eav.Security.Files;
 namespace ToSic.Eav.WebApi.Adam;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class HttpUploadedFile
+public class HttpUploadedFile(HttpRequestMessage requestMessage, HttpRequest request)
 {
-    public HttpUploadedFile(HttpRequestMessage requestMessage, HttpRequest request)
-    {
-        RequestMessage = requestMessage;
-        Request = request;
-    }
-
-    public HttpRequestMessage RequestMessage { get; }
-    public HttpRequest Request { get; }
+    public HttpRequestMessage RequestMessage { get; } = requestMessage;
+    public HttpRequest Request { get; } = request;
 
     public bool IsMultipart() => RequestMessage.Content.IsMimeMultipartContent();
 
@@ -34,7 +28,7 @@ public class HttpUploadedFile
         var fileName = FileNames.SanitizeFileName(file?.FileName);
 
         if (FileNames.IsKnownRiskyExtension(fileName))
-            throw new Exception($"File {fileName} has risky file type.");
+            throw new($"File {fileName} has risky file type.");
 
         return (fileName, file?.InputStream);
     }
