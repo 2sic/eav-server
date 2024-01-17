@@ -16,14 +16,14 @@ namespace ToSic.Eav.DataSources;
     NiceName = "Relationship/Tree Modeler",
     UiHint = "Connect items to create relationships or trees",
     Icon = DataSourceIcons.Tree,
-    NameIds = new[]
-    {
+    NameIds =
+    [
         "58cfcbd6-e2ae-40f7-9acf-ac8d758adff9",
         "ToSic.Eav.DataSources.TreeBuilder, ToSic.Eav.DataSources.SharePoint"
-    },
+    ],
     Type = DataSourceType.Modify,
     ConfigurationType = "d167054a-fe0f-4e98-b1f1-0a9990873e86",
-    In = new[] { DataSourceConstants.StreamDefaultName + "*" },
+    In = [DataSourceConstants.StreamDefaultName + "*"],
     HelpLink = "https://go.2sxc.org/DsTreeModeler")]
 [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
 // ReSharper disable once UnusedMember.Global

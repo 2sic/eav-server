@@ -124,7 +124,7 @@ internal class ValueComparison: HelperBase
         if (operation == OpContains || operation == OpNotContains)
         {
             Log.A($"Operator is {OpContains} or {OpNotContains}");
-            decimals = new();
+            decimals = [];
             foreach(var num in expected.Split(','))
                 if (decimal.TryParse(num, out var dec))
                     decimals.Add(dec);

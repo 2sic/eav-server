@@ -26,10 +26,10 @@ namespace ToSic.Eav.DataSources;
     NameId = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
     DynamicOut = false,
     ConfigurationType = "c76901b5-0345-4866-9fa3-6208de7f8543",
-    NameIds = new []
-    {
+    NameIds =
+    [
         "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"
-    },
+    ],
     HelpLink = "https://go.2sxc.org/DsSql")]
 
 public class Sql : CustomDataSourceAdvanced

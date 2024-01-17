@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.FilterList,
     Type = DataSourceType.Filter,
     NameId = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
-    In = new[] { InStreamDefaultRequired, StreamFallbackName },
+    In = [InStreamDefaultRequired, StreamFallbackName],
     DynamicOut = false,
     ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
     HelpLink = "https://go.2sxc.org/DsValueFilter")]

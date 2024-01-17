@@ -87,7 +87,7 @@ public partial class DataSourceOptions
 
         public IImmutableDictionary<string, string> ValuesFromStringArray(params string[] values)
         {
-            var cleaned = values?.Where(v => v.HasValue()).ToList() ?? new List<string>();
+            var cleaned = values?.Where(v => v.HasValue()).ToList() ?? [];
             if (cleaned.SafeNone()) return null;
             var valDic = cleaned
                 .Select(v => v.Split('='))

@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
     HelpLink = "https://go.2sxc.org/DsPaging")]
 

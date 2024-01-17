@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.Share,
     Type = DataSourceType.Filter,
     NameId = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
-    In = new[] { InStreamDefaultRequired, StreamFallbackName },
+    In = [InStreamDefaultRequired, StreamFallbackName],
     DynamicOut = false,
     ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
     HelpLink = "https://go.2sxc.org/DsRelationshipFilter")]
@@ -32,7 +32,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     [PrivateApi] private const string PrefixNot = "not-";
     [PrivateApi] internal const string DefaultDirection = "child";
     [PrivateApi] private const string DefaultSeparator = "ignore"; // by default, don't separate!
-    [PrivateApi] private readonly string[] _directionPossibleValues = { DefaultDirection };
+    [PrivateApi] private readonly string[] _directionPossibleValues = [DefaultDirection];
 
 
     /// <summary>
@@ -58,7 +58,8 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     /// <summary>
     /// All valid compare modes
     /// </summary>
-    [PrivateApi] internal string[] AllCompareModes = { CompareModeContains, CompareModeContainsAny, CompareModeAny, CompareModeFirst, CompareModeCount };
+    [PrivateApi] internal string[] AllCompareModes = [CompareModeContains, CompareModeContainsAny, CompareModeAny, CompareModeFirst, CompareModeCount
+    ];
 
 
     private enum CompareType { Any, Id, Title, Auto }
@@ -222,8 +223,8 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         }
 
         var filterList = Separator == DefaultSeparator
-            ? new[] { filter }
-            : filter.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries);
+            ? [filter]
+            : filter.Split([Separator], StringSplitOptions.RemoveEmptyEntries);
 
 
         l.A($"will compare mode:{strMode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");

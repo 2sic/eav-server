@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { StreamDefaultName },
+    In = [StreamDefaultName],
     HelpLink = "https://go.2sxc.org/DsFilterDuplicates")]
 
 public sealed class ItemFilterDuplicates: DataSourceBase

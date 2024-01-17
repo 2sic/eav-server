@@ -40,7 +40,8 @@ internal class LanguageMap
         HasLanguages = true;
 
         var langMap = Source
-            .Split( new []{','}, StringSplitOptions.RemoveEmptyEntries)
+            // ReSharper disable once UseCollectionExpression
+            .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
             .Select(s => s.Trim())
             .ToArray();
             

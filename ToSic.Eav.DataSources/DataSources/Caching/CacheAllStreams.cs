@@ -24,10 +24,10 @@ namespace ToSic.Eav.DataSources.Caching;
     DynamicOut = true,
     DynamicIn = true,
     ConfigurationType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
-    NameIds = new []
-    {
+    NameIds =
+    [
         "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources"
-    },
+    ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
 [PublicApi]
 public class CacheAllStreams : DataSourceBase

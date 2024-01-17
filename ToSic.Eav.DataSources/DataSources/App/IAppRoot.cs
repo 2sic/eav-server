@@ -13,11 +13,11 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Source,
     Audience = Audience.Advanced,
     NameId = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
-    NameIds = new []
-    {
+    NameIds =
+    [
         "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
         "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources"
-    },
+    ],
     HelpLink = "https://go.2sxc.org/DsAppRoot")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 public interface IAppRoot : IDataSource

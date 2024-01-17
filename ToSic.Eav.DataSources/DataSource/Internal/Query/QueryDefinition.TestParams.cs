@@ -33,7 +33,7 @@ partial class QueryDefinition
         // Parse Test-Parameters in Format [Token:Property]=Value
         var testParameters = TestParameters;
         if (testParameters == null)
-            return (new(), "no test params");
+            return ([], "no test params");
 
         // extract the lines which look like [source:property]=value
         var testValueTokens = TestParamRegex.Matches(testParameters);

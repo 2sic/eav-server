@@ -56,7 +56,7 @@ partial class DataSourceCatalog
             ? GlobalCache.Where(dsi => (dsi.VisualQuery?.NameId).HasValue())
             : GlobalCache;
 
-        var appList = Get(appId) ?? new List<DataSourceInfo>();
+        var appList = Get(appId) ?? [];
         var fromApp = onlyForVisualQuery
             ? appList.Where(dsi => (dsi.VisualQuery?.NameId).HasValue()).ToList()
             : appList;

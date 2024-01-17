@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.Services;
 using ToSic.Lib.Helpers;
 
@@ -18,7 +17,7 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
     DynamicOut = true,
-    In = new []{DataSourceConstants.StreamDefaultName},
+    In = [DataSourceConstants.StreamDefaultName],
     ConfigurationType = "|Config ToSic.Eav.DataSources.App",
     HelpLink = "https://go.2sxc.org/DsApp")]
 public partial class App : DataSourceBase

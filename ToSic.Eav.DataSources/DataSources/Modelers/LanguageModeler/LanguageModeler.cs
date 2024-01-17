@@ -14,14 +14,14 @@ namespace ToSic.Eav.DataSources;
     NiceName = "Language Modeler",
     UiHint = "Combine values to multi-language values",
     Icon = DataSourceIcons.Translate,
-    NameIds = new[]
-    {
+    NameIds =
+    [
         "f390e460-46ff-4a6e-883f-f50fdeb363ee",
         "ToSic.Eav.DataSources.FieldMapping, ToSic.Eav.DataSources.SharePoint" // originally came from SharePoint
-    },
+    ],
     Type = DataSourceType.Modify,
     ConfigurationType = "7b4fce73-9c29-4517-af14-0a704da5b958",
-    In = new[] { DataSourceConstants.StreamDefaultName + "*" },
+    In = [DataSourceConstants.StreamDefaultName + "*"],
     HelpLink = "https://go.2sxc.org/DsLanguageModeler")]
 [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
 public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
@@ -64,7 +64,7 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
         #region Load configuration and verify everything is ok - or return an error-stream
 
         var fieldMap = FieldMap
-            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+            .Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries)
             .Where(line => !string.IsNullOrWhiteSpace(line))
             .Select(line => new LanguageMap(line))
             .ToArray();

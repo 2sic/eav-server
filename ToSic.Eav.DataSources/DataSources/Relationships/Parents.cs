@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.Parents,
     Type = DataSourceType.Lookup,
     NameId = "915217e5-7957-4303-a19c-a15505f2ad1d",
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     DynamicOut = false,
     ConfigurationType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
     HelpLink = "https://go.2sxc.org/DsParents")]

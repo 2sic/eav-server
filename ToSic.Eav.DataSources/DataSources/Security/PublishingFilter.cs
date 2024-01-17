@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.Eye, 
     Type = DataSourceType.Security, 
     NameId = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
-    In = new []{ StreamPublishedName + "*", StreamDefaultName + "*",  StreamDraftsName + "*" },
+    In = [StreamPublishedName + "*", StreamDefaultName + "*",  StreamDraftsName + "*"],
     DynamicOut = false, 
     HelpLink = "https://go.2sxc.org/DsPublishingFilter")]
 

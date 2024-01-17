@@ -18,7 +18,7 @@ public static class Connections
     {
         if (string.IsNullOrWhiteSpace(wiringsSerialized)) return new List<Connection>();
 
-        var wirings = wiringsSerialized.Split(new[] { "\r\n" }, StringSplitOptions.None);
+        var wirings = wiringsSerialized.Split(["\r\n"], StringSplitOptions.None);
 
         return wirings.Select(wire => WireRegex.Match(wire)).Select(match => new Connection
             {

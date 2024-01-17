@@ -123,7 +123,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         {
             data = funcResult is IEnumerable enumerable
                 ? enumerable.Cast<object>().ToList()
-                : new() { funcResult };
+                : [funcResult];
         }
         catch (Exception ex)
         {

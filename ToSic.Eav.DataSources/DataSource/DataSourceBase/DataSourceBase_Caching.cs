@@ -10,7 +10,7 @@ partial class DataSourceBase
     /// <inheritdoc />
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public List<string> CacheRelevantConfigurations { get; } = new();
+    public List<string> CacheRelevantConfigurations { get; } = [];
 
 
     [PrivateApi]

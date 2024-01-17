@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Sort,
     NameId = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.ValueSort",
     HelpLink = "https://go.2sxc.org/DsValueSort")]
 

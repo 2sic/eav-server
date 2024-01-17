@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Modify,
     NameId = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
     HelpLink = "https://go.2sxc.org/DsAttributeRename")]
 
@@ -85,7 +85,7 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
 
         var mapRaw = AttributeMap;
         var attrMapArray = mapRaw
-            .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+            .Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries)
             .ToList();
         var attributeNames = attrMapArray
             .Select(s =>

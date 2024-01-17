@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Modify, 
     NameId = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new [] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
     HelpLink = "https://go.2sxc.org/DsAttributeFilter")]
 
