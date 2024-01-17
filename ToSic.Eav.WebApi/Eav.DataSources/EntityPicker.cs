@@ -67,14 +67,15 @@ public class EntityPicker : DataSourceBase
 
     public override IReadOnlyDictionary<string, IDataStream> Out => _out.Get(() =>
     {
-        // If no names specified, then out is same as base out
+        // 0. If no names specified, then out is same as base out
+        var typesWithoutDefault = ContentTypes?.Where(ct => !ct.Name.EqualsInsensitive(StreamDefaultName)).ToList();
         if (TypeNames.IsEmptyOrWs() || ContentTypes.SafeNone()) return base.Out;
 
-        var outList = new StreamDictionary(this); // new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase)
+        // 1. Create a new StreamDictionary with the Default
+        var outList = new StreamDictionary(this);
         outList.Add(StreamDefaultName, base.Out[StreamDefaultName]);
 
-        // Generate additional streams based on the content-types requested
-        var typesWithoutDefault = ContentTypes.Where(ct => !ct.Name.EqualsInsensitive(StreamDefaultName));
+        // 2. Generate additional streams based on the content-types requested
         var list = base.Out[StreamDefaultName].List;
         foreach (var contentType in typesWithoutDefault)
         {
