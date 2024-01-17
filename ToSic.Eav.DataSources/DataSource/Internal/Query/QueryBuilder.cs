@@ -78,11 +78,11 @@ public class QueryBuilder: ServiceBase
     });
 
 
-    public (IDataSource Main, Dictionary<string, IDataSource> DataSources) BuildQuery(QueryDefinition queryDef,
+    public QueryResult BuildQuery(QueryDefinition queryDef,
         ILookUpEngine lookUpEngineToClone,
-        List<ILookUp> overrideLookUps
-    ) => Log.Func($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}", l =>
+        List<ILookUp> overrideLookUps) 
     {
+        var l = Log.Fn<QueryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
         #region prepare shared / global value providers
             
         // centralizing building of the primary configuration template for each part
@@ -173,8 +173,8 @@ public class QueryBuilder: ServiceBase
         #endregion
 
         InitWirings(queryDef, dataSources);
-        return ((outTarget, dataSources), $"parts:{parts.Count}");
-    });
+        return l.Return(new(outTarget, dataSources), $"parts:{parts.Count}");
+    }
 
     /// <summary>
     /// Init Stream Wirings between Query-Parts (Bottom-Up)
@@ -259,14 +259,12 @@ public class QueryBuilder: ServiceBase
     }
 
 
-    public (IDataSource Main, Dictionary<string, IDataSource> DataSources) GetDataSourceForTesting(
-        QueryDefinition queryDef,
-        ILookUpEngine lookUps = null
-    ) => Log.Func($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId})", () =>
+    public QueryResult GetDataSourceForTesting(QueryDefinition queryDef, ILookUpEngine lookUps = null)
     {
+        var l = Log.Fn<QueryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId})");
         var testValueProviders = queryDef.TestParameterLookUps;
-        return BuildQuery(queryDef, lookUps, testValueProviders);
-    });
+        return l.ReturnAsOk(BuildQuery(queryDef, lookUps, testValueProviders));
+    }
 
 
 }

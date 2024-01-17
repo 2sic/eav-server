@@ -115,7 +115,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
         var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
         var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine,
             [paramsOverride]);
-        _source = queryInfos.Item1;
+        _source = queryInfos.Main;
         OutWritable = new(this, _source.Out);
     });
 

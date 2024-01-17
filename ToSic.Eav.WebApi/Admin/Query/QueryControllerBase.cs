@@ -166,13 +166,13 @@ public abstract class QueryControllerBase<TImplementation>(
     /// </summary>
     protected QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine lookUps, string from, string streamName)
     {
-        IDataSource GetSubStream((IDataSource, Dictionary<string, IDataSource>) builtQuery)
+        IDataSource GetSubStream(QueryResult builtQuery)
         {
             // Find the DataSource
-            if (!builtQuery.Item2.ContainsKey(from))
+            if (!builtQuery.DataSources.ContainsKey(from))
                 throw new($"Can't find source with name '{from}'");
 
-            var source = builtQuery.Item2[from];
+            var source = builtQuery.DataSources[from];
             if (!source.Out.ContainsKey(streamName))
                 throw new($"Can't find stream '{streamName}' on source '{from}'");
 
@@ -189,7 +189,7 @@ public abstract class QueryControllerBase<TImplementation>(
     }
 
     protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top,
-        Func<(IDataSource Main, Dictionary<string, IDataSource> DataSources), IDataSource> partLookup) 
+        Func<QueryResult, IDataSource> partLookup) 
     {
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
         // Get the query, run it and track how much time this took
@@ -197,6 +197,8 @@ public abstract class QueryControllerBase<TImplementation>(
         var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 
+        // New v17 experimental with special fields
+        var extraParams = new QueryODataParams(outSource.Configuration);
 
         var timer = new Stopwatch();
         timer.Start();
@@ -205,6 +207,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var converter = Services.EntToDicLazy.Value;
             converter.WithGuid = true;
             converter.MaxItems = top;
+            converter.SelectFields = extraParams.SelectFields;
             var converted = converter.Convert(partLookup(builtQuery));
             return (converted, "ok");
         });

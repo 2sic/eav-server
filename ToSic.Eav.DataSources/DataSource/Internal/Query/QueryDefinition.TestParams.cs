@@ -9,8 +9,10 @@ partial class QueryDefinition
         KeyProperty = "Property",
         KeyValue = "Value";
 
+    // Special Regex
+    // Note that the keyProperty is now a-zA-Z0-9$_- to allow for more complex property names
     internal static Regex TestParamRegex = new(
-        $@"(?:\[(?<{KeyToken}>\w+):(?<{KeyProperty}>\w+)\])=(?<{KeyValue}>[^\r\n]*)", RegexOptions.Compiled);
+        $@"(?:\[(?<{KeyToken}>\w+):(?<{KeyProperty}>[\w$-]+)\])=(?<{KeyValue}>[^\r\n]*)", RegexOptions.Compiled);
 
 
 
