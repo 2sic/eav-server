@@ -53,6 +53,9 @@ public class CacheAllStreams : DataSourceBase
     [Configuration(Fallback = false)]
     public bool ReturnCacheWhileRefreshing => Configuration.GetThis(false);
 
+    #endregion
+
+    #region Dynamic Out
 
     /// <inheritdoc />
     public override IReadOnlyDictionary<string, IDataStream> Out => _out.Get(() =>
