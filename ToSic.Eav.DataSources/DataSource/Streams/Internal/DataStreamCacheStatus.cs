@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Internal.Caching;
 
-namespace ToSic.Eav.DataSource.Streams;
+namespace ToSic.Eav.DataSource.Streams.Internal;
 
 /// <summary>
 /// Provides information of how to cache a stream.

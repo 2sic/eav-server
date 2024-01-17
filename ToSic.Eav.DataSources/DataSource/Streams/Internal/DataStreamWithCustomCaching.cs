@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource.Internal.Caching;
 
-namespace ToSic.Eav.DataSource.Streams;
+namespace ToSic.Eav.DataSource.Streams.Internal;
 
 /// <inheritdoc />
 /// <summary>

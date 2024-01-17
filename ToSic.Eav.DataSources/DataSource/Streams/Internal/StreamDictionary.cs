@@ -3,7 +3,7 @@ using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.Generics;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.DataSource.Streams;
+namespace ToSic.Eav.DataSource.Streams.Internal;
 
 internal class StreamDictionary
 {

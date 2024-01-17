@@ -3,7 +3,7 @@ using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Lib.Data;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.DataSource.Streams;
+namespace ToSic.Eav.DataSource.Streams.Internal;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

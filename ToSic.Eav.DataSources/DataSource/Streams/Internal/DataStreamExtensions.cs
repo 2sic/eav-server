@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Streams;
+﻿namespace ToSic.Eav.DataSource.Streams.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 internal static class DataStreamExtensions

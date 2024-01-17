@@ -3,13 +3,13 @@ using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Lib.Helpers;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSource.Streams;
+namespace ToSic.Eav.DataSource.Streams.Internal;
 
 /// <summary>
 /// A DataStream to get Entities when needed
 /// </summary>
 [PrivateApi]
-internal class DataStream : IDataStream // , IHasLog
+public class DataStream : IDataStream // , IHasLog
 {
     #region Constructor
 

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.Streams.Internal;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
