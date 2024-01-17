@@ -6,12 +6,12 @@ public class MetadataForSerialization
     /// <summary>
     /// Should be serialized
     /// </summary>
-    public bool? Serialize { get; set; }
+    public bool? Serialize { get; init; }
 
     /// <summary>
     /// The key should be serialized
     /// </summary>
-    public bool? SerializeKey { get; set; }
+    public bool? SerializeKey { get; init; }
 
     /// <summary>
     /// The type should be serialized
@@ -19,7 +19,7 @@ public class MetadataForSerialization
     /// <remarks>
     /// As of 2021-11 I believe this setting is passed around, but never used
     /// </remarks>
-    public bool? SerializeType { get; set; }
+    public bool? SerializeType { get; init; }
 
     public static MetadataForSerialization Stabilize(
         MetadataForSerialization original,

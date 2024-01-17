@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data;
+﻿using System.Collections.Generic;
+using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Serialization;
@@ -14,33 +15,73 @@ namespace ToSic.Eav.Serialization;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntitySerializationDecorator: IDecorator<IEntity>, IEntityIdSerialization
 {
-    public bool? SerializeId { get; set; } = null;
+    /// <summary>
+    /// Include ID - if not set, is included.
+    /// </summary>
+    public bool? SerializeId { get; init; } = null;
 
-    public bool? SerializeAppId { get; set; } = null;
-    public bool? SerializeZoneId { get; set; } = null;
+    /// <summary>
+    /// Include AppId - not included by default.
+    /// </summary>
+    public bool? SerializeAppId { get; init; } = null;
 
-    public bool? SerializeGuid { get; set; } = null;
+    /// <summary>
+    /// Include ZoneId - not included by default.
+    /// </summary>
+    public bool? SerializeZoneId { get; init; } = null;
 
-    public bool? SerializeTitle { get; set; } = null;
+    /// <summary>
+    /// Include GUID - if not set, is not included.
+    /// </summary>
+    public bool? SerializeGuid { get; init; } = null;
 
-    public bool? SerializeModified { get; set; } = null;
+    /// <summary>
+    /// Add standard "Title" property - default is ???.
+    /// </summary>
+    public bool? SerializeTitle { get; init; } = null;
 
-    public bool? SerializeCreated { get; set; } = null;
-    public bool RemoveEmptyStringValues { get; set; } = false;
+    /// <summary>
+    /// Include Modified date - default is false.
+    /// </summary>
+    public bool? SerializeModified { get; init; } = null;
 
-    public bool RemoveBoolFalseValues { get; set; } = false;
+    /// <summary>
+    /// Include Created date - default is false.
+    /// </summary>
+    public bool? SerializeCreated { get; init; } = null;
 
-    public bool RemoveNullValues { get; set; } = false;
+    /// <summary>
+    /// Lighten the result by dropping empty values; default is false.
+    /// </summary>
+    public bool RemoveEmptyStringValues { get; init; } = false;
 
-    public bool RemoveZeroValues { get; set; } = false;
+    /// <summary>
+    /// Lighten the result by dropping false values; default is false.
+    /// </summary>
+    public bool RemoveBoolFalseValues { get; init; } = false;
+
+    /// <summary>
+    /// Lighten the result by dropping null values; default is false.
+    /// </summary>
+    public bool RemoveNullValues { get; init; } = false;
+
+    /// <summary>
+    /// Lighten the result by dropping 0 values; default is false.
+    /// </summary>
+    public bool RemoveZeroValues { get; init; } = false;
+
+    /// <summary>
+    /// WIP v17.00 - not implemented yet
+    /// </summary>
+    public List<string> FilterFields { get; init; } = null;
 
     #region Metadata & Relationships
 
-    public MetadataForSerialization SerializeMetadataFor { get; set; } = null;
+    public MetadataForSerialization SerializeMetadataFor { get; init; } = null;
 
-    public ISubEntitySerialization SerializeMetadata { get; set; } = null;
+    public ISubEntitySerialization SerializeMetadata { get; init; } = null;
 
-    public ISubEntitySerialization SerializeRelationships { get; set; } = null;
+    public ISubEntitySerialization SerializeRelationships { get; init; } = null;
 
     #endregion
 }

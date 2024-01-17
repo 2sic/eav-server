@@ -3,15 +3,15 @@
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class SubEntitySerialization: ISubEntitySerialization
 {
-    public bool? Serialize { get; set; }
+    public bool? Serialize { get; init; }
 
-    public bool? SerializesAsCsv { get; set; }
+    public bool? SerializesAsCsv { get; init; }
         
-    public bool? SerializeId { get; set; }
+    public bool? SerializeId { get; init; }
 
-    public bool? SerializeGuid { get; set; }
+    public bool? SerializeGuid { get; init; }
 
-    public bool? SerializeTitle { get; set; }
+    public bool? SerializeTitle { get; init; }
 
     public static ISubEntitySerialization AllTrue()
         => Stabilize(null, false, true, true, true, true);

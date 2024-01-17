@@ -12,5 +12,5 @@ public interface ISubEntitySerialization : IEntityIdSerialization
     /// 
     /// </summary>
     /// <remarks>New v15.03 WIP</remarks>
-    bool? SerializesAsCsv { get; set; }
+    bool? SerializesAsCsv { get; init; }
 }
