@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.Streams.Internal;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
@@ -45,16 +46,16 @@ partial class App: IDataSourceReset
     /// <summary>
     /// Create a stream for each data-type
     /// </summary>
-    private StreamDictionary CreateAppOutWithAllStreams()
+    private void CreateAppOutWithAllStreams()
     {
-        var l = Log.Fn<StreamDictionary>();
-        IDataStream upstream;
+        var l = Log.Fn();
+        IDataStream inStream;
         try
         {
             // auto-attach to cache of current system?
             if (!In.ContainsKey(StreamDefaultName))
                 AttachOtherDataSource();
-            upstream = In[StreamDefaultName];
+            inStream = In[StreamDefaultName];
         }
         catch (KeyNotFoundException)
         {
@@ -62,7 +63,7 @@ partial class App: IDataSourceReset
                 $"Trouble with the App DataSource - must have a Default In-Stream with name {StreamDefaultName}. It has {In.Count} In-Streams.");
         }
 
-        var upstreamDataSource = upstream.Source;
+        var upstreamDataSource = inStream.Source;
         _out.Clear();
         _out.Add(StreamDefaultName, upstreamDataSource.Out[StreamDefaultName]);
 
@@ -91,7 +92,7 @@ partial class App: IDataSourceReset
             _out.Add(typeName, deferredStream);
         }
 
-        return l.Return(_out, $"Added with drafts:{showDraftsForCacheKey} streams: {typeList}");
+        l.Done($"Added with drafts:{showDraftsForCacheKey} streams: {typeList}");
     }
 
     /// <summary>
