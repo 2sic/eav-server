@@ -58,7 +58,7 @@ partial class App: IDataSourceReset
         }
         catch (KeyNotFoundException)
         {
-            throw new Exception(
+            throw new(
                 $"Trouble with the App DataSource - must have a Default In-Stream with name {StreamDefaultName}. It has {In.Count} In-Streams.");
         }
 

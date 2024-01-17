@@ -64,7 +64,7 @@ public class ConfigurationDataLoader() : ServiceBase(EavLogs.Eav + "CnfLdr")
                 token = $"[{DataSourceConstants.MyConfigurationSourceName}:{rule}]";
             }
 
-            result.Add(new ConfigMaskInfo
+            result.Add(new()
             {
                 Key = configProp.Name,
                 Token = token,

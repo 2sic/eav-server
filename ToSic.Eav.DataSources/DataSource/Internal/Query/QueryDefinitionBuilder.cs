@@ -19,7 +19,7 @@ public class QueryDefinitionBuilder: ServiceBase
     public QueryDefinition Create(IEntity entity, int appId)
     {
         var parts = GenerateParts(entity);
-        return new QueryDefinition(entity, appId, parts, Log);
+        return new(entity, appId, parts, Log);
     }
 
     private List<QueryPartDefinition> GenerateParts(IEntity entity)
@@ -43,15 +43,15 @@ public class QueryDefinitionBuilder: ServiceBase
     public QueryPartDefinition CreatePart(IEntity entity)
     {
         var assemblyAndType = entity.GetBestValue<string>(QueryConstants.PartAssemblyAndType, null)
-                              ?? throw new Exception("Tried to get DataSource Type of a query part, but didn't find anything");
+                              ?? throw new("Tried to get DataSource Type of a query part, but didn't find anything");
 
         var correctedName = GetCorrectedTypeName(assemblyAndType);
         var dsTypeIdentifier = _catalog.Find(correctedName, entity?.AppId ?? 0);
         var dsInfo = _catalog.FindDsiByGuidOrName(correctedName, entity?.AppId ?? 0)
                      ?? DataSourceInfo.CreateError(dsTypeIdentifier, false, DataSourceType.System,
-                         new DataSourceInfoError("Error finding data source", $"Tried to find {assemblyAndType} ({correctedName}) but can't find it."));
+                         new("Error finding data source", $"Tried to find {assemblyAndType} ({correctedName}) but can't find it."));
 
-        return new QueryPartDefinition(entity, dsTypeIdentifier, dsInfo.Type, dsInfo, Log);
+        return new(entity, dsTypeIdentifier, dsInfo.Type, dsInfo, Log);
     }
 
 

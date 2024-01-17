@@ -126,7 +126,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         {
             var valLower = value.ToLowerInvariant();
             if (!_directionPossibleValues.Contains(valLower))
-                throw new Exception("Value '" + value + "'not allowed for ChildOrParent");
+                throw new("Value '" + value + "'not allowed for ChildOrParent");
             Configuration.SetThisObsolete(valLower);
         }
     }
@@ -265,29 +265,29 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         {
             case CompareModeContains:
                 if (valuesToFind.Length > 1)
-                    return (new ResultOrError<Func<IEntity, bool>>(true,
+                    return (new(true,
                         entity =>
                         {
                             var rels = entity.Relationships.Children[relationship];
                             return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
                         }), "contains all");
-                return (new ResultOrError<Func<IEntity, bool>>(true,
+                return (new(true,
                     entity => entity.Relationships.Children[relationship]
                         .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""))
                 ), "contains one");
             case CompareModeContainsAny:
                 // Condition that of the needed relationships, at least one must exist
-                return (new ResultOrError<Func<IEntity, bool>>(true, entity =>
+                return (new(true, entity =>
                 {
                     var rels = entity.Relationships.Children[relationship];
                     return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
                 }), "will use contains any");
             case CompareModeAny:
-                return (new ResultOrError<Func<IEntity, bool>>(true,
+                return (new(true,
                     entity => entity.Relationships.Children[relationship].Any()), "will use any");
             case CompareModeFirst:
                 // Condition that of the needed relationships, the first must be what we want
-                return (new ResultOrError<Func<IEntity, bool>>(true, entity =>
+                return (new(true, entity =>
                 {
                     var first = entity.Relationships.Children[relationship].FirstOrDefault();
                     return first != null && valuesToFind.Any(v => internalCompare(first, v));
@@ -295,10 +295,10 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
             case CompareModeCount:
                 // Count relationships
                 if (int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out var count))
-                    return (new ResultOrError<Func<IEntity, bool>>(true,
+                    return (new(true,
                         entity => entity.Relationships.Children[relationship].Count() == count), "count");
 
-                return (new ResultOrError<Func<IEntity, bool>>(true, _ => false), "count");
+                return (new(true, _ => false), "count");
 
             default:
                 return (
@@ -332,7 +332,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         {
             case CompareType.Any:
                 l.A($"compare on a normal attribute:{fieldName}");
-                return new ResultOrError<Func<IEntity, string>>(true, e =>
+                return new(true, e =>
                 {
                     try
                     {
@@ -341,17 +341,17 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
                     catch
                     {
                         // Note 2021-03-29 I think it's extremely unlikely that this will ever fire
-                        throw new Exception("Error while trying to filter for related entities. " +
-                                            "Probably comparing an attribute on the related entity that doesn't exist. " +
-                                            $"Was trying to compare the attribute '{fieldName}'");
+                        throw new("Error while trying to filter for related entities. " +
+                                  "Probably comparing an attribute on the related entity that doesn't exist. " +
+                                  $"Was trying to compare the attribute '{fieldName}'");
                     }
                 });
             case CompareType.Id:
                 l.A("will compare on ID");
-                return new ResultOrError<Func<IEntity, string>>(true, e => e?.EntityId.ToString());
+                return new(true, e => e?.EntityId.ToString());
             case CompareType.Title:
                 l.A("will compare on title");
-                return new ResultOrError<Func<IEntity, string>>(true, e => e?.GetBestTitle()?.ToLowerInvariant());
+                return new(true, e => e?.GetBestTitle()?.ToLowerInvariant());
             // ReSharper disable once RedundantCaseLabel
             case CompareType.Auto:
             default:

@@ -82,7 +82,7 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
             var configEntityIds = EntityIds;
             // check if we have anything to work with
             if (string.IsNullOrWhiteSpace(configEntityIds))
-                return l.Return(new ResultOrError<int[]>(true, Array.Empty<int>()), "empty");
+                return l.Return(new(true, Array.Empty<int>()), "empty");
 
             var preCleanedIds = configEntityIds
                 .Split(',')
@@ -91,11 +91,11 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
             foreach (var strEntityId in preCleanedIds)
                 if (int.TryParse(strEntityId, out var entityIdToAdd))
                     lstEntityIds.Add(entityIdToAdd);
-            return l.Return(new ResultOrError<int[]>(true, lstEntityIds.Distinct().ToArray()), EntityIds);
+            return l.Return(new(true, lstEntityIds.Distinct().ToArray()), EntityIds);
         }
         catch (Exception ex)
         {
-            return l.ReturnAsError(new ResultOrError<int[]>(false, Array.Empty<int>(),
+            return l.ReturnAsError(new(false, Array.Empty<int>(),
                 Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
                     exception: ex)));
         }

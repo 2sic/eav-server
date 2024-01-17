@@ -64,7 +64,7 @@ public sealed class QueryInfo : DataSourceBase
             QueryBuilder = queryBuilder,
             _queryManager = queryManager,
             _attributesGenerator = attributesGenerator,
-            _dataFactory = dataFactory.New(options: new DataFactoryOptions(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
+            _dataFactory = dataFactory.New(options: new(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
         );
         ProvideOut(GetStreamsOfQuery);
         ProvideOut(GetAttributes, "Attributes");
@@ -132,7 +132,7 @@ public sealed class QueryInfo : DataSourceBase
 
         // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
         var found = _queryManager.Value.FindQuery(this, qName, recurseParents: 3)
-                    ?? throw new Exception($"Can't build query info - query not found '{qName}'");
+                    ?? throw new($"Can't build query info - query not found '{qName}'");
 
         var builtQuery = QueryBuilder.GetDataSourceForTesting(QueryBuilder.Create(found, AppId),
             lookUps: Configuration.LookUpEngine);

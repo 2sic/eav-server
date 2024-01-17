@@ -73,7 +73,7 @@ public class QueryBuilder: ServiceBase
         }
         catch (KeyNotFoundException)
         {
-            throw new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
+            throw new("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
         }
     });
 
@@ -237,9 +237,9 @@ public class QueryBuilder: ServiceBase
             {
                 var errMsg = $"Trouble with connecting query from {wire.From}:{wire.Out} to {wire.To}:{wire.In}. ";
                 if (!allDataSources.TryGetValue(wire.From, out var conSource))
-                    throw new Exception(errMsg + $"The source '{wire.From}' can't be found");
+                    throw new(errMsg + $"The source '{wire.From}' can't be found");
                 if (!allDataSources.TryGetValue(wire.To, out var conTarget))
-                    throw new Exception(errMsg + $"The target '{wire.To}' can't be found");
+                    throw new(errMsg + $"The target '{wire.To}' can't be found");
                 try
                 {
                     // Temporary solution until immutable works perfectly
@@ -250,7 +250,7 @@ public class QueryBuilder: ServiceBase
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(errMsg, ex);
+                    throw new(errMsg, ex);
                 }
             }
         }

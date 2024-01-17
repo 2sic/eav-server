@@ -22,7 +22,7 @@ internal class DataSourceLink(IDataSourceLink original,
 
     public IDataSourceLink Rename(string name = default, string outName = default, string inName = default) =>
         // Check if no names provided
-        !$"{name}{outName}{inName}".HasValue() ? this : new DataSourceLink(this, name: name, outName: outName, inName: inName);
+        !$"{name}{outName}{inName}".HasValue() ? this : new(this, name: name, outName: outName, inName: inName);
 
     public IDataSourceLink AddStream(string name = default, string outName = default, string inName = default) =>
         Add(new DataSourceLink(null, dataSource: DataSource, name: name, inName: inName, outName: outName));
@@ -39,7 +39,7 @@ internal class DataSourceLink(IDataSourceLink original,
         if (More.SafeNone()) return new DataSourceLink(this, more: newMore);
 
         // Current has more and new has more, must merge
-        return more.SafeNone() ? this : new DataSourceLink(this, more: newMore.Concat(More));
+        return more.SafeNone() ? this : new(this, more: newMore.Concat(More));
     }
 
     public IEnumerable<IDataSourceLink> Flatten(int recursion = 0)

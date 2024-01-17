@@ -48,7 +48,7 @@ internal class DataSourcesService: ServiceBase, IDataSourcesService
     public TDataSource Create<TDataSource>(IDataStream stream, IDataSourceOptions options = default) where TDataSource : IDataSource
     {
         if (stream.Source == null)
-            throw new Exception("Unexpected source - stream without a real source. can't process; wip");
+            throw new("Unexpected source - stream without a real source. can't process; wip");
         var sourceDs = stream.Source;
         var ds = Create<TDataSource>(options: new DataSourceOptions.Converter().Create(new DataSourceOptions(appIdentity: sourceDs, lookUp: sourceDs.Configuration.LookUpEngine), options));
         ds.Attach(DataSourceConstants.StreamDefaultName, stream);
@@ -60,7 +60,7 @@ internal class DataSourcesService: ServiceBase, IDataSourcesService
     {
         var primarySource = attach?.Link?.DataSource;
         if (primarySource == null && options?.AppIdentity == null)
-            throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");
+            throw new($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");
         if (primarySource == null && options?.LookUp == null)
             options = OptionsWithLookUp(options);
         // throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.LookUp no not be null.");

@@ -56,7 +56,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
 
     #region Out
     /// <inheritdoc/>
-    public override IReadOnlyDictionary<string, IDataStream> Out => (_out ??= new StreamDictionary(this, Query?.Out)).AsReadOnly();
+    public override IReadOnlyDictionary<string, IDataStream> Out => (_out ??= new(this, Query?.Out)).AsReadOnly();
 
     private StreamDictionary _out;
     #endregion

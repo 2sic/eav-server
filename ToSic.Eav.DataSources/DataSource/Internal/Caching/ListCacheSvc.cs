@@ -88,7 +88,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
         var duration = durationInSeconds > 0 ? durationInSeconds : DataSourceListCache.DefaultDuration;
         var expiration = new TimeSpan(0, 0, duration);
         var policy = slidingExpiration
-            ? new CacheItemPolicy { SlidingExpiration = expiration }
+            ? new() { SlidingExpiration = expiration }
             : new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(duration) };
 
         DataSourceListCache.Cache.Set(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);

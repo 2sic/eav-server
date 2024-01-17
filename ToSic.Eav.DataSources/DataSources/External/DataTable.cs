@@ -125,11 +125,11 @@ public class DataTable : CustomDataSourceAdvanced
     {
         // Validate Columns
         if (!source.Columns.Contains(entityIdField))
-            throw new Exception($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
+            throw new($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
         if (!source.Columns.Contains(titleField))
-            throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
+            throw new($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-        var tblFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
+        var tblFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
             
         // Populate a new Dictionary with EntityModels
         var result = new List<IEntity>();
@@ -139,7 +139,7 @@ public class DataTable : CustomDataSourceAdvanced
             var entityId = global::System.Convert.ToInt32(row[entityIdField]);
             var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField)
                 .ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-            values = new Dictionary<string, object>(values,
+            values = new(values,
                 StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
             var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
 

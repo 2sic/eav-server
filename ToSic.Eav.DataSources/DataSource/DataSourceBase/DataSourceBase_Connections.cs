@@ -11,7 +11,7 @@ partial class DataSourceBase
     #region Connections
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    internal DataSourceConnections Connections => _connections ??= new DataSourceConnections(this);
+    internal DataSourceConnections Connections => _connections ??= new(this);
     private DataSourceConnections _connections;
 
     #endregion
@@ -71,7 +71,7 @@ partial class DataSourceBase
     [PublicApi]
     public virtual IReadOnlyDictionary<string, IDataStream> Out => OutWritable.AsReadOnly();
 
-    private StreamDictionary OutWritable => _outWritable ??= new StreamDictionary(Services.CacheService);
+    private StreamDictionary OutWritable => _outWritable ??= new(Services.CacheService);
     private StreamDictionary _outWritable;
 
     /// <inheritdoc />

@@ -39,6 +39,6 @@ public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
             DynamicIn = true,
             Icon = "warning",
         };
-        return new DataSourceInfo(typeof(Error), isGlobal, typeName, vq, error);
+        return new(typeof(Error), isGlobal, typeName, vq, error);
     }
 }

@@ -22,7 +22,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
     private StreamDictionary OutWritable
     {
-        get => _outWritable ??= new StreamDictionary(Services.CacheService);
+        get => _outWritable ??= new(Services.CacheService);
         set => _outWritable = value;
     }
 
@@ -113,9 +113,9 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
         // now provide an override source for this
         var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
         var queryInfos = QueryBuilder.BuildQuery(Definition, Configuration.LookUpEngine,
-            new List<ILookUp> { paramsOverride });
+            new() { paramsOverride });
         _source = queryInfos.Item1;
-        OutWritable = new StreamDictionary(this, _source.Out);
+        OutWritable = new(this, _source.Out);
     });
 
     private QueryBuilder QueryBuilder => _queryBuilder.Get(() => _queryBuilderLazy.Value);
@@ -132,9 +132,9 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
         if (!_requiresRebuildOfOut)
         {
             l.A("Can't set param - query already compiled, error");
-            throw new Exception("Can't set param any more, the query has already been compiled. " +
-                                "Always set params before accessing the data. " +
-                                "To Re-Run the query with other params, call Reset() first.");
+            throw new("Can't set param any more, the query has already been compiled. " +
+                      "Always set params before accessing the data. " +
+                      "To Re-Run the query with other params, call Reset() first.");
         }
 
         Definition.Params[key] = value;

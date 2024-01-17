@@ -49,7 +49,7 @@ public sealed class Attributes: DataSourceBase
     {
         ConnectServices(
             _appStates = appStates,
-            _dataFactory = dataFactory.New(options: new DataFactoryOptions(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
+            _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
         );
         ProvideOut(GetList);
     }

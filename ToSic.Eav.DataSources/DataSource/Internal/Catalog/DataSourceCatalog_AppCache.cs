@@ -17,7 +17,7 @@ partial class DataSourceCatalog
         if (AppDataSourceCache[AppCacheKey(appId)] is List<DataSourceInfo> dataFromCache) return dataFromCache;
 
         var (data, policy) = _appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
-        AppDataSourceCache.Set(new CacheItem(AppCacheKey(appId), data), policy);
+        AppDataSourceCache.Set(new(AppCacheKey(appId), data), policy);
         return data;
     }
 }

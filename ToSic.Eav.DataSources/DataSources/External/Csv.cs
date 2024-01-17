@@ -210,7 +210,7 @@ public class Csv : CustomDataSourceAdvanced
                                  $"{commonErrorsIdTitle}"));
             }
 
-            var csvFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName));
+            var csvFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName));
 
             // Parse data
             while (parser.Read())

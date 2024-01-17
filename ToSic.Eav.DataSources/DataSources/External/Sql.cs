@@ -311,7 +311,7 @@ public class Sql : CustomDataSourceAdvanced
                                      ?? columNames.FirstOrDefault();
                     l.A($"will use '{casedTitle}' as title field");
 
-                    var sqlFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle));
+                    var sqlFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle));
 
                     #endregion
 

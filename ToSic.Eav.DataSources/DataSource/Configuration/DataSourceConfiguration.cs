@@ -87,7 +87,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     {
         // Ensure that we have a configuration-provider (not always the case, but required)
         if (LookUpEngine == null)
-            throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
+            throw new($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
 
         // construct a property access for in, use it in the config provider
         return LookUpEngine.LookUp(values, OverrideLookUps);

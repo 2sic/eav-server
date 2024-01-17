@@ -51,7 +51,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     private DataFactoryOptions Options
     {
             
-        get => _options ??= new DataFactoryOptions(typeName: "Custom");
+        get => _options ??= new(typeName: "Custom");
         set => _options = value;
     }
     private DataFactoryOptions _options;
@@ -123,7 +123,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         {
             data = funcResult is IEnumerable enumerable
                 ? enumerable.Cast<object>().ToList()
-                : new List<object>() { funcResult };
+                : new() { funcResult };
         }
         catch (Exception ex)
         {

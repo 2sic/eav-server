@@ -29,6 +29,6 @@ internal class DataStreamWithCustomCaching: DataStream
     /// Because then they would have the same cache-key, and that would cause trouble
     /// </summary>
     public override DataStreamCacheStatus Caching 
-        => _cachingInternal ??= new DataStreamCacheStatus(CacheInfoDelegate.Invoke(), Source, Name + "!Deferred");
+        => _cachingInternal ??= new(CacheInfoDelegate.Invoke(), Source, Name + "!Deferred");
     private DataStreamCacheStatus _cachingInternal;
 }

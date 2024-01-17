@@ -109,7 +109,7 @@ internal class DataStream : IDataStream // , IHasLog
     /// <summary>
     /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
     /// </summary>
-    public virtual DataStreamCacheStatus Caching => _cachingInternal ??= new DataStreamCacheStatus(Source, Source, Name);
+    public virtual DataStreamCacheStatus Caching => _cachingInternal ??= new(Source, Source, Name);
 
     private DataStreamCacheStatus _cachingInternal;
 

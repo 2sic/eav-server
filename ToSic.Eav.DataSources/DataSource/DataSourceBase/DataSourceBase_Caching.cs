@@ -15,7 +15,7 @@ partial class DataSourceBase
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public ICacheKeyManager CacheKey => _cacheKey ??= new CacheKey(this);
+    public ICacheKeyManager CacheKey => _cacheKey ??= new(this);
     private CacheKey _cacheKey;
 
     /// <inheritdoc />

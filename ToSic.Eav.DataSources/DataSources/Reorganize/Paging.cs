@@ -68,7 +68,7 @@ public sealed class Paging: DataSourceBase
     public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{LogPrefix}.Paging")
     {
         ConnectServices(
-            _pagingFactory = dataFactory.New(options: new DataFactoryOptions(typeName: "Paging"))
+            _pagingFactory = dataFactory.New(options: new(typeName: "Paging"))
         );
         ProvideOut(GetList);
         ProvideOut(GetPaging, "Paging");

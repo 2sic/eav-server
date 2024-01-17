@@ -33,7 +33,7 @@ partial class QueryDefinition
         // Parse Test-Parameters in Format [Token:Property]=Value
         var testParameters = TestParameters;
         if (testParameters == null)
-            return (new List<ILookUp>(), "no test params");
+            return (new(), "no test params");
 
         // extract the lines which look like [source:property]=value
         var testValueTokens = TestParamRegex.Matches(testParameters);
@@ -47,7 +47,7 @@ partial class QueryDefinition
             // Ensure a PropertyAccess exists for this LookUp name
             if (!(result.FirstOrDefault(i => i.Name == token) is LookUpInDictionary currentLookUp))
             {
-                currentLookUp = new LookUpInDictionary(token);
+                currentLookUp = new(token);
                 result.Add(currentLookUp);
             }
 

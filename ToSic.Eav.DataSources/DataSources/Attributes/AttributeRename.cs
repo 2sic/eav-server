@@ -115,12 +115,12 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
                         if (string.Equals(fieldMap.New, fieldMap.Old, StringComparison.InvariantCultureIgnoreCase))
                             return a;
                         var renameAttribute = CloneAttributeAndRename(a.Value, fieldMap.New);
-                        return new KeyValuePair<string, IAttribute>(fieldMap.New, renameAttribute);
+                        return new(fieldMap.New, renameAttribute);
                     }
 
                     return preserveOthers
                         ? a
-                        : new KeyValuePair<string, IAttribute>(null, null);
+                        : new(null, null);
                 })
                 .Where(set => set.Key != null)
                 .ToDictionary(a => a.Key, v => v.Value);
