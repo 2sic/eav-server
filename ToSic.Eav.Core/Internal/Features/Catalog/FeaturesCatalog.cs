@@ -9,7 +9,7 @@ namespace ToSic.Eav.Internal.Features;
 [PrivateApi]
 public class FeaturesCatalog: GlobalCatalogBase<Feature>
 {
-    public FeaturesCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.FeatCt", new CodeRef())
+    public FeaturesCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.FeatCt", new())
     {
         Register(
             // Released features since the dawn of features

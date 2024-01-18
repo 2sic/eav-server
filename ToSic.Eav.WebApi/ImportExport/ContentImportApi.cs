@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.ImportExport;
+﻿using System.IO;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
+using ToSic.Eav.ImportExport.Internal.XmlList;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Serialization;
-using ToSic.Lib.Logging;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-using ToSic.Eav.Apps.Work;
+using ToSic.Eav.Serialization.Internal;
 
 #if NETFRAMEWORK
 using System.Web.Http;
@@ -64,7 +55,7 @@ public class ContentImportApi : ServiceBase
 
         var import = GetXmlImport(args);
         var result = import.ErrorLog.HasErrors
-            ? new ContentImportResultDto(!import.ErrorLog.HasErrors, import.ErrorLog.Errors)
+            ? new(!import.ErrorLog.HasErrors, import.ErrorLog.Errors)
             : new ContentImportResultDto(!import.ErrorLog.HasErrors, new ImportStatisticsDto
             {
                 AmountOfEntitiesCreated = import.Info_AmountOfEntitiesCreated,
@@ -91,7 +82,7 @@ public class ContentImportApi : ServiceBase
             _appCachePurger.PurgeApp(args.AppId);
         }
 
-        return l.Return(new ContentImportResultDto(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
+        return l.Return(new(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
     }
 
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
@@ -99,13 +90,11 @@ public class ContentImportApi : ServiceBase
         var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
         var contextLanguages = _appStates.Languages(_appState.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
 
-        using (var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64)))
-        {
-            var importer = _importListXml.Value.Init(_appState, args.ContentType, contentSteam,
-                contextLanguages, args.DefaultLanguage,
-                args.ClearEntities, args.ImportResourcesReferences);
-            return l.Return(importer);
-        }
+        using var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64));
+        var importer = _importListXml.Value.Init(_appState, args.ContentType, contentSteam,
+            contextLanguages, args.DefaultLanguage,
+            args.ClearEntities, args.ImportResourcesReferences);
+        return l.Return(importer);
     }
 
     [HttpPost]
@@ -131,7 +120,7 @@ public class ContentImportApi : ServiceBase
         catch (Exception ex)
         {
             l.Ex(ex);
-            throw new Exception("Couldn't import - probably bad file format", ex);
+            throw new("Couldn't import - probably bad file format", ex);
         }
     }
 }

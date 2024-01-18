@@ -1,7 +1,5 @@
-﻿using ToSic.Eav.DataSource.Caching;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Services;
+﻿using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.DataSource.Internal.Configuration;
 
 namespace ToSic.Eav.DataSource;
 
@@ -19,7 +17,7 @@ partial class DataSourceBase
     public class MyServices : MyServicesBase
     {
         public LazySvc<IDataSourceCacheService> CacheService { get; }
-        public DataSourceConfiguration Configuration { get; }
+        public IDataSourceConfiguration Configuration { get; }
         public ConfigurationDataLoader ConfigDataLoader { get; }
         public LazySvc<DataSourceErrorHelper> ErrorHandler { get; }
 
@@ -28,7 +26,7 @@ partial class DataSourceBase
         /// </summary>
         [PrivateApi]
         public MyServices(
-            DataSourceConfiguration configuration,
+            IDataSourceConfiguration configuration,
             LazySvc<DataSourceErrorHelper> errorHandler,
             ConfigurationDataLoader configDataLoader,
             LazySvc<IDataSourceCacheService> cacheService

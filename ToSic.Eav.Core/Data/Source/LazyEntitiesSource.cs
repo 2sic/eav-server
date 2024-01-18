@@ -43,7 +43,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
                 Guids = guids;
                 break;
             default:
-                throw new Exception("relationship identifiers must be int? or guid?, anything else won't work");
+                throw new("relationship identifiers must be int? or guid?, anything else won't work");
         }
     }
 
@@ -96,7 +96,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
 
         // if we have number-IDs, but no lookup system, we'll have to use this as lookup system
         if (_entityIds != null && _entityIds.Count > 0 && _lookupList == null) // not set yet
-            throw new Exception("trying to resolve guids for this relationship, but can't, because the lookupList is not available");
+            throw new("trying to resolve guids for this relationship, but can't, because the lookupList is not available");
 
         return this.Select(e => e?.EntityGuid).ToList();
     }
@@ -133,7 +133,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     private List<IEntity> LoadEntities()
     {
         var result = _lookupList == null
-            ? new List<IEntity>()
+            ? new()
             : (_preferGuid
                 ? Guids.Select(l => !l.HasValue
                     ? null

@@ -9,17 +9,13 @@ namespace ToSic.Eav.Security;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Permission: EntityBasedType
+public class Permission(IEntity entity) : EntityBasedType(entity)
 {
     public const string TypeName = "PermissionConfiguration";
     public const string FieldIdentity = "Identity";
     public const string FieldCondition = "Condition";
     public const string FieldGrant = "Grant";
     public const string FieldOwner = "Owner"; // todo: unclear - this probably should be a global field name
-
-    public Permission(IEntity entity) : base(entity)
-    {
-    }
 
     /// <summary>
     /// The condition in this permission - like "this rule applies to admins"

@@ -97,7 +97,7 @@ public class FeaturePersistenceService : ServiceBase
 
         foreach (var f in oldFeatures["features"].AsArray())
         {
-            features.Features.Add(new FeatureStatePersisted()
+            features.Features.Add(new()
             {
                 Id = (Guid)f["id"],
                 Enabled = (bool)f["enabled"],
@@ -117,7 +117,7 @@ public class FeaturePersistenceService : ServiceBase
         try
         {
             // when null, prepare empty features
-            if (features == null) features = new FeatureStatesPersisted();
+            if (features == null) features = new();
 
             // update to latest fingerprint
             features.Fingerprint = _fingerprint.Value.GetFingerprint();

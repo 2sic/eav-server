@@ -1,11 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Serialization;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Serialization;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -19,15 +12,15 @@ namespace ToSic.Eav.DataSources;
 /// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
 /// * Renamed to `SerializationConfiguration` from `SerializationConfiguration` in 15.05
 /// </remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Serialization Configuration",
     UiHint = "Determine how this data is Serialized",
-    Icon = Icons.HtmlDotDotDot,
+    Icon = DataSourceIcons.HtmlDotDotDot,
     Type = DataSourceType.Modify, 
     NameId = "2952e680-4aaa-4a12-adf7-325cb2854358",
     DynamicOut = true,
-    In = new []{DataSourceConstants.StreamDefaultName},
+    In = [DataSourceConstants.StreamDefaultName],
     ConfigurationType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
     HelpLink = "https://go.2sxc.org/DsSerializationConfiguration")]
 
@@ -35,8 +28,8 @@ public partial class Serialization : DataSourceBase
 {
     #region Constants
 
-    [PrivateApi("not sure how to document, doesn't seem to be in use")] public static string KeepAll = "*";
-    [PrivateApi("not sure how to document, doesn't seem to be in use")] public static string KeepNone = "-";
+    [PrivateApi("not sure how to document, doesn't seem to be in use")] internal static string KeepAll = "*";
+    [PrivateApi("not sure how to document, doesn't seem to be in use")] internal static string KeepNone = "-";
 
     #endregion
     #region Configuration-properties

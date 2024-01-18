@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.Linq;
-using ToSic.Eav.Data;
+﻿using System.Collections.ObjectModel;
 using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Lib.Coding;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
-using ToSic.Lib.Logging;
 using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
@@ -18,7 +12,7 @@ partial class DataSourceBase
     #region Connections
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    internal DataSourceConnections Connections => _connections ??= new DataSourceConnections(this);
+    internal DataSourceConnections Connections => _connections ??= new(this);
     private DataSourceConnections _connections;
 
     #endregion
@@ -78,7 +72,7 @@ partial class DataSourceBase
     [PublicApi]
     public virtual IReadOnlyDictionary<string, IDataStream> Out => OutWritable.AsReadOnly();
 
-    private StreamDictionary OutWritable => _outWritable ??= new StreamDictionary(Services.CacheService);
+    private StreamDictionary OutWritable => _outWritable ??= new(Services.CacheService);
     private StreamDictionary _outWritable;
 
     /// <inheritdoc />

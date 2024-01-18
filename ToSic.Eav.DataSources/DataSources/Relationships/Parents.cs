@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using ToSic.Eav.DataSources.Internal;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
@@ -18,15 +13,15 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Parents",
     UiHint = "Get the item's parents",
-    Icon = Icons.Parents,
+    Icon = DataSourceIcons.Parents,
     Type = DataSourceType.Lookup,
     NameId = "915217e5-7957-4303-a19c-a15505f2ad1d",
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     DynamicOut = false,
     ConfigurationType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
     HelpLink = "https://go.2sxc.org/DsParents")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class Parents : RelationshipDataSourceBase
+public class Parents(DataSourceBase.MyServices services) : RelationshipDataSourceBase(services, $"{LogPrefix}.Parent")
 {
     /// <summary>
     /// Name of the field (in the parent) pointing to the child.
@@ -43,10 +38,6 @@ public class Parents : RelationshipDataSourceBase
     /// Example: If a person is referenced by books (as author) as by companies) as employee, then you may want to only find companies referencing this book. 
     /// </summary>
     public override string ContentTypeName => Configuration.GetThis();
-
-    public Parents(MyServices services) : base(services, $"{LogPrefix}.Parent")
-    {
-    }
 
     /// <summary>
     /// Construct function for the get of the related items

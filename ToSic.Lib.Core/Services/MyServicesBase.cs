@@ -27,6 +27,18 @@ public abstract class MyServicesBase: ILazyInitLog
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
     protected void ConnectServices(params object[] services) => DependencyLogs.Add(services);
 
+    /// <summary>
+    /// Experimental Connect-one, may be removed again.
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
+    /// <param name="service"></param>
+    /// <returns>the service passed in</returns>
+    protected TService ConnectService<TService>(TService service)
+    {
+        DependencyLogs.Add(service);
+        return service;
+    }
+
     internal bool InitDone;
 
     void ILazyInitLog.SetLog(ILog parentLog)

@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ToSic.Eav.WebApi.Admin.Features;
+﻿namespace ToSic.Eav.WebApi.Admin.Features;
 
 public class FeaturesDto
 {

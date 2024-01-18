@@ -1,11 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Reflection;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.WebApi.Infrastructure;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
 #else
@@ -15,18 +11,13 @@ using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 namespace ToSic.Eav.WebApi.ApiExplorer;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ApiExplorerControllerReal : ServiceBase
+public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker responseMaker)
+    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl")
 {
     public const string LogSuffix = "ApiExp";
 
-    public IApiInspector Inspector { get; }
-    public IResponseMaker ResponseMaker { get; }
-
-    public ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker responseMaker): base($"{EavLogs.WebApi}.{LogSuffix}Rl")
-    {
-        Inspector = inspector;
-        ResponseMaker = responseMaker;
-    }
+    public IApiInspector Inspector { get; } = inspector;
+    public IResponseMaker ResponseMaker { get; } = responseMaker;
 
     public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
     {

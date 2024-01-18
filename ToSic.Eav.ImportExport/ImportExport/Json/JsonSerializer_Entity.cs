@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Metadata;
-using ToSic.Eav.Serialization;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json;
@@ -29,7 +22,7 @@ partial class JsonSerializer
 
         JsonMetadataFor jsonFor = null;
         if (entity.MetadataFor.IsMetadata)
-            jsonFor = new JsonMetadataFor
+            jsonFor = new()
             {
                 // #TargetTypeIdInsteadOfTarget - the Target should become obsolete
                 Target = MetadataTargets.GetName(entity.MetadataFor.TargetType),
@@ -94,7 +87,7 @@ partial class JsonSerializer
             Id = entity.EntityId,
             Guid = entity.EntityGuid,
             Version = entity.Version,
-            Type = new JsonType(entity, withMap: true),
+            Type = new(entity, withMap: true),
             Attributes = attribs,
             Owner = entity.Owner,
             For = jsonFor,

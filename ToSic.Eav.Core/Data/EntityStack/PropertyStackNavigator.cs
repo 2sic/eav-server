@@ -26,7 +26,8 @@ namespace ToSic.Eav.Data;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class PropertyStackNavigator: Wrapper<IPropertyLookup>, IPropertyStackLookup
+public partial class PropertyStackNavigator(IPropertyLookup child, StackAddress stackAddress)
+    : Wrapper<IPropertyLookup>(child), IPropertyStackLookup
 {
     private const int MaxAncestorSiblings = 10;
 
@@ -35,9 +36,7 @@ public partial class PropertyStackNavigator: Wrapper<IPropertyLookup>, IProperty
 
     private static string MaxLookupError = $"Error finding value in Stack - too many cycles used (> {MaxLookupCycles}. This is probably a bug in EAV property stack";
 
-    public PropertyStackNavigator(IPropertyLookup child, StackAddress stackAddress): base(child) 
-        => StackAddress = stackAddress;
-    public StackAddress StackAddress { get; }
+    public StackAddress StackAddress { get; } = stackAddress;
 
 
     public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path)
@@ -49,7 +48,7 @@ public partial class PropertyStackNavigator: Wrapper<IPropertyLookup>, IProperty
         // This shouldn't happen, but if it ever does we don't want the server to run into buffer overflows
         if (path.Parts.Count > 1000)
             return l.Return(
-                new PropReqResult(result: MaxLookupError, fieldType: "error", path: path) { Name = "error", Source = "error", SourceIndex = StackAddress.Index },
+                new(result: MaxLookupError, fieldType: "error", path: path) { Name = "error", Source = "error", SourceIndex = StackAddress.Index },
                 "Error: Maximum lookup depth achieved");
 
         // Try to find on child - but only if startAt == 0

@@ -1,11 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Persistence.Efc;
+﻿namespace ToSic.Eav.Persistence.Efc;
 
 partial class Efc11Loader
 {

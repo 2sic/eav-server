@@ -1,15 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -25,7 +17,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "Attributes of Type",
     UiHint = "Attributes/fields of a Content-Type",
-    Icon = Icons.Dns,
+    Icon = DataSourceIcons.Dns,
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
     Audience = Audience.Advanced,
@@ -57,7 +49,7 @@ public sealed class Attributes: DataSourceBase
     {
         ConnectServices(
             _appStates = appStates,
-            _dataFactory = dataFactory.New(options: new DataFactoryOptions(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
+            _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
         );
         ProvideOut(GetList);
     }

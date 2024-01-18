@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data;
 /// > We recommend you read about the [](xref:Basics.Data.Index)
 /// </remarks>
 /// <typeparam name="T">Type of the Value</typeparam>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IAttribute<out T> : IAttribute
 {
     /// <summary>

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Context;
-using ToSic.Lib.DI;
-using ToSic.Eav.ImportExport.Options;
+﻿using ToSic.Eav.Context;
+using ToSic.Eav.ImportExport.Internal.Options;
 using ToSic.Eav.Security.Permissions;
-using ToSic.Eav.WebApi.Dto;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Infrastructure;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
@@ -64,7 +59,7 @@ public class EntityControllerReal : ServiceBase, IEntityController
         else if (guid.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
             .Delete(contentType, guid.Value, force, parentId, parentField);
         else
-            throw new Exception($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");
+            throw new($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");
     }
 
 

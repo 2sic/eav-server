@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Languages;
-using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Run;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Eav.WebApi.Security;
+using ToSic.Eav.Integration;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Languages;
@@ -54,7 +46,7 @@ public class LanguagesBackend: ServiceBase
             var converted = langs.Select(l =>
                 {
                     var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };
-                    if (withCount) dto.Permissions = new HasPermissionsDto { Count = l.PermissionCount };
+                    if (withCount) dto.Permissions = new() { Count = l.PermissionCount };
                     return dto;
                 })
                 .ToList();
@@ -63,7 +55,7 @@ public class LanguagesBackend: ServiceBase
         catch (Exception ex)
         {
             Log.Ex(ex);
-            return new List<SiteLanguageDto>();
+            return new();
         }
 
     }

@@ -53,7 +53,7 @@ internal class DataFactory : ServiceBase, IDataFactory
     private ILookup<object, IEntity> _nonLazyRelationships;
     private LazyLookup<object, IEntity> _lazyRelationships = new();
 
-    private RawRelationshipsConverter RelsConverter => _relsConverter.Get(() => new RawRelationshipsConverter(_builder, Log));
+    private RawRelationshipsConverter RelsConverter => _relsConverter.Get(() => new(_builder, Log));
     private readonly GetOnce<RawRelationshipsConverter> _relsConverter = new();
     #endregion
 
@@ -159,7 +159,7 @@ internal class DataFactory : ServiceBase, IDataFactory
                 try
                 {
                     newEntity = Create(n);
-                    return new EntityPair<TNewEntity>(newEntity, n);
+                    return new(newEntity, n);
                 }
                 catch
                 {

@@ -1,14 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Persistence.Efc.Models;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
-namespace ToSic.Eav.Repository.Efc.Parts;
-
-internal class DbDimensions: DbPartBase
+internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
 {
-    public DbDimensions(DbDataController db) : base(db, "Db.Dims") { }
-
     private int GetDimensionId(string systemKey, string externalKey)
     {
         // Because of changes in EF 3.x we had to split where part on server and client.

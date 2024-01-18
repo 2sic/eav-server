@@ -1,16 +1,10 @@
-﻿using System;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
-
-namespace ToSic.Eav.WebApi.Sys;
+﻿namespace ToSic.Eav.WebApi.Sys;
 // Release routes
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LogControllerReal: ServiceBase
+public class LogControllerReal() : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl")
 {
     public const string LogSuffix = "Log";
-
-    public LogControllerReal() : base($"{EavLogs.WebApi}.{LogSuffix}Rl") { }
 
     public string EnableDebug(Func<int, string> activateForDuration, int duration = 1)
     {

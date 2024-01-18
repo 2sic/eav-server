@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data;
+﻿using System.Collections;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.DataSource.Caching;
+using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.DataSource.Internal.Configuration;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource;
 
@@ -30,18 +23,14 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// Otherwise compiled code would break when we need additional dependencies just for the CustomDataSource.
     /// </summary>
     [PrivateApi]
-    public new class MyServices : CustomDataSourceAdvanced.MyServices
-    {
-        [PrivateApi]
-        public MyServices(
-            DataSourceConfiguration configuration,
-            LazySvc<DataSourceErrorHelper> errorHandler,
-            ConfigurationDataLoader configDataLoader,
-            LazySvc<IDataSourceCacheService> cacheService,
-            IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, cacheService, dataFactory)
-        {
-        }
-    }
+    [method: PrivateApi]
+    public new class MyServices(
+        IDataSourceConfiguration configuration,
+        LazySvc<DataSourceErrorHelper> errorHandler,
+        ConfigurationDataLoader configDataLoader,
+        LazySvc<IDataSourceCacheService> cacheService,
+        IDataFactory dataFactory)
+        : CustomDataSourceAdvanced.MyServices(configuration, errorHandler, configDataLoader, cacheService, dataFactory);
 
     /// <summary>
     /// Constructor for creating a Custom DataSource.
@@ -62,7 +51,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     private DataFactoryOptions Options
     {
             
-        get => _options ??= new DataFactoryOptions(typeName: "Custom");
+        get => _options ??= new(typeName: "Custom");
         set => _options = value;
     }
     private DataFactoryOptions _options;
@@ -134,7 +123,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         {
             data = funcResult is IEnumerable enumerable
                 ? enumerable.Cast<object>().ToList()
-                : new List<object>() { funcResult };
+                : [funcResult];
         }
         catch (Exception ex)
         {

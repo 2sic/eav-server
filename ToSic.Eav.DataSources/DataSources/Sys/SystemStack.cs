@@ -1,15 +1,10 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
+using ToSic.Eav.DataSources.Sys.Internal;
 using static ToSic.Eav.Apps.AppStackConstants;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -18,7 +13,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "System Stacks",
     UiHint = "Settings and/or Resources as a Stack",
-    Icon = Icons.Dns, // todo
+    Icon = DataSourceIcons.Dns, // todo
     Type = DataSourceType.System,
     NameId = "60806cb1-0c76-4c1e-8dfe-dcec94726f8d",
     Audience = Audience.Advanced,
@@ -81,7 +76,7 @@ public class SystemStack: Eav.DataSource.DataSourceBase
         var settings = _dataStackService.Init(appState).GetStack(stackName);
 
         // Dump results
-        var dump = settings._Dump(new PropReqSpecs(null, languages, Log), null);
+        var dump = settings._Dump(new(null, languages, Log), null);
 
         dump = SystemStackHelpers.ApplyKeysFilter(dump, Keys);
 
@@ -92,7 +87,7 @@ public class SystemStack: Eav.DataSource.DataSourceBase
         var asRaw = res2.Select(r => new AppStackDataRaw(r)).ToList();
         // Note: must use configure here, because AppId and AddValues are properties that's not set in the constructor
         var options = new RawConvertOptions(addKeys: AddValues ? new[] { "Value" } : null);
-        var stackFactory = _dataFactory.New(options: new DataFactoryOptions(AppStackDataRaw.Options, appId: AppId), rawConvertOptions: options);
+        var stackFactory = _dataFactory.New(options: new(AppStackDataRaw.Options, appId: AppId), rawConvertOptions: options);
         var converted = stackFactory.Create(asRaw);
 
         return converted;

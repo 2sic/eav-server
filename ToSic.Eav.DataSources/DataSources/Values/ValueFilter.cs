@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.VisualQuery;
+﻿using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.Streams.Internal;
+using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -18,14 +11,14 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Return only Entities having a specific value in an Attribute/Property
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Value Filter",
     UiHint = "Keep items which have a property with the expected value",
-    Icon = Icons.FilterList,
+    Icon = DataSourceIcons.FilterList,
     Type = DataSourceType.Filter,
     NameId = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
-    In = new[] { InStreamDefaultRequired, StreamFallbackName },
+    In = [InStreamDefaultRequired, StreamFallbackName],
     DynamicOut = false,
     ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
     HelpLink = "https://go.2sxc.org/DsValueFilter")]

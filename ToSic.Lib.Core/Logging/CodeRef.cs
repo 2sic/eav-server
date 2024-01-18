@@ -12,40 +12,36 @@ namespace ToSic.Lib.Logging;
 /// <remarks>
 /// This is a very internal plumbing-object important for referencing code in log entries.
 /// </remarks>
+/// <remarks>
+/// Automatic constructor should be called without params, so that the compiler automatically injects all values.
+/// </remarks>
+/// <param name="cPath">auto pre-filled by the compiler - path to the code file</param>
+/// <param name="cName">auto pre-filled by the compiler - method name</param>
+/// <param name="cLine">auto pre-filled by the compiler - code line number</param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("This is just FYI")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CodeRef
+public class CodeRef([CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
 {
+    public const string Message = "Message";
+
     /// <summary>
     /// Path to the code file
     /// </summary>
-    public readonly string Path;
+    public readonly string Path = cPath;
 
     /// <summary>
     /// Name of the method/property accessed
     /// </summary>
-    public readonly string Name;
+    public readonly string Name = cName;
 
     /// <summary>
     /// Line of code where the code was running
     /// </summary>
-    public readonly int Line;
+    public readonly int Line = cLine;
 
-    /// <summary>
-    /// Automatic constructor.
-    /// It should be called without params, so that the compiler automatically injects all values.
-    /// </summary>
-    /// <param name="cPath">auto pre filled by the compiler - path to the code file</param>
-    /// <param name="cName">auto pre filled by the compiler - method name</param>
-    /// <param name="cLine">auto pre filled by the compiler - code line number</param>
-    public CodeRef([CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
-    {
-        Path = cPath;
-        Name = cName;
-        Line = cLine;
-    }
-
-    public override string ToString() => $"Caller: {Name}; Line: {Line}; File: {Path}";
+    public override string ToString() => Path == Message
+        ? $"Message: {Name}; Number: {Line}"
+        : $"Caller: {Name}; Line: {Line}; File: {Path}";
 
     /// <summary>
     /// Manually create a <see cref="CodeRef"/> using an already available set of path/name/line.
@@ -61,9 +57,9 @@ public class CodeRef
     /// or to create a new one if it was null.
     /// </summary>
     /// <param name="codeRef">Exiting <see cref="CodeRef"/> object or `null`</param>
-    /// <param name="cPath">auto pre filled by the compiler - path to the code file</param>
-    /// <param name="cName">auto pre filled by the compiler - method name</param>
-    /// <param name="cLine">auto pre filled by the compiler - code line number</param>
+    /// <param name="cPath">auto pre-filled by the compiler - path to the code file</param>
+    /// <param name="cName">auto pre-filled by the compiler - method name</param>
+    /// <param name="cLine">auto pre-filled by the compiler - code line number</param>
     /// <returns></returns>
     public static CodeRef UseOrCreate(CodeRef codeRef, string cPath, string cName, int cLine) => codeRef ?? Create(cPath, cName, cLine);
 }

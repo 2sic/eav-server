@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.DataSource;
+﻿namespace ToSic.Eav.DataSource;
 
 /// <summary>
 /// Marks an attribute of a DataSource as a `Configuration` attribute.

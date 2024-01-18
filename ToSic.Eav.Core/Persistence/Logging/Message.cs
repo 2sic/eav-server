@@ -4,15 +4,9 @@ namespace ToSic.Eav.Persistence.Logging;
 /// Describes a Message while Exporting / Importing
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class Message
+public partial class Message(string text, Message.MessageTypes messageType)
 {
-    public Message(string text, MessageTypes messageType)
-    {
-        Text = text;
-        MessageType = messageType;
-    }
+    public string Text { get; set; } = text;
 
-    public string Text { get; set; }
-
-    public MessageTypes MessageType { get; set; }
+    public MessageTypes MessageType { get; set; } = messageType;
 }

@@ -1,24 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Compression;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Efc;
-using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Repositories;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc;
 
@@ -32,7 +18,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     /// AppId of this whole Context
     /// </summary>
     public int AppId => _appId == Constants.AppIdEmpty ? Constants.MetaDataAppId : _appId;
-    public int[] AppIds => _parentAppId == null ? new[] { AppId } : new[] { AppId, _parentAppId.Value };
+    public int[] AppIds => _parentAppId == null ? [AppId] : [AppId, _parentAppId.Value];
     private int _appId;
 
     /// <summary>
@@ -64,7 +50,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
         }
     }
 
-    public List<LogItem> ImportLogToBeRefactored { get; } = new List<LogItem>();
+    public List<LogItem> ImportLogToBeRefactored { get; } = [];
 
     public int? ParentAppId { get; set; }
     private int? _parentAppId;
@@ -172,7 +158,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
     {
         if (_appId == Constants.AppIdEmpty)
-            throw new Exception("SaveChanges with AppId 0 not allowed.");
+            throw new("SaveChanges with AppId 0 not allowed.");
 
         Versioning.GetChangeLogId();
 

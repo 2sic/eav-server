@@ -6,10 +6,8 @@ namespace ToSic.Eav.Plumbing;
 /// Execute something if a condition is met, but do it within a lock to avoid duplicate runs
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class TryLockTryDo
+public class TryLockTryDo(object lockObject = null)
 {
-    public TryLockTryDo(object lockObject = null) => _loadLock = lockObject ?? new object();
-
     // TODO: @STV SHOULD be applied to more places that use a lock, as I assume it's robust
     public void Do(Func<bool> condition, Action action)
     {
@@ -47,5 +45,5 @@ public class TryLockTryDo
 
     public int PreLockCount;
     public int LockCount;
-    private readonly object _loadLock;
+    private readonly object _loadLock = lockObject ?? new object();
 }

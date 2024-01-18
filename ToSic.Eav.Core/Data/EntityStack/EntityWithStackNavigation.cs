@@ -8,11 +8,10 @@ namespace ToSic.Eav.Data;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class EntityWithStackNavigation: EntityWrapper, IPropertyStackLookup
+internal class EntityWithStackNavigation(IEntity entity, StackAddress stackAddress)
+    : EntityWrapper(entity), IPropertyStackLookup
 {
-    public EntityWithStackNavigation(IEntity entity, StackAddress stackAddress) : base(entity) 
-        => Navigator = new PropertyStackNavigator(entity, stackAddress);
-    internal readonly PropertyStackNavigator Navigator;
+    internal readonly PropertyStackNavigator Navigator = new(entity, stackAddress);
 
     public override PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path) =>
         PropertyLookupWithStackNavigation.FindPropertyInternalOfStackWrapper(this, specs, path,

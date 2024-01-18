@@ -62,8 +62,8 @@ internal class AppsCache: AppsCacheBase, IAppsCacheSwitchable
         catch (Exception ex)
         {
             // unclear why this pops up sometime...if it would also hit on live, so I'm adding some more info
-            throw new Exception("issue with setting cache item - key is '" + key + "' and cache is null =" +
-                                (Caches == null) + " and item is null=" + (item == null), ex);
+            throw new("issue with setting cache item - key is '" + key + "' and cache is null =" +
+                      (Caches == null) + " and item is null=" + (item == null), ex);
         }
     }
 

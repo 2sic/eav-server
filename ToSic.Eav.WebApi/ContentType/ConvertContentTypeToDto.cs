@@ -1,13 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
-using ToSic.Eav.Data.Shared;
+﻿using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.WebApi.Security;
-using ToSic.Lib.DI;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi;
@@ -54,7 +46,7 @@ public class ConvertContentTypeToDto : ServiceBase, IConvert<IContentType, Conte
             StaticName = item.NameId,
             Scope = item.Scope,
             Description = details?.Description,
-            EditInfo = new EditInfoDto(item),
+            EditInfo = new(item),
             UsesSharedDef = ancestorDecorator != null,
             SharedDefId = ancestorDecorator?.Id,
             Items = count,
@@ -62,7 +54,7 @@ public class ConvertContentTypeToDto : ServiceBase, IConvert<IContentType, Conte
             Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(item.Metadata,
                 SubEntitySerialization.AllTrue()),
             Properties = properties,
-            Permissions = new HasPermissionsDto { Count = item.Metadata.Permissions.Count() },
+            Permissions = new() { Count = item.Metadata.Permissions.Count() },
         };
         return l.ReturnAsOk(jsonReady);
     }

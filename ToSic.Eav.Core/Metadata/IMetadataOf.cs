@@ -12,7 +12,7 @@ namespace ToSic.Eav.Metadata;
 /// <remarks>
 /// You can either loop through this object (since it's an `IEnumerable`) or ask for values of the metadata,
 /// no matter on what sub-entity the value is stored on.</remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions
 {
 

@@ -8,11 +8,9 @@
 /// IMPORTANT: Don't cache this object, as some info inside it can change during runtime
 /// </remarks>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ContentTypeDetails: EntityBasedType
+public class ContentTypeDetails(IEntity entity) : EntityBasedType(entity)
 {
     public const string ContentTypeTypeName = "ContentType";
-
-    public ContentTypeDetails(IEntity entity) : base(entity) { }
 
     public string Icon => GetThis<string>(null);
 

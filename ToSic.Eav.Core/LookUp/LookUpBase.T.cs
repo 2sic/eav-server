@@ -3,18 +3,12 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.LookUp;
 
-[PublicApi_Stable_ForUseInYourCode]
-public abstract class LookUpIn<T>: LookUpBase, IWrapper<T>
+[PublicApi]
+public abstract class LookUpIn<T>(T data, string name = "source without name") : LookUpBase(name), IWrapper<T>
 {
-    protected T Data { get; private set; }
+    protected T Data { get; private set; } = data;
 
-    protected void SetData(T data) => Data = data;
+    protected void SetData(T newData) => Data = newData;
 
     public T GetContents() => Data;
-
-    protected LookUpIn(T data, string name = "source without name")
-    {
-        Data = data;
-        Name = name;
-    }
 }

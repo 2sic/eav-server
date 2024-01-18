@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using ToSic.Eav.DataSource;
+﻿using System.Collections.ObjectModel;
 using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
+using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Lib.Helpers;
 using static System.StringComparer;
 
@@ -23,18 +19,18 @@ namespace ToSic.Eav.DataSources.Caching;
 [VisualQuery(
     NiceName = "Cache Streams",
     UiHint = "Cache all streams based on some rules",
-    Icon = Icons.HistoryOff,
+    Icon = DataSourceIcons.HistoryOff,
     Type = DataSourceType.Cache, 
     NameId = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
     DynamicOut = true,
     DynamicIn = true,
     ConfigurationType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
-    NameIds = new []
-    {
+    NameIds =
+    [
         "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources"
-    },
+    ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public class CacheAllStreams : DataSourceBase
 {
     #region Configuration-properties
@@ -58,6 +54,9 @@ public class CacheAllStreams : DataSourceBase
     [Configuration(Fallback = false)]
     public bool ReturnCacheWhileRefreshing => Configuration.GetThis(false);
 
+    #endregion
+
+    #region Dynamic Out
 
     /// <inheritdoc />
     public override IReadOnlyDictionary<string, IDataStream> Out => _out.Get(() =>

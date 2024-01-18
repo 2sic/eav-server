@@ -106,7 +106,7 @@ internal class AppStateStack
         // Current App level
         var sources = new List<KeyValuePair<string, IPropertyLookup>>();
         void AddSource(string name, IPropertyLookup value)
-            => sources.Add(new KeyValuePair<string, IPropertyLookup>(name, value));
+            => sources.Add(new(name, value));
 
         AddSource(AppStackConstants.PartApp, appStack.MetadataItem);
         AddSource(AppStackConstants.PartAppSystem, appStack.SystemItem);

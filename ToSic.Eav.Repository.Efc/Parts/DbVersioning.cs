@@ -1,12 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using ToSic.Eav.Internal.Compression;
-using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
@@ -67,7 +60,7 @@ internal  partial class DbVersioning: DbPartBase
     /// Save an entity to versioning, which is already serialized
     /// </summary>
     internal void AddToHistoryQueue(int entityId, Guid entityGuid, string serialized)
-        => _queue.Add(new ToSicEavDataTimeline
+        => _queue.Add(new()
         {
             SourceTable = EntitiesTableName,
             Operation = Constants.DataTimelineEntityJson,
@@ -88,5 +81,5 @@ internal  partial class DbVersioning: DbPartBase
         _queue.Clear();
     });
 
-    private readonly List<ToSicEavDataTimeline> _queue = new List<ToSicEavDataTimeline>();
+    private readonly List<ToSicEavDataTimeline> _queue = [];
 }

@@ -1,15 +1,7 @@
-﻿using System;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Services;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.DataSources;
 
@@ -17,15 +9,15 @@ namespace ToSic.Eav.DataSources;
 /// All the data inside an App. <br/>
 /// For example, it has a variable amount of Out-streams, one for each content-type in the app.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "App",
     UiHint = "All data in an app with streams for type",
-    Icon = Icons.TableChart,
+    Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.App, ToSic.Eav.DataSources",
     DynamicOut = true,
-    In = new []{DataSourceConstants.StreamDefaultName},
+    In = [DataSourceConstants.StreamDefaultName],
     ConfigurationType = "|Config ToSic.Eav.DataSources.App",
     HelpLink = "https://go.2sxc.org/DsApp")]
 public partial class App : DataSourceBase
@@ -77,6 +69,7 @@ public partial class App : DataSourceBase
     /// * Uses the[immutable convention](xref:NetCode.Conventions.Immutable).
     /// </remarks>
     [PrivateApi("WIP and not sure if this should ever become public")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [Configuration(Fallback = false)]
     public bool WithAncestors => Configuration.GetThis(false);
 
@@ -112,7 +105,7 @@ public partial class App : DataSourceBase
     {
         _services = services;
         // this one is unusual, so don't pre-attach a default data stream to out
-        _out = new StreamDictionary(this, null);
+        _out = new(this, null);
     }
 
     private readonly MyServices _services;
@@ -127,7 +120,7 @@ public partial class App : DataSourceBase
     private void AttachOtherDataSource()
     {
         // If something is done badly, we can easily get recursions
-        if (_attachOtherDataSourceRunning) throw new Exception("We have an unexpected recursion!");
+        if (_attachOtherDataSourceRunning) throw new("We have an unexpected recursion!");
         _attachOtherDataSourceRunning = true;
         // If we have zone/app switch, set not (they don't get updated if only the config is modified)
         // All not-set properties will use defaults 
@@ -155,10 +148,11 @@ public partial class App : DataSourceBase
 
     private bool _attachOtherDataSourceRunning = false;
 
-    [PrivateApi]
-    [Obsolete("Will probably be removed in v14")]
-    // TODO: cause obsolete warning when used! #Deprecated
-    public IMetadataSource Metadata => AppState;
+    // 2024-01-09 2dm Removed for v17.01 - should have been removed a long time ago
+    //[PrivateApi]
+    //[Obsolete("Will probably be removed in v14")]
+    //// TODO: cause obsolete warning when used! #Deprecated
+    //public IMetadataSource Metadata => AppState;
 
     protected IAppState AppState => _appState.Get(() => _services.AppStates.GetReader(this));
     private readonly GetOnce<IAppState> _appState = new();

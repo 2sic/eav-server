@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Context;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
-using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight;
@@ -69,12 +60,15 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
     private bool WithEditInfos { get; set; }
 
+    // WIP v17
+    internal List<string> SelectFields { get; set; }
+
     /// <inheritdoc/>
     public void ConfigureForAdminUse()
     {
         WithGuid = true;
         WithPublishing = true;
-        MetadataFor = new MetadataForSerialization { Serialize = true };
+        MetadataFor = new() { Serialize = true };
         Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
         WithEditInfos = true;
     }
@@ -121,24 +115,19 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         var rules = entity.GetDecorator<EntitySerializationDecorator>();
         var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, false, true, false, true);
 
-        // Exclude attributes when field type is Empty or attribute metadata is IsEphemeral
-        // Check if the entity type is in the cache
-        if (!_excludeAttributesCache.TryGetValue(entity.Type, out var excludeAttributes))
-        {
-            // If it's not in the cache, compute the list of attributes and add it to the cache
-            excludeAttributes = entity.Type.Attributes?.ToList()
-                .Where(a => a.Type == ValueTypes.Empty
-                            || a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
-                .Select(a => a.Name)
-                .ToList();
-            _excludeAttributesCache[entity.Type] = excludeAttributes;
-        }
+        var excludeAttributes = ExcludeAttributesOfType(entity);
 
         // Convert Entity to dictionary
         // If the value is a relationship, then give those too, but only Title and Id
-        var entityValues = entity.Attributes
+        var attributes = entity.Attributes
             .Select(d => d.Value)
-            .Where(d => excludeAttributes?.Contains(d.Name) != true)
+            .Where(d => excludeAttributes?.Contains(d.Name) != true);
+
+        // experimental v17
+        if (SelectFields.SafeAny())
+            attributes = attributes.Where(a => SelectFields.Contains(a.Name));
+
+        var entityValues = attributes
             .ToEavLight(attribute => attribute.Name, attribute =>
             {
                 var value = entity.GetBestValue(attribute.Name, Languages);
@@ -195,7 +184,34 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
         return entityValues;
     }
+
+    #region Exclude Attributes Cache
+
+    /// <summary>
+    /// Get list of attributes to exclude when serializing, especially Empty and Ephemeral attributes
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    private List<string> ExcludeAttributesOfType(IEntity entity)
+    {
+        // Check if the entity type is in the cache
+        if (_excludeAttributesCache.TryGetValue(entity.Type, out var excludeAttributes))
+            return excludeAttributes;
+
+        // If it's not in the cache, compute the list of attributes and add it to the cache
+        excludeAttributes = entity.Type.Attributes?.ToList()
+            .Where(a => a.Type == ValueTypes.Empty
+                        || a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
+            .Select(a => a.Name)
+            .ToList();
+
+        // Cache and return
+        _excludeAttributesCache[entity.Type] = excludeAttributes;
+        return excludeAttributes;
+    }
     private readonly Dictionary<object, List<string>> _excludeAttributesCache = new();
+
+    #endregion
 
     private void OptimizeRemoveEmptyValues(EntitySerializationDecorator rules, EavLightEntity entityValues)
     {

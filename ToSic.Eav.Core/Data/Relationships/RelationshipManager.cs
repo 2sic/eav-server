@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Lib.Documentation;
@@ -51,7 +50,7 @@ internal class RelationshipManager: IRelationshipManager
             => AllRelationships.Where(r => r.Parent == _entity).ToImmutableList();
 
         if (_appStateCache == null) return GetChildrenInternal();
-        _childRelationships = new SynchronizedList<EntityRelationship>(_appStateCache, GetChildrenInternal);
+        _childRelationships = new(_appStateCache, GetChildrenInternal);
         return _childRelationships.List;
     }
 
@@ -70,7 +69,7 @@ internal class RelationshipManager: IRelationshipManager
         IImmutableList<EntityRelationship> GetParents() => AllRelationships.Where(r => r.Child == _entity).ToImmutableList();
 
         if (_appStateCache == null) return GetParents();
-        _parentRelationships = new SynchronizedList<EntityRelationship>(_appStateCache, GetParents);
+        _parentRelationships = new(_appStateCache, GetParents);
         return _parentRelationships.List;
     }
     private SynchronizedList<EntityRelationship> _parentRelationships;
@@ -94,7 +93,7 @@ internal class RelationshipManager: IRelationshipManager
         {
             // If the field doesn't exist, return empty list
             if (!((IEntity)_entity).Attributes.ContainsKey(field))
-                return (new List<IEntity>(), "empty list, field doesn't exist");
+                return (new(), "empty list, field doesn't exist");
                 
             // if it does exist, still catch any situation where it's not a relationship field
             try
@@ -103,7 +102,7 @@ internal class RelationshipManager: IRelationshipManager
             }
             catch
             {
-                return (new List<IEntity>(), "empty list, doesn't seem to be relationship field");
+                return (new(), "empty list, doesn't seem to be relationship field");
             }
         }
 

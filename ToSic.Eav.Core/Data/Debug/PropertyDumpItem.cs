@@ -15,10 +15,10 @@ public class PropertyDumpItem
     public static PropertyDumpItem DummyErrorShouldStop(string path)
     {
         var errPath = path + Separator + "ErrorTooDeep";
-        return new PropertyDumpItem
+        return new()
         {
             Path = errPath,
-            Property = new PropReqResult(result: "error", fieldType: Attributes.FieldIsVirtual, path: new PropertyLookupPath().Add(errPath))
+            Property = new(result: "error", fieldType: Attributes.FieldIsVirtual, path: new PropertyLookupPath().Add(errPath))
             {
                 Name = "error",
             }

@@ -11,29 +11,22 @@ namespace ToSic.Eav.Apps.State;
 /// WIP v13 - should wrap a parent-app for re-use in a child-app
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ParentAppState
+public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inheritEntities)
 {
-    public ParentAppState(IAppStateCache appState, bool inheritTypes, bool inheritEntities)
-    {
-        AppState = appState;
-        InheritContentTypes = inheritTypes;
-        InheritEntities = inheritEntities;
-    }
-
     /// <summary>
     /// The parent App
     /// </summary>
-    public IAppStateCache AppState { get; }
+    public IAppStateCache AppState { get; } = appState;
 
     /// <summary>
     /// Determine if we should inherit ContentTypes or not
     /// </summary>
-    public bool InheritContentTypes;
+    public bool InheritContentTypes = inheritTypes;
 
     /// <summary>
     /// Set that entities / data should be inherited as well
     /// </summary>
-    public bool InheritEntities;
+    public bool InheritEntities = inheritEntities;
 
     /// <summary>
     /// The inherited content-types
@@ -50,7 +43,7 @@ public class ParentAppState
         {
             if (!InheritEntities || AppState == null) return new List<IEntity>(0);
             if (_entitiesCache != null) return _entitiesCache.List;
-            _entitiesCache = new SynchronizedEntityList(AppState,
+            _entitiesCache = new(AppState,
                 () => AppState.List.Select(WrapUnwrappedEntity).ToImmutableList());
             return _entitiesCache.List;
         }

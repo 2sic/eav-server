@@ -1,29 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Plumbing;
-using ToSic.Lib.Logging;
+﻿using System.Text;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsHtmlLog: InsightsHtmlTable
+internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
 {
-    private readonly ILogStoreLive _logStore;
-    public InsightsHtmlLog(ILogStoreLive logStore)
-    {
-        _logStore = logStore;
-    }
-
     internal string LogHistoryOverview()
     {
         var msg = "";
         try
         {
-            var segments = _logStore.Segments;
+            var segments = logStore.Segments;
             msg += P($"Logs Overview: {segments.Count}\n");
 
             var count = 0;
@@ -71,12 +59,12 @@ internal class InsightsHtmlLog: InsightsHtmlTable
             +Div("back to " + LinkTo("2sxc insights home", nameof(InsightsControllerReal.Help)))
             + H1($"2sxc Insights: Log {key}")
             + P("Status: ",
-                Strong(_logStore.Pause ? "paused" : "collecting"),
+                Strong(logStore.Pause ? "paused" : "collecting"),
                 ", toggle: ",
                 LinkTo(HtmlEncode("▶"), nameof(InsightsControllerReal.PauseLogs), more: "toggle=false"),
                 " | ",
                 LinkTo(HtmlEncode("⏸"), nameof(InsightsControllerReal.PauseLogs), more: "toggle=true"),
-                $" collecting #{_logStore.AddCount} of max {_logStore.MaxItems} (keep max {_logStore.SegmentSize} per set, then FIFO)"
+                $" collecting #{logStore.AddCount} of max {logStore.MaxItems} (keep max {logStore.SegmentSize} per set, then FIFO)"
                 + (showFlush
                     ? " " + LinkTo("flush " + key, nameof(InsightsControllerReal.LogsFlush), key: key).ToString()
                     : "")
@@ -93,7 +81,7 @@ internal class InsightsHtmlLog: InsightsHtmlTable
     internal string LogHistoryList(string key, string filter)
     {
         var msg = "";
-        if (!_logStore.Segments.TryGetValue(key, out var set))
+        if (!logStore.Segments.TryGetValue(key, out var set))
             return msg + "item not found";
 
         // Helper to check if any log has this key

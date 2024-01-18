@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text.Json;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc;
@@ -26,14 +19,16 @@ partial class Efc11Loader
     /// This is mostly for internal operations where initialization would cause trouble or unexpected side-effects.
     /// </summary>
     /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
+    /// <param name="codeRefTrail"></param>
     /// <returns>An object with everything which an app has, usually for caching</returns>
-    private IAppStateBuilder LoadAppStateFromDb(int appId)
+    private IAppStateBuilder LoadAppStateFromDb(int appId, CodeRefTrail codeRefTrail)
     {
         _logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
         var wrapLog = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
         var appIdentity =_appStates.IdentityOfApp(appId);
         var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
+        codeRefTrail.WithHere().AddMessage($"App: {appId}, {nameof(appGuidName)}: '{appGuidName}'");
 
         // This will contain the parent reference - in most cases it's the -42 App
         ParentAppState parent;
@@ -49,20 +44,21 @@ partial class Efc11Loader
                     $"The App {appIdentity.Show()} has an ancestor {ancestorAppId}. " +
                     $"This implies that it has an ancestor. 0 was expected, otherwise you need the feature.");
 
+            codeRefTrail.AddMessage($"Ancestor: {ancestorAppId}");
             var testParentApp = _appStates.GetCacheState(ancestorAppId);
-            parent = new ParentAppState(testParentApp, true, true);
+            parent = new(testParentApp, true, true);
         }
         else
         {
             // New v13 - use global app by default to share content-types
             var globalApp = _appStates.GetPresetReader();
-            parent = new ParentAppState(globalApp?.StateCache ?? throw new Exception("Can't find global app - which is required to build any other apps. "),
+            parent = new(globalApp?.StateCache ?? throw new("Can't find global app - which is required to build any other apps. "),
                 true, 
                 false);
         }
 
         var builder = _appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);
-        Update(builder.AppState, AppStateLoadSequence.Start);
+        Update(builder.AppState, AppStateLoadSequence.Start, codeRefTrail);
 
         return wrapLog.ReturnAsOk(builder);
     }
@@ -94,7 +90,7 @@ partial class Efc11Loader
     {
         var l = Log.Fn<IAppStateBuilder>($"{appId}", timer: true);
         codeRefTrail.WithHere();
-        var builder = LoadAppStateFromDb(appId);
+        var builder = LoadAppStateFromDb(appId, codeRefTrail);
         return l.ReturnAsOk(builder);
     }
 
@@ -109,26 +105,28 @@ partial class Efc11Loader
 
         var l = Log.Fn<IAppStateCache>($"{appId}", timer: true);
 
-        var builder = LoadAppStateFromDb(appId);
+        var builder = AppStateBuilderRaw(appId, codeRefTrail.WithHere().AddMessage("First Build")); // LoadAppStateFromDb(appId);
 
         if (builder.Reader.NameId == Constants.DefaultAppGuid)
             return l.Return(builder.AppState, "default app, don't auto-init");
 
         var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log)
-            ? LoadAppStateFromDb(appId).AppState
+            //? LoadAppStateFromDb(appId).AppState
+            ? AppStateBuilderRaw(appId, codeRefTrail.WithHere()).AppState
             : builder.AppState;
 
         return l.Return(result, "with init check");
     }
 
-    public IAppStateCache Update(IAppStateCache appStateOriginal, AppStateLoadSequence startAt, int[] entityIds = null)
+    public IAppStateCache Update(IAppStateCache appStateOriginal, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds = null)
     {
         var lMain = Log.Fn<IAppStateCache>(message: "What happens inside this is logged in the app-state loading log");
-        
+        codeRefTrail.WithHere().AddMessage($"App: {appStateOriginal.AppId}");
         var builder = _appStateBuilder.New().Init(appStateOriginal);
         builder.Load($"startAt: {startAt}, ids only:{entityIds != null}", state => 
         {
             var l = Log.Fn();
+            codeRefTrail.WithHere();
             // prepare metadata lists & relationships etc.
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
@@ -139,8 +137,9 @@ partial class Efc11Loader
             else
                 l.A("skipping metadata load");
 
-            if (startAt <= AppStateLoadSequence.ContentTypeLoad)
-                startAt = AppStateLoadSequence.ContentTypeLoad;
+            // 2024-01-12 2dm - this doesn't seem to do much, disable and remove ca. 2024-Q2
+            //if (startAt <= AppStateLoadSequence.ContentTypeLoad)
+            //    startAt = AppStateLoadSequence.ContentTypeLoad;
 
             // prepare content-types
             if (startAt <= AppStateLoadSequence.ContentTypeLoad)
@@ -157,9 +156,12 @@ partial class Efc11Loader
 
             // load data
             if (startAt <= AppStateLoadSequence.ItemLoad)
-                LoadEntities(builder, entityIds);
+                LoadEntities(builder, codeRefTrail, entityIds);
             else
+            {
+                codeRefTrail.AddMessage("skipping items load");
                 l.A("skipping items load");
+            }
 
             l.Done($"timers sql:sqlAll:{_sqlTotalTime}");
         });

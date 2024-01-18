@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Apps;
+﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Persistence.File;
 
@@ -45,7 +37,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
             if (_paths != null) return _paths;
             var wrapLog = Log.Fn<List<string>>(message: "start building path-list");
 
-            _paths = new List<string>();
+            _paths = [];
             // find all RepositoryInfoOfFolder and let them tell us what paths to use
             var types = AssemblyHandling.FindInherited(typeof(FolderBasedRepository), Log).ToList();
             Log.A($"found {types.Count} Path providers");

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Metadata;
-using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Lib.DI;
+﻿using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc
 {

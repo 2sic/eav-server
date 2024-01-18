@@ -1,11 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using IEntity = ToSic.Eav.Data.IEntity;
+﻿using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
 
@@ -17,11 +10,11 @@ namespace ToSic.Eav.DataSources;
 /// History
 /// * v12.10 added new Out streams `Distinct` removes duplicates, `And` keeps items which are in _all_ streams and `Xor` keeps items which are only in one stream
 /// </remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Merge Streams",
     UiHint = "Combine multiple streams into one",
-    Icon = Icons.MergeLeft,
+    Icon = DataSourceIcons.MergeLeft,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
     DynamicOut = false,
@@ -36,9 +29,9 @@ public sealed class StreamMerge: DataSourceBase
     /// <remarks>
     /// New in v12.10
     /// </remarks>
-    [PrivateApi] public const string DistinctStream = "Distinct";
-    [PrivateApi] public const string AndStream = "And";
-    [PrivateApi] public const string XorStream = "Xor";
+    [PrivateApi] internal const string DistinctStream = "Distinct";
+    [PrivateApi] internal const string AndStream = "And";
+    [PrivateApi] internal const string XorStream = "Xor";
 
 
     /// <inheritdoc />

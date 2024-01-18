@@ -13,7 +13,7 @@ partial class Entity
     // ReSharper disable once InheritdocInvalidUsage
     /// <inheritdoc />
     public object GetBestValue(string attributeName, string[] languages)
-        => FindPropertyInternal(new PropReqSpecs(attributeName, languages), null).Result;
+        => FindPropertyInternal(new(attributeName, languages), null).Result;
 
 
     // ReSharper disable once InheritdocInvalidUsage
@@ -31,20 +31,20 @@ partial class Entity
         {
             var attribute = Attributes[field];
             var (valueField, result) = attribute.GetTypedValue(languages);
-            return new PropReqResult(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
+            return new(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
         }
             
         if (field == EntityFieldTitle)
         {
             var attribute = Title;
             var valT = attribute?.GetTypedValue(languages);
-            return new PropReqResult(result: valT?.Result, fieldType: attribute?.Type.ToString() ?? FieldIsNotFound, path: path) { Value = valT?.ValueField, Source = this };
+            return new(result: valT?.Result, fieldType: attribute?.Type.ToString() ?? FieldIsNotFound, path: path) { Value = valT?.ValueField, Source = this };
         }
 
         // directly return internal properties, mark as virtual to not cause further Link resolution
         var valueFromInternalProperty = GetInternalPropertyByName(field);
         if (valueFromInternalProperty != null)
-            return new PropReqResult(result: valueFromInternalProperty, fieldType: FieldIsVirtual, path: path) { Source = this };
+            return new(result: valueFromInternalProperty, fieldType: FieldIsVirtual, path: path) { Source = this };
 
         // New Feature in 12.03 - Sub-Item Navigation if the data contains information what the sub-entity identifiers are
         try
@@ -54,7 +54,7 @@ partial class Entity
             if (subItem != null) return subItem;
         } catch { /* ignore */ }
 
-        return new PropReqResult(result: null, fieldType: FieldIsNotFound, path: path) { Source = this };
+        return new(result: null, fieldType: FieldIsNotFound, path: path) { Source = this };
     }
 
     protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)

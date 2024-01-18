@@ -7,10 +7,8 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Persistence.Logging;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ImportErrorLog : HelperBase, IEnumerable<ImportError>
+public class ImportErrorLog(ILog parentLog) : HelperBase(parentLog, "Imp.ErrLog"), IEnumerable<ImportError>
 {
-    public ImportErrorLog(ILog parentLog) : base(parentLog, "Imp.ErrLog") { }
-
     public ImportError this[int index] => Errors[index];
 
     public List<ImportError> Errors { get; } = new();
@@ -21,7 +19,7 @@ public class ImportErrorLog : HelperBase, IEnumerable<ImportError>
 
     public void Add(ImportErrorCode errorCode, string errorDetail = null, int? lineNumber = null, string lineDetail = null)
     {
-        Errors.Add(new ImportError(errorCode, errorDetail, lineNumber, lineDetail));
+        Errors.Add(new(errorCode, errorDetail, lineNumber, lineDetail));
         Log.A($"Imp-Err {errorCode} on line {lineDetail} details {lineDetail} msg: {errorDetail}");
     }
 

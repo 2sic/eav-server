@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Insights;
+﻿using ToSic.Eav.Apps.Internal.Insights;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 

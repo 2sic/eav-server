@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Languages;
+using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
-using ToSic.Eav.Run;
+using ToSic.Eav.Integration;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.Tests.Mocks

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Lib.Coding;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSource;
 
@@ -14,19 +8,12 @@ namespace ToSic.Eav.DataSource;
 ///
 /// It helps create a stream of standardized error entities.
 /// </summary>
+/// <remarks>
+/// Constructor - to find out if it's used anywhere
+/// </remarks>
 [PublicApi]
-public class DataSourceErrorHelper
+public class DataSourceErrorHelper(DataBuilder builder)
 {
-
-    /// <summary>
-    /// Constructor - to find out if it's used anywhere
-    /// </summary>
-    public DataSourceErrorHelper(DataBuilder builder)
-    {
-        _builder = builder;
-    }
-    private readonly DataBuilder _builder;
-
     [PrivateApi]
     internal DataSourceErrorHelper Link(IDataSource source)
     {
@@ -113,7 +100,8 @@ public class DataSourceErrorHelper
 
 
     [PrivateApi("usually not needed externally")]
-    public IEntity CreateErrorEntity(IDataSource source, string stream, string title, string message)
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    private IEntity CreateErrorEntity(IDataSource source, string stream, string title, string message)
     {
         var values = new Dictionary<string, object>
         {
@@ -133,9 +121,9 @@ public class DataSourceErrorHelper
 
         // Don't use the default data builder here, as it needs DI and this object
         // will often be created late when DI is already destroyed
-        var errorEntity = _builder.Entity.Create(appId: DataConstants.ErrorAppId, entityId: DataConstants.ErrorEntityId,
-            contentType: _builder.ContentType.Transient(DataConstants.ErrorTypeName),
-            attributes: _builder.Attribute.Create(values),
+        var errorEntity = builder.Entity.Create(appId: DataConstants.ErrorAppId, entityId: DataConstants.ErrorEntityId,
+            contentType: builder.ContentType.Transient(DataConstants.ErrorTypeName),
+            attributes: builder.Attribute.Create(values),
             titleField: DataConstants.ErrorFieldTitle);
         return errorEntity;
     }

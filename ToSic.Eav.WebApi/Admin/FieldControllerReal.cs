@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Apps.Work;
-using ToSic.Eav.Data;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-
-namespace ToSic.Eav.WebApi.Admin;
+﻿namespace ToSic.Eav.WebApi.Admin;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FieldControllerReal : ServiceBase, IFieldController

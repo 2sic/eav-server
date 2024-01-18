@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSources;
 
-public class CompareOperators
+internal class CompareOperators
 {
     public const string ErrorInvalidOperator = "Invalid Operator";
 

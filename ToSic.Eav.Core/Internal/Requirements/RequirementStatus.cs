@@ -2,18 +2,11 @@
 
 namespace ToSic.Eav.Internal.Requirements;
 
-public class RequirementStatus
+public class RequirementStatus(bool isOk, Aspect aspect = default, string message = default)
 {
-    public RequirementStatus(bool isOk, Aspect aspect = default, string message = default)
-    {
-        IsOk = isOk;
-        Aspect = aspect;
-        Message = message;
-    }
+    public bool IsOk { get; } = isOk;
 
-    public bool IsOk { get; }
+    public Aspect Aspect { get; } = aspect;
 
-    public Aspect Aspect { get; }
-
-    public string Message { get; }
+    public string Message { get; } = message;
 }

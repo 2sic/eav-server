@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence.File;
+﻿using ToSic.Eav.Persistence.File;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Internal.Configuration;
+﻿namespace ToSic.Eav.Internal.Configuration;
 
 /// <summary>
 /// Global Eav Configuration
@@ -14,7 +12,7 @@ public class DbConfiguration : IDbConfiguration
     public string ConnectionString
     {
         get => _conStr 
-               ?? throw new Exception("Couldn't load Connection String as SetConnectionString must have been forgotten");
+               ?? throw new("Couldn't load Connection String as SetConnectionString must have been forgotten");
         set
         {
             // Make sure the connection string is only set once

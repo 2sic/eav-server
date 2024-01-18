@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ToSic.Eav.DataFormats.EavLight;
+﻿namespace ToSic.Eav.DataFormats.EavLight;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class EavLightLinqExtensions
@@ -23,7 +20,7 @@ public static class EavLightLinqExtensions
 
         if (source is ICollection<TSource> collection)
         {
-            if (collection.Count == 0) return new EavLightEntity();
+            if (collection.Count == 0) return new();
 
             if (collection is TSource[] array) return ToEavLight(array, keySelector);
 
@@ -60,7 +57,7 @@ public static class EavLightLinqExtensions
         if (source is ICollection<TSource> collection)
         {
             if (collection.Count == 0)
-                return new EavLightEntity();
+                return new();
 
             if (collection is TSource[] array) return ToEavLight(array, keySelector, elementSelector);
 

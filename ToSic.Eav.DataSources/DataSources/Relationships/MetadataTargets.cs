@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
@@ -23,15 +16,14 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Metadata Targets",
     UiHint = "Get the item's targets (if they are metadata)",
-    Icon = Icons.Metadata,
+    Icon = DataSourceIcons.Metadata,
     Type = DataSourceType.Lookup,
     NameId = "afaf73d9-775c-4932-aebd-23e898b1643e",
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     DynamicOut = false,
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-
 public class MetadataTargets: MetadataDataSourceBase
 {
     /// <summary>

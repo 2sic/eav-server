@@ -66,7 +66,7 @@ public class EavSystemLoader : LoaderBase
     public void StartUp()
     {
         // Prevent multiple Inits
-        if (_startupAlreadyRan) throw new Exception("Startup should never be called twice.");
+        if (_startupAlreadyRan) throw new("Startup should never be called twice.");
         _startupAlreadyRan = true;
 
         // Pre-Load the Assembly list into memory to log separately
@@ -194,7 +194,7 @@ public class EavSystemLoader : LoaderBase
             .Where(f => f.Enabled.HasValue)
             .Select(FeaturePersistenceService.FeatureConfigBuilder).ToList();
 
-        return new FeatureStatesPersisted
+        return new()
         {
             Features = storedFeaturesButNotUpdated.Union(updatedFeatures).ToList(),
             Fingerprint = _fingerprint.GetFingerprint()

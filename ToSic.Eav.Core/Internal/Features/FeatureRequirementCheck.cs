@@ -4,12 +4,11 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Internal.Features;
 
-public class FeatureRequirementCheck: RequirementCheckBase
+public class FeatureRequirementCheck(LazySvc<IEavFeaturesService> features) : RequirementCheckBase
 {
     public const string ConditionIsFeature = "feature";
 
-    public FeatureRequirementCheck(LazySvc<IEavFeaturesService> features) => Features = features;
-    private LazySvc<IEavFeaturesService> Features { get; }
+    private LazySvc<IEavFeaturesService> Features { get; } = features;
 
     public override string NameId => ConditionIsFeature;
 

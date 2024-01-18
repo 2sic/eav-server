@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data;
 /// versioning, publishing etc.
 /// > We recommend you read about the [](xref:Basics.Data.Index)
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IPropertyLookup, IHasMetadata, ICanBeEntity
 {
     /// <summary>

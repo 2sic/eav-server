@@ -1,12 +1,6 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Data.Build;
 using static System.StringComparer;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -15,15 +9,15 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// DataSource to only pass through configured AttributeNames - other attributes/properties are removed from the entities.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Remove Attribute/Property",
     UiHint = "Remove attributes/properties to limit what is available",
-    Icon = Icons.Delete,
+    Icon = DataSourceIcons.Delete,
     Type = DataSourceType.Modify, 
     NameId = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new [] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
     HelpLink = "https://go.2sxc.org/DsAttributeFilter")]
 
@@ -31,8 +25,8 @@ public class AttributeFilter : Eav.DataSource.DataSourceBase
 {
     #region Constants
 
-    [PrivateApi] public const string ModeKeep = "+";
-    [PrivateApi] public const string ModeRemove = "-";
+    [PrivateApi] internal const string ModeKeep = "+";
+    [PrivateApi] internal const string ModeRemove = "-";
 
     #endregion
         

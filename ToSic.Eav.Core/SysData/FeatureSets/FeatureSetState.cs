@@ -24,9 +24,10 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.SysData;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class FeatureSetState: AspectState<FeatureSet>, IHasRawEntity<IRawEntity>
+public class FeatureSetState(FeatureSet featureSet)
+    : AspectState<FeatureSet>(featureSet, true), IHasRawEntity<IRawEntity>
 {
-    public FeatureSetState(FeatureSet featureSet) : base(featureSet, true /* def true as otherwise we wouldn't have the config */ ) { }
+    /* def true as otherwise we wouldn't have the config */
 
     public string Title { get; internal set; }
     public string LicenseKey { get; internal set; }

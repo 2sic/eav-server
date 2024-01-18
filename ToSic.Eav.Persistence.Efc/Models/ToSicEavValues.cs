@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Persistence.Efc.Models;
+﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class ToSicEavValues//: RepoValue

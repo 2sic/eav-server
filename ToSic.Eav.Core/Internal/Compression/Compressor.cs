@@ -4,17 +4,12 @@ using ToSic.Eav.Internal.Features;
 
 namespace ToSic.Eav.Internal.Compression;
 
-public class Compressor
+public class Compressor(IEavFeaturesService features = null)
 {
-    private readonly bool _featureEnabled;
-    private ICompressor _compressor;
+    private readonly bool _featureEnabled = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;
+    private ICompressor _compressor = CompressorFactory();
 
-    public Compressor(IEavFeaturesService features = null)
-    {
-        // TODO: review with 2DM, because fallback is to "true" (used by unit testing)
-        _featureEnabled = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;
-        _compressor = CompressorFactory();
-    }
+    // TODO: review with 2DM, because fallback is to "true" (used by unit testing)
 
     public Compressor InitCompressor(CompressorType compressorType)
     {
@@ -24,23 +19,14 @@ public class Compressor
 
     private static ICompressor CompressorFactory(CompressorType compressorType = CompressorType.GZip)
     {
-        switch (compressorType)
+        return compressorType switch
         {
-            case CompressorType.NoCompression:
-                return null;
-
-            case CompressorType.Deflate:
-                return new DeflateCompressor();
-
-            case CompressorType.GZip:
-                return new GZipCompressor();
-
-            case CompressorType.Brotli:
-                return new BrotliCompressor();
-
-            default:
-                throw new ArgumentOutOfRangeException(nameof(compressorType), compressorType, null);
-        }
+            CompressorType.NoCompression => null,
+            CompressorType.Deflate => new DeflateCompressor(),
+            CompressorType.GZip => new GZipCompressor(),
+            CompressorType.Brotli => new BrotliCompressor(),
+            _ => throw new ArgumentOutOfRangeException(nameof(compressorType), compressorType, null)
+        };
     }
 
     public bool IsEnabled => _featureEnabled && _compressor != null;

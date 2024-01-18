@@ -14,7 +14,7 @@ partial class PropertyStack
     public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path)
     {
         // No sources - return empty
-        if (Sources == null || !Sources.Any()) return new List<PropertyDumpItem>();
+        if (Sources == null || !Sources.Any()) return new();
 
         // If path is empty, use Name as base path
         if (string.IsNullOrEmpty(path)) path = NameId ?? "";

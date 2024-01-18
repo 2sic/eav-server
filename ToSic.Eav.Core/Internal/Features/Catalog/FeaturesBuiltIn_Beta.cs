@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.SysData;
 
@@ -14,7 +13,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature AdamRestrictLookupToEntity = new(
         nameof(AdamRestrictLookupToEntity),
-        new Guid("702f694c-53bd-4d03-b75c-4dad9c4fb852"),
+        new("702f694c-53bd-4d03-b75c-4dad9c4fb852"),
         "ADAM - Restrict file lookup to the same entity (BETA, not final)",
         false,
         false,

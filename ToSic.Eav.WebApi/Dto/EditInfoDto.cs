@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Shared;
+﻿using ToSic.Eav.Data.Shared;
 
 namespace ToSic.Eav.WebApi.Dto;
 

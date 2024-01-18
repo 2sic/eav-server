@@ -2,7 +2,8 @@
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Caching;
+using ToSic.Eav.DataSource.Internal;
+using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.Caching;
 using ToSic.Eav.DataSourceTests.TestData;

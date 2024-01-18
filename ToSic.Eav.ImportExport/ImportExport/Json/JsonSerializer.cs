@@ -1,8 +1,5 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Serialization;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Serialization.Internal;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 

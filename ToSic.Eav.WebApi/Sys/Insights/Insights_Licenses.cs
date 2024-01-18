@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ToSic.Razor.Markup;
+﻿using ToSic.Razor.Markup;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;

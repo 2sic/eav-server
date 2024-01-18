@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Net;
 using System.Text.Json;
 using ToSic.Eav.Internal.Configuration;
@@ -9,15 +6,12 @@ using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Security.Fingerprint;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
 using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
 using ToSic.Eav.WebApi.Validation;
 using ToSic.Lib.Documentation;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses;
 
@@ -124,14 +118,14 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
     {
         var l = Log.Fn<LicenseFileResultDto>();
         if (!uploadInfo.HasFiles())
-            return l.ReturnAndLog(new LicenseFileResultDto { Success = false, Message = "no file in upload" },
+            return l.ReturnAndLog(new() { Success = false, Message = "no file in upload" },
                 "no file in upload");
 
         var files = new List<FileUploadDto>();
         for (var i = 0; i < uploadInfo.Count; i++)
         {
             var (fileName, stream) = uploadInfo.GetStream(i);
-            files.Add(new FileUploadDto { Name = fileName, Stream = stream });
+            files.Add(new() { Name = fileName, Stream = stream });
         }
 
         foreach (var file in files) SaveLicenseFile(file);
@@ -139,7 +133,7 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
         // reload license and features
         _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-        return l.ReturnAndLog(new LicenseFileResultDto { Success = true, Message = "ok" }, "ok");
+        return l.ReturnAndLog(new() { Success = true, Message = "ok" }, "ok");
     }
 
 
@@ -177,7 +171,7 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
             catch (WebException e)
             {
                 Log.Ex(e);
-                throw new Exception("Could not download license file from '" + url + "'.", e);
+                throw new("Could not download license file from '" + url + "'.", e);
             }
             finally
             {
@@ -190,7 +184,7 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
         // reload license and features
         _systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-        return l.ReturnAndLog(new LicenseFileResultDto { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
+        return l.ReturnAndLog(new() { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
     }
 
     private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);

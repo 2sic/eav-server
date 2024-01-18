@@ -1,9 +1,6 @@
-﻿using System;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource.Caching;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Services;
+﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.DataSource.Internal.Configuration;
 
 namespace ToSic.Eav.DataSource;
 
@@ -17,26 +14,27 @@ namespace ToSic.Eav.DataSource;
 /// This has changed a lot in v15 (breaking change).
 /// Read about it in the docs.
 /// </remarks>
-[PrivateApi]
+[PublicApi]
 public abstract class CustomDataSourceAdvanced: DataSourceBase
 {
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public new class MyServices: DataSourceBase.MyServices
     {
         [PrivateApi]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public IDataFactory DataFactory { get; }
 
         [PrivateApi]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public MyServices(
-            DataSourceConfiguration configuration,
+            IDataSourceConfiguration configuration,
             LazySvc<DataSourceErrorHelper> errorHandler,
             ConfigurationDataLoader configDataLoader,
             LazySvc<IDataSourceCacheService> cacheService,
             IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, cacheService)
         {
-            ConnectServices(
-                DataFactory = dataFactory
-            );
+            DataFactory = ConnectService(dataFactory);
         }
     }
 

@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Lib.Documentation;
@@ -13,7 +12,7 @@ namespace ToSic.Eav.LookUp;
 /// <remarks></remarks>
 [PrivateApi("we might still rename this some day...")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class TokenReplace
+public class TokenReplace(ILookUpEngine lookupEngine)
 {
     #region RegEx - the core formula
     // Commented Regular Expression which doesn't capture non-tokens
@@ -54,11 +53,8 @@ public class TokenReplace
 
     private ILookUp FindSource(string key) => LookupEngine.FindSource(key);
 
-    public ILookUpEngine LookupEngine { get; }
-    public TokenReplace(ILookUpEngine lookupEngine)
-    {
-        LookupEngine = lookupEngine ?? throw new Exception("Can't initialize TokenReplace without engine");
-    }
+    public ILookUpEngine LookupEngine { get; } = lookupEngine ?? throw new("Can't initialize TokenReplace without engine");
+
     #endregion
 
 

@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Query;
-using ToSic.Eav.DataSource.VisualQuery;
+﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Services;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -30,7 +21,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "DataSources",
     UiHint = "List the DataSources available in the system",
-    Icon = Icons.ArrowUpBoxed,
+    Icon = DataSourceIcons.ArrowUpBoxed,
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
     Audience = Audience.Advanced,
@@ -73,7 +64,7 @@ public sealed class QueryInfo : DataSourceBase
             QueryBuilder = queryBuilder,
             _queryManager = queryManager,
             _attributesGenerator = attributesGenerator,
-            _dataFactory = dataFactory.New(options: new DataFactoryOptions(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
+            _dataFactory = dataFactory.New(options: new(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
         );
         ProvideOut(GetStreamsOfQuery);
         ProvideOut(GetAttributes, "Attributes");
@@ -141,7 +132,7 @@ public sealed class QueryInfo : DataSourceBase
 
         // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
         var found = _queryManager.Value.FindQuery(this, qName, recurseParents: 3)
-                    ?? throw new Exception($"Can't build query info - query not found '{qName}'");
+                    ?? throw new($"Can't build query info - query not found '{qName}'");
 
         var builtQuery = QueryBuilder.GetDataSourceForTesting(QueryBuilder.Create(found, AppId),
             lookUps: Configuration.LookUpEngine);

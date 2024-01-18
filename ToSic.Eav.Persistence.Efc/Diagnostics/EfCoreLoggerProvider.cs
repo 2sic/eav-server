@@ -1,5 +1,4 @@
 ﻿#if NETFRAMEWORK
-using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 

@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.WebApi.Sys.Insights;
+﻿namespace ToSic.Eav.WebApi.Sys.Insights;
 
 internal class InsightsGlobalTypes(IAppStates appStates) : InsightsTypes(appStates, "GlobalTypes")
 {

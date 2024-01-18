@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Data;
-using System.Linq;
-using ToSic.Eav.Data;
+﻿using System.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 using SqlDataTable = System.Data.DataTable;
 
@@ -19,7 +11,7 @@ namespace ToSic.Eav.DataSources;
 /// Provide Entities from a System.Data.DataTable. <br/>
 /// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public class DataTable : CustomDataSourceAdvanced
 {
     private readonly IDataFactory _dataFactory;
@@ -102,7 +94,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
     /// </remarks>
     [PrivateApi]
-    public DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+    internal DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
     {
         Source = source;
         // Only set the values if they were explicitly provided
@@ -133,11 +125,11 @@ public class DataTable : CustomDataSourceAdvanced
     {
         // Validate Columns
         if (!source.Columns.Contains(entityIdField))
-            throw new Exception($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
+            throw new($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
         if (!source.Columns.Contains(titleField))
-            throw new Exception($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
+            throw new($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-        var tblFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
+        var tblFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
             
         // Populate a new Dictionary with EntityModels
         var result = new List<IEntity>();
@@ -147,7 +139,7 @@ public class DataTable : CustomDataSourceAdvanced
             var entityId = global::System.Convert.ToInt32(row[entityIdField]);
             var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField)
                 .ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-            values = new Dictionary<string, object>(values,
+            values = new(values,
                 StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
             var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
 

@@ -1,25 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Api.Api01;
+using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Data;
-using ToSic.Eav.Plumbing;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.WebApi.App;
 
-internal class AppContentEntityBuilder: HelperBase
+internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "Api.Bldr")
 {
-    public AppContentEntityBuilder(ILog parentLog) : base(parentLog, "Api.Bldr")
-    {
-    }
-
-
     /// <summary>
     /// Construct an import-friendly, type-controlled value-dictionary to create or update an entity
     /// </summary>
@@ -79,7 +67,7 @@ internal class AppContentEntityBuilder: HelperBase
 
                     break;
                 default:
-                    throw new Exception(
+                    throw new(
                         $"Tried to create attribute '{attrName}' but the type is not known: '{attrDef.Type}'");
             }
 

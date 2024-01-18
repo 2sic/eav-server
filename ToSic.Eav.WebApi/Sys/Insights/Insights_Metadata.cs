@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
-using static ToSic.Razor.Blade.Tag;
+﻿using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 

@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Context;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Lib.Services;
+﻿using ToSic.Eav.Context;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
-using ToSic.Eav.Apps.Work;
 
 namespace ToSic.Eav.WebApi;
 
@@ -47,7 +39,7 @@ public class EntityPickerApi : ServiceBase
             contentType = appEnts.AppWorkCtx.AppState.GetContentType(contentTypeName);
             l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
             if (contentType == null)
-                return l.Return(new List<EntityForPickerDto>(),
+                return l.Return(new(),
                     "A type was specified but not found, will return empty list");
         }
 

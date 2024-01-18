@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Eav.Serialization;
+﻿using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight;

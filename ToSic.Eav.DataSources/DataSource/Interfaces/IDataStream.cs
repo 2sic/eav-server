@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Caching;
+﻿using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Streams;
-using ToSic.Lib.Documentation;
+using ToSic.Eav.DataSource.Streams.Internal;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource;
@@ -10,7 +9,7 @@ namespace ToSic.Eav.DataSource;
 /// Represents a DataStream object. This is a stream of IEntity objects, which has a source and a name.
 /// A stream can be read from, and it can be attached to upstream data-sources for further processing.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLinkable
 {
     /// <summary>
@@ -33,15 +32,18 @@ public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLi
     string Name { get; }
 
     /// <summary>
-    /// A special scope category for the stream. Important to hide system data types to the normal developer
+    /// A special scope category for the stream.
+    /// Important to hide system data types to the normal developer
     /// </summary>
     [PrivateApi("New / WIP 12.10")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     string Scope { get; }
 
     /// <summary>
     /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     DataStreamCacheStatus Caching { get; }
 
     /// <summary>
@@ -49,5 +51,6 @@ public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLi
     /// It will not flush the up-stream caches.
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     void ResetStream();
 }

@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Efc;
-using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Repository.Efc;
 

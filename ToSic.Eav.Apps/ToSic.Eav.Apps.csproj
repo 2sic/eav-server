@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net472;net7.0;</TargetFrameworks>
     <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
-    <RootNamespace>ToSic.Eav.Apps</RootNamespace>
+    <RootNamespace>ToSic</RootNamespace>
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
@@ -26,6 +26,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='efc and WebApi|AnyCPU'" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug eav only|AnyCPU'" />
+
+  <ItemGroup>
+    <Compile Remove="Eav.Apps.Internal\Work\Apps\**" />
+    <EmbeddedResource Remove="Eav.Apps.Internal\Work\Apps\**" />
+    <None Remove="Eav.Apps.Internal\Work\Apps\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />

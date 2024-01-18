@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
 
@@ -55,7 +54,7 @@ public class LookUpInStack: LookUpIn<IPropertyStack>
         key = key.Replace(":", ".");
 
         // Try to just find, and format the result if all is ok
-        var propReqResult = Data.InternalGetPath(new PropReqSpecs(key, _dimensions), new PropertyLookupPath());
+        var propReqResult = Data.InternalGetPath(new(key, _dimensions), new());
         if (propReqResult.Result != null)
             return FormatValue(propReqResult.Result, format, _dimensions);
 

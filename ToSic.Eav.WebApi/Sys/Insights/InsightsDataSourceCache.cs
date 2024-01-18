@@ -1,11 +1,7 @@
-﻿using System.Linq;
-using System.Text;
-using ToSic.Eav.DataSource.Caching;
-using ToSic.Eav.Plumbing;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
+﻿using System.Text;
+using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Razor.Blade;
-using static ToSic.Eav.DataSource.Caching.DataSourceListCache;
+using static ToSic.Eav.DataSource.Internal.Caching.DataSourceListCache;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 

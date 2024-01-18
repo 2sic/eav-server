@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource.Caching;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Caching;
+using ToSic.Eav.DataSource.Internal.Caching;
 
 namespace ToSic.Eav.DataSource;
 
@@ -12,19 +9,23 @@ partial class DataSourceBase
 
     /// <inheritdoc />
     [PrivateApi]
-    public List<string> CacheRelevantConfigurations { get; } = new();
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public List<string> CacheRelevantConfigurations { get; } = [];
 
 
     [PrivateApi]
-    public ICacheKeyManager CacheKey => _cacheKey ??= new CacheKey(this);
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public ICacheKeyManager CacheKey => _cacheKey ??= new(this);
     private CacheKey _cacheKey;
 
     /// <inheritdoc />
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public virtual string CachePartialKey => CacheKey.CachePartialKey;
 
     /// <inheritdoc />
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public virtual string CacheFullKey => CacheKey.CacheFullKey;
 
     /// <inheritdoc />
@@ -40,16 +41,4 @@ partial class DataSourceBase
         || In[DataSourceConstants.StreamDefaultName].Source.CacheChanged(dependentTimeStamp);
 
     #endregion
-
-
-    ///// <inheritdoc />
-    //[PrivateApi]
-    //// TODO: MOVING TO DataSourceCacheService
-    //public virtual void PurgeList(bool cascade = false)// => Log.Do($"{cascade} - on {GetType().Name}", l =>
-    //{
-    //    Services.DsCacheSvc.Value.UnCache(0,this, cascade);
-    //    //foreach (var stream in In)
-    //    //    stream.Value.PurgeList(cascade);
-    //    //if (!In.Any()) l.A("No streams found to clear");
-    //}//);
 }

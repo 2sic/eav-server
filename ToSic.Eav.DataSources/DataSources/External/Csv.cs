@@ -1,19 +1,10 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using ToSic.Eav.Context;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -24,11 +15,11 @@ namespace ToSic.Eav.DataSources;
 /// <remarks>
 /// * Renamed from `CsvDataSource` to `Csv` in v15.06 for consistency. Believe this should not affect anybody.
 /// </remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "CSV Data",
     UiHint = "Load data from a CSV file",
-    Icon = Icons.Description,
+    Icon = DataSourceIcons.Description,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
     DynamicOut = false,
@@ -38,7 +29,7 @@ public class Csv : CustomDataSourceAdvanced
 {
     #region Known errors
     [PrivateApi]
-    public const string ErrorIdNaN = "ID is not a number";
+    internal const string ErrorIdNaN = "ID is not a number";
 
     #endregion
 
@@ -219,7 +210,7 @@ public class Csv : CustomDataSourceAdvanced
                                  $"{commonErrorsIdTitle}"));
             }
 
-            var csvFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName));
+            var csvFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: ContentType, titleField: titleColName));
 
             // Parse data
             while (parser.Read())

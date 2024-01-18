@@ -15,11 +15,13 @@ public interface ICacheKey
     /// Unique key-id for this specific situation - could be the same for all instances, or could vary by some parameter.
     /// </summary>
     /// <returns>A string which is specific to this cache-item.</returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     string CachePartialKey { get; }
 
     /// <summary>
     /// Combination of the current key and all keys of upstream cached items, to create a long unique key for this context.
     /// </summary>
     /// <returns>Full key containing own partial key and upstream keys.</returns>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
     string CacheFullKey { get; }
 }

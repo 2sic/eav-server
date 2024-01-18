@@ -9,15 +9,8 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
 
-internal class RawRelationshipsConverter: HelperBase
+internal class RawRelationshipsConverter(DataBuilder builder, ILog parentLog) : HelperBase(parentLog, "Eav.RawRel")
 {
-    private readonly DataBuilder _builder;
-
-    public RawRelationshipsConverter(DataBuilder builder, ILog parentLog) : base(parentLog, "Eav.RawRel")
-    {
-        _builder = builder;
-    }
-
     internal Dictionary<string, object> RelationshipsToAttributes(IDictionary<string, object> values, ILookup<object, IEntity> relationships)
     {
         var l = Log.Fn<Dictionary<string, object>>();
@@ -25,10 +18,10 @@ internal class RawRelationshipsConverter: HelperBase
             v => v.Key,
             v =>
             {
-                if (!(v.Value is RawRelationship rawRelationship)) return v.Value;
+                if (v.Value is not RawRelationship rawRelationship) return v.Value;
                 var lookupSource =
                     new LookUpEntitiesSource<object>(rawRelationship.Keys, relationships);
-                var relAttr = _builder.Attribute.Relationship(v.Key, lookupSource);
+                var relAttr = builder.Attribute.Relationship(v.Key, lookupSource);
                 return relAttr;
             }, StringComparer.InvariantCultureIgnoreCase);
         return l.Return(valuesWithRelationships, $"{valuesWithRelationships.Count}");

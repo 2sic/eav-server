@@ -10,13 +10,8 @@ namespace ToSic.Eav.Caching.CachingMonitors;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
 {
-    private readonly Hashtable _dirMonitors;
-    private readonly object _lock;
-    public FolderChangeNotificationSystem()
-    {
-        _dirMonitors = Hashtable.Synchronized(new Hashtable(StringComparer.OrdinalIgnoreCase));
-        _lock = new object();
-    }
+    private readonly Hashtable _dirMonitors = Hashtable.Synchronized(new(StringComparer.OrdinalIgnoreCase));
+    private readonly object _lock = new();
 
     public class DirectoryMonitor
     {
@@ -34,9 +29,9 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
         {
             //_folderName = folderName;
             _onChangedCallback = onChangedCallback;
-            ChangedHandler = new FileSystemEventHandler(this.OnChanged);
-            ErrorHandler = new ErrorEventHandler(this.OnError);
-            RenamedHandler = new RenamedEventHandler(this.OnRenamed);
+            ChangedHandler = new(this.OnChanged);
+            ErrorHandler = new(this.OnError);
+            RenamedHandler = new(this.OnRenamed);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -74,13 +69,13 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
         if (onChangedCallback == null) throw new ArgumentNullException(nameof(onChangedCallback));
             
         var directoryInfo = new DirectoryInfo(dirPath);
-        if (!(_dirMonitors[dirPath] is DirectoryMonitor dirMon))
+        if (_dirMonitors[dirPath] is not DirectoryMonitor dirMon)
         {
             lock (_lock)
             {
                 dirMon = _dirMonitors[dirPath] as DirectoryMonitor ?? new DirectoryMonitor
                 {
-                    FileSystemWatcher = new FileSystemWatcher(dirPath)
+                    FileSystemWatcher = new(dirPath)
                     {
                         NotifyFilter = NotifyFilters.FileName
                                        | NotifyFilters.DirectoryName
@@ -118,8 +113,8 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
     {
         if (dirPath == null) throw new ArgumentNullException(nameof(dirPath));
         if (state == null) throw new ArgumentNullException(nameof(state));
-        if (!(state is FolderChangeEventTarget target)) throw new ArgumentException("target is null");
-        if (!(_dirMonitors[dirPath] is DirectoryMonitor dirMon)) return;
+        if (state is not FolderChangeEventTarget target) throw new ArgumentException("target is null");
+        if (_dirMonitors[dirPath] is not DirectoryMonitor dirMon) return;
         lock (dirMon)
         {
             dirMon.FileSystemWatcher.Changed -= target.ChangedHandler;

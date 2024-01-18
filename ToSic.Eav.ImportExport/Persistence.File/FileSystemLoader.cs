@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
+﻿using System.IO;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Serialization.Internal;
 using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-using static ToSic.Eav.ImportExport.ImpExpConstants;
+using static ToSic.Eav.ImportExport.Internal.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence.File;
@@ -68,7 +60,7 @@ public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
             // #SharedFieldDefinition
             // Also provide AppState if possible, for new #SharedFieldDefinition
             if (EntitiesSource is IHasMetadataSource withAppState)
-                _ser.DeserializationSettings = new JsonDeSerializationSettings
+                _ser.DeserializationSettings = new()
                 {
                     CtAttributeMetadataAppState = withAppState
                 };

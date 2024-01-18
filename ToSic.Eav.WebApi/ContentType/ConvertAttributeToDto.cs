@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Shared;
+﻿using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Eav.WebApi.Security;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-using ToSic.Eav.Apps.Work;
-using ToSic.Eav.Plumbing;
-using ToSic.Lib.Logging;
 using static ToSic.Eav.Data.AttributeMetadata;
 
 
@@ -57,7 +46,9 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
         var type = item.Type;
         var ancestorDecorator = type.GetDecorator<IAncestor>();
         var inputType = FindInputTypeOrUnknownOld(a);
-        var appInputTypes = _inputTypes.New(_appId).GetInputTypes();
+        var appInputTypes = _inputTypes.New(_appId).GetInputTypes()
+            .OrderBy(it => it.Type) // order for easier debugging
+            .ToList();
         var inputConfigs = GetInputTypesAndMetadata(inputType, a, type, ancestorDecorator, appInputTypes);
 
         var dto= new ContentTypeFieldDto
@@ -71,14 +62,14 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
             AttributeId = a.AttributeId,
             Metadata = inputConfigs.InputMetadata,
             InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
-            Permissions = new HasPermissionsDto { Count = a.Metadata.Permissions.Count() },
+            Permissions = new() { Count = a.Metadata.Permissions.Count() },
 
             // new in 12.01
             IsEphemeral = a.Metadata.GetBestValue<bool>(MetadataFieldAllIsEphemeral, TypeGeneral),
             HasFormulas = a.HasFormulas(Log),
 
             // Read-Only new in v13
-            EditInfo = new EditInfoAttributeDto(type, a),
+            EditInfo = new(type, a),
 
             // #SharedFieldDefinition
             Guid = a.Guid,
@@ -93,7 +84,7 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
     }
 
     private (IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)
-        GetInputTypesAndMetadata(string inputType, IContentTypeAttribute a, IContentType type, IAncestor ancestorDecorator, List<InputTypeInfo> appInputTypes)
+        GetInputTypesAndMetadata(string inputType, IContentTypeAttribute a, IContentType type, IAncestor ancestorDecorator, IReadOnlyCollection<InputTypeInfo> appInputTypes)
     {
         var l = Log.Fn<(IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)>();
         var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
@@ -101,7 +92,7 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
         // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side-effects
         var attribMetadata = (ContentTypeAttributeMetadata)a.Metadata;
         var mdToKeep = attribMetadata
-            .Where(m => configTypes.Keys.Contains(m.Type.NameId))
+            .Where(m => configTypes.Keys.Contains(m.Type.NameId) || configTypes.Keys.Contains(m.Type.Name))
             .ToList();
 
         l.A($"{nameof(mdToKeep)}: {mdToKeep.Count}; " + l.Try(() => string.Join(",", mdToKeep.Select(m => $"{m.Type}/{m}"))));
@@ -138,12 +129,12 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
 
         // Check if we're inheriting any metadata, as we don't want to give the 
         // inherited MD to the user to edit.
-        var mdInheritList = a.SysSettings?.InheritMetadataOf;
-        if (!mdInheritList.SafeAny()) return l.Return(configTypes, "no restrictions");
+        var mdInheritList = a.SysSettings?.InheritMetadataOf?.ToList();
+        if (mdInheritList.SafeNone()) return l.Return(configTypes, "no restrictions");
 
-        var inheritExceptions = mdInheritList.Where(pair => pair.Key == Guid.Empty);
+        var inheritExceptions = mdInheritList.Where(pair => pair.Key == Guid.Empty).ToList();
 
-        l.A($"{nameof(inheritExceptions)}: {inheritExceptions.Count()}");
+        l.A($"{nameof(inheritExceptions)}: {inheritExceptions.Count}");
 
         configTypes = configTypes
             .Where(ctPair => inheritExceptions.Any(ie => ie.Value == ctPair.Key))
@@ -195,23 +186,27 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
     /// </summary>
     /// <param name="inputTypeName"></param>
     /// <param name="inputTypes"></param>
-    /// <returns></returns>
+    /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
     private IDictionary<string, bool> GetFieldConfigTypes(string inputTypeName, IReadOnlyCollection<InputTypeInfo> inputTypes)
     {
         var l = Log.Fn<IDictionary<string, bool>>();
 
-        InputTypeInfo FindInputType(string name) => inputTypes.FirstOrDefault(i => i.Type.EqualsInsensitive(name));
-
         var inputType = FindInputType(inputTypeName);
         if (inputType == null)
-            return l.Return(new Dictionary<string, bool> { [TypeGeneral] = true }, "error - can't find type");
+            return l.Return(InputTypeInfo.NewDefaultConfigTypesDic(), "error - can't find type");
 
+        // Get all types, eg @All, @Entity, @entity-default
+        // or if configured eg. @All, @string-picker
         var dicFromInfo = inputType.ConfigTypesDic();
 
+        // Filer the ones that really exist for safety
         var finalDic = dicFromInfo
             .Where(pair => inputTypes.Any(i => i.Type.EqualsInsensitive(pair.Key.Trim('@'))))
             .ToDictionary(pair => pair.Key, pair => pair.Value);
 
         return l.Return(finalDic, $"{finalDic.Count}");
+
+        InputTypeInfo FindInputType(string name)
+            => inputTypes.FirstOrDefault(i => i.Type.EqualsInsensitive(name));
     }
 }

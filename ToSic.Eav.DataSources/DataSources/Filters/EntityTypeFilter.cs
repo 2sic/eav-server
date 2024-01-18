@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using ToSic.Eav.Apps;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -16,15 +8,15 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Keep only entities of a specific content-type
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Type-Filter",
     UiHint = "Only keep items of the specified type",
-    Icon = Icons.RouteAlt,
+    Icon = DataSourceIcons.RouteAlt,
     Type = DataSourceType.Filter, 
     NameId = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
     HelpLink = "https://go.2sxc.org/DsTypeFilter")]
 

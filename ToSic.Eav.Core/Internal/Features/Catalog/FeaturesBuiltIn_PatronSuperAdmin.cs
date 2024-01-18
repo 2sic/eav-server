@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.SysData;
 
@@ -11,7 +10,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature AppSyncWithSiteFiles = new(
         nameof(AppSyncWithSiteFiles),
-        new Guid("35694e6b-cd2f-4634-9ecf-5bd6fd14d9a1"),
+        new("35694e6b-cd2f-4634-9ecf-5bd6fd14d9a1"),
         "App Sync - Allow Include Site Files",
         false,
         false,
@@ -22,7 +21,7 @@ public partial class BuiltInFeatures
         
     public static readonly Feature AppAutoInstallerConfigurable = new(
         nameof(AppAutoInstallerConfigurable),
-        new Guid("3413786a-de3a-416f-827f-5d4c7cfc11a6"),
+        new("3413786a-de3a-416f-827f-5d4c7cfc11a6"),
         "App Auto-Installer - Make it more configurable.",
         false,
         false,
@@ -33,7 +32,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature DataExportImportBundles = new(
         nameof(DataExportImportBundles),
-        new Guid("32f4d1e6-764c-4702-9cda-521428aca66c"),
+        new("32f4d1e6-764c-4702-9cda-521428aca66c"),
         "Export Data in configured bundles",
         false,
         false,

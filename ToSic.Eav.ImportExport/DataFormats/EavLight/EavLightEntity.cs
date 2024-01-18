@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataFormats.EavLight;
 
@@ -18,11 +16,4 @@ namespace ToSic.Eav.DataFormats.EavLight;
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Internal DTO objects are documented for better understanding, but can change with time. You usually will not need them in your code. ")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EavLightEntity: Dictionary<string, object>
-{
-    public EavLightEntity() : base(StringComparer.InvariantCultureIgnoreCase)
-    {
-
-    }
-        
-}
+public class EavLightEntity() : Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);

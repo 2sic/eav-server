@@ -11,15 +11,8 @@ namespace ToSic.Eav.Apps.Services;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppDataStackService: ServiceBase
+public class AppDataStackService(IAppStates appStates) : ServiceBase("App.Stack")
 {
-    public AppDataStackService(IAppStates appStates): base("App.Stack")
-    {
-        _appStates = appStates;
-    }
-
-    private readonly IAppStates _appStates;
-
     public AppDataStackService Init(IAppState state)
     {
         Reader = (IAppStateInternal)state;
@@ -64,11 +57,11 @@ public class AppDataStackService: ServiceBase
         var l = Log.Fn<AppStateStack>(target.Target.ToString());
         // Site should be skipped on the global zone
         l.A($"Owner: {Reader.Show()}");
-        var site = Reader.ZoneId == Constants.DefaultZoneId ? null : _appStates.GetPrimaryReader(Reader.ZoneId, Log);
+        var site = Reader.ZoneId == Constants.DefaultZoneId ? null : appStates.GetPrimaryReader(Reader.ZoneId, Log);
         l.A($"Site: {site?.Show()}");
-        var global = _appStates.GetReader(Constants.GlobalIdentity);
+        var global = appStates.GetReader(Constants.GlobalIdentity);
         l.A($"Global: {global?.Show()}");
-        var preset = _appStates.GetPresetReader();
+        var preset = appStates.GetPresetReader();
         l.A($"Preset: {preset?.Show()}");
 
         // Find the ancestor, but only use it if it's not the preset

@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Serialization;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.ImportExport.Internal.Xml;
 
 
 // ReSharper disable once CheckNamespace

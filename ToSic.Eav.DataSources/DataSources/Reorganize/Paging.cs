@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using ToSic.Eav.Data.Build;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -17,19 +8,19 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Do Paging to only return a limited amount of results + show how many such pages exist and which Page we are on.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Paging",
     UiHint = "Split data into pages and forward just one batch",
-    Icon = Icons.Stories,
+    Icon = DataSourceIcons.Stories,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
     HelpLink = "https://go.2sxc.org/DsPaging")]
 
-public sealed class Paging: Eav.DataSource.DataSourceBase
+public sealed class Paging: DataSourceBase
 {
     private readonly IDataFactory _pagingFactory;
 
@@ -68,11 +59,6 @@ public sealed class Paging: Eav.DataSource.DataSourceBase
 
     #endregion
 
-    #region Debug-Properties
-    [PrivateApi]
-    public string ReturnedStreamName { get; private set; }
-    #endregion
-
 
     /// <inheritdoc />
     /// <summary>
@@ -82,7 +68,7 @@ public sealed class Paging: Eav.DataSource.DataSourceBase
     public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{LogPrefix}.Paging")
     {
         ConnectServices(
-            _pagingFactory = dataFactory.New(options: new DataFactoryOptions(typeName: "Paging"))
+            _pagingFactory = dataFactory.New(options: new(typeName: "Paging"))
         );
         ProvideOut(GetList);
         ProvideOut(GetPaging, "Paging");

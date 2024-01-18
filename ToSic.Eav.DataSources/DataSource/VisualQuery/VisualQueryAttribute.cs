@@ -1,7 +1,5 @@
-﻿using System;
-using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Plumbing;
 using ToSic.Lib.Data;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource.VisualQuery;
 
@@ -39,8 +37,8 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// </summary>
     public string[] In { get; set; } = null;
 
-    [PrivateApi]
-    public string[] GetSafeIn() => In ?? Array.Empty<string>();
+    //[PrivateApi]
+    //public string[] GetSafeIn() => In ?? Array.Empty<string>();
 
     /// <summary>
     /// Determine if this data sources can have many out-streams with custom names. Default is false.
@@ -59,7 +57,9 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     }
 
     // ReSharper disable once InconsistentNaming
-    [PrivateApi] public bool _DynamicInWasSet;
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public bool _DynamicInWasSet;
     private bool _dynamicIn = false;
 
     /// <summary>
@@ -73,6 +73,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// </summary>
     /// <returns>True if we have a known configuration content-type</returns>
     [PrivateApi("not important to the public")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public bool EnableConfig => ConfigurationType.HasValue();
 
     /// <summary>

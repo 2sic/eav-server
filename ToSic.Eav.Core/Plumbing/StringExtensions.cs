@@ -35,6 +35,14 @@ public static class StringExtensions
     public static string[] SplitNewLine(this string value) 
         => value?.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
+    /// <summary>
+    /// Split a CSV string into an array of string. Empty entries are removed.
+    /// Null-strings will return empty array;
+    /// </summary>
+    /// <param name="original"></param>
+    /// <returns></returns>
+    public static string[] CsvToArrayWithoutEmpty(this string original) => original?.Split(',').TrimmedAndWithoutEmpty() ?? [];
+
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string[] TrimmedAndWithoutEmpty(this string[] value) 
         => value?

@@ -1,6 +1,4 @@
 ﻿#if NETFRAMEWORK
-using System;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 
 namespace ToSic.Eav.Persistence.Efc.Diagnostics;

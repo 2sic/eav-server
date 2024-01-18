@@ -4,12 +4,13 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.ImportExport;
-using ToSic.Eav.Apps.Parts;
+using ToSic.Eav.Apps.Internal.Work;
+using ToSic.Eav.ImportExport.Internal;
+using ToSic.Eav.ImportExport.Internal.Zip;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
-using ToSic.Sxc.Apps.ImportExport;
+using ToSic.Sxc.Apps.Internal.ImportExport;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Repository.Efc.Tests

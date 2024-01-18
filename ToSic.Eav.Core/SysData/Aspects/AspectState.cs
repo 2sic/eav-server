@@ -6,19 +6,14 @@ namespace ToSic.Eav.SysData;
 /// Experimental - base class for any kind of aspect and it's state
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AspectState<TAspect> where TAspect : Aspect
+public class AspectState<TAspect>(TAspect aspect, bool isEnabled)
+    where TAspect : Aspect
 {
-    public AspectState(TAspect aspect, bool isEnabled)
-    {
-        Aspect = aspect;
-        IsEnabled = isEnabled;
-    }
-
     /// <summary>
     /// Feature Definition.
     /// </summary>
     [JsonIgnore]
-    public TAspect Aspect { get; }
+    public TAspect Aspect { get; } = aspect;
 
-    public virtual bool IsEnabled { get; }
+    public virtual bool IsEnabled { get; } = isEnabled;
 }

@@ -4,20 +4,12 @@
 /// Information that a code was used - must always contain a code-info which describes what was used.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CodeUse
+public class CodeUse(ICodeInfo change, int appId = default, string specificId = default, string[] more = default)
 {
-    public CodeUse(ICodeInfo change, int appId = default, string specificId = default, string[] more = default)
-    {
-        Change = change;
-        SpecificId = specificId;
-        More = more;
-        AppId = appId;
-    }
-
-    public ICodeInfo Change { get; }
-    public int AppId { get; }   // FYI: ATM not reported anywhere
-    public string SpecificId { get; }
-    public string[] More { get; }
+    public ICodeInfo Change { get; } = change;
+    public int AppId { get; } = appId; // FYI: ATM not reported anywhere
+    public string SpecificId { get; } = specificId;
+    public string[] More { get; } = more;
 
 
     public CodeUse UsedAs(int appId = default, string specificId = default, string[] more = default)

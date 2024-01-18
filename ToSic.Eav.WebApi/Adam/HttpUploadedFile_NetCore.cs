@@ -1,7 +1,5 @@
 ﻿#if !NETFRAMEWORK
-using System;
 using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using ToSic.Eav.Security.Files;
@@ -9,10 +7,9 @@ using ToSic.Eav.Security.Files;
 namespace ToSic.Eav.WebApi.Adam;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class HttpUploadedFile
+public class HttpUploadedFile(HttpRequest request)
 {
-    public HttpUploadedFile(HttpRequest request) => Request = request;
-    public HttpRequest Request { get; }
+    public HttpRequest Request { get; } = request;
 
     // https://stackoverflow.com/questions/45871479/net-core-2-how-to-check-if-the-request-is-mime-multipart-content
     public bool IsMultipart() => Request.GetMultipartBoundary() != null;
@@ -28,7 +25,7 @@ public class HttpUploadedFile
         var fileName = FileNames.SanitizeFileName(file?.FileName);
 
         if (FileNames.IsKnownRiskyExtension(fileName))
-            throw new Exception($"File {fileName} has risky file type.");
+            throw new($"File {fileName} has risky file type.");
 
         return (fileName, file.OpenReadStream());
     }

@@ -12,24 +12,19 @@ namespace ToSic.Eav.Data.PropertyLookup;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PropertyLookupDictionary: IPropertyLookup, IHasIdentityNameId
+public class PropertyLookupDictionary(string nameId, IDictionary<string, object> values)
+    : IPropertyLookup, IHasIdentityNameId
 {
     public const string SourceTypeId = "Dictionary";
-    public string NameId { get; }
+    public string NameId { get; } = nameId;
 
-    public PropertyLookupDictionary(string nameId, IDictionary<string, object> values)
-    {
-        NameId = nameId;
-        Values = values.ToInvariant();
-    }
-
-    public IDictionary<string, object> Values { get; }
+    public IDictionary<string, object> Values { get; } = values.ToInvariant();
 
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {
         path = path?.Add(SourceTypeId, NameId, specs.Field);
         return Values.TryGetValue(specs.Field, out var result)
-            ? new PropReqResult(result: result, fieldType: Attributes.FieldIsDynamic /* I believe this would only be used for certain follow up work */, path: path)
+            ? new(result: result, fieldType: Attributes.FieldIsDynamic /* I believe this would only be used for certain follow up work */, path: path)
             {
                 Value = null,
                 Source = this,
@@ -38,5 +33,5 @@ public class PropertyLookupDictionary: IPropertyLookup, IHasIdentityNameId
     }
 
     public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
-        => new() { new PropertyDumpItem { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" } };
+        => new() { new() { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" } };
 }

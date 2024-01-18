@@ -9,7 +9,7 @@ namespace ToSic.Eav.LookUp;
 /// It's mainly used to override values which are given, by a special situation. <br/>
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public class LookUpInLookUps: LookUpBase
 {
     [PrivateApi]
@@ -23,9 +23,8 @@ public class LookUpInLookUps: LookUpBase
     /// <param name="second">Second LookUp source</param>
     /// <param name="third">Optional third</param>
     /// <param name="fourth">Optional fourth</param>
-    public LookUpInLookUps(string name, ILookUp first, ILookUp second = null, ILookUp third = null, ILookUp fourth = null)
+    public LookUpInLookUps(string name, ILookUp first, ILookUp second = null, ILookUp third = null, ILookUp fourth = null) : base(name)
     {
-        Name = name;
         Providers.Add(first);
         if (second != null) Providers.Add(second);
         if (third != null) Providers.Add(third);
@@ -34,9 +33,8 @@ public class LookUpInLookUps: LookUpBase
 
     // not sure - doesn't seem used?
     [PrivateApi]
-    public LookUpInLookUps(string name, List<ILookUp> providers)
+    public LookUpInLookUps(string name, List<ILookUp> providers) : base(name)
     {
-        Name = name;
         Providers = providers;
     }
         

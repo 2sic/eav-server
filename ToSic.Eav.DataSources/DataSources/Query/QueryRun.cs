@@ -1,26 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Query;
+﻿using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSources.LookUp;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSources;
 
 /// <summary>
 /// Run another query and provide the resulting data. The settings will provide the params for the inner query.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Query Run",
     UiHint = "Get data from another Query",
-    Icon = Icons.Launch,
+    Icon = DataSourceIcons.Launch,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
     DynamicOut = true,
@@ -64,7 +57,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
 
     #region Out
     /// <inheritdoc/>
-    public override IReadOnlyDictionary<string, IDataStream> Out => (_out ??= new StreamDictionary(this, Query?.Out)).AsReadOnly();
+    public override IReadOnlyDictionary<string, IDataStream> Out => (_out ??= new(this, Query?.Out)).AsReadOnly();
 
     private StreamDictionary _out;
     #endregion
@@ -75,7 +68,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// The inner query object. Will be initialized the first time it's accessed.
     /// </summary>
     [PrivateApi("not sure if showing this has any value - probably not")]
-    public Query Query => _query ??= BuildQuery();
+    internal Query Query => _query ??= BuildQuery();
     private Query _query;
     #endregion
 

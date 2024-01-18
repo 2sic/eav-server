@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.WebApi.Dto;
+﻿namespace ToSic.Eav.WebApi.Dto;
 
 /// <summary>
 /// Will be enhanced later

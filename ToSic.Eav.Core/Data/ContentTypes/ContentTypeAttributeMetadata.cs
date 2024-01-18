@@ -15,19 +15,18 @@ namespace ToSic.Eav.Data;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ContentTypeAttributeMetadata: MetadataOf<int>
+public class ContentTypeAttributeMetadata(
+    int key,
+    string name,
+    ValueTypes type,
+    ContentTypeAttributeSysSettings sysSettings = default,
+    IReadOnlyCollection<IEntity> items = default,
+    IHasMetadataSource appSource = default,
+    Func<IHasMetadataSource> deferredSource = default)
+    : MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", items: items,
+        appSource: appSource, deferredSource: deferredSource)
 {
-    public ContentTypeAttributeMetadata(int key, string name, ValueTypes type,
-        ContentTypeAttributeSysSettings sysSettings = default,
-        IReadOnlyCollection<IEntity> items = default,
-        IHasMetadataSource appSource = default,
-        Func<IHasMetadataSource> deferredSource = default)
-        : base(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", items: items, appSource: appSource, deferredSource: deferredSource)
-    {
-        SysSettings = sysSettings ?? new ContentTypeAttributeSysSettings(); // make sure it's never null
-    }
-
-    private ContentTypeAttributeSysSettings SysSettings { get; }
+    private ContentTypeAttributeSysSettings SysSettings { get; } = sysSettings ?? new ContentTypeAttributeSysSettings(); // make sure it's never null
 
     /// <summary>
     /// Check if this metadata belongs to this attribute directly.
@@ -88,7 +87,7 @@ public class ContentTypeAttributeMetadata: MetadataOf<int>
         var source = SourceAttributes?.FirstOrDefault(a => a.Guid == guid);
 
         // Null-Check & cast inner source to this type, so we can access it's private .Source later on
-        if (!(source?.Metadata is ContentTypeAttributeMetadata sourceMd)) return null;
+        if (source?.Metadata is not ContentTypeAttributeMetadata sourceMd) return null;
 
         var md = (
             sourceMd.Source.SourceDirect?.List

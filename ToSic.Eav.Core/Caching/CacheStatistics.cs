@@ -18,7 +18,7 @@ public class CacheStatistics: ICacheStatistics
         CacheTimestamp = newTimeStamp;
         if (FirstTimestamp == 0) FirstTimestamp = newTimeStamp;
         else ResetCount++;
-        History.Push(new CacheHistory { Timestamp = newTimeStamp, ResetCount = ResetCount, ItemCount = itemCount, Message = message });
+        History.Push(new() { Timestamp = newTimeStamp, ResetCount = ResetCount, ItemCount = itemCount, Message = message });
     }
 }
 

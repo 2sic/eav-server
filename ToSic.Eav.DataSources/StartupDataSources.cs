@@ -1,22 +1,26 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Caching;
-using ToSic.Eav.DataSource.Catalog;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.AppDataSources;
+using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.DataSource.Internal.Catalog;
+using ToSic.Eav.DataSource.Internal.Configuration;
+using ToSic.Eav.DataSource.Internal.Query;
+using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.Services;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources;
 
-public static class DataSourcesStartup
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+public static class StartupDataSources
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IServiceCollection AddDataSources(this IServiceCollection services)
     {
         // Dependencies, new in v15
         services.TryAddTransient<DataSourceBase.MyServices>();
         services.TryAddTransient<App.MyServices>();
-        services.TryAddTransient<DataSourceConfiguration>();
+        //services.TryAddTransient<DataSourceConfiguration>();
         services.TryAddTransient<IDataSourceConfiguration, DataSourceConfiguration>();
         services.TryAddTransient<DataSourceConfiguration.MyServices>();
         services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
@@ -52,6 +56,7 @@ public static class DataSourcesStartup
         return services;
     }
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IServiceCollection AddDataSourcesFallback(this IServiceCollection services)
     {
         services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();

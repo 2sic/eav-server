@@ -6,7 +6,9 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Lib.Logging;
 
 /// <summary>
-/// Experimental - system to generate a code ref trail
+/// Experimental - system to generate a code ref trail.
+///
+/// Important: this is _not_ functional, so object changes are apply to all instances of this object.
 /// </summary>
 [PrivateApi("Experimental")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -25,7 +27,7 @@ public class CodeRefTrail
 
     public CodeRefTrail AddMessage(string message, int? number = default)
     {
-        CodeRefs.Add(CodeRef.Create("Message", message, number ??0));
+        CodeRefs.Add(CodeRef.Create(CodeRef.Message, message, number ??0));
         return this;
     }
 

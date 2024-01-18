@@ -7,10 +7,8 @@ using System.Linq;
 namespace ToSic.Eav.Data;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LazyFastAccess
+public class LazyFastAccess(IImmutableList<IEntity> list)
 {
-    public LazyFastAccess(IImmutableList<IEntity> list) => _list = list;
-
     public IEntity Get(int id)
     {
 #if DEBUG
@@ -67,7 +65,7 @@ public class LazyFastAccess
         return newEntry;
     }
 
-    private readonly IEnumerable<IEntity> _list;
+    private readonly IEnumerable<IEntity> _list = list;
 
     private readonly ConcurrentDictionary<int, IEntity> _byInt = new();
     private readonly ConcurrentDictionary<int, IEntity> _byRepoId = new();

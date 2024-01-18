@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence;
-using ToSic.Eav.Persistence.Efc.Models;
-
-namespace ToSic.Eav.Repository.Efc.Parts;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbEntity
 {
@@ -41,7 +32,7 @@ partial class DbEntity
         bool logDetails
     ) => Log.Do($"id:{newEnt.EntityId}", timer: true, action: () =>
     {
-        if (!_attributeQueueActive) throw new Exception("Attribute save-queue not ready - should be wrapped");
+        if (!_attributeQueueActive) throw new("Attribute save-queue not ready - should be wrapped");
         foreach (var attribute in newEnt.Attributes.Values)
             Log.Do($"InnerAttribute:{attribute.Name}", () =>
             {
@@ -53,7 +44,7 @@ partial class DbEntity
                 if (attribDef == null)
                 {
                     if (!so.DiscardAttributesNotInType)
-                        throw new Exception(
+                        throw new(
                             $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
                     return "attribute not found, will skip according to save-options";
                 }
@@ -76,7 +67,7 @@ partial class DbEntity
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception(
+                        throw new(
                             "something went wrong building the languages to save - " +
                             "your DB probably has some wrong language information which doesn't match; " +
                             "maybe even a duplicate entry for a language code" +
@@ -111,7 +102,7 @@ partial class DbEntity
         Log.Do($"attribute queue:{randomId} start", () =>
         {
             if (_attributeUpdateQueue.Any())
-                throw new Exception("Attribute queue started while already containing stuff - bad!");
+                throw new("Attribute queue started while already containing stuff - bad!");
             _attributeQueueActive = true;
             // 1. check if it's the outermost call, in which case afterwards we import
             //var willPurgeQueue = _isOutermostCall;
@@ -127,7 +118,7 @@ partial class DbEntity
 
     // ReSharper disable once RedundantDefaultMemberInitializer
     private bool _attributeQueueActive = false;
-    private readonly List<Action> _attributeUpdateQueue = new List<Action>();
+    private readonly List<Action> _attributeUpdateQueue = [];
 
     private void AttributeQueueAdd(Action next) => _attributeUpdateQueue.Add(next);
 

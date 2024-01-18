@@ -1,11 +1,9 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Caching;
-using ToSic.Lib.Documentation;
+using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Lib.Helpers;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
@@ -37,6 +35,7 @@ public class AppRoot : DataSourceBase, IAppRoot
     /// Special CacheKey generator for AppRoots, which rely on the state
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public new ICacheKeyManager CacheKey => _cacheKey ??= new AppRootCacheKey(this);
     private CacheKey _cacheKey;
 
@@ -49,11 +48,9 @@ public class AppRoot : DataSourceBase, IAppRoot
     #region Cache-Chain
 
     /// <inheritdoc />
-    [PrivateApi]
     public override long CacheTimestamp => AppReader.CacheTimestamp;
 
     /// <inheritdoc />
-    [PrivateApi]
     public override bool CacheChanged(long dependentTimeStamp) => AppReader.CacheChanged(dependentTimeStamp);
 
     /// <summary>
@@ -61,6 +58,7 @@ public class AppRoot : DataSourceBase, IAppRoot
     /// </summary>
     /// <returns>Full key containing own partial key and upstream keys.</returns>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public override string CacheFullKey => CachePartialKey;
 
     #endregion

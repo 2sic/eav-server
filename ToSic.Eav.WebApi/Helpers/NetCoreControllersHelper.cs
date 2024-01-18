@@ -1,26 +1,18 @@
 ﻿#if !NETFRAMEWORK
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using ToSic.Eav.Code;
-using ToSic.Lib.Logging;
-using ToSic.Lib.DI;
 
 namespace ToSic.Eav.WebApi.Helpers;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class NetCoreControllersHelper: ICanGetService
+public class NetCoreControllersHelper(ControllerBase parent) : ICanGetService
 {
-    public NetCoreControllersHelper(ControllerBase parent)
-    {
-        Parent = parent;
-        LogOrNull = (parent as IHasLog)?.Log;
-    }
-    public ControllerBase Parent { get; }
-    public ILog LogOrNull { get; }
+    public ControllerBase Parent { get; } = parent;
+    public ILog LogOrNull { get; } = (parent as IHasLog)?.Log;
 
     private ILogCall _actionTimerWrap; // it is used across events to track action execution total time
 

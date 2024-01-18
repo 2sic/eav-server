@@ -7,20 +7,18 @@ namespace ToSic.Eav.Data.Source;
 
 [PrivateApi("keep secret for now, only used in Metadata and it's not sure if we should re-use this")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class VariableSource<TSource>: ICacheExpiring, ICacheDependent where TSource : class, ICacheExpiring
+public class VariableSource<TSource>(
+    DirectEntitiesSource sourceDirect = default,
+    TSource sourceApp = default,
+    Func<TSource> sourceDeferred = default)
+    : ICacheExpiring, ICacheDependent
+    where TSource : class, ICacheExpiring
 {
-    public DirectEntitiesSource SourceDirect { get; }
-    public TSource SourceApp { get; }
-    public Func<TSource> SourceDeferred { get; }
+    public DirectEntitiesSource SourceDirect { get; } = sourceDirect;
+    public TSource SourceApp { get; } = sourceApp;
+    public Func<TSource> SourceDeferred { get; } = sourceDeferred;
 
     public bool UseSource { get; set; } = true;
-
-    public VariableSource(DirectEntitiesSource sourceDirect = default, TSource sourceApp = default, Func<TSource> sourceDeferred = default)
-    {
-        SourceDirect = sourceDirect;
-        SourceApp = sourceApp;
-        SourceDeferred = sourceDeferred;
-    }
 
     public TSource MainSource => _mainSource.Get(() => SourceApp ?? SourceDeferred?.Invoke());
     private readonly GetOnce<TSource> _mainSource = new();

@@ -1,10 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -15,11 +9,11 @@ namespace ToSic.Eav.DataSources;
 /// Usually this will be configured through [Params:SomeName]
 /// </summary>
 /// <remarks>Introduced in 10.26</remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Pick Stream",
     UiHint = "Choose a stream",
-    Icon = Icons.Merge,
+    Icon = DataSourceIcons.Merge,
     Type = DataSourceType.Logic,
     NameId = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
     ConfigurationType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",

@@ -1,11 +1,6 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.Streams.Internal;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -14,11 +9,11 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// A DataSource that returns the first stream which has content
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Stream Fallback",
     UiHint = "Find the first stream which has data",
-    Icon = Icons.Merge,
+    Icon = DataSourceIcons.Merge,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
     DynamicOut = false,
@@ -30,7 +25,7 @@ public sealed class StreamFallback : DataSourceBase
 
     #region Debug-Properties
     [PrivateApi]
-    public string ReturnedStreamName { get; private set; }
+    internal string ReturnedStreamName { get; private set; }
     #endregion
 
 

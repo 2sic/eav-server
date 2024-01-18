@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence;
-using ToSic.Eav.Persistence.Efc.Models;
-using IEntity = ToSic.Eav.Data.IEntity;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
-namespace ToSic.Eav.Repository.Efc.Parts;
-
-internal class DbRelationship: DbPartBase
+internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 {
-    public DbRelationship(DbDataController db) : base(db, "Db.Rels") {}
-
     internal void DoWhileQueueingRelationships(Action action)
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
@@ -35,7 +24,7 @@ internal class DbRelationship: DbPartBase
 
     private bool _isOutermostCall = true;
 
-    private readonly List<RelationshipToSave> _saveQueue = new List<RelationshipToSave>();
+    private readonly List<RelationshipToSave> _saveQueue = [];
 
 
 
@@ -65,7 +54,7 @@ internal class DbRelationship: DbPartBase
                 var newEntityIds = p.Targets.ToList();
                 // Create new relationships which didn't exist before
                 for (var i = 0; i < newEntityIds.Count; i++)
-                    DbContext.SqlDb.ToSicEavEntityRelationships.Add(new ToSicEavEntityRelationships
+                    DbContext.SqlDb.ToSicEavEntityRelationships.Add(new()
                     {
                         AttributeId = p.AttributeId,
                         ChildEntityId = newEntityIds[i],
@@ -81,7 +70,7 @@ internal class DbRelationship: DbPartBase
     private void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll)
     {
         Log.A($"add to queue for i:{entityId}, guids⋮{newValue.Count}");
-        _saveQueue.Add(new RelationshipToSave
+        _saveQueue.Add(new()
         {
             AttributeId = attributeId,
             ChildEntityGuids = newValue,
@@ -96,7 +85,7 @@ internal class DbRelationship: DbPartBase
     private void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll)
     {
         Log.A($"add to int for i:{entityId}, ints⋮{newValue.Count}");
-        _saveQueue.Add(new RelationshipToSave
+        _saveQueue.Add(new()
         {
             AttributeId = attributeId,
             ChildEntityIds = newValue,
@@ -126,7 +115,7 @@ internal class DbRelationship: DbPartBase
 
                 var parentIds = _saveQueue.Select(rel => rel.ParentEntityId).ToArray();
                 if (parentIds.Any(p => p <= 0))
-                    throw new Exception("some parent has no id provided, can't update relationships");
+                    throw new("some parent has no id provided, can't update relationships");
                 var parents = DbContext.Entities.GetDbEntities(parentIds);
                 l.A("Found parents to map:" + parents.Length);
 
@@ -145,7 +134,7 @@ internal class DbRelationship: DbPartBase
                     var entity = parents.Single(e => e.EntityId == relationship.ParentEntityId);
 
                     // start with the ID list - or if it doesn't exist, a new list
-                    var childEntityIds = relationship.ChildEntityIds ?? new List<int?>();
+                    var childEntityIds = relationship.ChildEntityIds ?? [];
 
                     // if additional / alternative guids were specified, use those
                     if (childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
@@ -156,14 +145,14 @@ internal class DbRelationship: DbPartBase
                                     ? dbTargetIds.ContainsKey(childGuid.Value)
                                         ? dbTargetIds[childGuid.Value]
                                         : new int?()
-                                    : new int?());
+                                    : new());
                             }
                             catch (InvalidOperationException)
                             {
                                 // ignore, may occur if the child entity doesn't exist / wasn't created successfully
                             }
 
-                    updates.Add(new RelationshipUpdatePackage(entity, relationship.AttributeId, childEntityIds));
+                    updates.Add(new(entity, relationship.AttributeId, childEntityIds));
                 }
 
                 UpdateEntityRelationshipsAndSave(updates);
@@ -173,18 +162,11 @@ internal class DbRelationship: DbPartBase
         _saveQueue.Clear();
     });
 
-    private class RelationshipUpdatePackage
+    private class RelationshipUpdatePackage(ToSicEavEntities entity, int attributeId, List<int?> relationships)
     {
-        public int AttributeId;
-        public List<int?> Targets;
-        public ToSicEavEntities Entity;
-
-        public RelationshipUpdatePackage(ToSicEavEntities entity, int attributeId, List<int?> relationships)
-        {
-            Entity = entity;
-            AttributeId = attributeId;
-            Targets = relationships;
-        }
+        public int AttributeId = attributeId;
+        public List<int?> Targets = relationships;
+        public ToSicEavEntities Entity = entity;
     }
 
     internal void FlushChildrenRelationships(List<int> parentIds
@@ -228,7 +210,7 @@ internal class DbRelationship: DbPartBase
     {
         // some initial error checking
         if (dbEntity.EntityId <= 0)
-            throw new Exception("can't work on relationships if entity doesn't have a repository id yet");
+            throw new("can't work on relationships if entity doesn't have a repository id yet");
 
         DoWhileQueueingRelationships(() =>
         {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.WebApi.Dto;
+﻿namespace ToSic.Eav.WebApi.Dto;
 
 public class ContextLanguageDto
 {

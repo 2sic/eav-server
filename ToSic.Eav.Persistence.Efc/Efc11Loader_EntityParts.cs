@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Data;
-using ToSic.Eav.Metadata;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence.Efc.Intermediate;
+﻿using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Persistence.Efc.Models;
 
 namespace ToSic.Eav.Persistence.Efc;
@@ -50,7 +42,7 @@ partial class Efc11Loader
                 EntityGuid = e.EntityGuid,
                 Version = e.Version,
                 AttributeSetId = e.AttributeSetId,
-                MetadataFor = new Target(e.AssignmentObjectTypeId, null, e.KeyString, e.KeyNumber, e.KeyGuid),
+                MetadataFor = new(e.AssignmentObjectTypeId, null, e.KeyString, e.KeyNumber, e.KeyGuid),
                 IsPublished = e.IsPublished,
                 PublishedEntityId = e.PublishedEntityId,
                 Owner = e.Owner,

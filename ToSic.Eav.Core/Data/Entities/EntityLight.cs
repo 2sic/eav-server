@@ -158,27 +158,20 @@ public partial class EntityLight : IEntityLight
     [PrivateApi]
     protected virtual object GetInternalPropertyByName(string attributeNameLowerInvariant)
     {
-        switch (attributeNameLowerInvariant.ToLowerInvariant())
+        return attributeNameLowerInvariant.ToLowerInvariant() switch
         {
-            case Attributes.EntityFieldId:
-                return EntityId;
-            case Attributes.EntityFieldGuid:
-                return EntityGuid;
-            case Attributes.EntityFieldType:
-                return Type.Name;
-            case Attributes.EntityFieldCreated:
-                return Created;
-            case Attributes.EntityFieldOwner:   // added in v15, was missing before
-                return Owner;
-            case Attributes.EntityFieldOwnerId: // new v15.03
-                return OwnerId;
-            case Attributes.EntityFieldModified:
-                return Modified;
-            case Attributes.EntityAppId:
-                return AppId;
-            default:
-                return null;
-        }
+            Attributes.EntityFieldId => EntityId,
+            Attributes.EntityFieldGuid => EntityGuid,
+            Attributes.EntityFieldType => Type.Name,
+            Attributes.EntityFieldCreated => Created,
+            Attributes.EntityFieldOwner => // added in v15, was missing before
+                Owner,
+            Attributes.EntityFieldOwnerId => // new v15.03
+                OwnerId,
+            Attributes.EntityFieldModified => Modified,
+            Attributes.EntityAppId => AppId,
+            _ => null
+        };
     }
 
 

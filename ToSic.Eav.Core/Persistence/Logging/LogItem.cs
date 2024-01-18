@@ -3,15 +3,9 @@
 namespace ToSic.Eav.Persistence.Logging;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LogItem
+public class LogItem(EventLogEntryType entryType, string message)
 {
-    public EventLogEntryType EntryType { get; }
+    public EventLogEntryType EntryType { get; } = entryType;
 
-    public string Message { get; private set; }
-
-    public LogItem(EventLogEntryType entryType, string message)
-    {
-        EntryType = entryType;
-        Message = message;
-    }
+    public string Message { get; private set; } = message;
 }

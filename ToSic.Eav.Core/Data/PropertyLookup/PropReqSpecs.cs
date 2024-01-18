@@ -4,28 +4,21 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.Data.PropertyLookup;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PropReqSpecs: ICanDump
+public class PropReqSpecs(string field, string[] dimensions, ILog logOrNull = null, bool treatEmptyAsDefault = true)
+    : ICanDump
 {
     public PropReqSpecs(string field): this(field, null) { }
 
-    public PropReqSpecs(string field, string[] dimensions, ILog logOrNull = null, bool treatEmptyAsDefault = true)
-    {
-        Field = field;
-        Dimensions = dimensions ?? Array.Empty<string>();
-        TreatEmptyAsDefault = treatEmptyAsDefault;
-        LogOrNull = logOrNull;
-    }
+    public readonly string Field = field;
 
-    public readonly string Field;
+    public readonly string[] Dimensions = dimensions ?? Array.Empty<string>();
 
-    public readonly string[] Dimensions;
-
-    public readonly bool TreatEmptyAsDefault;
+    public readonly bool TreatEmptyAsDefault = treatEmptyAsDefault;
 
     /// <summary>
     /// Log is null if no logging should happen, or a real logger if it's in use
     /// </summary>
-    public readonly ILog LogOrNull;
+    public readonly ILog LogOrNull = logOrNull;
 
     public PropReqSpecs ForOtherField(string field) => new(field, Dimensions, LogOrNull, TreatEmptyAsDefault);
 

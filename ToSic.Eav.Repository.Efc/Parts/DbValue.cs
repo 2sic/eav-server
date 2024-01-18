@@ -1,13 +1,7 @@
-﻿using System.Linq;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence.Efc.Models;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
-namespace ToSic.Eav.Repository.Efc.Parts;
-
-internal class DbValue : DbPartBase
+internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
 {
-    public DbValue(DbDataController db) : base(db, "Db.Values") {}
-
     /// <summary>
     /// Copy all Values (including Related Entities) from teh Source Entity to the target entity
     /// </summary>
@@ -36,7 +30,7 @@ internal class DbValue : DbPartBase
 
             // copy Dimensions
             foreach (var valuesDimension in eavValue.ToSicEavValuesDimensions)
-                value.ToSicEavValuesDimensions.Add(new ToSicEavValuesDimensions
+                value.ToSicEavValuesDimensions.Add(new()
                 {
                     DimensionId = valuesDimension.DimensionId,
                     ReadOnly = valuesDimension.ReadOnly
@@ -66,7 +60,7 @@ internal class DbValue : DbPartBase
             // Add all Related Entities
             Log.A($"add {source.RelationshipsWithThisAsParent.Count} relationships to {target.EntityId}");
             foreach (var entityParentRelationship in source.RelationshipsWithThisAsParent)
-                target.RelationshipsWithThisAsParent.Add(new ToSicEavEntityRelationships
+                target.RelationshipsWithThisAsParent.Add(new()
                 {
                     ParentEntityId = target.EntityId,
                     AttributeId = entityParentRelationship.AttributeId,

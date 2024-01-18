@@ -16,49 +16,44 @@ namespace ToSic.Eav.Apps;
 /// The names of the Get etc. will probably change a few more times
 /// </summary>
 [PrivateApi("internal")]
-internal class AppStates: IAppStates
+internal class AppStates(
+    IAppLoaderTools loaderTools,
+    AppsCacheSwitch appsCacheSwitch,
+    Generator<AppStateDataService> appStateGenerator)
+    : IAppStates
 {
-    public AppStates(IAppLoaderTools loaderTools, AppsCacheSwitch appsCacheSwitch, Generator<AppStateDataService> appStateGenerator)
-    {
-        _loaderTools = loaderTools;
-        AppsCacheSwitch = appsCacheSwitch;
-        _appStateGenerator = appStateGenerator;
-    }
-
-    private readonly IAppLoaderTools _loaderTools;
-    internal readonly AppsCacheSwitch AppsCacheSwitch;
-    private readonly Generator<AppStateDataService> _appStateGenerator;
+    internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
 
     /// <inheritdoc />
-    public IAppStateCache Get(IAppIdentity app) => AppsCacheSwitch.Value.Get(app, _loaderTools);
+    public IAppStateCache Get(IAppIdentity app) => AppsCacheSwitch.Value.Get(app, loaderTools);
 
     /// <inheritdoc />
-    public IAppStateCache GetCacheState(int appId) => AppsCacheSwitch.Value.Get(IdentityOfApp(appId), _loaderTools);
+    public IAppStateCache GetCacheState(int appId) => AppsCacheSwitch.Value.Get(IdentityOfApp(appId), loaderTools);
 
-    public IAppStateInternal ToReader(IAppStateCache state, ILog log = default) => _appStateGenerator.New().Init(state, log);
+    public IAppStateInternal ToReader(IAppStateCache state, ILog log = default) => appStateGenerator.New().Init(state, log);
 
     public bool IsCached(IAppIdentity appId) => AppsCacheSwitch.Value.Has(appId);
 
     public IAppIdentityPure IdentityOfApp(int appId) =>
-        new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, _loaderTools), appId);
+        new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, loaderTools), appId);
 
     public IAppIdentityPure IdentityOfPrimary(int zoneId) => new AppIdentityPure(zoneId, PrimaryAppId(zoneId));
 
     public IAppIdentityPure IdentityOfDefault(int zoneId) => new AppIdentityPure(zoneId, DefaultAppId(zoneId));
 
-    public string AppIdentifier(int zoneId, int appId) => AppsCacheSwitch.Value.Zones(_loaderTools)[zoneId].Apps[appId];
+    public string AppIdentifier(int zoneId, int appId) => AppsCacheSwitch.Value.Zones(loaderTools)[zoneId].Apps[appId];
 
-    public int DefaultAppId(int zoneId) => AppsCacheSwitch.Value.Zones(_loaderTools)[zoneId].DefaultAppId;
+    public int DefaultAppId(int zoneId) => AppsCacheSwitch.Value.Zones(loaderTools)[zoneId].DefaultAppId;
 
-    public int PrimaryAppId(int zoneId) => AppsCacheSwitch.Value.Zones(_loaderTools)[zoneId].PrimaryAppId;
+    public int PrimaryAppId(int zoneId) => AppsCacheSwitch.Value.Zones(loaderTools)[zoneId].PrimaryAppId;
 
-    public IDictionary<int, string> Apps(int zoneId) => AppsCacheSwitch.Value.Zones(_loaderTools)[zoneId].Apps;
+    public IDictionary<int, string> Apps(int zoneId) => AppsCacheSwitch.Value.Zones(loaderTools)[zoneId].Apps;
 
     public List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false)
     {
-        var zone = AppsCacheSwitch.Value.Zones(_loaderTools)[zoneId];
+        var zone = AppsCacheSwitch.Value.Zones(loaderTools)[zoneId];
         return includeInactive ? zone.Languages : zone.Languages.Where(l => l.Active).ToList();
     }
 
-    public IReadOnlyDictionary<int, Zone> Zones => AppsCacheSwitch.Value.Zones(_loaderTools);
+    public IReadOnlyDictionary<int, Zone> Zones => AppsCacheSwitch.Value.Zones(loaderTools);
 }

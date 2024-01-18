@@ -1,6 +1,4 @@
-﻿using System;
-using ToSic.Eav.DataSource;
-using ToSic.Lib.Documentation;
+﻿
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources;
@@ -24,6 +22,7 @@ public interface IDataTarget
     /// Attach a DataSource to In - replaces all existing in-streams.
     /// </summary>
     /// <param name="dataSource">DataSource to attach</param>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     void Attach(IDataSource dataSource);
 
     /// <summary>
@@ -32,6 +31,7 @@ public interface IDataTarget
     /// <param name="streamName">In-name of the stream</param>
     /// <param name="dataSource">The data source - will use it's default out</param>
     /// <param name="sourceName">The stream name on the source, will default to "Default"</param>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     void Attach(string streamName, IDataSource dataSource, string sourceName = DataSourceConstants.StreamDefaultName);
 
     /// <summary>
@@ -39,7 +39,6 @@ public interface IDataTarget
     /// </summary>
     /// <param name="streamName">In-name of the stream</param>
     /// <param name="dataStream">The data stream to attach</param>
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     void Attach(string streamName, IDataStream dataStream);
-
-
 }

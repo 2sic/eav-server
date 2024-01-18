@@ -34,7 +34,7 @@ public class SystemLoader : ServiceBase
     /// </summary>
     public EavSystemLoader EavSystemLoader => _systemLoaderLazy.IsValueCreated
         ? _systemLoaderLazy.Value
-        : throw new Exception("Can't access this property unless StartUp has run first");
+        : throw new("Can't access this property unless StartUp has run first");
 
     public void StartUp() => Log.Do(l =>
     {

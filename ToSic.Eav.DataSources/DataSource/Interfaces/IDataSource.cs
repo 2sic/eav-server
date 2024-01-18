@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource.Caching.CacheInfo;
+using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSources;
 using ToSic.Lib.Coding;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource;
@@ -14,7 +10,7 @@ namespace ToSic.Eav.DataSource;
 /// <summary>
 /// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IHasLog
 #pragma warning disable CS0618
     , IDataTarget
@@ -26,20 +22,28 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
     /// </summary>
     /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
-    [PrivateApi] Guid Guid { get; }
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    Guid Guid { get; }
 
     /// <summary>
     /// Name of this DataSource - not usually relevant.
     /// </summary>
     /// <returns>Name of this source.</returns>
-    [PrivateApi] string Name { get; }
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    string Name { get; }
 
     /// <summary>
     /// internal use only - for labeling data sources in queries to show in debugging
     /// </summary>
-    [PrivateApi] string Label { get; }
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    string Label { get; }
 
-    [PrivateApi] void AddDebugInfo(Guid? guid, string label);
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    void AddDebugInfo(Guid? guid, string label);
 
     #endregion
 
@@ -97,6 +101,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     IDataSourceConfiguration Configuration { get; }
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     void Setup(IDataSourceOptions options, IDataSourceLinkable attach);
 
     #endregion
@@ -108,9 +113,13 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// This list contains the names of all configuration items which are cache relevant.
     /// It will be used when generating a unique ID for caching the data.
     /// </summary>
-    [PrivateApi] List<string> CacheRelevantConfigurations { get; }
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    List<string> CacheRelevantConfigurations { get; }
 
-    [PrivateApi] ICacheKeyManager CacheKey { get; }
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    ICacheKeyManager CacheKey { get; }
 
     #endregion
 
@@ -140,5 +149,6 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     bool Immutable { get; }
 
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     void DoWhileOverrideImmutable(Action action);
 }

@@ -52,7 +52,7 @@ public class FolderChangeMonitor : FileChangeMonitor
             if (_folderPaths.Count == 1)
             {
                 var path = _folderPaths[0];
-                _folderChangeNotificationSystem.StartMonitoring(path, new OnChangedCallback(OnChanged), out _fcnState, out var lastWrite, out var fileSize);
+                _folderChangeNotificationSystem.StartMonitoring(path, new(OnChanged), out _fcnState, out var lastWrite, out var fileSize);
                 uniqueId = path + lastWrite.UtcDateTime.Ticks.ToString("X", CultureInfo.InvariantCulture) + fileSize.ToString("X", CultureInfo.InvariantCulture);
                 _lastModified = lastWrite;
             }
@@ -65,7 +65,7 @@ public class FolderChangeMonitor : FileChangeMonitor
                 foreach (var path in _folderPaths)
                 {
                     if (fcnState.Contains(path)) continue;
-                    _folderChangeNotificationSystem.StartMonitoring(path, new OnChangedCallback(OnChanged), out var state, out var lastWrite, out var fileSize);
+                    _folderChangeNotificationSystem.StartMonitoring(path, new(OnChanged), out var state, out var lastWrite, out var fileSize);
                     fcnState[path] = state;
                     sb.Append(path);
                     sb.Append(lastWrite.UtcDateTime.Ticks.ToString("X", CultureInfo.InvariantCulture));

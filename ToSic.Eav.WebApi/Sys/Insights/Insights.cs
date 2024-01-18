@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Insights;
-using ToSic.Eav.Apps.Work;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.WebApi.Errors;
-using ToSic.Lib.Coding;
-using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
@@ -57,7 +50,7 @@ public partial class InsightsControllerReal: ServiceBase
             AppCachePurger = appCachePurger,
             _insightsProviders = insightsProviders
         );
-        _logHtml = new InsightsHtmlLog(_logStore);
+        _logHtml = new(_logStore);
     }
     private readonly IAppStates _appStates;
     private readonly ILogStoreLive _logStore;

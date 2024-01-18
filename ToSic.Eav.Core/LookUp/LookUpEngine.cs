@@ -33,7 +33,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
 
     public LookUpEngine(ILog parentLog): base(parentLog, "EAV.LookUp")
     {
-        _reusableTokenReplace = new TokenReplace(this);
+        _reusableTokenReplace = new(this);
     }
 
     /// <inheritdoc />

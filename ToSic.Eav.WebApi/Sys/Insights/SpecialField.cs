@@ -1,18 +1,11 @@
 ﻿namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class SpecialField
+internal class SpecialField(object value, string styles = default, string tooltip = default)
 {
+    public object Value { get; } = value;
+    public string Styles { get; } = styles;
 
-    public SpecialField(object value, string styles = default, string tooltip = default)
-    {
-        Styles = styles;
-        Value = value;
-        Tooltip = tooltip;
-    }
-    public object Value { get; }
-    public string Styles { get; }
-
-    public string Tooltip { get; }
+    public string Tooltip { get; } = tooltip;
 
     public static SpecialField Center(object value) => new(value, "text-align: center;");
 

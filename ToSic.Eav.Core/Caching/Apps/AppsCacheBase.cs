@@ -41,8 +41,8 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
         var presetZone = new Zone(Constants.PresetZoneId,
             Constants.PresetAppId,
             Constants.PresetAppId,
-            new Dictionary<int, string> { { Constants.PresetAppId, Constants.PresetName } },
-            new List<Data.DimensionDefinition>
+            new() { { Constants.PresetAppId, Constants.PresetName } },
+            new()
             {
                 new()
                 {
@@ -138,7 +138,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
             // Init EavSqlStore once
             var loader = tools.RepositoryLoader(null);
             if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
-            appState = loader.AppStateInitialized(appIdentity.AppId, new CodeRefTrail());
+            appState = loader.AppStateInitialized(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}"));
             Set(cacheKey, appState);
         }
 
@@ -174,7 +174,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
         // if it's not cached yet, ignore the request as partial update won't be necessary
         if (!Has(appIdentity)) return l.ReturnNull("not cached, won't update");
         var appState = Get(appIdentity, tools);
-        tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, entities.ToArray());
+        tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, new(), entities.ToArray());
         return l.ReturnAsOk(appState);
     }
 
@@ -191,7 +191,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error trying to run {nameof(ZoneIdOfApp)}({appId}) - probably something wrong with the {nameof(appId)}", ex);
+            throw new($"Error trying to run {nameof(ZoneIdOfApp)}({appId}) - probably something wrong with the {nameof(appId)}", ex);
         }
     }
 

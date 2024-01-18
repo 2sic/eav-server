@@ -1,8 +1,7 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Text.Encodings.Web;
 using System.Web;
-using ToSic.Eav.Apps.Insights;
+using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Lib.Coding;
 using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;

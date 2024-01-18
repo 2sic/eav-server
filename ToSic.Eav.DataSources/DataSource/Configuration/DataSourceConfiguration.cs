@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using ToSic.Eav.Context;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
-using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
-using ToSic.Lib.Services;
 using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MyServices>, IDataSourceConfiguration
+[method: PrivateApi]
+internal class DataSourceConfiguration(DataSourceConfiguration.MyServices services)
+    : ServiceBase<DataSourceConfiguration.MyServices>(services, $"{DataSourceConstants.LogPrefix}.Config"),
+        IDataSourceConfiguration
 {
     #region Dependencies - Must be in DI
 
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public class MyServices: MyServicesBase
     {
         public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; }
@@ -32,12 +31,7 @@ public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MySer
 
     #endregion
 
-    #region Constructor (non DI)
-
-    [PrivateApi]
-    public DataSourceConfiguration(MyServices services) : base(services, $"{DataSourceConstants.LogPrefix}.Config")
-    {
-    }
+    #region Constructor
 
     internal DataSourceConfiguration Attach(DataSourceBase ds)
     {
@@ -93,7 +87,7 @@ public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MySer
     {
         // Ensure that we have a configuration-provider (not always the case, but required)
         if (LookUpEngine == null)
-            throw new Exception($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
+            throw new($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
 
         // construct a property access for in, use it in the config provider
         return LookUpEngine.LookUp(values, OverrideLookUps);
@@ -120,7 +114,7 @@ public class DataSourceConfiguration : ServiceBase<DataSourceConfiguration.MySer
     private IDictionary<string, ILookUp> OverrideLookUps 
         => _overrideLookUps.Get(() => new Dictionary<string, ILookUp>
         {
-            { "In".ToLowerInvariant(), new LookUpInDataTarget(DataSourceForIn, base.Services.ZoneCultureResolverLazy.Value) }
+            { "In".ToLowerInvariant(), new LookUpInDataSource(DataSourceForIn, base.Services.ZoneCultureResolverLazy.Value) }
         });
     private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new();
 

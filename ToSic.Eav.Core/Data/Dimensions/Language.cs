@@ -11,21 +11,14 @@ namespace ToSic.Eav.Data;
 /// </remarks>
 [PrivateApi("2021-09-30 hidden, previously marked as PublicApi_Stable_ForUseInYourCode")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Language : ILanguage
+public class Language(string key, bool readOnly, int dimensionId = 0) : ILanguage
 {
-    public Language(string key, bool readOnly, int dimensionId = 0)
-    {
-        Key = key.ToLowerInvariant();
-        ReadOnly = readOnly;
-        DimensionId = dimensionId;
-    }
+    /// <inheritdoc />
+    public int DimensionId { get; } = dimensionId;
 
     /// <inheritdoc />
-    public int DimensionId { get; }
+    public bool ReadOnly { get; } = readOnly;
 
     /// <inheritdoc />
-    public bool ReadOnly { get; }
-
-    /// <inheritdoc />
-    public string Key { get; }
+    public string Key { get; } = key.ToLowerInvariant();
 }

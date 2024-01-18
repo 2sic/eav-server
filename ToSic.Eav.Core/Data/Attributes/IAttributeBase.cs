@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data;
 /// <remarks>
 /// > We recommend you read about the [](xref:Basics.Data.Index)
 /// </remarks>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public interface IAttributeBase
 {
     /// <summary>

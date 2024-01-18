@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using ToSic.Eav.DataSources.Internal;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
@@ -20,10 +13,10 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "Metadata",
     UiHint = "Get the item's metadata",
-    Icon = Icons.OfferLocal,
+    Icon = DataSourceIcons.OfferLocal,
     Type = DataSourceType.Lookup,
     NameId = "3ab4b010-2daa-4a7f-b882-635d2d9fa0a0",
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     DynamicOut = false,
     ConfigurationType = "d7858b36-1ef1-4c3d-b15c-c567b0d7bdd4",
     HelpLink = "https://go.2sxc.org/DsMetadata")]

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Integration;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.StartUp;
@@ -15,7 +16,7 @@ namespace ToSic.Testing.Shared
             // Just add all services, not perfect yet
             // Ideally should only add the services not added by previous layers
             services
-                .AddEav();
+                .AddEavEverything();
         }
 
         /// <summary>

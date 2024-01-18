@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text.RegularExpressions;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using System.Text.RegularExpressions;
+using ToSic.Eav.DataSource.Internal.Errors;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -17,15 +9,15 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// A DataSource that filters Entities by Ids. Can handle multiple IDs if comma-separated.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Item Id Filter",
     UiHint = "Find items based on one or more IDs",
-    Icon = Icons.Fingerprint,
+    Icon = DataSourceIcons.Fingerprint,
     Type = DataSourceType.Filter, 
     NameId = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
     HelpLink = "https://go.2sxc.org/DsIdFilter")]
 
@@ -90,7 +82,7 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
             var configEntityIds = EntityIds;
             // check if we have anything to work with
             if (string.IsNullOrWhiteSpace(configEntityIds))
-                return l.Return(new ResultOrError<int[]>(true, Array.Empty<int>()), "empty");
+                return l.Return(new(true, Array.Empty<int>()), "empty");
 
             var preCleanedIds = configEntityIds
                 .Split(',')
@@ -99,11 +91,11 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
             foreach (var strEntityId in preCleanedIds)
                 if (int.TryParse(strEntityId, out var entityIdToAdd))
                     lstEntityIds.Add(entityIdToAdd);
-            return l.Return(new ResultOrError<int[]>(true, lstEntityIds.Distinct().ToArray()), EntityIds);
+            return l.Return(new(true, lstEntityIds.Distinct().ToArray()), EntityIds);
         }
         catch (Exception ex)
         {
-            return l.ReturnAsError(new ResultOrError<int[]>(false, Array.Empty<int>(),
+            return l.ReturnAsError(new(false, Array.Empty<int>(),
                 Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
                     exception: ex)));
         }

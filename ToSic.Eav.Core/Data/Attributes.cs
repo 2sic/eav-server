@@ -132,24 +132,17 @@ public class Attributes
     /// <returns></returns>
     public static (bool isSpecial, ValueTypes fieldType) InternalOnlyIsSpecialEntityProperty(string name)
     {
-        switch (name.ToLowerInvariant())
+        return name.ToLowerInvariant() switch
         {
-            case EntityFieldTitle:
-                return (true, ValueTypes.String);
-            case EntityFieldId:
-                return (true, ValueTypes.Number);
-            case EntityFieldGuid:
-                return (true, ValueTypes.Undefined);
-            case EntityFieldType:
-                return (true, ValueTypes.Undefined);
-            case EntityFieldIsPublished:
-                return (true, ValueTypes.Boolean);
-            case EntityFieldCreated:
-            case EntityFieldModified:
-                return (true, ValueTypes.DateTime);
-        }
-        return (false, ValueTypes.Undefined);
-
+            EntityFieldTitle => (true, ValueTypes.String),
+            EntityFieldId => (true, ValueTypes.Number),
+            EntityFieldGuid => (true, ValueTypes.Undefined),
+            EntityFieldType => (true, ValueTypes.Undefined),
+            EntityFieldIsPublished => (true, ValueTypes.Boolean),
+            EntityFieldCreated => (true, ValueTypes.DateTime),
+            EntityFieldModified => (true, ValueTypes.DateTime),
+            _ => (false, ValueTypes.Undefined)
+        };
     }
 
     #region DB Field / Names Constants

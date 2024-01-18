@@ -1,11 +1,6 @@
 ﻿namespace ToSic.Eav.WebApi.Context;
 
-public class SiteDto
+public class SiteDto(int portalId)
 {
-    public int Id;
-
-    public SiteDto(int portalId)
-    {
-        Id = portalId;
-    }
+    public int Id = portalId;
 }

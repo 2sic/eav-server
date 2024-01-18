@@ -1,11 +1,6 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using ToSic.Eav.DataSource.Streams;
+using ToSic.Eav.DataSource.Streams.Internal;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -14,15 +9,15 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// A DataSource that removes duplicate items in a Stream. Often used after a StreamMerge.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Filter duplicates",
     UiHint = "Remove items which occur multiple times",
-    Icon = Icons.Filter1,
+    Icon = DataSourceIcons.Filter1,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { StreamDefaultName },
+    In = [StreamDefaultName],
     HelpLink = "https://go.2sxc.org/DsFilterDuplicates")]
 
 public sealed class ItemFilterDuplicates: DataSourceBase

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Eav.WebApi.Zone;
+﻿using ToSic.Eav.WebApi.Zone;
 
 namespace ToSic.Eav.WebApi.Admin;
 

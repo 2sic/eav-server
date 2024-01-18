@@ -1,10 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Persistence;
-
-namespace ToSic.Eav.Repository.Efc.Parts;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbEntity
 {

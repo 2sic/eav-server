@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Persistence.Logging;
+﻿using System.Diagnostics;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
@@ -39,7 +34,7 @@ partial class DbContentType
     {
         var ct = GetTypeByStaticName(staticName);
         if (ct != null)
-            throw new Exception("current App already has a content-type with this static name - cannot continue");
+            throw new("current App already has a content-type with this static name - cannot continue");
 
         // find the original
         var attSets = DbContext.SqlDb.ToSicEavAttributeSets
@@ -54,7 +49,7 @@ partial class DbContentType
             throw new ArgumentException("can't find an original, non-ghost content-type with the static name '" + staticName + "'");
 
         if (attSets.Count > 1)
-            throw new Exception("found " + attSets.Count + " (expected 1) original, non-ghost content-type with the static name '" + staticName + "' - so won't create ghost as it's not clear off which you would want to ghost.");
+            throw new("found " + attSets.Count + " (expected 1) original, non-ghost content-type with the static name '" + staticName + "' - so won't create ghost as it's not clear off which you would want to ghost.");
 
         var attSet = attSets.First();
         var newSet = new ToSicEavAttributeSets
@@ -88,10 +83,10 @@ partial class DbContentType
 
         // If multiple masters are found, use first and add a warning message
         if (ghostAttributeSets.Count > 1)
-            DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Warning, $"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}"));
+            DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Warning, $"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}"));
 
         // nothing found - report error
-        DbContext.ImportLogToBeRefactored.Add(new LogItem(EventLogEntryType.Warning, $"AttributeSet not imported because master set not found: {contentTypeParentName}"));
+        DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Warning, $"AttributeSet not imported because master set not found: {contentTypeParentName}"));
         return 0;
     }
 

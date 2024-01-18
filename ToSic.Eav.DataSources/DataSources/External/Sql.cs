@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-#if NETFRAMEWORK
+﻿#if NETFRAMEWORK
 using System.Data.SqlClient;
 #else
 using Microsoft.Data.SqlClient;
 #endif
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Logging;
+using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Services;
 using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -26,27 +17,26 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Provide Entities from a SQL Server
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "SQL Data",
     UiHint = "Get data from a database using SQL",
-    Icon = Icons.FormDyn,
+    Icon = DataSourceIcons.FormDyn,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
     DynamicOut = false,
     ConfigurationType = "c76901b5-0345-4866-9fa3-6208de7f8543",
-    NameIds = new []
-    {
+    NameIds =
+    [
         "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"
-    },
+    ],
     HelpLink = "https://go.2sxc.org/DsSql")]
 
 public class Sql : CustomDataSourceAdvanced
 {
     // Note: of the standard SQL-terms, I will only allow exec|execute|select
     // Everything else shouldn't be allowed
-    [PrivateApi]
-    public static Regex ForbiddenTermsInSelect = new(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore|sp_executesql)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    internal static Regex ForbiddenTermsInSelect = new(@"(;|\s|^)+(insert|update|delete|create|alter|drop|rename|truncate|backup|restore|sp_executesql)\s", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     #region Configuration-properties
 
@@ -112,17 +102,16 @@ public class Sql : CustomDataSourceAdvanced
 
     #endregion
 
-    #region Special SQL specific properties to prevent SQL Injection
-        
-    [PrivateApi] public const string ExtractedParamPrefix = "AutoExtractedParam";
+    /// <summary>
+    /// Special SQL specific properties to prevent SQL Injection
+    /// </summary>
+    internal const string ExtractedParamPrefix = "AutoExtractedParam";
 
-    #endregion
+    /// <summary>
+    /// Error Constants
+    /// </summary>
+    internal const string ErrorTitleForbiddenSql = "Forbidden SQL words";
 
-    #region Error Constants
-
-    [PrivateApi] public const string ErrorTitleForbiddenSql = "Forbidden SQL words";
-
-    #endregion
 
     #region Constructor
 
@@ -170,7 +159,7 @@ public class Sql : CustomDataSourceAdvanced
     /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
     /// </remarks>
     [PrivateApi]
-    public Sql Setup(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
+    internal Sql Setup(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
     {
         ConnectionString = connectionString;
         SelectCommand = selectCommand;
@@ -322,7 +311,7 @@ public class Sql : CustomDataSourceAdvanced
                                      ?? columNames.FirstOrDefault();
                     l.A($"will use '{casedTitle}' as title field");
 
-                    var sqlFactory = _dataFactory.New(options: new DataFactoryOptions(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle));
+                    var sqlFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle));
 
                     #endregion
 

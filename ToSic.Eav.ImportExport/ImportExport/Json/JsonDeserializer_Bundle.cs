@@ -1,12 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using ToSic.Eav.Data;
+﻿using System.Text.Json;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Plumbing;
-using ToSic.Eav.Serialization;
-using ToSic.Lib.Logging;
 
 
 // ReSharper disable once CheckNamespace
@@ -18,7 +12,7 @@ public partial class JsonSerializer
     public string SerializeJsonBundle(JsonBundle bundleList, int indentation) =>
         System.Text.Json.JsonSerializer.Serialize(new JsonFormat
         {
-            Bundles = new List<JsonBundle> { bundleList }
+            Bundles = [bundleList]
         }, new JsonSerializerOptions(JsonOptions.UnsafeJsonWithoutEncodingHtml)
         {
             WriteIndented = indentation != 0
@@ -27,7 +21,7 @@ public partial class JsonSerializer
     public List<IContentType> GetContentTypesFromBundles(JsonFormat package)
     {
         var l = Log.Fn<List<IContentType>>();
-        if (package.Bundles.SafeNone()) return l.Return(new List<IContentType>(), "none found");
+        if (package.Bundles.SafeNone()) return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
         var bundlesWithTypes = package.Bundles
@@ -48,7 +42,7 @@ public partial class JsonSerializer
     public List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null)
     {
         var l = Log.Fn<List<IEntity>>();
-        if (package.Bundles.SafeNone()) return l.Return(new List<IEntity>(), "none found");
+        if (package.Bundles.SafeNone()) return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
         var bundlesWithEntities = package.Bundles

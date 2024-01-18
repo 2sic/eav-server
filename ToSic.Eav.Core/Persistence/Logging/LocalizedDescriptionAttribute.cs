@@ -14,11 +14,10 @@ namespace ToSic.Eav.Persistence.Logging;
 ///     MyValue1
 /// }
 /// </summary>
-internal class LocalizedDescriptionAttribute : DescriptionAttribute
+internal class LocalizedDescriptionAttribute(string resourceKey, Type resourceType, string resourceFolder)
+    : DescriptionAttribute
 {
-    private readonly string _resourceKey;
-        
-    private readonly ResourceManager _resourceManager;
+    private readonly ResourceManager _resourceManager = new(resourceFolder + "." + resourceType.Name, resourceType.Assembly);
         
     //public LocalizedDescriptionAttribute(string resourceKey, Type resourceType)
     //{
@@ -26,18 +25,12 @@ internal class LocalizedDescriptionAttribute : DescriptionAttribute
     //    _resourceKey = resourceKey;
     //}
 
-    public LocalizedDescriptionAttribute(string resourceKey, Type resourceType, string resourceFolder)
-    {
-        _resourceManager = new ResourceManager(resourceFolder + "." + resourceType.Name, resourceType.Assembly);
-        _resourceKey = resourceKey;
-    }
-
     public override string Description
     {
         get
         {
-            var displayName = _resourceManager.GetString(_resourceKey);
-            return string.IsNullOrEmpty(displayName) ? $"[{_resourceKey}]" : displayName;
+            var displayName = _resourceManager.GetString(resourceKey);
+            return string.IsNullOrEmpty(displayName) ? $"[{resourceKey}]" : displayName;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Net.Http;
-using ToSic.Eav.ImportExport.Options;
+using ToSic.Eav.ImportExport.Internal.Options;
 
 namespace ToSic.Eav.WebApi.PublicApi;
 

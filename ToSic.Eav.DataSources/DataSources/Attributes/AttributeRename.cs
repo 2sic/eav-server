@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using ToSic.Eav.Data.Build;
+using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -17,15 +8,15 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// DataSource to rename attributes. Will help to change internal field names to something which is more appropriate for your JS or whatever.
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 [VisualQuery(
     NiceName = "Rename Attribute/Property",
     UiHint = "Rename some attributes / properties",
-    Icon = Icons.EditAttributes,
+    Icon = DataSourceIcons.EditAttributes,
     Type = DataSourceType.Modify,
     NameId = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
     DynamicOut = false,
-    In = new[] { InStreamDefaultRequired },
+    In = [InStreamDefaultRequired],
     ConfigurationType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
     HelpLink = "https://go.2sxc.org/DsAttributeRename")]
 
@@ -94,7 +85,7 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
 
         var mapRaw = AttributeMap;
         var attrMapArray = mapRaw
-            .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+            .Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries)
             .ToList();
         var attributeNames = attrMapArray
             .Select(s =>
@@ -124,12 +115,12 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
                         if (string.Equals(fieldMap.New, fieldMap.Old, StringComparison.InvariantCultureIgnoreCase))
                             return a;
                         var renameAttribute = CloneAttributeAndRename(a.Value, fieldMap.New);
-                        return new KeyValuePair<string, IAttribute>(fieldMap.New, renameAttribute);
+                        return new(fieldMap.New, renameAttribute);
                     }
 
                     return preserveOthers
                         ? a
-                        : new KeyValuePair<string, IAttribute>(null, null);
+                        : new(null, null);
                 })
                 .Where(set => set.Key != null)
                 .ToDictionary(a => a.Key, v => v.Value);

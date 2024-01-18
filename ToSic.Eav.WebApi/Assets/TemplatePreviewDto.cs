@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ToSic.Eav.WebApi.Assets;
+﻿namespace ToSic.Eav.WebApi.Assets;
 
 public class TemplatePreviewDto
 {

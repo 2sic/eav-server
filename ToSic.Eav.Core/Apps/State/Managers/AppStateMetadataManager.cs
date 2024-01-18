@@ -54,9 +54,9 @@ internal class AppMetadataManager: IMetadataSource
     /// </summary>
     internal void Reset()
     {
-        _guid = new Dictionary<int, Dictionary<Guid, List<IEntity>>>();
-        _number = new Dictionary<int, Dictionary<int, List<IEntity>>>();
-        _string = new Dictionary<int, Dictionary<string, List<IEntity>>>();
+        _guid = new();
+        _number = new();
+        _string = new();
     }
 
     #region Cache Timestamp & Invalidation
@@ -93,10 +93,10 @@ internal class AppMetadataManager: IMetadataSource
     {
         // Get or create the metadata index on this targetType
         if (!metadataIndex.TryGetValue(mdTargetType, out var indexOfType))
-            indexOfType = metadataIndex[mdTargetType] = new Dictionary<T, List<IEntity>>();
+            indexOfType = metadataIndex[mdTargetType] = new();
 
         // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) exists, otherwise create empty list
-        var list = indexOfType.TryGetValue(mdValue, out var lst) ? lst : indexOfType[mdValue] = new List<IEntity>();
+        var list = indexOfType.TryGetValue(mdValue, out var lst) ? lst : indexOfType[mdValue] = new();
 
         // in case it was already in this index, remove first
         var found = list.One(entity.EntityId);
@@ -118,15 +118,12 @@ internal class AppMetadataManager: IMetadataSource
         if (type == typeof(Guid))
             return Lookup(_guid, targetType, key as Guid? ?? Guid.Empty, contentTypeName);
 
-        switch (Type.GetTypeCode(type))
+        return Type.GetTypeCode(type) switch
         {
-            case TypeCode.Int32:
-                return Lookup(_number, targetType, key as int? ?? 0, contentTypeName);
-            case TypeCode.String:
-                return Lookup(_string, targetType, key as string, contentTypeName);
-            default:
-                return Lookup(_string, targetType, key.ToString(), contentTypeName);
-        }
+            TypeCode.Int32 => Lookup(_number, targetType, key as int? ?? 0, contentTypeName),
+            TypeCode.String => Lookup(_string, targetType, key as string, contentTypeName),
+            _ => Lookup(_string, targetType, key.ToString(), contentTypeName)
+        };
     }
 
     public IEnumerable<IEntity> GetMetadata<T>(TargetTypes targetType, T key, string contentTypeName = null) 

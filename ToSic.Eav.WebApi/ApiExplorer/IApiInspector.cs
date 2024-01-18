@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using ToSic.Lib.Logging;
+﻿using System.Reflection;
 
 namespace ToSic.Eav.WebApi.ApiExplorer;
 

@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+using ToSic.Eav.DataSources.Internal;
 
 namespace ToSic.Eav.DataSources;
 

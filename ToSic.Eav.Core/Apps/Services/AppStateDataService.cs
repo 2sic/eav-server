@@ -12,13 +12,8 @@ using ToSic.Sxc.Apps;
 
 namespace ToSic.Eav.Apps.Services
 {
-    internal class AppStateDataService: ServiceBase, IAppStateInternal, IMetadataSource
+    internal class AppStateDataService() : ServiceBase("App.Reader"), IAppStateInternal, IMetadataSource
     {
-
-        public AppStateDataService(): base("App.Reader")
-        {
-        }
-
         internal AppStateDataService Init(IAppStateCache appState, ILog parentLog)
         {
             _appState = appState as AppState;

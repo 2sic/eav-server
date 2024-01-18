@@ -1,7 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
 
-using System.Collections.Generic;
-
 namespace ToSic.Eav.WebApi.ApiExplorer;
 
 public class ApiActionDto

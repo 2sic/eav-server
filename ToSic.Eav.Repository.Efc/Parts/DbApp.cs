@@ -1,16 +1,10 @@
-﻿using System.Linq;
-using System.Text.Json;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Persistence.Efc.Models;
+﻿using System.Text.Json;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
-internal class DbApp: DbPartBase
+internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
 {
-    public DbApp(DbDataController db) : base(db, "Db.App") {}
-
-
     /// <summary>
     /// Add a new App
     /// </summary>

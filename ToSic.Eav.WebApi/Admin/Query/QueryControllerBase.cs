@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Work;
-using ToSic.Eav.Data;
+﻿using System.Diagnostics;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Catalog;
-using ToSic.Eav.DataSource.Debug;
-using ToSic.Eav.DataSource.Query;
+using ToSic.Eav.DataSource.Internal.Catalog;
+using ToSic.Eav.DataSource.Internal.Inspect;
+using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.ImportExport.Serialization;
-using ToSic.Lib.Logging;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization;
-using ToSic.Eav.WebApi.Dto;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-using Connection = ToSic.Eav.DataSource.Query.Connection;
+using ToSic.Eav.Serialization.Internal;
+using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using SystemJsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Admin.Query;
@@ -31,7 +21,11 @@ namespace ToSic.Eav.WebApi.Admin.Query;
 /// It's just a base controller, because some methods need to be added at the SXC level which don't exist in the EAV.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryControllerBase<TImplementation>.MyServices> where TImplementation : QueryControllerBase<TImplementation>
+public abstract class QueryControllerBase<TImplementation>(
+    QueryControllerBase<TImplementation>.MyServices services,
+    string logName)
+    : ServiceBase<QueryControllerBase<TImplementation>.MyServices>(services, logName)
+    where TImplementation : QueryControllerBase<TImplementation>
 {
 
     #region Constructor / DI / Services
@@ -49,7 +43,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
         public Generator<IAppStates> AppStates { get; }
         public QueryBuilder QueryBuilder { get; }
         public LazySvc<ConvertToEavLight> EntToDicLazy { get; }
-        public LazySvc<QueryInfo> QueryInfoLazy { get; }
+        public LazySvc<InspectQuery> QueryInfoLazy { get; }
         public LazySvc<DataSourceCatalog> DataSourceCatalogLazy { get; }
         public Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> JsonSerializer { get; }
         public Generator<PassThrough> PassThrough { get; }
@@ -57,7 +51,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
         public MyServices(
             QueryBuilder queryBuilder,
             LazySvc<ConvertToEavLight> entToDicLazy,
-            LazySvc<QueryInfo> queryInfoLazy,
+            LazySvc<InspectQuery> queryInfoLazy,
             LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
             Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
             Generator<PassThrough> passThrough,
@@ -82,12 +76,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
     }
 
 
-
-    protected QueryControllerBase(MyServices services, string logName) : base(services, logName)
-    {
-        QueryBuilder = services.QueryBuilder;
-    }
-    private QueryBuilder QueryBuilder { get; }
+    private QueryBuilder QueryBuilder { get; } = services.QueryBuilder;
 
     #endregion
 
@@ -177,15 +166,15 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
     /// </summary>
     protected QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine lookUps, string from, string streamName)
     {
-        IDataSource GetSubStream((IDataSource, Dictionary<string, IDataSource>) builtQuery)
+        IDataSource GetSubStream(QueryResult builtQuery)
         {
             // Find the DataSource
-            if (!builtQuery.Item2.ContainsKey(from))
-                throw new Exception($"Can't find source with name '{from}'");
+            if (!builtQuery.DataSources.ContainsKey(from))
+                throw new($"Can't find source with name '{from}'");
 
-            var source = builtQuery.Item2[from];
+            var source = builtQuery.DataSources[from];
             if (!source.Out.ContainsKey(streamName))
-                throw new Exception($"Can't find stream '{streamName}' on source '{from}'");
+                throw new($"Can't find stream '{streamName}' on source '{from}'");
 
             var resultStream = source.Out[streamName];
                 
@@ -200,14 +189,16 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
     }
 
     protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top,
-        Func<(IDataSource Main, Dictionary<string, IDataSource> DataSources), IDataSource> partLookup) 
+        Func<QueryResult, IDataSource> partLookup) 
     {
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
         // Get the query, run it and track how much time this took
         var qDef = QueryBuilder.GetQueryDefinition(appId, id);
         var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
-        var outSource = builtQuery.Item1;
+        var outSource = builtQuery.Main;
 
+        // New v17 experimental with special fields
+        var extraParams = new QueryODataParams(outSource.Configuration);
 
         var timer = new Stopwatch();
         timer.Start();
@@ -216,6 +207,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
             var converter = Services.EntToDicLazy.Value;
             converter.WithGuid = true;
             converter.MaxItems = top;
+            converter.SelectFields = extraParams.SelectFields;
             var converted = converter.Convert(partLookup(builtQuery));
             return (converted, "ok");
         });
@@ -237,7 +229,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
                 })
                 .ToList(),
             Sources = debugInfo.Sources,
-            QueryTimer = new QueryTimerDto
+            QueryTimer = new()
             {
                 Milliseconds = timer.ElapsedMilliseconds,
                 Ticks = timer.ElapsedTicks
@@ -269,7 +261,7 @@ public abstract class QueryControllerBase<TImplementation> : ServiceBase<QueryCo
         catch (Exception ex)
         {
             l.Ex(ex);
-            throw new Exception($"Couldn't import - {ex?.Message ?? "probably bad file format"}.", ex);
+            throw new($"Couldn't import - {ex?.Message ?? "probably bad file format"}.", ex);
         }
     }
 

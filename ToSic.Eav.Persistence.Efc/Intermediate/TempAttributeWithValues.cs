@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Persistence.Efc.Intermediate;
+﻿namespace ToSic.Eav.Persistence.Efc.Intermediate;
 
 internal class TempAttributeWithValues
 {

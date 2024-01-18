@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Persistence.File;
 
@@ -27,7 +21,7 @@ partial class AppLoader
                 .Select(folder => new EntitySetsToLoad
                 {
                     Folder = folder,
-                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appState) ?? new List<IEntity>()
+                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appState) ?? []
                 })
                 .ToList();
 

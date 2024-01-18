@@ -13,7 +13,7 @@ partial class AppState
     /// All ContentTypes in this App
     /// </summary>
     public IEnumerable<IContentType> ContentTypes => _contentTypesList
-        ??= new SynchronizedList<IContentType>(CacheTimestampDelegate,
+        ??= new(CacheTimestampDelegate,
             () => _appContentTypesFromRepository.Union(ParentApp.ContentTypes).ToImmutableList()
         );
     private SynchronizedList<IContentType> _contentTypesList;

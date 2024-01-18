@@ -9,12 +9,8 @@ namespace ToSic.Eav.Data.Build;
 /// Builder to create / clone <see cref="IContentTypeAttribute"/> definitions.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ContentTypeAttributeBuilder: ServiceBase
+public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
 {
-    public ContentTypeAttributeBuilder(): base("Eav.CtAtBl")
-    {
-    }
-
     public ContentTypeAttribute Create(
         int appId,
         string name,
@@ -31,7 +27,7 @@ public class ContentTypeAttributeBuilder: ServiceBase
         metadata = metadata ?? new ContentTypeAttributeMetadata(key: id, name: name, type: type,
             sysSettings: sysSettings, items: metadataItems, deferredSource: metaSourceFinder);
 
-        return new ContentTypeAttribute(appId: appId, name: name, type: type, isTitle: isTitle,
+        return new(appId: appId, name: name, type: type, isTitle: isTitle,
             attributeId: id, sortOrder: sortOrder, guid: guid, sysSettings: sysSettings, metadata: metadata);
     }
 

@@ -12,7 +12,7 @@ public partial class BuiltInFeatures
 
     internal static List<FeatureLicenseRule> BuildRule(FeatureSet licDef, bool featureEnabled) => new()
     {
-        new FeatureLicenseRule(licDef, featureEnabled)
+        new(licDef, featureEnabled)
     };
 
 }

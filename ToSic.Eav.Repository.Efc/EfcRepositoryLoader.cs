@@ -1,35 +1,28 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
-using ToSic.Lib.Logging;
-using ToSic.Eav.Metadata;
-using ToSic.Eav.Repositories;
+﻿using ToSic.Eav.Apps.State;
 
 namespace ToSic.Eav.Repository.Efc;
 
 /// <summary>
 /// Wrapper for the EfcLoader, because we also need to do write operations on PrimaryApps, but the EFC loader cannot do that
 /// </summary>
-internal class EfcRepositoryLoader: IRepositoryLoader
+internal class EfcRepositoryLoader(DbDataController dataController) : IRepositoryLoader
 {
-    public EfcRepositoryLoader(DbDataController dataController)
-    {
-        _dataController = dataController.Init(null, null);
-    }
-
-    private readonly DbDataController _dataController;
+    private readonly DbDataController _dataController = dataController.Init(null, null);
 
     public ILog Log => _dataController.Loader.Log;
 
-    public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) => _dataController.Loader.ContentTypes(appId, source);
+    public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
+        => _dataController.Loader.ContentTypes(appId, source);
 
     //public AppState AppStateRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateRaw(appId, codeRefTrail);
-    public IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateBuilderRaw(appId, codeRefTrail);
+    public IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)
+        => _dataController.Loader.AppStateBuilderRaw(appId, codeRefTrail);
 
-    public IAppStateCache AppStateInitialized(int appId, CodeRefTrail codeRefTrail) => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
+    public IAppStateCache AppStateInitialized(int appId, CodeRefTrail codeRefTrail)
+        => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
 
-    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, int[] entityIds = null) => _dataController.Loader.Update(app, startAt, entityIds);
+    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds = null)
+        => _dataController.Loader.Update(app, startAt, codeRefTrail, entityIds);
 
     public IDictionary<int, Zone> Zones()
     {

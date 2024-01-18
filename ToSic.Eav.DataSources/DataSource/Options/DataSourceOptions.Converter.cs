@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using ToSic.Eav.Generics;
+﻿using ToSic.Eav.Generics;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class DataSourceOptions
 {
     /// <summary>
@@ -92,7 +87,7 @@ public partial class DataSourceOptions
 
         public IImmutableDictionary<string, string> ValuesFromStringArray(params string[] values)
         {
-            var cleaned = values?.Where(v => v.HasValue()).ToList() ?? new List<string>();
+            var cleaned = values?.Where(v => v.HasValue()).ToList() ?? [];
             if (cleaned.SafeNone()) return null;
             var valDic = cleaned
                 .Select(v => v.Split('='))

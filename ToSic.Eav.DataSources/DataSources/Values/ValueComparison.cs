@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
-using static System.StringComparison;
+﻿using static System.StringComparison;
 using static ToSic.Eav.DataSources.CompareOperators;
 
 namespace ToSic.Eav.DataSources;
@@ -130,7 +124,7 @@ internal class ValueComparison: HelperBase
         if (operation == OpContains || operation == OpNotContains)
         {
             Log.A($"Operator is {OpContains} or {OpNotContains}");
-            decimals = new List<decimal>();
+            decimals = [];
             foreach(var num in expected.Split(','))
                 if (decimal.TryParse(num, out var dec))
                     decimals.Add(dec);

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.ImportExport.Serialization;
 using ToSic.Eav.ImportExport.Tests.Json;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;
+using ToSic.Eav.Serialization.Internal;
 using ToSic.Testing.Shared;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 

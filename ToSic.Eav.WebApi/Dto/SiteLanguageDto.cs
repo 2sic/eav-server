@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using ToSic.Eav.WebApi.Security;
+﻿using ToSic.Eav.WebApi.Security;
 
 namespace ToSic.Eav.WebApi.Dto;
 

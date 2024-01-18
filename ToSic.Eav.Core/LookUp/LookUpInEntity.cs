@@ -10,7 +10,7 @@ namespace ToSic.Eav.LookUp;
 /// Get Values from an <see cref="IEntity"/>. <br/>
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
-[PublicApi_Stable_ForUseInYourCode]
+[PublicApi]
 public class LookUpInEntity : LookUpIn<IEntity>
 {
     private readonly string[] _dimensions;
@@ -53,7 +53,7 @@ public class LookUpInEntity : LookUpIn<IEntity>
             return string.Empty;
 
         // Finally: Handle child-Entity-Field (sorted list of related entities)
-        if (!(valueObject is IEnumerable<IEntity> relationshipList))
+        if (valueObject is not IEnumerable<IEntity> relationshipList)
             return string.Empty;
         var first = relationshipList.FirstOrDefault();
         return first == null

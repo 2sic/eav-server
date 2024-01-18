@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ToSic.Eav.Data;
+﻿using System.IO;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport;
+using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Helpers;
-using ToSic.Lib.Logging;
-using static ToSic.Eav.ImportExport.ImpExpConstants;
+using static ToSic.Eav.ImportExport.Internal.ImpExpConstants;
 
 namespace ToSic.Eav.Persistence.File;
 
@@ -24,7 +19,7 @@ partial class FileSystemLoader
     {
         // #1. check that folder exists
         if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
-            return (new Dictionary<string, JsonFormat>(), "path doesn't exist");
+            return (new(), "path doesn't exist");
 
         const string infoIfError = "couldn't read bundle-file";
         try
@@ -42,12 +37,12 @@ partial class FileSystemLoader
         catch (IOException e)
         {
             l.Ex("Failed loading type - couldn't import bundle-file, IO exception", e);
-            return (new Dictionary<string, JsonFormat>(), "IOException");
+            return (new(), "IOException");
         }
         catch (Exception e)
         {
             l.Ex($"Failed loading bundle - {infoIfError}", e);
-            return (new Dictionary<string, JsonFormat>(), "error");
+            return (new(), "error");
         }
     });
     private readonly GetOnce<Dictionary<string, JsonFormat>> _jsonBundles = new();
@@ -60,7 +55,7 @@ partial class FileSystemLoader
     {
         var l = Log.Fn<List<IContentType>>($"ContentTypes in bundles");
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes.SafeAny()) != true))
-            return new List<IContentType>();
+            return [];
 
         var contentTypes = JsonBundleBundles
             .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value))
@@ -97,7 +92,7 @@ partial class FileSystemLoader
         catch (Exception e)
         {
             l.Ex($"Failed building content types from bundle json", e);
-            return l.Return(new List<IContentType>(), "error");
+            return l.Return([], "error");
         }
     }
 
@@ -108,7 +103,7 @@ partial class FileSystemLoader
     {
         var l = Log.Fn<List<IEntity>>($"Entities in bundles");
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities.SafeAny()) != true))
-            return l.Return(new List<IEntity>(), "no bundles have entities, return none");
+            return l.Return([], "no bundles have entities, return none");
 
         var entities = JsonBundleBundles
             .SelectMany(json =>
@@ -147,7 +142,7 @@ partial class FileSystemLoader
         catch (Exception e)
         {
             l.Ex("Failed building entities from bundle json", e);
-            return l.Return(new List<IEntity>(), "error return none");
+            return l.Return([], "error return none");
         }
     }
 }

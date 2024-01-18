@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Lib.Documentation;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 
 namespace ToSic.Eav.DataSources;
 
@@ -12,15 +9,15 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "App Root Cache",
     UiHint = "All App data from the Cache",
-    Icon = Icons.TableChart,
+    Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.Source,
     Audience = Audience.Advanced,
     NameId = "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",
-    NameIds = new []
-    {
+    NameIds =
+    [
         "ToSic.Eav.DataSources.Caches.ICache, ToSic.Eav.DataSources",
         "ToSic.Eav.DataSources.Caching.IRootCache, ToSic.Eav.DataSources"
-    },
+    ],
     HelpLink = "https://go.2sxc.org/DsAppRoot")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 public interface IAppRoot : IDataSource

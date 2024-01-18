@@ -1,19 +1,10 @@
-﻿using System;
-using System.Linq;
-using ToSic.Eav.Plumbing;
-using ToSic.Lib.Logging;
-using static ToSic.Razor.Blade.Tag;
+﻿using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsTime: InsightsHtmlBase
+internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
 {
-    public InsightsTime(TimeSpan fullTime = default)
-    {
-        FullTime = fullTime;
-    }
-
-    private TimeSpan FullTime { get; }
+    private TimeSpan FullTime { get; } = fullTime;
 
     public string ShowTime(Log log)
     {

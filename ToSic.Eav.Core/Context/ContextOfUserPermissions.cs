@@ -8,14 +8,9 @@ namespace ToSic.Eav.Context;
 /// Very basic implementation.
 /// Should be replaced in Eav.Apps which often knows more about the user than just the simple site context
 /// </summary>
-internal class ContextOfUserPermissions: ServiceBase, IContextOfUserPermissions
+internal class ContextOfUserPermissions(IUser user) : ServiceBase("Eav.CtxSec"), IContextOfUserPermissions
 {
-    public IUser User { get; }
-
-    public ContextOfUserPermissions(IUser user): base("Eav.CtxSec")
-    {
-        User = user;
-    }
+    public IUser User { get; } = user;
 
     public bool UserMayEdit => _userMayEditWip.Get(() => Log.GetterM(() =>
     {

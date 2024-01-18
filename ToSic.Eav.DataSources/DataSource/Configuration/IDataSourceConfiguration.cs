@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Coding;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.DataSource;
 
@@ -12,7 +10,6 @@ namespace ToSic.Eav.DataSource;
 /// the LookUp engine which will perform the token resolution
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataSourceConfiguration
 {
     /// <summary>
@@ -66,6 +63,7 @@ public interface IDataSourceConfiguration
     /// The internal look up engine which manages value sources and will resolve the tokens
     /// </summary>
     [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     ILookUpEngine LookUpEngine { get; }
 
     #region Getters - new v15.04
@@ -97,6 +95,7 @@ public interface IDataSourceConfiguration
 }
 
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class DataSourceConfigurationObsoleteExtensions
 {
     /// <summary>
@@ -110,6 +109,8 @@ public static class DataSourceConfigurationObsoleteExtensions
     /// <param name="config"></param>
     /// <remarks>Added in v15.04</remarks>
 #pragma warning disable CS0618
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     internal static void SetThisObsolete<T>(this IDataSourceConfiguration config, T value, [CallerMemberName] string name = default)
         => ((DataSourceConfiguration)config).SetThisObsolete(value, name);
 #pragma warning restore CS0618

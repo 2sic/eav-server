@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using static System.Text.Json.Serialization.JsonIgnoreCondition;
+﻿using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json.V1;

@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Eav.Metadata;
-
-namespace ToSic.Eav.Persistence.Efc.Intermediate;
+﻿namespace ToSic.Eav.Persistence.Efc.Intermediate;
 
 internal class TempEntity
 {

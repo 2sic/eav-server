@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Internal.Features;
+﻿using ToSic.Eav.Internal.Features;
 
 namespace ToSic.Eav.WebApi.Admin.Features;
 

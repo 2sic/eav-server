@@ -1,13 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.Context;
-using ToSic.Eav.Data;
-using ToSic.Lib.DI;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Admin.Metadata;
-using ToSic.Eav.WebApi.Dto;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Admin;
@@ -50,7 +44,7 @@ public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
 
         var isGlobalOrPrimary = isGlobal || isPrimary;
 
-        return new AppInternalsDto
+        return new()
         {
             // 1. .../api/2sxc/admin/type/list?appId=999&scope=System.Configuration
             //SystemConfiguration = systemConfiguration,

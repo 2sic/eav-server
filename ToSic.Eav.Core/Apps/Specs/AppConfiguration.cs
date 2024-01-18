@@ -52,5 +52,5 @@ internal class AppConfiguration: EntityBasedWithLog, IAppConfiguration
     public Version RequiredOqtane => GetVersionOrDefault(FieldRequiredOqtaneVersion);
 
     private Version GetVersionOrDefault(string name) =>
-        Version.TryParse(Get(name, ""), out var version) ? version : new Version();
+        Version.TryParse(Get(name, ""), out var version) ? version : new();
 }
