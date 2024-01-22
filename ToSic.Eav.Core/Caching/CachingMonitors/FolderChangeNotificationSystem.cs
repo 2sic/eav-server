@@ -62,8 +62,10 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
         //    return 0 == string.Compare(s1, 0, s2, 0, s2.Length, StringComparison.OrdinalIgnoreCase);
         //}
     }
-        
-    public void StartMonitoring(string dirPath, OnChangedCallback onChangedCallback, out object state, out DateTimeOffset lastWriteTime, out long fileSize)
+    public void StartMonitoring(string dirPath, OnChangedCallback onChangedCallback, out object state, out DateTimeOffset lastWriteTime, out long fileSize) =>
+        StartMonitoring(dirPath, true, onChangedCallback, out state, out lastWriteTime, out fileSize);
+
+    public void StartMonitoring(string dirPath, bool includeSubdirectories, OnChangedCallback onChangedCallback, out object state, out DateTimeOffset lastWriteTime, out long fileSize)
     {
         if (dirPath == null) throw new ArgumentNullException(nameof(dirPath));
         if (onChangedCallback == null) throw new ArgumentNullException(nameof(onChangedCallback));
@@ -81,7 +83,7 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
                                        | NotifyFilters.DirectoryName
                                        | NotifyFilters.Size
                                        | NotifyFilters.LastWrite,
-                        IncludeSubdirectories = true,
+                        IncludeSubdirectories = includeSubdirectories,
                         EnableRaisingEvents = true
                     }
                 };
