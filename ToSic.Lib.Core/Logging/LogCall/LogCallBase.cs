@@ -20,7 +20,7 @@ public class LogCallBase : ILogLike, ILogCall
         bool timer = false)
     {
         // Always init the stopwatch, as it could be used later even without a parent log
-        Timer = timer ? Stopwatch.StartNew() : new Stopwatch();
+        Timer = timer ? Stopwatch.StartNew() : new();
 
         // Keep the log, but quit if it's not valid
         if (!(log.GetRealLog() is Log typedLog)) return;

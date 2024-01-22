@@ -13,7 +13,7 @@ public partial class Log
     /// <param name="name">optional new name</param>
     internal void LinkTo(ILog newParent, string name = null)
     {
-        if (newParent == this) throw new Exception("LOG ERROR - attaching a log to itself can't work");
+        if (newParent == this) throw new("LOG ERROR - attaching a log to itself can't work");
         // only attach new parent if it didn't already have an old one
         // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
         if (newParent != null)
@@ -25,7 +25,7 @@ public partial class Log
                 Parent = newParent;
                 Depth = (newParent as Log)?.Depth + 1 ?? 0;
                 if (Depth > MaxParentDepth)
-                    throw new Exception(
+                    throw new(
                         $"LOG ERROR - Adding parent to logger but exceeded max depth of {MaxParentDepth}");
 
                 // If we have any entries that were added before, add them to the parent now
