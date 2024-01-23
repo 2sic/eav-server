@@ -135,12 +135,9 @@ public class InputTypeInfo
         if (ConfigTypes.HasValue())
             try
             {
-                var parts = ConfigTypes
-                    .Split(',')
-                    .Select(s => s.Trim())
-                    .Where(s => s.HasValue())
-                    .ToArray();
-                foreach (var part in parts) newDic[part] = true;
+                var parts = ConfigTypes.CsvToArrayWithoutEmpty();
+                foreach (var part in parts)
+                    newDic[part] = true;
                 return l.Return(_configTypesDic = newDic, $"custom list {newDic.Count}");
             }
             catch (Exception ex)
