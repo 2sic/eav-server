@@ -24,6 +24,7 @@ using System.Text.Json;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.SysData;
@@ -146,8 +147,9 @@ public sealed class LicenseLoader : LoaderBase
         l.A($"Fingerprint: {validFp}");
 
         var validVersion = licensesPersisted.Versions?
-                               .Split(',')
-                               .Select(v => v.Trim())
+                               .CsvToArrayWithoutEmpty()
+                               //.Split(',')
+                               //.Select(v => v.Trim())
                                .Any(v => int.TryParse(v, out var licVersion) && EavSystemInfo.Version.Major == licVersion)
                            ?? false;
 

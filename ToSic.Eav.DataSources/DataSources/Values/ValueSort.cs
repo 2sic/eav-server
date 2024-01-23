@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.DataSources.Internal;
+using ToSic.Eav.Plumbing;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -91,8 +92,8 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
         Configuration.Parse();
 
         l.A("will apply value-sort");
-        var sortAttributes = Attributes.Split(',').Select(s => s.Trim()).ToArray();
-        var sortDirections = Directions.Split(',').Select(s => s.Trim()).ToArray();
+        var sortAttributes = Attributes.CsvToArrayWithoutEmpty(); // .Split(',').Select(s => s.Trim()).ToArray();
+        var sortDirections = Directions.CsvToArrayWithoutEmpty(); //.Split(',').Select(s => s.Trim()).ToArray();
         var descendingCodes = new[] { "desc","d","0",">" };
 
         // Languages check - not fully implemented yet, only supports "default" / "current"

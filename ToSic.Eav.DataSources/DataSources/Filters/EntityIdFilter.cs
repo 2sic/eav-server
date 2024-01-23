@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.DataSource.Internal.Errors;
+using ToSic.Eav.Plumbing;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -84,9 +85,9 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
             if (string.IsNullOrWhiteSpace(configEntityIds))
                 return l.Return(new(true, Array.Empty<int>()), "empty");
 
-            var preCleanedIds = configEntityIds
-                .Split(',')
-                .Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId));
+            var preCleanedIds = configEntityIds.CsvToArrayWithoutEmpty();
+                //.Split(',')
+                //.Where(strEntityId => !string.IsNullOrWhiteSpace(strEntityId));
             var lstEntityIds = new List<int>();
             foreach (var strEntityId in preCleanedIds)
                 if (int.TryParse(strEntityId, out var entityIdToAdd))

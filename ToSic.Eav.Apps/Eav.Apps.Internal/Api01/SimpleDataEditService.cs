@@ -242,8 +242,8 @@ public partial class SimpleDataEditService: ServiceBase
                     return idGuidNull.ToList();
                 case string strValEmpty when !strValEmpty.HasValue(): return null;
                 case string strVal:
-                    var parts = strVal.Split(',').Where(s => s.HasValue()).ToList();
-                    if (parts.Count == 0) return value;
+                    var parts = strVal.CsvToArrayWithoutEmpty(); //.Split(',').Where(s => s.HasValue()).ToList();
+                    if (parts.Length == 0) return value;
 
                     // could be int/guid - must convert - must all be the same
                     if (int.TryParse(parts[0], out var intValue))

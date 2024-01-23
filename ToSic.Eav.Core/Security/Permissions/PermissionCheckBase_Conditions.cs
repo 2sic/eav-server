@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -85,9 +86,10 @@ partial class PermissionCheckBase
 
         if (string.IsNullOrWhiteSpace(identity)) return false;
 
-        var groupIds = identity.Split(',').Select(g => g.Trim())
-            .Where(g => !string.IsNullOrWhiteSpace(g)).Select(
-                g => int.TryParse(g, out var gid) ? gid : 0)
+        var groupIds = identity.CsvToArrayWithoutEmpty()
+            //.Split(',').Select(g => g.Trim())
+            //.Where(g => !string.IsNullOrWhiteSpace(g))
+            .Select(g => int.TryParse(g, out var gid) ? gid : 0)
             .Where(gid => gid > 0)
             .ToList();
 

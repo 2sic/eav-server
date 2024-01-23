@@ -164,10 +164,10 @@ public class EntityPicker : DataSourceBase
 
         try
         {
-            var typeNames = TypeNames
-                .Split(',')
-                .Select(s => s.Trim())
-                .Where(t => t.HasValue())
+            var typeNames = TypeNames.CsvToArrayWithoutEmpty()
+                //.Split(',')
+                //.Select(s => s.Trim())
+                //.Where(t => t.HasValue())
                 .ToList();
 
             l.A($"found {typeNames.Count} type names, before verifying if they exist");
@@ -198,10 +198,10 @@ public class EntityPicker : DataSourceBase
         var raw = ItemIds;
         if (raw.IsEmptyOrWs()) return l.Return(list, "no filter, return all");
 
-        var untyped = raw
-            .Split(',')
-            .Select(s => s.Trim())
-            .Where(id => id.HasValue())
+        var untyped = raw.CsvToArrayWithoutEmpty()
+            //.Split(',')
+            //.Select(s => s.Trim())
+            //.Where(id => id.HasValue())
             .ToList();
 
         if (!untyped.Any()) return l.Return(list, "empty filter, return all");
