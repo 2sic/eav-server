@@ -20,7 +20,7 @@ public abstract class EntityBasedType : IEntityBasedType
     public IEntity Entity { get; protected set; }
 
     [PrivateApi] public IEntity RootContentsForEqualityCheck => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
-    public List<IDecorator<IEntity>> Decorators => _decorators ??= (Entity as IEntityWrapper)?.Decorators ?? new List<IDecorator<IEntity>>();
+    public List<IDecorator<IEntity>> Decorators => _decorators ??= (Entity as IEntityWrapper)?.Decorators ?? [];
     private List<IDecorator<IEntity>> _decorators;
 
     /// <summary>
@@ -33,7 +33,7 @@ public abstract class EntityBasedType : IEntityBasedType
         => LookupLanguages = languageCodes ?? Array.Empty<string>();
 
     protected EntityBasedType(IEntity entity, string languageCode) : this(entity)
-        => LookupLanguages = languageCode != null ? new[] { languageCode } : Array.Empty<string>();
+        => LookupLanguages = languageCode != null ? [languageCode] : Array.Empty<string>();
 
     /// <inheritdoc />
     public virtual string Title => _title ??= Entity?.GetBestTitle() ?? "";

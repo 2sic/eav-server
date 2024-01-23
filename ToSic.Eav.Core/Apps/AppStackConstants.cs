@@ -35,7 +35,7 @@ public class AppStackConstants
     public static string FieldSettingsIdentifier = "SettingsIdentifier";
     public static string FieldItemIdentifier = "ItemIdentifier";
 
-    internal static string[] BlacklistKeys = { FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope };
+    internal static string[] BlacklistKeys = [FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope];
 
     public static AppThingsIdentifiers Resources = new()
     {

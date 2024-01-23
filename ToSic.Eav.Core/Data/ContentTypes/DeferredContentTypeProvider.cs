@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.ContentTypes;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DeferredContentTypeProvider : IDeferredContentTypeProvider
 {
-    public List<IContentType> Source { get; } = new();
+    public List<IContentType> Source { get; } = [];
     public DeferredContentTypeProvider()
     {
     }

@@ -23,7 +23,7 @@ public class RequirementsService: ServiceBase
 
     public List<RequirementError> Check(IEnumerable<IHasRequirements> withRequirements) => Log.Func(timer: true, func: () =>
     {
-        var result = withRequirements?.SelectMany(Check).ToList() ?? new List<RequirementError>();
+        var result = withRequirements?.SelectMany(Check).ToList() ?? [];
         return (result, $"{result.Count} requirements failed");
     });
 
@@ -32,7 +32,7 @@ public class RequirementsService: ServiceBase
 
     public List<RequirementError> Check(List<Requirement> requirements)
     {
-        if (requirements == null || requirements.Count == 0) return new();
+        if (requirements == null || requirements.Count == 0) return [];
         return requirements.Select(Check).Where(c => c != null).ToList();
     }
 

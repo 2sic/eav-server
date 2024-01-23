@@ -24,7 +24,7 @@ public class LazySvc<TService>: ILazyLike<TService>, IHasLog, ILazyInitLog where
     /// <summary>
     /// Constructor, should never be called as it's only meant to be used with Dependency Injection.
     /// </summary>
-    public LazySvc(IServiceProvider sp) => _valueLazy = new Lazy<TService>(() => sp.Build<TService>(Log));
+    public LazySvc(IServiceProvider sp) => _valueLazy = new(() => sp.Build<TService>(Log));
     private readonly Lazy<TService> _valueLazy;
 
     /// <summary>
@@ -37,7 +37,7 @@ public class LazySvc<TService>: ILazyLike<TService>, IHasLog, ILazyInitLog where
         // Warn if we're accidentally replacing init-call, but only do this on debug
         // In most cases it has no consequences, but we should write code that avoids this
         if (_initCall != null)
-            throw new Exception($"You tried to call {nameof(SetInit)} twice. This should never happen");
+            throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
 #endif
         _initCall = newInitCall;
         return this;

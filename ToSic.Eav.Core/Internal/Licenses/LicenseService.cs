@@ -45,7 +45,7 @@ public class LicenseService : ILicenseService
 
     #region Internal stuff, caching, static
 
-    private static List<FeatureSetState> AllCache { get; set; } = new();
+    private static List<FeatureSetState> AllCache { get; set; } = [];
 
 
     private static IImmutableDictionary<Guid, FeatureSetState> EnabledCache { get; set; } =

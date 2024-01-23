@@ -12,7 +12,7 @@ internal sealed class UserUnknown: IUser, IIsUnknown
 
     public Guid Guid => System.Guid.Empty;
 
-    public List<int> Roles => new();
+    public List<int> Roles => [];
 
     public bool IsSystemAdmin => false;
 

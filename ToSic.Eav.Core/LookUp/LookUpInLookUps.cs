@@ -13,7 +13,7 @@ namespace ToSic.Eav.LookUp;
 public class LookUpInLookUps: LookUpBase
 {
     [PrivateApi]
-    public List<ILookUp> Providers = new(); 
+    public List<ILookUp> Providers = []; 
 
     /// <summary>
     /// Generate a lookup-of-lookups. 

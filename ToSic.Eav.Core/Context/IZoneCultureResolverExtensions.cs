@@ -40,12 +40,12 @@ public static class IZoneCultureResolverExtensions
 
     public static string[] SafeLanguagePriorityCodes(this IZoneCultureResolver resolver)
     {
-        if (resolver == null) return new[] { SafeCurrentCultureCode(null), null };
+        if (resolver == null) return [SafeCurrentCultureCode(null), null];
 
         var list = (resolver as IZoneCultureResolverProWIP)?.CultureCodesWithFallbacks
                    ?? UnsafeLanguagePriorityCodesWithoutProWIP(resolver);
 
-        if (list == null) return new[] { SafeCurrentCultureCode(null), null };
+        if (list == null) return [SafeCurrentCultureCode(null), null];
 
         ListBuildAddFinalFallback(list);
         return list.ToArray();

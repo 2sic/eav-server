@@ -87,7 +87,7 @@ public class BuiltInLicenses
     )
     {
         // Beta, functionality not implemented
-        AlsoInheritEnabledFrom = new [] { PatronPerfectionist }
+        AlsoInheritEnabledFrom = [PatronPerfectionist]
     };
 
     public static readonly FeatureSet PatronAdvancedCms = new(LicensePrefix + nameof(PatronAdvancedCms),102,

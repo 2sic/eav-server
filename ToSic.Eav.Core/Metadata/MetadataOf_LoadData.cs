@@ -20,7 +20,8 @@ partial class MetadataOf<T>
         {
             //_debugAllEntry++;
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-            _allCached = _loadAllInLock.Call(() => _allCached == null || UpStreamChanged(), LoadAndResetInLock,  _allCached ?? new List<IEntity>());
+            _allCached = _loadAllInLock.Call(() => _allCached == null || UpStreamChanged(), LoadAndResetInLock,  _allCached ??
+                []);
             //_debugAllReturn++;
             return _allCached;
         }
@@ -35,7 +36,7 @@ partial class MetadataOf<T>
 
     private List<IEntity> LoadAndResetInLock()
     {
-        var result = LoadFromProviderInsideLock() ?? new List<IEntity>();
+        var result = LoadFromProviderInsideLock() ?? [];
             
         // Reset everything and possibly also the timestamp
         _metadataWithoutPermissions = null;

@@ -13,8 +13,8 @@ public static class GrantSets
     /// It's important to note that create-grants don't provide
     /// read-grants
     /// </remarks>
-    public static List<Grants> ReadSomething = new()
-    {
+    public static List<Grants> ReadSomething =
+    [
         Approve,
         Read,
         Grants.ReadDraft,
@@ -22,32 +22,32 @@ public static class GrantSets
         UpdateDraft,
         Develop,
         Full
-    };
+    ];
 
-    public static List<Grants> ReadDraft = new()
-    {
+    public static List<Grants> ReadDraft =
+    [
         Approve,
         DeleteDraft,
         Grants.ReadDraft,
-        UpdateDraft, 
+        UpdateDraft,
         Delete,
         Develop,
         Full,
         Update
-    };
+    ];
 
-    public static List<Grants> ReadPublished = new()
-    {
+    public static List<Grants> ReadPublished =
+    [
         Approve,
         Read,
         Delete,
         Develop,
         Full,
         Update
-    };
+    ];
 
-    public static List<Grants> WriteSomething = new()
-    {
+    public static List<Grants> WriteSomething =
+    [
         Delete,
         DeleteDraft,
         Create,
@@ -57,11 +57,11 @@ public static class GrantSets
         Approve,
         UpdateDraft,
         Update
-    };
+    ];
 
     // ReSharper disable once UnusedMember.Global
-    public static List<Grants> WriteDraft = new()
-    {
+    public static List<Grants> WriteDraft =
+    [
         Delete,
         DeleteDraft,
         CreateDraft,
@@ -70,40 +70,40 @@ public static class GrantSets
         Approve,
         UpdateDraft,
         Update
-    };
+    ];
 
-    public static List<Grants> WritePublished = new()
-    {
+    public static List<Grants> WritePublished =
+    [
         Create,
         Update,
         Approve,
         Full,
         Develop
-    };
+    ];
 
 
-    public static List<Grants> UpdateSomething = new()
-    {
+    public static List<Grants> UpdateSomething =
+    [
         Develop,
         Full,
         Approve,
         UpdateDraft,
         Update
-    };
+    ];
 
 
-    public static List<Grants> DeleteSomething = new()
-    {
+    public static List<Grants> DeleteSomething =
+    [
         Delete,
         DeleteDraft
-    };
+    ];
 
 
-    public static List<Grants> CreateSomething = new()
-    {
+    public static List<Grants> CreateSomething =
+    [
         Create,
         CreateDraft,
         Full,
-        Develop,
-    };
+        Develop
+    ];
 }

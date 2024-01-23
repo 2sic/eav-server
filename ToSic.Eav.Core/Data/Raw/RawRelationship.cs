@@ -30,7 +30,7 @@ public class RawRelationship : IRawRelationship
     {
         Keys = keys?.ToList()
                ?? (key == null ? null : new List<object> { key })
-               ?? new List<object>();
+               ?? [];
     }
 
     /// <summary>

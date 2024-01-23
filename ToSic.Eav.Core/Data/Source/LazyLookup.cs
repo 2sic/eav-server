@@ -16,7 +16,7 @@ public class LazyLookup<TKey, TValue> : ILookup<TKey, TValue>
     public ILookup<TKey, TValue> Source => _source.Get(() => Raw.ToLookup(r => r.Key, r => r.Value));
     private readonly GetOnce<ILookup<TKey, TValue>> _source = new();
 
-    public List<KeyValuePair<TKey, TValue>> Raw = new();
+    public List<KeyValuePair<TKey, TValue>> Raw = [];
 
     public LazyLookup(/*ILookup<TKey, TValue> source = null*/)
     {

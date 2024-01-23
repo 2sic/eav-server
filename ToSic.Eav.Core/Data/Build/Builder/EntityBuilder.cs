@@ -107,7 +107,7 @@ public class EntityBuilder
         var originalEntity = original as Entity;
 
         var entityPartsBuilder = new EntityPartsBuilder(
-            ent => new RelationshipManager(ent, originalEntity?.Relationships as RelationshipManager),
+            ent => RelationshipManager.ForClone(ent, originalEntity?.Relationships as RelationshipManager),
             getMetadataOf: id == default && guid == default
                 // If identifiers don't change, it will provide the identical metadata
                 ? EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)

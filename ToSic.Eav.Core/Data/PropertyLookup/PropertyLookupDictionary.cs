@@ -33,5 +33,5 @@ public class PropertyLookupDictionary(string nameId, IDictionary<string, object>
     }
 
     public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
-        => new() { new() { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" } };
+        => [new() { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" }];
 }

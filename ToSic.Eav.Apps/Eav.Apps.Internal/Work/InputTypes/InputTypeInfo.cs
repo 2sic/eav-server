@@ -124,7 +124,7 @@ public class InputTypeInfo
     /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
     public IDictionary<string, bool> ConfigTypesDic(ILog log = null)
     {
-        if (_configTypesList != null) return _configTypesList;
+        if (_configTypesDic != null) return _configTypesDic;
 
         var l = log.Fn<IDictionary<string, bool>>();
 
@@ -135,13 +135,10 @@ public class InputTypeInfo
         if (ConfigTypes.HasValue())
             try
             {
-                var parts = ConfigTypes
-                    .Split(',')
-                    .Select(s => s.Trim())
-                    .Where(s => s.HasValue())
-                    .ToArray();
-                foreach (var part in parts) newDic[part] = true;
-                return l.Return(newDic, $"custom list {newDic.Count}");
+                var parts = ConfigTypes.CsvToArrayWithoutEmpty();
+                foreach (var part in parts)
+                    newDic[part] = true;
+                return l.Return(_configTypesDic = newDic, $"custom list {newDic.Count}");
             }
             catch (Exception ex)
             {
@@ -164,9 +161,9 @@ public class InputTypeInfo
             l.Ex(ex);
         }
 
-        return l.Return(_configTypesList = newDic, $"{newDic.Count}");
+        return l.Return(_configTypesDic = newDic, $"{newDic.Count}");
     }
-    private IDictionary<string, bool> _configTypesList;
+    private IDictionary<string, bool> _configTypesDic;
 
     #endregion
 

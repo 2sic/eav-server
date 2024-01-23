@@ -70,7 +70,7 @@ public class LogStoreLive : ILogStoreLive
 
         // make sure we have a queue
         if (!Segments.ContainsKey(key))
-            Segments.TryAdd(key, new FixedSizedQueue<LogStoreEntry>(SegmentSize));
+            Segments.TryAdd(key, new(SegmentSize));
 
         // add the current item if it's not already in the queue
         var entry = new LogStoreEntry { Log = log };

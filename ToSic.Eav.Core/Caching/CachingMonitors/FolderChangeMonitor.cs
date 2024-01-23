@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Caching;
-using System.Runtime.Caching.Hosting;
 using System.Text;
 using System.Threading;
 
@@ -16,23 +15,26 @@ namespace ToSic.Eav.Caching.CachingMonitors;
 public class FolderChangeMonitor : FileChangeMonitor
 {
     private const int MaxCharCountOfLongConvertedToHexadecimalString = 16;
-    private static IFileChangeNotificationSystem _folderChangeNotificationSystem;
+    private static FolderChangeNotificationSystem _folderChangeNotificationSystem;
     private object _fcnState;
 
-    public override ReadOnlyCollection<string> FilePaths => _folderPaths;
-    private readonly ReadOnlyCollection<string> _folderPaths;
-        
+    public override ReadOnlyCollection<string> FilePaths => _folderPaths.Select(folderInfo => folderInfo.Key).ToList().AsReadOnly();
+    private readonly IDictionary<string, bool> _folderPaths;
+
     public override string UniqueId => _uniqueId;
     private string _uniqueId;
         
     public override DateTimeOffset LastModified => _lastModified;
     private DateTimeOffset _lastModified;
 
-    public FolderChangeMonitor(IList<string> folderPaths)
+    public FolderChangeMonitor(IList<string> folderPaths) : this(folderPaths.ToDictionary(p => p, p => true))
+    { }
+
+    public FolderChangeMonitor(IDictionary<string, bool> folderPaths)
     {
         if (folderPaths == null || folderPaths.Count == 0) throw new ArgumentException("Empty collection: folderPaths");
 
-        _folderPaths = folderPaths.Distinct().ToList().AsReadOnly();
+        _folderPaths = new ReadOnlyDictionary<string, bool>(folderPaths);
         InitFcn();
         InitDisposableMembers();
     }
@@ -51,23 +53,23 @@ public class FolderChangeMonitor : FileChangeMonitor
             string uniqueId = null;
             if (_folderPaths.Count == 1)
             {
-                var path = _folderPaths[0];
-                _folderChangeNotificationSystem.StartMonitoring(path, new(OnChanged), out _fcnState, out var lastWrite, out var fileSize);
+                var path = _folderPaths.First();
+                _folderChangeNotificationSystem.StartMonitoring(path.Key, path.Value, new(OnChanged), out _fcnState, out var lastWrite, out var fileSize);
                 uniqueId = path + lastWrite.UtcDateTime.Ticks.ToString("X", CultureInfo.InvariantCulture) + fileSize.ToString("X", CultureInfo.InvariantCulture);
                 _lastModified = lastWrite;
             }
             else
             {
-                var capacity = _folderPaths.Sum(path => path.Length + (2 * MaxCharCountOfLongConvertedToHexadecimalString));
+                var capacity = _folderPaths.Sum(path => path.Key.Length + (2 * MaxCharCountOfLongConvertedToHexadecimalString));
                 var fcnState = new Hashtable(_folderPaths.Count);
                 _fcnState = fcnState;
                 var sb = new StringBuilder(capacity);
                 foreach (var path in _folderPaths)
                 {
-                    if (fcnState.Contains(path)) continue;
-                    _folderChangeNotificationSystem.StartMonitoring(path, new(OnChanged), out var state, out var lastWrite, out var fileSize);
-                    fcnState[path] = state;
-                    sb.Append(path);
+                    if (fcnState.Contains(path.Key)) continue;
+                    _folderChangeNotificationSystem.StartMonitoring(path.Key, path.Value, new(OnChanged), out var state, out var lastWrite, out var fileSize);
+                    fcnState[path.Key] = state;
+                    sb.Append(path.Key);
                     sb.Append(lastWrite.UtcDateTime.Ticks.ToString("X", CultureInfo.InvariantCulture));
                     sb.Append(fileSize.ToString("X", CultureInfo.InvariantCulture));
                     if (lastWrite > _lastModified) _lastModified = lastWrite;
@@ -96,16 +98,16 @@ public class FolderChangeMonitor : FileChangeMonitor
             var fcnState = _fcnState as Hashtable;
             foreach (var path in _folderPaths)
             {
-                if (string.IsNullOrEmpty(path)) continue;
+                if (string.IsNullOrEmpty(path.Key)) continue;
                     
-                var state = fcnState[path];
-                if (state != null) _folderChangeNotificationSystem.StopMonitoring(path, state);
+                var state = fcnState[path.Key];
+                if (state != null) _folderChangeNotificationSystem.StopMonitoring(path.Key, state);
             }
         }
         else
         {
-            var path = _folderPaths[0];
-            if (path != null && _fcnState != null) _folderChangeNotificationSystem.StopMonitoring(path, _fcnState);
+            var path = _folderPaths.First();
+            if (path.Key != null && _fcnState != null) _folderChangeNotificationSystem.StopMonitoring(path.Key, _fcnState);
         }
     }
 }

@@ -49,7 +49,7 @@ partial class ValueBuilder
     {
         var entityIdEnum = value as IEnumerable; // note: strings are also enum!
         if (value is string stringValue && stringValue.HasValue())
-            entityIdEnum = stringValue.Split(',').ToList();
+            entityIdEnum = stringValue.CsvToArrayWithoutEmpty(); //.Split(',').ToList();
         // this is the case when we get a CSV-string with GUIDs
         var entityGuids = entityIdEnum?.Cast<object>().Select(x =>
         {
@@ -59,7 +59,7 @@ partial class ValueBuilder
                 return new();
             var guid = Guid.Parse(v);
             return guid == Guid.Empty ? new Guid?() : guid;
-        }).ToList() ?? new List<Guid?>();
+        }).ToList() ?? [];
         return entityGuids;
     }
 

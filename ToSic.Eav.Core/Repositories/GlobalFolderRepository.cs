@@ -26,7 +26,7 @@ public class GlobalFolderRepository(IGlobalConfiguration config) : FolderBasedRe
     {
         get
         {
-            if (config.DataFolder == null) return new();
+            if (config.DataFolder == null) return [];
             var result = new List<string>
             {
                 config.DataFolder,

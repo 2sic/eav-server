@@ -22,5 +22,5 @@ partial class Entity
         => GetBestValue(name, HandleLanguageParams(language, languages)).ConvertOrFallback(fallback);
 
     private string[] HandleLanguageParams(string language, string[] languages) 
-        => language.SafeAny() ? languages : language.HasValue() ? new[] { language } : null;
+        => language.SafeAny() ? languages : language.HasValue() ? [language] : null;
 }

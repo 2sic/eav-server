@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -16,6 +17,18 @@ namespace ToSic.Lib.Services;
 [method: PrivateApi]
 public abstract class ServiceBase(string logName) : IHasLog
 {
+    /// <summary>
+    /// Experimental signature v17.02...
+    /// </summary>
+    /// <param name="logName"></param>
+    /// <param name="protect"></param>
+    /// <param name="connect"></param>
+    protected ServiceBase(string logName, NoParamOrder protect = default, object[] connect = default) : this(logName)
+    {
+        if (connect == null) return;
+        ConnectServices(connect);
+    }
+
     /// <inheritdoc />
     [JsonIgnore]
     [IgnoreDataMember]

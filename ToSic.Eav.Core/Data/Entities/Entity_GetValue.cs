@@ -75,7 +75,7 @@ partial class Entity
     public string[] ExtendDimsWithDefault(string[] dimensions)
     {
         // empty list - add the default dimension
-        if (dimensions == null || dimensions.Length == 0) return new[] { null as string };
+        if (dimensions == null || dimensions.Length == 0) return [null as string];
 
         // list already has a default at the end, don't change
 

@@ -24,6 +24,7 @@ using System.Text.Json;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.SysData;
@@ -79,7 +80,7 @@ public sealed class LicenseLoader : LoaderBase
         var validEntFps = _fingerprint.EnterpriseFingerprintsWIP
             .Where(e => e.Valid)
             .ToList();
-        l.A($"validEntFps:{validEntFps?.Count}");
+        l.A($"validEntFps:{validEntFps.Count}");
 
         try
         {
@@ -122,7 +123,7 @@ public sealed class LicenseLoader : LoaderBase
     private List<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, List<EnterpriseFingerprint> validEntFps)
     {
         var l = Log.Fn<List<FeatureSetState>>();
-        if (licensesPersisted == null) return l.Return(new(), "null");
+        if (licensesPersisted == null) return l.Return([], "null");
 
         // Check signature valid
         var resultForSignature = licensesPersisted.GenerateIdentity();
@@ -146,8 +147,9 @@ public sealed class LicenseLoader : LoaderBase
         l.A($"Fingerprint: {validFp}");
 
         var validVersion = licensesPersisted.Versions?
-                               .Split(',')
-                               .Select(v => v.Trim())
+                               .CsvToArrayWithoutEmpty()
+                               //.Split(',')
+                               //.Select(v => v.Trim())
                                .Any(v => int.TryParse(v, out var licVersion) && EavSystemInfo.Version.Major == licVersion)
                            ?? false;
 
@@ -156,7 +158,7 @@ public sealed class LicenseLoader : LoaderBase
         var validDate = DateTime.Now.CompareTo(licensesPersisted.Expires) <= 0;
         l.A($"Expired: {validDate}");
 
-        var licenses = licensesPersisted?.Licenses ?? new List<FeatureSetDetailsPersisted>();
+        var licenses = licensesPersisted?.Licenses ?? [];
         l.A($"Licenses: {licenses.Count}");
 
 

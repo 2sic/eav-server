@@ -205,31 +205,36 @@ public class EntityApi: ServiceBase
 
     public List<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)
     {
-        var wrapLog = Log.Fn<List<Dictionary<string, object>>>(timer: true);
-        EntityToDic.ConfigureForAdminUse();
-        var originals = _workEntities.New(_appWorkCtxPlus).Get(contentType).ToList();
+        var l = Log.Fn<List<Dictionary<string, object>>>(timer: true);
+
+        var ofType = _workEntities.New(_appWorkCtxPlus)
+            .Get(contentType)
+            .ToList();
 
         // in the successor app, we can get an additional AppConfiguration, AppSettings or AppResources from the ancestor app
         // that we can optionally exclude from the results
-        if (excludeAncestor) originals = 
-            originals.Where(e => !e.HasAncestor()).ToList();
+        var afterAncestorFilter = excludeAncestor
+            ? ofType.Where(e => !e.HasAncestor()).ToList()
+            : ofType;
 
-        var list = EntityToDic.Convert(originals).ToList();
+        // Convert all to dictionary
+        EntityToDic.ConfigureForAdminUse();
+        var list = EntityToDic.Convert(afterAncestorFilter).ToList();
 
-        var result = Log.Func(null, message: "truncate dictionary", timer: true, func: () => list
-            .Select(eLight => eLight.ToDictionary(pair => pair.Key, pair => Truncate(pair.Value, 50)))
-            .ToList());
-        return wrapLog.Return(result, result.Count.ToString());
+        // Truncate all values to 50 chars
+        var result = Log.Func(null, message: "truncate dictionary", timer: true,
+            func: () => list
+                .Select(eLight => eLight.ToDictionary(pair => pair.Key, pair => Truncate(pair.Value, 50)))
+                .ToList()
+        );
+        return l.Return(result, result.Count.ToString());
     }
 
 
-    private object Truncate(object value, int length)
-    {
-        if (value is not string asTxt)
-            return value;
-
-        if (asTxt.Length > length)
-            asTxt = asTxt.Substring(0, length);
-        return asTxt;
-    }
+    private object Truncate(object value, int length) =>
+        value is not string asTxt
+            ? value
+            : asTxt.Length > length
+                ? asTxt.Substring(0, length)
+                : asTxt;
 }

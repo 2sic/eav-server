@@ -42,8 +42,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
             Constants.PresetAppId,
             Constants.PresetAppId,
             new() { { Constants.PresetAppId, Constants.PresetName } },
-            new()
-            {
+            [
                 new()
                 {
                     Active = true,
@@ -53,7 +52,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
                     Name = "English",
                     Parent = null
                 }
-            });
+            ]);
         realZones.Add(Constants.PresetZoneId, presetZone);
 
         return new ReadOnlyDictionary<int, Zone>(realZones);

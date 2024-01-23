@@ -53,10 +53,19 @@ public abstract class RelationshipDataSourceBase : Eav.DataSource.DataSourceBase
         var relationships = source
             .SelectMany(o => find(o));
 
-        if (FilterDuplicates)
-            relationships = relationships.Distinct();
 
-        return l.ReturnAsOk(relationships.ToImmutableList());
+        // ReSharper disable PossibleMultipleEnumeration
+        var result = (FilterDuplicates)
+            ? relationships.Distinct()
+            : relationships;
+
+#if DEBUG
+        var relsList = relationships.ToList();
+        var distinctList = result.ToList();
+#endif
+
+        return l.ReturnAsOk(result.ToImmutableList());
+        // ReSharper restore PossibleMultipleEnumeration
     }
 
     /// <summary>
