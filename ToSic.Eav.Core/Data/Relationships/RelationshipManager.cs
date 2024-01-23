@@ -59,63 +59,14 @@ internal class RelationshipManager(IEntityLight entity, IAppStateCache app, IEnu
 
     private SynchronizedList<EntityRelationship> _childRelationships;
 
-    // 2024-01-23 fixing relationship of draft item
-    private IImmutableList<EntityRelationship> GetChildrenUncached()
-    {
-        // For most publishing scenarios we can compare by reference.
-        // These two cases work, as there is only 1 entity in the cache, with the correct EntityId
-        // 1. entity is published
-        // 2. entity is draft
-        //
-        // But in the draft case it would fail as we 2 refs (but with the same EntityIds).
-        // The admin would see the second draft item, but there is nothing ref-pointing to it.
-        // Because of this, we need to compare by EntityID in that case.
-        //Func<IEntity, bool> optimalCompare
-        //    = entity is Entity realEntity && realEntity.EntityId != realEntity.RepositoryId
-        //        ? other => entity.EntityId == other.EntityId
-        //        : other => ReferenceEquals(entity, other);
-
-        var optimalCompare = SelfComparisonForChild();
-
-        // Handle the most common scenario: #1 published item or #2 unpublished item
-        return AllRelationships
-            .Where(r => optimalCompare(r.Parent) /*ReferenceEquals(r.Parent, entity)*/)
+    /// <summary>
+    /// Directly retrieve the children - should only be called by the cachning mechanism
+    /// </summary>
+    private IImmutableList<EntityRelationship> GetChildrenUncached() =>
+        AllRelationships
+            .Where(r => ReferenceEquals(r.Parent, entity))
             .ToImmutableList();
 
-        //if (result.Any())
-        //    return result;
-
-        // handle special edge case #3: draft item
-        // in this scenario, there are two entities refs in memory
-        // but the relationships only point to the published one
-
-        // detect if we can skip case #3: draft item
-        //if (entity is Entity realEntity && realEntity.EntityId == realEntity.RepositoryId)
-        //    return result;
-    }
-
-    /// <summary>
-    /// For most publishing scenarios we can compare by reference.
-    /// These two cases work, as there is only 1 entity in the cache, with the correct EntityId
-    /// 1. entity is published
-    /// 2. entity is draft
-    ///
-    /// But in the draft case it would fail. Because then we have 2 copies with different IDs.
-    /// The admin would see the second draft item, but there is nothing pointing to it.
-    /// Because of this, we need to compare by ID in that case.
-    /// </summary>
-    /// <returns></returns>
-    private Func<IEntity, bool> SelfComparisonForChild()
-    {
-        var realEntity = entity as Entity;
-        var isCase3WithDraft = realEntity != null && realEntity.EntityId != realEntity.RepositoryId;
-        var myId = realEntity?.RepositoryId ?? entity.EntityId;
-        return _selfComparisonForChild ??= isCase3WithDraft
-            ? other => myId == other.RepositoryId
-            : other => ReferenceEquals(entity, other);
-    }
-
-    private Func<IEntity, bool> _selfComparisonForChild;
 
     /// <inheritdoc />
     // note: don't cache the result, as it's already cache-chained
@@ -155,22 +106,9 @@ internal class RelationshipManager(IEntityLight entity, IAppStateCache app, IEnu
     /// </remarks>
     private IImmutableList<EntityRelationship> GetParentsUncached()
     {
-        // For most publishing scenarios we can compare by reference.
-        // These two cases work, as there is only 1 entity in the cache, with the correct EntityId
-        // 1. entity is published
-        // 2. entity is draft
-        //
-        // But in the draft case it would fail as we 2 refs (but with the same EntityIds).
-        // The admin would see the second draft item, but there is nothing ref-pointing to it.
-        // Because of this, we need to compare by EntityID in that case.
-        //Func<IEntity, bool> optimalCompare
-        //    = entity is Entity realEntity && realEntity.EntityId != realEntity.RepositoryId
-        //        ? other => entity.EntityId == other.EntityId
-        //        : other => ReferenceEquals(entity, other);
         var optimalCompare = SelfComparisonForParent();
-
         return AllRelationships
-            .Where(r => optimalCompare(r.Child) /*r.Child.EntityId == entity.EntityId*//* comparison(r.Child)*/)
+            .Where(r => optimalCompare(r.Child))
             .ToImmutableList();
     }
 
@@ -276,6 +214,39 @@ internal class RelationshipManager(IEntityLight entity, IAppStateCache app, IEnu
             .ToList();
         return l.Return(parsAfterField, $"{parsAfterField.Count}");
     }
+
+    #endregion
+
+
+    #region Archive till #Remove2024-Q3
+
+    // This section contains code created 2024-01-23 2dm
+    // It was for fixing https://github.com/2sic/2sxc/issues/3258
+    // After making changes to the AppStateRelationshipManager, it seems that this code is no longer necessary
+    // But just in case I need it, I'll keep it here till 2024-Q3
+
+    ///// <summary>
+    ///// For most publishing scenarios we can compare by reference.
+    ///// These two cases work, as there is only 1 entity in the cache, with the correct EntityId
+    ///// 1. entity is published
+    ///// 2. entity is draft
+    /////
+    ///// But in the draft case it would fail. Because then we have 2 copies with different IDs.
+    ///// The admin would see the second draft item, but there is nothing pointing to it.
+    ///// Because of this, we need to compare by ID in that case.
+    ///// </summary>
+    ///// <returns></returns>
+    //private Func<IEntity, bool> SelfComparisonForChild()
+    //{
+    //    var realEntity = entity as Entity;
+    //    var isCase3WithDraft = realEntity != null && realEntity.EntityId != realEntity.RepositoryId;
+    //    var myId = realEntity?.RepositoryId ?? entity.EntityId;
+    //    return _selfComparisonForChild ??= isCase3WithDraft
+    //        ? other => myId == other.RepositoryId
+    //        : other => ReferenceEquals(entity, other);
+    //}
+
+    //private Func<IEntity, bool> _selfComparisonForChild;
 
     #endregion
 }
