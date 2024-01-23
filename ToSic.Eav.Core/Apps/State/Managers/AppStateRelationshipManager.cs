@@ -42,10 +42,12 @@ public class AppRelationshipManager: SynchronizedList<EntityRelationship>
             foreach (var childId in value.EntityIds.Where(e => e != null))
                 // 2024-01-23 2dm - rewrote to the code below, must monitor for problems
                 //Add(index, cache, entity.EntityId, childId);
-                Add(entity, childId.Value);
+                Add(entity/*.EntityId*/, childId.Value);
         }
 
         return cache.ToImmutableList();
+
+
 
         // 2024-01-23 2dm - rewrote to the code below, must monitor for problems
         // Important changes
@@ -58,6 +60,26 @@ public class AppRelationshipManager: SynchronizedList<EntityRelationship>
             if (index.TryGetValue(childId, out var child))
                 cache.Add(new(parent, child));
         }
+
+        #region Archive till #Remove2024-Q3
+
+        //// 2024-01-23 2dm - rewrote to the code below, must monitor for problems
+        //// Important changes
+        //// - directly add parent without lookup in index. It's not clear why it used the index, so if something pops up, we must document it
+        //// - removed the null-check for child, because it seems that the reason for it is a left-over
+        ////   since the nulls were filtered before
+        //void Add(int parentId, int/*?*/ childId)
+        //{
+        //    // See if we can find the parent; otherwise exit
+        //    var parent = index.TryGetValue(parentId, out var p) ? p : null;
+        //    if (parent == null) return;
+
+        //    var child = index.TryGetValue(childId, out var c) ? c : null;
+        //    cache.Add(new(parent, child));
+        //}
+
+        #endregion
+
     }
 
     #region Archive till #Remove2024-Q3
