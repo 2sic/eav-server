@@ -80,7 +80,7 @@ public sealed class LicenseLoader : LoaderBase
         var validEntFps = _fingerprint.EnterpriseFingerprintsWIP
             .Where(e => e.Valid)
             .ToList();
-        l.A($"validEntFps:{validEntFps?.Count}");
+        l.A($"validEntFps:{validEntFps.Count}");
 
         try
         {
