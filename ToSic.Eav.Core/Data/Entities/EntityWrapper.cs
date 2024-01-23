@@ -168,5 +168,5 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
         => Entity._Dump(specs, path);
 
-    public List<IDecorator<IEntity>> Decorators { get; } = new();
+    public List<IDecorator<IEntity>> Decorators { get; } = [];
 }

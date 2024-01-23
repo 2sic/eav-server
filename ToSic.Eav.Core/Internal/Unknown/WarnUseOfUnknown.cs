@@ -22,5 +22,5 @@ public class WarnUseOfUnknown<T>
         logStore.Add("warnings-not-implemented", log);
     }
 
-    private static readonly List<Type> AlreadyWarnedTypes = new();
+    private static readonly List<Type> AlreadyWarnedTypes = [];
 }

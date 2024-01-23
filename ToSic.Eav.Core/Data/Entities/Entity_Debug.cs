@@ -13,8 +13,8 @@ partial class Entity
     [PrivateApi]
     public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path)
     {
-        if (!Attributes.Any()) return new();
-        if (PropertyDumpItem.ShouldStop(path)) return new() {PropertyDumpItem.DummyErrorShouldStop(path)};
+        if (!Attributes.Any()) return [];
+        if (PropertyDumpItem.ShouldStop(path)) return [PropertyDumpItem.DummyErrorShouldStop(path)];
 
         var pathRoot = string.IsNullOrEmpty(path) ? "" : path + PropertyDumpItem.Separator;
 

@@ -50,7 +50,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     /// <summary>
     /// Blank value, just for marking the list as empty
     /// </summary>
-    private static readonly List<int?> EntityIdsEmpty = new();
+    private static readonly List<int?> EntityIdsEmpty = [];
     private readonly IEntitiesSource _lookupList;
     private readonly bool _preferGuid;
     private List<int?> _entityIds;
@@ -133,7 +133,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     private List<IEntity> LoadEntities()
     {
         var result = _lookupList == null
-            ? new()
+            ? []
             : (_preferGuid
                 ? Guids.Select(l => !l.HasValue
                     ? null

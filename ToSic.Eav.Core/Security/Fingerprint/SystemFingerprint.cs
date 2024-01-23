@@ -79,7 +79,7 @@ public sealed class SystemFingerprint: ServiceBase, IFingerprint
     internal static void ResetForTest() => _fingerprintCache = null;
 
     public List<EnterpriseFingerprint> EnterpriseFingerprintsWIP => _enterpriseFingerprints;
-    private static List<EnterpriseFingerprint> _enterpriseFingerprints = new();
+    private static List<EnterpriseFingerprint> _enterpriseFingerprints = [];
 
     internal void LoadEnterpriseFingerprintsWIP(List<EnterpriseFingerprint> enterpriseFingerprints) 
         => _enterpriseFingerprints = enterpriseFingerprints;

@@ -71,12 +71,12 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
     public IEnumerable<IValue<T>> Typed => Values.Cast<IValue<T>>().ToList();
 
     /// <inheritdoc/>
-    public T this[int languageId] => GetInternal(new[] { languageId }, FindHavingDimensions);
+    public T this[int languageId] => GetInternal([languageId], FindHavingDimensions);
 
     #region IAttribute Implementations
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    object IAttribute.this[string languageKey] => GetInternal(new [] {languageKey}, FindHavingDimensions);
+    object IAttribute.this[string languageKey] => GetInternal([languageKey], FindHavingDimensions);
 
 
     [PrivateApi]
@@ -115,7 +115,7 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
                 if (EqualityComparer<TKey>.Default.Equals(key, default))
                     valueHavingSpecifiedLanguages = Values.FirstOrDefault();
                 else if (key != null)
-                    valueHavingSpecifiedLanguages = lookupCallback(new[] { key });
+                    valueHavingSpecifiedLanguages = lookupCallback([key]);
 
                 // stop at first hit
                 if (valueHavingSpecifiedLanguages != null) break;

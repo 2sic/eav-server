@@ -10,7 +10,7 @@ internal class RequirementsServiceUnknown: IRequirementsService
     public RequirementsServiceUnknown(WarnUseOfUnknown<RequirementsServiceUnknown> _) {
     }
 
-    public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements) => new();
+    public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements) => [];
 
-    public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements) => new();
+    public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements) => [];
 }

@@ -11,7 +11,7 @@ public class ImportErrorLog(ILog parentLog) : HelperBase(parentLog, "Imp.ErrLog"
 {
     public ImportError this[int index] => Errors[index];
 
-    public List<ImportError> Errors { get; } = new();
+    public List<ImportError> Errors { get; } = [];
 
     public int ErrorCount => Errors.Count;
 

@@ -59,7 +59,7 @@ partial class ValueBuilder
                 return new();
             var guid = Guid.Parse(v);
             return guid == Guid.Empty ? new Guid?() : guid;
-        }).ToList() ?? new List<Guid?>();
+        }).ToList() ?? [];
         return entityGuids;
     }
 

@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.PropertyLookup;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropertyLookupPath(List<string> original = null)
 {
-    public List<string> Parts = original == null ? new() : new List<string>(original);
+    public List<string> Parts = original == null ? [] : [..original];
 
 }
 

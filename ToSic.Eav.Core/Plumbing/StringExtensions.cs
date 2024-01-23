@@ -33,7 +33,7 @@ public static class StringExtensions
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string[] SplitNewLine(this string value) 
-        => value?.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+        => value?.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
 
     /// <summary>
     /// Split a CSV string into an array of string. Empty entries are removed.

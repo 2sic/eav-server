@@ -9,7 +9,7 @@ namespace ToSic.Eav.SysData;
 public class FeatureStatesPersisted
 {
     [JsonPropertyName("features")]
-    public List<FeatureStatePersisted> Features = new();
+    public List<FeatureStatePersisted> Features = [];
 
     /// <summary>
     /// Fingerprint must be included for ensuring integrity of the data

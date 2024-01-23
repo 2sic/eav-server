@@ -72,7 +72,7 @@ internal class AppStateStack
     private CacheExpiringMultiSource GetMultiSourceCacheExpiry()
     {
         var cacheExpires = SiteOrNull == null
-            ? new ITimestamped[] { Owner, Global }
+            ? [Owner, Global]
             : new ITimestamped[] { Owner, SiteOrNull, Global };
         var cacheExpiry = new CacheExpiringMultiSource(cacheExpires);
         return cacheExpiry;

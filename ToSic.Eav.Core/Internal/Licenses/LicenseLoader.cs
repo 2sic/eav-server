@@ -123,7 +123,7 @@ public sealed class LicenseLoader : LoaderBase
     private List<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, List<EnterpriseFingerprint> validEntFps)
     {
         var l = Log.Fn<List<FeatureSetState>>();
-        if (licensesPersisted == null) return l.Return(new(), "null");
+        if (licensesPersisted == null) return l.Return([], "null");
 
         // Check signature valid
         var resultForSignature = licensesPersisted.GenerateIdentity();
@@ -158,7 +158,7 @@ public sealed class LicenseLoader : LoaderBase
         var validDate = DateTime.Now.CompareTo(licensesPersisted.Expires) <= 0;
         l.A($"Expired: {validDate}");
 
-        var licenses = licensesPersisted?.Licenses ?? new List<FeatureSetDetailsPersisted>();
+        var licenses = licensesPersisted?.Licenses ?? [];
         l.A($"Licenses: {licenses.Count}");
 
 

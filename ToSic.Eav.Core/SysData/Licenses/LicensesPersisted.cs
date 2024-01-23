@@ -99,7 +99,7 @@ public class LicensesPersisted
     {
         const string dateFormat = "yyyy-MM-dd";
 
-        var licenseList = Licenses ?? new List<FeatureSetDetailsPersisted>();
+        var licenseList = Licenses ?? [];
         var licenses = licenseList.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty();
 
         // License expiry must be built in a way

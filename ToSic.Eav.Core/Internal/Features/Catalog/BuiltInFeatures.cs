@@ -10,9 +10,7 @@ public partial class BuiltInFeatures
     // So always create the definition there first, then use the GUID of that definition here
 
 
-    internal static List<FeatureLicenseRule> BuildRule(FeatureSet licDef, bool featureEnabled) => new()
-    {
-        new(licDef, featureEnabled)
-    };
+    internal static List<FeatureLicenseRule> BuildRule(FeatureSet licDef, bool featureEnabled) =>
+        [new(licDef, featureEnabled)];
 
 }

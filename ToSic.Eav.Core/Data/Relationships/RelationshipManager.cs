@@ -93,7 +93,7 @@ internal class RelationshipManager: IRelationshipManager
         {
             // If the field doesn't exist, return empty list
             if (!((IEntity)_entity).Attributes.ContainsKey(field))
-                return (new(), "empty list, field doesn't exist");
+                return ([], "empty list, field doesn't exist");
                 
             // if it does exist, still catch any situation where it's not a relationship field
             try
@@ -102,7 +102,7 @@ internal class RelationshipManager: IRelationshipManager
             }
             catch
             {
-                return (new(), "empty list, doesn't seem to be relationship field");
+                return ([], "empty list, doesn't seem to be relationship field");
             }
         }
 

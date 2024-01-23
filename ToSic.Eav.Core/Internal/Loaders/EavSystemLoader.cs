@@ -100,7 +100,7 @@ public class EavSystemLoader : LoaderBase
                 .OfType(LicenseEntity.TypeNameId)
                 .Select(e => new LicenseEntity(e))
                 .ToList()
-                ?? new List<LicenseEntity>(0);
+                ?? [];
             l.A($"licEnt:{licEntities?.Count}");
 
             // Check all licenses and show extra message

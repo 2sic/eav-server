@@ -25,7 +25,7 @@ public class Feature(
 
     private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules, string nameId, Guid guid)
     {
-        var newRules = licRules?.ToList() ?? new List<FeatureLicenseRule>(0);
+        var newRules = licRules?.ToList() ?? [];
         // Create virtual license rule, so it can be enabled by its own GUID
         var ownLicenseDefinition = new FeatureSet(BuiltInLicenses.LicenseCustom, 0, $"Feature: {nameId}", guid, $"Feature {nameId} ({guid})");
         var ownRule = new FeatureLicenseRule(ownLicenseDefinition, true);

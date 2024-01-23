@@ -96,7 +96,7 @@ internal class AppMetadataManager: IMetadataSource
             indexOfType = metadataIndex[mdTargetType] = new();
 
         // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) exists, otherwise create empty list
-        var list = indexOfType.TryGetValue(mdValue, out var lst) ? lst : indexOfType[mdValue] = new();
+        var list = indexOfType.TryGetValue(mdValue, out var lst) ? lst : indexOfType[mdValue] = [];
 
         // in case it was already in this index, remove first
         var found = list.One(entity.EntityId);
