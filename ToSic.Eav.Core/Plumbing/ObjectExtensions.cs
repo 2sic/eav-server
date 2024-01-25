@@ -6,7 +6,7 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.Plumbing;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public static class ObjectExtensions
+public static partial class ObjectExtensions
 {
     // https://stackoverflow.com/questions/6553183/check-to-see-if-a-given-object-reference-or-value-type-is-equal-to-its-default
     // //Adapted from https://stackoverflow.com/a/6553276/1889720
