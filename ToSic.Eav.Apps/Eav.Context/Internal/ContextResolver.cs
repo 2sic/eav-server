@@ -11,19 +11,16 @@ public partial class ContextResolver: ServiceBase
     private readonly Generator<IContextOfApp> _contextOfApp;
 
     public ContextResolver(
-        //LazySvc<AppIdResolver> appIdResolverLazy,
         Generator<IContextOfSite> contextOfSite,
         Generator<IContextOfApp> contextOfApp) : this(contextOfSite, contextOfApp, "Eav.CtxRes")
     {
             
     }
     protected ContextResolver(Generator<IContextOfSite> contextOfSite,
-        Generator<IContextOfApp> contextOfApp, string logName) : base(logName)
+        Generator<IContextOfApp> contextOfApp, string logName, object[] connect = default) : base(logName, connect: [..connect ?? [], contextOfSite, contextOfApp])
     {
-        ConnectServices(
-            _contextOfSite = contextOfSite,
-            _contextOfApp = contextOfApp
-        );
+        _contextOfSite = contextOfSite;
+        _contextOfApp = contextOfApp;
     }
 
     #endregion

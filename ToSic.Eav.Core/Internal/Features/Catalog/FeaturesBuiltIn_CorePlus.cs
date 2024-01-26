@@ -37,7 +37,7 @@ public partial class BuiltInFeatures
     );
 
     public static readonly Feature SaveInAdamApi = new(
-        "SaveInAdamApi",
+        nameof(SaveInAdamApi),
         new("ecdab0f6-4692-4544-b1e7-72581f489f6a"),
         "SaveInAdam API",
         NotForPublic,
@@ -48,7 +48,7 @@ public partial class BuiltInFeatures
     );
 
     public static readonly Feature PermissionCheckUsers = new(
-        "PermissionCheckUsers",
+        nameof(PermissionCheckUsers),
         new("47c71ee9-ac7b-45bf-a08b-dfc8ce7c7775"),
         "Permission Check based on User",
         NotForPublic,
@@ -59,7 +59,7 @@ public partial class BuiltInFeatures
     );
 
     public static readonly Feature PermissionCheckGroups = new(
-        "PermissionCheckGroups",
+        nameof(PermissionCheckGroups),
         new("0fd479cc-300f-47fd-88fd-8f2fe092bc09"),
         "Permission Check based on Group",
         NotForPublic,
