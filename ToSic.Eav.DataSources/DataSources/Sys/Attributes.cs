@@ -50,7 +50,7 @@ public sealed class Attributes: DataSourceBase
     {
         ConnectServices(
             _appStates = appStates,
-            _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
+            _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)))
         );
         ProvideOut(GetList);
     }
@@ -84,8 +84,6 @@ public sealed class Attributes: DataSourceBase
         if (!types.Any())
             return l.Return(EmptyList, "no type found");
 
-        var type = types.First();
-
         // try to load from type, if it exists
         var attributes = types
             .SelectMany(t => t.Attributes?.Select(a => new
@@ -101,8 +99,9 @@ public sealed class Attributes: DataSourceBase
             .ToList();
 
 
-        var list = attributes // type.Attributes?
-            .Select(at => AsDic(at.Name, at.Attribute.Type, at.Attribute.IsTitle, at.Attribute.SortOrder, false))
+        // todo: when supporting multiple types, consider adding more info what type they are from
+        var list = attributes
+            .Select(at => AsDic(at.Name, at.Attribute.Type, at.Attribute.IsTitle, at.Attribute.SortOrder, false, at.Type.Name))
             .ToList();
 
         // note that often dynamic types will have zero attributes, so the previous command
@@ -112,32 +111,35 @@ public sealed class Attributes: DataSourceBase
             list = TypeNameFallbackToTryToUseInStream == ContentTypeName
                 ? firstEntityInStream?.Attributes
                     .OrderBy(atPair => atPair.Key)
-                    .Select(atPair => AsDic(atPair.Key, atPair.Value.Type, false, 0, false))
+                    .Select(atPair => AsDic(atPair.Key, atPair.Value.Type, false, 0, false, "dynamic"))
                     .ToList()
                 : null;
 
+        if (list == null)
+            return l.Return(EmptyList, "no attributes found");
+
         // New 2022-10-17 2dm - also add Id, Created, Modified etc.
-        if (list != null)
-            foreach (var sysField in Data.Attributes.SystemFields.Reverse())
-                if (!list.Any(dic =>
-                        dic.TryGetValue(AttributeType.Name.ToString(), out var name) &&
-                        name as string == sysField.Key))
-                    list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true));
+        foreach (var sysField in Data.Attributes.SystemFields.Reverse())
+            if (!list.Any(dic =>
+                    dic.TryGetValue(nameof(IAttributeType.Name), out var name) &&
+                    name as string == sysField.Key))
+                list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true, "all"));
 
         // if it didn't work yet, maybe try from stream items
-        return list?.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList()
-               ?? EmptyList;
+        var data = list.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList();
+        return l.Return(data, $"{data.Count}");
     }
 
     private static Dictionary<string, object> AsDic(string name, ValueTypes type, bool isTitle, int sortOrder,
-        bool builtIn)
+        bool builtIn, string contentTypeName)
         => new()
         {
-            { AttributeType.Name.ToString(), name },
-            { AttributeType.Type.ToString(), type.ToString() },
-            { AttributeType.IsTitle.ToString(), isTitle },
-            { AttributeType.SortOrder.ToString(), sortOrder },
-            { AttributeType.IsBuiltIn.ToString(), builtIn },
-            { AttributeType.Title.ToString(), $"{name} ({type}{(builtIn ? ", built-in" : "")})" }
+            [nameof(IAttributeType.Name)] = name,
+            [nameof(IAttributeType.Type)] = type.ToString(),
+            [nameof(IAttributeType.IsTitle)] = isTitle,
+            [nameof(IAttributeType.SortOrder)] = sortOrder,
+            [nameof(IAttributeType.IsBuiltIn)] = builtIn,
+            [nameof(IAttributeType.Title)] = $"{name} ({type}{(builtIn ? ", built-in" : "")})",
+            [nameof(IAttributeType.ContentType)] = contentTypeName,
         };
 }
