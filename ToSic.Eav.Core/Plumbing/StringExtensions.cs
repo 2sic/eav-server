@@ -44,6 +44,9 @@ public static class StringExtensions
     // TODO: @2dm - changed a lot of places to use this 2024-01-23. If no errors appear, remove commented code in each location ca. 2024-Q2
     public static string[] CsvToArrayWithoutEmpty(this string original) => original?.Split(',').TrimmedAndWithoutEmpty() ?? [];
 
+    public static string[] LinesToArrayWithoutEmpty(this string original) => original?.SplitNewLine().TrimmedAndWithoutEmpty() ?? [];
+
+
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string[] TrimmedAndWithoutEmpty(this string[] value) 
         => value?
