@@ -62,7 +62,7 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
     [PrivateApi]
     public string AppGuid => NameId;
 
-    protected internal EavApp Init(IAppIdentityPure appIdentity, Func<EavApp, IAppDataConfiguration> buildConfiguration, AppDataConfigSpecs dataSpecs)
+    protected internal EavApp Init(IAppIdentityPure appIdentity, AppDataConfigSpecs dataSpecs)
     {
         var l = Log.Fn<EavApp>();
         // Env / Tenant must be re-checked here
@@ -80,7 +80,6 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
         //    appIdentity = new AppIdentityPure(Site.ZoneId, appIdentity.AppId);
             
         InitAppBaseIds(appIdentity);
-        l.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
         l.A($"prep App #{appIdentity.Show()}, has{nameof(dataSpecs)}:{dataSpecs != null}");
 
         // Look up name in cache
@@ -89,7 +88,6 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
         InitializeResourcesSettingsAndMetadata();
 
         // for deferred initialization as needed
-        //_dataConfigurationBuilder = buildConfiguration;
         _dataConfigSpecs = dataSpecs;
 
         return l.Return(this);
