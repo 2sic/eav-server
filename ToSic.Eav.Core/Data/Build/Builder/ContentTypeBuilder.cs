@@ -59,9 +59,9 @@ public class ContentTypeBuilder
                 parentTypeId.Value));
 
         // Prepare metadata retrieval
-        metadata = metadata ?? new ContentTypeMetadata(typeId: nameId, items: metadataItems, deferredSource: metaSourceFinder, title: name);
+        metadata ??= new ContentTypeMetadata(typeId: nameId, items: metadataItems, deferredSource: metaSourceFinder, title: name);
 
-        attributes = attributes ?? new List<IContentTypeAttribute>();
+        attributes ??= new List<IContentTypeAttribute>();
 
         scope = Scopes.RenameOldScope(scope);
 
@@ -125,12 +125,12 @@ public class ContentTypeBuilder
             var ancestorDecorator = original.GetDecorator<IAncestor>();
             if (ancestorDecorator != null)
             {
-                configZoneId = configZoneId ?? ancestorDecorator.ZoneId;
-                configAppId = configAppId ?? ancestorDecorator.AppId;
+                configZoneId ??= ancestorDecorator.ZoneId;
+                configAppId ??= ancestorDecorator.AppId;
             }
         }
 
-        metadata = metadata ?? (metadataItems != default
+        metadata ??= (metadataItems != default
             ? new(original.NameId, metadataItems, null, original.Name)
             : original.Metadata);
 
