@@ -134,6 +134,8 @@ public static class StartupEavApps
         services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
         services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 
+        // v17
+        services.TryAddTransient<IAppDataConfigProvider, AppDataConfigProviderUnknown>();
         return services;
     }
 
