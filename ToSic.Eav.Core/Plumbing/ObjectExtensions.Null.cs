@@ -17,5 +17,12 @@ static partial class ObjectExtensions
     public static TResult NullOrUse<T, TResult>(this T? obj, Func<T, TResult> func)
         where T : class
         where TResult : class
-        => obj == null ? null : func(obj);  
+        => obj == null ? null : func(obj);
+
+    public static void UseIfNotNull<T>(this T? obj, Action<T> func)
+        where T : class
+    {
+        if (obj == null) return;
+        func(obj);
+    }
 }

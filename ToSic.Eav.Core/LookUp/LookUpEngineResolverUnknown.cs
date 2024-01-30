@@ -8,11 +8,7 @@ namespace ToSic.Eav.LookUp;
 /// Fall back implementation - just return an empty lookup engine
 /// This should usually be 
 /// </summary>
-internal sealed class LookUpEngineResolverUnknown: ServiceBase, ILookUpEngineResolver, IIsUnknown
+internal sealed class LookUpEngineResolverUnknown(WarnUseOfUnknown<LookUpEngineResolverUnknown> _) : ServiceBase($"{LogScopes.NotImplemented}.LookUp"), ILookUpEngineResolver, IIsUnknown
 {
-    public LookUpEngineResolverUnknown(WarnUseOfUnknown<LookUpEngineResolverUnknown> _) : base($"{LogScopes.NotImplemented}.LookUp")
-    {
-    }
-
     public ILookUpEngine GetLookUpEngine(int moduleId) => new LookUpEngine(Log);
 }
