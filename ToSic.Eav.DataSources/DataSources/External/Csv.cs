@@ -5,6 +5,7 @@ using System.IO;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Environment;
+using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -131,12 +132,16 @@ public class Csv : CustomDataSourceAdvanced
     private IImmutableList<IEntity> GetList()
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
+
+        // Collect parameters here, so we don't trigger logs on each access of each property
+        var delimiter = Delimiter;
+        var idColumnName = IdColumnName;
+        var titleColumnName = TitleColumnName;
 
         var entityList = new List<IEntity>();
 
         var csvPath = GetServerPath(FilePath);
-        l.A($"CSV path:'{csvPath}', delimiter:'{Delimiter}'");
+        l.A($"CSV path:'{csvPath}', delimiter:'{delimiter}'");
 
         if (string.IsNullOrWhiteSpace(csvPath))
             return l.ReturnAsError(Error.Create(title: "No Path Given", message: "There was no path for loading the CSV file."));
@@ -162,7 +167,7 @@ public class Csv : CustomDataSourceAdvanced
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
-            Delimiter = Delimiter,
+            Delimiter = delimiter,
             HasHeaderRecord = true,
             TrimOptions = TrimOptions.Trim
         };
@@ -180,32 +185,32 @@ public class Csv : CustomDataSourceAdvanced
             var headers = parser.Record;
 
             // If we should find the Column...
-            if (!string.IsNullOrEmpty(IdColumnName))
+            if (!string.IsNullOrEmpty(idColumnName))
             {
                 // on first round, check the headers fields
                 // Try to find - first case-sensitive, then insensitive
-                idColumnIndex = Array.FindIndex(headers, name => name == IdColumnName);
+                idColumnIndex = Array.FindIndex(headers, name => name == idColumnName);
                 if (idColumnIndex == -1)
                     idColumnIndex = Array.FindIndex(headers,
-                        name => name.Equals(IdColumnName, StringComparison.InvariantCultureIgnoreCase));
+                        name => name.Equals(idColumnName, InvariantCultureIgnoreCase));
                 if (idColumnIndex == -1)
                     return l.ReturnAsError(Error.Create(title: "ID Column not found",
-                        message: $"ID column '{IdColumnName}' specified cannot be found in the file. " +
+                        message: $"ID column '{idColumnName}' specified cannot be found in the file. " +
                                  $"The Headers: '{string.Join(",", headers)}'. " +
                                  $"{commonErrorsIdTitle}"));
             }
 
-            if (string.IsNullOrEmpty(TitleColumnName))
+            if (string.IsNullOrEmpty(titleColumnName))
                 titleColName = headers[0];
             else
             {
                 // The following is a little bit complicated, but it checks that the title specified exists
-                titleColName = headers.FirstOrDefault(colName => colName == TitleColumnName)
+                titleColName = headers.FirstOrDefault(colName => colName == titleColumnName)
                                ?? headers.FirstOrDefault(colName =>
-                                   colName.Equals(TitleColumnName, StringComparison.InvariantCultureIgnoreCase));
+                                   colName.Equals(titleColumnName, InvariantCultureIgnoreCase));
                 if (titleColName == null)
                     return l.ReturnAsError(Error.Create(title: "Title column not found",
-                        message: $"Title column '{TitleColumnName}' cannot be found in the file. " +
+                        message: $"Title column '{titleColumnName}' cannot be found in the file. " +
                                  $"The Headers: '{string.Join(",", headers)}'. " +
                                  $"{commonErrorsIdTitle}"));
             }
@@ -219,7 +224,7 @@ public class Csv : CustomDataSourceAdvanced
 
                 int entityId;
                 // No ID column specified, so use the row number
-                if (string.IsNullOrEmpty(IdColumnName))
+                if (string.IsNullOrEmpty(idColumnName))
                     entityId = parser.Row;
                 // check if id can be parsed from the current row
                 else if (!int.TryParse(fields[idColumnIndex], out entityId))
