@@ -19,4 +19,6 @@ public class JsonSerializationSettings
     /// Include Metadata of Attributes which only inherit their Metadata.
     /// </summary>
     public bool CtAttributeIncludeInheritedMetadata { get; set; } = true;
+
+    public bool CtWithEntities { get; set; } = true;
 }

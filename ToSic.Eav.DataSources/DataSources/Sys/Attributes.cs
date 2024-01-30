@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Sys.Types;
+using ToSic.Eav.Plumbing;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -30,13 +31,13 @@ public sealed class Attributes: DataSourceBase
 
     #region Configuration-properties (no config)
 
-    private const string TryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
+    private const string TypeNameFallbackToTryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
     private const string AttribContentTypeName = "Attribute";
 	    
     /// <summary>
     /// The content-type name
     /// </summary>
-    [Configuration(Fallback = TryToUseInStream)]
+    [Configuration(Fallback = TypeNameFallbackToTryToUseInStream)]
     public string ContentTypeName => Configuration.GetThis();
         
     #endregion
@@ -49,7 +50,7 @@ public sealed class Attributes: DataSourceBase
     {
         ConnectServices(
             _appStates = appStates,
-            _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: AttributeType.Title.ToString()))
+            _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)))
         );
         ProvideOut(GetList);
     }
@@ -59,60 +60,86 @@ public sealed class Attributes: DataSourceBase
     private IImmutableList<IEntity> GetList()
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
 
         // try to load the content-type - if it fails, return empty list
         if (string.IsNullOrWhiteSpace(ContentTypeName))
             return l.Return(EmptyList, "no type name");
 
-        var useStream = TryToUseInStream == ContentTypeName && In.ContainsKey(StreamDefaultName);
+        var typeNames = ContentTypeName.CsvToArrayWithoutEmpty();
+        if (typeNames.Length == 0)
+            return l.Return(EmptyList, "no type names");
+
+        var useStream = TypeNameFallbackToTryToUseInStream == ContentTypeName && In.ContainsKey(StreamDefaultName);
         var optionalList = useStream
             ? In[StreamDefaultName]?.List.ToImmutableList()
             : null;
 
-        var type = useStream 
-            ? optionalList?.FirstOrDefault()?.Type
-            : _appStates.GetReader(this).GetContentType(ContentTypeName);
+        var appReader = _appStates.GetReader(this);
+        var firstEntityInStream = useStream ? optionalList?.FirstOrDefault() : null;
+        var types = useStream 
+            ? (firstEntityInStream?.Type).ToListOfOne()
+            : typeNames.Select(appReader.GetContentType).ToList();
+
+
+        if (!types.Any())
+            return l.Return(EmptyList, "no type found");
 
         // try to load from type, if it exists
-        var list = type?.Attributes?
+        var attributes = types
+            .SelectMany(t => t.Attributes?.Select(a => new
+                             {
+                                 Type = t,
+                                 Attribute = a,
+                                 a.Name,
+                             })
+                             ?? []
+            )
+            .DistinctBy(set => set.Name)
             .OrderBy(at => at.Name)
-            .Select(at => AsDic(at.Name, at.Type, at.IsTitle, at.SortOrder, false))
+            .ToList();
+
+
+        // todo: when supporting multiple types, consider adding more info what type they are from
+        var list = attributes
+            .Select(at => AsDic(at.Name, at.Attribute.Type, at.Attribute.IsTitle, at.Attribute.SortOrder, false, at.Type.Name))
             .ToList();
 
         // note that often dynamic types will have zero attributes, so the previous command
         // gives a 0-list of attributes
         // so if that's the case, check the first item in the results
-        if (list == null || list.Count == 0)
-            list = TryToUseInStream == ContentTypeName
-                ? optionalList?.FirstOrDefault()?.Attributes
-                    .OrderBy(at => at.Key)
-                    .Select(at => AsDic(at.Key, at.Value.Type, false, 0, false))
+        if (list.SafeNone())
+            list = TypeNameFallbackToTryToUseInStream == ContentTypeName
+                ? firstEntityInStream?.Attributes
+                    .OrderBy(atPair => atPair.Key)
+                    .Select(atPair => AsDic(atPair.Key, atPair.Value.Type, false, 0, false, "dynamic"))
                     .ToList()
                 : null;
 
+        if (list == null)
+            return l.Return(EmptyList, "no attributes found");
+
         // New 2022-10-17 2dm - also add Id, Created, Modified etc.
-        if (list != null)
-            foreach (var sysField in Data.Attributes.SystemFields.Reverse())
-                if (!list.Any(dic =>
-                        dic.TryGetValue(AttributeType.Name.ToString(), out var name) &&
-                        name as string == sysField.Key))
-                    list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true));
+        foreach (var sysField in Data.Attributes.SystemFields.Reverse())
+            if (!list.Any(dic =>
+                    dic.TryGetValue(nameof(IAttributeType.Name), out var name) &&
+                    name as string == sysField.Key))
+                list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true, "all"));
 
         // if it didn't work yet, maybe try from stream items
-        return list?.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList()
-               ?? EmptyList;
+        var data = list.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList();
+        return l.Return(data, $"{data.Count}");
     }
 
     private static Dictionary<string, object> AsDic(string name, ValueTypes type, bool isTitle, int sortOrder,
-        bool builtIn)
+        bool builtIn, string contentTypeName)
         => new()
         {
-            { AttributeType.Name.ToString(), name },
-            { AttributeType.Type.ToString(), type.ToString() },
-            { AttributeType.IsTitle.ToString(), isTitle },
-            { AttributeType.SortOrder.ToString(), sortOrder },
-            { AttributeType.IsBuiltIn.ToString(), builtIn },
-            { AttributeType.Title.ToString(), $"{name} ({type}{(builtIn ? ", built-in" : "")})" }
+            [nameof(IAttributeType.Name)] = name,
+            [nameof(IAttributeType.Type)] = type.ToString(),
+            [nameof(IAttributeType.IsTitle)] = isTitle,
+            [nameof(IAttributeType.SortOrder)] = sortOrder,
+            [nameof(IAttributeType.IsBuiltIn)] = builtIn,
+            [nameof(IAttributeType.Title)] = $"{name} ({type}{(builtIn ? ", built-in" : "")})",
+            [nameof(IAttributeType.ContentType)] = contentTypeName,
         };
 }

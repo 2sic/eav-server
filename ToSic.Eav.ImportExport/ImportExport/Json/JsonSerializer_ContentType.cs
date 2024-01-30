@@ -26,7 +26,11 @@ partial class JsonSerializer
             ContentType = ToJson(contentType, settings)
         };
 
-        // now v12 - try to include metadata items
+        // v17 option to skip including additional entities
+        if (!settings.CtWithEntities)
+            l.Return(package, "done without additional entities");
+
+        // Include things within the metadata items
         try
         {
             // check all metadata of these attributes - get possible sub-entities attached

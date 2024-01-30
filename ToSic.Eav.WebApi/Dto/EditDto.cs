@@ -64,4 +64,9 @@ public class EditSettingsDto
 {
     public IDictionary<string, object> Values { get; set; }
     public List<JsonEntity> Entities { get; set; }
+
+    /// <summary>
+    /// New v17 ContentTypes which are used for Pickers to determine names etc.
+    /// </summary>
+    public List<JsonContentType> ContentTypes { get; set; }
 }

@@ -1,4 +1,6 @@
-﻿namespace ToSic.Lib.Services;
+﻿using ToSic.Lib.Coding;
+
+namespace ToSic.Lib.Services;
 
 /// <summary>
 /// Base class for any service which expects a Dependencies class
@@ -11,9 +13,11 @@ public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : 
     /// <summary>
     /// Constructor for normal case, with services
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="logName"></param>
-    protected ServiceBase(TMyServices services, string logName) : base(logName)
+    /// <param name="services">Services to auto-attach to property `Services`</param>
+    /// <param name="logName">The new objects name in the logs</param>
+    /// <param name="protect"></param>
+    /// <param name="connect"></param>
+    protected ServiceBase(TMyServices services, string logName, NoParamOrder protect = default, object[] connect = default) : base(logName, connect: connect)
     {
         Services = services.ConnectServices(Log);
     }

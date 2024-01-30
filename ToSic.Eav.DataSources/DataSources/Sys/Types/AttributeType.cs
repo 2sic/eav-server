@@ -1,11 +1,12 @@
 ﻿namespace ToSic.Eav.DataSources.Sys.Types;
 
-internal enum AttributeType
+internal interface IAttributeType
 {
-    Name,
-    Type,
-    IsTitle,
-    SortOrder,
-    IsBuiltIn,
-    Title,
+    string Type { get; }
+    string Name { get; }
+    string Title { get; }
+    bool IsTitle { get; }
+    bool IsBuiltIn { get; }
+    int SortOrder { get; }
+    IContentType ContentType { get; }
 }
