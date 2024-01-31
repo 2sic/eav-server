@@ -115,7 +115,7 @@ public class EntityBuilder
                 : EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
         );
 
-        attributes = attributes ?? originalEntity.Attributes;
+        attributes ??= originalEntity.Attributes;
 
         var e = Create(
             appId: appId ?? original.AppId,

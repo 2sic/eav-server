@@ -24,7 +24,7 @@ public class AesCryptographyService(Rfc2898Generator keyGen) : ServiceBase("Eav.
     private EncryptionResult<byte[]> Encrypt<T>(string value, AesConfiguration configuration = default
     ) where T : SymmetricAlgorithm, new() => Log.Func(enabled: Debug, func: l =>
     {
-        configuration = configuration ?? new AesConfiguration(true);
+        configuration ??= new AesConfiguration(true);
         var saltBytes = configuration.SaltBytes();
         var valueBytes = Encoding.UTF8.GetBytes(value);
 

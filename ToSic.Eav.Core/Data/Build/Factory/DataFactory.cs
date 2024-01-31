@@ -184,7 +184,7 @@ internal class DataFactory : ServiceBase, IDataFactory
         DateTime modified = default)
     {
         // pre-process RawRelationships
-        values = values ?? new Dictionary<string, object>();
+        values ??= new Dictionary<string, object>();
         var valuesWithRelationships = RelsConverter.RelationshipsToAttributes(values, Relationships);
 
         var ent = _builder.Entity.Create(

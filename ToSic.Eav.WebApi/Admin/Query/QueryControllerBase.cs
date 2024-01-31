@@ -164,7 +164,7 @@ public abstract class QueryControllerBase<TImplementation>(
     /// <summary>
     /// Query the Result of a Pipeline using Test-Parameters
     /// </summary>
-    protected QueryRunDto DebugStream(int appId, int id, int top, LookUpEngine lookUps, string from, string streamName)
+    protected QueryRunDto DebugStream(int appId, int id, int top, ILookUpEngine lookUps, string from, string streamName)
     {
         IDataSource GetSubStream(QueryResult builtQuery)
         {
@@ -188,7 +188,7 @@ public abstract class QueryControllerBase<TImplementation>(
         return RunDevInternal(appId, id, lookUps, top, GetSubStream);
     }
 
-    protected QueryRunDto RunDevInternal(int appId, int id, LookUpEngine lookUps, int top,
+    protected QueryRunDto RunDevInternal(int appId, int id, ILookUpEngine lookUps, int top,
         Func<QueryResult, IDataSource> partLookup) 
     {
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");

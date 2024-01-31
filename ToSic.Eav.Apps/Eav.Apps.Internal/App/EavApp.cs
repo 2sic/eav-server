@@ -24,31 +24,23 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
     /// Helper class, so inheriting stuff doesn't need to update the constructor all the time
     /// </summary>
     [PrivateApi]
-    public class MyServices: MyServicesBase
+    public class MyServices(
+        IZoneMapper zoneMapper,
+        ISite site,
+        IAppStates appStates,
+        IDataSourcesService dataSourceFactory,
+        LazySvc<QueryManager> queryManager,
+        Generator<Query> queryGenerator,
+        IAppDataConfigProvider dataConfigProvider)
+        : MyServicesBase(connect: [zoneMapper, site, appStates, dataSourceFactory, queryManager, queryGenerator, dataConfigProvider])
     {
-        public Generator<Query> QueryGenerator { get; }
-        public LazySvc<QueryManager> QueryManager { get; }
-        internal IZoneMapper ZoneMapper { get; } 
-        internal ISite Site { get; }
-        internal IAppStates AppStates { get; }
-        internal IDataSourcesService DataSourceFactory { get; }
-
-        public MyServices(IZoneMapper zoneMapper,
-            ISite site,
-            IAppStates appStates,
-            IDataSourcesService dataSourceFactory,
-            LazySvc<QueryManager> queryManager,
-            Generator<Query> queryGenerator)
-        {
-            ConnectServices(
-                ZoneMapper = zoneMapper,
-                Site = site,
-                AppStates = appStates,
-                DataSourceFactory = dataSourceFactory,
-                QueryManager = queryManager,
-                QueryGenerator = queryGenerator
-            );
-        }
+        public IAppDataConfigProvider DataConfigProvider { get; } = dataConfigProvider;
+        public Generator<Query> QueryGenerator { get; } = queryGenerator;
+        public LazySvc<QueryManager> QueryManager { get; } = queryManager;
+        internal IZoneMapper ZoneMapper { get; } = zoneMapper;
+        internal ISite Site { get; } = site;
+        internal IAppStates AppStates { get; } = appStates;
+        internal IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
     }
 
     #endregion
@@ -70,7 +62,7 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
     [PrivateApi]
     public string AppGuid => NameId;
 
-    protected internal EavApp Init(IAppIdentityPure appIdentity, Func<EavApp, IAppDataConfiguration> buildConfiguration)
+    protected internal EavApp Init(IAppIdentityPure appIdentity, AppDataConfigSpecs dataSpecs)
     {
         var l = Log.Fn<EavApp>();
         // Env / Tenant must be re-checked here
@@ -88,7 +80,7 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
         //    appIdentity = new AppIdentityPure(Site.ZoneId, appIdentity.AppId);
             
         InitAppBaseIds(appIdentity);
-        l.A($"prep App #{appIdentity.Show()}, hasDataConfig:{buildConfiguration != null}");
+        l.A($"prep App #{appIdentity.Show()}, has{nameof(dataSpecs)}:{dataSpecs != null}");
 
         // Look up name in cache
         NameId = Services.AppStates.GetReader(this).NameId;
@@ -96,7 +88,7 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
         InitializeResourcesSettingsAndMetadata();
 
         // for deferred initialization as needed
-        _dataConfigurationBuilder = buildConfiguration;
+        _dataConfigSpecs = dataSpecs;
 
         return l.Return(this);
     }

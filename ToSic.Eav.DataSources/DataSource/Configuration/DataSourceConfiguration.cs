@@ -46,12 +46,21 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
 
     private const string ConfigNotFoundMessage = "Trying to get a configuration by name of {0} but it doesn't exist. Did you forget to add to ConfigMask?";
 
-    public string GetThis([CallerMemberName] string name = default) => ParseToken(GetRaw(name));
+    public string GetThis([CallerMemberName] string name = default)
+    {
+        if (name == null) return null;
+        if (_getThisCache.TryGetValue(name, out var result)) return result;
+        var parsed = ParseToken(GetRaw(name));
+        _getThisCache[name] = parsed;
+        return parsed;
+    }
+    private readonly Dictionary<string, string> _getThisCache = [];
+
     public string GetRaw([CallerMemberName] string name = default) => _values.TryGetValue(name, out var result) 
         ? result
         : throw new ArgumentException(string.Format(ConfigNotFoundMessage, name));
 
-    public T GetThis<T>(T fallback, [CallerMemberName] string name = default) => Get<T>(name, fallback: fallback);
+    public T GetThis<T>(T fallback, [CallerMemberName] string name = default) => Get(name, fallback: fallback);
 
     // ReSharper disable once AssignNullToNotNullAttribute
     [Obsolete("This is necessary for older DataSources which hat configuration setters. We will not support that any more, do not use.")]

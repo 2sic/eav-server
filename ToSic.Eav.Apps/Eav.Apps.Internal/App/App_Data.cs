@@ -13,11 +13,9 @@ partial class EavApp
 
     private IAppDataConfiguration AppDataConfig => _appDataConfigOnce.Get(() =>
     {
-        // try deferred initialization of the configuration, 
-        // this only works if on initialization a _dataConfigBuilder was provided
-        if (_dataConfigurationBuilder == null) return null;
+        // New v17
+        var config = Services.DataConfigProvider.GetDataConfiguration(this, _dataConfigSpecs ?? new AppDataConfigSpecs());
 
-        var config = _dataConfigurationBuilder.Invoke(this);
         // needed to initialize data - must always happen a bit later because the show-draft info isn't available when creating the first App-object.
         // todo: later this should be moved to initialization of this object
         Log.A($"init data drafts:{config.ShowDrafts}, hasConf:{config.Configuration != null}");
@@ -25,7 +23,7 @@ partial class EavApp
 
     });
     private readonly GetOnce<IAppDataConfiguration> _appDataConfigOnce = new();
-    private Func<EavApp, IAppDataConfiguration> _dataConfigurationBuilder;
+    private AppDataConfigSpecs _dataConfigSpecs;
 
     #region Data
 

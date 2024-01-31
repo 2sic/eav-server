@@ -24,7 +24,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         List<IEntity> metadataItems = default,
         Func<IHasMetadataSource> metaSourceFinder = null)
     {
-        metadata = metadata ?? new ContentTypeAttributeMetadata(key: id, name: name, type: type,
+        metadata ??= new ContentTypeAttributeMetadata(key: id, name: name, type: type,
             sysSettings: sysSettings, items: metadataItems, deferredSource: metaSourceFinder);
 
         return new(appId: appId, name: name, type: type, isTitle: isTitle,
@@ -46,12 +46,11 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
     )
     {
         // Prepare parts which we also need for new Metadata Creation
-        name = name ?? original.Name;
-        id = id ?? original.AttributeId;
+        name ??= original.Name;
+        id ??= original.AttributeId;
         var realType = type ?? original.Type;
-        metadata = metadata ??
-                   EntityPartsBuilder.CloneMetadataFunc<int>(original.Metadata, items: metadataItems,
-                       deferredSource: metaSourceFinder)(id.Value, $"{name} ({realType})");
+        metadata ??= EntityPartsBuilder.CloneMetadataFunc<int>(original.Metadata, items: metadataItems,
+            deferredSource: metaSourceFinder)(id.Value, $"{name} ({realType})");
 
         return Create(
             appId: appId ?? original.AppId,

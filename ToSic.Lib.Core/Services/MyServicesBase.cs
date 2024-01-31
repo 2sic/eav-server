@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.DI;
+﻿using ToSic.Lib.Coding;
+using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 
@@ -16,6 +17,13 @@ namespace ToSic.Lib.Services;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class MyServicesBase: ILazyInitLog
 {
+    protected MyServicesBase(NoParamOrder protect = default, object[] connect = default)
+    {
+        if (connect == null) return;
+        ConnectServices(connect);
+    }
+
+
     /// <summary>
     /// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
     /// </summary>
