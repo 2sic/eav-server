@@ -71,6 +71,7 @@ internal class AppPaths: ServiceBase, IAppPathsMicroSvc
     {
         // 2022-02-07 2dm try to drop special case with site-id again, as we shouldn't need this any more
         // 2024-02-01 2dm WIP trouble with App listing apps in other sites
+        // it seems that the paths
         var key = $"AppPath-{name}" + _site.Id; // + _site.Id;
         var final = _appState.Internal().GetPiggyBack(key,
             () =>
