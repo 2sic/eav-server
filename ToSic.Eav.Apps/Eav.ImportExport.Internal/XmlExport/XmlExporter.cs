@@ -9,6 +9,7 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 
@@ -191,6 +192,10 @@ public abstract class XmlExporter : ServiceBase
                     AppState.GetMetadata(TargetTypes.Attribute, a.AttributeId)
                         .Select(c => GetEntityXElement(c.EntityId, c.Type.NameId))
                 );
+
+                // #SharedFieldDefinition
+                if (a.Guid.HasValue) xmlAttribute.Add(new XAttribute(XmlConstants.Guid, a.Guid));
+                if (a.SysSettings != null) xmlAttribute.Add(new XAttribute(XmlConstants.SysSettings, JsonSerializer.Serialize(a.SysSettings, Log)));
 
                 attributes.Add(xmlAttribute);
             }

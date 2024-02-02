@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Metadata;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -61,12 +62,20 @@ partial class XmlImportWithFiles
 
                 var xmlMetadata = xmlField.Elements(XmlConstants.Entity).ToList();
                 var attributeMetadata = BuildEntities(xmlMetadata, (int)TargetTypes.Attribute);
+
+                // #SharedFieldDefinition
+                Guid? guid = null;
+                if (Guid.TryParse(xmlField.Attribute(XmlConstants.Guid)?.Value, out var result)) guid = result;
+                var sysSettings = JsonSerializer.DeserializeAttributeSysSettings(xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
+
                 var attribute = Services.MultiBuilder.Value.TypeAttributeBuilder.Create(
                     appId: AppId,
                     name: name,
                     type: ValueTypeHelpers.Get(fieldTypeName),
                     isTitle: s.IsTitle,
-                    metadataItems: attributeMetadata
+                    metadataItems: attributeMetadata,
+                    guid: guid,
+                    sysSettings: sysSettings
                 );
                 attributes.Add(attribute);
 

@@ -117,9 +117,11 @@ partial class JsonSerializer
         return lMain.ReturnAsOk(contentType);
     }
 
-    public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized)
+    public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized) => DeserializeAttributeSysSettings(serialized, Log);
+
+    internal static ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized, ILog log)
     {
-        var l = Log.Fn<ContentTypeAttributeSysSettings>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
+        var l = log.Fn<ContentTypeAttributeSysSettings>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
         if (serialized.IsEmpty()) return l.Return(null, "empty serialized");
         try
         {

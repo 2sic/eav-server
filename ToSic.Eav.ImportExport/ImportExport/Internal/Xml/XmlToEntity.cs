@@ -193,6 +193,7 @@ public class XmlToEntity: ServiceBase
         var guidString = xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
                          throw new NullReferenceException("can't import an entity without a guid identifier");
         var guid = Guid.Parse(guidString);
+        var isPublished = xEntity.Attribute(XmlConstants.IsPublished)?.Value;
         // var attribs = finalAttributes.ToDictionary(x => x.Key, y => (object) y.Value);
 
         var typeForEntity = globalType;
@@ -210,7 +211,7 @@ public class XmlToEntity: ServiceBase
         var targetEntity = // globalType != null
             // ? _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
             // If not yet a known type, create a temporary pointer ContentType
-            /*:*/ _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity,
+            /*:*/ _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity, isPublished: isPublished != "False",
                 attributes: finalAttributes.ToImmutableInvariant(),
                 metadataFor: metadataForFor);
         //if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);

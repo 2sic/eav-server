@@ -127,9 +127,11 @@ partial class JsonSerializer
         return package;
     }
 
-    public string Serialize(ContentTypeAttributeSysSettings sysSettings)
+    public string Serialize(ContentTypeAttributeSysSettings sysSettings) => Serialize(sysSettings, Log);
+
+    internal static string Serialize(ContentTypeAttributeSysSettings sysSettings, ILog log)
     {
-        var l = Log.Fn<string>($"serialize {sysSettings} to json string");
+        var l = log.Fn<string>($"serialize {sysSettings} to json string");
         if (sysSettings == null) return l.Return(null, "null sysSettings");
         try
         {

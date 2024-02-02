@@ -40,8 +40,11 @@ public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(
             new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),
             valuesXElement);
 
+        if (!entity.IsPublished)
+            entityXElement.Add(new XAttribute(XmlConstants.IsPublished, "False"));
+
         // experimental new in V11
-        if(entity.Type.RepositoryType != RepositoryTypes.Sql)
+        if (entity.Type.RepositoryType != RepositoryTypes.Sql)
             entityXElement.Add(new XAttribute(XmlConstants.EntityIsJsonAttribute, "True"));
 
         // try to add keys - moved to here from xml-exporter

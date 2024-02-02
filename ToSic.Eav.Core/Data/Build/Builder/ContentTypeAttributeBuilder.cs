@@ -59,6 +59,8 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
             isTitle: isTitle ?? original.IsTitle,
             id: id.Value,
             sortOrder: sortOrder ?? original.SortOrder,
+            guid: original.Guid,
+            sysSettings: original.SysSettings,
             metadata: metadata
         );
     }

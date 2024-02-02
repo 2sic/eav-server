@@ -233,7 +233,7 @@ public class ZipExport: ServiceBase
         // 2022-01-04 2dm - new code, simplified
         // Get all entities except Attribute/Field Metadata, which is exported in a different way
         var entities = DataSourceFactory
-            .CreateDefault(new DataSourceOptions(appIdentity: appIdentity, showDrafts: false))
+            .CreateDefault(new DataSourceOptions(appIdentity: appIdentity, showDrafts: true))
             .List
             .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 

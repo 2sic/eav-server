@@ -53,6 +53,9 @@ public class XmlConstants
     public const string Attribute = "Attribute";
     public const string AttributeSetParentDef = "UsesConfigurationOfAttributeSet";
 
+    public const string IsPublished = "IsPublished";
+    public const string SysSettings = "SysSettings"; // #SharedFieldDefinition
+
     // Keys for metadata
     public const string KeyTargetTypeNameOld = "AssignmentObjectType";
     public const string KeyTargetType = "TargetType"; // #TargetTypeIdInsteadOfTarget
