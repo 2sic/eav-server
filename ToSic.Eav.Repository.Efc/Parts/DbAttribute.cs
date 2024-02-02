@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.ImportExport.Json;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
 internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.AttDef")
 {
+    private JsonSerializer Serializer { get; } = db.JsonSerializerGenerator.New();
+
     /// <summary>
     /// Set an Attribute as Title on an AttributeSet
     /// </summary>
@@ -95,6 +98,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         var type = contentTypeAttribute.Type.ToString();
         var isTitle = contentTypeAttribute.IsTitle;
         var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
+        var sysSettings = Serializer.Serialize(contentTypeAttribute.SysSettings);
 
         var attributeSet = DbContext.AttribSet.GetDbAttribSet(attributeSetId);
 
@@ -109,7 +113,9 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         {
             Type = type,
             StaticName = staticName,
-            ChangeLogCreated = DbContext.Versioning.GetChangeLogId()
+            ChangeLogCreated = DbContext.Versioning.GetChangeLogId(),
+            Guid = contentTypeAttribute.Guid,
+            SysSettings = sysSettings
         };
         var setAssignment = new ToSicEavAttributesInSets
         {
