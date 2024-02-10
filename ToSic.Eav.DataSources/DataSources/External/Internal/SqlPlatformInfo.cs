@@ -9,7 +9,9 @@ public class SqlPlatformInfo
 
     public virtual string FindConnectionString(string name)
     {
-        return System.Configuration.ConfigurationManager.ConnectionStrings[name].ConnectionString;
+        var config = System.Configuration.ConfigurationManager.ConnectionStrings[name];
+        var connectionString = config?.ConnectionString;
+        return connectionString;
     }
 
 }
