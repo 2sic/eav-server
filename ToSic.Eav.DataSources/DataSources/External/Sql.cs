@@ -185,26 +185,28 @@ public class Sql : CustomDataSourceAdvanced
         var tokenizer = TokenReplace.Tokenizer;
 
         // Before we process the Select-Command, we must get it (by default it's just a token!)
-        if (SelectCommand.StartsWith("[" + DataSourceConstants.MyConfigurationSourceName, InvariantCultureIgnoreCase))
+        var selectSql = SelectCommand;
+        if (selectSql.StartsWith("[" + DataSourceConstants.MyConfigurationSourceName, InvariantCultureIgnoreCase))
         {
             var tempList = Configuration.LookUpEngine.LookUp(
-                new Dictionary<string, string> { { "one", SelectCommand } },
+                new Dictionary<string, string> { { "one", selectSql } },
                 null, 0); // load, but make sure no recursions to prevent pre-filling parameters
-            SelectCommand = tempList["one"];
+            selectSql = tempList["one"];
         }
-        var sourceText = SelectCommand;
         var paramNumber = 1;
         var additionalParams = new List<string>();
         var result = new StringBuilder();
         var charProgress = 0;
-        var matches = tokenizer.Matches(sourceText);
-        if (matches.Count > 0)
+        var matches = tokenizer.Matches(selectSql);
+        if (matches.Count == 0)
+            SelectCommand = selectSql;
+        else
         {
             foreach (Match curMatch in matches)
             {
                 // Get characters before the first match
                 if (curMatch.Index > charProgress)
-                    result.Append(sourceText.Substring(charProgress, curMatch.Index - charProgress));
+                    result.Append(selectSql.Substring(charProgress, curMatch.Index - charProgress));
                 charProgress = curMatch.Index + curMatch.Length;
 
                 var paramName = $"@{ExtractedParamPrefix}{paramNumber++}";
@@ -216,11 +218,13 @@ public class Sql : CustomDataSourceAdvanced
             }
 
             // attach the rest of the text (after the last match)
-            result.Append(sourceText.Substring(charProgress));
+            result.Append(selectSql.Substring(charProgress));
 
             // Ready to finish, but first, ensure repeating if desired
             SelectCommand = result.ToString();
         }
+
+        // Add all additional tokens/parameters to the cache-keys, so any change in these values will use a different cache
         CacheRelevantConfigurations.AddRange(additionalParams);
 
         Configuration.Parse();
@@ -232,22 +236,24 @@ public class Sql : CustomDataSourceAdvanced
         var l = Log.Fn<IImmutableList<IEntity>>();
         CustomConfigurationParse();
 
-        l.A($"get from sql:{SelectCommand}");
+        var selectSql = SelectCommand;
+        l.A($"get from sql:{selectSql}");
 
         // Check if SQL contains forbidden terms
-        if (ForbiddenTermsInSelect.IsMatch(SelectCommand))
+        if (ForbiddenTermsInSelect.IsMatch(selectSql))
             return l.ReturnAsError(Error.Create(source: this, title: ErrorTitleForbiddenSql,
                 message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue."));
 
 
         // Load ConnectionString by Name (if specified)
-        if (!string.IsNullOrEmpty(ConnectionStringName) && string.IsNullOrEmpty(ConnectionString))
+        var conStringNameRaw = ConnectionStringName;
+        if (!string.IsNullOrEmpty(conStringNameRaw) && string.IsNullOrEmpty(ConnectionString))
             try
             {
-                var conStringName = string.IsNullOrWhiteSpace(ConnectionStringName) ||
-                                    ConnectionStringName.EqualsInsensitive(SqlPlatformInfo.DefaultConnectionPlaceholder)
+                var conStringName = conStringNameRaw.IsEmptyOrWs() ||
+                                    conStringNameRaw.EqualsInsensitive(SqlPlatformInfo.DefaultConnectionPlaceholder)
                     ? SqlServices.SqlPlatformInfo.DefaultConnectionStringName
-                    : ConnectionStringName;
+                    : conStringNameRaw;
 
                 ConnectionString = SqlServices.SqlPlatformInfo.FindConnectionString(conStringName);
             }
@@ -270,7 +276,7 @@ public class Sql : CustomDataSourceAdvanced
             // create a fake transaction, to ensure no changes can be made
             using (var trans = connection.BeginTransaction())
             {
-                var command = new SqlCommand(SelectCommand, connection, trans);
+                var command = new SqlCommand(selectSql, connection, trans);
 
                 // Add all items in Configuration starting with an @, as this should be an SQL parameter
                 foreach (var sqlParameter in Configuration.Values.Where(k => k.Key.StartsWith("@")))
