@@ -64,7 +64,14 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
 
     // ReSharper disable once AssignNullToNotNullAttribute
     [Obsolete("This is necessary for older DataSources which hat configuration setters. We will not support that any more, do not use.")]
-    internal void SetThisObsolete<T>(T value, [CallerMemberName] string name = default) => _values[name] = value?.ToString();
+    internal void SetThisObsolete<T>(T value, [CallerMemberName] string name = default)
+    {
+        // Set the value in the dictionary
+        _values[name] = value?.ToString();
+
+        // Flush the quick get-this cache, otherwise it will still return the old value
+        _getThisCache.Clear();
+    }
 
     [PrivateApi]
     public IReadOnlyDictionary<string, string> Values => _values as IReadOnlyDictionary<string, string>;
