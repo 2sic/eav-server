@@ -1,4 +1,5 @@
 ﻿using System;
+using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Plumbing;
 
@@ -25,22 +26,24 @@ public class TryLockTryDo(object lockObject = null)
     /// <summary>
     /// Get / Generate a value inside a lock with double-check.
     /// </summary>
-    /// <param name="condition">Function to call checking if we need to generate the result</param>
+    /// <param name="conditionToGenerate">Function to call checking if we need to generate the result</param>
     /// <param name="generator">the generator</param>
-    /// <param name="cacheOrDefault">fallback to provide if no loading should happen - typically a previously cached result or default data</param>
+    /// <param name="cacheOrFallback">fallback to provide if no loading should happen - typically a previously cached result or default data</param>
     /// <returns></returns>
-    public TResult Call<TResult>(Func<bool> condition, Func<TResult> generator, TResult cacheOrDefault)
+    public (TResult Result, bool Generated, string Message) Call<TResult>(Func<bool> conditionToGenerate, Func<TResult> generator, Func<TResult> cacheOrFallback)
     {
-        if (!condition()) return cacheOrDefault;
+        if (!conditionToGenerate())
+            return (cacheOrFallback(), false, "fallback; after 1st condition check");
+
         PreLockCount++;
         lock (_loadLock)
         {
             LockCount++;
             // Re-check, in case after the lock opened, the condition was moot
-            if (condition())
-                return generator();
+            if (conditionToGenerate())
+                return (generator(), true, "generated");
         }
-        return cacheOrDefault;
+        return (cacheOrFallback(), false, "fallback; after 2nd condition checks");
     }
 
     public int PreLockCount;

@@ -20,8 +20,13 @@ partial class MetadataOf<T>
         {
             //_debugAllEntry++;
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-            _allCached = _loadAllInLock.Call(() => _allCached == null || UpStreamChanged(), LoadAndResetInLock,  _allCached ??
-                []);
+            _allCached = _loadAllInLock.Call(
+                    conditionToGenerate: () => _allCached == null || UpStreamChanged(),
+                    generator: LoadAndResetInLock,
+                    cacheOrFallback: () => _allCached ?? []
+                )
+                .Result;
+
             //_debugAllReturn++;
             return _allCached;
         }
