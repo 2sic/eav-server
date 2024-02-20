@@ -78,4 +78,9 @@ partial class Constants
     /// Name of folder for template for new app
     /// </summary>
     public const string NewAppFolder = "new-app";
+
+    /// <summary>
+    /// Name of folder for templates for new apps
+    /// </summary>
+    public const string NewAppsFolder = "new-apps";
 }

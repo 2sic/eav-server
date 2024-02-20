@@ -13,7 +13,7 @@ partial class XmlImportWithFiles
     /// Creates an app and then imports the xml
     /// </summary>
     /// <returns>AppId of the new imported app</returns>
-    public bool ImportApp(int zoneId, XDocument doc, out int appId)
+    public bool ImportApp(int zoneId, XDocument doc, int? inheritAppId, out int appId)
     {
         var wrapLog = Log.Fn<bool>($"zone:{zoneId}");
 
@@ -42,7 +42,7 @@ partial class XmlImportWithFiles
             var eavDc = base.Services.DbDataForNewApp.Value.Init(zoneId, null);
 
             // ParentApp
-            parentAppId = GetParentAppId(xmlSource, eavDc);
+            parentAppId = inheritAppId ?? GetParentAppId(xmlSource, eavDc);
 
             var app = eavDc.App.AddApp(null, appGuid, parentAppId);
 

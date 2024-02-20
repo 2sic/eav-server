@@ -45,7 +45,7 @@ public class ImportApp: ServiceBase
 
     public ImportResultDto Import(Stream stream, int zoneId, string renameApp)
     {
-        Log.A("import app start");
+        Log.A("start import app from stream");
         var result = new ImportResultDto();
 
         if (!string.IsNullOrEmpty(renameApp)) Log.A($"new app name: {renameApp}");
@@ -58,6 +58,31 @@ public class ImportApp: ServiceBase
 
             // Increase script timeout to prevent timeouts
             result.Success = zipImport.ImportZip(stream, temporaryDirectory, renameApp);
+            result.Messages.AddRange(zipImport.Messages);
+        }
+        catch (Exception ex)
+        {
+            _envLogger.LogException(ex);
+            result.Success = false;
+            result.Messages.AddRange(zipImport.Messages);
+        }
+        return result;
+    }
+
+    public ImportResultDto Import(string zipPath, int zoneId, string renameApp, int? inheritAppId = null)
+    {
+        Log.A($"start import app from:{zipPath} with inheritAppId:{inheritAppId}");
+        var result = new ImportResultDto();
+
+        if (!string.IsNullOrEmpty(renameApp)) Log.A($"new app name: {renameApp}");
+
+        var zipImport = _zipImport;
+        try
+        {
+            zipImport.Init(zoneId, null, _user.IsSystemAdmin);
+            var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
+
+            result.Success = zipImport.ImportZip(zipPath, temporaryDirectory, renameApp, inheritAppId);
             result.Messages.AddRange(zipImport.Messages);
         }
         catch (Exception ex)

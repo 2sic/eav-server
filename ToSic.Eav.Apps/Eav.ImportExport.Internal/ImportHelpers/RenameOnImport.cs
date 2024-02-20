@@ -43,6 +43,11 @@ internal class RenameOnImport: HelperBase
             .SetAttributeValue("Value", name);
         Log.A($"change folder to install app:{name}");
 
+        // change DisplayName to install app
+        xmlDoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='DisplayName']")
+            .SetAttributeValue("Value", name);
+        Log.A($"change DisplayName to install app:{name}");
+
         // find Value element with OriginalId attribute
         var valueElementWithOriginalIdAttribute = appConfig.Elements(XmlConstants.ValueNode).FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId");
         // if missing add new Value element with OriginalId attribute

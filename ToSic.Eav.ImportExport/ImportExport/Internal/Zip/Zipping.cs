@@ -39,11 +39,34 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// <summary>
     /// Extracts a Zip (as Stream) to the given OutFolder directory.
     /// </summary>
-    public void ExtractZipFile(Stream zipStream, string outFolder, bool allowCodeImport
-    ) => Log.Do($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}", l =>
+    public void ExtractZipStream(Stream zipStream, string outFolder, bool allowCodeImport)
     {
-        using var file = new ZipArchive(zipStream);
-        foreach (var entry in file.Entries)
+
+        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+
+        using var zipArchive = new ZipArchive(zipStream);
+        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport);
+
+        l.Done("ok");
+    }
+
+    /// <summary>
+    /// Extracts a Zip (as File) to the given OutFolder directory.
+    /// </summary>
+    public void ExtractZipFile(string zipPath, string outFolder, bool allowCodeImport)
+    {
+        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+
+        using var zipArchive = ZipFile.OpenRead(zipPath);
+        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport);
+
+        l.Done("ok");
+    }
+
+    private void ExtractZipArchiveToFile(ZipArchive zipArchive, string outFolder, bool allowCodeImport)
+    {
+        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+        foreach (var entry in zipArchive.Entries)
         {
             // check for illegal file paths in zip
             CheckZipEntry(entry);
@@ -78,8 +101,8 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
             // Unzip File
             entry.ExtractToFile(fullPath);
         }
-        return "ok";
-    });
+        l.Done("ok");
+    }
 
     // Check for illegal zip file path
     public static void CheckZipEntry(ZipArchiveEntry input)
