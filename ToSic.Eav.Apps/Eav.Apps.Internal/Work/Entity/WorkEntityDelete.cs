@@ -3,15 +3,9 @@
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
+    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntDel", connect: [stateBuilder])
 {
-    private readonly Generator<IAppStateBuilder> _stateBuilder;
-
-    public WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder) : base("AWk.EntDel")
-    {
-        ConnectServices(_stateBuilder = stateBuilder);
-    }
-
     public bool Delete(Guid guid, bool force = false)
     {
         var l = Log.Fn<bool>($"delete guid:{guid}");
@@ -22,10 +16,10 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
 
     public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false,
         int? parentId = null, string parentField = null)
-        => Delete(new[] { id }, contentType, force, skipIfCant, parentId, parentField);
+        => Delete([id], contentType, force, skipIfCant, parentId, parentField);
 
     public bool Delete(List<int> ids) => Log.Func($"ids:{ids.Count}", timer: true, func: () =>
-        Delete(ids.ToArray(), null, false, true));
+        Delete([.. ids], null, false, true));
 
 
     /// <summary>
@@ -65,7 +59,7 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
         // introduced in v15.05 to reduce work on entity delete
         // in past we PurgeApp in whole on each entity delete
         // this should be much faster, but side effects are possible.
-        var builder = _stateBuilder.New().Init(AppWorkCtx.AppState.StateCache);
+        var builder = stateBuilder.New().Init(AppWorkCtx.AppState.StateCache);
         builder.RemoveEntities(repositoryIds, true);
 
         return l.Return(ok);
@@ -107,7 +101,7 @@ public class WorkEntityDelete : WorkUnitBase<IAppWorkCtxWithDb>
     }
 
     internal (bool HasMessages, string Messages) CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null)
-        => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(new[] { entityId }, parentId, parentField).First().Value;
+        => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata([entityId], parentId, parentField).First().Value;
 
 
     private Dictionary<int, (bool HasMessages, string Messages)> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string parentField = null)

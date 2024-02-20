@@ -55,7 +55,7 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
             _appCachePurger = appCachePurger,
             Env = environment
         );
-        Messages = new();
+        Messages = [];
     }
 
     public ZipImport Init(int zoneId, int? appId, bool allowCode)

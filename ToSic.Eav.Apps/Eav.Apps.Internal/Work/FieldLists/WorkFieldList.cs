@@ -6,23 +6,15 @@ using Callback = System.Func<ToSic.Eav.Apps.Internal.Work.CoupledIdLists, System
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkFieldList : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate)
+    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntFL", connect: [entityUpdate])
 {
-    private readonly GenWorkDb<WorkEntityUpdate> _entityUpdate;
-
-    public WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate) : base("AWk.EntFL")
-    {
-        ConnectServices(
-            _entityUpdate = entityUpdate
-        );
-    }
-
     public void FieldListUpdate(IEntity target, string[] fields, bool asDraft, Callback callback)
     {
         target = AppWorkCtx.AppState.GetDraftOrKeep(target);
         var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
         var values = callback.Invoke(lists);
-        _entityUpdate.New(AppWorkCtx).UpdatePartsFromValues(target, values, new(!asDraft, asDraft));
+        entityUpdate.New(AppWorkCtx).UpdatePartsFromValues(target, values, new(!asDraft, asDraft));
     }
 
     public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd, bool padWithNulls = false)
@@ -31,7 +23,7 @@ public class WorkFieldList : WorkUnitBase<IAppWorkCtxWithDb>
             // hitting + if the list is empty first add 1 null item (because we already see one demo item)
             // fix https://github.com/2sic/2sxc/issues/2943 
             if (lists.Lists.First().Value.Count < index && padWithNulls) // on non, first add 1 null item
-                lists.Add(0, new int?[] { null, null });
+                lists.Add(0, [null, null]);
 
             return lists.Add(forceAddToEnd ? null : (int?)index, values);
         });

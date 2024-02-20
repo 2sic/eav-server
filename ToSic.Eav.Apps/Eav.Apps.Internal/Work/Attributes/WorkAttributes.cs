@@ -3,14 +3,14 @@
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("ApS.InpGet")
+public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
 {
     public List<PairTypeWithAttribute> GetFields(string staticName)
     {
         var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{AppWorkCtx.Show()}, type:{staticName}");
 
         if (AppWorkCtx.AppState.GetContentType(staticName) is not { } type)
-            return l.Return(new(),
+            return l.Return([],
                 $"error, type:{staticName} is null, it is missing or it is not a ContentType - something broke");
 
         var fields = type.Attributes.OrderBy(a => a.SortOrder);
@@ -35,7 +35,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("ApS.InpGet")
                 .FirstOrDefault();
                 
             if (attribute == null)
-                return l.Return(new(), $"attribute {attributeId} not found");
+                return l.Return([], $"attribute {attributeId} not found");
 
             attributeType = attribute.Type;
         }

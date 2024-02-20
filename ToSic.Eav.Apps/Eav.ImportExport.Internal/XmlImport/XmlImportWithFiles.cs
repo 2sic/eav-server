@@ -84,7 +84,7 @@ public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles
     public XmlImportWithFiles Init(string defaultLanguage, bool allowUpdateOnSharedTypes)
     {
         // Prepare
-        Messages = new();
+        Messages = [];
         DefaultLanguage = (defaultLanguage ?? base.Services.Environment.DefaultLanguage).ToLowerInvariant();
         AllowUpdateOnSharedTypes = allowUpdateOnSharedTypes;
         return this;

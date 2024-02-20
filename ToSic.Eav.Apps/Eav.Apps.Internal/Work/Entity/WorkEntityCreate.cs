@@ -4,29 +4,19 @@ using ToSic.Eav.Metadata;
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkEntityCreate : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave)
+    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntCre", connect: [workEntSave, builder])
 {
-    private readonly GenWorkDb<WorkEntitySave> _workEntSave;
-    private readonly DataBuilder _builder;
-
-    public WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave) : base("AWk.EntCre")
-    {
-        ConnectServices(
-            _workEntSave = workEntSave,
-            _builder = builder
-        );
-    }
-
     public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
     {
         var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
 
-        var newEnt = _builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
+        var newEnt = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
             contentType: AppWorkCtx.AppState.GetContentType(typeName),
-            attributes: _builder.Attribute.Create(values),
+            attributes: builder.Attribute.Create(values),
             metadataFor: metadataFor);
 
-        var eid = _workEntSave.New(AppWorkCtx).Save(newEnt);
+        var eid = workEntSave.New(AppWorkCtx).Save(newEnt);
         var guid = AppWorkCtx.DataController.Entities.TempLastSaveGuid;
 
         return l.Return((eid, guid), $"id:{eid}, guid:{guid}");
@@ -53,10 +43,10 @@ public class WorkEntityCreate : WorkUnitBase<IAppWorkCtxWithDb>
             return existingEnt.EntityId;
         }
 
-        var newE = _builder.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
+        var newE = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
             contentType: AppWorkCtx.AppState.GetContentType(typeName),
-            attributes: _builder.Attribute.Create(values));
-        return _workEntSave.New(AppWorkCtx).Save(newE);
+            attributes: builder.Attribute.Create(values));
+        return workEntSave.New(AppWorkCtx).Save(newE);
     }
 
 }

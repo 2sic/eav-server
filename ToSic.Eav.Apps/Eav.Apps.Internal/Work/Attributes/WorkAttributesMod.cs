@@ -8,25 +8,15 @@ using static ToSic.Eav.Internal.Features.BuiltInFeatures;
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkAttributesMod(
+    GenWorkDb<WorkMetadata> workMetadata,
+    GenWorkBasic<WorkAttributes> workAttributes,
+    ContentTypeAttributeBuilder attributeBuilder,
+    Generator<IDataDeserializer> dataDeserializer,
+    LazySvc<IEavFeaturesService> features)
+    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.AttMod",
+        connect: [attributeBuilder, workMetadata, workAttributes, features, dataDeserializer])
 {
-    private readonly LazySvc<IEavFeaturesService> _features;
-    private readonly ContentTypeAttributeBuilder _attributeBuilder;
-    private readonly GenWorkDb<WorkMetadata> _workMetadata;
-    private readonly GenWorkBasic<WorkAttributes> _workAttributes;
-    private readonly Generator<IDataDeserializer> _dataDeserializer;
-
-    public WorkAttributesMod(GenWorkDb<WorkMetadata> workMetadata, GenWorkBasic<WorkAttributes> workAttributes, ContentTypeAttributeBuilder attributeBuilder, Generator<IDataDeserializer> dataDeserializer, LazySvc<IEavFeaturesService> features) : base("ApS.InpGet")
-    {
-        ConnectServices(
-            _attributeBuilder = attributeBuilder,
-            _workMetadata = workMetadata,
-            _workAttributes = workAttributes,
-            _features = features,
-            _dataDeserializer = dataDeserializer
-        );
-    }
-
     #region Getters which don't modify, but need the DB
 
     /// <summary>
@@ -48,7 +38,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
     public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
     {
         var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-        var attDef = _attributeBuilder
+        var attDef = attributeBuilder
             .Create(appId: AppWorkCtx.AppId, name: staticName, type: ValueTypeHelpers.Get(type), isTitle: false, id: 0, sortOrder: sortOrder);
         var id = AddField(contentTypeId, attDef, inputType);
         return l.Return(id);
@@ -81,7 +71,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
             { AttributeMetadata.GeneralFieldInputType, inputType }
         };
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        _workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
         l.Done();
     }
 
@@ -95,7 +85,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
         var newValues = new Dictionary<string, object> { { AttributeMetadata.GeneralFieldInputType, inputType } };
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        _workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
         return l.ReturnTrue();
     }
 
@@ -130,7 +120,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
     {
         var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
 
-        if (!_features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
             throw exp;
 
         // get field attributeId
@@ -140,7 +130,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
         // update with the Share = share (hide we'll ignore for now, it's for future needs)
         var newSysSettings = new ContentTypeAttributeSysSettings(share: share);
 
-        var serializer = _dataDeserializer.New();
+        var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other attribute change
@@ -159,7 +149,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
     {
         var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
 
-        if (!_features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
             throw exp;
 
         // get field attributeId
@@ -172,7 +162,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
             inheritMetadata: false,
             inheritMetadataOf: new() { [inheritMetadataOf] = "" });
 
-        var serializer = _dataDeserializer.New();
+        var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other attribute change
@@ -185,7 +175,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
     {
         var l = Log.Fn<bool>();
 
-        if (!_features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
             throw exp;
 
         // 1. First check that sources are correct
@@ -195,7 +185,7 @@ public class WorkAttributesMod : WorkUnitBase<IAppWorkCtxWithDb>
         // - second the source field guid
         // - note that the content-type wouldn't be necessary, but we want to have it to prevent mistakes if for some reason the guid is duplicate
         // - verify that the source fields exist, and really belong to the content-types they claim to be from
-        var fields = _workAttributes.New(AppWorkCtx.AppId).GetSharedFields(attributeId: default)
+        var fields = workAttributes.New(AppWorkCtx.AppId).GetSharedFields(attributeId: default)
             .Where(f => f.Type.NameId == sourceType && f.Attribute.Guid == sourceField).ToList();
 
         // 1.2 Find the source fields and only keep the ones that are valid

@@ -8,16 +8,9 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// WIP - meant as a replacement of EntityRuntime with clean architecture
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkEntities: WorkUnitBase<IAppWorkCtxPlus>
+public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
+    : WorkUnitBase<IAppWorkCtxPlus>("ApS.EnRead", connect: [dataSourceFactory])
 {
-    private readonly LazySvc<IDataSourcesService> _dataSourceFactory;
-    public WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory) : base("ApS.EnRead")
-    {
-        ConnectServices(
-            _dataSourceFactory = dataSourceFactory
-        );
-    }
-
     /// <summary>
     /// All entities in the app - this also includes system entities like data-source configuration etc.
     /// </summary>
@@ -32,7 +25,7 @@ public class WorkEntities: WorkUnitBase<IAppWorkCtxPlus>
     {
         var l = Log.Fn<IEnumerable<IEntity>>();
         var scopes = withConfiguration
-            ? new[] { Scopes.Default, Scopes.SystemConfiguration }
+            ? [Scopes.Default, Scopes.SystemConfiguration]
             : new[] { Scopes.Default };
         return l.Return(AppWorkCtx.Data.List.Where(e => scopes.Contains(e.Type.Scope)));
     }
@@ -51,7 +44,7 @@ public class WorkEntities: WorkUnitBase<IAppWorkCtxPlus>
 
     public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus overrideWorkCtx = default)
     {
-        var typeFilter = _dataSourceFactory.Value.Create<EntityTypeFilter>(attach: (overrideWorkCtx ?? AppWorkCtx).Data); // need to go to cache, to include published & unpublished
+        var typeFilter = dataSourceFactory.Value.Create<EntityTypeFilter>(attach: (overrideWorkCtx ?? AppWorkCtx).Data); // need to go to cache, to include published & unpublished
         typeFilter.TypeName = contentTypeName;
         return typeFilter.List;
     }
@@ -60,7 +53,7 @@ public class WorkEntities: WorkUnitBase<IAppWorkCtxPlus>
     public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName)
     {
         var l = Log.Fn<IEnumerable<IEntity>>($"{nameof(contentTypeName)}: {contentTypeName}");
-        var appWithParents = _dataSourceFactory.Value.Create<AppWithParents>(attach: AppWorkCtx.Data);
+        var appWithParents = dataSourceFactory.Value.Create<AppWithParents>(attach: AppWorkCtx.Data);
         var newCtx = AppWorkCtx.NewWithPresetData(data: appWithParents);
         return l.Return(Get(contentTypeName, newCtx));
     }

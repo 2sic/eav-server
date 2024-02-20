@@ -4,21 +4,12 @@ using ToSic.Eav.Metadata;
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkMetadata : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkMetadata(
+    DataBuilder builder,
+    GenWorkDb<WorkEntitySave> workEntSave,
+    GenWorkDb<WorkEntityUpdate> entityUpdate)
+    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntMd", connect: [entityUpdate, builder, workEntSave])
 {
-    private readonly GenWorkDb<WorkEntityUpdate> _entityUpdate;
-    private readonly GenWorkDb<WorkEntitySave> _workEntSave;
-    private readonly DataBuilder _builder;
-
-    public WorkMetadata(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave, GenWorkDb<WorkEntityUpdate> entityUpdate) : base("AWk.EntMd")
-    {
-        ConnectServices(
-            _entityUpdate = entityUpdate,
-            _builder = builder,
-            _workEntSave = workEntSave
-        );
-    }
-
     public void SaveMetadata(Target target, string typeName, Dictionary<string, object> values)
     {
         var l = Log.Fn($"target:{target.KeyNumber}/{target.KeyGuid}, values count:{values.Count}");
@@ -29,15 +20,15 @@ public class WorkMetadata : WorkUnitBase<IAppWorkCtxWithDb>
         var existingEntity = AppWorkCtx.AppState.List
             .FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
         if (existingEntity != null)
-            _entityUpdate.New(AppWorkCtx).UpdateParts(existingEntity.EntityId, values);
+            entityUpdate.New(AppWorkCtx).UpdateParts(existingEntity.EntityId, values);
         else
         {
             var appState = AppWorkCtx.AppState;
-            var saveEnt = _builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
+            var saveEnt = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
                 contentType: appState.GetContentType(typeName),
-                attributes: _builder.Attribute.Create(values),
+                attributes: builder.Attribute.Create(values),
                 metadataFor: target);
-            _workEntSave.New(AppWorkCtx).Save(saveEnt);
+            workEntSave.New(AppWorkCtx).Save(saveEnt);
         }
 
         l.Done();
