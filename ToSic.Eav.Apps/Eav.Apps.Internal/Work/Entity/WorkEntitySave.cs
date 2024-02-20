@@ -12,28 +12,16 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkEntitySave(
+    LazySvc<DataBuilder> multiBuilder,
+    AppsCacheSwitch appsCache,
+    LazySvc<IImportExportEnvironment> environmentLazy
+    )
+    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntSav", connect: [multiBuilder, appsCache, environmentLazy])
 {
-    private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
-    private readonly AppsCacheSwitch _appsCache;
-    private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
+    // Note: Singleton
 
-    public WorkEntitySave(
-        LazySvc<DataBuilder> multiBuilder,
-        LazySvc<IAppLoaderTools> appLoaderTools,
-        AppsCacheSwitch appsCache, // Note: Singleton
-        LazySvc<IImportExportEnvironment> environmentLazy) : base("Wrk.EntSav")
-    {
-        ConnectServices(
-            _multiBuilder = multiBuilder,
-            _appLoaderTools = appLoaderTools,
-            _appsCache = appsCache,
-            _environmentLazy = environmentLazy
-        );
-    }
-
-    private readonly LazySvc<DataBuilder> _multiBuilder;
-    private DataBuilder Builder => _multiBuilder.Value;
+    private DataBuilder Builder => multiBuilder.Value;
 
 
     public void Import(List<IEntity> newEntities)
@@ -50,42 +38,45 @@ public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
 
 
     public int Save(IEntity entity, SaveOptions saveOptions = null)
-        => Save(new List<IEntity> { entity }, saveOptions).FirstOrDefault();
+        => Save([entity], saveOptions).FirstOrDefault();
 
 
     public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
     {
         var l = Log.Fn<List<int>>("save count:" + entities.Count + ", with Options:" + (saveOptions != null));
+
         // Run the change in a lock/transaction
         // This is to avoid parallel creation of new entities
         // because sometimes the save may be executed twice before the state knows that the entity exists
         // in which case it would add it twice
-        var appReader = AppWorkCtx.AppState;
 
-        saveOptions ??= _environmentLazy.Value.SaveOptions(appReader.ZoneId);
+        var appReader = AppWorkCtx.AppState;
+        saveOptions ??= environmentLazy.Value.SaveOptions(appReader.ZoneId);
+        List<int> ids = null;
+        appReader.StateCache.DoInLock(Log, () => ids = InnerSaveInLock());
+        return l.Return(ids, $"ids:{ids.Count}");
 
         // Inner call which will be executed with the Lock of the AppState
         List<int> InnerSaveInLock()
         {
-
             // Try to reset the content-type if not specified
             entities = entities.Select(entity =>
-            {
-                // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
-                if (entity is not Entity e2 || e2.Type.IsDynamic || e2.Type.Attributes != null)
-                    return entity;
-                var newType = appReader.GetContentType(entity.Type.Name);
-                if (newType == null) return entity;
-
-                return Builder.Entity.CreateFrom(entity, type: newType);
-            }).ToList();
+                {
+                    // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
+                    if (entity is not Entity e2 || e2.Type.IsDynamic || e2.Type.Attributes != null)
+                        return entity;
+                    var newType = appReader.GetContentType(entity.Type.Name);
+                    return newType == null ? entity : Builder.Entity.CreateFrom(entity, type: newType);
+                })
+                .ToList();
 
             // Clear Ephemeral attributes which shouldn't be saved (new in v12)
             entities = entities.Select(entity =>
-            {
-                var attributes = AttributesWithEmptyEphemerals(entity);
-                return attributes == null ? entity : Builder.Entity.CreateFrom(entity, attributes: attributes);
-            }).ToList();
+                {
+                    var attributes = AttributesWithEmptyEphemerals(entity);
+                    return attributes == null ? entity : Builder.Entity.CreateFrom(entity, attributes: attributes);
+                })
+                .ToList();
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
             entities = AttachRelationshipResolver(entities, appReader.StateCache);
@@ -95,15 +86,9 @@ public class WorkEntitySave : WorkUnitBase<IAppWorkCtxWithDb>
             dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
 
             // Tell the cache to do a partial update
-            _appsCache.Value.Update(appReader, intIds, Log, _appLoaderTools.Value);
+            appsCache.Update(appReader.PureIdentity(), intIds);
             return intIds;
         }
-
-
-        List<int> ids = null;
-        appReader.StateCache.DoInLock(Log, () => ids = InnerSaveInLock());
-
-        return l.Return(ids, $"ids:{ids.Count}");
     }
 
 

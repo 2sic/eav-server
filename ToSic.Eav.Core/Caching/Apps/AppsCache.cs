@@ -26,8 +26,9 @@ internal class AppsCache: AppsCacheBase, IAppsCacheSwitchable
 
     public override IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools)
     {
-        // ensure it's only loaded once, even if multiple threads are trying this at the same time
         if (ZoneAppCache != null) return ZoneAppCache;
+
+        // ensure it's only loaded once, even if multiple threads are trying this at the same time
         lock (ZoneAppLoadLock)
             if (ZoneAppCache == null)
                 ZoneAppCache = LoadZones(tools);

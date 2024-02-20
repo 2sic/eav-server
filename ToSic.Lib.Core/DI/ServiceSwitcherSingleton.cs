@@ -10,20 +10,13 @@ namespace ToSic.Lib.DI;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ServiceSwitcherSingleton<T>: ServiceBase, ILazyLike<T> where T : ISwitchableService
+public class ServiceSwitcherSingleton<T>(
+    ILogStore logStore,
+    LazySvc<ServiceSwitcher<T>> serviceSwitcher,
+    object[] connect = default)
+    : ServiceBase($"{LogScopes.Lib}.SrvSwS", connect: [.. connect ?? [], logStore, serviceSwitcher]), ILazyLike<T>
+    where T : ISwitchableService
 {
-    public ServiceSwitcherSingleton(
-        ILogStore logStore,
-        LazySvc<ServiceSwitcher<T>> serviceSwitcher
-    ) : base($"{LogScopes.Lib}.SrvSwS") =>
-        ConnectServices(
-            _logStore = logStore,
-            _serviceSwitcher = serviceSwitcher
-        );
-
-    private readonly ILogStore _logStore;
-    private readonly LazySvc<ServiceSwitcher<T>> _serviceSwitcher;
-
     public T Value => GetSingletonSwitchableService();
 
     private T GetSingletonSwitchableService()
@@ -31,20 +24,20 @@ public class ServiceSwitcherSingleton<T>: ServiceBase, ILazyLike<T> where T : IS
         // Already loaded
         if (_preferredService != null) return _preferredService;
 
-        _logStore.Add(LogNames.LogStoreStartUp, Log);
+        logStore.Add(LogNames.LogStoreStartUp, Log);
         var call = Log.Fn<T>(message: "re-check singleton service");
-        _preferredService = _serviceSwitcher.Value.Value;
+        _preferredService = serviceSwitcher.Value.Value;
         return call.Return(_preferredService, $"found {_preferredService.NameId}");
     }
 
     /// <summary>
-    /// Note: This must be static, as the service itself is transient, not singleton!
+    /// Note: This must be static, as the service itself is used transient, not singleton!
     /// </summary>
     private static T _preferredService;
 
     public bool IsValueCreated => _preferredService != null;
 
-    public T ByNameId(string nameId) => _serviceSwitcher.Value.ByNameId(nameId);
+    public T ByNameId(string nameId) => serviceSwitcher.Value.ByNameId(nameId);
 
     protected void Reset() => _preferredService = default;
 }
