@@ -35,14 +35,14 @@ public class MdRequirements: ServiceBase, IRequirementsService
 
         var (ok, notOk) = CheckRequirements(requirements);
         return ok 
-            ? l.Return(new(), "all ok")
+            ? l.Return([], "all ok")
             : l.Return(notOk.Cast<RequirementStatus>().ToList(), $"a few not ok: {notOk.Count}");
     }
 
     public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements)
     {
         var l = Log.Fn<List<RequirementStatus>>();
-        if (requirements.SafeNone()) return l.Return(new());
+        if (requirements.SafeNone()) return l.Return([]);
 
         var reqStatus = requirements
             .Select(r => VerifySysCap(r.NameId))

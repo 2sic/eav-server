@@ -6,26 +6,13 @@ using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkEntityUpdate : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkEntityUpdate(
+    DataBuilder builder,
+    LazySvc<EntitySaver> entitySaverLazy,
+    LazySvc<IImportExportEnvironment> environmentLazy,
+    GenWorkDb<WorkEntitySave> workEntSave)
+    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntUpd", connect: [builder, entitySaverLazy, workEntSave, environmentLazy])
 {
-    private readonly GenWorkDb<WorkEntitySave> _workEntSave;
-    private readonly DataBuilder _builder;
-    private readonly LazySvc<EntitySaver> _entitySaverLazy;
-    private readonly LazySvc<IImportExportEnvironment> _environmentLazy;
-
-    public WorkEntityUpdate(
-        DataBuilder builder,
-        LazySvc<EntitySaver> entitySaverLazy,
-        LazySvc<IImportExportEnvironment> environmentLazy,
-        GenWorkDb<WorkEntitySave> workEntSave) : base("AWk.EntUpd")
-    {
-        ConnectServices(
-            _builder = builder,
-            _entitySaverLazy = entitySaverLazy,
-            _workEntSave = workEntSave,
-            _environmentLazy = environmentLazy
-        );
-    }
     /// <summary>
     /// Update an entity
     /// </summary>
@@ -73,11 +60,11 @@ public class WorkEntityUpdate : WorkUnitBase<IAppWorkCtxWithDb>
         if (partialEntity == null)
             return l.ReturnFalse("nothing to import");
 
-        var saveOptions = _environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
+        var saveOptions = environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
         saveOptions.PreserveUntouchedAttributes = true;
         saveOptions.PreserveUnknownLanguages = true;
 
-        var saveEnt = _entitySaverLazy.Value.CreateMergedForSaving(orig, partialEntity, saveOptions);
+        var saveEnt = entitySaverLazy.Value.CreateMergedForSaving(orig, partialEntity, saveOptions);
 
         // if changes should be draft, ensure it works
         if (publishing != null && saveEnt is Entity withPublishing)
@@ -86,7 +73,7 @@ public class WorkEntityUpdate : WorkUnitBase<IAppWorkCtxWithDb>
             withPublishing.PlaceDraftInBranch = publishing.ShouldBranchDrafts;
         }
 
-        _workEntSave.New(AppWorkCtx).Save(saveEnt, saveOptions);
+        workEntSave.New(AppWorkCtx).Save(saveEnt, saveOptions);
         return l.ReturnTrue("ok");
     }
 
@@ -98,6 +85,6 @@ public class WorkEntityUpdate : WorkUnitBase<IAppWorkCtxWithDb>
         if (values == null || !values.Any())
             return l.ReturnNull("nothing to save");
 
-        return l.Return(_builder.Entity.Create(appId: AppWorkCtx.AppId, contentType: orig.Type, attributes: _builder.Attribute.Create(values)), "ok");
+        return l.Return(builder.Entity.Create(appId: AppWorkCtx.AppId, contentType: orig.Type, attributes: builder.Attribute.Create(values)), "ok");
     }
 }

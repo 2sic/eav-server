@@ -27,13 +27,13 @@ namespace ToSic.Eav.DataSources.Sys;
     DynamicOut = false,
     Audience = Audience.Advanced,
     ConfigurationType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
-    NameIds = new []
-    {
+    NameIds =
+    [
         "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
         // not sure if this was ever used...just added it for safety for now
         // can probably remove again, if we see that all system queries use the correct name
-        "ToSic.Eav.DataSources.Apps, ToSic.Eav.Apps",
-    },
+        "ToSic.Eav.DataSources.Apps, ToSic.Eav.Apps"
+    ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Apps")]
 // ReSharper disable once UnusedMember.Global
 public sealed class Apps: CustomDataSource

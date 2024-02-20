@@ -21,7 +21,7 @@ partial class XmlImportWithFiles
     private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId
     ) => Log.Func($"for {entities?.Count}; type {assignmentObjectTypeId}", () =>
     {
-        if (entities == null) return (new(), "empty");
+        if (entities == null) return ([], "empty");
         var result = entities.Select(e => BuildEntity(e, assignmentObjectTypeId)).ToList();
         return (result, $"found {result.Count}");
     });

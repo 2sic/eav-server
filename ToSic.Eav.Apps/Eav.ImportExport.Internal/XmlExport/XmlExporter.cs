@@ -22,14 +22,14 @@ public abstract class XmlExporter : ServiceBase
 {
 
     #region simple properties
-    protected readonly List<int> ReferencedFileIds = new();
-    protected readonly List<int> ReferencedFolderIds = new();
-    public List<TenantFileItem> ReferencedFiles = new();
+    protected readonly List<int> ReferencedFileIds = [];
+    protected readonly List<int> ReferencedFolderIds = [];
+    public List<TenantFileItem> ReferencedFiles = [];
     private bool _isAppExport;
 
     public string[] AttributeSetNamesOrIds;
     public string[] EntityIDs;
-    public List<Message> Messages = new();
+    public List<Message> Messages = [];
 
     public IAppStateInternal AppState { get; private set; }
 

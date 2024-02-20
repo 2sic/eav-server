@@ -80,7 +80,7 @@ public class MdRecommendations: ServiceBase
         // Not fully worked out yet...
         // TODO #metadata
         var attachedRecommendations = GetTargetsExpectations(targetTypeId, key)
-                                      ?? new List<MetadataRecommendation>();
+                                      ?? [];
 
         // 2.3 Find Content-Types marked with `MetadataFor` this specific target
         // For example Types which are marked to decorate an App
@@ -88,7 +88,7 @@ public class MdRecommendations: ServiceBase
         var initialTypes = typesForTheTarget?
             .Select(set =>
                 new MetadataRecommendation(set.Type, set.Decorator, null, "Self-Declaring", PrioMedium))
-            .ToList() ?? new List<MetadataRecommendation>();
+            .ToList() ?? [];
 
         attachedRecommendations.AddRange(initialTypes);
 
@@ -207,7 +207,7 @@ public class MdRecommendations: ServiceBase
                 var entity = AppState.List.One(guidKey);
                 if (entity == null) return l.ReturnNull("entity not found");
                 var onEntity = GetMetadataExpectedDecorators(entity.Metadata, (int)TargetTypes.Entity, "attached to Entity", PrioMax)
-                               ?? new List<MetadataRecommendation>();
+                               ?? [];
 
                 // Now also ask the content-type for MD related to this
                 var onEntType = GetMetadataExpectedDecorators(entity.Type.Metadata, (int)TargetTypes.Entity, "attached to entity-type", PrioHigh);
@@ -223,7 +223,7 @@ public class MdRecommendations: ServiceBase
                 // todo: maybe improve?
                 return l.ReturnNull("zone or CmsObject not supported");
         }
-        return l.Return(new(), "ok");
+        return l.Return([], "ok");
     }
 
     /// <summary>
@@ -239,7 +239,7 @@ public class MdRecommendations: ServiceBase
         var l = Log.Fn<List<MetadataRecommendation>>();
         var all = md.OfType(MetadataExpectedDecorator.ContentTypeNameId).ToList();
         if (meantFor > 0) all = all.Where(r => meantFor == new MetadataForDecorator(r).TargetType).ToList();
-        if (!all.Any()) return l.Return(new(), "no recommendations");
+        if (!all.Any()) return l.Return([], "no recommendations");
 
         var resultAll = all.SelectMany(rEntity =>
             {
