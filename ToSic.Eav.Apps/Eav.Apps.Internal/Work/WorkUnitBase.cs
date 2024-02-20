@@ -5,7 +5,7 @@
 /// </summary>
 /// <typeparam name="TContext"></typeparam>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class WorkUnitBase<TContext>(string logName) : ServiceBase(logName)
+public abstract class WorkUnitBase<TContext>(string logName, object[] connect = default) : ServiceBase(logName, connect: connect ?? [])
     where TContext : class, IAppWorkCtx
 {
     /// <summary>

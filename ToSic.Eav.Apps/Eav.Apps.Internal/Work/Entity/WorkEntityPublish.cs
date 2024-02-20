@@ -3,23 +3,14 @@
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkEntityPublish : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkEntityPublish(AppsCacheSwitch appsCache)
+    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntPub", connect: [appsCache])
 {
-    private readonly LazySvc<IAppLoaderTools> _appLoaderTools;
-    private readonly AppsCacheSwitch _appsCache;
-
-    public WorkEntityPublish(LazySvc<IAppLoaderTools> appLoaderTools, AppsCacheSwitch appsCache /* Note: Singleton */) : base("AWk.EntPub")
-    {
-        ConnectServices(
-            _appLoaderTools = appLoaderTools,
-            _appsCache = appsCache
-        );
-    }
 
     /// <summary>
     /// Publish a single entity 
     /// </summary>
-    public void Publish(int entityId) => Publish(new[] { entityId });
+    public void Publish(int entityId) => Publish([entityId]);
 
 
     /// <summary>
@@ -35,7 +26,7 @@ public class WorkEntityPublish : WorkUnitBase<IAppWorkCtxWithDb>
             }
             catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
         // Tell the cache to do a partial update
-        _appsCache.Value.Update(AppWorkCtx, entityIds, Log, _appLoaderTools.Value);
+        appsCache.Update(AppWorkCtx, entityIds);
         l.Done();
     }
 
