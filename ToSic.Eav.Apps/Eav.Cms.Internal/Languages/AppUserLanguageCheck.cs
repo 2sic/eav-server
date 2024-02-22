@@ -62,7 +62,7 @@ public class AppUserLanguageCheck: ServiceBase
         // in other cases we get the languages from the app state or from context (http headers)
         var zoneMapper = _zoneMapperLazy.Value;
         var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : _ctx.Site;
-        if (site == null) return (new(), "null site");
+        if (site == null) return ([], "null site");
 
         var languages = zoneMapper.CulturesWithState(site);
 

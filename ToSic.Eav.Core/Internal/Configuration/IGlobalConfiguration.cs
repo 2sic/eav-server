@@ -64,4 +64,10 @@ public interface IGlobalConfiguration: ILogShouldNeverConnect
     /// Used when new app is created.
     /// </summary>
     string AppDataTemplateFolder { get; set; }
+
+    /// <summary>
+    /// The absolute folder where the template of new apps are stored.
+    /// Used when new app is created.
+    /// </summary>
+    string NewAppsTemplateFolder { get; set; }
 }

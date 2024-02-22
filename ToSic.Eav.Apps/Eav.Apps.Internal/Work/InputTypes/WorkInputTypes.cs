@@ -5,22 +5,12 @@ using static ToSic.Eav.Data.InputTypes;
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
+public class WorkInputTypes(
+    LazySvc<IAppStates> appStates,
+    LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy,
+    GenWorkPlus<WorkEntities> workEntities)
+    : WorkUnitBase<IAppWorkCtxPlus>("ApS.InpGet", connect: [appStates, workEntities, appFileSystemLoaderLazy])
 {
-    private readonly GenWorkPlus<WorkEntities> _workEntities;
-    private readonly LazySvc<IAppFileSystemLoader> _appFileSystemLoaderLazy;
-    private readonly LazySvc<IAppStates> _appStates;
-
-    public WorkInputTypes(LazySvc<IAppStates> appStates, LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy, GenWorkPlus<WorkEntities> workEntities) : base("ApS.InpGet")
-    {
-        ConnectServices(
-            _appStates = appStates,
-            _workEntities = workEntities,
-            _appFileSystemLoaderLazy = appFileSystemLoaderLazy
-        );
-    }
-
-
     /// <summary>
     /// Retrieve a list of all input types known to the current system
     /// </summary>
@@ -63,7 +53,7 @@ public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
         LogListOfInputTypes("Combined", inputTypes);
 
         // Merge input types registered in global metadata-app
-        var systemAppCtx = _workEntities.CtxSvc.ContextPlus(Constants.MetaDataAppId);
+        var systemAppCtx = workEntities.CtxSvc.ContextPlus(Constants.MetaDataAppId);
         var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx);
         systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
         LogListOfInputTypes("System", systemAppInputTypes);
@@ -112,7 +102,7 @@ public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
     /// <returns></returns>
     private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus overrideCtx = default)
     {
-        var list = _workEntities.New(overrideCtx ?? AppWorkCtx)
+        var list = workEntities.New(overrideCtx ?? AppWorkCtx)
             .Get(TypeForInputTypeDefinition);
 
         return list
@@ -141,14 +131,14 @@ public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
         var l = Log.Fn<List<InputTypeInfo>>();
         try
         {
-            var appLoader = _appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppState);
+            var appLoader = appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppState);
             var inputTypes = appLoader.InputTypes();
             return l.Return(inputTypes, $"{inputTypes.Count}");
         }
         catch (Exception e)
         {
             l.Ex(e);
-            return l.Return(new(), "error");
+            return l.Return([], "error");
         }
     }
 
@@ -163,7 +153,7 @@ public class WorkInputTypes : WorkUnitBase<IAppWorkCtxPlus>
         var l = Log.Fn<List<InputTypeInfo>>(timer: true);
         if (_presetInpTypeCache != null) return l.Return(_presetInpTypeCache, $"cached {_presetInpTypeCache.Count}");
 
-        var presetApp = _appStates.Value.GetPresetReader();
+        var presetApp = appStates.Value.GetPresetReader();
 
         var types = presetApp.ContentTypes
             .Where(p => p.NameId.StartsWith(FieldTypePrefix)

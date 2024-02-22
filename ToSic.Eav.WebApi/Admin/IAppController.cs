@@ -10,7 +10,7 @@ public interface IAppController<out THttpResponse>
 
     void App(int zoneId, int appId, bool fullDelete = true);
 
-    void App(int zoneId, string name, int? inheritAppId = null);
+    void App(int zoneId, string name, int? inheritAppId = null, int templateId = 0);
 
     List<SiteLanguageDto> Languages(int appId);
 

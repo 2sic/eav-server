@@ -75,19 +75,4 @@ public interface IUser: ILogShouldNeverConnect
     /// </summary>
     bool IsAnonymous { get; }
 
-    #region Removed in v15.03 2023-02-20 - already deprecated in v14.09 and probably never used outside of core code
-
-    ///// <summary>
-    ///// Information if the user has super-user rights. This kind of user can do everything, incl. create apps. 
-    ///// </summary>
-    //[Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
-    //bool IsSuperUser { get; }
-
-    ///// <summary>
-    ///// Information if the user is admin - allowing full content-management. 
-    ///// </summary>
-    //[Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
-    //bool IsAdmin { get; }
-
-    #endregion
 }

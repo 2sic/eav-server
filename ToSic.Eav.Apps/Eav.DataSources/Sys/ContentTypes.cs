@@ -28,13 +28,13 @@ namespace ToSic.Eav.DataSources.Sys;
     Audience = Audience.Advanced,
     DynamicOut = false,
     ConfigurationType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
-    NameIds = new []
-    {
+    NameIds =
+    [
         "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         // not sure if this was ever used...just added it for safety for now
         // can probably remove again, if we see that all system queries use the correct name
-        "ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps",
-    },
+        "ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps"
+    ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
 // ReSharper disable once UnusedMember.Global
 public sealed class ContentTypes: CustomDataSource

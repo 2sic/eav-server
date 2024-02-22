@@ -13,7 +13,7 @@ public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
     public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
     {
         Init(context, app);
-        _items = new() {item};
+        _items = [item];
         return this;
     }
     private List<IEntity> _items;

@@ -7,28 +7,22 @@
 /// </summary>
 /// <typeparam name="TWork"></typeparam>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class GenWorkBasic<TWork>: ServiceBase where TWork : WorkUnitBase<IAppWorkCtx>
+public class GenWorkBasic<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generator<TWork> gen)
+    : ServiceBase("App.WorkUn", connect: [ctxSvc, gen])
+    where TWork : WorkUnitBase<IAppWorkCtx>
 {
-    private readonly LazySvc<AppWorkContextService> _ctxSvc;
-    private readonly Generator<TWork> _gen;
-
-    public GenWorkBasic(LazySvc<AppWorkContextService> ctxSvc, Generator<TWork> gen): base("App.WorkUn")
-    {
-        ConnectServices(_ctxSvc = ctxSvc, _gen = gen);
-    }
-
-    public AppWorkContextService CtxSvc => _ctxSvc.Value;
+    public AppWorkContextService CtxSvc => ctxSvc.Value;
     public TWork NewInternal(IAppWorkCtx ctx)
     {
-        var fresh = _gen.New();
+        var fresh = gen.New();
         fresh._initCtx(ctx);
         return fresh;
     }
 
 
-    public TWork New(IAppState appState) => NewInternal(_ctxSvc.Value.Context(appState));
+    public TWork New(IAppState appState) => NewInternal(ctxSvc.Value.Context(appState));
 
-    public TWork New(int appId) => NewInternal(_ctxSvc.Value.Context(appId));
+    public TWork New(int appId) => NewInternal(ctxSvc.Value.Context(appId));
 
     // These signatures are not used ATM, but might be useful in the future
     //public TWork New(IAppWorkCtx ctx) => NewInternal(ctx);

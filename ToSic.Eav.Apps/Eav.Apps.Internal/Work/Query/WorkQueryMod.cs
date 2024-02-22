@@ -7,40 +7,21 @@ using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
+public class WorkQueryMod(
+    LazySvc<AppCachePurger> systemManagerLazy,
+    LazySvc<QueryManager> queryManager,
+    LazySvc<QueryDefinitionBuilder> queryDefBuilder,
+    GenWorkDb<WorkEntityCreate> entCreate,
+    GenWorkDb<WorkEntityDelete> delete,
+    GenWorkDb<WorkEntityUpdate> entUpdate)
+    : WorkUnitBase<IAppWorkCtx>("AWk.QryMod",
+        connect: [systemManagerLazy, queryManager, queryDefBuilder, delete, entCreate, entUpdate])
 {
-
-    public WorkQueryMod(
-        LazySvc<AppCachePurger> systemManagerLazy,
-        LazySvc<QueryManager> queryManager,
-        LazySvc<QueryDefinitionBuilder> queryDefBuilder,
-        GenWorkDb<WorkEntityCreate> entCreate,
-        GenWorkDb<WorkEntityDelete> entDelete,
-        GenWorkDb<WorkEntityUpdate> entUpdate) : base("AWk.QryMod")
-    {
-        ConnectServices(
-            _systemManagerLazy = systemManagerLazy,
-            _queryManager = queryManager,
-            _queryDefBuilder = queryDefBuilder,
-            _entDelete = entDelete,
-            _entCreate = entCreate,
-            _entUpdate = entUpdate
-        );
-    }
-
-    private readonly GenWorkDb<WorkEntityUpdate> _entUpdate;
-    private readonly GenWorkDb<WorkEntityCreate> _entCreate;
-    private readonly GenWorkDb<WorkEntityDelete> _entDelete;
-    private readonly LazySvc<AppCachePurger> _systemManagerLazy;
-    private readonly LazySvc<QueryManager> _queryManager;
-    private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
-
-
     public bool Delete(int id)
     {
         var l = Log.Fn<bool>($"delete a#{AppWorkCtx.AppId}, id:{id}");
 
-        var entDelete = _entDelete.New(AppWorkCtx.AppState);
+        var entDelete = delete.New(AppWorkCtx.AppState);
 
         var canDeleteResult = entDelete.CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(id);
         if (!canDeleteResult.HasMessages)
@@ -48,8 +29,8 @@ public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
 
 
         // Get the Entity describing the Query and Query Parts (DataSources)
-        var queryEntity = _queryManager.Value.GetQueryEntity(id, AppWorkCtx.AppState);
-        var qDef = _queryDefBuilder.Value.Create(queryEntity, AppWorkCtx.AppId);
+        var queryEntity = queryManager.Value.GetQueryEntity(id, AppWorkCtx.AppState);
+        var qDef = queryDefBuilder.Value.Create(queryEntity, AppWorkCtx.AppId);
 
         var parts = qDef.Parts;
         var mdItems = parts
@@ -64,13 +45,13 @@ public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
         entDelete.Delete(id);
 
         // flush cache
-        _systemManagerLazy.Value.PurgeApp(AppWorkCtx.AppId);
+        systemManagerLazy.Value.PurgeApp(AppWorkCtx.AppId);
 
         return l.ReturnTrue();
     }
 
     private QueryDefinition Get(int queryId)
-        => _queryManager.Value.Get(AppWorkCtx.AppState, queryId);
+        => queryManager.Value.Get(AppWorkCtx.AppState, queryId);
 
     /// <summary>
     /// Update an existing query in this app
@@ -126,11 +107,11 @@ public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
                 dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
 
             if (entityId != null)
-                _entUpdate.New(AppWorkCtx.AppState).UpdateParts(Convert.ToInt32(entityId), dataSource);
+                entUpdate.New(AppWorkCtx.AppState).UpdateParts(Convert.ToInt32(entityId), dataSource);
             // Add new DataSource
             else
             {
-                var newSpecs = _entCreate.New(AppWorkCtx.AppState).Create(QueryConstants.QueryPartTypeName, dataSource,
+                var newSpecs = entCreate.New(AppWorkCtx.AppState).Create(QueryConstants.QueryPartTypeName, dataSource,
                     new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                 newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
             }
@@ -161,7 +142,7 @@ public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
         // Get EntityGuids from the UI (except Out and unsaved)
         newEntityGuids.AddRange(newDataSources);
 
-        var entDelete = _entDelete.New(AppWorkCtx.AppState);
+        var entDelete = delete.New(AppWorkCtx.AppState);
         foreach (var entToDel in existingEntityGuids.Where(guid => !newEntityGuids.Contains(guid)))
             // force: true - force-delete the data-source part even if it still has metadata and stuff referencing it
             entDelete.Delete(entToDel, force: true);
@@ -190,7 +171,7 @@ public class WorkQueryMod : WorkUnitBase<IAppWorkCtx>
         // add to new object...then send to save/update
         values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
         // #ExtractEntitySave
-        _entUpdate.New(AppWorkCtx.AppState).UpdateParts(id, values);
+        entUpdate.New(AppWorkCtx.AppState).UpdateParts(id, values);
         l.Done();
     }
 

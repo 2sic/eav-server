@@ -5,17 +5,16 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Caching;
 
-internal class AppLoaderTools: ServiceBase, IAppLoaderTools
+/// <summary>
+/// Tools for loading Apps from repositories.
+/// It's used by the cache to load apps from the repository.
+///
+/// This level of indirection is necessary, because the cache is a singleton and does not have DI,
+/// so it needs to be handed this object for certain operations.
+/// </summary>
+/// <param name="repoFactory"></param>
+internal class AppLoaderTools(Generator<IRepositoryLoader> repoFactory)
+    : ServiceBase("Eav.LodTls", connect: [repoFactory]), IAppLoaderTools
 {
-
-    public AppLoaderTools(Generator<IRepositoryLoader> repoFactory): base("Eav.LodTls")
-    {
-        ConnectServices(
-            _repoFactory = repoFactory
-        );
-    }
-    private readonly Generator<IRepositoryLoader> _repoFactory;
-
-        
-    public IRepositoryLoader RepositoryLoader(ILog parentLog) => _repoFactory.New().LinkLog(parentLog);
+    public IRepositoryLoader RepositoryLoader(ILog parentLog) => repoFactory.New().LinkLog(parentLog ?? Log);
 }

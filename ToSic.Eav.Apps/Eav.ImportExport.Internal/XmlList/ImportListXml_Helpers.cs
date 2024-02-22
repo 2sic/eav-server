@@ -47,7 +47,7 @@ partial class ImportListXml
     /// <summary>
     /// The entities created from the document. They will be saved to the repository.
     /// </summary>
-    public List<Entity> ImportEntities { get; } = new();
+    public List<Entity> ImportEntities { get; } = [];
 
     private Entity GetImportEntity(Guid entityGuid) => Log.Func(l =>
     {

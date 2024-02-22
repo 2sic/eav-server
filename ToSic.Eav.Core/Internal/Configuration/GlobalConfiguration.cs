@@ -77,6 +77,13 @@ public class GlobalConfiguration : IGlobalConfiguration
         set => _appDataTemplateFolder = CorrectFolderOrErrorIfInvalid(value, nameof(AppDataTemplateFolder));
     }
 
+    /// <inheritdoc />
+    public string NewAppsTemplateFolder
+    {
+        get => _newAppsTemplateFolder ?? Path.Combine(GlobalFolder, Constants.AppDataProtectedFolder, Constants.NewAppsFolder);
+        set => _newAppsTemplateFolder = CorrectFolderOrErrorIfInvalid(value, nameof(NewAppsTemplateFolder));
+    }
+
     private static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) 
         => value?.Backslash().TrimLastSlash() ?? throw new(ErrorMessage(fieldName));
 
@@ -93,4 +100,5 @@ public class GlobalConfiguration : IGlobalConfiguration
     private static string _configFolder;
     private static string _instructionsFolder;
     private static string _appDataTemplateFolder;
+    private static string _newAppsTemplateFolder;
 }

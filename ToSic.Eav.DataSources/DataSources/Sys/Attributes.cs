@@ -86,13 +86,14 @@ public sealed class Attributes: DataSourceBase
 
         // try to load from type, if it exists
         var attributes = types
-            .SelectMany(t => t.Attributes?.Select(a => new
-                             {
-                                 Type = t,
-                                 Attribute = a,
-                                 a.Name,
-                             })
-                             ?? []
+            .SelectMany(t =>
+                t.Attributes?.Select(a => new
+                {
+                    Type = t,
+                    Attribute = a,
+                    a.Name,
+                })
+                ?? []
             )
             .DistinctBy(set => set.Name)
             .OrderBy(at => at.Name)
@@ -101,7 +102,15 @@ public sealed class Attributes: DataSourceBase
 
         // todo: when supporting multiple types, consider adding more info what type they are from
         var list = attributes
-            .Select(at => AsDic(at.Name, at.Attribute.Type, at.Attribute.IsTitle, at.Attribute.SortOrder, false, at.Type.Name))
+            .Select(at => AsDic(
+                    name: at.Name,
+                    type: at.Attribute.Type,
+                    isTitle: at.Attribute.IsTitle,
+                    sortOrder: at.Attribute.SortOrder,
+                    builtIn: false,
+                    contentTypeName: at.Type.Name
+                )
+            )
             .ToList();
 
         // note that often dynamic types will have zero attributes, so the previous command
@@ -111,7 +120,15 @@ public sealed class Attributes: DataSourceBase
             list = TypeNameFallbackToTryToUseInStream == ContentTypeName
                 ? firstEntityInStream?.Attributes
                     .OrderBy(atPair => atPair.Key)
-                    .Select(atPair => AsDic(atPair.Key, atPair.Value.Type, false, 0, false, "dynamic"))
+                    .Select(atPair => AsDic(
+                            name: atPair.Key,
+                            type: atPair.Value.Type,
+                            isTitle: false,
+                            sortOrder: 0,
+                            builtIn: false,
+                            contentTypeName: "dynamic"
+                        )
+                    )
                     .ToList()
                 : null;
 
@@ -130,8 +147,13 @@ public sealed class Attributes: DataSourceBase
         return l.Return(data, $"{data.Count}");
     }
 
-    private static Dictionary<string, object> AsDic(string name, ValueTypes type, bool isTitle, int sortOrder,
-        bool builtIn, string contentTypeName)
+    private static Dictionary<string, object> AsDic(
+        string name,
+        ValueTypes type,
+        bool isTitle,
+        int sortOrder,
+        bool builtIn,
+        string contentTypeName)
         => new()
         {
             [nameof(IAttributeType.Name)] = name,

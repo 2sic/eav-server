@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources.Sys.Types;
+using ToSic.Eav.Plumbing;
 using ToSic.Eav.Services;
 using ToSic.Lib.Helpers;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
@@ -104,14 +105,30 @@ public sealed class QueryInfo : DataSourceBase
             return l.Return(EmptyList, "null");
 
         // check that _query has the stream name
-        if (!query.Out.ContainsKey(StreamName))
+        if (StreamName.IsEmptyOrWs())
+            return l.Return(EmptyList, "Stream Name empty");
+
+        var streamNames = StreamName.CsvToArrayWithoutEmpty();
+        var realStreams = streamNames.Where(query.Out.ContainsKey).ToList();
+
+        if (!realStreams.Any())
             return l.Return(EmptyList, "can't find stream name in query");
 
-        var attribInfo = _attributesGenerator.New(attach: query);
-        if (StreamName != StreamDefaultName)
-            attribInfo.Attach(StreamDefaultName, query, StreamName);
+        var results = realStreams
+            .SelectMany(sName =>
+            {
+                // Prepare Inspection DataSource
+                var attribInfo = _attributesGenerator.New(attach: query);
 
-        var results = attribInfo.List.ToImmutableList();
+                // For non-default streams, it should know about the desired stream
+                // So we're attaching the other stream to the inspection
+                if (sName != StreamDefaultName)
+                    attribInfo.Attach(StreamDefaultName, query, sName);
+
+                return attribInfo.List;
+            })
+            .DistinctBy(e => e.GetBestTitle())
+            .ToImmutableList();
 
         return l.Return(results, $"{results.Count}");
     }

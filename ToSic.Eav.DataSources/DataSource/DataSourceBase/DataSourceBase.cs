@@ -25,7 +25,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
     /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
     [PrivateApi]
-    protected DataSourceBase(MyServices services, string logName) : base(services, logName)
+    protected DataSourceBase(MyServices services, string logName, object[] connect = default) : base(services, logName, connect: connect)
     {
         AutoLoadAllConfigMasks(GetType());
     }

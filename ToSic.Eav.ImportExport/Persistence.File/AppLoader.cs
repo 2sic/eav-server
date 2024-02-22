@@ -35,41 +35,42 @@ internal partial class AppLoader : ServiceBase, IAppLoader
         get
         {
             if (_paths != null) return _paths;
-            var wrapLog = Log.Fn<List<string>>(message: "start building path-list");
+            var l = Log.Fn<List<string>>(message: "start building path-list");
 
             _paths = [];
             // find all RepositoryInfoOfFolder and let them tell us what paths to use
             var types = AssemblyHandling.FindInherited(typeof(FolderBasedRepository), Log).ToList();
-            Log.A($"found {types.Count} Path providers");
+            l.A($"found {types.Count} Path providers");
 
             foreach (var typ in types)
                 try
                 {
-                    Log.A($"adding {typ.FullName}");
+                    l.A($"adding {typ.FullName}");
                     var instance = (FolderBasedRepository) ActivatorUtilities.CreateInstance(_serviceProvider, typ, Array.Empty<object>());
                     var paths = instance.RootPaths;
                     if (paths != null) _paths.AddRange(paths);
                 }
                 catch(Exception e)
                 {
-                    Log.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
-                    Log.Ex(e);
+                    l.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
+                    l.Ex(e);
                 }
-            Log.A(Log.Try(() => string.Join(",", _paths)));
-            return wrapLog.Return(_paths, $"{_paths.Count} paths");
+            l.A(l.Try(() => string.Join(",", _paths)));
+            return l.Return(_paths, $"{_paths.Count} paths");
         }
     }
     private List<string> _paths;
 
 
     internal List<FileSystemLoader> Loaders => _loader ??= Paths
-        .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, null)).ToList();
+        .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, null))
+        .ToList();
     private List<FileSystemLoader> _loader;
 
 
     public IAppStateBuilder LoadFullAppState()
     {
-        var outerWrapLog = Log.Fn<IAppStateBuilder>(timer: true);
+        var outerLog = Log.Fn<IAppStateBuilder>(timer: true);
 
         var builder = _stateBuilder.New().InitForPreset();
         //var appState = builder.AppState;// new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
@@ -117,7 +118,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
             }
         });
 
-        return outerWrapLog.ReturnAsOk(builder);
+        return outerLog.ReturnAsOk(builder);
     }
 
 }

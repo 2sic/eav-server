@@ -246,7 +246,7 @@ public partial class ImportListXml: ServiceBase
                 var langShouldBeReadOnly = valExisting.Languages
                     .FirstOrDefault(lang => lang.Key == valueReferenceLanguage)?.ReadOnly ?? false;
                 var valueLanguages = _builder.Language.GetBestValueLanguages(valueReferenceLanguage, langShouldBeReadOnly)
-                                     ?? new List<ILanguage>();
+                                     ?? [];
                 valueLanguages.Add(new Language(nodeLang, valueReadOnly));
                 // update languages on valExisting
                 var updatedValue2 = _builder.Value.CreateFrom(valExisting, languages: _builder.Language.Merge(valExisting.Languages, valueLanguages));

@@ -1,8 +1,11 @@
 ﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context.Internal;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.Security.Internal;
+using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
@@ -54,22 +57,42 @@ public class EntityPicker : DataSourceBase
     /// Constructs a new EntityTypeFilter
     /// </summary>
     [PrivateApi]
-    public EntityPicker(GenWorkPlus<WorkEntities> workEntities, IUser user, MyServices services) : base(services, "Api.EntPck")
+    public EntityPicker(
+        GenWorkPlus<WorkEntities> workEntities,
+        IContextResolver ctxResolver,
+        Generator<MultiPermissionsApp> appPermissions,
+        Generator<MultiPermissionsTypes> typePermissions,
+        IUser user,
+        MyServices services
+    ) : base(services, "Api.EntPck", connect: [workEntities, appPermissions, typePermissions, ctxResolver])
     {
-        ConnectServices(
-            _workEntities = workEntities
-        );
+        _workEntities = workEntities;
+        _ctxResolver = ctxResolver;
+        _appPermissions = appPermissions;
+        _typePermissions = typePermissions;
         _user = user;
         ProvideOut(GetList);
     }
 
-    #region DynamicOut
+    private readonly GenWorkPlus<WorkEntities> _workEntities;
+    private readonly IContextResolver _ctxResolver;
+    private readonly IUser _user;
+    private readonly Generator<MultiPermissionsApp> _appPermissions;
+    private readonly Generator<MultiPermissionsTypes> _typePermissions;
 
+    #region Dynamic Out
+
+    /// <summary>
+    /// Override Out to provide the Default stream as well as additional streams for each content-type
+    /// </summary>
     public override IReadOnlyDictionary<string, IDataStream> Out => _out.Get(() =>
     {
         // 0. If no names specified, then out is same as base out
-        var typesWithoutDefault = ContentTypes?.Where(ct => !ct.Name.EqualsInsensitive(StreamDefaultName)).ToList();
-        if (TypeNames.IsEmptyOrWs() || ContentTypes.SafeNone()) return base.Out;
+        if (TypeNames.IsEmptyOrWs()) return base.Out;
+        var typesWithoutDefault = ContentTypes?
+            .Where(ct => !ct.Name.EqualsInsensitive(StreamDefaultName))
+            .ToList();
+        if (typesWithoutDefault.SafeNone()) return base.Out;
 
         // 1. Create a new StreamDictionary with the Default
         var outList = new StreamDictionary(this);
@@ -89,57 +112,73 @@ public class EntityPicker : DataSourceBase
 
     private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _out = new();
 
-
     #endregion
-
-    private readonly GenWorkPlus<WorkEntities> _workEntities;
-    private readonly IUser _user;
-
 
     private IEnumerable<IEntity> GetList()
     {
         // Open the log after config-parse, so we have type names
         var l = Log.Fn<IEnumerable<IEntity>>($"get list with type:{TypeNames}");
 
-        var entitiesSvc = WorkEntities;
+        // Get the context - must be pre-set by the caller
+        
+        IContextOfApp context;
+        try
+        {
+            context = _ctxResolver.App();
+        }
+        catch (Exception ex)
+        {
+            l.Ex(ex);
+            return l.Return(Error.Create(title: "No App context", message: "No context found, cannot continue", exception: ex), "no context");
+        }
 
         // Case 1: No Type Names - return all entities in the Content-Scope
         if (TypeNames.IsEmptyOrWs())
         {
+            // App permission checker
+            var permCheckApp = _appPermissions.New().Init(_ctxResolver.App(), this.PureIdentity());
+
+            // First do security check with no-type name
+            if (!permCheckApp.EnsureAll(GrantSets.ReadSomething, out _))
+                return l.ReturnAsError(Error.Create(title: "No permissions on App, get all entities denied"));
+
+            // Check if we provide drafts as well
+            var withDrafts = permCheckApp.EnsureAny(GrantSets.ReadDraft);
+
+            var entitiesSvc = _workEntities.New(this, showDrafts: withDrafts);
             var entities = entitiesSvc.OnlyContent(withConfiguration: _user.IsSystemAdmin).ToList();
             entities = FilterByIds(entities);
             return l.Return(entities, $"no type filter: {entities.Count}");
         }
 
-        // Case 2: We have 1+ Type Names, let's get these
-        //var typeNames = TypeNames
-        //    .Split(',')
-        //    .Select(s => s.Trim())
-        //    .Where(t => t.HasValue())
-        //    .ToList();
-
-        //l.A($"found {typeNames.Count} type names");
-
-        //var appState = entitiesSvc.AppWorkCtx.AppState;
         try
         {
             var types = ContentTypes;
-            //typeNames
-            //    .Select(appState.GetContentType)
-            //    .Where(t => t != null)
-            //    .ToList();
-
             if (types == null) return l.ReturnAsError(Error.Create(title: "TypeList==null, something threw an error there."));
-
             if (!types.Any()) return l.Return(new List<IEntity>(), "no valid types found, empty list");
 
+            // Find all Entities of the specified types
             var result = new List<IEntity>();
             foreach (var type in types)
             {
                 var lType = l.Fn($"Adding all of '{type.Name}'");
-                var ofType = entitiesSvc.AppWorkCtx.Data.List.OfType(type).ToList();
-                result.AddRange(ofType);
-                lType.Done($"{ofType.Count}");
+
+                var permCheckType = _typePermissions.New().Init(context, context.AppState, type.Name);
+
+                if (permCheckType.EnsureAll(GrantSets.ReadSomething, out _))
+                {
+                    var withDrafts = permCheckType.EnsureAny(GrantSets.ReadDraft);
+                    var entitiesSvc = _workEntities.New(this, showDrafts: withDrafts);
+                    var ofType = entitiesSvc.AppWorkCtx.Data.List.OfType(type).ToList();
+                    result.AddRange(ofType);
+                    lType.Done($"{ofType.Count}");
+                }
+                else
+                {
+                    var errorItem = Error.Create(title: $"No permissions for Type {type.Name}");
+                    result.AddRange(errorItem);
+                    lType.Done($"added error for {type.Name}");
+                }
             }
 
             if (result.Any()) result = FilterByIds(result);
@@ -154,9 +193,15 @@ public class EntityPicker : DataSourceBase
 
     }
 
-    private WorkEntities WorkEntities => _workEntitiesReal.Get(() => _workEntities.New(this));
-    private readonly GetOnce<WorkEntities> _workEntitiesReal = new();
+    // TODO: CONTINUE
+    // 1. Get the AppState from elsewhere, not the WorkEntities
+    // 2. Get the ContentTypes to return both the types and a perm checker
+    // 3. ...
+    // CHANGE detection of type names to use the ContentTypes array ?
 
+    /// <summary>
+    /// List of ContentTypes to filter by
+    /// </summary>
     private List<IContentType> ContentTypes => _contentTypes.Get(() =>
     {
         var l = Log.Fn<List<IContentType>>();
@@ -164,17 +209,13 @@ public class EntityPicker : DataSourceBase
 
         try
         {
-            var typeNames = TypeNames.CsvToArrayWithoutEmpty()
-                //.Split(',')
-                //.Select(s => s.Trim())
-                //.Where(t => t.HasValue())
-                .ToList();
+            var typeNames = TypeNames.CsvToArrayWithoutEmpty().ToList();
 
             l.A($"found {typeNames.Count} type names, before verifying if they exist");
 
             if (!typeNames.Any()) return l.Return([]);
 
-            var appState = WorkEntities.AppWorkCtx.AppState;
+            var appState = _ctxResolver.App().AppState;
 
             var types = typeNames
                 .Select(appState.GetContentType)
@@ -195,14 +236,10 @@ public class EntityPicker : DataSourceBase
     private List<IEntity> FilterByIds(List<IEntity> list)
     {
         var l = Log.Fn<List<IEntity>>($"started with {list.Count}");
-        var raw = ItemIds;
-        if (raw.IsEmptyOrWs()) return l.Return(list, "no filter, return all");
+        var rawIds = ItemIds;
+        if (rawIds.IsEmptyOrWs()) return l.Return(list, "no filter, return all");
 
-        var untyped = raw.CsvToArrayWithoutEmpty()
-            //.Split(',')
-            //.Select(s => s.Trim())
-            //.Where(id => id.HasValue())
-            .ToList();
+        var untyped = rawIds.CsvToArrayWithoutEmpty().ToList();
 
         if (!untyped.Any()) return l.Return(list, "empty filter, return all");
 

@@ -9,21 +9,15 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// </summary>
 /// <typeparam name="TWork"></typeparam>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class GenWorkPlus<TWork>: ServiceBase where TWork : WorkUnitBase<IAppWorkCtxPlus>
+public class GenWorkPlus<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generator<TWork> gen)
+    : ServiceBase("App.WorkUn", connect: [ctxSvc, gen])
+    where TWork : WorkUnitBase<IAppWorkCtxPlus>
 {
-    private readonly LazySvc<AppWorkContextService> _ctxSvc;
-    private readonly Generator<TWork> _gen;
-
-    public GenWorkPlus(LazySvc<AppWorkContextService> ctxSvc, Generator<TWork> gen): base("App.WorkUn")
-    {
-        ConnectServices(_ctxSvc = ctxSvc, _gen = gen);
-    }
-
-    public AppWorkContextService CtxSvc => _ctxSvc.Value;
+    public AppWorkContextService CtxSvc => ctxSvc.Value;
 
     private TWork NewInternal(IAppWorkCtxPlus ctx)
     {
-        var fresh = _gen.New();
+        var fresh = gen.New();
         fresh._initCtx(ctx);
         return fresh;
     }
@@ -31,9 +25,9 @@ public class GenWorkPlus<TWork>: ServiceBase where TWork : WorkUnitBase<IAppWork
     public TWork New(IAppWorkCtxPlus ctx) => NewInternal(ctx);
 
     //public TWork New(AppState state, bool? showDrafts = default) => NewInternal(_ctxSvc.Value.ContextPlus(state, showDrafts: showDrafts));
-    public TWork New(IAppStateInternal state, bool? showDrafts = default) => NewInternal(_ctxSvc.Value.ContextPlus(state, showDrafts: showDrafts));
+    public TWork New(IAppStateInternal state, bool? showDrafts = default) => NewInternal(ctxSvc.Value.ContextPlus(state, showDrafts: showDrafts));
 
-    public TWork New(IAppIdentity identity) => NewInternal(_ctxSvc.Value.ContextPlus(identity));
+    public TWork New(IAppIdentity identity, bool? showDrafts = default) => NewInternal(ctxSvc.Value.ContextPlus(identity, showDrafts: showDrafts));
 
-    public TWork New(int appId, bool? showDrafts = default) => NewInternal(_ctxSvc.Value.ContextPlus(appId, showDrafts: showDrafts));
+    public TWork New(int appId, bool? showDrafts = default) => NewInternal(ctxSvc.Value.ContextPlus(appId, showDrafts: showDrafts));
 }
