@@ -7,19 +7,13 @@ namespace ToSic.Eav.DataSource.Streams.Internal;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class ConnectionStream: IDataStream, IWrapper<IDataStream>
+internal class ConnectionStream(
+    LazySvc<IDataSourceCacheService> cache,
+    DataSourceConnection connection,
+    DataSourceErrorHelper errorHandler = null)
+    : IDataStream, IWrapper<IDataStream>
 {
-
-    public ConnectionStream(LazySvc<IDataSourceCacheService> cache, DataSourceConnection connection, DataSourceErrorHelper errorHandler = null)
-    {
-        _cache = cache;
-        Connection = connection;
-        _errorHandler = errorHandler;
-    }
-
-    private readonly LazySvc<IDataSourceCacheService> _cache;
-    public DataSourceConnection Connection;
-    private readonly DataSourceErrorHelper _errorHandler;
+    public DataSourceConnection Connection = connection;
 
     private IDataStream LoadStream()
     {
@@ -52,8 +46,8 @@ internal class ConnectionStream: IDataStream, IWrapper<IDataStream>
 
     private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
     {
-        var errors = _errorHandler.Create(title: title, message: message);
-        return new DataStream(_cache, intendedSource, "ConnectionStreamError", () => errors);
+        var errors = errorHandler.Create(title: title, message: message);
+        return new DataStream(cache, intendedSource, "ConnectionStreamError", () => errors);
     }
 
     public IDataStream GetContents() => InnerStream;
@@ -63,11 +57,7 @@ internal class ConnectionStream: IDataStream, IWrapper<IDataStream>
 
     #region Simple properties linked to the underlying Stream
 
-    public bool AutoCaching
-    {
-        get => InnerStream.AutoCaching;
-        //set => InnerStream.AutoCaching = value;
-    }
+    public bool AutoCaching => InnerStream.AutoCaching;
 
     public int CacheDurationInSeconds
     {
@@ -80,8 +70,6 @@ internal class ConnectionStream: IDataStream, IWrapper<IDataStream>
         get => InnerStream.CacheRefreshOnSourceRefresh;
         set => InnerStream.CacheRefreshOnSourceRefresh = value;
     }
-
-    //public void PurgeList(bool cascade = false) => InnerStream.PurgeList(cascade);
 
     public IEnumerator<IEntity> GetEnumerator() => InnerStream.GetEnumerator();
 
@@ -100,4 +88,6 @@ internal class ConnectionStream: IDataStream, IWrapper<IDataStream>
     #endregion
 
     public IDataSourceLink Link => InnerStream.Link;
+
+    IDataSource ICanBeDataSource.DataSource => Source;
 }

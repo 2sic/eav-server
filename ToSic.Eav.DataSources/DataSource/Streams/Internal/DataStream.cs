@@ -201,4 +201,6 @@ public class DataStream : IDataStream // , IHasLog
 
     public IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: Source, stream: this, outName: Name));
     private readonly GetOnce<IDataSourceLink> _link = new();
+
+    IDataSource ICanBeDataSource.DataSource => Source;
 }
