@@ -71,7 +71,13 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         MetadataFor = new() { Serialize = true };
         Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
         WithEditInfos = true;
+        LinksWithBothValues = true;
     }
+
+    /// <summary>
+    /// WIP 17.02+ - should show link as file:42|https://...
+    /// </summary>
+    private bool LinksWithBothValues { get; set; }
 
     #endregion
 
@@ -130,19 +136,24 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         var entityValues = attributes
             .ToEavLight(attribute => attribute.Name, attribute =>
             {
-                var value = entity.GetBestValue(attribute.Name, Languages);
+                var rawValue = entity.GetBestValue(attribute.Name, Languages);
 
-                // Special Case 1: Hyperlink Field which must be resolved
-                if (attribute.Type == ValueTypes.Hyperlink && value is string stringValue &&
-                    ValueConverterBase.CouldBeReference(stringValue))
-                    return Services.ValueConverter.ToValue(stringValue, entity.EntityGuid);
-
-                // Special Case 2: Entity-List
-                if (attribute.Type == ValueTypes.Entity && value is IEnumerable<IEntity> entities)
-                    return serRels.Serialize == true ? CreateListOrCsvOfSubEntities(entities, serRels) : null;
+                return attribute.Type switch
+                {
+                    // Special Case 1: Hyperlink Field which must be resolved
+                    ValueTypes.Hyperlink when rawValue is string stringValue &&
+                                              ValueConverterBase.CouldBeReference(stringValue)
+                        => (LinksWithBothValues ? stringValue + "|" : "" ) // Optionally prefix with original value, but only in admin-mode new 17.02+
+                           + Services.ValueConverter.ToValue(stringValue, entity.EntityGuid),
+                    // Special Case 2: Entity-List
+                    ValueTypes.Entity when rawValue is IEnumerable<IEntity> entities
+                        => serRels.Serialize == true
+                            ? CreateListOrCsvOfSubEntities(entities, serRels)
+                            : null,
+                    _ => rawValue
+                };
 
                 // Default: Normal Value
-                return value;
             });
 
         // todo: verify what happens with null-values on the relationships, maybe we should filter them out again?

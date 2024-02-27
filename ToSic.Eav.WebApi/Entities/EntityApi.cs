@@ -11,41 +11,22 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.WebApi;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EntityApi: ServiceBase
+public class EntityApi(
+    AppWorkContextService appWorkCtxSvc,
+    GenWorkPlus<WorkEntities> workEntities,
+    GenWorkDb<WorkEntityDelete> entDelete,
+    Generator<IConvertToEavLight> entitiesToDicLazy,
+    EntityBuilder entityBuilder,
+    Generator<MultiPermissionsTypes> multiPermissionsTypes)
+    : ServiceBase("Api.Entity",
+        connect: [appWorkCtxSvc, workEntities, entDelete, entitiesToDicLazy.SetInit(etd => etd.WithGuid = true), entityBuilder, multiPermissionsTypes])
 {
 
     #region DI Constructor & Init
 
-    public EntityApi(
-        AppWorkContextService appWorkCtxSvc,
-        GenWorkPlus<WorkEntities> workEntities,
-        GenWorkDb<WorkEntityDelete> entDelete,
-        LazySvc<IConvertToEavLight> entitiesToDicLazy, 
-        EntityBuilder entityBuilder, 
-        Generator<MultiPermissionsTypes> multiPermissionsTypes) : base("Api.Entity")
-    {
-        ConnectServices(
-            _appWorkCtxSvc = appWorkCtxSvc,
-            _workEntities = workEntities,
-            _entDelete = entDelete,
-            _entitiesToDicLazy = entitiesToDicLazy,
-            _entityBuilder = entityBuilder,
-            _multiPermissionsTypes = multiPermissionsTypes
-        );
-    }
-
-    private readonly AppWorkContextService _appWorkCtxSvc;
-    private readonly GenWorkPlus<WorkEntities> _workEntities;
-    private readonly GenWorkDb<WorkEntityDelete> _entDelete;
-
-    private readonly LazySvc<IConvertToEavLight> _entitiesToDicLazy;
-    private readonly EntityBuilder _entityBuilder;
-    private readonly Generator<MultiPermissionsTypes> _multiPermissionsTypes;
-
-
     public EntityApi Init(int appId, bool? showDrafts = default)
     {
-        _appWorkCtxPlus = _appWorkCtxSvc.ContextPlus(appId, showDrafts);
+        _appWorkCtxPlus = appWorkCtxSvc.ContextPlus(appId, showDrafts);
         return this;
     }
 
@@ -53,36 +34,17 @@ public class EntityApi: ServiceBase
 
     #endregion
 
-    #region Lazy Helpers
-
-    /// <summary>
-    /// The serializer, so it can be configured from outside if necessary
-    /// </summary>
-    private IConvertToEavLight EntityToDic
-    {
-        get
-        {
-            if (_entToDic != null) return _entToDic;
-            _entToDic = _entitiesToDicLazy.Value;
-            _entToDic.WithGuid = true;
-            return _entToDic;
-        }
-    }
-    private IConvertToEavLight _entToDic;
-
-    #endregion
-
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
     public IEnumerable<IDictionary<string, object>> GetEntities(string contentType)
-        => EntityToDic.Convert(_workEntities.New(_appWorkCtxPlus).Get(contentType));
+        => entitiesToDicLazy.New().Convert(workEntities.New(_appWorkCtxPlus).Get(contentType));
 
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
     public IEnumerable<IDictionary<string, object>> GetEntities(IAppStateInternal appState, string contentType, bool showDrafts) 
-        => EntityToDic.Convert(_workEntities.New(appState, showDrafts).Get(contentType));
+        => entitiesToDicLazy.New().Convert(workEntities.New(appState, showDrafts).Get(contentType));
 
     public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
     {
@@ -114,7 +76,7 @@ public class EntityApi: ServiceBase
                 ? bundle.Entity.EntityGuid
                 : Guid.NewGuid();
             if (hasEntity && !useEntityGuid)
-                bundle.Entity = _entityBuilder.CreateFrom(bundle.Entity, guid: bundle.Header.Guid);
+                bundle.Entity = entityBuilder.CreateFrom(bundle.Entity, guid: bundle.Header.Guid);
             //bundle.Entity = _entityBuilder.ResetIdentifiers(bundle.Entity, newGuid: bundle.Header.Guid);
             //(bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
         }
@@ -142,7 +104,7 @@ public class EntityApi: ServiceBase
         if (!p.DuplicateEntity.HasValue) return found;
 
         // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct
-        var copy = _entityBuilder.CreateFrom(found, id: 0, guid: Guid.Empty);
+        var copy = entityBuilder.CreateFrom(found, id: 0, guid: Guid.Empty);
         return copy;
     }
 
@@ -157,7 +119,7 @@ public class EntityApi: ServiceBase
     /// <exception cref="ArgumentNullException">Entity does not exist</exception>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
     public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null)
-        => _entDelete.New(_appWorkCtxPlus.AppState).Delete(id, contentType, force, false, parentId, parentField);
+        => entDelete.New(_appWorkCtxPlus.AppState).Delete(id, contentType, force, false, parentId, parentField);
 
     /// <summary>
     /// Delete the entity specified by GUID.
@@ -170,7 +132,7 @@ public class EntityApi: ServiceBase
     /// <exception cref="ArgumentNullException">Entity does not exist</exception>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
     public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string parentField = null) 
-        => Delete(contentType, _workEntities.New(_appWorkCtxPlus.AppState).Get(entityGuid).EntityId, force, parentId, parentField);
+        => Delete(contentType, workEntities.New(_appWorkCtxPlus.AppState).Get(entityGuid).EntityId, force, parentId, parentField);
 
 
     /// <summary>
@@ -197,7 +159,7 @@ public class EntityApi: ServiceBase
     // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
     public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants)
     {
-        var permCheck = _multiPermissionsTypes.New().Init(context, app, contentType);
+        var permCheck = multiPermissionsTypes.New().Init(context, app, contentType);
         if (!permCheck.EnsureAll(requiredGrants, out var error))
             throw HttpException.PermissionDenied(error);
         return Init(app.AppId);
@@ -207,7 +169,7 @@ public class EntityApi: ServiceBase
     {
         var l = Log.Fn<List<Dictionary<string, object>>>(timer: true);
 
-        var ofType = _workEntities.New(_appWorkCtxPlus)
+        var ofType = workEntities.New(_appWorkCtxPlus)
             .Get(contentType)
             .ToList();
 
@@ -218,8 +180,9 @@ public class EntityApi: ServiceBase
             : ofType;
 
         // Convert all to dictionary
-        EntityToDic.ConfigureForAdminUse();
-        var list = EntityToDic.Convert(afterAncestorFilter).ToList();
+        var entityToDic = entitiesToDicLazy.New();
+        ((ConvertToEavLight)entityToDic).ConfigureForAdminUse();
+        var list = entityToDic.Convert(afterAncestorFilter).ToList();
 
         // Truncate all values to 50 chars
         var result = Log.Func(null, message: "truncate dictionary", timer: true,
