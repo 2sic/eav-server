@@ -38,6 +38,14 @@ public static class AnonymousTypesExtensions
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IDictionary<string, object> ObjectToDictionary(this object a, bool mutable = false, bool caseInsensitive = false)
     {
+        // edge case for object that is 'string'
+        // prevent exception "Parameter count mismatch" in x.GetValue(a, null) for object that is 'string'
+        if (a is string) 
+        {
+            var d = new Dictionary<string, object>(caseInsensitive ? InvariantCultureIgnoreCase : null) { { "Value", a } };
+            return (mutable) ? d : d.ToImmutableDictionary(caseInsensitive ? InvariantCultureIgnoreCase : null);
+        }
+        
         var props = a.GetType().GetProperties();
         if (mutable)
             return caseInsensitive
