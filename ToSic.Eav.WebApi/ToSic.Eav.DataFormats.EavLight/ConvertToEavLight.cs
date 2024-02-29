@@ -129,12 +129,14 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         var attachedRules = entity.GetDecorator<EntitySerializationDecorator>();
         var rules = new EntitySerializationDecorator(
             attachedRules,
-            // Important: don't force set title here, as it's a special case which doesn't just prefer it, but also changes the behavior replace/add
-            //serializeTitle: selectConfig.ForceAddTitle,
             serializeId: selectConfig.AddId,
             serializeGuid: selectConfig.AddGuid ?? WithGuid,
             serializeModified: selectConfig.AddModified,
-            serializeCreated: selectConfig.AddCreated
+            serializeCreated: selectConfig.AddCreated,
+            // Important: don't force set title here, as it's a special case which doesn't just prefer it, but also changes the behavior replace/add
+            //serializeTitle: selectConfig.ForceAddTitle,
+            customTitleName: selectConfig.CustomTitleFieldName
+            // filterFields: selectConfig.SelectFields
         );
 
         // Figure out how to serialize relationships
@@ -211,8 +213,9 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         // Include title field, if there is not already one in the dictionary
         // - If forced, always set/override
         // - if the rules say to include (or no rules), only replace if not already set
-        if (selectConfig.ForceAddTitle || ((rules.SerializeTitle ?? true) && !entityValues.ContainsKey(Attributes.TitleNiceName)))
-            entityValues[Attributes.TitleNiceName] = entity.GetBestTitle(Languages);
+        var titleFieldName = rules.CustomTitleName ?? Attributes.TitleNiceName;
+        if (selectConfig.ForceAddTitle || ((rules.SerializeTitle ?? true) && !entityValues.ContainsKey(titleFieldName)))
+            entityValues[titleFieldName] = entity.GetBestTitle(Languages);
 
         AddDateInformation(entity: entity, entityValues: entityValues, rules: rules);
 

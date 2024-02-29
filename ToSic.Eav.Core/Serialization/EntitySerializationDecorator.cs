@@ -22,6 +22,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         bool? serializeZoneId = null,
         bool? serializeGuid = null,
         bool? serializeTitle = null,
+        string customTitleName = null,
         bool? serializeModified = null,
         bool? serializeCreated = null,
         bool? removeEmptyStringValues = null,
@@ -38,6 +39,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         SerializeZoneId = serializeZoneId ?? original?.SerializeZoneId;
         SerializeGuid = serializeGuid ?? original?.SerializeGuid;
         SerializeTitle = serializeTitle ?? original?.SerializeTitle;
+        CustomTitleName = customTitleName ?? original?.CustomTitleName;
         SerializeModified = serializeModified ?? original?.SerializeModified;
         SerializeCreated = serializeCreated ?? original?.SerializeCreated;
         RemoveEmptyStringValues = removeEmptyStringValues ?? original?.RemoveEmptyStringValues ?? default;
@@ -74,6 +76,8 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// Add standard "Title" property - default is ???.
     /// </summary>
     public bool? SerializeTitle { get; init; } = null;
+
+    public string CustomTitleName { get; init; } = null;
 
     /// <summary>
     /// Include Modified date - default is false.
