@@ -61,7 +61,43 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     private bool WithEditInfos { get; set; }
 
     // WIP v17
-    internal List<string> SelectFields { get; set; }
+    public void AddSelectFields(List<string> fields) => _selectConfiguration = new(fields);
+
+    private SelectSpecs SelectConfiguration => _selectConfiguration ??= new(null);
+    private SelectSpecs _selectConfiguration;
+
+    /// <summary>
+    /// Quick helper to get $select to work properly, and force-replace the title
+    /// Should probably be modified so these aspects are placed in the rules, to reduce edge cases
+    /// </summary>
+    private class SelectSpecs
+    {
+        public SelectSpecs(List<string> selectFields)
+        {
+            if (selectFields == null) return;
+            ApplySelect = selectFields.Any();
+
+            // Force adding the title below, as it's a special case
+            //if (selectFields.Any(sf => sf.EqualsInsensitive(Attributes.TitleNiceName))) 
+            ForceSetTitle = selectFields.Any(sf => sf.EqualsInsensitive(Attributes.TitleNiceName));
+            ForceSetId = selectFields.Any(sf => sf.EqualsInsensitive(Attributes.IdNiceName));
+            ForceSetGuid = selectFields.Any(sf => sf.EqualsInsensitive(Attributes.GuidNiceName));
+            ForceSetModified = selectFields.Any(sf => sf.EqualsInsensitive(Attributes.ModifiedNiceName));
+            ForceSetCreated = selectFields.Any(sf => sf.EqualsInsensitive(Attributes.CreatedNiceName));
+
+            // drop all system fields
+            selectFields = selectFields.Where(sf => Attributes.SystemFields.Keys.Any(key => !key.EqualsInsensitive(sf))).ToList();
+
+            SelectFields = selectFields;
+        }
+        public bool ApplySelect { get; }
+        public List<string> SelectFields { get; }
+        public bool ForceSetTitle { get; }
+        public bool? ForceSetId { get; }
+        public bool? ForceSetGuid { get; }
+        public bool? ForceSetModified { get; }
+        public bool? ForceSetCreated { get; }
+    }
 
     /// <inheritdoc/>
     public void ConfigureForAdminUse()
@@ -117,8 +153,13 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     protected virtual EavLightEntity GetDictionaryFromEntity(IEntity entity)
     {
         // Get serialization rules if some exist - new in 11.13
-        // var rules = entity as IEntitySerialization;
+        // They can be different for each entity, so we must get them from the entity
         var rules = entity.GetDecorator<EntitySerializationDecorator>();
+
+        // Get the configuration for the $select parameter
+        var selectConfig = SelectConfiguration;
+
+        // Figure out how to serialize relationships
         var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, false, true, false, true);
 
         var excludeAttributes = ExcludeAttributesOfType(entity);
@@ -127,11 +168,14 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         // If the value is a relationship, then give those too, but only Title and Id
         var attributes = entity.Attributes
             .Select(d => d.Value)
-            .Where(d => excludeAttributes?.Contains(d.Name) != true);
+            .Where(d => excludeAttributes?.Contains(d.Name) != true)
+            .ToList();
 
         // experimental v17
-        if (SelectFields.SafeAny())
-            attributes = attributes.Where(a => SelectFields.Contains(a.Name));
+        if (selectConfig.ApplySelect)
+            attributes = attributes
+                .Where(a => selectConfig.SelectFields.Contains(a.Name))
+                .ToList();
 
         var entityValues = attributes
             .ToEavLight(attribute => attribute.Name, attribute =>
@@ -158,10 +202,11 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
         // todo: verify what happens with null-values on the relationships, maybe we should filter them out again?
 
-        // New 12.05 - drop null values
+        // New 12.05 - drop null values as specified in the configuration
         if(rules != null) OptimizeRemoveEmptyValues(rules, entityValues);
 
-        AddAllIds(entity, entityValues, rules);
+        // Add Id, Guid, AppId - according to rules
+        AddAllIds(entity, entityValues, rules, withIdOverride: selectConfig.ForceSetId, withGuidFallback: selectConfig.ForceSetGuid ?? WithGuid);
 
         if (WithPublishing)
         {
@@ -183,13 +228,13 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
             AddEditInfo(entity, entityValues);
         }
 
-
         // Include title field, if there is not already one in the dictionary
-        if(rules?.SerializeTitle ?? true)
-            if (!entityValues.ContainsKey(Attributes.TitleNiceName))
-                entityValues.Add(Attributes.TitleNiceName, entity.GetBestTitle(Languages));
+        // - If forced, always set/override
+        // - if the rules say to include (or no rules), only replace if not already set
+        if (selectConfig.ForceSetTitle || ((rules?.SerializeTitle ?? true) && !entityValues.ContainsKey(Attributes.TitleNiceName)))
+            entityValues[Attributes.TitleNiceName] = entity.GetBestTitle(Languages);
                 
-        AddDateInformation(entity, entityValues, rules);
+        AddDateInformation(entity: entity, entityValues: entityValues, rules: rules, withCreaPreference: selectConfig.ForceSetCreated, withModPreference: selectConfig.ForceSetModified);
 
         if (Type.Serialize) entityValues.Add(InternalTypeField, new JsonType(entity, Type.WithDescription));
 
@@ -220,7 +265,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         _excludeAttributesCache[entity.Type] = excludeAttributes;
         return excludeAttributes;
     }
-    private readonly Dictionary<object, List<string>> _excludeAttributesCache = new();
+    private readonly Dictionary<object, List<string>> _excludeAttributesCache = [];
 
     #endregion
 

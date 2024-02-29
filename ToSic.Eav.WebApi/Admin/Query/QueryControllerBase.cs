@@ -207,7 +207,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var converter = Services.EntToDicLazy.Value;
             converter.WithGuid = true;
             converter.MaxItems = top;
-            converter.SelectFields = extraParams.SelectFields;
+            converter.AddSelectFields(extraParams.SelectFields);
             var converted = converter.Convert(partLookup(builtQuery));
             return (converted, "ok");
         });
