@@ -13,8 +13,43 @@ namespace ToSic.Eav.Serialization;
 /// </remarks>
 [PrivateApi("Just fyi, was previously published as internal till v14")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EntitySerializationDecorator: IDecorator<IEntity>, IEntityIdSerialization
+public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSerialization
 {
+    public EntitySerializationDecorator(
+        EntitySerializationDecorator original,
+        bool? serializeId = null,
+        bool? serializeAppId = null,
+        bool? serializeZoneId = null,
+        bool? serializeGuid = null,
+        bool? serializeTitle = null,
+        bool? serializeModified = null,
+        bool? serializeCreated = null,
+        bool? removeEmptyStringValues = null,
+        bool? removeBoolFalseValues = null,
+        bool? removeNullValues = null,
+        bool? removeZeroValues = null,
+        List<string> filterFields = null,
+        MetadataForSerialization serializeMetadataFor = null,
+        ISubEntitySerialization serializeMetadata = null,
+        ISubEntitySerialization serializeRelationships = null): this()
+    {
+        SerializeId = serializeId ?? original?.SerializeId;
+        SerializeAppId = serializeAppId ?? original?.SerializeAppId;
+        SerializeZoneId = serializeZoneId ?? original?.SerializeZoneId;
+        SerializeGuid = serializeGuid ?? original?.SerializeGuid;
+        SerializeTitle = serializeTitle ?? original?.SerializeTitle;
+        SerializeModified = serializeModified ?? original?.SerializeModified;
+        SerializeCreated = serializeCreated ?? original?.SerializeCreated;
+        RemoveEmptyStringValues = removeEmptyStringValues ?? original?.RemoveEmptyStringValues ?? default;
+        RemoveBoolFalseValues = removeBoolFalseValues ?? original?.RemoveBoolFalseValues ?? default;
+        RemoveNullValues = removeNullValues ?? original?.RemoveNullValues ?? default;
+        RemoveZeroValues = removeZeroValues ?? original?.RemoveZeroValues ?? default;
+        FilterFields = filterFields ?? original?.FilterFields;
+        SerializeMetadataFor = serializeMetadataFor ?? original?.SerializeMetadataFor;
+        SerializeMetadata = serializeMetadata ?? original?.SerializeMetadata;
+        SerializeRelationships = serializeRelationships ?? original?.SerializeRelationships;
+    }
+
     /// <summary>
     /// Include ID - if not set, is included.
     /// </summary>
