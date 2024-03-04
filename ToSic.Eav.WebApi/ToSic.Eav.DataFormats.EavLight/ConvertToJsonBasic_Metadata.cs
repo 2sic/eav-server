@@ -9,12 +9,12 @@ partial class ConvertToEavLight
     {
         // if rules.MetadataFor are not set, then respect WithMetadataFor
         // otherwise the rules should be applied, but default to false
-        var itemForRules = MetadataForSerialization.Stabilize(rules?.SerializeMetadataFor, MetadataFor);
+        var itemForRules = MetadataForSerialization.Stabilize(rules.SerializeMetadataFor, MetadataFor);
         if (itemForRules.Serialize /*?? MetadataFor.Serialize*/ ?? false)
             if (entity.MetadataFor.IsMetadata)
                 entityValues.Add(Attributes.JsonKeyMetadataFor, entity.MetadataFor);
-
-        var itemMdRules = SubEntitySerialization.Stabilize(rules?.SerializeMetadata, Metadata);
+        
+        var itemMdRules = SubEntitySerialization.Stabilize(rules.SerializeMetadata, Metadata);
             
         if (itemMdRules.Serialize != true || !entity.Metadata.Any()) return;
 

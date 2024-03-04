@@ -30,12 +30,10 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
         IAppStates appStates,
         IDataSourcesService dataSourceFactory,
         LazySvc<QueryManager> queryManager,
-        Generator<Query> queryGenerator,
         IAppDataConfigProvider dataConfigProvider)
-        : MyServicesBase(connect: [zoneMapper, site, appStates, dataSourceFactory, queryManager, queryGenerator, dataConfigProvider])
+        : MyServicesBase(connect: [zoneMapper, site, appStates, dataSourceFactory, queryManager, dataConfigProvider])
     {
         public IAppDataConfigProvider DataConfigProvider { get; } = dataConfigProvider;
-        public Generator<Query> QueryGenerator { get; } = queryGenerator;
         public LazySvc<QueryManager> QueryManager { get; } = queryManager;
         internal IZoneMapper ZoneMapper { get; } = zoneMapper;
         internal ISite Site { get; } = site;

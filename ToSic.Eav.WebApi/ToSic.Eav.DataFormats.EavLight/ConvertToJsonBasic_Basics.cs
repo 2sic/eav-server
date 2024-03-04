@@ -6,19 +6,17 @@ namespace ToSic.Eav.DataFormats.EavLight;
 partial class ConvertToEavLight
 {
     /// <summary>
-    /// Add Id, Guid and possibly AppId (new v15)
+    /// Add Id, Guid and possibly AppId (new v15).
+    /// New v17: added withIdOverride and withGuidFallback
     /// </summary>
-    /// <param name="entity"></param>
-    /// <param name="entityValues"></param>
-    /// <param name="rules"></param>
-    private void AddAllIds(IEntityLight entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
+    private void AddAllIds(IEntityLight entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules, bool withGuidFallback)
     {
         // Id - on by default
         // ...only if these are not already existing with this name in the entity itself as an internal value
-        if (rules?.SerializeId ?? true) 
+        if (rules.SerializeId /*?? withIdOverride*/ ?? true) 
             AddOrReplaceValue(entityValues, Attributes.IdNiceName, entity.EntityId);
 
-        if (rules?.SerializeAppId ?? false)
+        if (rules.SerializeAppId ?? false)
             AddOrReplaceValue(entityValues, nameof(IAppIdentity.AppId), entity.AppId);
 
         // Note: this doesn't work yet - we would have to lookup the ZoneId in the AppStates
@@ -27,7 +25,9 @@ partial class ConvertToEavLight
 
         // if rules.SerializeGuid are not set, then respect WithGuid
         // otherwise the rules should be applied, but default to false
-        if (rules?.SerializeGuid == null && WithGuid || (rules?.SerializeGuid ?? false))
+        // 2024-02-29 2dm shortened this from below, if no problems, remove old comment 2024-Q3
+        //if (rules?.SerializeGuid == null && WithGuid || (rules?.SerializeGuid ?? false))
+        if (rules.SerializeGuid ?? withGuidFallback)
             AddOrReplaceValue(entityValues, Attributes.GuidNiceName, entity.EntityGuid);
     }
 
@@ -42,12 +42,12 @@ partial class ConvertToEavLight
     private static void AddDateInformation(IEntityLight entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
     {
         // Include modified field, if there is not already one in the dictionary
-        if (rules?.SerializeModified ?? true)
+        if (rules.SerializeModified ?? true)
             if (!entityValues.ContainsKey(Attributes.ModifiedNiceName))
                 entityValues.Add(Attributes.ModifiedNiceName, entity.Modified);
 
         // Include created field, if there is not already one in the dictionary
-        if (rules?.SerializeCreated ?? true)
+        if (rules.SerializeCreated ?? true)
             if (!entityValues.ContainsKey(Attributes.CreatedNiceName))
                 entityValues.Add(Attributes.CreatedNiceName, entity.Created);
     }

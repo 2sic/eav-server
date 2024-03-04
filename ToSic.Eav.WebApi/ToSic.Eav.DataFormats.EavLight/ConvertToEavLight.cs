@@ -61,7 +61,12 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     private bool WithEditInfos { get; set; }
 
     // WIP v17
-    internal List<string> SelectFields { get; set; }
+    public void AddSelectFields(List<string> fields) => _selectConfiguration = new(fields);
+
+    private SelectSpecs SelectConfiguration => _selectConfiguration ??= new(null);
+    private SelectSpecs _selectConfiguration;
+
+
 
     /// <inheritdoc/>
     public void ConfigureForAdminUse()
@@ -71,7 +76,13 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         MetadataFor = new() { Serialize = true };
         Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
         WithEditInfos = true;
+        LinksWithBothValues = true;
     }
+
+    /// <summary>
+    /// WIP 17.02+ - should show link as file:42|https://...
+    /// </summary>
+    private bool LinksWithBothValues { get; set; }
 
     #endregion
 
@@ -110,10 +121,26 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     [PrivateApi]
     protected virtual EavLightEntity GetDictionaryFromEntity(IEntity entity)
     {
+        // Get the configuration for the $select parameter
+        var selectConfig = SelectConfiguration;
+
         // Get serialization rules if some exist - new in 11.13
-        // var rules = entity as IEntitySerialization;
-        var rules = entity.GetDecorator<EntitySerializationDecorator>();
-        var serRels = SubEntitySerialization.Stabilize(rules?.SerializeRelationships, true, false, true, false, true);
+        // They can be different for each entity, so we must get them from the entity
+        var attachedRules = entity.GetDecorator<EntitySerializationDecorator>();
+        var rules = new EntitySerializationDecorator(
+            attachedRules,
+            serializeId: selectConfig.AddId,
+            serializeGuid: selectConfig.AddGuid ?? WithGuid,
+            serializeModified: selectConfig.AddModified,
+            serializeCreated: selectConfig.AddCreated,
+            // Important: don't force set title here, as it's a special case which doesn't just prefer it, but also changes the behavior replace/add
+            //serializeTitle: selectConfig.ForceAddTitle,
+            customTitleName: selectConfig.CustomTitleFieldName
+            // filterFields: selectConfig.SelectFields
+        );
+
+        // Figure out how to serialize relationships
+        var serRels = SubEntitySerialization.Stabilize(rules.SerializeRelationships, true, false, true, false, true);
 
         var excludeAttributes = ExcludeAttributesOfType(entity);
 
@@ -121,36 +148,47 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         // If the value is a relationship, then give those too, but only Title and Id
         var attributes = entity.Attributes
             .Select(d => d.Value)
-            .Where(d => excludeAttributes?.Contains(d.Name) != true);
+            .Where(d => excludeAttributes?.Contains(d.Name) != true)
+            .ToList();
 
         // experimental v17
-        if (SelectFields.SafeAny())
-            attributes = attributes.Where(a => SelectFields.Contains(a.Name));
+        if (selectConfig.ApplySelect)
+            attributes = attributes
+                .Where(a => selectConfig.SelectFields.Contains(a.Name))
+                .ToList();
 
         var entityValues = attributes
             .ToEavLight(attribute => attribute.Name, attribute =>
             {
-                var value = entity.GetBestValue(attribute.Name, Languages);
+                var rawValue = entity.GetBestValue(attribute.Name, Languages);
 
-                // Special Case 1: Hyperlink Field which must be resolved
-                if (attribute.Type == ValueTypes.Hyperlink && value is string stringValue &&
-                    ValueConverterBase.CouldBeReference(stringValue))
-                    return Services.ValueConverter.ToValue(stringValue, entity.EntityGuid);
-
-                // Special Case 2: Entity-List
-                if (attribute.Type == ValueTypes.Entity && value is IEnumerable<IEntity> entities)
-                    return serRels.Serialize == true ? CreateListOrCsvOfSubEntities(entities, serRels) : null;
+                return attribute.Type switch
+                {
+                    // Special Case 1: Hyperlink Field which must be resolved
+                    ValueTypes.Hyperlink when rawValue is string stringValue &&
+                                              ValueConverterBase.CouldBeReference(stringValue)
+                        => (LinksWithBothValues ? stringValue + "|" : "" ) // Optionally prefix with original value, but only in admin-mode new 17.02+
+                           + Services.ValueConverter.ToValue(stringValue, entity.EntityGuid),
+                    // Special Case 2: Entity-List
+                    ValueTypes.Entity when rawValue is IEnumerable<IEntity> entities
+                        => serRels.Serialize == true
+                            ? CreateListOrCsvOfSubEntities(entities, serRels)
+                            : null,
+                    _ => rawValue
+                };
 
                 // Default: Normal Value
-                return value;
             });
 
         // todo: verify what happens with null-values on the relationships, maybe we should filter them out again?
 
-        // New 12.05 - drop null values
-        if(rules != null) OptimizeRemoveEmptyValues(rules, entityValues);
+        // New 12.05 - drop null values as specified in the configuration - use attached rules if they exist
+        // don't use the final rules, as they don't affect these settings as of now
+        if(attachedRules != null)
+            OptimizeRemoveEmptyValues(attachedRules, entityValues);
 
-        AddAllIds(entity, entityValues, rules);
+        // Add Id, Guid, AppId - according to rules
+        AddAllIds(entity, entityValues, rules, withGuidFallback: WithGuid);
 
         if (WithPublishing)
         {
@@ -172,13 +210,14 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
             AddEditInfo(entity, entityValues);
         }
 
-
         // Include title field, if there is not already one in the dictionary
-        if(rules?.SerializeTitle ?? true)
-            if (!entityValues.ContainsKey(Attributes.TitleNiceName))
-                entityValues.Add(Attributes.TitleNiceName, entity.GetBestTitle(Languages));
-                
-        AddDateInformation(entity, entityValues, rules);
+        // - If forced, always set/override
+        // - if the rules say to include (or no rules), only replace if not already set
+        var titleFieldName = rules.CustomTitleName ?? Attributes.TitleNiceName;
+        if (selectConfig.ForceAddTitle || ((rules.SerializeTitle ?? true) && !entityValues.ContainsKey(titleFieldName)))
+            entityValues[titleFieldName] = entity.GetBestTitle(Languages);
+
+        AddDateInformation(entity: entity, entityValues: entityValues, rules: rules);
 
         if (Type.Serialize) entityValues.Add(InternalTypeField, new JsonType(entity, Type.WithDescription));
 
@@ -209,7 +248,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         _excludeAttributesCache[entity.Type] = excludeAttributes;
         return excludeAttributes;
     }
-    private readonly Dictionary<object, List<string>> _excludeAttributesCache = new();
+    private readonly Dictionary<object, List<string>> _excludeAttributesCache = [];
 
     #endregion
 
@@ -279,4 +318,5 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
             Log.Ex(e);
         }
     }
+
 }

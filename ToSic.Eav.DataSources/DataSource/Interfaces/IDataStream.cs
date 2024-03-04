@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Caching;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -10,7 +9,7 @@ namespace ToSic.Eav.DataSource;
 /// A stream can be read from, and it can be attached to upstream data-sources for further processing.
 /// </summary>
 [PublicApi]
-public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLinkable
+public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLinkable, ICanBeDataSource
 {
     /// <summary>
     /// The list of items in this stream.

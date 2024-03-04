@@ -14,15 +14,36 @@ static partial class ObjectExtensions
     /// <param name="obj"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    public static TResult NullOrUse<T, TResult>(this T? obj, Func<T, TResult> func)
+    public static TResult NullOrGetWith<T, TResult>(this T? obj, Func<T, TResult> func)
         where T : class
         where TResult : class
         => obj == null ? null : func(obj);
 
-    public static void UseIfNotNull<T>(this T? obj, Action<T> func)
+    /// <summary>
+    /// If obj is null, return null, otherwise return the result of func(obj)
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public static TResult NullOrGet<T, TResult>(this T? obj, Func<TResult> func)
+        where T : class
+        where TResult : class
+        => obj == null ? null : func();
+
+
+    public static void DoIfNotNull<T>(this T? obj, Action<T> func)
         where T : class
     {
         if (obj == null) return;
         func(obj);
+    }
+
+    public static void DoIfNotNull<T>(this T? obj, Action func)
+        where T : class
+    {
+        if (obj == null) return;
+        func();
     }
 }
