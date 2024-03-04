@@ -4,17 +4,9 @@ using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi;
 
-public class ConvertContentTypeToDto : ServiceBase, IConvert<IContentType, ContentTypeDto>
+public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLight)
+    : ServiceBase("Cnv.TypDto", connect: [convertToEavLight]), IConvert<IContentType, ContentTypeDto>
 {
-    private readonly LazySvc<IConvertToEavLight> _convertToEavLight;
-
-    public ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLight) : base("Cnv.TypDto")
-    {
-        ConnectServices(
-            _convertToEavLight = convertToEavLight
-        );
-    }
-
     public IEnumerable<ContentTypeDto> Convert(IEnumerable<IContentType> list)
     {
         var l = Log.Fn<IEnumerable<ContentTypeDto>>();
@@ -24,37 +16,51 @@ public class ConvertContentTypeToDto : ServiceBase, IConvert<IContentType, Conte
 
     public ContentTypeDto Convert(IContentType item) => Convert(item, -1);
 
-    public ContentTypeDto Convert(IContentType item, int count)
+    public ContentTypeDto Convert(IContentType cType, int count)
     {
-        var l = Log.Fn<ContentTypeDto>($"for json a:{item.AppId}, type:{item.Name}");
-        var details = item.Metadata.DetailsOrNull;
+        var l = Log.Fn<ContentTypeDto>($"for json a:{cType.AppId}, type:{cType.Name}");
+
+        // Note 2024-03-04 2dm - had errors with expired IServiceProvide getting deeper Metadata
+        // This should just make it quiet, but there could be a deeper underlying issue.
+        // Monitor - happened on Content App - but only when accessing scope System.Cms
+        ContentTypeDetails details = null;
+        try
+        {
+            details = cType.Metadata.DetailsOrNull;
+        }
+        catch (Exception ex)
+        {
+            l.E($"Getting details for content type '{cType}'");
+            l.Ex(ex);
+        }
+        l.A("Got past retrieving metadata.");
 
         var nameOverride = details?.Title;
         if (string.IsNullOrEmpty(nameOverride))
-            nameOverride = item.Name;
-        var ser = _convertToEavLight.Value;
+            nameOverride = cType.Name;
+        var ser = convertToEavLight.Value;
 
-        var ancestorDecorator = item.GetDecorator<IAncestor>();
+        var ancestorDecorator = cType.GetDecorator<IAncestor>();
 
         var properties = ser.Convert(details?.Entity);
 
         var jsonReady = new ContentTypeDto
         {
-            Id = item.Id,
-            Name = item.Name,
+            Id = cType.Id,
+            Name = cType.Name,
             Label = nameOverride,
-            StaticName = item.NameId,
-            Scope = item.Scope,
+            StaticName = cType.NameId,
+            Scope = cType.Scope,
             Description = details?.Description,
-            EditInfo = new(item),
+            EditInfo = new(cType),
             UsesSharedDef = ancestorDecorator != null,
             SharedDefId = ancestorDecorator?.Id,
             Items = count,
-            Fields = item.Attributes.Count(),
-            Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(item.Metadata,
+            Fields = cType.Attributes.Count(),
+            Metadata = (ser as ConvertToEavLight)?.CreateListOfSubEntities(cType.Metadata,
                 SubEntitySerialization.AllTrue()),
             Properties = properties,
-            Permissions = new() { Count = item.Metadata.Permissions.Count() },
+            Permissions = new() { Count = cType.Metadata.Permissions.Count() },
         };
         return l.ReturnAsOk(jsonReady);
     }
