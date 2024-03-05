@@ -43,8 +43,14 @@ public class EntityApi(
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
-    public IEnumerable<IDictionary<string, object>> GetEntities(IAppStateInternal appState, string contentType, bool showDrafts) 
-        => entitiesToDicLazy.New().Convert(workEntities.New(appState, showDrafts).Get(contentType));
+    public IEnumerable<IDictionary<string, object>> GetEntities(IAppStateInternal appState, string contentType, bool showDrafts, string oDataSelect)
+    {
+        var list = workEntities.New(appState, showDrafts).Get(contentType);
+        var converter= entitiesToDicLazy.New();
+        if (oDataSelect.HasValue())
+            (converter as ConvertToEavLight)?.DoIfNotNull(c => c.AddSelectFields(oDataSelect.CsvToArrayWithoutEmpty().ToList()));
+        return converter.Convert(list);
+    }
 
     public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
     {
