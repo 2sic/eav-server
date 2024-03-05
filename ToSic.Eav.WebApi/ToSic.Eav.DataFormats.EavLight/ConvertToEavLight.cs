@@ -188,7 +188,8 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         AddMetadataAndFor(entity, entityValues, rules);
 
         // Special edit infos - _Title (old, maybe not needed), Stats, EditInfo for read-only etc.
-        if (WithEditInfos)
+        // 2024-03-05 2dm - basically when the $select is applied, don't add these any more
+        if (rules.FilterFieldsEnabled != true && WithEditInfos)
         {
             // this internal _Title field is probably not used much any more, so there is no rule for it
             // Probably remove at some time in near future, once verified it's not used in the admin-front-end
