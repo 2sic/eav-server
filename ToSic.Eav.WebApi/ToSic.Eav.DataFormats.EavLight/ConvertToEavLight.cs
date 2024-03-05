@@ -64,7 +64,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     // WIP v17
     public void AddSelectFields(List<string> fields) => _presetFilters = FromFieldList(fields, WithGuid, Log);
 
-    private EntitySerializationDecorator PresetFilters => _presetFilters ??= FromFieldList(null, WithGuid, Log);
+    protected EntitySerializationDecorator PresetFilters => _presetFilters ??= FromFieldList(null, WithGuid, Log);
     private EntitySerializationDecorator _presetFilters;
 
     /// <inheritdoc/>
