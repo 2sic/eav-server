@@ -67,8 +67,6 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     private EntitySerializationDecorator PresetFilters => _presetFilters ??= FromFieldList(null, WithGuid);
     private EntitySerializationDecorator _presetFilters;
 
-
-
     /// <inheritdoc/>
     public void ConfigureForAdminUse()
     {

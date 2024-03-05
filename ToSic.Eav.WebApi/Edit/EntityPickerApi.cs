@@ -5,25 +5,9 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.WebApi;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EntityPickerApi : ServiceBase
+public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user)
+    : ServiceBase("Api.EntPck", connect: [cultureResolver, workEntities, user])
 {
-
-    #region DI Constructor
-
-    public EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user) : base("Api.EntPck")
-    {
-        ConnectServices(
-            _cultureResolver = cultureResolver,
-            _workEntities = workEntities,
-            _user = user
-        );
-    }
-    private readonly GenWorkPlus<WorkEntities> _workEntities;
-    private readonly IZoneCultureResolver _cultureResolver;
-    private readonly IUser _user;
-
-    #endregion
-
     /// <summary>
     /// Returns a list of entities, optionally filtered by contentType.
     /// </summary>
@@ -32,7 +16,7 @@ public class EntityPickerApi : ServiceBase
     {
         var l = Log.Fn<List<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
 
-        var appEnts = _workEntities.New(appId, showDrafts: withDrafts);
+        var appEnts = workEntities.New(appId, showDrafts: withDrafts);
         IContentType contentType = null;
         if (!IsNullOrEmpty(contentTypeName))
         {
@@ -54,12 +38,12 @@ public class EntityPickerApi : ServiceBase
         else
         {
             l.A("won't filter by type because it's null");
-            l.A($"Will restrict by scope if user is not system admin: {_user.IsSystemAdmin}");
+            l.A($"Will restrict by scope if user is not system admin: {user.IsSystemAdmin}");
             list = allowFromAllScopes
                 // Get all the data which the current user may see (filtering drafts etc.)
                 ? appEnts.AppWorkCtx.Data.List.ToList()
                 // Get all content only, and maybe configuration
-                : appEnts.OnlyContent(withConfiguration: _user.IsSystemAdmin).ToList(); // only super user should also get Configuration
+                : appEnts.OnlyContent(withConfiguration: user.IsSystemAdmin).ToList(); // only super user should also get Configuration
         }
 
         // optionally filter by IDs
@@ -72,7 +56,7 @@ public class EntityPickerApi : ServiceBase
         else
             l.A("won't filter by IDs");
 
-        var languagePriorities = _cultureResolver.SafeLanguagePriorityCodes();
+        var languagePriorities = cultureResolver.SafeLanguagePriorityCodes();
 
         var entities = list.Select(e => new EntityForPickerDto
             {
