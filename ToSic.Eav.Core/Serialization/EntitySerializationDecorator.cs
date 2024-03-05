@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Logging;
 using static ToSic.Eav.Data.Attributes;
 
 namespace ToSic.Eav.Serialization;
@@ -83,26 +86,31 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// <summary>
     /// Include ID - if not set, is included.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializeId { get; init; }
 
     /// <summary>
     /// Include AppId - not included by default.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializeAppId { get; init; }
 
     /// <summary>
     /// Include ZoneId - not included by default.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializeZoneId { get; init; }
 
     /// <summary>
     /// Include GUID - if not set, is not included.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializeGuid { get; init; }
 
     /// <summary>
     /// Add standard "Title" property - default is ???.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializeTitle { get; init; }
     public const bool DefaultSerializeTitle = true;
 
@@ -111,19 +119,23 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// This is important, because of different ways a "Title" field can be "Title" or something else.
     /// So in rare cases, there is a "Title" field but the title itself is a "Name" or "TitleInternal".
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializeTitleForce { get; init; }
     public const bool DefaultSerializeTitleForce = false;
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string CustomTitleName { get; init; }
 
     /// <summary>
     /// Include Modified date - default is false.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializeModified { get; init; }
 
     /// <summary>
     /// Include Created date - default is false.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SerializeCreated { get; init; }
 
     /// <summary>
@@ -149,20 +161,25 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// <summary>
     /// WIP v17.04 - not in the entity config, but ATM added manually from the $select
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? FilterFieldsEnabled { get; init; }
 
     /// <summary>
     /// WIP v17.04 - Fields to include in the result. Will only take effect if <see cref="FilterFieldsEnabled"/>.
     /// Note: not in the entity config, but ATM added manually from the $select
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string> FilterFields { get; init; }
 
     #region Metadata & Relationships
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public MetadataForSerialization SerializeMetadataFor { get; init; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ISubEntitySerialization SerializeMetadata { get; init; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ISubEntitySerialization SerializeRelationships { get; init; }
 
     #endregion
@@ -174,12 +191,14 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// </summary>
     /// <param name="selectFields">list of fields to select</param>
     /// <param name="withGuid">If it should add the guids by default - usually when the serializer is configured as admin-mode</param>
+    /// <param name="log">log to use in this static function</param>
     /// <returns></returns>
-    public static EntitySerializationDecorator FromFieldList(List<string> selectFields, bool withGuid)
+    public static EntitySerializationDecorator FromFieldList(List<string> selectFields, bool withGuid, ILog log)
     {
+        var l = log.Fn<EntitySerializationDecorator>($"{nameof(selectFields)}: {selectFields}, {nameof(withGuid)}: {withGuid}");
         // If nothing, exit.
         if (selectFields == null || !selectFields.Any())
-            return new() { SerializeGuid = withGuid };
+            return l.Return(new() { SerializeGuid = withGuid }, "no filters");
 
         // Force adding the title as it's a special case
         // First check for "EntityTitle" - as that would mean we should add it, but rename it
@@ -188,6 +207,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         string customTitleFieldName = null;
         if (selectFields.Any(sf => sf.EqualsInsensitive(EntityFieldTitle)))
         {
+            l.A($"Found long title name {EntityFieldTitle}, will process replacement strategy");
             forceAddTitle = true;
             customTitleFieldName = "EntityTitle"; // can't 
             dropNames.Add(EntityFieldTitle);
@@ -210,7 +230,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         // drop all system fields
         var filterFields = selectFields.Where(sf => dropNames.Any(key => !key.EqualsInsensitive(sf))).ToList();
 
-        return new()
+        var result = new EntitySerializationDecorator
         {
             SerializeId = addId,
             SerializeGuid = addGuid,
@@ -221,6 +241,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
             FilterFieldsEnabled = true,
             FilterFields = filterFields
         };
+        return l.Return(result, JsonSerializer.Serialize(result));
     }
 
 

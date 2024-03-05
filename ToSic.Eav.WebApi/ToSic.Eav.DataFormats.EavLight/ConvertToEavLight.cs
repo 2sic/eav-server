@@ -62,9 +62,9 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     private bool WithEditInfos { get; set; }
 
     // WIP v17
-    public void AddSelectFields(List<string> fields) => _presetFilters = FromFieldList(fields, WithGuid);
+    public void AddSelectFields(List<string> fields) => _presetFilters = FromFieldList(fields, WithGuid, Log);
 
-    private EntitySerializationDecorator PresetFilters => _presetFilters ??= FromFieldList(null, WithGuid);
+    private EntitySerializationDecorator PresetFilters => _presetFilters ??= FromFieldList(null, WithGuid, Log);
     private EntitySerializationDecorator _presetFilters;
 
     /// <inheritdoc/>
@@ -120,13 +120,10 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     [PrivateApi]
     protected virtual EavLightEntity GetDictionaryFromEntity(IEntity entity)
     {
-        // Get the configuration for the $select parameter
-        var selectConfig = PresetFilters;
-
         // Get serialization rules if some exist - new in 11.13
         // They can be different for each entity, so we must get them from the entity
         var attachedRules = entity.GetDecorator<EntitySerializationDecorator>();
-        var rules = new EntitySerializationDecorator(selectConfig, attachedRules);
+        var rules = new EntitySerializationDecorator(PresetFilters, attachedRules);
 
         // Figure out how to serialize relationships
         var serRels = SubEntitySerialization.Stabilize(rules.SerializeRelationships, true, false, true, false, true);
