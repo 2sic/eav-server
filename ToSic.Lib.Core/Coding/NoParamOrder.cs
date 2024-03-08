@@ -19,4 +19,5 @@ namespace ToSic.Lib.Coding;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public struct NoParamOrder
 {
+    public const string HelpLink = "https://go.2sxc.org/named-params";
 }
