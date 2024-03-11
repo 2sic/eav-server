@@ -27,6 +27,7 @@ public interface IEditController
     /// <returns></returns>
     Dictionary<Guid, int> Save(EditDto package, int appId, bool partOfPage);
 
+    // #RemoveOldEntityPicker - commented out 2024-03-05, remove ca. 2024-06-01
     ///// <summary>
     ///// Used to be GET or POST Ui/GetAvailableEntities.
     ///// By default it uses GET, but usually the items-array is passed in through a POST.

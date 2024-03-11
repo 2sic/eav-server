@@ -10,9 +10,9 @@ public interface IAppDataController
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
-    IEnumerable<IDictionary<string, object>> GetEntities(string contentType, string appPath = null);
+    IEnumerable<IDictionary<string, object>> GetEntities(string contentType, string appPath = default, string oDataSelect = default);
 
-    IDictionary<string, object> GetOne(string contentType, string id, string appPath = null);
+    IDictionary<string, object> GetOne(string contentType, string id, string appPath = default, string oDataSelect = default);
 
     IDictionary<string, object> CreateOrUpdate(string contentType, Dictionary<string, object> newContentItem, int? id = null, string appPath = null);
 

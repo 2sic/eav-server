@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav;
@@ -57,7 +58,7 @@ public class Parameters
     private static NamedArgumentException CreateException(string methodName, string paramNames, string addMessage = default)
     {
         var intro = $"When using '.{methodName}(...)'\n you must use named parameters\n to ensure your code works in future\n when params might change. ";
-        var see = $"See {HelpLink} ";
+        var see = $"See {NoParamOrder.HelpLink} ";
         var paramsText = paramNames == null ? "" : $". This command expects these parameters: '{paramNames}'.";
         var msg = intro + see + paramsText + addMessage;
         return new(msg, intro, paramNames, paramsText);

@@ -3,7 +3,13 @@
 namespace ToSic.Eav.Apps.Internal.Insights;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class InsightsProvider(string name, NoParamOrder protect = default, string teaser = default, string helpCategory = default): ServiceBase($"Ins.{name}"), IInsightsProvider
+public abstract class InsightsProvider(string name,
+#pragma warning disable CS9113 // Parameter is unread.
+    NoParamOrder protect = default,
+#pragma warning restore CS9113 // Parameter is unread.
+    string teaser = default,
+    string helpCategory = default
+    ): ServiceBase($"Ins.{name}"), IInsightsProvider
 {
     public string HelpCategory => helpCategory;
 

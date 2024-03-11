@@ -6,7 +6,9 @@ namespace ToSic.Eav.DataSource;
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 internal class DataSourceLink(IDataSourceLink original,
-    NoParamOrder noParamOrder = default,
+#pragma warning disable CS9113 // Parameter is unread.
+    NoParamOrder protect = default,
+#pragma warning restore CS9113 // Parameter is unread.
     IDataSource dataSource = default,
     IDataStream stream = default,
     string name = default,

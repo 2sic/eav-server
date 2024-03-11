@@ -11,4 +11,6 @@ namespace ToSic.Lib.Documentation;
 /// <param name="comment">Reason why it's WIP, required</param>
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+#pragma warning disable CS9113 // Parameter is unread.
 public class WorkInProgressApi(string comment) : Attribute;
+#pragma warning restore CS9113 // Parameter is unread.

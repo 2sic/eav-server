@@ -76,5 +76,7 @@ namespace ToSic.Eav.WebApi.Admin
         /// <param name="exportConfiguration"></param>
         /// <returns></returns>
         THttpResponseType JsonBundleExport(int appId, Guid exportConfiguration, int indentation = 0);
+
+        // ScopesDto Scopes(int appId);
     }
 }

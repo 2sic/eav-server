@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ToSic.Eav.Code.Help;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Eav;
 
@@ -16,7 +17,7 @@ public class NamedArgumentException : ArgumentException, IExceptionWithHelp
         ParamsText = paramsText;
 
         var help = new CodeHelp("named-parameters", null,
-            Parameters.HelpLink,
+            NoParamOrder.HelpLink,
             uiMessage: " ",
             detailsHtml: intro.Replace("\n", "<br>") +
                          (paramNames.HasValue() ? $"<br>Param Names: <code>{paramNames}</code>" : ""));

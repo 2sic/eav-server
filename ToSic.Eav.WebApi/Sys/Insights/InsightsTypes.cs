@@ -4,20 +4,11 @@ using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsTypes : InsightsProvider
+internal class InsightsTypes(IAppStates appStates, string name) : InsightsProvider(name)
 {
-    private readonly IAppStates _appStates;
+    protected readonly IAppStates AppStates = appStates;
 
-    public InsightsTypes(IAppStates appStates) : base("Types")
-    {
-        _appStates = appStates;
-    }
-    
-
-    protected InsightsTypes(IAppStates appStates, string name) : base(name)
-    {
-        _appStates = appStates;
-    }
+    public InsightsTypes(IAppStates appStates) : this(appStates, "Types") { }
 
     public override string Title => $"Content Types for App: {AppId}";
 
@@ -28,7 +19,7 @@ internal class InsightsTypes : InsightsProvider
             return l.Return("please add appid to the url parameters");
 
         l.A($"debug app types for {AppId}");
-        var pkg = _appStates.GetReader(AppId.Value);
+        var pkg = AppStates.GetReader(AppId.Value);
 
         var msg = TypesTable(AppId.Value, pkg.ContentTypes, pkg.List);
 

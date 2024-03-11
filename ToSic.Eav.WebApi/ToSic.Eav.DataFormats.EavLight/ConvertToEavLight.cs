@@ -2,6 +2,7 @@
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization;
 using ToSic.Lib.Documentation;
+using static ToSic.Eav.Serialization.EntitySerializationDecorator;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataFormats.EavLight;
@@ -61,12 +62,10 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     private bool WithEditInfos { get; set; }
 
     // WIP v17
-    public void AddSelectFields(List<string> fields) => _selectConfiguration = new(fields);
+    public void AddSelectFields(List<string> fields) => _presetFilters = FromFieldList(fields, WithGuid, Log);
 
-    private SelectSpecs SelectConfiguration => _selectConfiguration ??= new(null);
-    private SelectSpecs _selectConfiguration;
-
-
+    protected EntitySerializationDecorator PresetFilters => _presetFilters ??= FromFieldList(null, WithGuid, Log);
+    private EntitySerializationDecorator _presetFilters;
 
     /// <inheritdoc/>
     public void ConfigureForAdminUse()
@@ -121,23 +120,10 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     [PrivateApi]
     protected virtual EavLightEntity GetDictionaryFromEntity(IEntity entity)
     {
-        // Get the configuration for the $select parameter
-        var selectConfig = SelectConfiguration;
-
         // Get serialization rules if some exist - new in 11.13
         // They can be different for each entity, so we must get them from the entity
         var attachedRules = entity.GetDecorator<EntitySerializationDecorator>();
-        var rules = new EntitySerializationDecorator(
-            attachedRules,
-            serializeId: selectConfig.AddId,
-            serializeGuid: selectConfig.AddGuid ?? WithGuid,
-            serializeModified: selectConfig.AddModified,
-            serializeCreated: selectConfig.AddCreated,
-            // Important: don't force set title here, as it's a special case which doesn't just prefer it, but also changes the behavior replace/add
-            //serializeTitle: selectConfig.ForceAddTitle,
-            customTitleName: selectConfig.CustomTitleFieldName
-            // filterFields: selectConfig.SelectFields
-        );
+        var rules = new EntitySerializationDecorator(PresetFilters, attachedRules);
 
         // Figure out how to serialize relationships
         var serRels = SubEntitySerialization.Stabilize(rules.SerializeRelationships, true, false, true, false, true);
@@ -152,9 +138,9 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
             .ToList();
 
         // experimental v17
-        if (selectConfig.ApplySelect)
+        if (rules.FilterFieldsEnabled == true)
             attributes = attributes
-                .Where(a => selectConfig.SelectFields.Contains(a.Name))
+                .Where(a => rules.FilterFields.Any(ff => ff.EqualsInsensitive(a.Name)))
                 .ToList();
 
         var entityValues = attributes
@@ -199,7 +185,8 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         AddMetadataAndFor(entity, entityValues, rules);
 
         // Special edit infos - _Title (old, maybe not needed), Stats, EditInfo for read-only etc.
-        if (WithEditInfos)
+        // 2024-03-05 2dm - basically when the $select is applied, don't add these any more
+        if (rules.FilterFieldsEnabled != true && WithEditInfos)
         {
             // this internal _Title field is probably not used much any more, so there is no rule for it
             // Probably remove at some time in near future, once verified it's not used in the admin-front-end
@@ -214,7 +201,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         // - If forced, always set/override
         // - if the rules say to include (or no rules), only replace if not already set
         var titleFieldName = rules.CustomTitleName ?? Attributes.TitleNiceName;
-        if (selectConfig.ForceAddTitle || ((rules.SerializeTitle ?? true) && !entityValues.ContainsKey(titleFieldName)))
+        if ((rules.SerializeTitleForce ?? DefaultSerializeTitleForce) || ((rules.SerializeTitle ?? DefaultSerializeTitle) && !entityValues.ContainsKey(titleFieldName)))
             entityValues[titleFieldName] = entity.GetBestTitle(Languages);
 
         AddDateInformation(entity: entity, entityValues: entityValues, rules: rules);

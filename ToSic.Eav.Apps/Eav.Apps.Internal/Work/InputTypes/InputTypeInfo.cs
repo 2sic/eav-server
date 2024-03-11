@@ -151,8 +151,11 @@ public class InputTypeInfo
         try
         {
             var mainType = Type.Split('-')[0];
-            mainType = mainType[0].ToString().ToUpper() + mainType.Substring(1);
-            newDic["@" + mainType] = true;
+            var mainTypeFinal = Enum.GetNames(typeof(ValueTypes))
+                                    .FirstOrDefault(t => t.EqualsInsensitive(mainType))
+                                // fallback to just capitalize first letter, should never happen
+                                ?? mainType[0].ToString().ToUpper() + mainType.Substring(1);
+            newDic["@" + mainTypeFinal] = true;
             newDic["@" + Type] = true;
         }
         catch (Exception ex)

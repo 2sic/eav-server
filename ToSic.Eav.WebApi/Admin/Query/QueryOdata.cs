@@ -4,11 +4,11 @@ namespace ToSic.Eav.WebApi.Admin.Query;
 
 internal class QueryOdata
 {
-    public const string FieldSelect = "$select";
+    
     public static Dictionary<string, string> ODataParams =
         new(StringComparer.InvariantCultureIgnoreCase)
         {
-            [FieldSelect] = $"[QueryString:{FieldSelect}]"
+            [EavWebApiConstants.ODataSelect] = $"[QueryString:{EavWebApiConstants.ODataSelect}]"
         };
 }
 
@@ -18,7 +18,7 @@ internal class QueryODataParams
     {
         if (config == null) return;
         var extraParams = config.Parse(QueryOdata.ODataParams);
-        SelectFields = (extraParams[QueryOdata.FieldSelect]?.CsvToArrayWithoutEmpty() ?? []).ToList();
+        SelectFields = (extraParams[EavWebApiConstants.ODataSelect]?.CsvToArrayWithoutEmpty() ?? []).ToList();
 
     }
     public List<string> SelectFields { get; set; }
