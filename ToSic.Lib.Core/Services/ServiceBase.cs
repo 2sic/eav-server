@@ -32,6 +32,8 @@ public abstract class ServiceBase(string logName) : IHasLog
     /// <inheritdoc />
     [JsonIgnore]
     [IgnoreDataMember]
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public ILog Log { get; } = new Log(logName);
 
     /// <summary>
