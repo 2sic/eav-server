@@ -254,7 +254,6 @@ public class MdRecommendations: ServiceBase
 
                 return config
                     .CsvToArrayWithoutEmpty()
-                    // .Split(',')
                     .Select(name => TypeAsRecommendation(name, debug, priority, delWarning))
                     .Where(x => x != null)
                     .ToList();
