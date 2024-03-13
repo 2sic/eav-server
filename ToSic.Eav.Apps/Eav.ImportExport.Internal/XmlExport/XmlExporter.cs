@@ -74,7 +74,7 @@ public abstract class XmlExporter : ServiceBase
     public virtual XmlExporter Init(int zoneId, int appId, IAppStateInternal appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
     {
         ContextResolver.SetApp(new AppIdentity(zoneId, appId));
-        var ctxOfApp = ContextResolver.App();
+        var ctxOfApp = ContextResolver.AppRequired();
         PostContextInit(ctxOfApp);
         Constructor(zoneId, appRuntime, ctxOfApp.AppState.NameId, appExport, attrSetIds, entityIds);
 
