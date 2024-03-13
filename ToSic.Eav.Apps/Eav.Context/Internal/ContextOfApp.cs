@@ -20,31 +20,21 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// These dependencies are a bit special, because they can be re-used for child context-of...
     /// This is why we gave them a much clearer name, not just the normal "Dependencies"
     /// </summary>
-    public new class MyServices: MyServicesBase<ContextOfSite.MyServices>
+    public new class MyServices(
+        ContextOfSite.MyServices siteServices,
+        IAppStates appStates,
+        LazySvc<IEavFeaturesService> features,
+        LazySvc<AppUserLanguageCheck> langChecks,
+        Generator<IEnvironmentPermission> environmentPermissions,
+        LazySvc<AppDataStackService> settingsStack)
+        : MyServicesBase<ContextOfSite.MyServices>(siteServices,
+            connect: [environmentPermissions, appStates, features, langChecks, settingsStack])
     {
-        public MyServices(
-            ContextOfSite.MyServices siteServices,
-            IAppStates appStates,
-            LazySvc<IEavFeaturesService> features,
-            LazySvc<AppUserLanguageCheck> langChecks,
-            Generator<IEnvironmentPermission> environmentPermissions,
-            LazySvc<AppDataStackService> settingsStack
-        ): base(siteServices)
-        {
-            ConnectServices(
-                EnvironmentPermissions = environmentPermissions,
-                AppStates = appStates,
-                Features = features,
-                LangChecks = langChecks,
-                SettingsStack = settingsStack
-            );
-        }
-
-        public IAppStates AppStates { get; }
-        public LazySvc<IEavFeaturesService> Features { get; }
-        public LazySvc<AppUserLanguageCheck> LangChecks { get; }
-        public LazySvc<AppDataStackService> SettingsStack { get; }
-        internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions;
+        public IAppStates AppStates { get; } = appStates;
+        public LazySvc<IEavFeaturesService> Features { get; } = features;
+        public LazySvc<AppUserLanguageCheck> LangChecks { get; } = langChecks;
+        public LazySvc<AppDataStackService> SettingsStack { get; } = settingsStack;
+        internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions = environmentPermissions;
     }
 
     /// <summary>

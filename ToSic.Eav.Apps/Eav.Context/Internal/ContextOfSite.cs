@@ -12,24 +12,12 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
 {
     #region Constructor / DI
 
-    public class MyServices: MyServicesBase
+    public class MyServices(ISite site, IUser user, Generator<AppPermissionCheck> appPermissionCheck)
+        : MyServicesBase(connect: [site, user, appPermissionCheck])
     {
-        public ISite Site { get; }
-        public IUser User { get; }
-        public Generator<AppPermissionCheck> AppPermissionCheck { get; }
-
-        public MyServices(
-            ISite site,
-            IUser user,
-            Generator<AppPermissionCheck> appPermissionCheck
-        )
-        {
-            ConnectServices(
-                Site = site,
-                User = user,
-                AppPermissionCheck = appPermissionCheck
-            );
-        }
+        public ISite Site { get; } = site;
+        public IUser User { get; } = user;
+        public Generator<AppPermissionCheck> AppPermissionCheck { get; } = appPermissionCheck;
     }
     /// <summary>
     /// Constructor for DI

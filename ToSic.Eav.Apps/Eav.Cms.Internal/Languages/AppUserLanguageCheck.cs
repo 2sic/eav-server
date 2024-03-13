@@ -12,25 +12,14 @@ using ServiceBase = ToSic.Lib.Services.ServiceBase;
 namespace ToSic.Eav.Cms.Internal.Languages;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppUserLanguageCheck: ServiceBase
+public class AppUserLanguageCheck(
+    LazySvc<IZoneMapper> zoneMapperLazy,
+    IContextOfSite ctx,
+    Generator<AppPermissionCheck> checkGenerator,
+    LazySvc<IAppStates> appStatesLazy,
+    LazySvc<IEavFeaturesService> featuresLazy)
+    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, checkGenerator, appStatesLazy, featuresLazy])
 {
-    public AppUserLanguageCheck(LazySvc<IZoneMapper> zoneMapperLazy, IContextOfSite ctx, Generator<AppPermissionCheck> checkGenerator, LazySvc<IAppStates> appStatesLazy,
-        LazySvc<IEavFeaturesService> featuresLazy)
-        : base($"{EavLogs.Eav}.LngChk") =>
-        ConnectServices(
-            _zoneMapperLazy = zoneMapperLazy,
-            _ctx = ctx,
-            _checkGenerator = checkGenerator,
-            _appStatesLazy = appStatesLazy,
-            _featuresLazy = featuresLazy
-        );
-
-    private readonly LazySvc<IZoneMapper> _zoneMapperLazy;
-    private readonly IContextOfSite _ctx;
-    private readonly Generator<AppPermissionCheck> _checkGenerator;
-    private readonly LazySvc<IAppStates> _appStatesLazy;
-    private readonly LazySvc<IEavFeaturesService> _featuresLazy;
-
     /// <summary>
     /// Test if the current user has explicit language editing permissions.
     /// </summary>
@@ -41,7 +30,7 @@ public class AppUserLanguageCheck: ServiceBase
         var l = Log.Fn<bool?>($"{appStateOrNull?.Name}({appStateOrNull?.AppId})");
         // Note: it's important that all cases where we don't detect a forbidden
         // we return null, and DON'T access _ctx.UserMayEdit, as it will recurse to here again
-        if (!_featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
+        if (!featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
             return l.ReturnNull("feat disabled");
 
         // Check if we have any language rules
@@ -49,7 +38,7 @@ public class AppUserLanguageCheck: ServiceBase
         if (languages == null || !languages.Any()) return l.ReturnNull("no config");
 
         // Check rules on current language
-        var currentCode = _ctx.Site.CurrentCultureCode;
+        var currentCode = ctx.Site.CurrentCultureCode;
         var currentLang = languages.FirstOrDefault(lp => lp.Code.Equals(currentCode, InvariantCultureIgnoreCase));
         return l.Return(currentLang?.IsAllowed, $"permission: {currentLang?.IsAllowed}");
     }
@@ -60,15 +49,15 @@ public class AppUserLanguageCheck: ServiceBase
         // app languages are different from languages in global app and because global
         // settings are in primary appid=1, zoneId=1 without portal site we just return empty list for it
         // in other cases we get the languages from the app state or from context (http headers)
-        var zoneMapper = _zoneMapperLazy.Value;
-        var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : _ctx.Site;
+        var zoneMapper = zoneMapperLazy.Value;
+        var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : ctx.Site;
         if (site == null) return ([], "null site");
 
         var languages = zoneMapper.CulturesWithState(site);
 
         // Check if ML-Permissions-Feature is enabled, otherwise don't check detailed permissions
-        var mlFeatureEnabled = _featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage);
-        var allowAllLanguages = !mlFeatureEnabled || _ctx.User.IsSystemAdmin;
+        var mlFeatureEnabled = featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage);
+        var allowAllLanguages = !mlFeatureEnabled || ctx.User.IsSystemAdmin;
 
         if (allowAllLanguages || appStateOrNull == null)
         {
@@ -87,12 +76,12 @@ public class AppUserLanguageCheck: ServiceBase
         {
             l.A("No permissions, and not primary app - will try that");
             //var primaryId = _appStatesLazy.Value.PrimaryAppId(appStateOrNull.ZoneId);
-            var primaryApp = _appStatesLazy.Value.GetPrimaryReader(appStateOrNull.ZoneId, Log); //.Get(primaryId);
+            var primaryApp = appStatesLazy.Value.GetPrimaryReader(appStateOrNull.ZoneId, Log); //.Get(primaryId);
             set = GetLanguagePermissions(primaryApp, languages);
             hasPermissions = set.Any(s => s.Permissions.Any());
         }
 
-        var defaultAllowed = _ctx.User.IsSystemAdmin || !hasPermissions;
+        var defaultAllowed = ctx.User.IsSystemAdmin || !hasPermissions;
         l.A($"HasPermissions: {hasPermissions}, Initial Allowed: {defaultAllowed}");
 
         var newSet = set.Select(s =>
@@ -101,9 +90,9 @@ public class AppUserLanguageCheck: ServiceBase
             var ok = defaultAllowed;
             if (!ok)
             {
-                var pChecker = _checkGenerator.New();
+                var pChecker = checkGenerator.New();
                 var permissions = permissionEntities.Select(p => new Permission(p));
-                pChecker.ForCustom(_ctx, appStateOrNull, permissions);
+                pChecker.ForCustom(ctx, appStateOrNull, permissions);
                 ok = pChecker.PermissionsAllow(GrantSets.WriteSomething);
             }
 

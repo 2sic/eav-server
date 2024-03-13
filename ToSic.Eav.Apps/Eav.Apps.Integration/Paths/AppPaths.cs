@@ -24,20 +24,10 @@ namespace ToSic.Eav.Apps.Integration;
 /// * Future: We should find a way to scope some DI to a module, so it doesn't bleed to others
 ///   But that is a bit difficult, because there are also some services like the IPage which should be shared across modules
 /// </remarks>
-internal class AppPaths: ServiceBase, IAppPathsMicroSvc
+internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config)
+    : ServiceBase($"{EavLogs.Eav}.AppPth", connect: [serverPaths, config]), IAppPathsMicroSvc
 {
     private const bool Debug = true;
-
-    public AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config) : base($"{EavLogs.Eav}.AppPth")
-    {
-        ConnectServices(
-            _serverPaths = serverPaths,
-            _config = config
-        );
-    }
-
-    private readonly LazySvc<IServerPaths> _serverPaths;
-    private readonly LazySvc<IGlobalConfiguration> _config;
 
     /// <summary>
     /// 
@@ -89,19 +79,19 @@ internal class AppPaths: ServiceBase, IAppPathsMicroSvc
             .ToAbsolutePathForwardSlash());
 
     public string PathShared => GetInternal(nameof(PathShared), 
-        () => Combine(_config.Value.SharedAppsFolder, _appState.Folder)
+        () => Combine(config.Value.SharedAppsFolder, _appState.Folder)
             .ToAbsolutePathForwardSlash());
 
     public string PhysicalPath => GetInternal(nameof(PhysicalPath), 
         () => Combine(_site.AppsRootPhysicalFull, _appState.Folder));
 
     public string PhysicalPathShared => GetInternal(nameof(PhysicalPathShared), 
-        () => _serverPaths.Value.FullAppPath(Combine(_config.Value.SharedAppsFolder, _appState.Folder)));
+        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder, _appState.Folder)));
 
     public string RelativePath => GetInternal(nameof(RelativePath), 
         () => Combine(_site.AppsRootPhysical, _appState.Folder).Backslash());
         
     public string RelativePathShared => GetInternal(nameof(RelativePathShared), 
-        () => Combine(_config.Value.SharedAppsFolder, _appState.Folder)
+        () => Combine(config.Value.SharedAppsFolder, _appState.Folder)
             .ToAbsolutePathForwardSlash());
 }

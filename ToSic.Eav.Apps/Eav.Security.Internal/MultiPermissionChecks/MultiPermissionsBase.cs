@@ -9,10 +9,6 @@ public abstract class MultiPermissionsBase<TServices>(TServices services, string
     : ServiceBase<TServices>(services, logName), IMultiPermissionCheck
     where TServices : MyServicesBase
 {
-    #region Constructor / Init stuff
-
-    #endregion
-
     /// <summary>
     /// All the permission checks that will be used
     /// </summary>

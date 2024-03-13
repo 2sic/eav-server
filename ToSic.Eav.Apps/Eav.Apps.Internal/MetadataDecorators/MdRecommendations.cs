@@ -17,16 +17,9 @@ namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 /// </summary>
 /// <remarks>new in v13.02</remarks>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MdRecommendations: ServiceBase
+public class MdRecommendations(LazySvc<MdRequirements> requirements)
+    : ServiceBase($"{AppConstants.LogName}.MdRead", connect: [requirements])
 {
-
-    public MdRecommendations(LazySvc<MdRequirements> requirements): base($"{AppConstants.LogName}.MdRead")
-    {
-        ConnectServices(_requirements = requirements);
-    }
-
-    private readonly LazySvc<MdRequirements> _requirements;
-
     public void Init(IAppDataAndMetadataService appState) => _appState = appState;
 
     private IAppDataAndMetadataService AppState => _appState ?? throw new("Can't use this Read class before setting AppState");
@@ -40,7 +33,7 @@ public class MdRecommendations: ServiceBase
         var remaining = recommendations
             .Select(r =>
             {
-                var (approved, featureId) = _requirements.Value.RequirementMet(r.Type.Metadata);
+                var (approved, featureId) = requirements.Value.RequirementMet(r.Type.Metadata);
                 r.Enabled = approved;
                 if (!approved && !IsNullOrWhiteSpace(featureId))
                     r.MissingFeature = featureId;

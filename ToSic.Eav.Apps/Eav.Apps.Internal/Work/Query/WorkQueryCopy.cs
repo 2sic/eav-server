@@ -18,20 +18,18 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         LazySvc<QueryManager> queryManager,
         LazySvc<DataBuilder> builder,
         LazySvc<JsonSerializer> jsonSerializer,
-        GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod")
+        GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod", connect: [entSave, queryManager, jsonSerializer, builder])
     {
-        ConnectServices(
-            _entSave = entSave,
-            _queryManager = queryManager,
-            Serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState)),
-            _builder = builder
-        );
+        _entSave = entSave;
+        _queryManager = queryManager;
+        _serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState));
+        _builder = builder;
     }
 
     private readonly GenWorkDb<WorkEntitySave> _entSave;
     private readonly LazySvc<DataBuilder> _builder;
     private readonly LazySvc<QueryManager> _queryManager;
-    private LazySvc<JsonSerializer> Serializer;
+    private readonly LazySvc<JsonSerializer> _serializer;
 
     private QueryDefinition Get(int queryId) => _queryManager.Value.Get(AppWorkCtx.AppState, queryId);
 
@@ -105,8 +103,8 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     {
         var l = Log.Fn<IEntity>();
         // todo: probably replace with clone as that should be reliable now...
-        var newSer = Serializer.Value.Serialize(original);
-        var newEnt = Serializer.Value.Deserialize(newSer);
+        var newSer = _serializer.Value.Serialize(original);
+        var newEnt = _serializer.Value.Deserialize(newSer);
 
         newEnt = _builder.Value.Entity.CreateFrom(newEnt, guid: newGuid, id: 0,
             target: newMetadataTarget == null

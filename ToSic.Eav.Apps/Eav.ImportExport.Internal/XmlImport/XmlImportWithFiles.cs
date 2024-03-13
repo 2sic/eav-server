@@ -4,7 +4,6 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.ImportExport.Internal;
@@ -12,44 +11,31 @@ namespace ToSic.Eav.ImportExport.Internal;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles.MyServices>
 {
-    public class MyServices: MyServicesBase
+    public class MyServices(
+        LazySvc<ImportService> importerLazy,
+        LazySvc<DbDataController> dbDataForNewApp,
+        LazySvc<DbDataController> dbDataForAppImport,
+        IImportExportEnvironment importExportEnvironment,
+        ITargetTypes metaTargetTypes,
+        AppCachePurger appCachePurger,
+        IAppStates appStates,
+        LazySvc<XmlToEntity> xmlToEntity,
+        LazySvc<DataBuilder> multiBuilder)
+        : MyServicesBase(connect:
+        [
+            importerLazy, dbDataForNewApp, dbDataForAppImport, importExportEnvironment,
+            metaTargetTypes, appStates, xmlToEntity, appCachePurger, multiBuilder
+        ])
     {
-        public readonly LazySvc<DataBuilder> MultiBuilder;
-        public LazySvc<ContentTypeAttributeBuilder> CtAttribBuilder { get; }
-        internal readonly LazySvc<ImportService> ImporterLazy;
-        internal readonly LazySvc<DbDataController> DbDataForNewApp;
-        internal readonly LazySvc<DbDataController> DbDataForAppImport;
-        internal readonly IImportExportEnvironment Environment;
-        internal readonly ITargetTypes MetaTargetTypes;
-        internal readonly IAppStates AppStates;
-        internal readonly LazySvc<XmlToEntity> XmlToEntity;
-        internal readonly AppCachePurger AppCachePurger;
-
-        public MyServices(
-            LazySvc<ImportService> importerLazy,
-            LazySvc<DbDataController> dbDataForNewApp,
-            LazySvc<DbDataController> dbDataForAppImport,
-            IImportExportEnvironment importExportEnvironment,
-            ITargetTypes metaTargetTypes,
-            AppCachePurger appCachePurger,
-            IAppStates appStates,
-            LazySvc<XmlToEntity> xmlToEntity,
-            LazySvc<ContentTypeAttributeBuilder> ctAttribBuilder,
-            LazySvc<DataBuilder> multiBuilder)
-        {
-            ConnectServices(
-                CtAttribBuilder = ctAttribBuilder,
-                ImporterLazy = importerLazy,
-                DbDataForNewApp = dbDataForNewApp,
-                DbDataForAppImport = dbDataForAppImport,
-                Environment = importExportEnvironment,
-                MetaTargetTypes = metaTargetTypes,
-                AppStates = appStates,
-                XmlToEntity = xmlToEntity,
-                AppCachePurger = appCachePurger,
-                MultiBuilder = multiBuilder
-            );
-        }
+        public readonly LazySvc<DataBuilder> MultiBuilder = multiBuilder;
+        internal readonly LazySvc<ImportService> ImporterLazy = importerLazy;
+        internal readonly LazySvc<DbDataController> DbDataForNewApp = dbDataForNewApp;
+        internal readonly LazySvc<DbDataController> DbDataForAppImport = dbDataForAppImport;
+        internal readonly IImportExportEnvironment Environment = importExportEnvironment;
+        internal readonly ITargetTypes MetaTargetTypes = metaTargetTypes;
+        internal readonly IAppStates AppStates = appStates;
+        internal readonly LazySvc<XmlToEntity> XmlToEntity = xmlToEntity;
+        internal readonly AppCachePurger AppCachePurger = appCachePurger;
     }
 
     private List<DimensionDefinition> _targetDimensions;

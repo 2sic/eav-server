@@ -9,26 +9,15 @@ using static ToSic.Eav.Apps.Internal.MetadataDecorators.RequirementDecorator;
 namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MdRequirements: ServiceBase, IRequirementsService
+public class MdRequirements(
+    LazySvc<ILicenseService> licenseService,
+    LazySvc<IEavFeaturesService> featsService,
+    LazySvc<IPlatformInfo> platInfo,
+    LicenseCatalog licenseCatalog,
+    LazySvc<SysFeaturesService> sysCapSvc)
+    : ServiceBase($"{AppConstants.LogName}.MdReq",
+        connect: [licenseService, featsService, platInfo, licenseCatalog, sysCapSvc]), IRequirementsService
 {
-
-    public MdRequirements(LazySvc<ILicenseService> licenseService, LazySvc<IEavFeaturesService> featsService, LazySvc<IPlatformInfo> platInfo, LicenseCatalog licenseCatalog, LazySvc<SysFeaturesService> sysCapSvc)
-        : base($"{AppConstants.LogName}.MdReq")
-    {
-        ConnectServices(
-            _licenseService = licenseService,
-            _featsService = featsService,
-            _platInfo = platInfo,
-            _licenseCatalog = licenseCatalog,
-            _sysCapSvc = sysCapSvc
-        );
-    }
-    private readonly LazySvc<ILicenseService> _licenseService;
-    private readonly LazySvc<IEavFeaturesService> _featsService;
-    private readonly LazySvc<IPlatformInfo> _platInfo;
-    private readonly LicenseCatalog _licenseCatalog;
-    private readonly LazySvc<SysFeaturesService> _sysCapSvc;
-
     public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements)
     {
         var l = Log.Fn<List<RequirementStatus>>();
@@ -126,7 +115,7 @@ public class MdRequirements: ServiceBase, IRequirementsService
         var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {platform}");
         if (platform.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. platform");
 
-        var enabled = _platInfo.Value.Name.EqualsInsensitive(platform);
+        var enabled = platInfo.Value.Name.EqualsInsensitive(platform);
         return l.Return((enabled, Aspect.Custom(platform, Guid.Empty, platform)), $"enabled: {enabled}");
     }
 
@@ -138,8 +127,8 @@ public class MdRequirements: ServiceBase, IRequirementsService
         var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {feat}");
         if (feat.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. feature");
 
-        var enabled = _featsService.Value.IsEnabled(feat);
-        var status = _featsService.Value.Get(feat);
+        var enabled = featsService.Value.IsEnabled(feat);
+        var status = featsService.Value.Get(feat);
         return l.Return((enabled, status?.Aspect ?? Aspect.None), $"enabled: {enabled}");
     }
 
@@ -151,8 +140,8 @@ public class MdRequirements: ServiceBase, IRequirementsService
         var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {sysCap}");
         if (sysCap.IsEmptyOrWs()) return l.Return((true, Aspect.None), "no req. feature");
 
-        var enabled = _sysCapSvc.Value.IsEnabled(sysCap);
-        var status = _sysCapSvc.Value.GetDef(sysCap);
+        var enabled = sysCapSvc.Value.IsEnabled(sysCap);
+        var status = sysCapSvc.Value.GetDef(sysCap);
         return l.Return((enabled, status ?? Aspect.None), $"enabled: {enabled}");
     }
 
@@ -167,10 +156,10 @@ public class MdRequirements: ServiceBase, IRequirementsService
         Aspect GenAspectFromLicense() => Aspect.Custom(license, Guid.TryParse(license, out var lic) ? lic : Guid.Empty);
 
         // find license
-        var matchingLic = _licenseCatalog.TryGet(license);
+        var matchingLic = licenseCatalog.TryGet(license);
         if (matchingLic == null) return l.Return((false, GenAspectFromLicense()), "unknown license");
 
-        var enabled = _licenseService.Value.IsEnabled(matchingLic);
+        var enabled = licenseService.Value.IsEnabled(matchingLic);
         return l.Return((enabled, GenAspectFromLicense()), $"enabled {enabled}");
     }
 }
