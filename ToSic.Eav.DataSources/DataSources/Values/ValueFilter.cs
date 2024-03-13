@@ -84,29 +84,28 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new ValueFilter
     /// </summary>
     [PrivateApi]
-    public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{LogPrefix}.ValFil")
+    public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{LogPrefix}.ValFil", connect: [valLanguages])
     {
-        ConnectServices(
-            _valueLanguageService = valLanguages
-        );
+        _valueLanguageService = valLanguages;
 
         ProvideOut(GetValueFilterOrFallback);
     }
     private readonly ValueLanguages _valueLanguageService;
 
-    private IImmutableList<IEntity> GetValueFilterOrFallback() => Log.Func(() =>
+    private IImmutableList<IEntity> GetValueFilterOrFallback()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         // todo: maybe do something about languages?
         Configuration.Parse();
 
         // Get the data, then see if anything came back
         var res = GetValueFilter();
         return res.Any()
-            ? (res, "found")
+            ? l.Return(res, "found")
             : In.HasStreamWithItems(StreamFallbackName)
-                ? (In[StreamFallbackName].List.ToImmutableList(), "fallback")
-                : (res, "final");
-    });
+                ? l.Return(In[StreamFallbackName].List.ToImmutableList(), "fallback")
+                : l.Return(res, "final");
+    }
 
 
     private IImmutableList<IEntity> GetValueFilter()
@@ -145,17 +144,8 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
         // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
-        // 2022-03-09 2dm 
         if (!isSpecial) fieldType = firstEntity[fieldName].Type;
-        //var firstValue = firstEntity.Value(fieldName);
 
-
-        // 2021-03-29 2dm changed from checking the type-name to actually checking the type
-        // this was necessary, because entity-lists were LazyEntities and not "Entity"
-        //var netTypeName = firstAtt?.GetType().Name ?? "Null";
-        // very special case - since we're using the .net type and not the Attribute.Type,
-        // then lazy-entities are marked as LazyEntity or similar, and NOT "Entity"
-        //if (netTypeName.Contains(Constants.DataTypeEntity)) netTypeName = Constants.DataTypeEntity;
 
         IImmutableList<IEntity> innerErrors = null;
         var compMaker = new ValueComparison((title, message) => innerErrors = Error.Create(title: title, message: message), Log);
