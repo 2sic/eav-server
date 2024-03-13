@@ -89,5 +89,4 @@ internal class ConnectionStream(
 
     public IDataSourceLink Link => InnerStream.Link;
 
-    IDataSource ICanBeDataSource.DataSource => Source;
 }

@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSource;
 /// Consult the guide to upgrade your custom data sources.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Just FYI for people who need to know more about the internal APIs")]
-public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServices>, IDataSource, IAppIdentitySync, ICanBeDataSource
+public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServices>, IDataSource, IAppIdentitySync
 {
 
     /// <summary>
@@ -101,5 +101,4 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
         ZoneId = appIdentity.ZoneId;
     }
 
-    IDataSource ICanBeDataSource.DataSource => this;
 }

@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSource;
 /// A stream can be read from, and it can be attached to upstream data-sources for further processing.
 /// </summary>
 [PublicApi]
-public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLinkable, ICanBeDataSource
+public interface IDataStream: ICanSelfCache, IEnumerable<IEntity>, IDataSourceLinkable
 {
     /// <summary>
     /// The list of items in this stream.
