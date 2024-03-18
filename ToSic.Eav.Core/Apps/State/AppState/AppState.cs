@@ -16,7 +16,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
 {
 
     [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new MyServicesEmpty(), $"App.St-{id.AppId}")
+    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new(), $"App.St-{id.AppId}", connect: [])
     {
         var l = Log.Fn($"AppState for App {id.AppId}");
         this.LinkLog(parentLog, forceConnect: true);

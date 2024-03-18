@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Internal;
 /// <param name="logName">must be null by default, because of DI</param>
 [PrivateApi("Hide implementation - was PublicApi_Stable_ForUseInYourCode till 16.09")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class EavApp(EavApp.MyServices services, string logName = null) : AppBase<EavApp.MyServices>(services, logName ?? "Eav.App"), IApp
+public abstract partial class EavApp(EavApp.MyServices services, string logName = default, object[] connect = default) : AppBase<EavApp.MyServices>(services, logName ?? "Eav.App", connect: connect), IApp
 {
     #region Constructor / DI
 
@@ -60,9 +60,13 @@ public partial class EavApp(EavApp.MyServices services, string logName = null) :
     [PrivateApi]
     public string AppGuid => NameId;
 
-    protected internal EavApp Init(IAppIdentityPure appIdentity, AppDataConfigSpecs dataSpecs)
+    public EavApp Init(ISite site, IAppIdentityPure appIdentity, AppDataConfigSpecs dataSpecs)
     {
         var l = Log.Fn<EavApp>();
+
+        // 2024-03-18 moved here...
+        if (site != null) Site = site;
+
         // Env / Tenant must be re-checked here
         if (Site == null) throw new("no site/portal received");
             
