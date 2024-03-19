@@ -50,6 +50,7 @@ public static class StartupDataSources
 
         services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();
         services.TryAddTransient<IListCacheSvc, ListCacheSvc>();
+        services.TryAddSingleton<DataSourceListCache>();
 
         services.AddDataSourcesFallback();
 

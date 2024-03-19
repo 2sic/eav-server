@@ -98,6 +98,9 @@ public static class StartUpEavCore
         services.TryAddScoped<CodeInfosInScope>();
         services.TryAddTransient<CodeInfoStats>();
 
+        // v17
+        services.TryAddSingleton<MemoryCacheService>();
+
         return services;
     }
 

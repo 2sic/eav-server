@@ -8,13 +8,8 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
 /// </summary>
 [PrivateApi("this is just fyi")]
-internal class ListCacheSvc: ServiceBase, IListCacheSvc
+internal class ListCacheSvc(DataSourceListCache dataSourceListCache) : ServiceBase("DS.LstCch", connect: [dataSourceListCache]), IListCacheSvc
 {
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    [PrivateApi]
-    public ListCacheSvc() : base("DS.LstCch") { }
 
     #region Get List
 
@@ -72,7 +67,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
     }
 
     /// <inheritdoc />
-    public ListCacheItem Get(string key) => DataSourceListCache.Cache[key] as ListCacheItem;
+    public ListCacheItem Get(string key) => dataSourceListCache.GetStream(key);
 
     /// <inheritdoc />
     public ListCacheItem Get(IDataStream dataStream) => Get(DataSourceListCache.CacheKey(dataStream));
@@ -91,7 +86,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
             ? new() { SlidingExpiration = expiration }
             : new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(duration) };
 
-        DataSourceListCache.Cache.Set(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);
+        dataSourceListCache.Add(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);
         l.Done();
     }
         

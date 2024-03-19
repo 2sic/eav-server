@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.Caching;
+using ToSic.Eav.Caching;
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
 
@@ -8,11 +9,10 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public /* should be internal as soon as insights work with that */ class DataSourceListCache
+public /* should be internal as soon as insights work with that */
+    class DataSourceListCache(MemoryCacheService memoryCacheService)
 {
-    #region Static Caching and Lock Variables
-
-    internal static ObjectCache Cache => MemoryCache.Default;
+    #region Static Lock Variables
 
     public static readonly ConcurrentDictionary<string, object> LoadLocks = new();
 
@@ -25,7 +25,7 @@ public /* should be internal as soon as insights work with that */ class DataSou
     internal const int DefaultDuration = 60 * 60;
 
 
-    #region Static Cache Checks
+    #region Cache Checks
 
     /// <summary>
     /// Returns the cache key for a data stream
@@ -34,17 +34,19 @@ public /* should be internal as soon as insights work with that */ class DataSou
     /// <returns></returns>
     internal static string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey;
 
-    public static bool HasStream(string key) => Cache.Contains(key);
+    public bool HasStream(string key) => memoryCacheService.Contains(key);
 
-    public static bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
-
-    #endregion
-
-    #region Get (static)
-
-
-    public static ListCacheItem GetStream(string key) => Cache[key] as ListCacheItem;
+    public bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
 
     #endregion
 
+    #region Get
+
+    public ListCacheItem GetStream(string key) => memoryCacheService.Get<ListCacheItem>(key);
+
+    #endregion
+
+    #region Add
+    public void Add(string key, object value, CacheItemPolicy policy) => memoryCacheService.Set(key, value, policy);
+    #endregion
 }

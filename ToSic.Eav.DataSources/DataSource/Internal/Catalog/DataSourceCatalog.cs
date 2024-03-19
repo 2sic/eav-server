@@ -1,20 +1,15 @@
-﻿using ToSic.Eav.DataSource.Internal.AppDataSources;
+﻿using ToSic.Eav.Caching;
+using ToSic.Eav.DataSource.Internal.AppDataSources;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
 
 namespace ToSic.Eav.DataSource.Internal.Catalog;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class DataSourceCatalog: ServiceBase
+public partial class DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader, MemoryCacheService memoryCacheService) 
+    : ServiceBase("DS.DsCat", connect: [appDataSourcesLoader, memoryCacheService])
 {
-    private readonly LazySvc<IAppDataSourcesLoader> _appDataSourcesLoader;
-    private IServiceProvider ServiceProvider { get; }
-
-    public DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader) : base("DS.DsCat")
-    {
-        _appDataSourcesLoader = appDataSourcesLoader;
-        ServiceProvider = serviceProvider;
-    }
+    private IServiceProvider ServiceProvider => serviceProvider;
 
     /// <summary>
     /// Create Instance of DataSource to get In- and Out-Streams
