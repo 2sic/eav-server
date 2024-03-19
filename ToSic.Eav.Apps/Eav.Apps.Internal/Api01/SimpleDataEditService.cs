@@ -137,7 +137,7 @@ public partial class SimpleDataEditService(
         var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
 
         // Figure out publishing before converting to IAttribute
-        var publishing = FigureOutPublishing(type, values, existingIsPublished);
+        var publishing = FigureOutPublishingOrNull(type, values, existingIsPublished);
 
         // Prepare attributes to add
         var preparedValues = ConvertRelationsToNullArray(type, values);

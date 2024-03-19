@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Internal.Api01;
 partial class SimpleDataEditService
 {
 
-    private EntitySavePublishing? FigureOutPublishing(IContentType contentType, IDictionary<string, object> values, bool? existingIsPublished)
+    private EntitySavePublishing FigureOutPublishingOrNull(IContentType contentType, IDictionary<string, object> values, bool? existingIsPublished)
     {
         var l = Log.Fn<EntitySavePublishing?>($"..., ..., attributes: {values?.Count}");
         // (bool ShouldPublish, bool DraftShouldBranch, EntitySavePublishing Publishing)? publishAndBranch = null;
