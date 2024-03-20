@@ -59,8 +59,9 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 
     public T GetOrBuild<T>(string key, Func<T> buildFunc, CacheItemPolicy policy)
     {
-        if (!TryGetValue<T>(key, out var value))
-            _cache.Add(key, buildFunc(), policy);
+        if (TryGetValue<T>(key, out var value)) return value;
+        value = buildFunc();
+        _cache.Add(key, value, policy);
         return value;
     }
 
