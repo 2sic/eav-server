@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Runtime.Caching;
 using ToSic.Eav.Caching;
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
@@ -9,10 +8,10 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public /* should be internal as soon as insights work with that */
-    class DataSourceListCache(MemoryCacheService memoryCacheService)
+public /* should be internal as soon as insights work with that */ class DataSourceListCache
 {
-    #region Static Lock Variables
+
+    #region Static Caching and Lock Variables
 
     public static readonly ConcurrentDictionary<string, object> LoadLocks = new();
 
@@ -25,7 +24,7 @@ public /* should be internal as soon as insights work with that */
     internal const int DefaultDuration = 60 * 60;
 
 
-    #region Cache Checks
+    #region Static Cache Checks
 
     /// <summary>
     /// Returns the cache key for a data stream
@@ -34,19 +33,17 @@ public /* should be internal as soon as insights work with that */
     /// <returns></returns>
     internal static string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey;
 
-    public bool HasStream(string key) => memoryCacheService.Contains(key);
+    public static bool HasStream(string key) => MemoryCacheService.Contains(key);
 
-    public bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
-
-    #endregion
-
-    #region Get
-
-    public ListCacheItem GetStream(string key) => memoryCacheService.Get<ListCacheItem>(key);
+    public static bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
 
     #endregion
 
-    #region Add
-    public void Add(string key, object value, CacheItemPolicy policy) => memoryCacheService.Set(key, value, policy);
+    #region Get (static)
+
+
+    public static ListCacheItem GetStream(string key) => MemoryCacheService.Get(key) as ListCacheItem;
+
     #endregion
+
 }

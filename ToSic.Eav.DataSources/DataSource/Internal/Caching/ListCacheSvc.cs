@@ -8,8 +8,20 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
 /// </summary>
 [PrivateApi("this is just fyi")]
-internal class ListCacheSvc(DataSourceListCache dataSourceListCache) : ServiceBase("DS.LstCch", connect: [dataSourceListCache]), IListCacheSvc
+internal class ListCacheSvc: ServiceBase, IListCacheSvc
 {
+    private readonly MemoryCacheService _memoryCacheService;
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    [PrivateApi]
+    public ListCacheSvc(MemoryCacheService memoryCacheService) : base("DS.LstCch")
+    {
+        ConnectServices(
+            _memoryCacheService = memoryCacheService
+            );
+    }
 
     #region Get List
 
@@ -67,7 +79,7 @@ internal class ListCacheSvc(DataSourceListCache dataSourceListCache) : ServiceBa
     }
 
     /// <inheritdoc />
-    public ListCacheItem Get(string key) => dataSourceListCache.GetStream(key);
+    public ListCacheItem Get(string key) => MemoryCacheService.Get(key) as ListCacheItem;
 
     /// <inheritdoc />
     public ListCacheItem Get(IDataStream dataStream) => Get(DataSourceListCache.CacheKey(dataStream));
@@ -86,7 +98,7 @@ internal class ListCacheSvc(DataSourceListCache dataSourceListCache) : ServiceBa
             ? new() { SlidingExpiration = expiration }
             : new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(duration) };
 
-        dataSourceListCache.Add(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);
+        _memoryCacheService.Set(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);
         l.Done();
     }
         

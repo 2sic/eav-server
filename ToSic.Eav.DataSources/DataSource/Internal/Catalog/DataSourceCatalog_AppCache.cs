@@ -9,24 +9,14 @@ partial class DataSourceCatalog
     /// A cache of all DataSource Types - initialized upon first access ever, then static cache.
     /// </summary>
 
-
+    private static string AppCacheKey(int appId) => $"DataSourceCatalog:AppDataSource:{appId}";
 
     public List<DataSourceInfo> Get(int appId)
     {
-        var appCacheKey = MemoryCacheService.DataSourceCatalogAppCacheKey(appId);
+        if (MemoryCacheService.Get(AppCacheKey(appId)) is List<DataSourceInfo> dataFromCache) return dataFromCache;
 
-        if (memoryCacheService.TryGetValue(appCacheKey, out List<DataSourceInfo> dataFromCache))
-            return dataFromCache;
-
-        var (data, policy) = appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
-        memoryCacheService.Set(appCacheKey, data, policy);
+        var (data, policy) = _appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
+        _memoryCacheService.Set(new(AppCacheKey(appId), data), policy);
         return data;
-
-        //CacheItemPolicy policy = null;
-        //return _memoryCacheService.GetOrBuild(appCacheKey, () =>
-        //{
-        //    (var data, policy) = _appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
-        //    return data;
-        //}, policy);
     }
 }
