@@ -15,21 +15,21 @@ namespace ToSic.Eav.Caching;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 {
-    private readonly MemoryCache _cache = MemoryCache.Default;
+    private static readonly MemoryCache Cache = MemoryCache.Default;
 
     #region General
 
-    public void Set(string key, object value, CacheItemPolicy policy) => _cache.Add(key, value, policy);
+    public void Set(string key, object value, CacheItemPolicy policy) => Cache.Add(key, value, policy);
 
-    public bool Contains(string key) => _cache.Contains(key);
+    public bool Contains(string key) => Cache.Contains(key);
 
     public T Get<T>(string key)
     {
         try
         {
-            if (_cache.Contains(key))
+            if (Cache.Contains(key))
             {
-                return (T)_cache.Get(key);
+                return (T)Cache.Get(key);
             }
         }
         catch
@@ -45,7 +45,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         {
             if (Contains(key))
             {
-                value = (T)_cache.Get(key);
+                value = (T)Cache.Get(key);
                 return true;
             }
         }
@@ -61,11 +61,11 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     {
         if (TryGetValue<T>(key, out var value)) return value;
         value = buildFunc();
-        _cache.Add(key, value, policy);
+        Cache.Add(key, value, policy);
         return value;
     }
 
-    public void Remove(string key) => _cache.Remove(key);
+    public void Remove(string key) => Cache.Remove(key);
 
     #endregion
 

@@ -99,7 +99,7 @@ public static class StartUpEavCore
         services.TryAddTransient<CodeInfoStats>();
 
         // v17
-        services.TryAddSingleton<MemoryCacheService>();
+        services.TryAddTransient<MemoryCacheService>();
 
         return services;
     }
