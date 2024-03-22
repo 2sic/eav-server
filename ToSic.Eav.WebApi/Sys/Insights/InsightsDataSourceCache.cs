@@ -10,11 +10,14 @@ namespace ToSic.Eav.WebApi.Sys.Insights;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class InsightsDataSourceCache: ServiceBase
 {
+
     private readonly LazySvc<IDataSourceCacheService> _dsCacheSvc;
-    public InsightsDataSourceCache(LazySvc<IDataSourceCacheService> dsCacheSvc): base("Ins.DsCache")
+    private readonly LazySvc<DataSourceListCache> _dsListCache;
+    public InsightsDataSourceCache(LazySvc<IDataSourceCacheService> dsCacheSvc, LazySvc<DataSourceListCache> dsListCache) : base("Ins.DsCache")
     {
         ConnectServices(
-            _dsCacheSvc = dsCacheSvc
+            _dsCacheSvc = dsCacheSvc,
+            _dsListCache = dsListCache
         );
     }
 
@@ -27,7 +30,7 @@ public class InsightsDataSourceCache: ServiceBase
         m.AppendLine(H1($"DataSource Lists Cache ({locks.Count})").ToString());
 
 
-        var namesInMemory = locks.Select(l => l.Key).Where(HasStream).ToList();
+        var namesInMemory = locks.Select(l => l.Key).Where(_dsListCache.Value.HasStream).ToList();
         m.AppendLine(H1(
                 $"In Cache ({namesInMemory.Count})",
                 Html.LinkTo(HtmlEncode("🚽"), nameof(DataSourceCacheFlushAll))
@@ -40,7 +43,7 @@ public class InsightsDataSourceCache: ServiceBase
 
         var rows = namesInMemory.Select(name =>
         {
-            var cacheItem = GetStream(name);
+            var cacheItem = _dsListCache.Value.GetStream(name);
             return InsightsHtmlTable.RowFields(
                 HoverLabel(name.Ellipsis(100), name.Replace(">", "\n>"), ""),
                 SpecialField.Right(
@@ -61,7 +64,7 @@ public class InsightsDataSourceCache: ServiceBase
                      + "</table>");
 
         m.AppendLine(Hr().ToString());
-        var namesOutOfMemory = locks.Select(l => l.Key).Where(n => !HasStream(n)).ToList();
+        var namesOutOfMemory = locks.Select(l => l.Key).Where(n => !_dsListCache.Value.HasStream(n)).ToList();
         m.AppendLine(H2($"Not In Cache ({namesOutOfMemory.Count})").ToString());
 
         if (!namesOutOfMemory.Any())
@@ -87,10 +90,10 @@ public class InsightsDataSourceCache: ServiceBase
 
         var locks = LoadLocks;
 
-        var namesInMemory = locks.Select(l => l.Key).Where(key.EqualsInsensitive).Where(HasStream).ToList();
+        var namesInMemory = locks.Select(l => l.Key).Where(key.EqualsInsensitive).Where(_dsListCache.Value.HasStream).ToList();
 
         var name = namesInMemory.FirstOrDefault();
-        var cacheItem = GetStream(name);
+        var cacheItem = _dsListCache.Value.GetStream(name);
 
         m.AppendLine("<table id='table'>"
                      + InsightsHtmlTable.HeadFields("Name", "Count", "Timestamp")

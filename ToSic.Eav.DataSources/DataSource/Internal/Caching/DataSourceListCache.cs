@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public /* should be internal as soon as insights work with that */ class DataSourceListCache
+public /* should be internal as soon as insights work with that */ class DataSourceListCache(MemoryCacheService memoryCacheService)
 {
 
     #region Static Caching and Lock Variables
@@ -33,16 +33,16 @@ public /* should be internal as soon as insights work with that */ class DataSou
     /// <returns></returns>
     internal static string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey;
 
-    public static bool HasStream(string key) => MemoryCacheService.Contains(key);
+    public bool HasStream(string key) => memoryCacheService.Contains(key);
 
-    public static bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
+    public bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
 
     #endregion
 
     #region Get (static)
 
 
-    public static ListCacheItem GetStream(string key) => MemoryCacheService.Get(key) as ListCacheItem;
+    public ListCacheItem GetStream(string key) => memoryCacheService.Get(key) as ListCacheItem;
 
     #endregion
 

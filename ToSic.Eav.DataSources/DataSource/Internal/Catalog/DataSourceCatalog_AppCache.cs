@@ -13,7 +13,7 @@ partial class DataSourceCatalog
 
     public List<DataSourceInfo> Get(int appId)
     {
-        if (MemoryCacheService.Get(AppCacheKey(appId)) is List<DataSourceInfo> dataFromCache) return dataFromCache;
+        if (_memoryCacheService.Get(AppCacheKey(appId)) is List<DataSourceInfo> dataFromCache) return dataFromCache;
 
         var (data, policy) = _appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
         _memoryCacheService.Set(new(AppCacheKey(appId), data), policy);

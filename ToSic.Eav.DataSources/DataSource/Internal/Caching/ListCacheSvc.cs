@@ -79,7 +79,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
     }
 
     /// <inheritdoc />
-    public ListCacheItem Get(string key) => MemoryCacheService.Get(key) as ListCacheItem;
+    public ListCacheItem Get(string key) => _memoryCacheService.Get(key) as ListCacheItem;
 
     /// <inheritdoc />
     public ListCacheItem Get(IDataStream dataStream) => Get(DataSourceListCache.CacheKey(dataStream));
