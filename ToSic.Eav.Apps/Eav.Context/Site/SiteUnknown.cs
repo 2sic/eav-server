@@ -1,12 +1,11 @@
 ﻿using ToSic.Eav.Internal.Unknown;
+#pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Eav.Context;
 
-internal class SiteUnknown: ISite, IIsUnknown
+internal class SiteUnknown(WarnUseOfUnknown<SiteUnknown> _) : ISite, IIsUnknown
 {
     private const string Unknown = "unknown - please implement the ISite interface to get real values";
-
-    public SiteUnknown(WarnUseOfUnknown<SiteUnknown> _) { }
 
     /// <summary>
     /// The unknown zone defaults to 2, as #1 is usually reserved for internal stuff

@@ -53,18 +53,11 @@ public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckB
 
     #region constructors
 
-    public class MyServices: MyServicesBase
+    public class MyServices(IEavFeaturesService features, IEnvironmentPermission environmentPermission)
+        : MyServicesBase(connect: [features, environmentPermission])
     {
-        public IEavFeaturesService Features { get; }
-        public IEnvironmentPermission EnvironmentPermission { get; }
-
-        public MyServices(IEavFeaturesService features, IEnvironmentPermission environmentPermission)
-        {
-            ConnectServices(
-                Features = features,
-                EnvironmentPermission = environmentPermission
-            );
-        }
+        public IEavFeaturesService Features { get; } = features;
+        public IEnvironmentPermission EnvironmentPermission { get; } = environmentPermission;
     }
 
     /// <summary>

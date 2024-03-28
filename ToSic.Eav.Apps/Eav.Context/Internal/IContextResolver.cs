@@ -15,6 +15,8 @@ public interface IContextResolver: IHasLog, IContextResolverUserPermissions
 
     IContextOfApp SetApp(IAppIdentity appIdentity);
 
-    IContextOfApp App();
+    IContextOfApp AppRequired();
+
+    IContextOfApp AppOrNull();
 
 }

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSource.Internal.AppDataSources;
+﻿using ToSic.Eav.Caching;
+using ToSic.Eav.DataSource.Internal.AppDataSources;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
 
 namespace ToSic.Eav.DataSource.Internal.Catalog;
@@ -8,11 +9,13 @@ namespace ToSic.Eav.DataSource.Internal.Catalog;
 public partial class DataSourceCatalog: ServiceBase
 {
     private readonly LazySvc<IAppDataSourcesLoader> _appDataSourcesLoader;
+    private readonly MemoryCacheService _memoryCacheService;
     private IServiceProvider ServiceProvider { get; }
 
-    public DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader) : base("DS.DsCat")
+    public DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader, MemoryCacheService memoryCacheService) : base("DS.DsCat")
     {
         _appDataSourcesLoader = appDataSourcesLoader;
+        _memoryCacheService = memoryCacheService;
         ServiceProvider = serviceProvider;
     }
 

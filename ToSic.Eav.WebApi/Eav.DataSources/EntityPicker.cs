@@ -120,23 +120,19 @@ public class EntityPicker : DataSourceBase
         var l = Log.Fn<IEnumerable<IEntity>>($"get list with type:{TypeNames}");
 
         // Get the context - must be pre-set by the caller
-        
-        IContextOfApp context;
-        try
+
+        var context = _ctxResolver.AppOrNull();
+        if (context == null)
         {
-            context = _ctxResolver.App();
-        }
-        catch (Exception ex)
-        {
-            l.Ex(ex);
-            return l.Return(Error.Create(title: "No App context", message: "No context found, cannot continue", exception: ex), "no context");
+            l.E("No App context");
+            return l.Return(Error.Create(title: "No App context", message: "No context found, cannot continue"), "no context");
         }
 
         // Case 1: No Type Names - return all entities in the Content-Scope
         if (TypeNames.IsEmptyOrWs())
         {
             // App permission checker
-            var permCheckApp = _appPermissions.New().Init(_ctxResolver.App(), this.PureIdentity());
+            var permCheckApp = _appPermissions.New().Init(context, this.PureIdentity());
 
             // First do security check with no-type name
             if (!permCheckApp.EnsureAll(GrantSets.ReadSomething, out _))
@@ -215,7 +211,7 @@ public class EntityPicker : DataSourceBase
 
             if (!typeNames.Any()) return l.Return([]);
 
-            var appState = _ctxResolver.App().AppState;
+            var appState = _ctxResolver.AppRequired().AppState;
 
             var types = typeNames
                 .Select(appState.GetContentType)

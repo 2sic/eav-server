@@ -1,12 +1,11 @@
 ﻿using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Internal.Unknown;
+#pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Eav.Apps.Integration;
 
-internal sealed class FileSystemLoaderUnknown: ServiceBase, IAppFileSystemLoader, IIsUnknown
+internal sealed class FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> _) : ServiceBase(LogConstants.FullNameUnknown), IAppFileSystemLoader, IIsUnknown
 {
-    public FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> _): base(LogConstants.FullNameUnknown)
-    { }
 
     // do nothing
     public IAppFileSystemLoader Init(IAppState app) => this;

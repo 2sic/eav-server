@@ -23,41 +23,21 @@ namespace ToSic.Eav.Apps.Internal.Api01;
 ///
 /// Used to be called SimpleDataController before v17
 /// </summary>
+/// <remarks>
+/// Used for DI - must always call Init to use
+/// </remarks>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class SimpleDataEditService: ServiceBase
+public partial class SimpleDataEditService(
+    DataBuilder builder,
+    IZoneMapper zoneMapper,
+    IContextOfSite ctx,
+    GenWorkDb<WorkEntitySave> entSave,
+    GenWorkDb<WorkEntityUpdate> entUpdate,
+    GenWorkDb<WorkEntityDelete> entDelete,
+    Generator<AppPermissionCheck> appPermissionCheckGenerator) : ServiceBase("Dta.Simple", connect: [entSave, entUpdate, entDelete, zoneMapper, builder, ctx, appPermissionCheckGenerator])
 {
+
     #region Constructor / DI
-
-    /// <summary>
-    /// Used for DI - must always call Init to use
-    /// </summary>
-    public SimpleDataEditService(
-        DataBuilder builder,
-        IZoneMapper zoneMapper,
-        IContextOfSite ctx,
-        GenWorkDb<WorkEntitySave> entSave,
-        GenWorkDb<WorkEntityUpdate> entUpdate,
-        GenWorkDb<WorkEntityDelete> entDelete,
-        Generator<AppPermissionCheck> appPermissionCheckGenerator) : base("Dta.Simple")
-    {
-        ConnectServices(
-            _entSave = entSave,
-            _entUpdate = entUpdate,
-            _entDelete = entDelete,
-            _zoneMapper = zoneMapper,
-            _builder = builder,
-            _ctx = ctx,
-            _appPermissionCheckGenerator = appPermissionCheckGenerator
-        );
-    }
-
-    private readonly GenWorkDb<WorkEntitySave> _entSave;
-    private readonly GenWorkDb<WorkEntityUpdate> _entUpdate;
-    private readonly GenWorkDb<WorkEntityDelete> _entDelete;
-    private readonly IZoneMapper _zoneMapper;
-    private readonly IContextOfSite _ctx;
-    private readonly Generator<AppPermissionCheck> _appPermissionCheckGenerator;
-    private readonly DataBuilder _builder;
 
 
     private string _defaultLanguageCode;
@@ -75,11 +55,11 @@ public partial class SimpleDataEditService: ServiceBase
         _appId = appId;
 
         // when zoneId is not that same as in current context, we need to set right site for provided zoneId
-        if (_ctx.Site.ZoneId != zoneId) _ctx.Site = _zoneMapper.SiteOfZone(zoneId);
+        if (ctx.Site.ZoneId != zoneId) ctx.Site = zoneMapper.SiteOfZone(zoneId);
 
         _defaultLanguageCode = GetDefaultLanguage(zoneId);
         var appIdentity = new AppIdentity(zoneId, appId);
-        _ctxWithDb = _entSave.CtxSvc.CtxWithDb(appIdentity);
+        _ctxWithDb = entSave.CtxSvc.CtxWithDb(appIdentity);
         _checkWritePermissions = checkWritePermissions;
         l.A($"Default language:{_defaultLanguageCode}");
         return l.Return(this);
@@ -88,10 +68,10 @@ public partial class SimpleDataEditService: ServiceBase
     private string GetDefaultLanguage(int zoneId)
     {
         var l = Log.Fn<string>($"{zoneId}");
-        var site = _zoneMapper.SiteOfZone(zoneId);
+        var site = zoneMapper.SiteOfZone(zoneId);
         if (site == null) return l.Return("", "site is null");
 
-        var usesLanguages = _zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
+        var usesLanguages = zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
         return l.Return(usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
     }
         
@@ -123,7 +103,7 @@ public partial class SimpleDataEditService: ServiceBase
         var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
 
         // #ExtractEntitySave - verified
-        var ids = _entSave.New(_ctxWithDb.AppState).Save(importEntity);
+        var ids = entSave.New(_ctxWithDb.AppState).Save(importEntity);
 
         return l.Return(ids, "ok");
     }
@@ -157,15 +137,15 @@ public partial class SimpleDataEditService: ServiceBase
         var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
 
         // Figure out publishing before converting to IAttribute
-        var publishing = FigureOutPublishing(type, values, existingIsPublished);
+        var publishing = FigureOutPublishingOrNull(type, values, existingIsPublished);
 
         // Prepare attributes to add
         var preparedValues = ConvertRelationsToNullArray(type, values);
-        var preparedIAttributes = _builder.Attribute.Create(preparedValues);
+        var preparedIAttributes = builder.Attribute.Create(preparedValues);
         var attributes = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode);
 
-        var newEntity = _builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
-            attributes: _builder.Attribute.Create(attributes),
+        var newEntity = builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
+            attributes: builder.Attribute.Create(attributes),
             owner: owner,
             metadataFor: targetOrNull,
             publishing: publishing);
@@ -192,7 +172,7 @@ public partial class SimpleDataEditService: ServiceBase
         var original = _ctxWithDb.AppState.List.FindRepoId(entityId);
         var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
         // #ExtractEntitySave - verified
-        _entUpdate.New(_ctxWithDb.AppState).UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
+        entUpdate.New(_ctxWithDb.AppState).UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
         l.Done();
     }
 
@@ -202,14 +182,14 @@ public partial class SimpleDataEditService: ServiceBase
     /// </summary>
     /// <param name="entityId">Entity ID</param>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-    public void Delete(int entityId) => _entDelete.New(_ctxWithDb.AppState).Delete(entityId);
+    public void Delete(int entityId) => entDelete.New(_ctxWithDb.AppState).Delete(entityId);
 
 
     /// <summary>
     /// Delete the entity specified by GUID.
     /// </summary>
     /// <param name="entityGuid">Entity GUID</param>
-    public void Delete(Guid entityGuid) => _entDelete.New(_ctxWithDb.AppState).Delete(entityGuid);
+    public void Delete(Guid entityGuid) => entDelete.New(_ctxWithDb.AppState).Delete(entityGuid);
 
 
     private IDictionary<string, object> ConvertRelationsToNullArray(IContentType contentType, IDictionary<string, object> values)
@@ -242,7 +222,7 @@ public partial class SimpleDataEditService: ServiceBase
                     return idGuidNull.ToList();
                 case string strValEmpty when !strValEmpty.HasValue(): return null;
                 case string strVal:
-                    var parts = strVal.CsvToArrayWithoutEmpty(); //.Split(',').Where(s => s.HasValue()).ToList();
+                    var parts = strVal.CsvToArrayWithoutEmpty();
                     if (parts.Length == 0) return value;
 
                     // could be int/guid - must convert - must all be the same
@@ -280,8 +260,8 @@ public partial class SimpleDataEditService: ServiceBase
                     var firstValContents = firstValue?.ObjectContents;
                     if (firstValContents == null) return null;
                     var preConverted =
-                        _builder.Value.PreConvertReferences(firstValContents, ctAttr.Type, true);
-                    var newAttribute = _builder.Attribute.CreateOrUpdate(originalOrNull: attribute, name: ctAttr.Name, value: preConverted,
+                        builder.Value.PreConvertReferences(firstValContents, ctAttr.Type, true);
+                    var newAttribute = builder.Attribute.CreateOrUpdate(originalOrNull: attribute, name: ctAttr.Name, value: preConverted,
                         type: ctAttr.Type, valueToReplace: firstValue, language: valuesLanguage);
                     l.A($"Attribute '{keyValuePair.Key}' will become '{keyValuePair.Value}' ({ctAttr.Type})");
                     return new

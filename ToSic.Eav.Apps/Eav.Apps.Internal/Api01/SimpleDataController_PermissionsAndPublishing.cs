@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Internal.Api01;
 partial class SimpleDataEditService
 {
 
-    private EntitySavePublishing? FigureOutPublishing(IContentType contentType, IDictionary<string, object> values, bool? existingIsPublished)
+    private EntitySavePublishing FigureOutPublishingOrNull(IContentType contentType, IDictionary<string, object> values, bool? existingIsPublished)
     {
         var l = Log.Fn<EntitySavePublishing?>($"..., ..., attributes: {values?.Count}");
         // (bool ShouldPublish, bool DraftShouldBranch, EntitySavePublishing Publishing)? publishAndBranch = null;
@@ -53,22 +53,22 @@ partial class SimpleDataEditService
         var appStateReader = _ctxWithDb.AppState;
 
         // 1.1. app permissions 
-        if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appStateReader)
+        if (appPermissionCheckGenerator.New().ForAppInInstance(ctx, appStateReader)
             .UserMay(GrantSets.WritePublished)) return l.ReturnAndLog((true, true), "App check - all ok");
 
         // 1.2. type permissions
-        if (_appPermissionCheckGenerator.New().ForType(_ctx, appStateReader, targetType)
+        if (appPermissionCheckGenerator.New().ForType(ctx, appStateReader, targetType)
             .UserMay(GrantSets.WritePublished)) return l.ReturnAndLog((true, true), "Type check, all ok");
 
 
         // 2. Find if user may write DRAFT:
 
         // 2.1. app permissions 
-        if (_appPermissionCheckGenerator.New().ForAppInInstance(_ctx, appStateReader)
+        if (appPermissionCheckGenerator.New().ForAppInInstance(ctx, appStateReader)
             .UserMay(GrantSets.WriteDraft)) return l.ReturnAndLog((false, true), "App check draft - f/t");
 
         // 2.2. type permissions
-        if (_appPermissionCheckGenerator.New().ForType(_ctx, appStateReader, targetType)
+        if (appPermissionCheckGenerator.New().ForType(ctx, appStateReader, targetType)
             .UserMay(GrantSets.WriteDraft)) return l.ReturnAndLog((false, true), "Type check draft - f/t");
 
 

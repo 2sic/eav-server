@@ -111,6 +111,9 @@ public static class StartupEavApps
         // V13 Language Checks
         services.TryAddTransient<AppUserLanguageCheck>();
 
+        // v17
+        services.TryAddTransient<IAppJsonService, AppJsonService>();
+
         return services;
     }
 

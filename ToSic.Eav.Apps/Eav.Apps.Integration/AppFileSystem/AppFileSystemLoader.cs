@@ -21,19 +21,15 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
 
     #region Dependencies and Constructor
 
-    public class MyServices: MyServicesBase
+    public class MyServices(
+        ISite site,
+        Generator<FileSystemLoader> fslGenerator,
+        LazySvc<IAppPathsMicroSvc> appPathsLazy)
+        : MyServicesBase(connect: [site, fslGenerator, appPathsLazy])
     {
-        public MyServices(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy)
-        {
-            ConnectServices(
-                Site = site,
-                FslGenerator = fslGenerator,
-                AppPathsLazy = appPathsLazy
-            );
-        }
-        public ISite Site { get; }
-        internal Generator<FileSystemLoader> FslGenerator { get; }
-        internal LazySvc<IAppPathsMicroSvc> AppPathsLazy { get; }
+        public ISite Site { get; } = site;
+        internal Generator<FileSystemLoader> FslGenerator { get; } = fslGenerator;
+        internal LazySvc<IAppPathsMicroSvc> AppPathsLazy { get; } = appPathsLazy;
     }
 
     /// <summary>

@@ -21,29 +21,19 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
 
     public bool AllowCodeImport;
 
-    public class MyServices : MyServicesBase
+    public class MyServices(
+        Generator<FileManager> fileManagerGenerator,
+        IImportExportEnvironment environment,
+        Generator<XmlImportWithFiles> xmlImpExpFiles,
+        AppCachePurger appCachePurger,
+        IAppStates appStates)
+        : MyServicesBase(connect: [fileManagerGenerator, environment, xmlImpExpFiles, appCachePurger, appStates])
     {
-        public Generator<FileManager> FileManagerGenerator { get; }
-        public IImportExportEnvironment Environment { get; }
-        public Generator<XmlImportWithFiles> XmlImpExpFiles { get; }
-        public AppCachePurger AppCachePurger { get; }
-        public IAppStates AppStates { get; }
-
-        public MyServices(Generator<FileManager> fileManagerGenerator,
-            IImportExportEnvironment environment,
-            Generator<XmlImportWithFiles> xmlImpExpFiles,
-            AppCachePurger appCachePurger,
-            IAppStates appStates
-        )
-        {
-            ConnectServices(
-                FileManagerGenerator = fileManagerGenerator,
-                Environment = environment,
-                XmlImpExpFiles = xmlImpExpFiles,
-                AppCachePurger = appCachePurger,
-                AppStates = appStates
-            );
-        }
+        public Generator<FileManager> FileManagerGenerator { get; } = fileManagerGenerator;
+        public IImportExportEnvironment Environment { get; } = environment;
+        public Generator<XmlImportWithFiles> XmlImpExpFiles { get; } = xmlImpExpFiles;
+        public AppCachePurger AppCachePurger { get; } = appCachePurger;
+        public IAppStates AppStates { get; } = appStates;
     }
 
     public ZipImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, AppCachePurger appCachePurger, IAppStates appStates) : base(services, "Zip.Imp")

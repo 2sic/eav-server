@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Caching;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
@@ -6,13 +7,15 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 [PrivateApi]
 internal class DataSourceCacheService: ServiceBase, IDataSourceCacheService
 {
+    private readonly MemoryCacheService _cache;
     public const int MaxRecursions = 100;
     private const string ErrRecursions = "too many recursions on UnCache";
 
-    public DataSourceCacheService(IListCacheSvc listCache) : base("Ds.CchSvc")
+    public DataSourceCacheService(IListCacheSvc listCache, MemoryCacheService cache) : base("Ds.CchSvc")
     {
         ConnectServices(
-            ListCache = listCache
+            ListCache = listCache,
+            _cache = cache
         );
     }
 
@@ -103,5 +106,5 @@ internal class DataSourceCacheService: ServiceBase, IDataSourceCacheService
     /// Remove an item from the list-cache using the string-key
     /// </summary>
     /// <param name="key">the identifier in the cache</param>
-    private void FlushKey(string key) => Log.Do(parameters: key, action: () => MemoryCache.Default.Remove(key));
+    private void FlushKey(string key) => Log.Do(parameters: key, action: () => _cache.Remove(key));
 }

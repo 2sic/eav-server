@@ -17,38 +17,17 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// It must be called from an AppManager, which has been created for this app
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppInitializer : ServiceBase
+public class AppInitializer(
+    LazySvc<DataBuilder> builder,
+    Generator<IRepositoryLoader> repoLoader,
+    GenWorkDb<WorkEntitySave> entitySave,
+    GenWorkDb<WorkContentTypesMod> contentTypesMod,
+    AppCachePurger cachePurger,
+    IAppStates appStates)
+    : ServiceBase("Eav.AppBld", connect: [contentTypesMod, entitySave, builder, cachePurger, repoLoader, appStates])
 {
-    #region Constructor / DI
 
-    public AppInitializer(
-        LazySvc<DataBuilder> builder,
-        Generator<IRepositoryLoader> repoLoader,
-        GenWorkDb<WorkEntitySave> entitySave,
-        GenWorkDb<WorkContentTypesMod> contentTypesMod,
-        AppCachePurger cachePurger,
-        IAppStates appStates) : base("Eav.AppBld")
-    {
-        ConnectServices(
-            _contentTypesMod = contentTypesMod,
-            _entitySave = entitySave,
-            _builder = builder,
-            CachePurger = cachePurger,
-            _repoLoader = repoLoader,
-            _appStates = appStates
-        );
-    }
-
-
-    private readonly GenWorkDb<WorkContentTypesMod> _contentTypesMod;
-    private readonly GenWorkDb<WorkEntitySave> _entitySave;
-    private readonly LazySvc<DataBuilder> _builder;
-    private readonly Generator<IRepositoryLoader> _repoLoader;
-    private readonly IAppStates _appStates;
-    protected readonly AppCachePurger CachePurger;
-
-
-    #endregion
+    protected readonly AppCachePurger CachePurger = cachePurger;
 
     /// <summary>
     /// Create app-describing entity for configuration and add Settings and Resources Content Type
@@ -106,7 +85,7 @@ public class AppInitializer : ServiceBase
             // this is because other APIs may access the AppStates (though they shouldn't)
             CachePurger.Purge(appState);
             // get the latest app-state, but not-initialized so we can make changes
-            appState = _repoLoader.New().AppStateBuilderRaw(appState.AppId, codeRefTrail.WithHere()).Reader;
+            appState = repoLoader.New().AppStateBuilderRaw(appState.AppId, codeRefTrail.WithHere()).Reader;
         }
 
         addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appState, task));
@@ -132,7 +111,7 @@ public class AppInitializer : ServiceBase
     private bool CreateAllMissingContentTypes(IAppState appStateRaw, List<AddContentTypeAndOrEntityTask> newItems)
     {
         var l = Log.Fn<bool>($"Check for {newItems.Count}");
-        var typesMod = _contentTypesMod.New(appStateRaw.Internal());
+        var typesMod = contentTypesMod.New(appStateRaw.Internal());
         var addedTypes = false;
         foreach (var item in newItems)
             if (item.InAppType && FindContentType(appStateRaw, item.SetName, item.InAppType) == null)
@@ -161,12 +140,12 @@ public class AppInitializer : ServiceBase
         }
 
         var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
-        var attrs = _builder.Value.Attribute.Create(values);
+        var attrs = builder.Value.Attribute.Create(values);
         var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appStateRaw.AppId);
-        var newEnt = _builder.Value.Entity
+        var newEnt = builder.Value.Entity
             .Create(appId: appStateRaw.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
 
-        _entitySave.New(appStateRaw.Internal()).Save(newEnt);
+        entitySave.New(appStateRaw.Internal()).Save(newEnt);
         l.Done();
     }
 
@@ -181,7 +160,7 @@ public class AppInitializer : ServiceBase
         // discuss w/2dm if you think you want to change this
         var ct = inAppType
             ? appStateRaw.GetContentType(setName)
-            : _appStates.GetPresetReader().GetContentType(setName);
+            : appStates.GetPresetReader().GetContentType(setName);
         return ct;
     }
 

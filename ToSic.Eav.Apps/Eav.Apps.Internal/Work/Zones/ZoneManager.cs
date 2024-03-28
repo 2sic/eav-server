@@ -3,19 +3,9 @@
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ZoneManager : ServiceBase, IZoneIdentity
+public class ZoneManager(LazySvc<DbDataController> dbLazy, LazySvc<AppCachePurger> appCachePurger)
+    : ServiceBase("App.Zone", connect: [dbLazy, appCachePurger]), IZoneIdentity
 {
-    #region Constructor and simple properties
-
-    public ZoneManager(LazySvc<DbDataController> dbLazy, LazySvc<AppCachePurger> appCachePurger) : base("App.Zone")
-    {
-        ConnectServices(
-            _dbLazy = dbLazy,
-            _appCachePurger = appCachePurger
-        );
-    }
-    private readonly LazySvc<DbDataController> _dbLazy;
-    private readonly LazySvc<AppCachePurger> _appCachePurger;
 
     public int ZoneId { get; private set; }
 
@@ -25,15 +15,14 @@ public class ZoneManager : ServiceBase, IZoneIdentity
         return this;
     }
 
-    internal DbDataController DataController => _db ??= _dbLazy.Value.Init(ZoneId, null);
+    internal DbDataController DataController => _db ??= dbLazy.Value.Init(ZoneId, null);
     private DbDataController _db;
 
-    #endregion
 
     #region App management
 
     public void DeleteApp(int appId, bool fullDelete)
-        => _appCachePurger.Value.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId, fullDelete), true);
+        => appCachePurger.Value.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId, fullDelete), true);
 
 
     #endregion
@@ -44,7 +33,7 @@ public class ZoneManager : ServiceBase, IZoneIdentity
     {
         var l = Log.Fn($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
         DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
-        _appCachePurger.Value.PurgeZoneList();
+        appCachePurger.Value.PurgeZoneList();
         l.Done();
     }
 

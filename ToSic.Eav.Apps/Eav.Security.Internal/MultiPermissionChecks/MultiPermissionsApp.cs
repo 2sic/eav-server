@@ -7,27 +7,22 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Security.Internal;
 
 /// <summary>
-/// Do consolidated permission checks on a set of permissions
+/// Do consolidate permission checks on a set of permissions
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MyServices>
 {
     #region Constructors and DI
 
-    public class MyServices: MyServicesBase
+    public class MyServices(
+        LazySvc<IZoneMapper> zoneMapper,
+        Generator<AppPermissionCheck> appPermCheckGenerator,
+        Generator<IEavFeaturesService> featIntGen)
+        : MyServicesBase(connect: [zoneMapper, appPermCheckGenerator, featIntGen])
     {
-        public MyServices(LazySvc<IZoneMapper> zoneMapper, Generator<AppPermissionCheck> appPermCheckGenerator, Generator<IEavFeaturesService> featIntGen)
-        {
-            ConnectServices(
-                ZoneMapper = zoneMapper,
-                AppPermCheckGenerator = appPermCheckGenerator,
-                FeatIntGen = featIntGen
-            );
-        }
-        internal LazySvc<IZoneMapper> ZoneMapper { get; }
-        internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; }
-        internal Generator<IEavFeaturesService> FeatIntGen { get; }
-
+        internal LazySvc<IZoneMapper> ZoneMapper { get; } = zoneMapper;
+        internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; } = appPermCheckGenerator;
+        internal Generator<IEavFeaturesService> FeatIntGen { get; } = featIntGen;
     }
 
     /// <summary>

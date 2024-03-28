@@ -1,14 +1,14 @@
 ﻿using System.IO;
-using System.Text.Json.Nodes;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using static System.IO.Path;
 
 namespace ToSic.Eav.ImportExport.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class FileManager() : ServiceBase(EavLogs.Eav + ".FileMn")
+public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(EavLogs.Eav + ".FileMn")
 {
     private const char Separator = ';';
 
@@ -64,34 +64,7 @@ public class FileManager() : ServiceBase(EavLogs.Eav + ".FileMn")
     /// Get exclude search patterns from app.json
     /// </summary>
     /// <returns></returns>
-    private List<string> ExcludeSearchPatterns => _excludeSearchPatterns.Get(() => Log.Func(l =>
-    {
-        // validate source folder
-        if (!Directory.Exists(_sourceFolder))
-            return ([], $"warning, can't find source folder '{_sourceFolder}'");
-
-        // validate app.json content
-        var jsonString = File.ReadAllText(GetPathToDotAppJson(_sourceFolder));
-        if (string.IsNullOrEmpty(jsonString))
-            return ([], $"warning, '{Constants.AppJson}' is empty");
-
-        // deserialize app.json
-        try
-        {
-            var json = JsonNode.Parse(jsonString, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions);
-            return (json?["export"]?["exclude"]?.AsArray()
-                .Select(e => (e.ToString()).Trim().Backslash())
-                .Where(e => !string.IsNullOrEmpty(e) && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
-                .Select(e => e.StartsWith(@"\") ? Combine(_sourceFolder, e.Substring(1)) : e) // handle case with starting slash
-                .Select(e => e.ToLowerInvariant())
-                .ToList(),"ok");
-        }
-        catch (Exception e)
-        {
-            l.Ex(e);
-            return ([], $"warning, json is not valid in '{Constants.AppJson}'");
-        }
-    }));
+    private List<string> ExcludeSearchPatterns => _excludeSearchPatterns.Get(() => appJsonService.Value.ExcludeSearchPatterns(_sourceFolder));
     private readonly GetOnce<List<string>> _excludeSearchPatterns = new();
 
 
@@ -104,7 +77,7 @@ public class FileManager() : ServiceBase(EavLogs.Eav + ".FileMn")
         var hardcodedExcludedFolders = GetHardcodedExcludedFolders();
         l.A($"Hardcoded excluded folders count: {hardcodedExcludedFolders.Count}");
 
-        var pathToDotAppJson = GetPathToDotAppJson(_sourceFolder);
+        var pathToDotAppJson = appJsonService.Value.GetPathToDotAppJson(_sourceFolder);
         IEnumerable<string> files;
 
         if (File.Exists(pathToDotAppJson))
@@ -152,7 +125,7 @@ public class FileManager() : ServiceBase(EavLogs.Eav + ".FileMn")
     /// <returns></returns>
     public IEnumerable<string> GetAllTransferableFolders(string searchPattern = "*.*") => Log.Func(l =>
     {
-        var pathToDotAppJson = GetPathToDotAppJson(_sourceFolder);
+        var pathToDotAppJson = appJsonService.Value.GetPathToDotAppJson(_sourceFolder);
         if (File.Exists(pathToDotAppJson)) // exclude files based on app.json from v14.08
             return (ExcludeFoldersBasedOnExcludeInDotAppJson(_root, searchPattern).ToList(), $"ok, exclude folders based on {pathToDotAppJson}");
 
@@ -296,7 +269,4 @@ public class FileManager() : ServiceBase(EavLogs.Eav + ".FileMn")
         }
         return files;
     }
-    
-    private static string GetPathToDotAppJson(string sourceFolder) => Combine(sourceFolder, Constants.AppDataProtectedFolder, Constants.AppJson);
-
 }

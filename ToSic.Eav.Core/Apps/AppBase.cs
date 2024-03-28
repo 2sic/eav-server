@@ -17,10 +17,9 @@ public abstract class AppBase<TServices>: ServiceBase<TServices>, IAppIdentity w
     public int AppId { get; private set; }
 
     /// <summary>
-    /// DI Constructor - always run Init afterwards
+    /// DI Constructor - always run Init afterward
     /// </summary>
-    protected AppBase(TServices services, string logName): base(services, logName ?? "App.Base") { }
-    protected AppBase(MyServicesBase<TServices> services, string logName): base(services, logName ?? "App.Base") { }
+    protected AppBase(TServices services, string logName, object[] connect): base(services, logName ?? "App.Base", connect: connect) { }
 
     /// <summary>
     /// App identity containing zone/app combination

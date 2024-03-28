@@ -7,17 +7,9 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
+public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) : ServiceBase("Eav.AppBld",
+    connect: [appInitGenerator]), IAppInitializedChecker
 {
-    private readonly Generator<AppInitializer> _appInitGenerator;
-
-    #region Constructor / DI
-
-    public AppInitializedChecker(Generator<AppInitializer> appInitGenerator) : base("Eav.AppBld") 
-        => ConnectServices(_appInitGenerator = appInitGenerator);
-
-    #endregion
-
     /// <inheritdoc />
     public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppState appState, string appName, CodeRefTrail codeRefTrail, ILog parentLog)
     {
@@ -30,7 +22,7 @@ public class AppInitializedChecker : ServiceBase, IAppInitializedChecker
             return l.ReturnFalse("ok");
 
         // something is missing, so we must build them
-        _appInitGenerator.New().InitializeApp(appState, appName, codeRefTrail.WithHere().AddMessage("Add Requested"));
+        appInitGenerator.New().InitializeApp(appState, appName, codeRefTrail.WithHere().AddMessage("Add Requested"));
 
         return l.ReturnTrue();
     }

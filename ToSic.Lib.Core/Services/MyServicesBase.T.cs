@@ -1,4 +1,6 @@
-﻿using ToSic.Lib.Documentation;
+﻿using ToSic.Lib.Coding;
+using ToSic.Lib.Documentation;
+#pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Lib.Services;
 
@@ -10,7 +12,7 @@ namespace ToSic.Lib.Services;
 /// <typeparam name="T"></typeparam>
 [PublicApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MyServicesBase<T>(T parentServices) : MyServicesBase
+public class MyServicesBase<T>(T parentServices, NoParamOrder protect = default, object[] connect = default) : MyServicesBase(connect: connect)
 {
     public T ParentServices { get; } = parentServices;
 

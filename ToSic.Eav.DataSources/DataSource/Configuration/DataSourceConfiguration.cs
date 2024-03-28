@@ -17,16 +17,10 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     #region Dependencies - Must be in DI
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public class MyServices: MyServicesBase
+    public class MyServices(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
+        : MyServicesBase(connect: [zoneCultureResolverLazy])
     {
-        public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; }
-
-        public MyServices(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
-        {
-            ConnectServices(
-                ZoneCultureResolverLazy = zoneCultureResolverLazy
-            );
-        }
+        public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; } = zoneCultureResolverLazy;
     }
 
     #endregion
@@ -48,15 +42,25 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
 
     public string GetThis([CallerMemberName] string name = default)
     {
-        if (name == null) return null;
+        if (name == null || name.IsEmptyOrWs()) return null;
         if (_getThisCache.TryGetValue(name, out var result)) return result;
-        var parsed = ParseToken(GetRaw(name));
+
+        // on first call, get and log
+        var l = Log.Fn<string>($"{DataSourceForIn.GetType().Name}:{name}");
+        var raw = GetRaw(name);
+        var parsed = ParseToken(raw);
         _getThisCache[name] = parsed;
-        return parsed;
+        return l.Return(parsed, raw == parsed ? $"'{raw}'" : $"raw: '{raw}'; parsed: '{parsed}'");
     }
     private readonly Dictionary<string, string> _getThisCache = [];
 
-    public string GetRaw([CallerMemberName] string name = default) => _values.TryGetValue(name, out var result) 
+    /// <summary>
+    /// Get the raw token or throw an error, since it should only be used on things which have a [Configuration] attribute.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    private string GetRaw(string name = default) => _values.TryGetValue(name, out var result) 
         ? result
         : throw new ArgumentException(string.Format(ConfigNotFoundMessage, name));
 

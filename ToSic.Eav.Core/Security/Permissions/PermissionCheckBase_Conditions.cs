@@ -87,8 +87,6 @@ partial class PermissionCheckBase
         if (string.IsNullOrWhiteSpace(identity)) return false;
 
         var groupIds = identity.CsvToArrayWithoutEmpty()
-            //.Split(',').Select(g => g.Trim())
-            //.Where(g => !string.IsNullOrWhiteSpace(g))
             .Select(g => int.TryParse(g, out var gid) ? gid : 0)
             .Where(gid => gid > 0)
             .ToList();

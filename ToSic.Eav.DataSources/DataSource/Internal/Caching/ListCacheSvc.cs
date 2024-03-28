@@ -10,11 +10,18 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 [PrivateApi("this is just fyi")]
 internal class ListCacheSvc: ServiceBase, IListCacheSvc
 {
+    private readonly MemoryCacheService _memoryCacheService;
+
     /// <summary>
     /// Constructor
     /// </summary>
     [PrivateApi]
-    public ListCacheSvc() : base("DS.LstCch") { }
+    public ListCacheSvc(MemoryCacheService memoryCacheService) : base("DS.LstCch")
+    {
+        ConnectServices(
+            _memoryCacheService = memoryCacheService
+            );
+    }
 
     #region Get List
 
@@ -72,7 +79,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
     }
 
     /// <inheritdoc />
-    public ListCacheItem Get(string key) => DataSourceListCache.Cache[key] as ListCacheItem;
+    public ListCacheItem Get(string key) => _memoryCacheService.Get(key) as ListCacheItem;
 
     /// <inheritdoc />
     public ListCacheItem Get(IDataStream dataStream) => Get(DataSourceListCache.CacheKey(dataStream));
@@ -91,7 +98,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
             ? new() { SlidingExpiration = expiration }
             : new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(duration) };
 
-        DataSourceListCache.Cache.Set(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);
+        _memoryCacheService.Set(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);
         l.Done();
     }
         
