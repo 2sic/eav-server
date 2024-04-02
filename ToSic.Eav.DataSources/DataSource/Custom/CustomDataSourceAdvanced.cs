@@ -51,7 +51,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     /// this is important, because the date should stay fixed throughout the lifetime of this object
     /// but renew when it is updates
     /// </remarks>
-    protected CustomDataSourceAdvanced(MyServices services, string logName = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
+    protected CustomDataSourceAdvanced(MyServices services, string logName = null, object[] connect = null) : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern", connect: connect)
     {
         DataFactory = services.DataFactory;
     }

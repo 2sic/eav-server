@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Helpers;
 using ToSic.Eav.Internal.Environment;
 using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -47,24 +48,25 @@ public class Csv : CustomDataSourceAdvanced
     /// <summary>
     /// Full path to the CSV file. 
     /// </summary>
-    private string GetServerPath(string csvPath) => Log.Func($"csvPath: {csvPath}", l =>
+    private string GetServerPath(string csvPath)
     {
+        var l = Log.Fn<string>($"{nameof(csvPath)}: {csvPath}");
         // Handle cases where it's a "file:72"
         if (ValueConverterBase.CouldBeReference(csvPath))
         {
-            l.A($"This seems to be a reference: '{csvPath}'");
             csvPath = _serverPaths.FullPathOfReference(csvPath);
-            l.A($"Resolved to '{csvPath}'");
-            return csvPath;
+            return l.Return(csvPath, $"seems to be a ref, now: {csvPath}");
         }
 
         l.A("Doesn't seem to be a reference, will use as is");
 
         // if it's a full path, use that, otherwise do map-path assuming it must be in the app
         // this is for backward compatibility, because old samples used "[App:Path]/something.csv" which returns a relative path
-        var result = csvPath.Contains(":") ? csvPath : _serverPaths.FullContentPath(csvPath);
-        return result;
-    });
+        var result = csvPath.IsPathWithDriveOrNetwork()
+            ? csvPath
+            : _serverPaths.FullContentPath(csvPath);
+        return l.Return(result, $"not a ref, now: {result}");
+    }
 
 
     /// <summary>
@@ -115,13 +117,11 @@ public class Csv : CustomDataSourceAdvanced
 
 
     [PrivateApi]
-    public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv")
+    public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv", connect: [user, serverPaths, dataFactory])
     {
-        ConnectServices(
-            _user = user,
-            _serverPaths = serverPaths,
-            _dataFactory = dataFactory
-        );
+        _user = user;
+        _serverPaths = serverPaths;
+        _dataFactory = dataFactory;
         ProvideOut(GetList);
     }
     private readonly IUser _user;

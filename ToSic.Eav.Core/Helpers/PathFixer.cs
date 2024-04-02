@@ -79,4 +79,12 @@ public static class PathFixer
         path = path.TrimStart('~');
         return path.ForwardSlash().PrefixSlash().FlattenMultipleForwardSlashes();
     }
+
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public static bool IsPathWithDrive(this string path)
+        => Regex.IsMatch(path, @"^[a-zA-Z]:\\");
+
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public static bool IsPathWithDriveOrNetwork(this string path)
+        => Regex.IsMatch(path, @"^\\\\|^[a-zA-Z]:\\");
 }
