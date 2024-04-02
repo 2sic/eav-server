@@ -1,17 +1,18 @@
-﻿using static ToSic.Razor.Blade.Tag;
+﻿using ToSic.Eav.Caching;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
 partial class InsightsControllerReal
 {
 
-    private string LightSpeedStats()
+    private string LightSpeedStatsGet()
     {
         var msg = H1("LightSpeed Stats").ToString();
         try
         {
-            var countStats = _lightSpeedStats.ItemsCount;
-            var sizeStats = _lightSpeedStats.Size;
+            var countStats = LightSpeedStats.ItemsCount;
+            var sizeStats = LightSpeedStats.Size;
             msg += P($"Apps in Cache: {countStats.Count}");
             msg += "<table id='table'>"
                    + InsightsHtmlTable.HeadFields("#", "ZoneId", "AppId", "Name", "Items in Cache", "Ca. Memory Use", "NameId")

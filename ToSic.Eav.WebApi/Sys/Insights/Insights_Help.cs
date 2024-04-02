@@ -1,5 +1,4 @@
 ﻿using ToSic.Lib.Coding;
-using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
 using static ToSic.Razor.Blade.Tag;
 
@@ -27,7 +26,7 @@ partial class InsightsControllerReal
         var extras = providersWithCategory
             .Select(g =>
                 H2(g.Key)
-                + Ol(g.Select(p => Li(LinkTo(p.Title, p.Name))))
+                + Ol(g.Select(p => Li(LinkTo(p.Title, p.Name), $" {p.Teaser}")))
             )
             .ToList();
 
@@ -38,7 +37,7 @@ partial class InsightsControllerReal
                     + "The other links are listed here so you know what they would be, "
                     + "in case something is preventing you from browsing the normal way. "
                     + "Read more about 2sxc insights in the "
-                    + Tag.A("blog post").Href("https://2sxc.org/en/blog/post/using-2sxc-insights").Target("_blank")
+                    + A("blog post").Href("https://2sxc.org/en/blog/post/using-2sxc-insights").Target("_blank")
                 ),
 
                 H2("Most used"),
@@ -54,9 +53,8 @@ partial class InsightsControllerReal
                 Ol(
                     Li(LinkTo("Global Types in cache", ProviderName(nameof(InsightsGlobalTypes)))),
                     Li(LinkTo("Global Types loading log", nameof(GlobalTypesLog))),
-                    Li(LinkTo("Global logs", nameof(Logs), key: Lib.Logging.LogNames.LogStoreStartUp)),
-                    Li(LinkTo("Licenses &amp; Features", nameof(Licenses))),
-                    Li(LinkTo("LightSpeed stats", nameof(LightSpeedStats)))
+                    Li(LinkTo("Global logs", nameof(Logs), key: LogNames.LogStoreStartUp)),
+                    Li(LinkTo("Licenses &amp; Features", nameof(Licenses)))
                 ),
                 RawHtml(extras.Cast<object>().ToArray()),
 

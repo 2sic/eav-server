@@ -80,7 +80,8 @@ public static class StartUpEavCore
         //services.TryAddTransient<IFingerprint, Fingerprint>();
         services.TryAddTransient<SystemFingerprint>();
 
-        services.TryAddSingleton<LightSpeedStats>();
+        // 2024-04-02 2dm - removed from DI
+        //services.TryAddSingleton<LightSpeedStats>();
 
         // V14 Requirements Checks - don't use try-add, as we'll add many
         services.TryAddTransient<RequirementsService>();
