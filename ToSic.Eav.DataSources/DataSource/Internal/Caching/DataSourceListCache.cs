@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using ToSic.Eav.Caching;
+﻿using ToSic.Eav.Caching;
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
 
@@ -13,7 +12,7 @@ public /* should be internal as soon as insights work with that */ class DataSou
 
     #region Static Caching and Lock Variables
 
-    public static readonly ConcurrentDictionary<string, object> LoadLocks = new();
+    public static readonly NamedLocks LoadLocks = new();
 
     #endregion
 
