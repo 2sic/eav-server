@@ -30,7 +30,6 @@ public partial class InsightsControllerReal: ServiceBase
         LazySvc<LicenseCatalog> licenseCatalog,
         GenWorkPlus<WorkEntities> workEntities,
         IUser user, 
-        LightSpeedStats lightSpeedStats,
         Generator<JsonSerializer> jsonSerializer,
         LazySvc<InsightsDataSourceCache> dsCache,
         IEnumerable<IInsightsProvider> insightsProviders)
@@ -44,7 +43,6 @@ public partial class InsightsControllerReal: ServiceBase
             _fingerprint = fingerprint,
             _licenseCatalog = licenseCatalog,
             _user = user,
-            _lightSpeedStats = lightSpeedStats,
             _jsonSerializer = jsonSerializer,
             _dsCache = dsCache,
             AppCachePurger = appCachePurger,
@@ -56,7 +54,6 @@ public partial class InsightsControllerReal: ServiceBase
     private readonly ILogStoreLive _logStore;
     private readonly LazySvc<ILicenseService> _licenseServiceLazy;
     private readonly IUser _user;
-    private readonly LightSpeedStats _lightSpeedStats;
     protected readonly AppCachePurger AppCachePurger;
 
     private InsightsHtmlTable HtmlTableBuilder { get; } = new();

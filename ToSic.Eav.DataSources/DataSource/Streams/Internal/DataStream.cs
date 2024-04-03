@@ -8,23 +8,22 @@ namespace ToSic.Eav.DataSource.Streams.Internal;
 /// <summary>
 /// A DataStream to get Entities when needed
 /// </summary>
+/// <param name="cache"></param>
+/// <param name="source">The DataSource providing Entities when needed</param>
+/// <param name="name">Name of this Stream</param>
+/// <param name="listDelegate">Function which gets Entities</param>
+/// <param name="enableAutoCaching"></param>
 [PrivateApi]
-public class DataStream : IDataStream // , IHasLog
+public class DataStream(
+    LazySvc<IDataSourceCacheService> cache,
+    IDataSource source,
+    string name,
+    Func<IImmutableList<IEntity>> listDelegate = null,
+    bool enableAutoCaching = false
+    ) : IDataStream, ICanBeEntity
 {
+
     #region Constructor
-
-    private readonly Func<IImmutableList<IEntity>> _listDelegate;
-    private readonly LazySvc<IDataSourceCacheService> _cache;
-
-    ///// <summary>
-    ///// Constructs a new DataStream
-    ///// </summary>
-    ///// <param name="source">The DataSource providing Entities when needed</param>
-    ///// <param name="name">Name of this Stream</param>
-    ///// <param name="listDelegate">Function which gets Entities</param>
-    ///// <param name="enableAutoCaching"></param>
-    //public DataStream(IDataSource source, string name, Func<IEnumerable<IEntity>> listDelegate = null, bool enableAutoCaching = false)
-    //    : this(source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
 
     /// <summary>
     /// Constructs a new DataStream
@@ -36,38 +35,6 @@ public class DataStream : IDataStream // , IHasLog
     /// <param name="enableAutoCaching"></param>
     public DataStream(LazySvc<IDataSourceCacheService> cache, IDataSource source, string name, Func<IEnumerable<IEntity>> listDelegate = null, bool enableAutoCaching = false)
         : this(cache, source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
-
-    ///// <summary>
-    ///// Constructs a new DataStream
-    ///// </summary>
-    ///// <param name="source">The DataSource providing Entities when needed</param>
-    ///// <param name="name">Name of this Stream</param>
-    ///// <param name="listDelegate">Function which gets Entities</param>
-    ///// <param name="enableAutoCaching"></param>
-    //public DataStream(IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate = null, bool enableAutoCaching = false)
-    //{
-    //    Source = source;
-    //    Name = name;
-    //    _listDelegate = listDelegate;
-    //    AutoCaching = enableAutoCaching;
-    //}
-
-    /// <summary>
-    /// Constructs a new DataStream
-    /// </summary>
-    /// <param name="cache"></param>
-    /// <param name="source">The DataSource providing Entities when needed</param>
-    /// <param name="name">Name of this Stream</param>
-    /// <param name="listDelegate">Function which gets Entities</param>
-    /// <param name="enableAutoCaching"></param>
-    public DataStream(LazySvc<IDataSourceCacheService> cache, IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate = null, bool enableAutoCaching = false)
-    {
-        _cache = cache;
-        Source = source;
-        Name = name;
-        _listDelegate = listDelegate;
-        AutoCaching = enableAutoCaching;
-    }
 
     private static Func<IImmutableList<IEntity>> ConvertDelegate(Func<IEnumerable<IEntity>> original)
     {
@@ -88,7 +55,7 @@ public class DataStream : IDataStream // , IHasLog
     /// <summary>
     /// Place the stream in the cache if wanted, by default not
     /// </summary>
-    public bool AutoCaching { get; set; }
+    public bool AutoCaching { get; set; } = enableAutoCaching;
 
     /// <inheritdoc />
     /// <summary>
@@ -126,7 +93,7 @@ public class DataStream : IDataStream // , IHasLog
         // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
         if (!AutoCaching) return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
 
-        var cacheItem = _cache.Value.ListCache.GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+        var cacheItem = cache.Value.ListCache.GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
         return (cacheItem.List, $"with {nameof(AutoCaching)}");
     });
 
@@ -154,13 +121,13 @@ public class DataStream : IDataStream // , IHasLog
         IImmutableList<IEntity> CreateErr(string title, string message, Exception ex = default)
             => Source.Error.Create(source: Source, title: title, message: message, exception: ex).ToImmutableList();
 
-        if (_listDelegate == null)
+        if (listDelegate == null)
             return l.ReturnAsError(CreateErr("Error loading Stream",
                 "Can't load stream - no delegate found to supply it"));
 
         try
         {
-            var resultList = ImmutableSmartList.Wrap(_listDelegate());
+            var resultList = ImmutableSmartList.Wrap(listDelegate());
             return l.ReturnAsOk(resultList);
         }
         catch (InvalidOperationException invEx) // this is a special exception - for example when using SQL. Pass it on to enable proper testing
@@ -179,16 +146,18 @@ public class DataStream : IDataStream // , IHasLog
     /// <summary>
     /// The source which holds this stream
     /// </summary>
-    public IDataSource Source { get; }
+    public IDataSource Source { get; } = source;
 
     /// <inheritdoc />
     /// <summary>
     /// Name - usually the name within the Out-dictionary of the source. For identification and for use in caching-IDs and similar
     /// </summary>
-    public string Name { get; }
+    public string Name { get; } = name;
 
 
     #region Support for IEnumerable<IEntity>
+
+    //IEnumerator<ICanBeEntity> IEnumerable<ICanBeEntity>.GetEnumerator() => List.GetEnumerator();
 
     public IEnumerator<IEntity> GetEnumerator() => List.GetEnumerator();
 
@@ -201,4 +170,6 @@ public class DataStream : IDataStream // , IHasLog
 
     public IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: Source, stream: this, outName: Name));
     private readonly GetOnce<IDataSourceLink> _link = new();
+
+    IEntity ICanBeEntity.Entity => this.FirstOrDefault();
 }

@@ -1,5 +1,4 @@
-﻿using System.Runtime.Caching;
-using ToSic.Eav.Caching;
+﻿using ToSic.Eav.Caching;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
@@ -29,9 +28,9 @@ internal class DataSourceCacheService: ServiceBase, IDataSourceCacheService
     public bool FlushAll()
     {
         var l = Log.Fn<bool>();
-        var keys = DataSourceListCache.LoadLocks.Keys.ToList();
+        var keys = DataSourceListCache.LoadLocks.Locks.Keys.ToList();
         foreach (var key in keys) FlushKey(key);
-        DataSourceListCache.LoadLocks.Clear();
+        DataSourceListCache.LoadLocks.Locks.Clear();
         return l.ReturnTrue();
     }
 

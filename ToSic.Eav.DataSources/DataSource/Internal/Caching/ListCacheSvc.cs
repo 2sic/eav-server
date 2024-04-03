@@ -60,7 +60,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
         // Otherwise slow loading data - like SharePoint lists from a remote server
         // would trigger multiple load attempts on page reloads and overload the system
         // trying to reload while still building the initial cache
-        var lockKey = DataSourceListCache.LoadLocks.GetOrAdd(key, new object());
+        var lockKey = DataSourceListCache.LoadLocks.Get(key);
         lock (lockKey)
         {
             l.A("came out of lock");

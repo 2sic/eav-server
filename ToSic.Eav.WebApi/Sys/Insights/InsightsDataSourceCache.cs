@@ -25,7 +25,7 @@ public class InsightsDataSourceCache: ServiceBase
 
     public string DataSourceCache()
     {
-        var locks = LoadLocks;
+        var locks = LoadLocks.Locks;
         var m = new StringBuilder();
         m.AppendLine(H1($"DataSource Lists Cache ({locks.Count})").ToString());
 
@@ -88,7 +88,7 @@ public class InsightsDataSourceCache: ServiceBase
         var m = new StringBuilder();
         m.AppendLine(H1("App In Cache").ToString());
 
-        var locks = LoadLocks;
+        var locks = LoadLocks.Locks;
 
         var namesInMemory = locks.Select(l => l.Key).Where(key.EqualsInsensitive).Where(_dsListCache.Value.HasStream).ToList();
 

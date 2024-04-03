@@ -99,7 +99,6 @@ partial class InsightsControllerReal
         if (view.EqualsInsensitive(nameof(AttributePermissions))) return AttributePermissions(appId, type, nameId);
         if (view.EqualsInsensitive(nameof(TypeMetadata))) return TypeMetadata(appId, type);
         if (view.EqualsInsensitive(nameof(TypePermissions))) return TypePermissions(appId, type);
-        if (view.EqualsInsensitive(nameof(LightSpeedStats))) return LightSpeedStats();
 
         return $"Error: View name {view} unknown";
     }

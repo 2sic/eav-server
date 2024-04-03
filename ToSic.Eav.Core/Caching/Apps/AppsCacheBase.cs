@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -127,7 +126,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
         if (appState != null) return appState;
 
         // create lock to prevent parallel initialization
-        var lockKey = LoadLocks.GetOrAdd(cacheKey, new object());
+        var lockKey = LoadLocks.Get(cacheKey);
         lock (lockKey)
         {
             // now that lock is free, it could have been initialized, so re-check
@@ -147,7 +146,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     /// <summary>
     /// List of locks, to ensure that each app locks the loading process separately
     /// </summary>
-    private static readonly ConcurrentDictionary<string, object> LoadLocks = new();
+    private static readonly NamedLocks LoadLocks = new();
 
     #region Purge Cache
 
