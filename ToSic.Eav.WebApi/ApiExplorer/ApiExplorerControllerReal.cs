@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker responseMaker)
-    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl")
+    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [inspector, responseMaker])
 {
     public const string LogSuffix = "ApiExp";
 
