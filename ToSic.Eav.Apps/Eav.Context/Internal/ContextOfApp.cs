@@ -73,7 +73,12 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     }
     private IAppIdentity _appIdentity;
 
-    public override bool UserMayEdit => _userMayEditGet.Get(() => Log.GetterM(() =>
+    #region User Permissions / May Edit
+
+    AdminPermissions IContextOfUserPermissions.Permissions => _permissions ??= new(UserMayEdit || User.IsContentAdmin, UserMayAdmin);
+    private AdminPermissions _permissions;
+
+    private bool UserMayEdit => _userMayEditGet.Get(() => Log.GetterM(() =>
     {
         // Case 1: Superuser always may
         if (User.IsSystemAdmin) return (true, "super");
@@ -81,7 +86,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         // Case 2: No App-State
         if (AppState == null)
         {
-            if (base.UserMayEdit) return (true, "no app, use default checks");
+            if (UserMayAdmin) return (true, "no app, use UserMayAdmin checks");
 
             // If user isn't allowed yet, it may be that the environment allows it
             var fromEnv = AppServices.EnvironmentPermissions.New()
@@ -103,6 +108,9 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         return (fromApp, $"{fromApp}");
     }));
     private readonly GetOnce<bool> _userMayEditGet = new();
+
+    #endregion
+
 
     public IAppStateInternal AppState => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppStates.GetReader(AppIdentity));
     private readonly GetOnce<IAppStateInternal> _appStateInternal = new();

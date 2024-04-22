@@ -42,11 +42,9 @@ public class PublishingFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new PublishingFilter
     /// </summary>
     [PrivateApi]
-    public PublishingFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{LogPrefix}.Publsh")
+    public PublishingFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{LogPrefix}.Publsh", connect: [userPermissions])
     {
-        ConnectServices(
-            _userPermissions = userPermissions
-        );
+        _userPermissions = userPermissions;
         ProvideOut(PublishingFilterList);
     }
     private readonly IContextResolverUserPermissions _userPermissions;
@@ -54,12 +52,12 @@ public class PublishingFilter : Eav.DataSource.DataSourceBase
 
     private IImmutableList<IEntity> PublishingFilterList()
     {
-        Configuration.Parse();
-        var showDraftsInSettings = ShowDrafts;
-        var finalShowDrafts = ShowDrafts ?? _userPermissions.UserPermissions()?.UserMayEdit ?? QueryConstants.ParamsShowDraftsDefault;
-        Log.A($"get incl. draft:'{showDraftsInSettings}' = '{finalShowDrafts}'");
+        var showDraftsAsSet = ShowDrafts;
+        var l = Log.Fn<IImmutableList<IEntity>>();
+        var finalShowDrafts = showDraftsAsSet ?? _userPermissions.UserPermissions()?.IsContentAdmin ?? QueryConstants.ParamsShowDraftsDefault;
         var outStreamName = finalShowDrafts ? StreamDraftsName : StreamPublishedName;
-        return In[outStreamName].List.ToImmutableList();
+        var result = In[outStreamName].List.ToImmutableList();
+        return l.Return(result, $"showDraftSet:'{showDraftsAsSet}'; final:{finalShowDrafts}; stream: {outStreamName}; count: {result.Count}");
     }
 
 }

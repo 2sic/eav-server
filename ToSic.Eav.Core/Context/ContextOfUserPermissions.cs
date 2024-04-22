@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Helpers;
+﻿using ToSic.Eav.Plumbing;
+using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
@@ -12,14 +13,18 @@ internal class ContextOfUserPermissions(IUser user) : ServiceBase("Eav.CtxSec"),
 {
     public IUser User { get; } = user;
 
-    public bool UserMayEdit => _userMayEditWip.Get(() => Log.GetterM(() =>
+    private bool UserMayAdmin()
     {
+        var l = Log.Fn<bool>();
         var u = User;
-        if (u == null) return (false, "user unknown, false");
+        if (u == null) return l.Return(false, "user unknown, false");
         // Case 1: Superuser always may
-        if (u.IsSystemAdmin) return (true, "super");
+        if (u.IsSystemAdmin) return l.Return(true, "super");
 
-        return (u.IsSiteAdmin || u.IsSiteDeveloper, "admin/developer");
-    }));
-    private readonly GetOnce<bool> _userMayEditWip = new();
+        return l.Return(u.IsSiteAdmin || u.IsSiteDeveloper, "admin/developer");
+    }
+
+    AdminPermissions IContextOfUserPermissions.Permissions => _permissions ??= UserMayAdmin().Map(userMay => new AdminPermissions(userMay || (User?.IsContentAdmin ?? false), userMay));
+    private AdminPermissions _permissions;
+
 }

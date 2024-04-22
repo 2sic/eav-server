@@ -1,15 +1,13 @@
 ﻿namespace ToSic.Eav.Context;
 
 /// <summary>
-/// WIP 15.04
+/// WIP 15.04.
+/// Should solve problem that sometimes we need to know about the user permissions, but
+/// depending on the full context it can be more or less.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IContextOfUserPermissions
 {
-    /// <summary>
-    /// Determines if the user is regarded as an editor within this context.
-    /// Will vary depending on how much we know about the user. In the Site-context it only depends
-    /// on user permissions.
-    /// </summary>
-    bool UserMayEdit { get; }
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    AdminPermissions Permissions { get; }
 }
