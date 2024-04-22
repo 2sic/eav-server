@@ -19,9 +19,7 @@ static partial class ObjectExtensions
         where TResult : class
         => obj == null ? null : func(obj);
 
-    public static TResult Map<T, TResult>(this T obj, Func<T, TResult> func)
-        where T : class
-        where TResult : class
+    public static TResult Map<T, TResult>(this T obj, Func<T, TResult> func) where TResult : class
         => func(obj);
 
 

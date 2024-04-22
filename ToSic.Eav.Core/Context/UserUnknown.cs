@@ -4,10 +4,8 @@ using ToSic.Eav.Internal.Unknown;
 
 namespace ToSic.Eav.Context;
 
-internal sealed class UserUnknown: IUser, IIsUnknown
+internal sealed class UserUnknown(WarnUseOfUnknown<UserUnknown> _) : IUser, IIsUnknown
 {
-    public UserUnknown(WarnUseOfUnknown<UserUnknown> _) { }
-
     public string IdentityToken => "unknown(eav):0";
 
     public Guid Guid => System.Guid.Empty;
@@ -15,12 +13,6 @@ internal sealed class UserUnknown: IUser, IIsUnknown
     public List<int> Roles => [];
 
     public bool IsSystemAdmin => false;
-
-    [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
-    public bool IsSuperUser => false;
-
-    [Obsolete("deprecated in v14.09 2022-10, will be removed ca. v16 #remove16")]
-    public bool IsAdmin => false;
 
     public bool IsSiteAdmin => false;
 
