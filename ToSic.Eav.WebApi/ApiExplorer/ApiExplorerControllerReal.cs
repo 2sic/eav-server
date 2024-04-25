@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using ToSic.Eav.Context;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.WebApi.Infrastructure;
 #if NETFRAMEWORK
@@ -11,8 +12,8 @@ using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 namespace ToSic.Eav.WebApi.ApiExplorer;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker responseMaker)
-    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [inspector, responseMaker])
+public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IResponseMaker responseMaker, LazySvc<Admin.IAppExplorerControllerDependency> appFileController)
+    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [inspector, responseMaker, appFileController])
 {
     public const string LogSuffix = "ApiExp";
 
@@ -146,5 +147,40 @@ public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker r
         };
         return wrapLog.ReturnAsOk(result);
     }
+
+    public AllApiFilesDto AppApiFiles(int appId)
+    {
+        var l = Log.Fn<AllApiFilesDto>($"list all api files a#{appId}");
+
+        var mask = $"*{Constants.ApiControllerSuffix}.cs";
+
+        var localFiles =
+            appFileController.Value.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
+                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f) }).ToArray();
+        l.A($"local files:{localFiles.Length}");
+
+        var globalFiles = user.IsSystemAdmin
+            ? appFileController.Value.All(appId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
+                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f) }).ToArray()
+            : [];
+        l.A($"global files:{globalFiles.Length}");
+
+        // only for api controller files
+        var allInAppCode = appFileController.Value.AllApiFilesInAppCodeForAllEditions(appId).ToArray();
+        l.A($"all in AppCode:{allInAppCode.Length}");
+
+        return l.ReturnAsOk(new() { Files = localFiles.Union(globalFiles).Union(allInAppCode) });
+    }
+
+    private static string ApiFileEndpointPath(string relativePath)
+        => AdjustControllerName(relativePath, $"{Constants.ApiControllerSuffix}.cs").ForwardSlash().PrefixSlash();
+
+    public static string AppCodeEndpointPath(string edition, string controller)
+        => Path.Combine(edition, Constants.Api, AdjustControllerName(controller, Constants.ApiControllerSuffix)).ForwardSlash().PrefixSlash();
+
+    private static string AdjustControllerName(string controllerName, string suffix)
+        => controllerName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
+            ? controllerName.Substring(0, controllerName.Length - suffix.Length)
+            : controllerName;
 }
 

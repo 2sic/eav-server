@@ -102,6 +102,7 @@ public static class StartupWebApi
         // APIs
         services.TryAddTransient<ApiExplorerControllerReal>();
         services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
+        services.TryAddTransient<IAppExplorerControllerDependency, AppExplorerControllerDependencyUnknown>();
         // The ResponseMaker must be registered as generic, so that any specific registration will have priority
         services.TryAddScoped<IResponseMaker, ResponseMakerUnknown>();
         return services;

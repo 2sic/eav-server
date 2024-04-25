@@ -11,10 +11,4 @@ public class AllFileDto
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Shared;
-
-    public string Folder;
-    public string EndpointPath;
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? IsCompiled;
 }
