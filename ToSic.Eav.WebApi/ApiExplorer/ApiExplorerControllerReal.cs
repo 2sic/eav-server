@@ -173,10 +173,10 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
     }
 
     private static string ApiFileEndpointPath(string relativePath)
-        => AdjustControllerName(relativePath, $"{Constants.ApiControllerSuffix}.cs").ForwardSlash().PrefixSlash();
+        => AdjustControllerName(relativePath, $"{Constants.ApiControllerSuffix}.cs").ForwardSlash();
 
     public static string AppCodeEndpointPath(string edition, string controller)
-        => Path.Combine(edition, Constants.Api, AdjustControllerName(controller, Constants.ApiControllerSuffix)).ForwardSlash().PrefixSlash();
+        => Path.Combine(edition, Constants.Api, AdjustControllerName(controller, Constants.ApiControllerSuffix)).ForwardSlash();
 
     private static string AdjustControllerName(string controllerName, string suffix)
         => controllerName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
