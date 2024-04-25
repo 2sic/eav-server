@@ -2,6 +2,7 @@
 using System.Reflection;
 using ToSic.Eav.Context;
 using ToSic.Eav.Helpers;
+using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Infrastructure;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
@@ -12,7 +13,7 @@ using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 namespace ToSic.Eav.WebApi.ApiExplorer;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IResponseMaker responseMaker, LazySvc<Admin.IAppExplorerControllerDependency> appFileController)
+public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IResponseMaker responseMaker, LazySvc<IAppExplorerControllerDependency> appFileController)
     : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [inspector, responseMaker, appFileController])
 {
     public const string LogSuffix = "ApiExp";
@@ -155,22 +156,23 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
         var mask = $"*{Constants.ApiControllerSuffix}.cs";
 
         var localFiles =
-            appFileController.Value.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f) }).ToArray();
+            AppFileController.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
+                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f), Edition = AppFileController.GetEdition(appId, f) }).ToArray();
         l.A($"local files:{localFiles.Length}");
 
         var globalFiles = user.IsSystemAdmin
-            ? appFileController.Value.All(appId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f) }).ToArray()
+            ? AppFileController.All(appId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
+                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f), Edition = AppFileController.GetEdition(appId, f) }).ToArray()
             : [];
         l.A($"global files:{globalFiles.Length}");
 
         // only for api controller files
-        var allInAppCode = appFileController.Value.AllApiFilesInAppCodeForAllEditions(appId).ToArray();
+        var allInAppCode = AppFileController.AllApiFilesInAppCodeForAllEditions(appId).ToArray();
         l.A($"all in AppCode:{allInAppCode.Length}");
 
         return l.ReturnAsOk(new() { Files = localFiles.Union(globalFiles).Union(allInAppCode) });
     }
+    private IAppExplorerControllerDependency AppFileController => appFileController.Value;
 
     private static string ApiFileEndpointPath(string relativePath)
         => AdjustControllerName(relativePath, $"{Constants.ApiControllerSuffix}.cs").ForwardSlash();
