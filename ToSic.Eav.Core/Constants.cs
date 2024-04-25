@@ -102,4 +102,14 @@ public partial class Constants
     public const string GoUrl = "https://go.2sxc.org";
     public const string GoUrlSysFeats = $"{GoUrl}/sysfeats";
     public static string GoUrlFor(string code) => $"{GoUrl}/{code}";
+
+    /// <summary>
+    /// ApiController files and classes suffix
+    /// </summary>
+    public const string ApiControllerSuffix = "Controller";
+
+    /// <summary>
+    /// ApiController folder and route segment
+    /// </summary>
+    public const string Api = "api";
 }

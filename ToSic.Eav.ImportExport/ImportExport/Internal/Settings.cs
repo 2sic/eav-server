@@ -11,7 +11,8 @@ public class Settings
         ".git",
         "node_modules",
         "bower_components",
-        ".vs"
+        ".vs",
+        "obj"
     ];
 
     public static string[] ExcludeRootFolders =
