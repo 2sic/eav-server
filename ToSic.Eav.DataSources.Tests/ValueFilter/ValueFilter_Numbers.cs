@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
@@ -68,7 +69,7 @@ namespace ToSic.Eav.DataSourceTests
             => NumberFilter("Height", "180", 9818, "!=");
 
         public void ValueFilter_EntityId()
-            => NumberFilter("EntityId", "9818", 9818, "==");
+            => NumberFilter(Attributes.EntityIdPascalCase, "9818", 9818, "==");
 
         [TestMethod]
         public void Between()
