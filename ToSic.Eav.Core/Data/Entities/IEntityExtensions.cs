@@ -118,8 +118,8 @@ public static partial class IEntityExtensions
     public static Dictionary<string, object> AsDictionary(this IEntity entity)
     {
         var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v => v.Value[0]);
-        attributes.Add("EntityId", entity.EntityId);
-        attributes.Add("EntityGuid", entity.EntityGuid);
+        attributes.Add(Attributes.EntityIdPascalCase, entity.EntityId);
+        attributes.Add(Attributes.EntityGuidPascalCase, entity.EntityGuid);
         return attributes;
     }
 
@@ -127,7 +127,7 @@ public static partial class IEntityExtensions
     public static IEntity KeepOrThrowIfInvalid(this IEntity item, string contentType, object identifier)
     {
         if (item == null || contentType != null && !item.Type.Is(contentType))
-            throw new KeyNotFoundException("Can't find " + identifier + "of type '" + contentType + "'");
+            throw new KeyNotFoundException($"Can't find {identifier} of type '{contentType}'");
         return item;
     }
 }
