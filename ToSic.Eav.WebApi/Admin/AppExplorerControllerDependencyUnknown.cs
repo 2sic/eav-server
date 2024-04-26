@@ -17,8 +17,8 @@ public class AppExplorerControllerDependencyUnknown : ServiceBase, IAppExplorerC
         throw new NotImplementedException();
     }
 
-    public string GetEdition(int appId, string path)
-    {
-        throw new NotImplementedException();
-    }
+    //public string GetEdition(int appId, string path)
+    //{
+    //    throw new NotImplementedException();
+    //}
 }

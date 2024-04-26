@@ -157,12 +157,12 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
 
         var localFiles =
             AppFileController.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f), Edition = AppFileController.GetEdition(appId, f) }).ToArray();
+                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) }).ToArray();
         l.A($"local files:{localFiles.Length}");
 
         var globalFiles = user.IsSystemAdmin
             ? AppFileController.All(appId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f), Edition = AppFileController.GetEdition(appId, f) }).ToArray()
+                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) }).ToArray()
             : [];
         l.A($"global files:{globalFiles.Length}");
 
@@ -184,5 +184,23 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
         => controllerName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
             ? controllerName.Substring(0, controllerName.Length - suffix.Length)
             : controllerName;
+
+    public string GetEdition(int appId, string path)
+    {
+        var l = Log.Fn<string>($"{nameof(path)}:'{path}'");
+
+        // extract bottom folder from path
+        var edition = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)[0];
+
+        return IsRootEdition(path, edition)
+            ? l.Return(string.Empty, "edition: <root>")
+            : l.Return(edition, $"ok, edition:'{edition}'");
+    }
+
+    private static bool IsRootEdition(string path, string edition)
+        => edition.Equals(Constants.Api, StringComparison.OrdinalIgnoreCase) // <root>/api/
+           || edition.Equals(Constants.AppCode, StringComparison.OrdinalIgnoreCase) // <root>/AppCode/
+           || edition.Equals(Constants.AppDataProtectedFolder, StringComparison.OrdinalIgnoreCase) // <root>/App_Data/
+           || edition.Equals(path, StringComparison.OrdinalIgnoreCase); // path is only file without folder
 }
 

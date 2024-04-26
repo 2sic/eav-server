@@ -8,5 +8,5 @@ public interface IAppExplorerControllerDependency
 
     List<AllApiFileDto> AllApiFilesInAppCodeForAllEditions(int appId);
 
-    string GetEdition(int appId, string path);
+    //string GetEdition(int appId, string path);
 }
