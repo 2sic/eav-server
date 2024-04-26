@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Apps.Integration;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Internal.Configuration;
@@ -17,8 +18,8 @@ namespace ToSic.Eav.Apps.Internal
     /// <param name="appStates"></param>
     /// <param name="appPaths"></param>
     [PrivateApi]
-    public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, ISite site, IAppStates appStates, IAppPathsMicroSvc appPaths)
-        : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appStates, appPaths]), IAppJsonService
+    public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, ISite site, IAppStates appStates, IAppPathsMicroSvc appPaths, MemoryCacheService memoryCacheService)
+        : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appStates, appPaths, memoryCacheService]), IAppJsonService
     {
 
         /// <summary>
@@ -43,6 +44,100 @@ namespace ToSic.Eav.Apps.Internal
         private string GetAppFullPath(int appId)
             => appPaths.Init(site, appStates.ToReader(appStates.GetCacheState(appId))).PhysicalPath;
 
+
+
+        public string GetDotAppJson(int appId)
+        {
+            var l = Log.Fn<string>($"{nameof(appId)}: '{appId}'");
+
+            var cacheKey = CacheKey(appId);
+            l.A($"cache key: {cacheKey}");
+
+            if (memoryCacheService.Get(cacheKey) is string json)
+                return l.Return(json, "ok, cache hit");
+
+            var pathToDotAppJson = GetPathToDotAppJson(appId);
+            l.A($"path to '{Constants.AppJson}':'{pathToDotAppJson}'");
+
+            if (!File.Exists(pathToDotAppJson))
+                return l.ReturnNull($"warning, file '{Constants.AppJson}' not found");
+
+            json = GetDotAppJsonInternal(pathToDotAppJson);
+
+            if (string.IsNullOrEmpty(json))
+                return l.ReturnNull("warning, json is empty");
+
+            memoryCacheService.Set(new(cacheKey, json), keys: [CacheKeyInternal(pathToDotAppJson)]);
+
+            return l.ReturnAsOk(json);
+        }
+        private string CacheKey(int appId) => $"{nameof(AppJsonService)}:{nameof(appId)}:{appId}";
+
+        //public string GetDotAppJson(string sourceFolder)
+        //{
+        //    var l = Log.Fn<string>($"{nameof(sourceFolder)}: '{sourceFolder}'");
+
+        //    var cacheKey = CacheKey(sourceFolder);
+        //    l.A($"cache key: {cacheKey}");
+
+        //    if (memoryCacheService.Get(cacheKey) is string json)
+        //        return l.Return(json, "ok, cache hit");
+
+        //    var pathToDotAppJson = GetPathToDotAppJson(sourceFolder);
+        //    l.A($"path to '{Constants.AppJson}':'{pathToDotAppJson}'");
+
+        //    if (!File.Exists(pathToDotAppJson))
+        //        return l.ReturnNull($"warning, file '{Constants.AppJson}' not found");
+
+        //    json = GetDotAppJsonInternal(pathToDotAppJson);
+
+        //    if (string.IsNullOrEmpty(json))
+        //        return l.ReturnNull("warning, json is empty");
+
+        //    var expiration = new TimeSpan(1, 0, 0);
+        //    var policy = new CacheItemPolicy { SlidingExpiration = expiration };
+        //    policy.ChangeMonitors.Add(memoryCacheService.CreateCacheEntryChangeMonitor([CacheKeyInternal(pathToDotAppJson)])); // cache dependency on existing cache item;        
+        //    memoryCacheService.Set(new(cacheKey, json), policy);
+
+        //    return l.ReturnAsOk(json);
+        //}
+        //private string CacheKey(string sourceFolder) => $"{nameof(AppJsonService)}:{nameof(sourceFolder)}:{sourceFolder}";
+
+        private string GetDotAppJsonInternal(string pathToDotAppJson)
+        {
+            var l = Log.Fn<string>($"{nameof(pathToDotAppJson)}:'{pathToDotAppJson}'");
+
+            var cacheKey = CacheKeyInternal(pathToDotAppJson);
+            l.A($"cache key: {cacheKey}");
+
+            if (memoryCacheService.Get(cacheKey) is string json)
+                return l.Return(json, "ok, cache hit");
+
+            if (!File.Exists(pathToDotAppJson))
+                return l.ReturnNull($"warning, file '{Constants.AppJson}' not found");
+
+            json = null;
+
+            try
+            {
+                json = File.ReadAllText(pathToDotAppJson);
+                l.A($"json read from file, size:{json.Length}");
+            }
+            catch (Exception e)
+            {
+                l.Ex(e);
+            }
+
+            if (string.IsNullOrEmpty(json))
+                return l.ReturnNull("warning, json is empty");
+
+            memoryCacheService.Set(new(cacheKey, json), filePaths: [pathToDotAppJson]);
+
+            return l.ReturnAsOk(json);
+        }
+        private string CacheKeyInternal(string pathToDotAppJson) => $"{nameof(AppJsonService)}:{nameof(pathToDotAppJson)}:{pathToDotAppJson}";
+
+
         public List<string> ExcludeSearchPatterns(string sourceFolder)
         {
             var l = Log.Fn<List<string>>($"{nameof(sourceFolder)}: '{sourceFolder}'");
@@ -51,7 +146,7 @@ namespace ToSic.Eav.Apps.Internal
                 return l.Return([], $"warning, can't find source folder '{sourceFolder}'");
 
             // validate app.json content
-            var jsonString = File.ReadAllText(GetPathToDotAppJson(sourceFolder));
+            var jsonString = GetDotAppJsonInternal(sourceFolder);
             if (string.IsNullOrEmpty(jsonString))
                 return l.Return([], $"warning, '{Constants.AppJson}' is empty");
 
@@ -64,7 +159,7 @@ namespace ToSic.Eav.Apps.Internal
                     .Where(e => !string.IsNullOrEmpty(e) && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
                     .Select(e => e.StartsWith(@"\") ? Path.Combine(sourceFolder, e.Substring(1)) : e) // handle case with starting slash
                     .Select(e => e.ToLowerInvariant())
-                    .ToList(),"ok");
+                    .ToList(), "ok");
             }
             catch (Exception e)
             {

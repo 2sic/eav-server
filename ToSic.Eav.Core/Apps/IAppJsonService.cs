@@ -10,5 +10,7 @@ public interface IAppJsonService
 
     string GetPathToDotAppJson(string sourceFolder);
 
+    string GetDotAppJson(int appId);
+
     List<string> ExcludeSearchPatterns(string sourceFolder);
 }
