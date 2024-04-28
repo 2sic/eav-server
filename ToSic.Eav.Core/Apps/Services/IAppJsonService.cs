@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Services;
 
 public interface IAppJsonService
 {
     void MoveAppJsonTemplateFromOldToNewLocation();
 
-    string GetPathToDotAppJson(int appId);
+    //string GetPathToDotAppJson(int appId);
 
     string GetPathToDotAppJson(string sourceFolder);
 
-    string GetDotAppJson(int appId);
+    AppJson GetDotAppJson(int appId);
 
     List<string> ExcludeSearchPatterns(string sourceFolder);
 }
