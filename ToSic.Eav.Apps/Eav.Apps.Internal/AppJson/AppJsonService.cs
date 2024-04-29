@@ -152,4 +152,6 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
             return l.Return([], $"warning, json is not valid in '{Constants.AppJson}'");
         }
     }
+
+    public bool RazorCompilerAlwaysUseRoslyn(int? appId) => appId.HasValue && GetDotAppJson(appId.Value)?.DotNet?.RazorCompiler?.Equals("roslyn", StringComparison.OrdinalIgnoreCase) == true;
 }

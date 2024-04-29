@@ -13,4 +13,6 @@ public interface IAppJsonService
     AppJson GetDotAppJson(int appId);
 
     List<string> ExcludeSearchPatterns(string sourceFolder);
+
+    bool RazorCompilerAlwaysUseRoslyn(int? appId);
 }
