@@ -44,7 +44,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
     {
         var l = Log.Fn<AppJson>($"{nameof(appId)}: '{appId}'");
 
-        var cacheKey = CacheKey(appId);
+        var cacheKey = AppJsonCacheKey(appId);
         l.A($"cache key: {cacheKey}");
 
         if (memoryCacheService.Get(cacheKey) is AppJson appJson)
@@ -62,7 +62,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
         return l.ReturnAsOk(appJson);
     }
 
-    private string CacheKey(int appId) => $"{nameof(AppJsonService)}:{nameof(appId)}:{appId}";
+    public string AppJsonCacheKey(int appId) => $"{nameof(AppJsonService)}:{nameof(appId)}:{appId}";
 
     /// <summary>
     /// Find parent path that exist to use it as cache dependency (folder cache monitor) 

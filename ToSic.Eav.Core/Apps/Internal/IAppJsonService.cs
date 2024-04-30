@@ -12,5 +12,7 @@ public interface IAppJsonService
 
     AppJson GetAppJson(int appId);
 
+    string AppJsonCacheKey(int appId);
+
     List<string> ExcludeSearchPatterns(string sourceFolder);
 }
