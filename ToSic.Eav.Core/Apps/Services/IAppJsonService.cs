@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Apps.Services;
 
+// todo: @STV MOVE TO Apps.Internal
 public interface IAppJsonService
 {
     void MoveAppJsonTemplateFromOldToNewLocation();
@@ -14,5 +15,6 @@ public interface IAppJsonService
 
     List<string> ExcludeSearchPatterns(string sourceFolder);
 
-    bool RazorCompilerAlwaysUseRoslyn(int? appId);
+    // TODO: @STV - appId should not be nullable
+    bool DnnCompilerAlwaysUseRoslyn(int? appId);
 }

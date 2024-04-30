@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace ToSic.Eav.Apps.State
+namespace ToSic.Eav.Apps.State;
+
+public interface IAppStateChanges
 {
-    public interface IAppStateChanges
-    {
-        event EventHandler AppStateChanged;
-    }
+    event EventHandler AppStateChanged;
 }

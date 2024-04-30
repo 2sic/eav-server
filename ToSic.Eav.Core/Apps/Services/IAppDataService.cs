@@ -1,6 +1,5 @@
-﻿namespace ToSic.Eav.Apps.Services
+﻿namespace ToSic.Eav.Apps.Services;
+
+public interface IAppDataService: IAppEntityService, IAppContentTypeService
 {
-    public interface IAppDataService: IAppEntityService, IAppContentTypeService
-    {
-    }
 }

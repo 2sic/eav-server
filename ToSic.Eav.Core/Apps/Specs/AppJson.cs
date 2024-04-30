@@ -3,6 +3,8 @@
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;
 
+// todo: @STV MOVE TO Apps.Internal.Specs - entire folder
+
 /// <summary>
 /// Used to deserialize 'editions' from app.json
 /// </summary>
@@ -21,9 +23,10 @@ public class ExportConfig
 
 public class DotNetConfig
 {
-    public string RazorCompiler { get; set; }
+    public string Compiler { get; set; }
 }
 
+// TODO: probably not use constructor
 public class EditionInfo(string description)
 {
     public string Description { get; set; } = description;

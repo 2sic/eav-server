@@ -2,6 +2,9 @@
 
 namespace ToSic.Eav.Apps.Services;
 
+/// <summary>
+/// TODO: @STV COMMENT WHY THIS EXISTS
+/// </summary>
 [PrivateApi]
 public interface IJsonServiceInternal
 {

@@ -17,6 +17,7 @@ namespace ToSic.Eav.Apps.Internal;
 /// <param name="appStates"></param>
 /// <param name="appPaths"></param>
 [PrivateApi]
+[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, ISite site, IAppStates appStates, IAppPathsMicroSvc appPaths, MemoryCacheService memoryCacheService, Lazy<IJsonServiceInternal> json)
     : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appStates, appPaths, memoryCacheService, json]), IAppJsonService
 {
@@ -37,13 +38,19 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
     public string GetPathToDotAppJson(int appId)
         => GetPathToDotAppJson(GetAppFullPath(appId));
 
+    // TODO: CONSIDER making private
+    // probably better to just use the pattern (or not), but not worry about file-existance in export
     public string GetPathToDotAppJson(string sourceFolder) 
         => Path.Combine(sourceFolder, Constants.AppDataProtectedFolder, Constants.AppJson);
 
     private string GetAppFullPath(int appId)
         => appPaths.Init(site, appStates.ToReader(appStates.GetCacheState(appId))).PhysicalPath;
 
-
+    /// <summary>
+    /// Get the settings object from the App.json file in the App_Data folder
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <returns>The AppJson object, or null</returns>
     public AppJson GetDotAppJson(int appId)
     {
         var l = Log.Fn<AppJson>($"{nameof(appId)}: '{appId}'");
@@ -62,6 +69,8 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
 
         appJson = GetDotAppJsonInternal(pathToDotAppJson);
 
+        // not ideal, I think null should be cached too, otherwise we do a lot of ongoing checks, especially if it doesn't exist, which is often the case
+        // Maybe create a special call on the memory service for this kind of operation...
         if (appJson == null)
             return l.ReturnNull("warning, json is empty");
 
@@ -69,18 +78,23 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
 
         return l.ReturnAsOk(appJson);
     }
+
     private string CacheKey(int appId) => $"{nameof(AppJsonService)}:{nameof(appId)}:{appId}";
 
+    // todo: consolidate
     private AppJson GetDotAppJsonInternal(string pathToDotAppJson)
     {
         var l = Log.Fn<AppJson>($"{nameof(pathToDotAppJson)}:'{pathToDotAppJson}'");
 
+        // duplicate
         var cacheKey = CacheKeyInternal(pathToDotAppJson);
         l.A($"cache key: {cacheKey}");
 
+        // duplicate
         if (memoryCacheService.Get(cacheKey) is AppJson appJson)
             return l.Return(appJson, "ok, internal cache hit");
 
+        // duplicate
         if (!File.Exists(pathToDotAppJson))
             return l.ReturnNull($"warning, file '{Constants.AppJson}' not found");
 
@@ -101,6 +115,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
             l.Ex(e);
         }
 
+        // duplicate, but with file path
         memoryCacheService.Set(new(cacheKey, appJson), filePaths: [pathToDotAppJson]);
 
         return l.ReturnAsOk(appJson);
@@ -127,6 +142,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
 
         return l.ReturnAsOk(excludeSearchPatterns);
     }
+
     private string CacheKey(string sourceFolder) => $"{nameof(AppJsonService)}:{nameof(sourceFolder)}:{sourceFolder}";
 
     private List<string> ExcludeSearchPatternsInternal(string sourceFolder)
@@ -153,5 +169,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
         }
     }
 
-    public bool RazorCompilerAlwaysUseRoslyn(int? appId) => appId.HasValue && GetDotAppJson(appId.Value)?.DotNet?.RazorCompiler?.Equals("roslyn", StringComparison.OrdinalIgnoreCase) == true;
+    // TODO: MAKE extension method in Dnn DLL
+    public bool DnnCompilerAlwaysUseRoslyn(int? appId)
+        => appId.HasValue && GetDotAppJson(appId.Value)?.DotNet?.Compiler?.Equals("roslyn", StringComparison.OrdinalIgnoreCase) == true;
 }
