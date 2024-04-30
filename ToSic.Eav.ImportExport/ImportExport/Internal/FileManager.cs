@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using ToSic.Eav.Apps.Services;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.DI;
@@ -78,23 +78,15 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         var hardcodedExcludedFolders = GetHardcodedExcludedFolders();
         l.A($"Hardcoded excluded folders count: {hardcodedExcludedFolders.Count}");
 
-        var pathToDotAppJson = appJsonService.Value.GetPathToDotAppJson(_sourceFolder);
-        IEnumerable<string> files;
-
-        if (File.Exists(pathToDotAppJson))
-        {
-            l.A($"Exclude files based on {pathToDotAppJson}");
-            files = ExcludeFilesBasedOnExcludeInDotAppJson(_root, searchPattern);
-        }
-        else
-        {
-            l.A($"Can't find {pathToDotAppJson}, exclude files using old way");
-            files = AllFiles(searchPattern);
-        }
+        var usingAppJson = appJsonService.Value.ExcludeSearchPatterns(_sourceFolder).Any();
+        var files = usingAppJson 
+            ? ExcludeFilesBasedOnExcludeInDotAppJson(_root, searchPattern) // based on app.json
+            : AllFiles(searchPattern); // old way
+        l.A($"Exclude files {(usingAppJson ? $"based on {Constants.AppJson}" : "using old way")}");
 
         l.A($"Process excluding files based on hardcoded exclusions");
         var filteredFiles = files
-            .Where(file => !FileManager.IsFileInExcludedFolder(file, hardcodedExcludedFolders))
+            .Where(file => !IsFileInExcludedFolder(file, hardcodedExcludedFolders))
             .ToList();
 
         l.A($"Returning filtered files based on exclusion criteria");
@@ -126,12 +118,11 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
     /// <returns></returns>
     public IEnumerable<string> GetAllTransferableFolders(string searchPattern = "*.*") => Log.Func(l =>
     {
-        var pathToDotAppJson = appJsonService.Value.GetPathToDotAppJson(_sourceFolder);
-        if (File.Exists(pathToDotAppJson)) // exclude files based on app.json from v14.08
-            return (ExcludeFoldersBasedOnExcludeInDotAppJson(_root, searchPattern).ToList(), $"ok, exclude folders based on {pathToDotAppJson}");
+        if (appJsonService.Value.ExcludeSearchPatterns(_sourceFolder).Any()) // exclude files based on app.json from v14.08
+            return (ExcludeFoldersBasedOnExcludeInDotAppJson(_root, searchPattern).ToList(), $"ok, exclude folders based on {Constants.AppJson}");
 
         // old hardcoded way of excluding files
-        l.A($"can't find {pathToDotAppJson}, exclude folders on old way");
+        l.A($"can't find ExcludeSearchPatterns in {Constants.AppJson}, exclude folders on old way");
         // add folder slashes to ensure the term is part of a folder, not within a file-name
         var exclAnyFolder = Settings.ExcludeFolders
             .Select(f => $"{DirectorySeparatorChar}{f}{DirectorySeparatorChar}")

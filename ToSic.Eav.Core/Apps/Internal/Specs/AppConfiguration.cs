@@ -1,18 +1,18 @@
 ﻿using System;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
+using ToSic.Sxc.Apps;
 // ReSharper disable UnusedMember.Global - we need these, as it's a public API
 
-namespace ToSic.Sxc.Apps;
+namespace ToSic.Eav.Apps.Internal.Specs;
 
 /// <summary>
 /// The configuration of the app, as you can set it in the app-package definition.
 /// </summary>
 [PrivateApi("Note: was public till 16.08")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class AppConfiguration: EntityBasedWithLog, IAppConfiguration
+internal class AppConfiguration : EntityBasedWithLog, IAppConfiguration
 {
     // todo: probably move most to Eav.Apps.AppConstants
     [PrivateApi] public const string FieldAllowRazor = "AllowRazorTemplates";
@@ -29,7 +29,7 @@ internal class AppConfiguration: EntityBasedWithLog, IAppConfiguration
 
     public Version Version => GetVersionOrDefault(nameof(Version));
 
-    public string Name => Get(AppLoadConstants.FieldName, Eav.Constants.NullNameId);
+    public string Name => Get(AppLoadConstants.FieldName, Constants.NullNameId);
 
     public string Description => GetThis("");
 
@@ -48,7 +48,7 @@ internal class AppConfiguration: EntityBasedWithLog, IAppConfiguration
     public Version RequiredSxc => GetVersionOrDefault(FieldRequiredSxcVersion);
 
     public Version RequiredDnn => GetVersionOrDefault(FieldRequiredDnnVersion);
-        
+
     public Version RequiredOqtane => GetVersionOrDefault(FieldRequiredOqtaneVersion);
 
     private Version GetVersionOrDefault(string name) =>

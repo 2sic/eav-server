@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps.Internal.Specs;
 
 /// <summary>
 /// This contains system level settings for an app.
@@ -17,7 +17,7 @@ public class AppSysSettings
 
     /// <summary>
     /// Determines if this app inherits from another app.
-    /// Typically as of v13 it's true if the Ancestor is set. 
+    /// Typically, as of v13 it's true if the Ancestor is set. 
     /// </summary>
     public bool Inherit { get; set; }
 

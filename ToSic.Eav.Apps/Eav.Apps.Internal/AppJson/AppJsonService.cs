@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using ToSic.Eav.Apps.Integration;
-using ToSic.Eav.Apps.Services;
+using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Helpers;
@@ -35,23 +35,12 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
             File.Move(oldAppJsonTemplateFilePath, appJsonTemplateFilePath);
     }
 
-    public string GetPathToDotAppJson(int appId)
-        => GetPathToDotAppJson(GetAppFullPath(appId));
-
-    // TODO: CONSIDER making private
-    // probably better to just use the pattern (or not), but not worry about file-existance in export
-    public string GetPathToDotAppJson(string sourceFolder) 
-        => Path.Combine(sourceFolder, Constants.AppDataProtectedFolder, Constants.AppJson);
-
-    private string GetAppFullPath(int appId)
-        => appPaths.Init(site, appStates.ToReader(appStates.GetCacheState(appId))).PhysicalPath;
-
     /// <summary>
     /// Get the settings object from the App.json file in the App_Data folder
     /// </summary>
     /// <param name="appId"></param>
     /// <returns>The AppJson object, or null</returns>
-    public AppJson GetDotAppJson(int appId)
+    public AppJson GetAppJson(int appId)
     {
         var l = Log.Fn<AppJson>($"{nameof(appId)}: '{appId}'");
 
@@ -61,71 +50,88 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
         if (memoryCacheService.Get(cacheKey) is AppJson appJson)
             return l.Return(appJson, "ok, cache hit");
 
-        var pathToDotAppJson = GetPathToDotAppJson(appId);
-        l.A($"path to '{Constants.AppJson}':'{pathToDotAppJson}'");
+        var pathToAppJson = GetPathToAppJson(appId);
+        l.A($"path to '{Constants.AppJson}':'{pathToAppJson}'");
 
-        if (!File.Exists(pathToDotAppJson))
-            return l.ReturnNull($"warning, file '{Constants.AppJson}' not found");
-
-        appJson = GetDotAppJsonInternal(pathToDotAppJson);
-
-        // not ideal, I think null should be cached too, otherwise we do a lot of ongoing checks, especially if it doesn't exist, which is often the case
-        // Maybe create a special call on the memory service for this kind of operation...
-        if (appJson == null)
-            return l.ReturnNull("warning, json is empty");
-
-        memoryCacheService.Set(new(cacheKey, appJson), keys: [CacheKeyInternal(pathToDotAppJson)]);
+        appJson = GetAppJsonInternal(pathToAppJson);
+        if (appJson != null)
+            memoryCacheService.Set(new(cacheKey, appJson), filePaths: [pathToAppJson]); // cache appJson
+        else
+            memoryCacheService.Set(new(cacheKey, new AppJson()), folderPaths: GetExistingParent(pathToAppJson)); // cache null
 
         return l.ReturnAsOk(appJson);
     }
 
     private string CacheKey(int appId) => $"{nameof(AppJsonService)}:{nameof(appId)}:{appId}";
 
-    // todo: consolidate
-    private AppJson GetDotAppJsonInternal(string pathToDotAppJson)
+    /// <summary>
+    /// Find parent path that exist to use it as cache dependency (folder cache monitor) 
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns>list with single item</returns>
+    private List<string> GetExistingParent(string filePath)
     {
-        var l = Log.Fn<AppJson>($"{nameof(pathToDotAppJson)}:'{pathToDotAppJson}'");
+        var l = Log.Fn<List<string>>($"{nameof(filePath)}:'{filePath}'");
 
-        // duplicate
-        var cacheKey = CacheKeyInternal(pathToDotAppJson);
-        l.A($"cache key: {cacheKey}");
+        var parentPath = Path.GetDirectoryName(filePath);
 
-        // duplicate
-        if (memoryCacheService.Get(cacheKey) is AppJson appJson)
-            return l.Return(appJson, "ok, internal cache hit");
+        // find parent path folder that exist
+        do
+        {
+            if (Directory.Exists(parentPath))
+                return l.ReturnAsOk([parentPath]);
+            parentPath = Path.GetDirectoryName(parentPath);
+        } while (!string.IsNullOrEmpty(parentPath));
+        return l.Return([], "warning, parent path not found");
+    }
 
-        // duplicate
-        if (!File.Exists(pathToDotAppJson))
-            return l.ReturnNull($"warning, file '{Constants.AppJson}' not found");
+    private string GetPathToAppJson(int appId)
+        => GetPathToAppJson(GetAppFullPath(appId));
 
-        appJson = null;
+    private static string GetPathToAppJson(string sourceFolder)
+        => Path.Combine(sourceFolder, Constants.AppDataProtectedFolder, Constants.AppJson);
 
+    private string GetAppFullPath(int appId)
+        => appPaths.Init(site, appStates.ToReader(appStates.GetCacheState(appId))).PhysicalPath;
+
+    private AppJson GetAppJsonInternal(string pathToAppJson)
+    {
+        var l = Log.Fn<AppJson>($"{nameof(pathToAppJson)}:'{pathToAppJson}'");
+
+        if (!File.Exists(pathToAppJson))
+            return l.ReturnNull($"file '{Constants.AppJson}' not found");
+
+        AppJson appJson;
         try
         {
-            var text = File.ReadAllText(pathToDotAppJson);
+            var text = File.ReadAllText(pathToAppJson);
             l.A($"json read from file, size:{text.Length}");
 
             if (string.IsNullOrEmpty(text))
-                return l.ReturnNull("warning, json is empty");
+                return l.Return(new(),"json is empty");
 
             appJson = json.Value.To<AppJson>(text);
+            if (appJson == null)
+                return l.Return(new(),"appJson is null");
         }
         catch (Exception e)
         {
             l.Ex(e);
+            return l.Return(new(), "json is not valid");
         }
-
-        // duplicate, but with file path
-        memoryCacheService.Set(new(cacheKey, appJson), filePaths: [pathToDotAppJson]);
 
         return l.ReturnAsOk(appJson);
     }
-    private string CacheKeyInternal(string pathToDotAppJson) => $"{nameof(AppJsonService)}:{nameof(pathToDotAppJson)}:{pathToDotAppJson}";
 
 
+    /// <summary>
+    /// Get the exclude search patterns from the App.json file in the App_Data folder
+    /// </summary>
+    /// <param name="sourceFolder"></param>
+    /// <returns>List&lt;string&gt;</returns>
     public List<string> ExcludeSearchPatterns(string sourceFolder)
     {
-        var l = Log.Fn<List<string>>($"{nameof(sourceFolder)}: '{sourceFolder}'"); 
+        var l = Log.Fn<List<string>>($"{nameof(sourceFolder)}: '{sourceFolder}'");
 
         var cacheKey = CacheKey(sourceFolder);
         l.A($"cache key: {cacheKey}");
@@ -134,11 +140,10 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
             return l.Return(excludeSearchPatterns, "ok, cache hit");
 
         excludeSearchPatterns = ExcludeSearchPatternsInternal(sourceFolder);
-
-        if (excludeSearchPatterns == null)
-            return l.ReturnNull("warning, json is empty");
-
-        memoryCacheService.Set(new(cacheKey, excludeSearchPatterns), keys: [CacheKeyInternal(GetPathToDotAppJson(sourceFolder))]);
+        if (excludeSearchPatterns != null)
+            memoryCacheService.Set(new(cacheKey, excludeSearchPatterns), filePaths: [GetPathToAppJson(sourceFolder)]);
+        else
+            memoryCacheService.Set(new(cacheKey, new List<string>()), folderPaths: GetExistingParent(GetPathToAppJson(sourceFolder))); // cache null
 
         return l.ReturnAsOk(excludeSearchPatterns);
     }
@@ -149,9 +154,9 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
     {
         var l = Log.Fn<List<string>>($"{nameof(sourceFolder)}: '{sourceFolder}'");
 
-        var appJson = GetDotAppJsonInternal(GetPathToDotAppJson(sourceFolder));
-        if (appJson.Export?.Exclude == null)
-            return l.Return([], $"warning, '{Constants.AppJson}' is empty or 'export.exclude' configuration is missing");
+        var appJson = GetAppJsonInternal(GetPathToAppJson(sourceFolder));
+        if (appJson?.Export?.Exclude == null)
+            return l.ReturnNull($"warning, '{Constants.AppJson}' is missing.");
 
         try
         {
@@ -168,8 +173,4 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
             return l.Return([], $"warning, json is not valid in '{Constants.AppJson}'");
         }
     }
-
-    // TODO: MAKE extension method in Dnn DLL
-    public bool DnnCompilerAlwaysUseRoslyn(int? appId)
-        => appId.HasValue && GetDotAppJson(appId.Value)?.DotNet?.Compiler?.Equals("roslyn", StringComparison.OrdinalIgnoreCase) == true;
 }

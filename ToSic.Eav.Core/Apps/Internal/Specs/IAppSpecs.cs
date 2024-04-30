@@ -1,9 +1,9 @@
 ﻿using ToSic.Lib.Data;
 using ToSic.Sxc.Apps;
 
-namespace ToSic.Eav.Apps.Specs;
+namespace ToSic.Eav.Apps.Internal.Specs;
 
-public interface IAppSpecs: IAppIdentity, IHasIdentityNameId
+public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
 {
     string Name { get; }
 
