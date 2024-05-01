@@ -144,8 +144,9 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
             memoryCacheService.Set(new(cacheKey, excludeSearchPatterns), filePaths: [GetPathToAppJson(sourceFolder)]);
         else
             memoryCacheService.Set(new(cacheKey, new List<string>()), folderPaths: GetExistingParent(GetPathToAppJson(sourceFolder))); // cache null
-
-        return l.ReturnAsOk(excludeSearchPatterns);
+        
+        // return result; never return null, as we have a lot of .Any() checks which fail otherwise
+        return l.ReturnAsOk(excludeSearchPatterns ?? []);
     }
 
     private string CacheKey(string sourceFolder) => $"{nameof(AppJsonService)}:{nameof(sourceFolder)}:{sourceFolder}";
@@ -161,7 +162,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
         try
         {
             return l.Return(appJson.Export.Exclude
-                .Select(e => (e.ToString()).Trim().Backslash())
+                .Select(e => e.ToString().Trim().Backslash())
                 .Where(e => !string.IsNullOrEmpty(e) && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
                 .Select(e => e.StartsWith(@"\") ? Path.Combine(sourceFolder, e.Substring(1)) : e) // handle case with starting slash
                 .Select(e => e.ToLowerInvariant())
