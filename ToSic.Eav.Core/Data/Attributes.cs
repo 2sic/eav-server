@@ -70,6 +70,9 @@ public class Attributes
     public const string EntityFieldOwnerId = "ownerid";
     public const string EntityFieldCreatorWIP = "creator";  // this is not in use yet, but probably will be soon
 
+    public const string EntityIdPascalCase = "EntityId";
+    public const string EntityGuidPascalCase = "EntityGuid";
+
     /// <summary>
     /// New v15.04
     /// </summary>

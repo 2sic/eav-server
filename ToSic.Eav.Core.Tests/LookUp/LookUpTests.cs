@@ -35,11 +35,11 @@ namespace ToSic.Eav.Core.Tests.LookUp
             ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<DataBuilder>()).TestEntityDaniel(), null);
 
             Assert.AreNotEqual(string.Empty, valProv.Get("FirstName"), "Has first name");
-            Assert.AreNotEqual(string.Empty, valProv.Get("EntityId"), "Has entity id");
+            Assert.AreNotEqual(string.Empty, valProv.Get(Attributes.EntityIdPascalCase), "Has entity id");
             Assert.AreNotEqual(string.Empty, valProv.Get(Attributes.EntityFieldTitle), "Has entity title");
             Assert.AreEqual("Mettler", valProv.Get("LastName", ""));
             Assert.AreEqual("Mettler", valProv.Get("LastName"));
-            Assert.AreEqual(1.ToString(), valProv.Get("EntityId"));
+            Assert.AreEqual(1.ToString(), valProv.Get(Attributes.EntityIdPascalCase));
             Assert.AreEqual("Daniel", valProv.Get(Attributes.EntityFieldTitle));
             // this test can't work, because ispublished is blank on a light entity
             // Assert.IsTrue(Convert.ToBoolean(valProv.Get("IsPublished")));

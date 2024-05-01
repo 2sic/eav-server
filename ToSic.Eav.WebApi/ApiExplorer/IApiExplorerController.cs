@@ -9,5 +9,7 @@ namespace ToSic.Eav.WebApi.ApiExplorer
     public interface IApiExplorerController
     {
         THttpResponseType Inspect(string path);
+
+        AllApiFilesDto AppApiFiles(int appId);
     }
 }

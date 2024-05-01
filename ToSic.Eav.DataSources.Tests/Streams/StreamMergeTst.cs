@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
@@ -99,7 +100,7 @@ namespace ToSic.Eav.DataSourceTests.Streams
         private ValueFilter GenerateSecondStreamWithSomeResults(StreamMerge sf, int itemsInSecondStream)
         {
             var secondSf = CreateDataSource<ValueFilter>(sf.InForTests().First().Value);
-            secondSf.Attribute = "EntityId";
+            secondSf.Attribute = Attributes.EntityIdPascalCase;
             secondSf.Operator = "<";
             secondSf.Value = (FirstId + itemsInSecondStream).ToString();
             Assert.AreEqual(itemsInSecondStream, secondSf.ListForTests().Count(),

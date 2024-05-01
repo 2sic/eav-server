@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Reflection;
+using ToSic.Eav.Context;
 using ToSic.Eav.Helpers;
+using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Infrastructure;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
@@ -11,8 +13,8 @@ using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 namespace ToSic.Eav.WebApi.ApiExplorer;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker responseMaker)
-    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl")
+public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IResponseMaker responseMaker, LazySvc<IAppExplorerControllerDependency> appFileController)
+    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [inspector, responseMaker, appFileController])
 {
     public const string LogSuffix = "ApiExp";
 
@@ -146,5 +148,59 @@ public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker r
         };
         return wrapLog.ReturnAsOk(result);
     }
+
+    public AllApiFilesDto AppApiFiles(int appId)
+    {
+        var l = Log.Fn<AllApiFilesDto>($"list all api files a#{appId}");
+
+        var mask = $"*{Constants.ApiControllerSuffix}.cs";
+
+        var localFiles =
+            AppFileController.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
+                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) }).ToArray();
+        l.A($"local files:{localFiles.Length}");
+
+        var globalFiles = user.IsSystemAdmin
+            ? AppFileController.All(appId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
+                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) }).ToArray()
+            : [];
+        l.A($"global files:{globalFiles.Length}");
+
+        // only for api controller files
+        var allInAppCode = AppFileController.AllApiFilesInAppCodeForAllEditions(appId).ToArray();
+        l.A($"all in AppCode:{allInAppCode.Length}");
+
+        return l.ReturnAsOk(new() { Files = localFiles.Union(globalFiles).Union(allInAppCode) });
+    }
+    private IAppExplorerControllerDependency AppFileController => appFileController.Value;
+
+    private static string ApiFileEndpointPath(string relativePath)
+        => AdjustControllerName(relativePath, $"{Constants.ApiControllerSuffix}.cs").ForwardSlash();
+
+    public static string AppCodeEndpointPath(string edition, string controller)
+        => Path.Combine(edition, Constants.Api, AdjustControllerName(controller, Constants.ApiControllerSuffix)).ForwardSlash();
+
+    private static string AdjustControllerName(string controllerName, string suffix)
+        => controllerName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
+            ? controllerName.Substring(0, controllerName.Length - suffix.Length)
+            : controllerName;
+
+    public string GetEdition(int appId, string path)
+    {
+        var l = Log.Fn<string>($"{nameof(path)}:'{path}'");
+
+        // extract bottom folder from path
+        var edition = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)[0];
+
+        return IsRootEdition(path, edition)
+            ? l.Return(string.Empty, "edition: <root>")
+            : l.Return(edition, $"ok, edition:'{edition}'");
+    }
+
+    private static bool IsRootEdition(string path, string edition)
+        => edition.Equals(Constants.Api, StringComparison.OrdinalIgnoreCase) // <root>/api/
+           || edition.Equals(Constants.AppCode, StringComparison.OrdinalIgnoreCase) // <root>/AppCode/
+           || edition.Equals(Constants.AppDataProtectedFolder, StringComparison.OrdinalIgnoreCase) // <root>/App_Data/
+           || edition.Equals(path, StringComparison.OrdinalIgnoreCase); // path is only file without folder
 }
 

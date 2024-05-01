@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.Specs;
+﻿using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Metadata;
 
 // ReSharper disable once CheckNamespace

@@ -1,5 +1,6 @@
-﻿using System.Text.Json;
+﻿using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Serialization;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 

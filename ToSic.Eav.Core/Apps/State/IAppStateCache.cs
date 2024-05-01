@@ -6,26 +6,25 @@ using ToSic.Eav.Metadata;
 using ToSic.Lib.Data;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.State
+namespace ToSic.Eav.Apps.State;
+
+public interface IAppStateCache: ICacheExpiring, IHasMetadata, IHasPiggyBack, IAppIdentity, IHasMetadataSource, IHasIdentityNameId, 
+    IEntitiesSource, IHasLog
 {
-    public interface IAppStateCache: ICacheExpiring, IHasMetadata, IHasPiggyBack, IAppIdentity, IHasMetadataSource, IHasIdentityNameId, 
-        IEntitiesSource, IHasLog
-    {
 
-        string Folder { get; }
+    string Folder { get; }
 
-        AppRelationshipManager Relationships { get; }
+    AppRelationshipManager Relationships { get; }
 
-        AppStateMetadata ThingInApp(AppThingsToStack target);
+    AppStateMetadata ThingInApp(AppThingsToStack target);
 
-        ParentAppState ParentApp { get; }
+    ParentAppState ParentApp { get; }
 
-        ICacheStatistics CacheStatistics { get; }
+    ICacheStatistics CacheStatistics { get; }
 
-        int DynamicUpdatesCount { get; }
+    int DynamicUpdatesCount { get; }
 
-        void PreRemove();
+    void PreRemove();
 
-        void DoInLock(ILog parentLog, Action transaction);
-    }
+    void DoInLock(ILog parentLog, Action transaction);
 }

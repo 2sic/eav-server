@@ -88,7 +88,7 @@ public class QueryBuilder: ServiceBase
         // centralizing building of the primary configuration template for each part
         var baseLookUp = new LookUpEngine(lookUpEngineToClone, Log);
 
-        var showDrafts = _userPermissions.UserPermissions().UserMayEdit;
+        var showDrafts = _userPermissions.UserPermissions().IsContentAdmin;
         if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
             paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 

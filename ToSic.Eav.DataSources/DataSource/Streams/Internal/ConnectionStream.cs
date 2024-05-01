@@ -88,6 +88,4 @@ internal class ConnectionStream(
     #endregion
 
     public IDataSourceLink Link => InnerStream.Link;
-
-    IEntity ICanBeEntity.Entity => this.FirstOrDefault();
 }

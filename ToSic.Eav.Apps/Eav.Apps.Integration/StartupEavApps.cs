@@ -139,6 +139,7 @@ public static class StartupEavApps
 
         // v17
         services.TryAddTransient<IAppDataConfigProvider, AppDataConfigProviderUnknown>();
+        services.TryAddTransient<IJsonServiceInternal, JsonServiceInternalUnknown>();
         return services;
     }
 

@@ -19,8 +19,9 @@ public class DataStream(
     IDataSource source,
     string name,
     Func<IImmutableList<IEntity>> listDelegate = null,
-    bool enableAutoCaching = false
-    ) : IDataStream, ICanBeEntity
+    bool enableAutoCaching = false,
+    string scope = default
+    ) : IDataStream
 {
 
     #region Constructor
@@ -71,7 +72,7 @@ public class DataStream(
     public bool CacheRefreshOnSourceRefresh { get; set; } = true;
 
     /// <inheritdoc />
-    public string Scope { get; protected internal set; } = Scopes.Default;
+    public string Scope { get; protected internal set; } = scope ?? Scopes.Default;
 
     /// <summary>
     /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
@@ -170,6 +171,4 @@ public class DataStream(
 
     public IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: Source, stream: this, outName: Name));
     private readonly GetOnce<IDataSourceLink> _link = new();
-
-    IEntity ICanBeEntity.Entity => this.FirstOrDefault();
 }

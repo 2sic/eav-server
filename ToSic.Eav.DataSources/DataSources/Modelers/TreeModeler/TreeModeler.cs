@@ -88,12 +88,12 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
         var tm = _treeMapper;
         switch (Identifier)
         {
-            case "EntityGuid":
+            case Attributes.EntityGuidPascalCase:
                 var resultGuid = tm.AddParentChild(
                     source, Identifier, ParentReferenceField,
                     NewChildrenField, NewParentField);
                 return l.Return(resultGuid, $"Guid: {resultGuid.Count}");
-            case "EntityId":
+            case Attributes.EntityIdPascalCase:
                 var resultInt = tm.AddParentChild(
                     source, Identifier, ParentReferenceField,
                     NewChildrenField, NewParentField);

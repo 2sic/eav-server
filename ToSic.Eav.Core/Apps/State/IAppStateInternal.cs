@@ -2,32 +2,31 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 
-namespace ToSic.Eav.Apps.State
+namespace ToSic.Eav.Apps.State;
+
+public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource
 {
-    public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource
-    {
-        IAppStateCache StateCache { get; }
+    IAppStateCache StateCache { get; }
 
-        IAppStateCache ParentAppState { get; }
+    IAppStateCache ParentAppState { get; }
 
-        SynchronizedEntityList ListCache { get; }
+    SynchronizedEntityList ListCache { get; }
 
-        public SynchronizedList<IEntity> ListPublished { get; }
+    public SynchronizedList<IEntity> ListPublished { get; }
 
-        SynchronizedList<IEntity> ListNotHavingDrafts { get; }
+    SynchronizedList<IEntity> ListNotHavingDrafts { get; }
 
 
-        AppStateMetadata SettingsInApp { get; }
+    AppStateMetadata SettingsInApp { get; }
 
-        AppStateMetadata ResourcesInApp { get; }
+    AppStateMetadata ResourcesInApp { get; }
 
-        IEntity ConfigurationEntity { get; }
+    IEntity ConfigurationEntity { get; }
 
-        //IContentType GetContentType(int contentTypeId);
+    //IContentType GetContentType(int contentTypeId);
 
-        ParentAppState ParentApp { get; }
+    ParentAppState ParentApp { get; }
 
-        AppRelationshipManager Relationships { get; }
+    AppRelationshipManager Relationships { get; }
 
-    }
 }

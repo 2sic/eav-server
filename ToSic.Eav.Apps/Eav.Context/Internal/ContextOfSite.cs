@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Security.Internal;
+﻿using ToSic.Eav.Plumbing;
+using ToSic.Eav.Security.Internal;
 
 namespace ToSic.Eav.Context.Internal;
 
@@ -43,13 +44,15 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     /// <inheritdoc />
     public IUser User => Services.User;
 
-    /// <inheritdoc />
-    public virtual bool UserMayEdit => Log.Getter(() =>
+    protected bool UserMayAdmin => Log.Getter(() =>
     {
         var u = User;
-        if (u == null) return false;
+        if (u == null) return false; // note: not sure if user could ever be null since it's injected
         return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
     });
+
+    AdminPermissions IContextOfUserPermissions.Permissions => _permissions ??= UserMayAdmin.Map(mayAdmin => new AdminPermissions(mayAdmin || (User?.IsContentAdmin ?? false), mayAdmin));
+    private AdminPermissions _permissions;
 
     /// <inheritdoc />
     public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);

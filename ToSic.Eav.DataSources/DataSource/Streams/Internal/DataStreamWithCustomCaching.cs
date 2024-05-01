@@ -9,20 +9,21 @@ namespace ToSic.Eav.DataSource.Streams.Internal;
 /// And otherwise just use the cache.
 /// </summary>
 [PrivateApi]
-internal class DataStreamWithCustomCaching: DataStream
+internal class DataStreamWithCustomCaching(
+    LazySvc<IDataSourceCacheService> cache,
+    Func<ICacheInfo> cacheInfoDelegate,
+    IDataSource source,
+    string name,
+    Func<IImmutableList<IEntity>> listDelegate,
+    bool enableAutoCaching,
+    string scope)
+    : DataStream(cache: cache, source: source, name: name, listDelegate: listDelegate,
+        enableAutoCaching: enableAutoCaching, scope: scope)
 {
-    public DataStreamWithCustomCaching(LazySvc<IDataSourceCacheService> cache, Func<ICacheInfo> cacheInfoDelegate, IDataSource source, string name, Func<IImmutableList<IEntity>> listDelegate, 
-        bool enableAutoCaching, string scope)
-        : base(cache, source, name, listDelegate, enableAutoCaching)
-    {
-        CacheInfoDelegate = cacheInfoDelegate;
-        Scope = scope;
-    }
-
     /// <summary>
     /// This will get a CacheInfo if ever needed - but as long as not needed, won't run
     /// </summary>
-    public readonly Func<ICacheInfo> CacheInfoDelegate;
+    public Func<ICacheInfo> CacheInfoDelegate { get; } = cacheInfoDelegate;
 
     /// <summary>
     /// The Cache-Suffix helps to keep these streams separate in case the original stream also says it caches

@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps.Services
+namespace ToSic.Eav.Apps.Services;
+
+public interface IAppDataAndMetadataService: IAppDataService //, IMetadataOfSource
 {
-    public interface IAppDataAndMetadataService: IAppDataService //, IMetadataOfSource
-    {
-        public IMetadataOf Metadata { get; }
-    }
+    public IMetadataOf Metadata { get; }
 }

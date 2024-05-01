@@ -71,7 +71,7 @@ partial class App: IDataSourceReset
         // because the "real" source already applies filters like published
         var appState = AppState;
         var listOfTypes = appState.ContentTypes;
-        var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().UserMayEdit;
+        var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().IsContentAdmin;
         var typeList = "";
         foreach (var contentType in listOfTypes)
         {
