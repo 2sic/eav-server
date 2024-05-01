@@ -88,11 +88,15 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
     private string GetPathToAppJson(int appId)
         => GetPathToAppJson(GetAppFullPath(appId));
 
-    private static string GetPathToAppJson(string sourceFolder)
-        => Path.Combine(sourceFolder, Constants.AppDataProtectedFolder, Constants.AppJson);
+    private static string GetPathToAppJson(string appPath)
+        => Path.Combine(appPath, Constants.AppDataProtectedFolder, Constants.AppJson);
 
-    private string GetAppFullPath(int appId)
-        => appPaths.Init(site, appStates.ToReader(appStates.GetCacheState(appId))).PhysicalPath;
+    private string GetAppFullPath(int appId, bool useShared = false)
+    {
+        if (!appPaths.InitDone)
+            appPaths.Init(site, appStates.ToReader(appStates.GetCacheState(appId)));
+        return useShared ? appPaths.PhysicalPathShared : appPaths.PhysicalPath;
+    }
 
     private AppJson GetAppJsonInternal(string pathToAppJson)
     {
