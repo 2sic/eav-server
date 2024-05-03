@@ -61,8 +61,8 @@ public class ZipExport: ServiceBase
         _physicalAppPath = physicalAppPath;
         _physicalPathGlobal = physicalPathGlobal;
         ConnectServices(
-            FileManager = _fileManagerGenerator.New().SetFolder(_physicalAppPath),
-            FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal)
+            FileManager = _fileManagerGenerator.New().SetFolder(appId, _physicalAppPath),
+            FileManagerGlobal = _fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
         );
         var appIdentity = new AppIdentity(_zoneId, _appId);
         _appState = _appStates.GetReader(appIdentity);

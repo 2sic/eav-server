@@ -14,8 +14,10 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
     private const char Separator = ';';
 
 
-    public FileManager SetFolder(string sourceFolder, string subFolder = null)
+    public FileManager SetFolder(int appId, string sourceFolder, string subFolder = null)
     {
+        // appId is needed to get app.json from cache
+        _appId = appId;
         // source folder needed to get AppRoot for app.json
         _sourceFolder = sourceFolder;
         // we need it as "root" for files for export, usually same or under "sourceFolder"
@@ -27,6 +29,7 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         return this;
     }
 
+    private int _appId;
     private string _sourceFolder;
     private string _root;
 
@@ -67,7 +70,7 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
     /// Get exclude search patterns from app.json
     /// </summary>
     /// <returns></returns>
-    private List<string> ExcludeSearchPatterns => _excludeSearchPatterns.Get(() => appJsonService.Value.ExcludeSearchPatterns(_sourceFolder));
+    private List<string> ExcludeSearchPatterns => _excludeSearchPatterns.Get(() => appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId));
     private readonly GetOnce<List<string>> _excludeSearchPatterns = new();
 
 
@@ -81,7 +84,7 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         var hardcodedExcludedFolders = GetHardcodedExcludedFolders();
         l.A($"Hardcoded excluded folders count: {hardcodedExcludedFolders.Count}");
 
-        var usingAppJson = appJsonService.Value.ExcludeSearchPatterns(_sourceFolder).Any();
+        var usingAppJson = appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId).Any();
         var files = usingAppJson 
             ? ExcludeFilesBasedOnExcludeInDotAppJson(_root, searchPattern) // based on app.json
             : AllFiles(searchPattern); // old way
@@ -123,7 +126,7 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
     public IEnumerable<string> GetAllTransferableFolders(string searchPattern = "*.*")
     {
         var l = Log.Fn<IEnumerable<string>>();
-        if (appJsonService.Value.ExcludeSearchPatterns(_sourceFolder).Any()) // exclude files based on app.json from v14.08
+        if (appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId).Any()) // exclude files based on app.json from v14.08
             return l.Return(ExcludeFoldersBasedOnExcludeInDotAppJson(_root, searchPattern).ToList(), $"ok, exclude folders based on {Constants.AppJson}");
 
         // old hardcoded way of excluding files

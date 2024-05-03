@@ -292,7 +292,7 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
         var templateRoot = Env.TemplatesRoot(_zoneId, appId);
         var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
         if (Directory.Exists(appTemplateRoot))
-            base.Services.FileManagerGenerator.New().SetFolder(appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+            base.Services.FileManagerGenerator.New().SetFolder(appId, appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
         l.Done("ok");
     }
 
@@ -317,7 +317,7 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
 
             l.A("copy all files to app global template folder");
             base.Services.FileManagerGenerator.New()
-                .SetFolder(appTemplateRoot)
+                .SetFolder(appId, appTemplateRoot)
                 .CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
         }
         l.Done("ok");
