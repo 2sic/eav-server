@@ -49,7 +49,7 @@ public class QueryManager: ServiceBase
     /// </summary>
     /// <param name="entityId">EntityId</param>
     /// <param name="appIdentity">DataSource to load Entity from</param>
-    internal IEntity GetQueryEntity(int entityId, IAppIdentity appIdentity) => Log.Func($"{entityId}", l =>
+    internal IEntity GetQueryEntity(int entityId, IAppIdentity appIdentity)
     {
         var l = Log.Fn<IEntity>($"{entityId}");
         var app = _appStates.KeepOrGetReader(appIdentity);
@@ -66,7 +66,7 @@ public class QueryManager: ServiceBase
             l.Ex(ex);
             throw;
         }
-    });
+    }
 
     /// <summary>
     /// Assembles a list of all queries / Queries configured for this app. 
