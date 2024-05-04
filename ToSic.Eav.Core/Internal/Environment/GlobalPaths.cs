@@ -30,15 +30,15 @@ public class GlobalPaths: ServiceBase
     /// </summary>
     public string GlobalPathTo(string path, PathTypes pathType)
     {
-        var wrapLog = Log.Fn<string>($"path:{path},pathType:{pathType}");
+        var l = Log.Fn<string>($"path:{path},pathType:{pathType}");
         var assetPath = Combine(_config.Value.AssetsVirtualUrl.Backslash(), path);
-        string assetLocation = pathType switch
+        var assetLocation = pathType switch
         {
             PathTypes.Link => assetPath.ToAbsolutePathForwardSlash(),
             PathTypes.PhysRelative => assetPath.TrimStart('~').Backslash(),
             PathTypes.PhysFull => _serverPaths.Value.FullAppPath(assetPath).Backslash(),
             _ => throw new ArgumentOutOfRangeException(nameof(pathType), pathType, null)
         };
-        return wrapLog.ReturnAsOk(assetLocation);
+        return l.ReturnAsOk(assetLocation);
     }
 }

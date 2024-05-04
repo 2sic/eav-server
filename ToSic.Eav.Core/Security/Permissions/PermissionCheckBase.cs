@@ -110,10 +110,10 @@ public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckB
 
     public bool UserMay(List<Grants> grants)
     {
-        var wrapLog = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
+        var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
         GrantedBecause = Conditions.Undefined;
         var result = _environmentPermission.EnvironmentAllows(grants) || PermissionsAllow(grants);
-        return wrapLog.Return(result, $"{result} ({GrantedBecause})");
+        return l.Return(result, $"{result} ({GrantedBecause})");
     }
 
 
@@ -124,11 +124,11 @@ public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckB
     /// <returns></returns>
     public bool PermissionsAllow(IReadOnlyCollection<Grants> grants)
     {
-        var wrapLog = Log.Fn<bool>(Log.Try(() => $"[{string.Join(", ", grants)}]"), Log.Try(() => $"for {PermissionList.Count()} permission items"));
+        var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(", ", grants)}]"), Log.Try(() => $"for {PermissionList.Count()} permission items"));
         var result = PermissionList.Any(
             perm => PermissionAllows(perm,
                 grants.Select(g => (char) g).ToArray()));
-        return wrapLog.ReturnAndLog(result);
+        return l.ReturnAndLog(result);
     }
 
     /// <summary>
@@ -139,14 +139,14 @@ public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckB
     /// <returns></returns>
     private bool PermissionAllows(Permission permissionEntity, char[] desiredActionCode)
     {
-        var wrapLog = Log.Fn<bool>($"{new string(desiredActionCode)}");
+        var l = Log.Fn<bool>($"{new string(desiredActionCode)}");
         // Check if it's a grant for the desired action - otherwise stop here
         var grant = permissionEntity.Grant;
         // If Grant doesn't contain desired action, stop here
         // otherwise check if it applies
         var result = grant.IndexOfAny(desiredActionCode) != -1 
                      && VerifyConditionApplies(permissionEntity);
-        return wrapLog.ReturnAndLog(result);
+        return l.ReturnAndLog(result);
     }
         
 

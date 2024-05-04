@@ -77,7 +77,7 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
 
     private bool _ImportZip(string temporaryDirectory, string rename = null, Stream zipStream = null, string zipPath = null, int? inheritAppId = null)
     {
-        var wrapLog = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
+        var l = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
         var messages = Messages;
         Exception finalException = null;
 
@@ -89,12 +89,12 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
             // unzip to temp directory
             if (zipStream != null)
             {
-                wrapLog.A("will extract zip from stream");
+                l.A("will extract zip from stream");
                 new Zipping(Log).ExtractZipStream(zipStream, temporaryDirectory, AllowCodeImport);
             }
             else if (zipPath != null)
             {
-                wrapLog.A($"will extract zip from file: {zipPath}");
+                l.A($"will extract zip from file: {zipPath}");
                 new Zipping(Log).ExtractZipFile(zipPath, temporaryDirectory, AllowCodeImport);
             }
             else
@@ -136,11 +136,11 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
         if (finalException != null)
         {
             Log.A("had found errors during import, will throw");
-            wrapLog.ReturnFalse("error");
+            l.ReturnFalse("error");
             throw finalException; // must throw, to enable logging outside
         }
 
-        return wrapLog.ReturnTrue("ok");
+        return l.ReturnTrue("ok");
     }
 
 

@@ -40,28 +40,28 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
 
     private bool PreCheckAndCleanPath(ref string path, out THttpResponseType error)
     {
-        var wrapLog = Log.Fn<bool>();
+        var l = Log.Fn<bool>();
 
-        Log.A($"Controller Path from appRoot: {path}");
+        l.A($"Controller Path from appRoot: {path}");
 
         if (string.IsNullOrWhiteSpace(path) || path.Contains(".."))
         {
             var msg = $"Error: bad parameter {path}";
             {
                 error = ResponseMaker.InternalServerError(msg);
-                return wrapLog.ReturnTrue(msg);
+                return l.ReturnTrue(msg);
             }
         }
 
         // Ensure make windows path slashes to make later work easier
         path = path.Backslash();
         error = default; // null
-        return wrapLog.ReturnFalse();
+        return l.ReturnFalse();
     }
 
     private THttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
     {
-        var wrapLog = Log.Fn<THttpResponseType>();
+        var l = Log.Fn<THttpResponseType>();
         var controllerName = path.Substring(path.LastIndexOf('\\') + 1);
         controllerName = controllerName.Substring(0, controllerName.IndexOf('.'));
         var controller =
@@ -72,13 +72,13 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
             var msg =
                 $"Error: can't find controller class: {controllerName} in file {Path.GetFileNameWithoutExtension(path)}. " +
                 $"This can happen if the controller class does not have the same name as the file.";
-                return wrapLog.Return(ResponseMaker.InternalServerError(msg), "error");
+                return l.Return(ResponseMaker.InternalServerError(msg), "error");
         }
 
         var controllerDto = BuildApiControllerDto(controller);
 
         var responseMessage = ResponseMaker.Json(controllerDto);
-        return wrapLog.ReturnAsOk(responseMessage);
+        return l.ReturnAsOk(responseMessage);
     }
 
     private ApiControllerDto BuildApiControllerDto(Type controller)
@@ -120,7 +120,7 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
 
     private ApiSecurityDto MergeSecurity(ApiSecurityDto contSec, ApiSecurityDto methSec)
     {
-        var wrapLog = Log.Fn<ApiSecurityDto>();
+        var l = Log.Fn<ApiSecurityDto>();
         var ignoreSecurity = contSec.ignoreSecurity || methSec.ignoreSecurity;
         var allowAnonymous = contSec.allowAnonymous || methSec.allowAnonymous;
         var view = contSec.view || methSec.view;
@@ -146,7 +146,7 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
             requireContext = !ignoreSecurity && requireContext,
             requireVerificationToken = !ignoreSecurity && requireVerificationToken,
         };
-        return wrapLog.ReturnAsOk(result);
+        return l.ReturnAsOk(result);
     }
 
     public AllApiFilesDto AppApiFiles(int appId)

@@ -127,7 +127,7 @@ partial class JsonSerializer
 
     private IImmutableDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
     {
-        var wrapLog = Log.Fn<IImmutableDictionary<string, IAttribute>>();
+        var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
         var bld = Services.DataBuilder.Value;
         var attribs = new Dictionary<string, IAttribute>[]
         {
@@ -145,7 +145,7 @@ partial class JsonSerializer
             .SelectMany(pair => pair)
             .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
 
-        return wrapLog.ReturnAsOk(final);
+        return l.ReturnAsOk(final);
     }
 
     private Dictionary<string, IAttribute> BuildAttrib<T>(

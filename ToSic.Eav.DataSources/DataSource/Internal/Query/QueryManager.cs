@@ -51,14 +51,14 @@ public class QueryManager: ServiceBase
     /// <param name="appIdentity">DataSource to load Entity from</param>
     internal IEntity GetQueryEntity(int entityId, IAppIdentity appIdentity) => Log.Func($"{entityId}", l =>
     {
-        var wrapLog = Log.Fn<IEntity>($"{entityId}");
+        var l = Log.Fn<IEntity>($"{entityId}");
         var app = _appStates.KeepOrGetReader(appIdentity);
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
             if (queryEntity.Type.NameId != QueryConstants.QueryTypeName)
                 throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
-            return wrapLog.Return(queryEntity);
+            return l.Return(queryEntity);
         }
         catch (Exception ex)
         {
