@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSources.LookUp;
 using ToSic.Eav.LookUp;
@@ -130,9 +129,17 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// <returns></returns>
     private LookUpEngine LookUpWithoutParams()
     {
-        var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, makeOwnCopyOfSources: true);
-        if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))
-            lookUpsWithoutParams.Sources.Remove(DataSourceConstants.ParamsSourceName);
+        // Get sources, but make sure it's without the params
+        // 2024-05-06 2dm changed this to make the LookUpEngine.Sources read-only,
+        // ...but there is a small chance the change didn't work as expected, because the original
+        // ...HasSource() also checked sub-sources, even if it didn't remove them.
+        // ...So I think we're safe. If all is ok, remove this comment 2024-Q3
+        var sources = Configuration.LookUpEngine.Sources.ToList();
+        sources.Remove(sources.GetSource(DataSourceConstants.ParamsSourceName));
+
+        var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, sources: sources, onlyUseProperties: true, skipOriginalSource: true);
+        //if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))
+        //    lookUpsWithoutParams.Sources.Remove(DataSourceConstants.ParamsSourceName);
         // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them
         return lookUpsWithoutParams;
     }

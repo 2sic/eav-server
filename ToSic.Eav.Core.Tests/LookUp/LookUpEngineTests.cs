@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -31,8 +32,8 @@ namespace ToSic.Eav.Core.Tests.LookUp
         private void AssertLookUpEngineHasSourcesOfOriginal(ILookUpEngine lookUpEngine)
         {
             var settings = Settings();
-            Assert.IsTrue(lookUpEngine.Sources.Count == 2, "Should have 2 sources");
-            Assert.AreEqual("App Settings", lookUpEngine.Sources["appsettings"].Get(Attributes.TitleNiceName));
+            Assert.IsTrue(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
+            Assert.AreEqual("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").Get(Attributes.TitleNiceName));
             Assert.AreEqual(OriginalSettingDefaultCat, settings["DefaultCategory"]);
             Assert.AreEqual(OriginalSettingMaxItems, settings["MaxItems"]);
         }
@@ -78,7 +79,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         {
             var original = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
             var cloned = new LookUpEngine(original, null);
-            Assert.AreEqual(0, cloned.Sources.Count);
+            Assert.AreEqual(0, cloned.Sources.Count());
             AssertLookUpEngineHasSourcesOfOriginal(cloned.Downstream);
         }
 

@@ -15,9 +15,8 @@ public interface ILookUpEngine: IHasLog
     /// Sources are various dictionaries which can resolve a key to a value. <br/>
     /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
     /// </summary>
-    /// <returns><see cref="Dictionary{TKey,TValue}"/> of <see cref="ILookUp"/> items.</returns>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    Dictionary<string, ILookUp> Sources { get; }
+    public IEnumerable<ILookUp> Sources { get; }
 
     /// <summary>
     /// This will go through a dictionary of strings (usually configuration values) and replace all tokens in that string
@@ -54,9 +53,19 @@ public interface ILookUpEngine: IHasLog
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     ILookUpEngine Downstream { get; }
 
+    /// <summary>
+    /// Find a source by name in the current engine or any downstream engines.
+    /// </summary>
+    /// <param name="name">the name we're looking for, invariant</param>
+    /// <returns></returns>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     ILookUp FindSource(string name);
 
+    /// <summary>
+    /// Will check if the lookup engine - or any of it's downstream engines - have a source with the given name
+    /// </summary>
+    /// <param name="name">the name we're looking for, invariant</param>
+    /// <returns></returns>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     bool HasSource(string name);
 }

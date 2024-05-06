@@ -23,9 +23,10 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     [PrivateApi] protected bool LogDetailed = true;
     #endregion
 
-    // todo: probably change and not let the outside modify directly
-    [PrivateApi]
-    public Dictionary<string, ILookUp> Sources { get; } = new(InvariantCultureIgnoreCase);
+    private Dictionary<string, ILookUp> SourceDic { get; } = new(InvariantCultureIgnoreCase);
+
+    /// <inheritdoc/>
+    public IEnumerable<ILookUp> Sources => SourceDic.Values;
 
     /// <summary>
     /// List of all Configurations for this DataSource
@@ -39,30 +40,28 @@ public class LookUpEngine : HelperBase, ILookUpEngine
             Add(sources);
     }
 
-    /// <inheritdoc />
     /// <summary>
     /// Cloning another LookUpEngine and keep the sources.
     /// </summary>
-    public LookUpEngine(ILookUpEngine original, ILog parentLog,
+    public LookUpEngine(
+        ILookUpEngine original,
+        ILog parentLog,
         NoParamOrder protector = default,
         List<ILookUp> sources = default,
         List<ILookUp> overrides = default,
-        bool makeOwnCopyOfSources = false
+        bool skipOriginalSource = false,
+        bool onlyUseProperties = false
         ): this(parentLog)
     {
         if (original == null) return;
-        var l = Log.Fn($"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}; {nameof(makeOwnCopyOfSources)}: {makeOwnCopyOfSources}");
+        var l = Log.Fn($"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}; {nameof(onlyUseProperties)}: {onlyUseProperties}");
         
+        // Link downstream. This is either the original, or if we copy the sources, then we won't use the original, so we use its downstream
+        Link(onlyUseProperties ? original.Downstream : original);
+
         // If we should make our own copy of the sources, we'll copy them all, and link the downstream of the original
-        if (makeOwnCopyOfSources)
-        {
-            Link(original.Downstream);
-            foreach (var srcSet in original.Sources)
-                Sources.Add(srcSet.Key, srcSet.Value);
-        }
-        // Otherwise we just link the entire source as downstream, so that it's sources and downstream are the fallback
-        else
-            Link(original);
+        if (onlyUseProperties && !skipOriginalSource)
+            Add(original.Sources);
 
         if (sources != null)
             Add(sources);
@@ -70,13 +69,13 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         if (overrides != null)
             AddOverride(overrides);
 
-        l.Done($"cloned {original.Sources.Count}");
+        l.Done($"cloned {original.Sources.Count()}; added {sources?.Count}; overrides: {overrides?.Count}");
     }
 
     public ILookUpEngine Downstream { get; private set; }
 
-    public ILookUp FindSource(string name) => Sources.ContainsKey(name)
-        ? Sources[name]
+    public ILookUp FindSource(string name) => SourceDic.ContainsKey(name)
+        ? SourceDic[name]
         : Downstream?.FindSource(name);
 
     [PrivateApi]
@@ -122,12 +121,12 @@ public class LookUpEngine : HelperBase, ILookUpEngine
 
         // if there are instance-specific additional Property-Access objects, add them to the sources-list
         // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
-        if (overrides == null || overrides.Count <= 0)
+        if (overrides is not { Count: > 0 })
             return l.ReturnAsOk(LookUp(values, depth));
 
-        var innerLookup = new LookUpEngine(this, Log);
-        foreach (var pa in overrides)
-            innerLookup.Sources.Add(pa.Key, pa.Value);
+        var innerLookup = new LookUpEngine(this, Log, sources: [.. overrides.Values]);
+        //foreach (var pa in overrides)
+        //    innerLookup._sources.Add(pa.Key, pa.Value);
         return l.ReturnAsOk(innerLookup.LookUp(values, depth));
     }
 
@@ -147,7 +146,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         var sourceNames = Log.Try(() => string.Join(", ", list.Select(l => $"'{l.Name ?? "unknown"}'")));
         Log.A(Log.Try(() => $"Add/replace sources: {sourceNames}"));
         foreach (var lookUp in list) 
-            Sources[lookUp.Name] = lookUp;
+            SourceDic[lookUp.Name] = lookUp;
     }
 
     ///// <summary>
@@ -157,9 +156,9 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     ///// <param name="lookUp">a <see cref="ILookUp"/> which should override the original configuration</param>
     private void AddOverride(ILookUp lookUp)
     {
-        var found = Sources.TryGetValue(lookUp.Name, out var original);
+        var found = SourceDic.TryGetValue(lookUp.Name, out var original);
         var l = (LogDetailed ? Log : null).Fn($"{lookUp.Name}; found existing: {found}");
-        Sources[lookUp.Name] = found
+        SourceDic[lookUp.Name] = found
             ? new LookUpInLookUps(lookUp.Name, lookUp, original)
             : lookUp;
         l.Done();
