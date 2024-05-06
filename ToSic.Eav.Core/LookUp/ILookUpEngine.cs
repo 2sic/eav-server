@@ -28,11 +28,12 @@ public interface ILookUpEngine: IHasLog
     /// <param name="depth">Max recursion when looking up tokens which return other tokens.</param>
     IDictionary<string, string> LookUp(IDictionary<string, string> values, IDictionary<string, ILookUp> overrides = null, int depth = LookUpEngine.DefaultLookUpDepth);
 
-    /// <summary>
-    /// Add (or replace) a value provider in the source list
-    /// </summary>
-    /// <param name="lookUp">An source to add to this configuration provider. The name will be taken from this object.</param>
-    void Add(ILookUp lookUp);
+    // 2024-05-06 2dm going functional, so add must happen at setup
+    ///// <summary>
+    ///// Add (or replace) a value provider in the source list
+    ///// </summary>
+    ///// <param name="lookUp">An source to add to this configuration provider. The name will be taken from this object.</param>
+    //void Add(ILookUp lookUp);
 
     // 2024-05-06 2dm - no need for a public API of add-one
     ///// <summary>
@@ -42,12 +43,12 @@ public interface ILookUpEngine: IHasLog
     ///// <param name="lookUp">a <see cref="ILookUp"/> which should override the original configuration</param>
     //void AddOverride(ILookUp lookUp);
 
-    /// <summary>
-    /// Add many overriding sources. <br/>
-    /// This is used when the underlying configuration provider is shared, and this instance needs a few custom configurations. 
-    /// </summary>
-    /// <param name="lookUps">list of <see cref="ILookUp"/> which should override the original configuration</param>
-    void AddOverride(IEnumerable<ILookUp> lookUps);
+    ///// <summary>
+    ///// Add many overriding sources. <br/>
+    ///// This is used when the underlying configuration provider is shared, and this instance needs a few custom configurations. 
+    ///// </summary>
+    ///// <param name="lookUps">list of <see cref="ILookUp"/> which should override the original configuration</param>
+    //void AddOverride(IEnumerable<ILookUp> lookUps);
 
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]

@@ -130,7 +130,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// <returns></returns>
     private LookUpEngine LookUpWithoutParams()
     {
-        var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
+        var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, makeOwnCopyOfSources: true);
         if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))
             lookUpsWithoutParams.Sources.Remove(DataSourceConstants.ParamsSourceName);
         // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them

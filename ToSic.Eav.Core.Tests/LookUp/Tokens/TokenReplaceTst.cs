@@ -260,11 +260,13 @@ Now try a token which returns a token: Daniel";
             appS.Properties.Add("UserNameMaybeFromUrl", "[QueryString:UserName||Samantha]");
             var tok = new LookUpInDictionary("token");
             tok.Properties.Add("key", "What a Token!");
-            var engine = LookUpTestData.EmptyLookupEngine;
-            engine.TestAdd(qs);
-            engine.TestAdd(mod);
-            engine.TestAdd(appS);
-            engine.TestAdd(tok);
+            var engine = LookUpTestData.EmptyLookupEngine(new List<ILookUp>
+            {
+                qs,
+                mod,
+                appS,
+                tok,
+            });
 
             var tr = new TokenReplace(engine);
             var resultNoRecurrance = tr.ReplaceTokens(original);

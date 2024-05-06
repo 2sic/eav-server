@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
@@ -31,31 +32,45 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     /// </summary>
     private readonly TokenReplace _reusableTokenReplace;
 
-    public LookUpEngine(ILog parentLog): base(parentLog, "EAV.LookUp")
+    public LookUpEngine(ILog parentLog, NoParamOrder protector = default, IEnumerable<ILookUp> sources = default) : base(parentLog, "EAV.LookUp")
     {
         _reusableTokenReplace = new(this);
+        if (sources != null)
+            Add(sources);
     }
 
     /// <inheritdoc />
     /// <summary>
     /// Cloning another LookUpEngine and keep the sources.
     /// </summary>
-    public LookUpEngine(ILookUpEngine original, ILog parentLog, bool makeOwnCopyOfSources = false): this(parentLog)
+    public LookUpEngine(ILookUpEngine original, ILog parentLog,
+        NoParamOrder protector = default,
+        List<ILookUp> sources = default,
+        List<ILookUp> overrides = default,
+        bool makeOwnCopyOfSources = false
+        ): this(parentLog)
     {
         if (original == null) return;
-        Log.Do(message: $"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}", action: () =>
+        var l = Log.Fn($"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}; {nameof(makeOwnCopyOfSources)}: {makeOwnCopyOfSources}");
+        
+        // If we should make our own copy of the sources, we'll copy them all, and link the downstream of the original
+        if (makeOwnCopyOfSources)
         {
-            if (makeOwnCopyOfSources)
-            {
-                Link(original.Downstream);
-                foreach (var srcSet in original.Sources)
-                    Sources.Add(srcSet.Key, srcSet.Value);
-            }
-            else
-                Link(original);
+            Link(original.Downstream);
+            foreach (var srcSet in original.Sources)
+                Sources.Add(srcSet.Key, srcSet.Value);
+        }
+        // Otherwise we just link the entire source as downstream, so that it's sources and downstream are the fallback
+        else
+            Link(original);
 
-            return $"cloned {original.Sources.Count}";
-        });
+        if (sources != null)
+            Add(sources);
+
+        if (overrides != null)
+            AddOverride(overrides);
+
+        l.Done($"cloned {original.Sources.Count}");
     }
 
     public ILookUpEngine Downstream { get; private set; }
@@ -116,38 +131,51 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         return l.ReturnAsOk(innerLookup.LookUp(values, depth));
     }
 
+    // 2024-05-06 2dm
+    ///// <inheritdoc />
+    //private void Add(ILookUp lookUp)
+    //{
+    //    Log.A(LogDetailed, $"Add/replace source: '{lookUp.Name}'");
+    //    Sources[lookUp.Name] = lookUp;
+    //}
 
-    /// <inheritdoc />
-    public void Add(ILookUp lookUp)
+    private void Add(IEnumerable<ILookUp> lookUps)
     {
-        Log.A(LogDetailed, $"Add/replace source: '{lookUp.Name}'");
-        Sources[lookUp.Name] = lookUp;
-    }
-
-    public void Add(IList<ILookUp> lookUps)
-    {
-        var sourceNames = Log.Try(() => string.Join(", ", lookUps.Select(l => $"'{l.Name ?? "unknown"}'")));
+        if (lookUps == null) return;
+        var list = lookUps.ToList();
+        if (list.Count == 0) return;
+        var sourceNames = Log.Try(() => string.Join(", ", list.Select(l => $"'{l.Name ?? "unknown"}'")));
         Log.A(Log.Try(() => $"Add/replace sources: {sourceNames}"));
-        foreach (var lookUp in lookUps) 
+        foreach (var lookUp in list) 
             Sources[lookUp.Name] = lookUp;
     }
 
-    /// <inheritdoc />
-    public void AddOverride(ILookUp lookUp) => Log.Do(() =>
+    ///// <summary>
+    ///// Add an overriding source. <br/>
+    ///// This is used when the underlying configuration provider is shared, and this instance needs a few custom configurations. 
+    ///// </summary>
+    ///// <param name="lookUp">a <see cref="ILookUp"/> which should override the original configuration</param>
+    private void AddOverride(ILookUp lookUp)
     {
-        if (Sources.ContainsKey(lookUp.Name))
-            Sources[lookUp.Name] = new LookUpInLookUps(lookUp.Name, lookUp, Sources[lookUp.Name]);
-        else
-            Sources.Add(lookUp.Name, lookUp);
-    }, enabled: LogDetailed);
+        var found = Sources.TryGetValue(lookUp.Name, out var original);
+        var l = (LogDetailed ? Log : null).Fn($"{lookUp.Name}; found existing: {found}");
+        Sources[lookUp.Name] = found
+            ? new LookUpInLookUps(lookUp.Name, lookUp, original)
+            : lookUp;
+        l.Done();
+    }
 
-    /// <inheritdoc />
-    public void AddOverride(IEnumerable<ILookUp> lookUps)
+    /// <summary>
+    /// Add many overriding sources. <br/>
+    /// This is used when the underlying configuration provider is shared, and this instance needs a few custom configurations. 
+    /// </summary>
+    /// <param name="lookUps">list of <see cref="ILookUp"/> which should override the original configuration</param>
+    private void AddOverride(IEnumerable<ILookUp> lookUps)
     {
         if (lookUps == null) return;
         foreach (var provider in lookUps)
             if (provider.Name == null)
-                throw new NullReferenceException("PropertyProvider must have a Name");
+                throw new NullReferenceException("LookUp must have a Name");
             else
                 // check if it already has this provider. 
                 // ensure that there is an "override property provider" which would pre-catch certain keys

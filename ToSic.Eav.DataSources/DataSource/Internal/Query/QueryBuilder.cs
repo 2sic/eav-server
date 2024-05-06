@@ -85,15 +85,15 @@ public class QueryBuilder: ServiceBase
         var l = Log.Fn<QueryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
         #region prepare shared / global value providers
             
-        // centralizing building of the primary configuration template for each part
-        var baseLookUp = new LookUpEngine(lookUpEngineToClone, Log);
-
         var showDrafts = _userPermissions.UserPermissions().IsContentAdmin;
         if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
             paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 
-        baseLookUp.Add(queryDef.ParamsLookUp);      // Add [params:...]
-        baseLookUp.AddOverride(overrideLookUps);    // add override
+        // centralizing building of the primary configuration template for each part
+        var baseLookUp = new LookUpEngine(lookUpEngineToClone, Log, sources: [queryDef.ParamsLookUp], overrides: overrideLookUps);
+
+        //baseLookUp.Add(queryDef.ParamsLookUp);      // Add [params:...]
+        //baseLookUp.AddOverride(overrideLookUps);    // add override
 
         // 2023-03-13 2dm - #removedQueryPartShowDrafts - it's available on [Params:ShowDrafts] and I don't think every source needs it too
         // provide global settings for ShowDrafts, ATM just if showdrafts are to be used
@@ -133,10 +133,11 @@ public class QueryBuilder: ServiceBase
         {
             #region Init Configuration Provider
 
-            var partLookUp = new LookUpEngine(baseLookUp, Log);
+            var querySpecsLookUp = new LookUpInQueryMetadata(DataSourceConstants.MyConfigurationSourceName, dataQueryPart.Entity, dimensions);
+            var partEngine = new LookUpEngine(baseLookUp, Log, sources: [querySpecsLookUp]);
             // add / set item part configuration
-            partLookUp.Add(new LookUpInQueryMetadata(DataSourceConstants.MyConfigurationSourceName, dataQueryPart.Entity, dimensions));
-            var partConfig = new DataSourceOptions(lookUp: partLookUp, appIdentity: appIdentity);
+            //partLookUp.Add(querySpecsLookUp);
+            var partConfig = new DataSourceOptions(lookUp: partEngine, appIdentity: appIdentity);
 
             // 2023-03-13 2dm - #removedQueryPartShowDrafts
             // if show-draft in overridden, add that to the settings
@@ -179,9 +180,9 @@ public class QueryBuilder: ServiceBase
     /// <summary>
     /// Init Stream Wirings between Query-Parts (Bottom-Up)
     /// </summary>
-    private void InitWirings(QueryDefinition queryDef, IDictionary<string, IDataSource> dataSources
-    ) => Log.Do($"count⋮{queryDef.Connections?.Count}",l => 
+    private void InitWirings(QueryDefinition queryDef, IDictionary<string, IDataSource> dataSources) 
     {
+        var l = Log.Fn($"count⋮{queryDef.Connections?.Count}");
         // Init
         var wirings = queryDef.Connections;
         var initializedWirings = new List<Connection>();
@@ -211,7 +212,9 @@ public class QueryBuilder: ServiceBase
             l.Ex(exception);
             throw exception;
         }
-    });
+
+        l.Done();
+    }
 
     /// <summary>
     /// Wire all Out-Wirings on specified DataSources
