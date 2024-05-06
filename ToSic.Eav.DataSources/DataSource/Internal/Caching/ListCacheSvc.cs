@@ -14,6 +14,12 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 [method: PrivateApi]
 internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase("DS.LstCch", connect: [memoryCacheService]), IListCacheSvc
 {
+    /// <summary>
+    /// The time a list stays in the cache by default - default is 3600 = 1 hour.
+    /// Is used in all Set commands where the default duration is needed.
+    /// </summary>
+    internal const int DefaultDuration = 60 * 60;
+
     #region Get List
 
     /// <summary>
@@ -75,6 +81,10 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     /// <inheritdoc />
     public ListCacheItem Get(IDataStream dataStream) => Get(DataSourceListCache.CacheKey(dataStream));
 
+    public bool HasStream(string key) => memoryCacheService.Contains(key);
+
+    public bool HasStream(IDataStream stream) => memoryCacheService.Contains(DataSourceListCache.CacheKey(stream));
+
     #endregion
 
     #region set/add list
@@ -83,7 +93,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, bool refreshOnSourceRefresh, int durationInSeconds = 0, bool slidingExpiration = true)
     {
         var l = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
-        var duration = durationInSeconds > 0 ? durationInSeconds : DataSourceListCache.DefaultDuration;
+        var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
         var expiration = new TimeSpan(0, 0, duration);
         var absoluteExpiration = DateTime.Now.AddSeconds(duration);
         var policy = slidingExpiration

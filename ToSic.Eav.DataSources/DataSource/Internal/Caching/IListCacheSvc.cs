@@ -49,4 +49,17 @@ public interface IListCacheSvc
     /// <param name="slidingExpiration"></param>
     void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true);
 
+
+    /// <summary>
+    /// temp, seems to be used by tests
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <returns></returns>
+    bool HasStream(IDataStream stream);
+
+    /// <summary>
+    /// temp, seems to be used by tests
+    /// </summary>
+    /// <returns></returns>
+    bool HasStream(string key);
 }

@@ -2,6 +2,8 @@
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
 
+// TODO: @STV - I think this should be merged into the ListCacheSvc as it seems to be a leftover and only does very little
+
 /// <summary>
 /// Internal cache for the data-sources
 /// </summary>
@@ -16,12 +18,6 @@ public /* should be internal as soon as insights work with that */ class DataSou
 
     #endregion
 
-    /// <summary>
-    /// The time a list stays in the cache by default - default is 3600 = 1 hour.
-    /// Is used in all Set commands where the default duration is needed.
-    /// </summary>
-    internal const int DefaultDuration = 60 * 60;
-
 
     #region Static Cache Checks
 
@@ -33,8 +29,6 @@ public /* should be internal as soon as insights work with that */ class DataSou
     internal static string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey;
 
     public bool HasStream(string key) => memoryCacheService.Contains(key);
-
-    public bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
 
     #endregion
 

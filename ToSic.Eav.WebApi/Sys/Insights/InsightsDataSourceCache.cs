@@ -8,19 +8,11 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class InsightsDataSourceCache: ServiceBase
+public class InsightsDataSourceCache(
+    LazySvc<IDataSourceCacheService> dsCacheSvc,
+    LazySvc<DataSourceListCache> dsListCache)
+    : ServiceBase("Ins.DsCache", connect: [dsCacheSvc, dsListCache])
 {
-
-    private readonly LazySvc<IDataSourceCacheService> _dsCacheSvc;
-    private readonly LazySvc<DataSourceListCache> _dsListCache;
-    public InsightsDataSourceCache(LazySvc<IDataSourceCacheService> dsCacheSvc, LazySvc<DataSourceListCache> dsListCache) : base("Ins.DsCache")
-    {
-        ConnectServices(
-            _dsCacheSvc = dsCacheSvc,
-            _dsListCache = dsListCache
-        );
-    }
-
     internal InsightsHtmlBase Html = new();
 
     public string DataSourceCache()
@@ -30,7 +22,7 @@ public class InsightsDataSourceCache: ServiceBase
         m.AppendLine(H1($"DataSource Lists Cache ({locks.Count})").ToString());
 
 
-        var namesInMemory = locks.Select(l => l.Key).Where(_dsListCache.Value.HasStream).ToList();
+        var namesInMemory = locks.Select(l => l.Key).Where(dsListCache.Value.HasStream).ToList();
         m.AppendLine(H1(
                 $"In Cache ({namesInMemory.Count})",
                 Html.LinkTo(HtmlEncode("🚽"), nameof(DataSourceCacheFlushAll))
@@ -43,7 +35,7 @@ public class InsightsDataSourceCache: ServiceBase
 
         var rows = namesInMemory.Select(name =>
         {
-            var cacheItem = _dsListCache.Value.GetStream(name);
+            var cacheItem = dsListCache.Value.GetStream(name);
             return InsightsHtmlTable.RowFields(
                 HoverLabel(name.Ellipsis(100), name.Replace(">", "\n>"), ""),
                 SpecialField.Right(
@@ -64,7 +56,7 @@ public class InsightsDataSourceCache: ServiceBase
                      + "</table>");
 
         m.AppendLine(Hr().ToString());
-        var namesOutOfMemory = locks.Select(l => l.Key).Where(n => !_dsListCache.Value.HasStream(n)).ToList();
+        var namesOutOfMemory = locks.Select(l => l.Key).Where(n => !dsListCache.Value.HasStream(n)).ToList();
         m.AppendLine(H2($"Not In Cache ({namesOutOfMemory.Count})").ToString());
 
         if (!namesOutOfMemory.Any())
@@ -90,10 +82,10 @@ public class InsightsDataSourceCache: ServiceBase
 
         var locks = LoadLocks.Locks;
 
-        var namesInMemory = locks.Select(l => l.Key).Where(key.EqualsInsensitive).Where(_dsListCache.Value.HasStream).ToList();
+        var namesInMemory = locks.Select(l => l.Key).Where(key.EqualsInsensitive).Where(dsListCache.Value.HasStream).ToList();
 
         var name = namesInMemory.FirstOrDefault();
-        var cacheItem = _dsListCache.Value.GetStream(name);
+        var cacheItem = dsListCache.Value.GetStream(name);
 
         m.AppendLine("<table id='table'>"
                      + InsightsHtmlTable.HeadFields("Name", "Count", "Timestamp")
@@ -116,13 +108,13 @@ public class InsightsDataSourceCache: ServiceBase
 
     public string DataSourceCacheFlushAll()
     {
-        _dsCacheSvc.Value.FlushAll();
+        dsCacheSvc.Value.FlushAll();
         return "All Flushed" + Br() + Html.LinkBack();
     }
 
     public string DataSourceCacheFlush(string key)
     {
-        _dsCacheSvc.Value.Flush(key);
+        dsCacheSvc.Value.Flush(key);
         return $"key {key} Flushed" + Br() + Html.LinkBack();
     }
 }

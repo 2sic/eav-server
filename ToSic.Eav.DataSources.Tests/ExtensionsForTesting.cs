@@ -34,9 +34,9 @@ namespace ToSic.Eav.DataSourceTests
 
         public static IEnumerable<IEntity> ListForTests(this IDataStream stream) => stream.List;
 
-        public static bool HasTA(this IListCacheSvc listCache, string key) => listCache.Get(key) != null; //..HasStream(key);
+        public static bool HasTA(this IListCacheSvc listCache, string key) => listCache.HasStream(key);
 
-        public static bool HasTA(this IListCacheSvc listCache, IDataStream dataStream) => listCache.Get(dataStream) != null; // DataSourceListCache.HasStream(dataStream);
+        public static bool HasTA(this IListCacheSvc listCache, IDataStream dataStream) => listCache.HasStream(dataStream);
 
         public static ListCacheItem GetTA(this IListCacheSvc listCache, string key) => listCache.Get(key);
 
