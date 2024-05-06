@@ -26,7 +26,7 @@ partial class Efc11Loader
     {
         _logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
-        var wrapLog = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
+        var l = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
         var appIdentity =_appStates.IdentityOfApp(appId);
         var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
         codeRefTrail.WithHere().AddMessage($"App: {appId}, {nameof(appGuidName)}: '{appGuidName}'");
@@ -61,30 +61,30 @@ partial class Efc11Loader
         var builder = _appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);
         Update(builder.AppState, AppStateLoadSequence.Start, codeRefTrail);
 
-        return wrapLog.ReturnAsOk(builder);
+        return l.ReturnAsOk(builder);
     }
 
     private int GetAncestorAppIdOrZero(int appId)
     {
-        var wrapLog = Log.Fn<int>($"{nameof(appId)}:{appId}");
+        var l = Log.Fn<int>($"{nameof(appId)}:{appId}");
         // Prefetch this App (new in v13 for ancestor apps)
         var appInDb = _dbContext.ToSicEavApps.FirstOrDefault(a => a.AppId == appId);
         var appSysSettings = appInDb?.SysSettings;
         if (string.IsNullOrWhiteSpace(appSysSettings))
-            return wrapLog.Return(0, "none found");
+            return l.Return(0, "none found");
 
         var sysSettings = JsonSerializer.Deserialize<AppSysSettings>(appInDb.SysSettings, JsonOptions.SafeJsonForHtmlAttributes);
         if (!sysSettings.Inherit || sysSettings.AncestorAppId == 0) 
-            return wrapLog.Return(0, "data found but inherit not active");
+            return l.Return(0, "data found but inherit not active");
 
         if (sysSettings.AncestorAppId == appId)
         {
             Log.A($"Error: Got an {nameof(sysSettings.AncestorAppId)} of {appId}. " +
                   "It's the same as the app itself - this should never happen. Stop.");
-            return wrapLog.Return(0, "error");
+            return l.Return(0, "error");
         }
 
-        return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
+        return l.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
     }
 
     public IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)

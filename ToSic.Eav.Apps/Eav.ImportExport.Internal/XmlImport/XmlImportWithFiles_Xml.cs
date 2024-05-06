@@ -15,19 +15,19 @@ partial class XmlImportWithFiles
     /// </summary>
     public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
     {
-        var wrapLog = Log.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
+        var l = Log.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
         _eavContext = base.Services.DbDataForAppImport.Value.Init(zoneId, appId);
             
         AppId = appId;
         ZoneId = zoneId;
 
         if (!IsCompatible(doc))
-            return wrapLog.ReturnFalse(LogError("The import file is not compatible with the installed version of 2sxc."));
+            return l.ReturnFalse(LogError("The import file is not compatible with the installed version of 2sxc."));
 
         // Get root node "SexyContent"
         var xmlSource = doc.Element(XmlConstants.RootNode);
         if (xmlSource == null)
-            return wrapLog.ReturnFalse(LogError("Xml doesn't have expected root node: " + XmlConstants.RootNode));
+            return l.ReturnFalse(LogError("Xml doesn't have expected root node: " + XmlConstants.RootNode));
 
         PrepareFolderIdCorrectionListAndCreateMissingFolders(xmlSource);
         PrepareFileIdCorrectionList(xmlSource);
@@ -38,7 +38,7 @@ partial class XmlImportWithFiles
 
         var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
         if (sourceDimensions == null || sourceDefaultLanguage == null)
-            return wrapLog.ReturnFalse(LogError("Can't find source dimensions or source-default language."));
+            return l.ReturnFalse(LogError("Can't find source dimensions or source-default language."));
 
         var sourceDefaultDimensionId = sourceDimensions.Any() ?
             sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
@@ -67,7 +67,7 @@ partial class XmlImportWithFiles
 
         Messages.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
 
-        return wrapLog.ReturnTrue("done");
+        return l.ReturnTrue("done");
     }
 
 

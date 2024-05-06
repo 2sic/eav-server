@@ -10,7 +10,7 @@ partial class DbEntity
     /// <returns></returns>
     internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
     {
-        var wrapLog = Log.Fn<List<int>>($"count:{entities?.Count}");
+        var l = Log.Fn<List<int>>($"count:{entities?.Count}");
         var ids = new List<int>();
 
         if (entities == null || entities.Count == 0)
@@ -36,7 +36,7 @@ partial class DbEntity
                                 }
                             }))));
         }
-        return wrapLog.Return(ids, $"id count:{ids.Count}");
+        return l.Return(ids, $"id count:{ids.Count}");
     }
 
 }

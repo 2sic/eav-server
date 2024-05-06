@@ -34,7 +34,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
 
     public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app)
     {
-        var wrapLog = Log.Fn<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
+        var l = Log.Fn<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
         Context = context;
         App = app;
 
@@ -44,7 +44,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
             // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
             // todo: probably enhance with a Site.IsMultiZone check
             : Services.ZoneMapper.Value.SiteOfZone(App.ZoneId) ?? context.Site;
-        return wrapLog.Return(this, $"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
+        return l.Return(this, $"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
     }
     /// <summary>
     /// The current app which will be used and can be re-used externally
@@ -62,10 +62,10 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
         
     public bool ZoneIsOfCurrentContextOrUserIsSuper(out string error)
     {
-        var wrapLog = Log.Fn<bool>();
+        var l = Log.Fn<bool>();
         var zoneSameOrSuperUser = SamePortal || Context.User.IsSystemAdmin;
         error = zoneSameOrSuperUser ? null: $"accessing app {App.AppId} in zone {App.ZoneId} is not allowed for this user";
-        return wrapLog.Return(zoneSameOrSuperUser, zoneSameOrSuperUser ? $"SamePortal:{SamePortal} - ok": "not ok, generate error");
+        return l.Return(zoneSameOrSuperUser, zoneSameOrSuperUser ? $"SamePortal:{SamePortal} - ok": "not ok, generate error");
     }
 
 

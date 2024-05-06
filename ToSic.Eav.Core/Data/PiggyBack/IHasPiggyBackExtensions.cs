@@ -30,19 +30,19 @@ public static class IHasPiggyBackExtensions
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TData GetOrCreateInPiggyBack<TData>(this IPropertyLookup entryPoint, string field, Func<string, TData> factory, ILog logOrNull) where TData : class
     {
-        var wrapLog = logOrNull.Fn<TData>();
+        var l = logOrNull.Fn<TData>();
         var advProperty = entryPoint.FindPropertyInternal(new(field), null);
 
         // Skip if nothing to process
         if (advProperty?.Result is not string valString || string.IsNullOrWhiteSpace(valString))
-            return wrapLog.ReturnNull("empty / not found");
+            return l.ReturnNull("empty / not found");
 
         // If our source has a PiggyBack cache, use this
         if (advProperty.Source is IHasPiggyBack piggyBackCache)
-            return wrapLog.Return(piggyBackCache.GetPiggyBack("auto-pgb-" + field, () => factory(valString)), "piggyback");
+            return l.Return(piggyBackCache.GetPiggyBack("auto-pgb-" + field, () => factory(valString)), "piggyback");
 
         // Otherwise just create
-        return wrapLog.Return(factory(valString), "no piggyback");
+        return l.Return(factory(valString), "no piggyback");
     }
 
 

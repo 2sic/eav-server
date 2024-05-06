@@ -28,8 +28,8 @@ public class AssemblyHandling
     /// <returns></returns>
     public static bool HasType(string typeFullName, ILog log = null)
     {
-        var wrapLog = log.Fn<bool>(message: $"HasType {typeFullName}");
-        return wrapLog.ReturnAsOk(GetTypes(log).Any(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
+        var l = log.Fn<bool>(message: $"HasType {typeFullName}");
+        return l.ReturnAsOk(GetTypes(log).Any(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
     }
 
     /// <summary>
@@ -40,21 +40,21 @@ public class AssemblyHandling
     /// <returns></returns>
     public static Type GetTypeOrNull(string typeFullName, ILog log = null)
     {
-        var wrapLog = log.Fn<Type>(message: $"HasType {typeFullName}");
-        return wrapLog.ReturnAsOk(GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
+        var l = log.Fn<Type>(message: $"HasType {typeFullName}");
+        return l.ReturnAsOk(GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
     }
 
     internal static List<Type> GetTypes(ILog log = null)
     {
         if (_typeCache != null) return _typeCache;
 
-        var wrapLog = log.Fn<List<Type>>(timer: true);
+        var l = log.Fn<List<Type>>(timer: true);
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        wrapLog.A($"GetTypes() - found {assemblies.Length} assemblies");
+        l.A($"GetTypes() - found {assemblies.Length} assemblies");
 
         _typeCache = assemblies.SelectMany(a => GetLoadableTypes(a, log)).ToList();
 
-        return wrapLog.Return(_typeCache, $"{_typeCache.Count}");
+        return l.Return(_typeCache, $"{_typeCache.Count}");
     }
 
     private static List<Type> _typeCache;

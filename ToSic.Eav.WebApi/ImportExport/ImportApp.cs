@@ -104,7 +104,7 @@ public class ImportApp: ServiceBase
     /// <returns></returns>
     public IEnumerable<PendingAppDto> GetPendingApps(int zoneId)
     {
-        var wrapLog = Log.Fn<IEnumerable<PendingAppDto>>($"list all app folders for zoneId.{zoneId}");
+        var l = Log.Fn<IEnumerable<PendingAppDto>>($"list all app folders for zoneId.{zoneId}");
         var result = new List<PendingAppDto>();
 
         // loop through each app folder and find pending apps
@@ -150,7 +150,7 @@ public class ImportApp: ServiceBase
             }
         }
 
-        return wrapLog.ReturnAsOk(result);
+        return l.ReturnAsOk(result);
     }
 
     /// <summary>
