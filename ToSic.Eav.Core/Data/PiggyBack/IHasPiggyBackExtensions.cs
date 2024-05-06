@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -45,5 +47,31 @@ public static class IHasPiggyBackExtensions
         return l.Return(factory(valString), "no piggyback");
     }
 
+    /// <summary>
+    /// Get from piggyback, while using the AppState itself as the cache/expiring parameter to ensure reload when app changes
+    /// </summary>
+    /// <typeparam name="TData"></typeparam>
+    /// <param name="parent"></param>
+    /// <param name="key"></param>
+    /// <param name="create"></param>
+    /// <returns></returns>
+    public static (TData Value, bool IsCached) GetPiggyBackExpiring<TData>(this IAppStateInternal parent, string key, Func<TData> create)
+        => parent.PiggyBack.GetOrGenerate(parent, key, create);
+
+
+    /// <summary>
+    /// Get PiggyBack property, and if it doesn't exist, create it.
+    /// Will auto-expire if the app has any changes on it.
+    /// Uses the file name and method for the key.
+    /// </summary>
+    /// <typeparam name="TData"></typeparam>
+    /// <param name="parent"></param>
+    /// <param name="create"></param>
+    /// <param name="cPath">auto</param>
+    /// <param name="cName">auto</param>
+    /// <returns></returns>
+    public static (TData Value, bool IsCached) GetPiggyBackPropExpiring<TData>(this IAppStateInternal parent, Func<TData> create,
+        [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default)
+        => parent.PiggyBack.GetOrGenerate(parent, $"autokey:{cPath};{cName}()", create);
 
 }
