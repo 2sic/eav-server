@@ -94,11 +94,15 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
         var l = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
         var duration = durationInSeconds > 0 ? durationInSeconds : DataSourceListCache.DefaultDuration;
         var expiration = new TimeSpan(0, 0, duration);
+        var absoluteExpiration = DateTime.Now.AddSeconds(duration);
         var policy = slidingExpiration
-            ? new() { SlidingExpiration = expiration }
-            : new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(duration) };
+            ? new CacheItemPolicy { SlidingExpiration = expiration }
+            : new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration };
 
-        _memoryCacheService.Set(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);
+        _memoryCacheService.Set(key, 
+            value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy),
+            absoluteExpiration: slidingExpiration ? null : absoluteExpiration, 
+            slidingExpiration: slidingExpiration ? expiration : null);
         l.Done();
     }
         
