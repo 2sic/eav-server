@@ -6,18 +6,13 @@ namespace ToSic.Eav.DataSource.Internal.Catalog;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class DataSourceCatalog: ServiceBase
+public partial class DataSourceCatalog(
+    IServiceProvider serviceProvider,
+    LazySvc<IAppDataSourcesLoader> appDataSourcesLoader,
+    MemoryCacheService memoryCacheService)
+    : ServiceBase("DS.DsCat", connect: [appDataSourcesLoader, memoryCacheService, serviceProvider])
 {
-    private readonly LazySvc<IAppDataSourcesLoader> _appDataSourcesLoader;
-    private readonly MemoryCacheService _memoryCacheService;
-    private IServiceProvider ServiceProvider { get; }
-
-    public DataSourceCatalog(IServiceProvider serviceProvider, LazySvc<IAppDataSourcesLoader> appDataSourcesLoader, MemoryCacheService memoryCacheService) : base("DS.DsCat")
-    {
-        _appDataSourcesLoader = appDataSourcesLoader;
-        _memoryCacheService = memoryCacheService;
-        ServiceProvider = serviceProvider;
-    }
+    private IServiceProvider ServiceProvider { get; } = serviceProvider;
 
     /// <summary>
     /// Create Instance of DataSource to get In- and Out-Streams
