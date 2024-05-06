@@ -10,10 +10,8 @@ public partial class DataSourceCatalog(
     IServiceProvider serviceProvider,
     LazySvc<IAppDataSourcesLoader> appDataSourcesLoader,
     MemoryCacheService memoryCacheService)
-    : ServiceBase("DS.DsCat", connect: [appDataSourcesLoader, memoryCacheService, serviceProvider])
+    : ServiceBase("DS.DsCat", connect: [appDataSourcesLoader, memoryCacheService/*, never add serviceProvider! - it will cause errors of already-disposed at random places */])
 {
-    private IServiceProvider ServiceProvider { get; } = serviceProvider;
-
     /// <summary>
     /// Create Instance of DataSource to get In- and Out-Streams
     /// </summary>
@@ -25,7 +23,7 @@ public partial class DataSourceCatalog(
         try
         {
             // This MUST use Build (not GetService<>) since that will also create objects which are not registered
-            var dataSourceInstance = ServiceProvider.Build<IDataSource>(dsInfo.Type);
+            var dataSourceInstance = serviceProvider.Build<IDataSource>(dsInfo.Type);
 
             // skip this if out-connections cannot be queried
             return l.Return(dataSourceInstance.Out.Keys.ToList(), "ok");
