@@ -7,22 +7,13 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// <summary>
 /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
 /// </summary>
+/// <remarks>
+/// Constructor
+/// </remarks>
 [PrivateApi("this is just fyi")]
-internal class ListCacheSvc: ServiceBase, IListCacheSvc
+[method: PrivateApi]
+internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase("DS.LstCch", connect: [memoryCacheService]), IListCacheSvc
 {
-    private readonly MemoryCacheService _memoryCacheService;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    [PrivateApi]
-    public ListCacheSvc(MemoryCacheService memoryCacheService) : base("DS.LstCch")
-    {
-        ConnectServices(
-            _memoryCacheService = memoryCacheService
-            );
-    }
-
     #region Get List
 
     /// <summary>
@@ -79,7 +70,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
     }
 
     /// <inheritdoc />
-    public ListCacheItem Get(string key) => _memoryCacheService.Get(key) as ListCacheItem;
+    public ListCacheItem Get(string key) => memoryCacheService.Get(key) as ListCacheItem;
 
     /// <inheritdoc />
     public ListCacheItem Get(IDataStream dataStream) => Get(DataSourceListCache.CacheKey(dataStream));
@@ -99,7 +90,7 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
             ? new CacheItemPolicy { SlidingExpiration = expiration }
             : new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration };
 
-        _memoryCacheService.Set(key, 
+        memoryCacheService.Set(key, 
             value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy),
             absoluteExpiration: slidingExpiration ? null : absoluteExpiration, 
             slidingExpiration: slidingExpiration ? expiration : null);
