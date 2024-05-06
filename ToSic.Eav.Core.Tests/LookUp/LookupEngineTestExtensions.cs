@@ -7,6 +7,6 @@ namespace ToSic.Eav.Core.Tests.LookUp
     {
         public static void TestAdd(this LookUpEngine engine, ILookUp part) => engine.Add(part);
 
-        public static void TestAdd(this LookUpEngine engine, IList<ILookUp> part) => engine.Add(part);
+        //public static void TestAdd(this LookUpEngine engine, IList<ILookUp> part) => engine.Add(part);
     }
 }

@@ -7,7 +7,7 @@ namespace ToSic.Eav.LookUp;
 /// <summary>
 /// Resolves Configurations from LookUps. Common use is for configurable DataSources
 /// </summary>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public interface ILookUpEngine: IHasLog
 {
     /// <summary>
@@ -34,12 +34,13 @@ public interface ILookUpEngine: IHasLog
     /// <param name="lookUp">An source to add to this configuration provider. The name will be taken from this object.</param>
     void Add(ILookUp lookUp);
 
-    /// <summary>
-    /// Add an overriding source. <br/>
-    /// This is used when the underlying configuration provider is shared, and this instance needs a few custom configurations. 
-    /// </summary>
-    /// <param name="lookUp">a <see cref="ILookUp"/> which should override the original configuration</param>
-    void AddOverride(ILookUp lookUp);
+    // 2024-05-06 2dm - no need for a public API of add-one
+    ///// <summary>
+    ///// Add an overriding source. <br/>
+    ///// This is used when the underlying configuration provider is shared, and this instance needs a few custom configurations. 
+    ///// </summary>
+    ///// <param name="lookUp">a <see cref="ILookUp"/> which should override the original configuration</param>
+    //void AddOverride(ILookUp lookUp);
 
     /// <summary>
     /// Add many overriding sources. <br/>
