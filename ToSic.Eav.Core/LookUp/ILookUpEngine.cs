@@ -25,7 +25,7 @@ public interface ILookUpEngine: IHasLog
     /// <param name="values">Dictionary of configuration strings.</param>
     /// <param name="overrides">Optional override LookUps which would be consulted first.</param>
     /// <param name="depth">Max recursion when looking up tokens which return other tokens.</param>
-    IDictionary<string, string> LookUp(IDictionary<string, string> values, IDictionary<string, ILookUp> overrides = null, int depth = LookUpEngine.DefaultLookUpDepth);
+    IDictionary<string, string> LookUp(IDictionary<string, string> values, IEnumerable<ILookUp> overrides = null, int depth = LookUpEngine.DefaultLookUpDepth);
 
     // 2024-05-06 2dm going functional, so add must happen at setup
     ///// <summary>

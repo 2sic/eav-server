@@ -110,9 +110,10 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         return l.ReturnAsOk(values);
     }
 
-    public DicString LookUp(DicString values, IDictionary<string, ILookUp> overrides, int depth = 4)
+    public DicString LookUp(DicString values, IEnumerable<ILookUp> overrides, int depth = 4)
     {
-        var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overrides?.Count}, depth: {depth}");
+        var overridesList = overrides?.ToList() ?? [];
+        var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overridesList.Count()}, depth: {depth}");
         // start by creating a copy of the dictionary
         values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
 
@@ -121,12 +122,10 @@ public class LookUpEngine : HelperBase, ILookUpEngine
 
         // if there are instance-specific additional Property-Access objects, add them to the sources-list
         // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
-        if (overrides is not { Count: > 0 })
+        if (!overridesList.Any())
             return l.ReturnAsOk(LookUp(values, depth));
 
-        var innerLookup = new LookUpEngine(this, Log, sources: [.. overrides.Values]);
-        //foreach (var pa in overrides)
-        //    innerLookup._sources.Add(pa.Key, pa.Value);
+        var innerLookup = new LookUpEngine(this, Log, sources: [.. overridesList]);
         return l.ReturnAsOk(innerLookup.LookUp(values, depth));
     }
 
