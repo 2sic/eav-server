@@ -41,7 +41,8 @@ internal class DataFactory : ServiceBase, IDataFactory
     /// <inheritdoc />
     public IContentType ContentType { get; }
 
-    public DataFactoryOptions Options { get; }
+    public DataFactoryOptions Options => _options ?? throw new Exception($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
+    private DataFactoryOptions _options;
 
 
     public DateTime Created { get; } = DateTime.Now;
@@ -88,7 +89,7 @@ internal class DataFactory : ServiceBase, IDataFactory
     ) :this (builder)
     {
         // Store settings
-        Options = options ?? new DataFactoryOptions();
+        _options = options ?? new DataFactoryOptions();
 
         IdCounter = Options.IdSeed;
         ContentType = _builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
