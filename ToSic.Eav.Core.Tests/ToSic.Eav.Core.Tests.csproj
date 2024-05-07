@@ -140,6 +140,7 @@
     <Compile Include="Types\TypesBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Signature\2sxc-ca_Base64.cer" />
     <None Include="Signature\2sxc-ca_Base64_Public.cer" />
     <None Include="Signature\2sxc-ca_Public.crt" />
