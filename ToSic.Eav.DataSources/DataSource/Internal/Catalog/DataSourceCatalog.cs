@@ -10,7 +10,7 @@ public partial class DataSourceCatalog(
     IServiceProvider serviceProvider,
     LazySvc<IAppDataSourcesLoader> appDataSourcesLoader,
     MemoryCacheService memoryCacheService)
-    : ServiceBase("DS.DsCat", connect: [appDataSourcesLoader, memoryCacheService/*, never add serviceProvider! - it will cause errors of already-disposed at random places */])
+    : ServiceBase("DS.DsCat", connect: [appDataSourcesLoader, memoryCacheService /*, never! add serviceProvider! - it will cause errors of already-disposed at random places */])
 {
     /// <summary>
     /// Create Instance of DataSource to get In- and Out-Streams

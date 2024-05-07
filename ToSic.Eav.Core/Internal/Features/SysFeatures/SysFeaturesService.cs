@@ -8,7 +8,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Features;
 
-public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap")
+public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap", connect: [/* never! sp*/ ])
 {
     public List<SysFeature> Definitions => _list ??= LoadCapabilities().Defs;
     private static List<SysFeature> _list;
