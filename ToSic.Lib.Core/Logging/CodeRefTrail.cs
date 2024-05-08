@@ -31,7 +31,7 @@ public class CodeRefTrail
         return this;
     }
 
-    public List<CodeRef> CodeRefs { get; } = new();
+    public List<CodeRef> CodeRefs { get; } = [];
 
     public override string ToString() => CodeRefs == null ? "" : string.Join("\n", CodeRefs.Select(cr => cr.ToString()));
 }
