@@ -43,11 +43,11 @@ public sealed class Zones: Eav.DataSource.DataSourceBase
     [PrivateApi]
     public Zones(MyServices services, IZoneMapper zoneMapper, IAppStates appStates, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
     {
-        ConnectServices(
+        ConnectLogs([
             _zoneMapper = zoneMapper,
             _appStates = appStates,
             _dataFactory = dataFactory.New(options: new(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
-        );
+        ]);
         ProvideOut(GetList);
     }
     private readonly IZoneMapper _zoneMapper;

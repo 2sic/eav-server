@@ -121,7 +121,7 @@ public class Sql : CustomDataSourceAdvanced
         public SqlPlatformInfo SqlPlatformInfo { get; }
         public MyServices(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.MyServices parentServices): base(parentServices)
         {
-            ConnectServices([
+            ConnectLogs([
                 SqlPlatformInfo = sqlPlatformInfo
             ]);
         }
@@ -135,9 +135,9 @@ public class Sql : CustomDataSourceAdvanced
     [PrivateApi]
     public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
     {
-        ConnectServices(
+        ConnectLogs([
             _dataFactory = dataFactory
-        );
+        ]);
         SqlServices = services;
         ProvideOut(GetList);
     }

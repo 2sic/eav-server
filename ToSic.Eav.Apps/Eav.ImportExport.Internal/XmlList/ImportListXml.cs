@@ -17,23 +17,14 @@ namespace ToSic.Eav.ImportExport.Internal.XmlList;
 /// Import a virtual table of content-items
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ImportListXml: ServiceBase 
+public partial class ImportListXml(
+    LazySvc<ImportService> importerLazy,
+    DataBuilder builder,
+    GenWorkDb<WorkEntityDelete> entDelete)
+    : ServiceBase("App.ImpVtT", connect: [builder, importerLazy, entDelete])
 {
 
     #region Dependency Injection
-
-    public ImportListXml(LazySvc<ImportService> importerLazy, DataBuilder builder, GenWorkDb<WorkEntityDelete> entDelete) : base("App.ImpVtT")
-    {
-        ConnectServices(
-            _builder = builder,
-            _importerLazy = importerLazy,
-            _entDelete = entDelete
-        );
-    }
-
-    private readonly GenWorkDb<WorkEntityDelete> _entDelete;
-    private readonly LazySvc<ImportService> _importerLazy;
-    private readonly DataBuilder _builder;
 
     #endregion
 
@@ -134,7 +125,7 @@ public partial class ImportListXml: ServiceBase
 
             var entityGuid = entityGuidManager.GetGuid(xEntity, _docLangPrimary);
             var entityInImportQueue = GetImportEntity(entityGuid);
-            var entityAttributes = _builder.Attribute.Mutable(entityInImportQueue?.Attributes);
+            var entityAttributes = builder.Attribute.Mutable(entityInImportQueue?.Attributes);
 
             foreach (var ctAttribute in ContentType.Attributes)
             {
@@ -150,8 +141,8 @@ public partial class ImportListXml: ServiceBase
                 if (value == XmlConstants.EmptyMarker)
                 {
                     entityAttributes.TryGetValue(valName, out var existingAttr);
-                    var emptyAttribute = _builder.Attribute.CreateOrUpdate(originalOrNull: existingAttr, name: valName, value: "", type: ctAttribute.Type, language: nodeLang);
-                    entityAttributes = _builder.Attribute.Replace(entityAttributes, emptyAttribute);
+                    var emptyAttribute = builder.Attribute.CreateOrUpdate(originalOrNull: existingAttr, name: valName, value: "", type: ctAttribute.Type, language: nodeLang);
+                    entityAttributes = builder.Attribute.Replace(entityAttributes, emptyAttribute);
                     continue;
                 }
 
@@ -165,9 +156,9 @@ public partial class ImportListXml: ServiceBase
                     try
                     {
                         entityAttributes.TryGetValue(valName, out var existingAttr2);
-                        var preConverted = _builder.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks);
-                        var valRefAttribute = _builder.Attribute.CreateOrUpdate(originalOrNull: existingAttr2, name: valName, value: preConverted, type: valType, language: nodeLang);
-                        entityAttributes = _builder.Attribute.Replace(entityAttributes, valRefAttribute);
+                        var preConverted = builder.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks);
+                        var valRefAttribute = builder.Attribute.CreateOrUpdate(originalOrNull: existingAttr2, name: valName, value: preConverted, type: valType, language: nodeLang);
+                        entityAttributes = builder.Attribute.Replace(entityAttributes, valRefAttribute);
 
                     }
                     catch (FormatException)
@@ -201,10 +192,10 @@ public partial class ImportListXml: ServiceBase
                     // In future, we should move immutability "up" so this would go into a queue for values to create the final entity
                     var updatedValue = entityValue.Value.Clone(entityValue.Value.Languages.ToImmutableList()
                         .Add(new Language(nodeLang, valueReadOnly)));
-                    var newValues = _builder.Value.Replace(entityValue.Attribute.Values,
+                    var newValues = builder.Value.Replace(entityValue.Attribute.Values,
                         entityValue.Value, updatedValue);
-                    var newAttribute = _builder.Attribute.CreateFrom(entityValue.Attribute, newValues);
-                    entityAttributes = _builder.Attribute.Replace(entityAttributes, newAttribute);
+                    var newAttribute = builder.Attribute.CreateFrom(entityValue.Attribute, newValues);
+                    entityAttributes = builder.Attribute.Replace(entityAttributes, newAttribute);
                     continue;
                 }
 
@@ -245,16 +236,16 @@ public partial class ImportListXml: ServiceBase
                 // Just add the value. Note 2023-02-28 2dm - not exactly sure how/why, assume it's the final-no-errors case
                 var langShouldBeReadOnly = valExisting.Languages
                     .FirstOrDefault(lang => lang.Key == valueReferenceLanguage)?.ReadOnly ?? false;
-                var valueLanguages = _builder.Language.GetBestValueLanguages(valueReferenceLanguage, langShouldBeReadOnly)
+                var valueLanguages = builder.Language.GetBestValueLanguages(valueReferenceLanguage, langShouldBeReadOnly)
                                      ?? [];
                 valueLanguages.Add(new Language(nodeLang, valueReadOnly));
                 // update languages on valExisting
-                var updatedValue2 = _builder.Value.CreateFrom(valExisting, languages: _builder.Language.Merge(valExisting.Languages, valueLanguages));
+                var updatedValue2 = builder.Value.CreateFrom(valExisting, languages: builder.Language.Merge(valExisting.Languages, valueLanguages));
                 //var updatedValue2 = AttributeBuilder.Value.UpdateLanguages(valExisting, valueLanguages);
                 // TODO: update/replace value in existingEnt[attribute.Name]
-                var values2 = _builder.Value.Replace(attrExisting.Values, valExisting, updatedValue2);
-                var attribute2 = _builder.Attribute.CreateFrom(attrExisting, values2);
-                entityAttributes = _builder.Attribute.Replace(entityAttributes, attribute2);
+                var values2 = builder.Value.Replace(attrExisting.Values, valExisting, updatedValue2);
+                var attribute2 = builder.Attribute.CreateFrom(attrExisting, values2);
+                entityAttributes = builder.Attribute.Replace(entityAttributes, attribute2);
 
 
                 #endregion
@@ -269,7 +260,7 @@ public partial class ImportListXml: ServiceBase
                 // note: I'm not sure if this should ever happen, if the same entity already exists
                 // in the ImportEntities list. But because there is a check if it's already in there
                 // which was from 2017 or before, I'll leave it in for now
-                var entityClone = _builder.Entity.CreateFrom(entityInImportQueue, attributes: _builder.Attribute.Create(entityAttributes));
+                var entityClone = builder.Entity.CreateFrom(entityInImportQueue, attributes: builder.Attribute.Create(entityAttributes));
                 ImportEntities.Remove(entityInImportQueue);
                 ImportEntities.Add(entityClone as Entity);
             }
@@ -293,10 +284,10 @@ public partial class ImportListXml: ServiceBase
         if (_deleteSetting == ImportDeleteUnmentionedItems.All)
         {
             var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
-            _entDelete.New(AppState.Internal()).Delete(idsToDelete);
+            entDelete.New(AppState.Internal()).Delete(idsToDelete);
         }
 
-        var import = _importerLazy.Value.Init(null, _appId, false, true);
+        var import = importerLazy.Value.Init(null, _appId, false, true);
         import.ImportIntoDb(null, ImportEntities);
 
         // important note: don't purge cache here, but the caller MUST do this!

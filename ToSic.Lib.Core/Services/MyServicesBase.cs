@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Coding;
+﻿using System;
+using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging;
@@ -20,7 +21,7 @@ public abstract class MyServicesBase: ILazyInitLog
     protected MyServicesBase(NoParamOrder protect = default, object[] connect = default)
     {
         if (connect == null) return;
-        ConnectServices(connect);
+        ConnectLogs(connect);
     }
 
 
@@ -33,8 +34,10 @@ public abstract class MyServicesBase: ILazyInitLog
     /// Add objects to various queues to be auto-initialized when <see cref="ServiceDependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
-    protected void ConnectServices(object[] services) => DependencyLogs.Add(services);
+    protected void ConnectLogs(object[] services) => DependencyLogs.Add(services);
 
+    [Obsolete("Avoid using, will be removed soon. Use ConnectLogs([...])")]
+    protected void ConnectServices(params object[] services) => DependencyLogs.Add(services);
 
     /// <summary>
     /// Experimental Connect-one, may be removed again.
@@ -65,7 +68,6 @@ public static class ServiceDependenciesExtensions
     /// Auto-initialize the log on all dependencies.
     /// Special format to allow command chaining, so it returns itself.
     /// </summary>
-    // TODO: @2dm - rename to ConnectServices
     public static TDependencies ConnectServices<TDependencies>(this TDependencies parent, ILog log) where TDependencies : MyServicesBase
     {
         (parent as ILazyInitLog).SetLog(log);

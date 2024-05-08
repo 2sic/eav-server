@@ -15,35 +15,20 @@ namespace ToSic.Eav.WebApi.ImportExport;
 
 /// <inheritdoc />
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ContentImportApi : ServiceBase
+public class ContentImportApi(
+    LazySvc<ImportListXml> importListXml,
+    LazySvc<JsonSerializer> jsonSerializerLazy,
+    AppCachePurger appCachePurger,
+    GenWorkDb<WorkEntitySave> workEntSave,
+    IAppStates appStates)
+    : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appStates])
 {
-
-    public ContentImportApi(
-        LazySvc<ImportListXml> importListXml, 
-        LazySvc<JsonSerializer> jsonSerializerLazy,
-        AppCachePurger appCachePurger,
-        GenWorkDb<WorkEntitySave> workEntSave,
-        IAppStates appStates) : base("Api.EaCtIm")
-    {
-        ConnectServices(
-            _workEntSave = workEntSave,
-            _importListXml = importListXml,
-            _jsonSerializerLazy = jsonSerializerLazy,
-            _appCachePurger = appCachePurger,
-            _appStates = appStates
-        );
-    }
-    private readonly GenWorkDb<WorkEntitySave> _workEntSave;
-    private readonly LazySvc<ImportListXml> _importListXml;
-    private readonly LazySvc<JsonSerializer> _jsonSerializerLazy;
-    private readonly AppCachePurger _appCachePurger;
-    private readonly IAppStates _appStates;
     private IAppStateInternal _appState;
 
     public ContentImportApi Init(int appId)
     {
         var l = Log.Fn<ContentImportApi>($"app: {appId}");
-        _appState = _appStates.GetReader(appId);
+        _appState = appStates.GetReader(appId);
         return l.Return(this);
     }
 
@@ -79,7 +64,7 @@ public class ContentImportApi : ServiceBase
         if (!import.ErrorLog.HasErrors)
         {
             import.PersistImportToRepository();
-            _appCachePurger.PurgeApp(args.AppId);
+            appCachePurger.PurgeApp(args.AppId);
         }
 
         return l.Return(new(!import.ErrorLog.HasErrors, null), "done, errors: " + import.ErrorLog.HasErrors);
@@ -88,10 +73,10 @@ public class ContentImportApi : ServiceBase
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
     {
         var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
-        var contextLanguages = _appStates.Languages(_appState.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
+        var contextLanguages = appStates.Languages(_appState.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
 
         using var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64));
-        var importer = _importListXml.Value.Init(_appState, args.ContentType, contentSteam,
+        var importer = importListXml.Value.Init(_appState, args.ContentType, contentSteam,
             contextLanguages, args.DefaultLanguage,
             args.ClearEntities, args.ImportResourcesReferences);
         return l.Return(importer);
@@ -103,13 +88,13 @@ public class ContentImportApi : ServiceBase
         var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
         try
         {
-            var deserializer = _jsonSerializerLazy.Value.SetApp(_appState);
+            var deserializer = jsonSerializerLazy.Value.SetApp(_appState);
             // Since we're importing directly into this app, we prefer local content-types
             deserializer.PreferLocalAppTypes = true;
 
             var listToImport = new List<IEntity> { deserializer.Deserialize(args.GetContentString()) };
 
-            _workEntSave.New(_appState).Import(listToImport);
+            workEntSave.New(_appState).Import(listToImport);
 
             return l.ReturnTrue();
         }

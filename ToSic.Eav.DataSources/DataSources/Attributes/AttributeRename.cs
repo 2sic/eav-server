@@ -65,9 +65,9 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
     [PrivateApi]
     public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{LogPrefix}.AtrRen")
     {
-        ConnectServices(
+        ConnectLogs([
             _dataBuilder = dataBuilder
-        );
+        ]);
         ProvideOut(GetList);
     }
 

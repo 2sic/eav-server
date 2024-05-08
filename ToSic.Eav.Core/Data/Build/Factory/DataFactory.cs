@@ -14,24 +14,9 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class DataFactory : ServiceBase, IDataFactory
+internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
 {
-    #region Constructor / DI
-
-
-    /// <summary>
-    /// Constructor for DI
-    /// </summary>
-    public DataFactory(DataBuilder builder) : base("Ds.DatBld")
-    {
-        ConnectServices(
-            _builder = builder
-        );
-    }
-    private readonly DataBuilder _builder;
-
-    #endregion
-
+    private readonly DataBuilder _builder = builder;
 
     #region Properties to configure Builder / Defaults
 
@@ -42,7 +27,7 @@ internal class DataFactory : ServiceBase, IDataFactory
     public IContentType ContentType { get; }
 
     public DataFactoryOptions Options => _options ?? throw new Exception($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
-    private DataFactoryOptions _options;
+    private readonly DataFactoryOptions _options;
 
 
     public DateTime Created { get; } = DateTime.Now;

@@ -17,7 +17,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
         public MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppStates appStates)
         {
-            ConnectServices([
+            ConnectLogs([
                 MetadataTargets = metadataTargets,
                 DataBuilder = dataBuilder,
                 AppStates = appStates

@@ -14,10 +14,10 @@ public class AppPermissionCheck: PermissionCheckBase
     #region Constructor & DI
     public AppPermissionCheck(IAppStates appStates, MyServices services) : base(services, $"{AppConstants.LogName}.PrmChk")
     {
-        ConnectServices(
+        ConnectLogs([
             _appStates = appStates,
             _environmentPermission = (EnvironmentPermission)services.EnvironmentPermission
-        );
+        ]);
     }
     private readonly IAppStates _appStates;
     private readonly EnvironmentPermission _environmentPermission;

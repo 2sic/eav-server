@@ -48,10 +48,10 @@ public sealed class Attributes: DataSourceBase
     /// </summary>
     public Attributes(IAppStates appStates, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib")
     {
-        ConnectServices(
+        ConnectLogs([
             _appStates = appStates,
             _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)))
-        );
+        ]);
         ProvideOut(GetList);
     }
     private readonly IAppStates _appStates;

@@ -14,18 +14,8 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Persistence;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EntitySaver : ServiceBase
+public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", connect: [dataBuilder])
 {
-    public EntitySaver(DataBuilder dataBuilder) : base("Dta.Saver")
-    {
-        ConnectServices(
-            _dataBuilder = dataBuilder
-        );
-    }
-
-    private readonly DataBuilder _dataBuilder;
-
-
     /// <summary>
     /// Goal: Pass changes into an existing entity so that it can then be saved as a whole, with correct
     /// modifications. 
@@ -65,8 +55,8 @@ public class EntitySaver : ServiceBase
 
         #region Step 2: clean up unwanted attributes from both lists
 
-        var origAttribsOrNull = original == null ? null : _dataBuilder.Attribute.Mutable(original.Attributes);
-        var newAttribs = _dataBuilder.Attribute.Mutable(update.Attributes);
+        var origAttribsOrNull = original == null ? null : dataBuilder.Attribute.Mutable(original.Attributes);
+        var newAttribs = dataBuilder.Attribute.Mutable(update.Attributes);
 
         l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribsOrNull?.Count}, newAtts⋮{newAttribs.Count}");
 
@@ -131,9 +121,9 @@ public class EntitySaver : ServiceBase
                     : newAttrib.Value;
 
         var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs, logDetails);
-        var clone = _dataBuilder.Entity.CreateFrom(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
+        var clone = dataBuilder.Entity.CreateFrom(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
             type: newType,
-            attributes: _dataBuilder.Attribute.Create(preCleaned.Attributes),
+            attributes: dataBuilder.Attribute.Create(preCleaned.Attributes),
             isPublished: preCleaned.NewIsPublished);
         //var result = CorrectPublishedAndGuidImports(clone, clone.Attributes, logDetails); // as Entity;
         return (clone, "ok");
@@ -149,8 +139,8 @@ public class EntitySaver : ServiceBase
     private IAttribute CreateIsPublishedAttribute(bool isPublished)
     {
         //var values = new List<IValue> { _dataBuilder.Value.Build(ValueTypes.Boolean, isPublished) };
-        var values = new List<IValue> { _dataBuilder.Value.Bool(isPublished) };
-        var attribute = _dataBuilder.Attribute.Create(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
+        var values = new List<IValue> { dataBuilder.Value.Bool(isPublished) };
+        var attribute = dataBuilder.Attribute.Create(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
         // #immutable
         //attribute.Values = values;
         return attribute;
@@ -191,7 +181,7 @@ public class EntitySaver : ServiceBase
                 }
 
                 //field.Value.Values = values;
-                return _dataBuilder.Attribute.CreateFrom(field.Value, values.ToImmutableList());
+                return dataBuilder.Attribute.CreateFrom(field.Value, values.ToImmutableList());
             }, InvariantCultureIgnoreCase);
 
         return modified;
@@ -250,11 +240,11 @@ public class EntitySaver : ServiceBase
             if (remainingLanguages.Count == 0) continue;
 
             // Add the value with the remaining languages / relationships
-            var val = _dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
+            var val = dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
             result.Add(val);
         }
 
-        var final = _dataBuilder.Attribute.CreateFrom(update, result.ToImmutableList());
+        var final = dataBuilder.Attribute.CreateFrom(update, result.ToImmutableList());
         return final;
     });
 

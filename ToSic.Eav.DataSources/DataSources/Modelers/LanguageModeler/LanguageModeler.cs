@@ -43,9 +43,9 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
     [PrivateApi]
     public LanguageModeler(DataBuilder dataBuilder, MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.LngMod")
     {
-        ConnectServices(
+        ConnectLogs([
             _dataBuilder = dataBuilder
-        );
+        ]);
         ProvideOut(MapLanguagesIntoValues);
     }
 

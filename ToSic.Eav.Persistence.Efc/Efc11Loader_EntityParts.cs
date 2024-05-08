@@ -8,7 +8,7 @@ partial class Efc11Loader
     private int[] GetEntityIdOfPartnerEntities(int[] repositoryIds)
     {
         var l = Log.Fn<int[]>();
-        var relatedIds = from e in _dbContext.ToSicEavEntities
+        var relatedIds = from e in context.ToSicEavEntities
             where e.PublishedEntityId.HasValue && !e.IsPublished && repositoryIds.Contains(e.EntityId) &&
                   !repositoryIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
             select e.PublishedEntityId.Value;
@@ -22,7 +22,7 @@ partial class Efc11Loader
     private List<TempEntity> GetRawEntities(int[] entityIds, int appId, bool filterIds, string filterType = null)
     {
         var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterType)}: '{filterType}'");
-        var query = _dbContext.ToSicEavEntities
+        var query = context.ToSicEavEntities
             .Include(e => e.AttributeSet)
             .Where(e => e.AppId == appId)
             .Where(e => e.ChangeLogDeleted == null && e.AttributeSet.ChangeLogDeleted == null);
@@ -63,7 +63,7 @@ partial class Efc11Loader
         // just get once, we'll need it in a deep loop
         var primaryLanguage = PrimaryLanguage;
 
-        var attributes = _dbContext.ToSicEavValues
+        var attributes = context.ToSicEavValues
             .Include(v => v.Attribute)
             .Include(v => v.ToSicEavValuesDimensions)
             .ThenInclude(d => d.Dimension)
@@ -109,7 +109,7 @@ partial class Efc11Loader
     private List<ToSicEavEntityRelationships> GetRelationshipChunk(int appId, ICollection<int> entityIdsFound)
     {
         var l = Log.Fn<List<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIdsFound.Count}");
-        var relationships = _dbContext.ToSicEavEntityRelationships
+        var relationships = context.ToSicEavEntityRelationships
             .Include(rel => rel.Attribute)
             .Where(rel => rel.ParentEntity.AppId == appId)
             .Where(r => !r.ChildEntityId.HasValue // child can be a null-reference

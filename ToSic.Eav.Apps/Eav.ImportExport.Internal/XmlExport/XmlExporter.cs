@@ -18,7 +18,12 @@ namespace ToSic.Eav.ImportExport.Internal;
 // should all get it from cache only!
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class XmlExporter : ServiceBase
+public abstract class XmlExporter(
+    XmlSerializer xmlSerializer,
+    IAppStates appStates,
+    IContextResolver contextResolver,
+    string logPrefix)
+    : ServiceBase(logPrefix + "XmlExp", connect: [appStates, xmlSerializer, contextResolver])
 {
 
     #region simple properties
@@ -40,17 +45,9 @@ public abstract class XmlExporter : ServiceBase
 
     #region Constructor & DI
 
-    protected XmlExporter(XmlSerializer xmlSerializer, IAppStates appStates, IContextResolver contextResolver, string logPrefix) : base(logPrefix + "XmlExp")
-    {
-        ConnectServices(
-            AppStates = appStates,
-            Serializer = xmlSerializer,
-            ContextResolver = contextResolver
-        );
-    }
-    protected IContextResolver ContextResolver { get; }
-    public XmlSerializer Serializer { get; }
-    protected readonly IAppStates AppStates;
+    protected IContextResolver ContextResolver { get; } = contextResolver;
+    public XmlSerializer Serializer { get; } = xmlSerializer;
+    protected readonly IAppStates AppStates = appStates;
 
     protected void Constructor(int zoneId, IAppStateInternal appState, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
     {

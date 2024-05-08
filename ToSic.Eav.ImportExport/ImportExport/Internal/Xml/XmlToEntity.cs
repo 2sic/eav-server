@@ -19,9 +19,9 @@ public class XmlToEntity: ServiceBase
 
     public XmlToEntity(IAppStates appStates, DataBuilder dataBuilder) : base("Imp.XmlEnt")
     {
-        ConnectServices(
+        ConnectLogs([
             _dataBuilder = dataBuilder
-        );
+        ]);
         _presetApp = appStates.GetPresetReader();
     }
 

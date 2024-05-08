@@ -32,7 +32,7 @@ partial class DataSourceBase
             LazySvc<IDataSourceCacheService> cacheService
         )
         {
-            ConnectServices([
+            ConnectLogs([
                 Configuration = configuration,
                 ErrorHandler = errorHandler,
                 ConfigDataLoader = configDataLoader,

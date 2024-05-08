@@ -10,13 +10,14 @@ internal partial class AppLoader : ServiceBase, IAppLoader
 {
     #region Constructor and DI
 
-    public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<IAppStateBuilder> stateBuilder) : base("Eav.RunTme")
+    public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
+        : base("Eav.RunTme")
     {
-        _serviceProvider = sp;
-        ConnectServices(
+        _serviceProvider = sp;  // never add to connect, as it's not a service
+        ConnectLogs([
             _fslGenerator = fslGenerator,
             _stateBuilder = stateBuilder
-        );
+        ]);
         // Only add the first time it's really used
         InternalAppLoader.LoadLog ??= Log;
     }

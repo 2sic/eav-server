@@ -70,7 +70,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
         DataBuilder builder
     ) : base("Db.Data")
     {
-        ConnectServices(
+        ConnectLogs([
             _efcLoaderLazy = efcLoaderLazy,
             _userLazy = userLazy,
             _appsCache = appsCache,
@@ -79,7 +79,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
             JsonSerializerGenerator = jsonSerializerGenerator,
             _compressor = compressor,
             _builder = builder
-        );
+        ]);
         SqlDb.AlternateSaveHandler += SaveChanges;
     }
 

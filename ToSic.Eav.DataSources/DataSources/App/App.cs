@@ -89,7 +89,7 @@ public partial class App : DataSourceBase
             IDataSourcesService dataSourceFactory,
             IContextResolverUserPermissions userPermissions) : base(parentServices)
         {
-            ConnectServices([
+            ConnectLogs([
                 AppStates = appStates,
                 DataSourceFactory = dataSourceFactory,
                 UserPermissions = userPermissions

@@ -18,12 +18,12 @@ public class SystemLoader : ServiceBase
         LazySvc<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
     ) : base($"{EavLogs.Eav}SysLdr")
     {
-        logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, Log);
+        logStore.Add(LogNames.LogStoreStartUp, Log);
         Log.A("EAV System Loader");
-        ConnectServices(
+        ConnectLogs([
             _registrations = registrations,
             _systemLoaderLazy = systemLoaderLazy
-        );
+        ]);
     }
 
     private readonly IEnumerable<IStartUpRegistrations> _registrations;

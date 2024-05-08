@@ -49,12 +49,12 @@ public class SystemStack: Eav.DataSource.DataSourceBase
         IDataFactory dataFactory
     ) : base(services, "Ds.AppStk")
     {
-        ConnectServices(
+        ConnectLogs([
             _appStates = appStates,
             _zoneCulture = zoneCulture,
             _dataStackService = dataStackService,
             _dataFactory = dataFactory
-        );
+        ]);
         ProvideOut(GetStack);
     }
 

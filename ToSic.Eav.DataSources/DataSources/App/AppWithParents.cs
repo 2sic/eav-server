@@ -37,11 +37,11 @@ internal class AppWithParents: DataSourceBase
 
     public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppStates appStates, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
     {
-        ConnectServices(
+        ConnectLogs([
             _dataSourceFactory = dataSourceFactory,
             _appStates = appStates,
             _mergeGenerator = mergeGenerator
-        );
+        ]);
         ProvideOut(GetList);
     }
 

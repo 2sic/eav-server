@@ -14,7 +14,7 @@ partial class Efc11Loader
     {
         get {
             if (_primaryLanguage != null) return _primaryLanguage;
-            _primaryLanguage = _environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
+            _primaryLanguage = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
             Log.A($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
             return _primaryLanguage;
         }
@@ -85,7 +85,7 @@ partial class Efc11Loader
 
         #region Build EntityModels
 
-        var serializer = _dataDeserializer.New();
+        var serializer = dataDeserializer.New();
         serializer.Initialize(builder.Reader);
 
         var entityTimer = Stopwatch.StartNew();
@@ -127,7 +127,7 @@ partial class Efc11Loader
             //fromJson.Created = e.Created;
             //fromJson.Modified = e.Modified;
             //fromJson.Owner = e.Owner;
-            var clonedExtended = _dataBuilder.Entity.CreateFrom(fromJson,
+            var clonedExtended = dataBuilder.Entity.CreateFrom(fromJson,
                 isPublished: e.IsPublished,
                 created: e.Created,
                 modified: e.Modified,
@@ -143,7 +143,7 @@ partial class Efc11Loader
         // Prepare relationships to add to AttributeGenerator
         var emptyValueList = new List<(string StaticName, IValue)>();
         var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
-            ? rawRels.Select(r => (r.StaticName, _dataBuilder.Value.Relationship(r.Children, app.StateCache))).ToList()
+            ? rawRels.Select(r => (r.StaticName, dataBuilder.Value.Relationship(r.Children, app.StateCache))).ToList()
             : emptyValueList;
 
         var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
@@ -159,7 +159,7 @@ partial class Efc11Loader
                 .SelectMany(a =>
                 {
                     var results = a.Values
-                        .Select(v => _dataBuilder.Value.Build(a.CtAttribute.Type, v.Value, v.Languages))
+                        .Select(v => dataBuilder.Value.Build(a.CtAttribute.Type, v.Value, v.Languages))
                         .ToList();
                     var final = DataRepair.FixIncorrectLanguageDefinitions(results, primaryLanguage);
                     return final.Select(r => (a.Name, r));
@@ -171,9 +171,9 @@ partial class Efc11Loader
             .ToLookup(x => x.Item1, x => x.Item2, InvariantCultureIgnoreCase);
 
         // Get all Attributes of that Content-Type
-        var newAttributes = _dataBuilder.Attribute.Create(contentType, mergedValueLookups);
+        var newAttributes = dataBuilder.Attribute.Create(contentType, mergedValueLookups);
         var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: app.StateCache, metadata: null);
-        var newEntity = _dataBuilder.Entity.Create(
+        var newEntity = dataBuilder.Entity.Create(
             appId: app.AppId,
             guid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
             metadataFor: e.MetadataFor, 

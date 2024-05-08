@@ -11,48 +11,18 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 /// Factory to create a Data Query
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class QueryBuilder: ServiceBase
+public class QueryBuilder(
+    IDataSourcesService dataSourceFactory,
+    IZoneCultureResolver cultureResolver,
+    Generator<PassThrough> passThrough,
+    IAppStates appStates,
+    IContextResolverUserPermissions userPermissions,
+    QueryDefinitionBuilder queryDefinitionBuilder)
+    : ServiceBase("DS.PipeFt",
+        connect: [cultureResolver, appStates, dataSourceFactory, passThrough, userPermissions, queryDefinitionBuilder])
 {
-    private readonly QueryDefinitionBuilder _queryDefinitionBuilder;
-    private readonly IContextResolverUserPermissions _userPermissions;
-    private readonly Generator<PassThrough> _passThrough;
-    private readonly IDataSourcesService _dataSourceFactory;
-    private readonly IZoneCultureResolver _cultureResolver;
-    private readonly IAppStates _appStates;
 
-    #region Dependency Injection
-
-    /// <summary>
-    /// DI Constructor
-    /// </summary>
-    /// <remarks>
-    /// Never call this constructor from your code, as it re-configures the DataSourceFactory it gets
-    /// </remarks>
-    public QueryBuilder(
-        IDataSourcesService dataSourceFactory, 
-        IZoneCultureResolver cultureResolver,
-        Generator<PassThrough> passThrough,
-        IAppStates appStates,
-        IContextResolverUserPermissions userPermissions,
-        QueryDefinitionBuilder queryDefinitionBuilder
-    ) : base("DS.PipeFt")
-    {
-        ConnectServices(
-            _cultureResolver = cultureResolver,
-            _appStates = appStates,
-            _dataSourceFactory = dataSourceFactory,
-            _dataSourceFactory,
-            _passThrough = passThrough,
-            _userPermissions = userPermissions,
-            _queryDefinitionBuilder = queryDefinitionBuilder
-        );
-    }
-
-        
-
-    #endregion
-
-    public QueryDefinition Create(IEntity entity, int appId) => _queryDefinitionBuilder.Create(entity, appId);
+    public QueryDefinition Create(IEntity entity, int appId) => queryDefinitionBuilder.Create(entity, appId);
 
     /// <summary>
     /// Build a query-definition object based on the entity-ID defining the query
@@ -62,8 +32,8 @@ public class QueryBuilder: ServiceBase
     {
         try
         {
-            var app = _appStates.IdentityOfApp(appId);
-            var source = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: app));
+            var app = appStates.IdentityOfApp(appId);
+            var source = dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: app));
             var appEntities = source.List;
 
             // use findRepo, as it uses the cache, which gives the list of all items
@@ -85,7 +55,7 @@ public class QueryBuilder: ServiceBase
         var l = Log.Fn<QueryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
         #region prepare shared / global value providers
             
-        var showDrafts = _userPermissions.UserPermissions().IsContentAdmin;
+        var showDrafts = userPermissions.UserPermissions().IsContentAdmin;
         if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
             paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 
@@ -106,7 +76,7 @@ public class QueryBuilder: ServiceBase
 
         // tell the primary-out that it has this guid, for better debugging
         var passThroughLookUp = new LookUpEngine(baseLookUp, Log);
-        IDataSource outTarget = _passThrough.New().Init(passThroughLookUp);
+        IDataSource outTarget = passThrough.New().Init(passThroughLookUp);
         if (outTarget.Guid == Guid.Empty)
             outTarget.AddDebugInfo(queryDef.Entity.EntityGuid, null);
 
@@ -114,8 +84,8 @@ public class QueryBuilder: ServiceBase
 
         #region Load Parameters needed for all parts
 
-        var appIdentity = _appStates.IdentityOfApp(queryDef.AppId);
-        var dimensions = _cultureResolver.SafeLanguagePriorityCodes();
+        var appIdentity = appStates.IdentityOfApp(queryDef.AppId);
+        var dimensions = cultureResolver.SafeLanguagePriorityCodes();
 
         #endregion
 
@@ -147,7 +117,7 @@ public class QueryBuilder: ServiceBase
 
             // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
             var dsType = dataQueryPart.DataSourceType;
-            var dataSource = _dataSourceFactory.Create(type: dsType, options: partConfig);
+            var dataSource = dataSourceFactory.Create(type: dsType, options: partConfig);
             try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Entity.GetBestTitle()); }
             catch { /* ignore */ }
 

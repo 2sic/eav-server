@@ -51,11 +51,11 @@ public sealed class LicenseLoader : LoaderBase
     ) : base(logStore, $"{EavLogs.Eav}LicLdr")
     {
         Log.A("Load Licenses");
-        ConnectServices(
+        ConnectLogs([
             _licenseCatalog = licenseCatalog,
             _fingerprint = fingerprint,
             _globalConfiguration = globalConfiguration
-        );
+        ]);
     }
 
     internal LicenseLoader Init(List<EnterpriseFingerprint> entFingerprints)

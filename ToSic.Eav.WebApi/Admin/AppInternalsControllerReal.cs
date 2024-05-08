@@ -7,29 +7,16 @@ using ServiceBase = ToSic.Lib.Services.ServiceBase;
 namespace ToSic.Eav.WebApi.Admin;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
+public class AppInternalsControllerReal(
+    LazySvc<IContextOfSite> context,
+    LazySvc<ContentTypeDtoService> ctApiLazy,
+    LazySvc<IAppStates> appStates,
+    LazySvc<EntityApi> entityApi,
+    LazySvc<MetadataControllerReal> metadataControllerReal)
+    : ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appStates, entityApi, metadataControllerReal]),
+        IAppInternalsController
 {
     public const string LogSuffix = "AppInternals";
-    public AppInternalsControllerReal(
-        LazySvc<IContextOfSite> context,
-        LazySvc<ContentTypeDtoService> ctApiLazy,
-        LazySvc<IAppStates> appStates,
-        LazySvc<EntityApi> entityApi,
-        LazySvc<MetadataControllerReal> metadataControllerReal)
-        : base("Api.AppInternalsRl") =>
-        ConnectServices(
-            _context = context,
-            _ctApiLazy = ctApiLazy,
-            _appStates = appStates,
-            _entityApi = entityApi,
-            _metadataControllerReal = metadataControllerReal
-        );
-
-    private readonly LazySvc<IContextOfSite> _context;
-    private readonly LazySvc<ContentTypeDtoService> _ctApiLazy;
-    private readonly LazySvc<IAppStates> _appStates;
-    private readonly LazySvc<EntityApi> _entityApi;
-    private readonly LazySvc<MetadataControllerReal> _metadataControllerReal;
 
     /// <inheritdoc/>
     public AppInternalsDto Get(int appId, int targetType, string keyType, string key)
@@ -38,9 +25,9 @@ public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
         var settingsCustomExists = systemConfiguration.Any(ct => ct.Name == "SettingsCustom");
         var resourcesCustomExists = systemConfiguration.Any(ct => ct.Name == "ResourcesCustom");
 
-        var appState = _appStates.Value.GetReader(appId);
+        var appState = appStates.Value.GetReader(appId);
         var isGlobal = appState.IsGlobalSettingsApp();
-        var isPrimary = appState.AppId == _appStates.Value.PrimaryAppId(appState.ZoneId);
+        var isPrimary = appState.AppId == appStates.Value.PrimaryAppId(appState.ZoneId);
 
         var isGlobalOrPrimary = isGlobal || isPrimary;
 
@@ -112,15 +99,15 @@ public class AppInternalsControllerReal : ServiceBase, IAppInternalsController
     }
 
     private IEnumerable<ContentTypeDto> TypeListInternal(int appId, string scope = null, bool withStatistics = false)
-        => _ctApiLazy.Value/*.Init(appId)*/.List(appId, scope, withStatistics);
+        => ctApiLazy.Value/*.Init(appId)*/.List(appId, scope, withStatistics);
 
     private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
-        => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.ReadSomething)
+        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.IdentityOfApp(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType, excludeAncestor);
 
     private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)
-        => _ctApiLazy.Value/*.Init(appId)*/.GetFields(appId, typeName);
+        => ctApiLazy.Value/*.Init(appId)*/.GetFields(appId, typeName);
 
     private MetadataListDto MetadataListInternal(int appId, int targetType, string keyType, string key, string contentType = null)
-        => _metadataControllerReal.Value.Get(appId, targetType, keyType, key, contentType);
+        => metadataControllerReal.Value.Get(appId, targetType, keyType, key, contentType);
 }

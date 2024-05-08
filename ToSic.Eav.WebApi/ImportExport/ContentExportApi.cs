@@ -25,38 +25,20 @@ using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 namespace ToSic.Eav.WebApi.ImportExport;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ContentExportApi : ServiceBase
+public class ContentExportApi(
+    AppWorkContextService appWorkCtxSvc,
+    IAppStates appStates,
+    Generator<JsonSerializer> jsonSerializer,
+    IResponseMaker responseMaker,
+    Generator<ExportListXml> exportListXmlGenerator,
+    LazySvc<IEavFeaturesService> features)
+    : ServiceBase("Api.EaCtEx",
+        connect: [appWorkCtxSvc, exportListXmlGenerator, appStates, jsonSerializer, responseMaker, features])
 {
-    private readonly AppWorkContextService _appWorkCtxSvc;
-    private readonly Generator<ExportListXml> _exportListXmlGenerator;
-    private readonly IAppStates _appStates;
-    private readonly Generator<JsonSerializer> _jsonSerializer;
-    private readonly IResponseMaker _responseMaker;
-    private readonly LazySvc<IEavFeaturesService> _features;
-
-    public ContentExportApi(
-        AppWorkContextService appWorkCtxSvc,
-        IAppStates appStates,
-        Generator<JsonSerializer> jsonSerializer,
-        IResponseMaker responseMaker,
-        Generator<ExportListXml> exportListXmlGenerator,
-        LazySvc<IEavFeaturesService> features
-        ) : base("Api.EaCtEx")
-    {
-        ConnectServices(
-            _appWorkCtxSvc = appWorkCtxSvc,
-            _exportListXmlGenerator = exportListXmlGenerator,
-            _appStates = appStates,
-            _jsonSerializer = jsonSerializer,
-            _responseMaker = responseMaker,
-            _features = features
-        );
-    }
-
     public ContentExportApi Init(int appId)
     {
         var l = Log.Fn<ContentExportApi>($"For app: {appId}");
-        _appCtx = _appWorkCtxSvc.Context(appId);
+        _appCtx = appWorkCtxSvc.Context(appId);
         return l.Return(this);
     }
 
@@ -74,7 +56,7 @@ public class ContentExportApi : ServiceBase
         var l = Log.Fn<(string, string)>($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
         SecurityHelpers.ThrowIfNotContentAdmin(user, l);
 
-        var contextLanguages = _appStates.Languages(_appCtx.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
+        var contextLanguages = appStates.Languages(_appCtx.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
 
         // check if we have an array of ids
         int[] ids = null;
@@ -88,7 +70,7 @@ public class ContentExportApi : ServiceBase
             throw new("trouble finding selected IDs to export", e);
         }
 
-        var tableExporter = _exportListXmlGenerator.New().Init(_appCtx.AppState, contentType);
+        var tableExporter = exportListXmlGenerator.New().Init(_appCtx.AppState, contentType);
         var fileContent = exportSelection == ExportSelection.Blank
             ? tableExporter.EmptyListTemplate()
             : tableExporter.GenerateXml(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,
@@ -110,7 +92,7 @@ public class ContentExportApi : ServiceBase
         var l = Log.Fn<THttpResponseType>($"get fields type:{name}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
         var type = _appCtx.AppState.GetContentType(name);
-        var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
+        var serializer = jsonSerializer.New().SetApp(_appCtx.AppState);
         var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
             .RemoveNonFilenameCharacters();
 
@@ -119,7 +101,7 @@ public class ContentExportApi : ServiceBase
             CtIncludeInherited = false,
             CtAttributeIncludeInheritedMetadata = false
         });
-        return l.ReturnAsOk(_responseMaker.File(typeJson, fileName, MimeHelper.Json));
+        return l.ReturnAsOk(responseMaker.File(typeJson, fileName, MimeHelper.Json));
     }
 
     [HttpGet]
@@ -128,9 +110,9 @@ public class ContentExportApi : ServiceBase
         var l = Log.Fn<THttpResponseType>($"get fields id:{id}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
         var entity = _appCtx.AppState.List.FindRepoId(id);
-        var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
+        var serializer = jsonSerializer.New().SetApp(_appCtx.AppState);
 
-        return l.ReturnAsOk(_responseMaker.File(
+        return l.ReturnAsOk(responseMaker.File(
             serializer.Serialize(entity, withMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0),
             (prefix + (string.IsNullOrWhiteSpace(prefix) ? "" : ".")
              + entity.GetBestTitle() + ImpExpConstants.Extension(ImpExpConstants.Files.json))
@@ -143,14 +125,14 @@ public class ContentExportApi : ServiceBase
         var l = Log.Fn<THttpResponseType>($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
 
-        _features.Value.ThrowIfNotEnabled("This feature is required", BuiltInFeatures.DataExportImportBundles.Guid);
+        features.Value.ThrowIfNotEnabled("This feature is required", BuiltInFeatures.DataExportImportBundles.Guid);
 
         var export = ExportConfigurationBuildOrThrow(exportConfiguration);
 
         // find all decorator metadata of type SystemExportDecorator
         l.A($"metadataExportMarkers:{export.ExportMarkers.Count}");
 
-        var serializer = _jsonSerializer.New().SetApp(_appCtx.AppState);
+        var serializer = jsonSerializer.New().SetApp(_appCtx.AppState);
 
         var bundle = BundleBuild(export, serializer);
 
@@ -159,7 +141,7 @@ public class ContentExportApi : ServiceBase
 
         // give it to the browser with the name specified in the Export Configuration
         l.A($"OK, export fileName:{export.FileName}, size:{fileContent.Count()}");
-        return l.ReturnAsOk(_responseMaker.File(fileContent, export.FileName, MimeHelper.Json));
+        return l.ReturnAsOk(responseMaker.File(fileContent, export.FileName, MimeHelper.Json));
     }
     
     public ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfiguration)

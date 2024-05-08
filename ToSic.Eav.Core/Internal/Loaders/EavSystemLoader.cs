@@ -44,7 +44,7 @@ public class EavSystemLoader : LoaderBase
     ) : base(logStore, $"{EavLogs.Eav}SysLdr")
     {
         var l = Log.Fn("System Load");
-        ConnectServices(
+        ConnectLogs([
             _fingerprint = fingerprint,
             _appsCache = appsCache,
             _logStore = logStore,
@@ -54,7 +54,7 @@ public class EavSystemLoader : LoaderBase
             _featurePersistenceService = featurePersistenceService,
             _licenseLoader = licenseLoader,
             _sysFeaturesService = sysFeaturesService
-        );
+        ]);
         l.Done();
     }
 

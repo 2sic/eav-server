@@ -13,40 +13,23 @@ using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 namespace ToSic.Eav.WebApi.Admin;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EntityControllerReal : ServiceBase, IEntityController 
+public class EntityControllerReal(
+    LazySvc<IContextOfSite> context,
+    LazySvc<IAppStates> appStates,
+    LazySvc<EntityApi> entityApi,
+    LazySvc<ContentExportApi> contentExport,
+    LazySvc<ContentImportApi> contentImport,
+    LazySvc<IUser> user,
+    IResponseMaker responseMaker)
+    : ServiceBase("Api.EntityRl",
+        connect: [context, appStates, entityApi, contentExport, contentImport, user, responseMaker]), IEntityController
 {
     public const string LogSuffix = "Entity";
-    public EntityControllerReal(
-        LazySvc<IContextOfSite> context, 
-        LazySvc<IAppStates> appStates, 
-        LazySvc<EntityApi> entityApi, 
-        LazySvc<ContentExportApi> contentExport, 
-        LazySvc<ContentImportApi> contentImport, 
-        LazySvc<IUser> user,
-        IResponseMaker responseMaker)
-        : base("Api.EntityRl") =>
-        ConnectServices(
-            _context = context,
-            _appStates = appStates,
-            _entityApi = entityApi,
-            _contentExport = contentExport,
-            _contentImport = contentImport,
-            _user = user,
-            _responseMaker = responseMaker
-        );
-
-    private readonly LazySvc<IContextOfSite> _context;
-    private readonly LazySvc<IAppStates> _appStates;
-    private readonly LazySvc<EntityApi> _entityApi;
-    private readonly LazySvc<ContentExportApi> _contentExport;
-    private readonly LazySvc<ContentImportApi> _contentImport;
-    private readonly LazySvc<IUser> _user;
-    private readonly IResponseMaker _responseMaker;
 
 
     /// <inheritdoc/>
     public IEnumerable<Dictionary<string, object>> List(int appId, string contentType)
-        => _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.ReadSomething)
+        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.IdentityOfApp(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType);
 
 
@@ -54,9 +37,9 @@ public class EntityControllerReal : ServiceBase, IEntityController
     public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null,
         string parentField = null)
     {
-        if (id.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
+        if (id.HasValue) entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
             .Delete(contentType, id.Value, force, parentId, parentField);
-        else if (guid.HasValue) _entityApi.Value.InitOrThrowBasedOnGrants(_context.Value, _appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
+        else if (guid.HasValue) entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
             .Delete(contentType, guid.Value, force, parentId, parentField);
         else
             throw new($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");
@@ -65,7 +48,7 @@ public class EntityControllerReal : ServiceBase, IEntityController
 
     /// <inheritdoc/>
     public THttpResponseType Json(int appId, int id, string prefix, bool withMetadata)
-        => _contentExport.Value.Init(appId).DownloadEntityAsJson(_user.Value, id, prefix, withMetadata);
+        => contentExport.Value.Init(appId).DownloadEntityAsJson(user.Value, id, prefix, withMetadata);
 
 
     /// <inheritdoc/>
@@ -79,28 +62,28 @@ public class EntityControllerReal : ServiceBase, IEntityController
         ExportLanguageResolution languageReferences, 
         string selectedIds = null)
     {
-        var (content, fileName) = _contentExport.Value.Init(appId).ExportContent(
-            _user.Value,
+        var (content, fileName) = contentExport.Value.Init(appId).ExportContent(
+            user.Value,
             language, defaultLanguage, contentType,
             recordExport, resourcesReferences,
             languageReferences, selectedIds);
 
-        return _responseMaker.File(fileContent: content, fileName: fileName);
+        return responseMaker.File(fileContent: content, fileName: fileName);
     }
 
 
     /// <inheritdoc/>
     public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
-        => _contentImport.Value.Init(args.AppId).XmlPreview(args);
+        => contentImport.Value.Init(args.AppId).XmlPreview(args);
 
 
     /// <inheritdoc/>
     public ContentImportResultDto XmlUpload(ContentImportArgsDto args)
-        => _contentImport.Value.Init(args.AppId).XmlImport(args);
+        => contentImport.Value.Init(args.AppId).XmlImport(args);
 
 
     /// <inheritdoc/>
-    public bool Upload(EntityImportDto args) => _contentImport.Value.Init(args.AppId).Import(args);
+    public bool Upload(EntityImportDto args) => contentImport.Value.Init(args.AppId).Import(args);
 
 
     /// <inheritdoc/>

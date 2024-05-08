@@ -5,17 +5,8 @@ using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 namespace ToSic.Eav.DataSource.Internal.Query;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class QueryDefinitionBuilder: ServiceBase
+public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Eav.QDefBl", connect: [catalog])
 {
-    private readonly DataSourceCatalog _catalog;
-
-    public QueryDefinitionBuilder(DataSourceCatalog catalog): base("Eav.QDefBl")
-    {
-        ConnectServices(
-            _catalog = catalog
-        );
-    }
-
     public QueryDefinition Create(IEntity entity, int appId)
     {
         var parts = GenerateParts(entity);
@@ -46,8 +37,8 @@ public class QueryDefinitionBuilder: ServiceBase
                               ?? throw new("Tried to get DataSource Type of a query part, but didn't find anything");
 
         var correctedName = GetCorrectedTypeName(assemblyAndType);
-        var dsTypeIdentifier = _catalog.Find(correctedName, entity?.AppId ?? 0);
-        var dsInfo = _catalog.FindDsiByGuidOrName(correctedName, entity?.AppId ?? 0)
+        var dsTypeIdentifier = catalog.Find(correctedName, entity?.AppId ?? 0);
+        var dsInfo = catalog.FindDsiByGuidOrName(correctedName, entity?.AppId ?? 0)
                      ?? DataSourceInfo.CreateError(dsTypeIdentifier, false, DataSourceType.System,
                          new("Error finding data source", $"Tried to find {assemblyAndType} ({correctedName}) but can't find it."));
 

@@ -12,34 +12,21 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class QueryManager: ServiceBase
+public class QueryManager(
+    Generator<Query> queryGenerator,
+    LazySvc<IAppStates> appStates,
+    LazySvc<QueryDefinitionBuilder> queryDefBuilder)
+    : ServiceBase($"{LogPrefix}.QryMan", connect: [queryGenerator, appStates, queryDefBuilder])
 {
-    private readonly LazySvc<IAppStates> _appStates;
-    private readonly Generator<Query> _queryGenerator;
-    private readonly LazySvc<QueryDefinitionBuilder> _queryDefBuilder;
-
-    public QueryManager(
-        Generator<Query> queryGenerator, 
-        LazySvc<IAppStates> appStates,
-        LazySvc<QueryDefinitionBuilder> queryDefBuilder
-    ) : base($"{LogPrefix}.QryMan")
-    {
-        ConnectServices(
-            _queryGenerator = queryGenerator,
-            _appStates = appStates,
-            _queryDefBuilder = queryDefBuilder
-        );
-    }
-
     /// <summary>
     /// Get a query definition from the current app
     /// </summary>
     public QueryDefinition Get(IAppIdentity appIdentity, int queryId)
     {
         var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
-        var app = _appStates.KeepOrGetReader(appIdentity);
+        var app = appStates.KeepOrGetReader(appIdentity);
         var qEntity = GetQueryEntity(queryId, app);
-        var qDef = _queryDefBuilder.Value.Create(qEntity, app.AppId);
+        var qDef = queryDefBuilder.Value.Create(qEntity, app.AppId);
         return l.Return(qDef);
     }
 
@@ -52,7 +39,7 @@ public class QueryManager: ServiceBase
     internal IEntity GetQueryEntity(int entityId, IAppIdentity appIdentity)
     {
         var l = Log.Fn<IEntity>($"{entityId}");
-        var app = _appStates.KeepOrGetReader(appIdentity);
+        var app = appStates.KeepOrGetReader(appIdentity);
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
@@ -79,7 +66,7 @@ public class QueryManager: ServiceBase
         var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entQuery in AllQueryItems(app))
         {
-            var delayedQuery = _queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, lookUps);
+            var delayedQuery = queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, lookUps);
             // make sure it doesn't break if two queries have the same name...
             var name = entQuery.GetBestTitle();
             if (!dict.ContainsKey(name))
@@ -90,7 +77,7 @@ public class QueryManager: ServiceBase
 
     internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app, int recurseParents = 0) => Log.Func($"App: {app.AppId}, recurse: {recurseParents}", l =>
     {
-        var appState = _appStates.KeepOrGetReader(app).Internal();
+        var appState = appStates.KeepOrGetReader(app).Internal();
         var result = appState.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
         if (recurseParents <= 0) return (result, "ok, no recursions");
         l.A($"Try to recurse parents {recurseParents}");
@@ -106,7 +93,7 @@ public class QueryManager: ServiceBase
         var qEntity = FindQuery(appIdentity, nameOrGuid, recurseParents);
         if (qEntity == null)
             return l.ReturnNull("not found");
-        var delayedQuery = _queryGenerator.New().Init(appIdentity.ZoneId, appIdentity.AppId, qEntity, lookUps);
+        var delayedQuery = queryGenerator.New().Init(appIdentity.ZoneId, appIdentity.AppId, qEntity, lookUps);
         return l.Return(delayedQuery, "found");
     }
 

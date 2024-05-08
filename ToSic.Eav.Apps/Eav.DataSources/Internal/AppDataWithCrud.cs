@@ -22,10 +22,10 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
 
     public AppDataWithCrud(MyServices services, LazySvc<SimpleDataEditService> dataController, LazySvc<IDataSourceCacheService> dsCacheSvc) : base(services)
     {
-        ConnectServices(
+        ConnectLogs([
             DataController = dataController.SetInit(dc => dc.Init(ZoneId, AppId, false)),
             _dsCacheSvc = dsCacheSvc
-        );
+        ]);
     }
 
     #endregion

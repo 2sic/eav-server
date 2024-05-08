@@ -35,7 +35,7 @@ public partial class InsightsControllerReal: ServiceBase
         IEnumerable<IInsightsProvider> insightsProviders)
         : base("Api.SysIns")
     {
-        ConnectServices(
+        ConnectLogs([
             _workEntities = workEntities,
             _appStates = appStates,
             _logStore = logStore,
@@ -47,7 +47,7 @@ public partial class InsightsControllerReal: ServiceBase
             _dsCache = dsCache,
             AppCachePurger = appCachePurger,
             _insightsProviders = insightsProviders
-        );
+        ]);
         _logHtml = new(_logStore);
     }
     private readonly IAppStates _appStates;

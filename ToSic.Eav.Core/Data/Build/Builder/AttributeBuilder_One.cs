@@ -57,7 +57,7 @@ partial class AttributeBuilder
         bool languageReadOnly = false
     ) => Log.Func($"..., {name}, {value} ({type}), {language}, ...", l =>
     {
-        var valueLanguages = _languageBuilder.GetBestValueLanguages(language, languageReadOnly);
+        var valueLanguages = languageBuilder.GetBestValueLanguages(language, languageReadOnly);
 
         var valueWithLanguages = ValueBuilder.Build(type, value, valueLanguages?.ToImmutableList());
 

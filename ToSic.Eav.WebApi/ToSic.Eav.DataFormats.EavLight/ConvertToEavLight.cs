@@ -24,7 +24,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
         public MyServices(LazySvc<IAppStates> appStates, IValueConverter valueConverter, IZoneCultureResolver zoneCultureResolver)
         {
-            ConnectServices([
+            ConnectLogs([
                 AppStates = appStates,
                 ValueConverter = valueConverter,
                 ZoneCultureResolver = zoneCultureResolver

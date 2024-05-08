@@ -31,30 +31,17 @@ namespace ToSic.Eav.Security.Fingerprint;
 /// Class responsible for generating the fingerprint
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public sealed class SystemFingerprint: ServiceBase, IFingerprint
+public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IDbConfiguration> dbConfigLazy)
+    : ServiceBase($"{EavLogs.Eav}SysFpr", connect: [platform, dbConfigLazy]), IFingerprint
 {
-    /// <summary>
-    /// Constructor - gets Lazy PlatformInfo, because it's only used once for initial generation
-    /// </summary>
-    public SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IDbConfiguration> dbConfigLazy): base($"{EavLogs.Eav}SysFpr")
-    {
-        ConnectServices(
-            _platform = platform,
-            _dbConfig = dbConfigLazy
-        );
-    }
-
-    private readonly LazySvc<IPlatformInfo> _platform;
-    private readonly LazySvc<IDbConfiguration> _dbConfig;
-
     public string GetFingerprint()
     {
         if (_fingerprintCache != null) return _fingerprintCache;
 
-        var platform = _platform.Value;
-        var nameId = platform.Name.ToLowerInvariant();          // usually "dnn" or "oqt"
-        var systemGuid = platform.Identity.ToLowerInvariant();  // unique id of an installation
-        var sysVersion = platform.Version;                            // Major version, fingerprint should change with each
+        var platform1 = platform.Value;
+        var nameId = platform1.Name.ToLowerInvariant();          // usually "dnn" or "oqt"
+        var systemGuid = platform1.Identity.ToLowerInvariant();  // unique id of an installation
+        var sysVersion = platform1.Version;                            // Major version, fingerprint should change with each
         var dbConnection = GetDbName().ToLowerInvariant();      // Database name
         var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
 
@@ -70,7 +57,7 @@ public sealed class SystemFingerprint: ServiceBase, IFingerprint
 
     private string GetDbName()
     {
-        var dbConnection = _dbConfig.Value.ConnectionString;
+        var dbConnection = dbConfigLazy.Value.ConnectionString;
         const string key = "initial catalog=";
         var dbName = dbConnection.Between(key, ";", true) ?? dbConnection;
         return dbName;

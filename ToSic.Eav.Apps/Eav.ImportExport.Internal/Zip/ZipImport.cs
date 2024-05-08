@@ -17,7 +17,7 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
     private int _zoneId;
     public readonly IImportExportEnvironment Env;
 
-    public List<Message> Messages { get; }
+    public List<Message> Messages { get; } = [];
 
     public bool AllowCodeImport;
 
@@ -36,16 +36,16 @@ public class ZipImport : ServiceBase<ZipImport.MyServices>
         public IAppStates AppStates { get; } = appStates;
     }
 
-    public ZipImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, AppCachePurger appCachePurger, IAppStates appStates) : base(services, "Zip.Imp")
+    // TODO: @2DM - FIX - should use objects from services, not get them 2x
+    public ZipImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, AppCachePurger appCachePurger, IAppStates appStates)
+        : base(services, "Zip.Imp", connect: [xmlImpExpFiles, appStates, appCachePurger, environment])
     {
-        Env = base.Services.Environment;
-        ConnectServices(
-            _xmlImpExpFiles = xmlImpExpFiles,
-            _appStates = appStates,
-            _appCachePurger = appCachePurger,
-            Env = environment
-        );
-        Messages = [];
+        Env = Services.Environment;
+
+        _xmlImpExpFiles = xmlImpExpFiles;
+        _appStates = appStates;
+        _appCachePurger = appCachePurger;
+            Env = environment;
     }
 
     public ZipImport Init(int zoneId, int? appId, bool allowCode)

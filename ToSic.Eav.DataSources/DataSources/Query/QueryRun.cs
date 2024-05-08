@@ -48,9 +48,9 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     [PrivateApi]
     public QueryRun(MyServices services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.QryRun")
     {
-        ConnectServices(
+        ConnectLogs([
             _queryGenerator = queryGenerator
-        );
+        ]);
     }
     #endregion
 

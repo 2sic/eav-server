@@ -7,31 +7,18 @@ using ServiceBase = ToSic.Lib.Services.ServiceBase;
 namespace ToSic.Eav.WebApi.Languages;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LanguagesBackend: ServiceBase
+public class LanguagesBackend(
+    LazySvc<IZoneMapper> zoneMapper,
+    LazySvc<ZoneManager> zoneManager,
+    ISite site,
+    LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
+    : ServiceBase("Bck.Admin", connect: [zoneManager, site, appUserLanguageCheckLazy, zoneMapper])
 {
-    #region Constructor & DI
-        
-    public LanguagesBackend(LazySvc<IZoneMapper> zoneMapper, LazySvc<ZoneManager> zoneManager, ISite site, LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy) 
-        : base("Bck.Admin") =>
-        ConnectServices(
-            _zoneManager = zoneManager,
-            _site = site,
-            _appUserLanguageCheckLazy = appUserLanguageCheckLazy,
-            _zoneMapper = zoneMapper
-        );
-
-    private readonly LazySvc<IZoneMapper> _zoneMapper;
-    private readonly LazySvc<ZoneManager> _zoneManager;
-    private readonly ISite _site;
-    private readonly LazySvc<AppUserLanguageCheck> _appUserLanguageCheckLazy;
-
-    #endregion
-
     public IList<SiteLanguageDto> GetLanguages()
     {
-        var l = Log.Fn<IList<SiteLanguageDto>>($"{_site.Id}");
+        var l = Log.Fn<IList<SiteLanguageDto>>($"{site.Id}");
         // ReSharper disable once PossibleInvalidOperationException
-        var cultures = _zoneMapper.Value.CulturesWithState(_site)
+        var cultures = zoneMapper.Value.CulturesWithState(site)
             .Select(c => new SiteLanguageDto { Code = c.Code, Culture = c.Culture, IsEnabled = c.IsEnabled })
             .ToList();
 
@@ -42,7 +29,7 @@ public class LanguagesBackend: ServiceBase
     {
         try
         {
-            var langs = _appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appStateOrNull);
+            var langs = appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appStateOrNull);
             var converted = langs.Select(l =>
                 {
                     var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };
@@ -64,6 +51,6 @@ public class LanguagesBackend: ServiceBase
     {
         Log.A($"switch language:{cultureCode}, to:{enable}");
         // Activate or Deactivate the Culture
-        _zoneManager.Value.SetId(_site.ZoneId).SaveLanguage(cultureCode, niceName, enable);
+        zoneManager.Value.SetId(site.ZoneId).SaveLanguage(cultureCode, niceName, enable);
     }
 }

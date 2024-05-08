@@ -17,9 +17,9 @@ public class ZipFromUrlImport: ZipImport
         IGlobalConfiguration globalConfiguration, AppCachePurger appCachePurger, IAppStates appStates)
         : base(services, environment, xmlImpExpFiles, appCachePurger, appStates)
     {
-        ConnectServices(
+        ConnectLogs([
             _globalConfiguration = globalConfiguration
-        );
+        ]);
     }
 
     private readonly IGlobalConfiguration _globalConfiguration;

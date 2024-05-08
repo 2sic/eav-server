@@ -70,9 +70,9 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     [PrivateApi]
     public Query(MyServices services, LazySvc<QueryBuilder> queryBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Query")
     {
-        ConnectServices(
+        ConnectLogs([
             _queryBuilderLazy = queryBuilder
-        );
+        ]);
     }
     private readonly LazySvc<QueryBuilder> _queryBuilderLazy;
 

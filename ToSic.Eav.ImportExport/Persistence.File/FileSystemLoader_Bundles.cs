@@ -79,7 +79,7 @@ partial class FileSystemLoader
             var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
 
             var newContentTypes = contentTypes
-                .Select(ct => _dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed,
+                .Select(ct => dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed,
                     repoType: RepoType, repoAddress: path,
                     parentTypeId: Constants.PresetContentTypeFakeParent,
                     configZoneId: Constants.PresetZoneId,
@@ -133,7 +133,7 @@ partial class FileSystemLoader
                 .Select(e =>
                 {
                     var newId = ++EntityIdSeed;
-                    return _dataBuilder.Entity.CreateFrom(e, id: newId, repositoryId: newId);
+                    return dataBuilder.Entity.CreateFrom(e, id: newId, repositoryId: newId);
                 })
                 .ToList();
             //entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));

@@ -63,9 +63,9 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
     [PrivateApi]
     public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{LogPrefix}.ValSrt")
     {
-        ConnectServices(
+        ConnectLogs([
             _valLanguages = valLanguages
-        );
+        ]);
 
         ProvideOut(GetValueSort);
     }
