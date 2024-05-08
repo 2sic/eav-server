@@ -18,7 +18,10 @@ public class FolderChangeMonitor : FileChangeMonitor
     private static FolderChangeNotificationSystem _folderChangeNotificationSystem;
     private object _fcnState;
 
-    public override ReadOnlyCollection<string> FilePaths => _folderPaths.Select(folderInfo => folderInfo.Key).ToList().AsReadOnly();
+    public override ReadOnlyCollection<string> FilePaths => _folderPaths
+        .Select(folderInfo => folderInfo.Key)
+        .ToList()
+        .AsReadOnly();
     private readonly IDictionary<string, bool> _folderPaths;
 
     public override string UniqueId => _uniqueId;
@@ -27,7 +30,7 @@ public class FolderChangeMonitor : FileChangeMonitor
     public override DateTimeOffset LastModified => _lastModified;
     private DateTimeOffset _lastModified;
 
-    public FolderChangeMonitor(IList<string> folderPaths) : this(folderPaths.ToDictionary(p => p, p => true))
+    public FolderChangeMonitor(IList<string> folderPaths) : this(folderPaths?.ToDictionary(p => p, p => true) ?? new Dictionary<string, bool>())
     { }
 
     public FolderChangeMonitor(IDictionary<string, bool> folderPaths)
@@ -42,7 +45,7 @@ public class FolderChangeMonitor : FileChangeMonitor
     private static void InitFcn()
     {
         if (_folderChangeNotificationSystem != null) return;
-        Interlocked.CompareExchange(ref _folderChangeNotificationSystem, new FolderChangeNotificationSystem(), null);
+        Interlocked.CompareExchange(ref _folderChangeNotificationSystem, new(), null);
     }
 
     private void InitDisposableMembers()
@@ -50,7 +53,7 @@ public class FolderChangeMonitor : FileChangeMonitor
         var dispose = true;
         try
         {
-            string uniqueId = null;
+            string uniqueId;
             if (_folderPaths.Count == 1)
             {
                 var path = _folderPaths.First();
@@ -91,7 +94,8 @@ public class FolderChangeMonitor : FileChangeMonitor
 
     protected override void Dispose(bool disposing)
     {
-        if (!disposing || _folderChangeNotificationSystem == null || _folderPaths == null || _fcnState == null) return;
+        if (!disposing || _folderChangeNotificationSystem == null || _folderPaths == null || _fcnState == null)
+            return;
             
         if (_folderPaths.Count > 1)
         {

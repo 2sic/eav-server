@@ -100,6 +100,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
             ? new CacheItemPolicy { SlidingExpiration = expiration }
             : new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration };
 
+        // TOD: THIS LOOKS FISHY! Why is the policy added in a way 2x?
         memoryCacheService.Set(key, 
             value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy),
             absoluteExpiration: slidingExpiration ? null : absoluteExpiration, 
