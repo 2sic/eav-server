@@ -43,7 +43,7 @@ public abstract class MyServicesBase: ILazyInitLog
     /// <returns>the service passed in</returns>
     protected TService ConnectService<TService>(TService service)
     {
-        DependencyLogs.Add(service);
+        DependencyLogs.Add([service]);
         return service;
     }
 

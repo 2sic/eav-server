@@ -41,4 +41,5 @@ public abstract class ServiceBase(string logName) : IHasLog
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
     protected void ConnectServices(params object[] services) => (this as IHasLog).ConnectServices(services);
+    protected void ConnectSvcs(object[] services) => (this as IHasLog).ConnectServices(services);
 }
