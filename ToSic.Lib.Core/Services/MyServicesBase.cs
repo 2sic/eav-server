@@ -33,7 +33,8 @@ public abstract class MyServicesBase: ILazyInitLog
     /// Add objects to various queues to be auto-initialized when <see cref="ServiceDependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
-    protected void ConnectServices(params object[] services) => DependencyLogs.Add(services);
+    protected void ConnectServices(object[] services) => DependencyLogs.Add(services);
+
 
     /// <summary>
     /// Experimental Connect-one, may be removed again.

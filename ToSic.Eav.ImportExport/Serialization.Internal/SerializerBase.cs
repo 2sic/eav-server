@@ -17,11 +17,11 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
         public MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppStates appStates)
         {
-            ConnectServices(
+            ConnectServices([
                 MetadataTargets = metadataTargets,
                 DataBuilder = dataBuilder,
                 AppStates = appStates
-            );
+            ]);
         }
 
         public ITargetTypes MetadataTargets { get; }

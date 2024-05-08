@@ -32,12 +32,12 @@ partial class DataSourceBase
             LazySvc<IDataSourceCacheService> cacheService
         )
         {
-            ConnectServices(
+            ConnectServices([
                 Configuration = configuration,
                 ErrorHandler = errorHandler,
                 ConfigDataLoader = configDataLoader,
                 CacheService = cacheService
-            );
+            ]);
         }
     }
 }

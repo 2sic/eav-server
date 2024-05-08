@@ -60,7 +60,7 @@ public abstract class QueryControllerBase<TImplementation>(
             GenWorkBasic<WorkQueryMod> workUnitQueryMod,
             GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
         {
-            ConnectServices(
+            ConnectServices([
                 QueryBuilder = queryBuilder,
                 EntToDicLazy = entToDicLazy,
                 QueryInfoLazy = queryInfoLazy,
@@ -71,7 +71,7 @@ public abstract class QueryControllerBase<TImplementation>(
                 WorkUnitQueryMod = workUnitQueryMod,
                 WorkUnitQueryCopy = workUnitQueryCopy,
                 AppStates = appStates
-            );
+            ]);
         }
     }
 

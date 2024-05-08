@@ -121,9 +121,9 @@ public class Sql : CustomDataSourceAdvanced
         public SqlPlatformInfo SqlPlatformInfo { get; }
         public MyServices(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.MyServices parentServices): base(parentServices)
         {
-            ConnectServices(
+            ConnectServices([
                 SqlPlatformInfo = sqlPlatformInfo
-            );
+            ]);
         }
     }
 
