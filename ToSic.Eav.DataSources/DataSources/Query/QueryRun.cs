@@ -83,9 +83,9 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         // It's a LookUpInLookUps if the QueryBuilder overwrote it with SaveDraft infos...
         // which we're not sure yet 2023-03-14 2dm if it's in use anywhere
         var lookUpRoot = Configuration.LookUpEngine.FindSource(DataSourceConstants.MyConfigurationSourceName);
-        var metadataLookUp = lookUpRoot as LookUpInQueryMetadata
+        var metadataLookUp = lookUpRoot as LookUpInQueryPartMetadata
                              ?? (lookUpRoot as LookUpInLookUps)
-                             ?.Providers.FirstOrDefault(p => p is LookUpInQueryMetadata) as LookUpInQueryMetadata;
+                             ?.Providers.FirstOrDefault(p => p is LookUpInQueryPartMetadata) as LookUpInQueryPartMetadata;
 
         // if found, initialize and get the metadata entity attached
         metadataLookUp?.Initialize();

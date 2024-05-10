@@ -103,7 +103,7 @@ public class QueryBuilder(
         {
             #region Init Configuration Provider
 
-            var querySpecsLookUp = new LookUpInQueryMetadata(DataSourceConstants.MyConfigurationSourceName, dataQueryPart.Entity, dimensions);
+            var querySpecsLookUp = new LookUpInQueryPartMetadata(DataSourceConstants.MyConfigurationSourceName, dataQueryPart.Entity, dimensions);
             var partEngine = new LookUpEngine(baseLookUp, Log, sources: [querySpecsLookUp]);
             // add / set item part configuration
             //partLookUp.Add(querySpecsLookUp);
