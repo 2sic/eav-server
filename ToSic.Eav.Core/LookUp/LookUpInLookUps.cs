@@ -15,8 +15,6 @@ public class LookUpInLookUps: LookUpBase
     [PrivateApi]
     public List<ILookUp> Providers = [];
 
-    private string _description;
-
     /// <summary>
     /// Generate a lookup-of-lookups. 
     /// </summary>
