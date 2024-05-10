@@ -26,10 +26,11 @@ partial class ILogExtensions
         string parameters = default,
         string message = default,
         bool timer = false,
+        bool enabled = true,
         [CallerFilePath] string cPath = default,
         [CallerMemberName] string cName = default,
         [CallerLineNumber] int cLine = default
-    ) => new LogCall<T>(log, CodeRef.Create(cPath, cName, cLine), false, parameters, message, timer);
+    ) => enabled ? new LogCall<T>(log, CodeRef.Create(cPath, cName, cLine), false, parameters, message, timer) : null;
 
     ///// <summary>
     ///// Log a function call from start up until returning the result.
@@ -72,10 +73,11 @@ partial class ILogExtensions
         string parameters = default,
         string message = default,
         bool timer = false,
+        bool enabled = true,
         [CallerFilePath] string cPath = default,
         [CallerMemberName] string cName = default,
         [CallerLineNumber] int cLine = default
-    ) => new LogCall(log, CodeRef.Create(cPath, cName, cLine), false, parameters, message, timer);
+    ) => enabled ? new LogCall(log, CodeRef.Create(cPath, cName, cLine), false, parameters, message, timer) : null;
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
