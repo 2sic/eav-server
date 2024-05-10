@@ -21,7 +21,7 @@ internal class LookUpInQueryMetadata : LookUpInEntity
     /// <param name="name">Source name</param>
     /// <param name="entityWithMetadata">Entity whose metadata we'll use</param>
     /// <param name="dimensions">language / dimension data for lookup</param>
-    public LookUpInQueryMetadata(string name, IEntity entityWithMetadata, string[] dimensions): base(name, null, dimensions)
+    public LookUpInQueryMetadata(string name, IEntity entityWithMetadata, string[] dimensions): base(name, null, dimensions, "LookUp in DataSource-Part Metadata")
     {
         _parent = entityWithMetadata;
     }

@@ -13,7 +13,9 @@ namespace ToSic.Eav.LookUp;
 public class LookUpInLookUps: LookUpBase
 {
     [PrivateApi]
-    public List<ILookUp> Providers = []; 
+    public List<ILookUp> Providers = [];
+
+    private string _description;
 
     /// <summary>
     /// Generate a lookup-of-lookups. 
@@ -30,6 +32,8 @@ public class LookUpInLookUps: LookUpBase
         if (third != null) Providers.Add(third);
         if (fourth != null) Providers.Add(fourth);
     }
+
+    public override string Description => $"Lookup in multiple lookups: {string.Join(",", Providers.Select(p => p?.Name))}";
 
     // not sure - doesn't seem used?
     [PrivateApi]

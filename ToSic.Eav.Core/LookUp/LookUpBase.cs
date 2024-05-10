@@ -11,12 +11,14 @@ namespace ToSic.Eav.LookUp;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PublicApi]
-public abstract class LookUpBase(string name) : ILookUp
+public abstract class LookUpBase(string name, string description = "") : ILookUp
 {
 
     #region default methods of interface
     /// <inheritdoc/>
     public string Name { get; } = name;
+
+    public virtual string Description => description;
 
     #region Sub-Token analysis and splitting
     // this is needed by some key accesses which support sub-properties like Content:Publisher:Location:City...

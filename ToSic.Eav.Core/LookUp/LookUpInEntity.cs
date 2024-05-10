@@ -21,7 +21,7 @@ public class LookUpInEntity : LookUpIn<IEntity>
     /// <param name="name">Name of the LookUp, e.g. Settings</param>
     /// <param name="source"></param>
     /// <param name="dimensions">the languages / dimensions to use</param>
-    public LookUpInEntity(string name, IEntity source, string[] dimensions): base(source, name)
+    public LookUpInEntity(string name, IEntity source, string[] dimensions, string description = default): base(source, name, description ?? $"LookUp in Entity {source?.EntityId}")
     {
         _dimensions = dimensions ?? IZoneCultureResolverExtensions.SafeLanguagePriorityCodes(null);
     }

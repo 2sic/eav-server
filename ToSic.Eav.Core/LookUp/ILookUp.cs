@@ -17,6 +17,11 @@ public interface ILookUp
     string Name { get; }
 
     /// <summary>
+    /// Additional description to better understand what each LookUp is for.
+    /// </summary>
+    string Description { get; }
+
+    /// <summary>
     /// Gets a value by Name/key, will simply return the string or an empty string, in rare cases a null-value.
     /// </summary>
     /// <param name="key"></param>

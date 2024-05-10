@@ -18,7 +18,7 @@ public class LookUpInStack: LookUpIn<IPropertyStack>
     /// </summary>
     /// <param name="source"></param>
     /// <param name="dimensions">the languages / dimensions to use</param>
-    public LookUpInStack(IPropertyStack source, string[] dimensions): base(source, source.NameId?.ToLowerInvariant())
+    public LookUpInStack(IPropertyStack source, string[] dimensions): base(source, source.NameId?.ToLowerInvariant(), "LookUp in stack")
     {
         _dimensions = dimensions ?? IZoneCultureResolverExtensions.SafeLanguagePriorityCodes(null);
     }
