@@ -170,3 +170,11 @@ ToSic.Eav.ManagementUI/tmp/
 /ToSic.Eav.Repository.Efc.Tests/Destination
 /.vs/
 /ToSic.Eav.Repository.Efc.Tests/Temp
+/ToSic.Eav.Core.Tests/.vs
+ToSic.Eav.Apps.Tests/.vs
+/ToSic.Testing.Performance/.vs
+ToSic.Eav.TokenEngine.Tests/.vs
+/ToSic.Eav.DataSources.Tests/.vs
+/ToSic.Eav.ImportExport.Tests/.vs
+/ToSic.Eav.Persistence.Efc.Tests/.vs
+/ToSic.Eav.Repository.Efc.Tests/.vs
