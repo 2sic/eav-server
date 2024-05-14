@@ -105,8 +105,9 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     /// <summary>
     /// Create a stream for each data-type
     /// </summary>
-    private void CreateOutWithAllStreams() => Log.Do(timer: true, message: $"Query: '{Definition.Entity.GetBestTitle()}'", action: () =>
+    private void CreateOutWithAllStreams()
     {
+        var l = Log.Fn(message: $"Query: '{Definition.Entity.GetBestTitle()}'", timer: true);
         // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
         // and the current In
         var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.Params);
@@ -117,7 +118,8 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
             [paramsOverride]);
         _source = queryInfos.Main;
         OutWritable = new(this, _source.Out);
-    });
+        l.Done();
+    }
 
     private QueryBuilder QueryBuilder => _queryBuilder.Get(() => _queryBuilderLazy.Value);
     private readonly GetOnce<QueryBuilder> _queryBuilder = new();

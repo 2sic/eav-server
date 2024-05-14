@@ -18,9 +18,9 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
         CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
     });
 
-    private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodePlatform
-    ) => Log.Do($"{reqVersionNode}, {reqVersionNodePlatform}", () =>
+    private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodePlatform)
     {
+        var l = Log.Fn($"{reqVersionNode}, {reqVersionNodePlatform}");
         if (reqVersionNode != null)
         {
             var vEav = Version.Parse(env.ModuleVersion);
@@ -40,6 +40,8 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
                           ", installed is " + vHost +
                           ". cannot continue. see also 2sxc.org/en/help?tag=app");
         }
-    });
+
+        l.Done();
+    }
 
 }

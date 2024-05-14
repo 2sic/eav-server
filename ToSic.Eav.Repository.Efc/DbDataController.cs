@@ -179,11 +179,13 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
 
     #region Shorthand for do & save
 
-    internal void DoAndSave(Action action, string message = null) => Log.Do(timer: true, message: message, action: () =>
+    internal void DoAndSave(Action action, string message = null)
     {
+        var l = Log.Fn(message: message, timer: true);
         action.Invoke();
         SqlDb.SaveChanges();
-    });
+        l.Done();
+    }
 
 
     internal void DoAndSaveWithoutChangeDetection(Action action, string message = null) => Log.Do(timer: true, message: message, action: l =>
@@ -238,22 +240,26 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     /// <remarks>Useful if many changes are made in a batch and Cache should be purged after that batch</remarks>
     private bool _purgeAppCacheOnSave = true;
 
-    public void DoButSkipAppCachePurge(Action action) => Log.Do(timer: true, action: () =>
+    public void DoButSkipAppCachePurge(Action action)
     {
+        var l = Log.Fn(timer: true);
         var before = _purgeAppCacheOnSave;
         _purgeAppCacheOnSave = false;
         action.Invoke();
         _purgeAppCacheOnSave = before;
-    });
+        l.Done();
+    }
 
-    public void DoWithDelayedCacheInvalidation(Action action) => Log.Do(timer: true, action: () =>
+    public void DoWithDelayedCacheInvalidation(Action action)
     {
+        var l = Log.Fn(timer: true);
         _purgeAppCacheOnSave = false;
         action.Invoke();
 
         _purgeAppCacheOnSave = true;
         PurgeAppCacheIfReady();
-    });
+        l.Done();
+    }
 
     /// <summary>
     /// The loader must use the same connection, to ensure it runs in existing transactions.

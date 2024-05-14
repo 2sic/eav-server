@@ -7,7 +7,6 @@ using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -163,14 +162,16 @@ public class ImportService(
         })
     );
 
-    private void MergeAndSaveContentTypes(IAppState appState, List<IContentType> contentTypes) => Log.Do(timer: true, action: () =>
+    private void MergeAndSaveContentTypes(IAppState appState, List<IContentType> contentTypes)
     {
+        var l = Log.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appState, type));
         var so = importExportEnvironment.SaveOptions(ZoneId);
         so.DiscardAttributesNotInType = true;
         Storage.Save(toUpdate.ToList(), so);
-    });
+        l.Done();
+    }
 
 
     private List<IEntity> MetadataWithResetIds(IMetadataOf metadata)

@@ -40,11 +40,13 @@ public class SystemLoader : ServiceBase
         _systemLoaderLazy.Value.StartUp();
     });
 
-    private void DoRegistrations() => Log.Do(() =>
+    private void DoRegistrations()
     {
+        var l = Log.Fn();
         foreach (var registration in _registrations)
             DoRegistration(registration);
-    });
+        l.Done();
+    }
 
     private void DoRegistration(IStartUpRegistrations registration) => Log.Do(registration.NameId, l =>
     {

@@ -50,11 +50,13 @@ internal  partial class DbVersioning: DbPartBase
     #endregion
 
 
-    public void DoAndSaveHistoryQueue(Action action) => Log.Do(timer: true, action: () =>
+    public void DoAndSaveHistoryQueue(Action action)
     {
+        var l = Log.Fn(timer: true);
         action.Invoke();
         Save();
-    });
+        l.Done();
+    }
 
     /// <summary>
     /// Save an entity to versioning, which is already serialized
@@ -75,11 +77,13 @@ internal  partial class DbVersioning: DbPartBase
     /// <summary>
     /// Persist items is queue
     /// </summary>
-    private void Save() => Log.Do(timer: true, action: () =>
+    private void Save()
     {
+        var l = Log.Fn(timer: true);
         DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue));
         _queue.Clear();
-    });
+        l.Done();
+    }
 
     private readonly List<ToSicEavDataTimeline> _queue = [];
 }
