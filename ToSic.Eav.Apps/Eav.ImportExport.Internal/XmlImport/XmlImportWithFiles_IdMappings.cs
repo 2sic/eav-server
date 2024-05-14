@@ -9,8 +9,8 @@ namespace ToSic.Eav.ImportExport.Internal;
 
 partial class XmlImportWithFiles
 {
-    private readonly Dictionary<int, int> _fileIdCorrectionList = new();
-    private readonly Dictionary<int, int> _folderIdCorrectionList = new();
+    private readonly Dictionary<int, int> _fileIdCorrectionList = [];
+    private readonly Dictionary<int, int> _folderIdCorrectionList = [];
 
 
     private bool PrepareFileIdCorrectionList(XElement sexyContentNode)
