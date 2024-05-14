@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps;
 
 /// <summary>
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.

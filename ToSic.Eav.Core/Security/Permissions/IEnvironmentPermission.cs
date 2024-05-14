@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Apps;
 
 namespace ToSic.Eav.Security;
 

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace ToSic.Eav.Generics;
+﻿namespace ToSic.Eav.Generics;
 
 public static class ListExtensions
 {

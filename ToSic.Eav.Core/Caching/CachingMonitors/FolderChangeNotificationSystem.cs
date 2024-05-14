@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.IO;
 using System.Runtime.Caching;
 using System.Runtime.Caching.Hosting;

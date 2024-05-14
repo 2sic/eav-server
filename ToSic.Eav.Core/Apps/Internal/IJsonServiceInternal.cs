@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Apps.Internal;
+﻿namespace ToSic.Eav.Apps.Internal;
 
 /// <summary>
 /// Dependency of ToSic.Eav.Apps.Internal.AppJsonService to convert JSON to typed object.

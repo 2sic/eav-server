@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace ToSic.Eav.Data.ContentTypes;
+﻿namespace ToSic.Eav.Data.ContentTypes;
 
 /// <summary>
 /// Special helper class for delayed construction of ContentTypes so they can be immutable

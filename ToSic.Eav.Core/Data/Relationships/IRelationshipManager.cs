@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Manages relationships of an entity - to it's children and parents.

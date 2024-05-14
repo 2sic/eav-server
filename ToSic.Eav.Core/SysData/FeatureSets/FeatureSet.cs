@@ -15,8 +15,6 @@
  *
  */
 
-using System;
-
 namespace ToSic.Eav.SysData;
 
 /// <summary>

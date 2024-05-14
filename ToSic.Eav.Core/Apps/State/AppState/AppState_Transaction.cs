@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Apps.State;
+﻿namespace ToSic.Eav.Apps.State;
 
 partial class AppState
 {

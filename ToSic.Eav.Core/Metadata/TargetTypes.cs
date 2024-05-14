@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Metadata;
+﻿namespace ToSic.Eav.Metadata;
 
 /// <summary>
 /// Metadata targets specific things, and the TargetTypes determines what kind of thing this is. 

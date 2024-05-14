@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps.State;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps;

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 // ReSharper disable once InconsistentNaming
 public static class IHasDecoratorExtensions

@@ -1,6 +1,4 @@
 ﻿using ToSic.Lib.Data;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.StartUp;
 

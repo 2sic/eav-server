@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Persistence.Versions;
+﻿namespace ToSic.Eav.Persistence.Versions;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ItemHistory

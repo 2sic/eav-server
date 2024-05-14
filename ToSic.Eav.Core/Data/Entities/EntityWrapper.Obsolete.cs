@@ -1,6 +1,5 @@
 ﻿#if NETFRAMEWORK
-using System;
-using ToSic.Lib.Documentation;
+
 
 // Old stuff for compatibility with DNN, should not bleed into Oqtane
 namespace ToSic.Eav.Data;

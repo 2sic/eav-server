@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
 // Based on https://github.com/dotnet/runtime/issues/43026#issuecomment-949966701

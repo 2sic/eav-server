@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Lib.Logging;
+﻿using ToSic.Eav.Data.PropertyLookup;
 
 namespace ToSic.Eav.Data;
 

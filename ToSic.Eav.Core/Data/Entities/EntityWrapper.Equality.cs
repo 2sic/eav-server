@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 partial class EntityWrapper: IEquatable<IEntityWrapper>, IEquatable<IMultiWrapper<IEntity>>
 {

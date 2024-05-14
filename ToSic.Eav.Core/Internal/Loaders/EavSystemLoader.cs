@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+﻿using System.Text.Json;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
@@ -11,8 +8,6 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Internal.Loaders;
 

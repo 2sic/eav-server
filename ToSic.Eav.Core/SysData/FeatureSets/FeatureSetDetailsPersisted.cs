@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.SysData;
+﻿namespace ToSic.Eav.SysData;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FeatureSetDetailsPersisted

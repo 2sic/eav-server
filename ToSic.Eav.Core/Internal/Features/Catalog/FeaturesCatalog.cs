@@ -1,7 +1,5 @@
 ﻿using ToSic.Eav.Internal.Catalogs;
 using ToSic.Eav.SysData;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 using static ToSic.Eav.Internal.Features.BuiltInFeatures;
 
 namespace ToSic.Eav.Internal.Features;

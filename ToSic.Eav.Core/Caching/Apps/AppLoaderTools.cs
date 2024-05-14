@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Repositories;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Caching;

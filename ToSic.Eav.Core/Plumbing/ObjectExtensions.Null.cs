@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Plumbing;
+﻿namespace ToSic.Eav.Plumbing;
 
 static partial class ObjectExtensions
 {

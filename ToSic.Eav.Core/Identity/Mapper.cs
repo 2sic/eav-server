@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Identity;
+﻿namespace ToSic.Eav.Identity;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class Mapper

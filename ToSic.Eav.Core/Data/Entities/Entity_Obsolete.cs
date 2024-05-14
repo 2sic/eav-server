@@ -1,9 +1,7 @@
 ﻿/* only in old old .net */
 
 #if NETFRAMEWORK
-using System;
 using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Lib.Documentation;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data;

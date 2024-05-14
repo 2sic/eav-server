@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Represents a Dimension to assign values to. Dimensions are usually languages (<see cref="ILanguage"/>),

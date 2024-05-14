@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Security;
+﻿namespace ToSic.Eav.Security;
 
 /// <summary>
 /// A wrapper for many permission checks. All of which must approve, for the request to succeed

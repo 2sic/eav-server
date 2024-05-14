@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Security.Encryption;
+﻿namespace ToSic.Eav.Security.Encryption;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EncryptionResult<T>

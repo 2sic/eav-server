@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Eav.LookUp;
 
 /// <summary>
 /// Resolves Configurations from LookUps. Common use is for configurable DataSources

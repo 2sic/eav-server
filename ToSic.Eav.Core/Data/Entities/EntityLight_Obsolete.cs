@@ -1,7 +1,4 @@
 ﻿#if NETFRAMEWORK
-using System;
-using ToSic.Lib.Documentation;
-
 namespace ToSic.Eav.Data;
 
 partial class EntityLight

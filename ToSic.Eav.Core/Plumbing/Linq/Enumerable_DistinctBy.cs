@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ToSic.Eav.Plumbing;
+﻿namespace ToSic.Eav.Plumbing;
 
 /// <summary>
 /// Taken from https://github.com/morelinq/MoreLINQ/blob/master/MoreLinq/DistinctBy.cs

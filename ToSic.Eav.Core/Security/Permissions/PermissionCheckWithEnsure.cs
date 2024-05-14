@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Security;
+﻿namespace ToSic.Eav.Security;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class PermissionCheckWithEnsure 

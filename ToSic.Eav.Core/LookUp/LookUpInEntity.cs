@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Context;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Context;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.LookUp;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Eav.LookUp;
 
 /// <summary>
 /// Look Up values from a .net dictionary. Case-Insensitive. <br/>

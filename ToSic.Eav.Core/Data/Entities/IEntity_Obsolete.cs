@@ -1,6 +1,5 @@
 ﻿#if NETFRAMEWORK
-using System;
-using ToSic.Lib.Documentation;
+
 
 // This is old stuff / compatibility necessary for DNN
 // It should not bleed into Oqtane or newer implementations

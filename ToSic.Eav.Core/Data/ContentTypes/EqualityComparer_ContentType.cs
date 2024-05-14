@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 // TODO: V11 move to ContentType itself
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

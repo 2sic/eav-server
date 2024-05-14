@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Data.PropertyLookup;
+﻿namespace ToSic.Eav.Data.PropertyLookup;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropertyLookupPath(List<string> original = null)

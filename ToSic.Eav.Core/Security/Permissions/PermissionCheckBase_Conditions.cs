@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using ToSic.Eav.Context;
+﻿using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security;
