@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.DataFormats.EavLight;
+﻿namespace ToSic.Eav.DataFormats.EavLight;
 
 /// <summary>
 /// DTO for a relationship pointer to other entities.

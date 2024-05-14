@@ -1,7 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-using static System.Text.Json.Serialization.JsonIgnoreCondition;
-
-namespace ToSic.Eav.ImportExport.Json.V1;
+﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
 public class JsonMetadataFor
 {

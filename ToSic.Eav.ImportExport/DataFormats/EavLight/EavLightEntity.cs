@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.DataFormats.EavLight;
+﻿namespace ToSic.Eav.DataFormats.EavLight;
 
 /// <summary>
 /// DTO for the most basic JSON format of EAV.
