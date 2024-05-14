@@ -134,8 +134,9 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// </summary>
     /// <param name="directoryPath"></param>
     /// <param name="log"></param>
-    public static void TryToDeleteDirectory(string directoryPath, ILog log) => log.Do(directoryPath, () =>
+    public static void TryToDeleteDirectory(string directoryPath, ILog log)
     {
+        var l = log.Fn($"{nameof(directoryPath)}:'{directoryPath}'");
         var retryDelete = 0;
         do
         {
@@ -154,8 +155,8 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             }
         } while (Directory.Exists(directoryPath) && retryDelete <= 20);
 
-        return Directory.Exists(directoryPath) ? "error, can't delete" : "ok";
-    });
+        l.Done(Directory.Exists(directoryPath) ? "error, can't delete" : "ok");
+    }
 
 
     /// <summary>

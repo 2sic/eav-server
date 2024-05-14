@@ -59,17 +59,16 @@ partial class AppState
             {
                 // first set a lock, to ensure that only one update/load is running at the same time
                 lock (this)
-                    lState.Do($"loading: {st.Loading} (app loading start in lock)", action: () =>
-                    {
+                {
+                    var lInLock = l.Fn($"loading: {st.Loading} (app loading start in lock)");
                         // only if loading is true will the AppState object accept changes
                         st.Loading = true;
                         loader.Invoke(st);
                         st.CacheResetTimestamp("load complete");
                         _ = EnsureNameAndFolderInitialized();
                         if (!st.FirstLoadCompleted) st.FirstLoadCompleted = true;
-
-                        return $"done - dynamic load count: {st.DynamicUpdatesCount}";
-                    });
+                    lInLock.Done($"done - dynamic load count: {st.DynamicUpdatesCount}");
+                }
             }
             catch (Exception ex)
             {
