@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PublicApi]
-public interface ILookUp
+public interface ILookUp : ICanBeLookUp
 {
     /// <summary>
     /// Gets the Name of this LookUp, e.g. QueryString or PipelineSettings

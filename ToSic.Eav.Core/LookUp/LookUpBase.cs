@@ -141,6 +141,8 @@ public abstract class LookUpBase(string name, string description = "") : ILookUp
     #endregion
 
     public override string ToString() => $"{GetType().Name}; {Description}";
+
+    ILookUp ICanBeLookUp.LookUp => this;
 }
 
 [PrivateApi]
