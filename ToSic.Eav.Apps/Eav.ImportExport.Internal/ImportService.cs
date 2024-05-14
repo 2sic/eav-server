@@ -62,8 +62,9 @@ public class ImportService(
     /// <summary>
     /// Import AttributeSets and Entities
     /// </summary>
-    public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities
-    ) => Log.Do($"types: {newTypes?.Count}; entities: {newEntities?.Count}", timer: true, action: l =>
+    public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities) 
+    {
+        var l = Log.Fn($"types: {newTypes?.Count}; entities: {newEntities?.Count}", timer: true);
         Storage.DoWithDelayedCacheInvalidation(() =>
         {
             #region import AttributeSets if any were included but rollback transaction if necessary
@@ -96,17 +97,17 @@ public class ImportService(
                             return newTypeList.Where(a => !newSysTypes.Contains(a)).ToList();
                         });
 
-                        Log.Do(message: "Import Types in non-Sys scopes", timer: true, action: () =>
+                        var lInner = Log.Fn(message: "Import Types in non-Sys scopes", timer: true);
+                        if (nonSysTypes.Any())
                         {
-                            if (!nonSysTypes.Any()) return;
-
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
                             var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
 
                             // now the remaining attributeSets
                             MergeAndSaveContentTypes(appStateTemp, nonSysTypes);
-                        });
+                        }
+                        lInner.Done();
                     });
                 });
 
@@ -119,11 +120,12 @@ public class ImportService(
             else
             {
                 var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader; // load all entities
-                var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () => newEntities
-                    .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
-                    .Where(e => e != null)
-                    .Cast<IEntity>()
-                    .ToList());
+                var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () =>
+                    newEntities
+                        .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
+                        .Where(e => e != null)
+                        .Cast<IEntity>()
+                        .ToList());
 
                 // HACK 2022-05-05 2dm Import Problem
                 // If we use chunks of 500, then relationships are not imported
@@ -159,8 +161,9 @@ public class ImportService(
             }
 
             #endregion
-        })
-    );
+        });
+        l.Done();
+    }
 
     private void MergeAndSaveContentTypes(IAppState appState, List<IContentType> contentTypes)
     {

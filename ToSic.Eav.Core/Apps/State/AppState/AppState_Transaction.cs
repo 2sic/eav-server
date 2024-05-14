@@ -9,16 +9,21 @@ partial class AppState
     /// </summary>
     /// <param name="parentLog"></param>
     /// <param name="transaction"></param>
-    public void DoInLock(ILog parentLog, Action transaction) => parentLog.Do(() =>
+    public void DoInLock(ILog parentLog, Action transaction)
     {
+        var l = parentLog.Fn();
         try
         {
-            lock (_transactionLock) 
-                parentLog.Do(transaction, message: "in lock");
+            lock (_transactionLock)
+            {
+                var lInner = parentLog.Fn("in lock");
+                transaction();
+                lInner.Done();
+            }
         }
         finally
         {
-
         }
-    });
+        l.Done();
+    }
 }
