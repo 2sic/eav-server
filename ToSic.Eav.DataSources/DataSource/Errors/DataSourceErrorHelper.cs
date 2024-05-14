@@ -60,11 +60,8 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// <remarks>
     /// Added v16.00
     /// </remarks>
-    public IImmutableList<IEntity> TryGetInFailed(NoParamOrder noParamOrder = default, IDataSource source = default, string name = DataSourceConstants.StreamDefaultName)
-    {
-        //Parameters.Protect(noParamOrder, $"{nameof(source)}, {nameof(name)}");
-        return TryGetFailed(source, true, name);
-    }
+    public IImmutableList<IEntity> TryGetInFailed(NoParamOrder noParamOrder = default, IDataSource source = default, string name = DataSourceConstants.StreamDefaultName) 
+        => TryGetFailed(source, true, name);
 
     /// <summary>
     /// Create a stream of items showing a detailed error why an Out stream was not found.
