@@ -72,5 +72,9 @@ public abstract class EntityBasedType : IEntityBasedType
     /// <param name="fallback">Value to provide if nothing was found - required</param>
     /// <param name="propertyName">The property name - will be auto-filled by the compiler</param>
     /// <returns>The typed value</returns>
-    protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default) => Get(propertyName, fallback);
+    protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default)
+        => Get(propertyName, fallback);
+
+    protected T GetThisIfEntity<T>(T fallback, [CallerMemberName] string propertyName = default)
+        => Entity == null ? fallback : GetThis(fallback, propertyName);
 }
