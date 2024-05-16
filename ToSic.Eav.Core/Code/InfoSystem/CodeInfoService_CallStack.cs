@@ -25,7 +25,7 @@ partial class CodeInfoService
         }
         catch
         {
-            return (stack, MainError, Array.Empty<string>());
+            return (stack, MainError, []);
         }
     }
 

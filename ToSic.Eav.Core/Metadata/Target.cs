@@ -69,7 +69,7 @@ public class Target : ITarget
 
     [JsonIgnore]
     [PrivateApi("WIP v13")] public string Title { get; set; }
-    public string[] Recommendations { get; set; } = Array.Empty<string>();
+    public string[] Recommendations { get; set; } = [];
 
     public override string ToString() => 
         base.ToString() + $" - Type: {TargetType}; $: '{KeyString}', #: '{KeyNumber}'; Guid: '{KeyGuid}'; Title: '{Title}'";

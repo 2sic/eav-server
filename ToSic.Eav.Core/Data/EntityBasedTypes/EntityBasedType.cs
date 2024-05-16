@@ -27,10 +27,10 @@ public abstract class EntityBasedType : IEntityBasedType
     protected EntityBasedType(IEntity entity) => Entity = entity;
 
     protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
-        => LookupLanguages = languageCodes ?? Array.Empty<string>();
+        => LookupLanguages = languageCodes ?? [];
 
     protected EntityBasedType(IEntity entity, string languageCode) : this(entity)
-        => LookupLanguages = languageCode != null ? [languageCode] : Array.Empty<string>();
+        => LookupLanguages = languageCode != null ? [languageCode] : [];
 
     /// <inheritdoc />
     public virtual string Title => _title ??= Entity?.GetBestTitle() ?? "";
@@ -46,7 +46,7 @@ public abstract class EntityBasedType : IEntityBasedType
     public IMetadataOf Metadata => Entity?.Metadata;
 
     [PrivateApi]
-    protected string[] LookupLanguages { get; } = Array.Empty<string>();
+    protected string[] LookupLanguages { get; } = [];
 
 
     /// <summary>

@@ -8,7 +8,7 @@ public class PropReqSpecs(string field, string[] dimensions, ILog logOrNull = nu
 
     public readonly string Field = field;
 
-    public readonly string[] Dimensions = dimensions ?? Array.Empty<string>();
+    public readonly string[] Dimensions = dimensions ?? [];
 
     public readonly bool TreatEmptyAsDefault = treatEmptyAsDefault;
 
