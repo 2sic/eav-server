@@ -51,6 +51,7 @@ public class ContentTypeDtoService(
         var filteredType = ofScopeAndOrdered
             .Select(t => convTypeDto.Convert(t, appEntities.Get(t.Name).Count()))
             .ToList(); // must convert to list, otherwise it happens late when DI isn't available any more
+
         return l.ReturnAsOk(filteredType);
     }
         

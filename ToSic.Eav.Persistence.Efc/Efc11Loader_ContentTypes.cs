@@ -172,7 +172,11 @@ partial class Efc11Loader
                 configZoneId: set.ZoneId,
                 configAppId: set.AppId,
                 isAlwaysShared: set.ConfigIsOmnipresent,
-                metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
+                // 2024-05-16 2dm changing to not use a Reader, as it's not needed and may cause #IServiceProviderDisposedException
+                //metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
+                metaSourceFinder: notGhost
+                    ? () => source
+                    : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId)),
                 attributes: ctAttributes
             );
         });
@@ -181,4 +185,7 @@ partial class Efc11Loader
 
         return l.Return(newTypes.ToImmutableList());
     }
+
+    //private static Func<IHasMetadataSource> GetMetaSourceFinder(IAppStates appStates, IAppIdentity appId)
+    //    => () => appStates.Get(appId);
 }
