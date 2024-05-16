@@ -35,7 +35,7 @@ partial class DataSourceCatalog
 
     private static DataSourceInfo FindInCachedList(string name, List<DataSourceInfo> list, bool isLocal) =>
         // First check for normal type name
-        list.FirstOrDefault(dst => dst.Name.EqualsInsensitive(name))
+        list.FirstOrDefault(dst => dst.NameId.EqualsInsensitive(name))
         ?? (isLocal ? list.FirstOrDefault(dst => dst.TypeName.EqualsInsensitive(name)) : null)
         // Otherwise check for historical names in the VisualQuery Attribute
         ?? list.FirstOrDefault(dst =>
