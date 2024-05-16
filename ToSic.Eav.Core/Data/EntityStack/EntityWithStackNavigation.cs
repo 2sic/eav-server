@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data;
 

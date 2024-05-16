@@ -39,12 +39,19 @@ public class ContentTypeDtoService(
         var appEntities = workEntities.New(appCtxPlus);
 
         // get all types
-        var allTypes = appCtxPlus.AppState.ContentTypes.OfScope(scope, true);
+        var allTypes = appCtxPlus.AppState.ContentTypes
+            .OfScope(scope, true)
+            .ToList();
 
-        var filteredType = allTypes.Where(t => t.Scope == scope)
+        var ofScopeAndOrdered = allTypes
+            .Where(t => t.Scope == scope)
             .OrderBy(t => t.Name)
+            .ToList();
+
+        var filteredType = ofScopeAndOrdered
             .Select(t => convTypeDto.Convert(t, appEntities.Get(t.Name).Count()))
             .ToList(); // must convert to list, otherwise it happens late when DI isn't available any more
+
         return l.ReturnAsOk(filteredType);
     }
         

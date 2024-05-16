@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 using static ToSic.Eav.Code.InfoSystem.CodeInfoConstants;
 
@@ -27,7 +25,7 @@ partial class CodeInfoService
         }
         catch
         {
-            return (stack, MainError, Array.Empty<string>());
+            return (stack, MainError, []);
         }
     }
 

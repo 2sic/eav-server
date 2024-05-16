@@ -198,13 +198,13 @@ public static class ILog_Func
         string message,
         bool timer,
         CodeRef code,
-        bool enabled,
-        bool logResult = true)
+        bool enabled /*,
+        bool logResult = true */)
     {
         var l = enabled ? log.FnCode<TResult>(parameters, message, timer, code) : null;
         var result = func(l);
         if (!enabled) return result;
-        return logResult ? l.ReturnAndLog(result) : l.Return(result);
+        return /*logResult*/ true ? l.ReturnAndLog(result) : l.Return(result);
     }
 
     #endregion

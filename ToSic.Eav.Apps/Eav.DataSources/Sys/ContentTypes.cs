@@ -72,9 +72,7 @@ public sealed class ContentTypes: CustomDataSource
     [PrivateApi]
     public ContentTypes(MyServices services, IAppStates appStates): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
     {
-        ConnectServices(
-            _appStates = appStates
-        );
+        ConnectLogs([_appStates = appStates]);
         var options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
         ProvideOut(GetList, options: () => new(options, appId: OfAppId));
     }

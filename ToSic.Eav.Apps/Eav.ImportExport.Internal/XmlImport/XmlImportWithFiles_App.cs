@@ -15,13 +15,13 @@ partial class XmlImportWithFiles
     /// <returns>AppId of the new imported app</returns>
     public bool ImportApp(int zoneId, XDocument doc, int? inheritAppId, out int appId)
     {
-        var wrapLog = Log.Fn<bool>($"zone:{zoneId}");
+        var l = Log.Fn<bool>($"zone:{zoneId}");
 
         appId = 0;
         int? parentAppId = null;
 
         if (!IsCompatible(doc))
-            return wrapLog.ReturnFalse(LogError("The import file is not compatible with the installed version of 2sxc."));
+            return l.ReturnFalse(LogError("The import file is not compatible with the installed version of 2sxc."));
 
         // Get root node "SexyContent"
         var xmlSource = doc.Element(XmlConstants.RootNode);
@@ -30,7 +30,7 @@ partial class XmlImportWithFiles
         var appGuid = xApp?.Attribute(XmlConstants.Guid)?.Value;
 
         if (appGuid == null)
-            return wrapLog.ReturnFalse(LogError("Something is wrong in the xml structure, can't get an app-guid"));
+            return l.ReturnFalse(LogError("Something is wrong in the xml structure, can't get an app-guid"));
 
         if (appGuid != XmlConstants.AppContentGuid)
         {
@@ -54,11 +54,11 @@ partial class XmlImportWithFiles
             appId = AppId;
 
         if (appId <= 0)
-            return wrapLog.ReturnFalse(LogError("App was not created. Please try again or make sure the package you are importing is correct."));
+            return l.ReturnFalse(LogError("App was not created. Please try again or make sure the package you are importing is correct."));
 
         Log.A("Purging all Zones");
         base.Services.AppCachePurger.PurgeZoneList();
-        return wrapLog.Return(ImportXml(zoneId, appId, doc), "done");
+        return l.Return(ImportXml(zoneId, appId, doc), "done");
     }
 
     private static int? GetParentAppId(XElement xmlSource, Repository.Efc.DbDataController eavDc)

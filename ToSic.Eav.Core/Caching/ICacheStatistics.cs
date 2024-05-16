@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Eav.Caching;
 
 /// <summary>
 /// WIP - trying to keep more information about cache changes

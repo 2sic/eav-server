@@ -1,9 +1,10 @@
-﻿using System;
+﻿using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Plumbing;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class TypeWithMetadataBase<T> where T: class
+public abstract class TypeWithMetadataBase<T> : IHasIdentityNameId
+    where T: class
 {
     protected TypeWithMetadataBase(Type dsType)
     {
@@ -17,7 +18,7 @@ public abstract class TypeWithMetadataBase<T> where T: class
         catch {  /*ignore */ }
     }
 
-    public abstract string Name { get; }
+    public abstract string NameId { get; }
 
     public Type Type { get; }
 

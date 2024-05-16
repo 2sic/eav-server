@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps;
 
 /// <summary>
 /// Marks things which belongs to a Zone

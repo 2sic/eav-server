@@ -1,7 +1,5 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Security.Encryption;
 // IMPORTANT: this does not work ATM, and it's not used anywhere

@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.LookUp;
 
@@ -47,23 +46,17 @@ public class TokenReplace(ILookUpEngine lookupEngine)
 
 ";
 
-    #endregion
-
-    #region constructor
-
-    private ILookUp FindSource(string key) => LookupEngine.FindSource(key);
-
-    public ILookUpEngine LookupEngine { get; } = lookupEngine ?? throw new("Can't initialize TokenReplace without engine");
-
-    #endregion
-
-
-
     /// <summary>
     /// Gets the Regular expression for the token to be replaced
     /// </summary>
     /// <value>A regular Expression</value>   
     public static Regex Tokenizer { get; } = new(RegExFindAllTokens, RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace);
+
+    #endregion
+
+    public ILookUpEngine LookupEngine { get; } = lookupEngine ?? throw new("Can't initialize TokenReplace without engine");
+
+
 
     /// <summary>
     /// Checks for present [Object:Property] tokens
@@ -140,5 +133,5 @@ public class TokenReplace(ILookUpEngine lookupEngine)
     /// <param name="format"></param>
     /// <returns></returns>
     protected string RetrieveTokenValue(string sourceName, string key, string format) 
-        => FindSource(sourceName)?.Get(key, format) ?? string.Empty;
+        => LookupEngine.FindSource(sourceName)?.Get(key, format) ?? string.Empty;
 }

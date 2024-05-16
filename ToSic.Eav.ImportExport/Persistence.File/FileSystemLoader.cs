@@ -12,22 +12,10 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Persistence.File;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
+public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGenerator, DataBuilder dataBuilder)
+    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [jsonSerializerGenerator, dataBuilder]), IContentTypeLoader
 {
-    private readonly Generator<JsonSerializer> _jsonSerializerGenerator;
-    private readonly DataBuilder _dataBuilder;
     public int AppId = -999;
-
-    /// <summary>
-    /// Empty constructor for DI
-    /// </summary>
-    public FileSystemLoader(Generator<JsonSerializer> jsonSerializerGenerator, DataBuilder dataBuilder) : base($"{EavLogs.Eav}.FsLoad")
-    {
-        ConnectServices(
-            _jsonSerializerGenerator = jsonSerializerGenerator,
-            _dataBuilder = dataBuilder
-        );
-    }
 
 
     public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource)
@@ -55,7 +43,7 @@ public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
         get
         {
             if (_ser != null) return _ser;
-            _ser = _jsonSerializerGenerator.New();
+            _ser = jsonSerializerGenerator.New();
 
             // #SharedFieldDefinition
             // Also provide AppState if possible, for new #SharedFieldDefinition
@@ -73,12 +61,12 @@ public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
 
     internal void ResetSerializer(IAppState appState)
     {
-        var serializer = _jsonSerializerGenerator.New().SetApp(appState);
+        var serializer = jsonSerializerGenerator.New().SetApp(appState);
         _ser = serializer;
     }
     internal void ResetSerializer(List<IContentType> types)
     {
-        var serializer = _jsonSerializerGenerator.New();
+        var serializer = jsonSerializerGenerator.New();
         serializer.Initialize(AppId, types, null);
         _ser = serializer;
     }
@@ -205,7 +193,7 @@ public partial class FileSystemLoader: ServiceBase, IContentTypeLoader
             var ct = ser.DeserializeContentType(json);
 
             infoIfError = "couldn't set source/parent";
-            ct = _dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
+            ct = dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
             return l.ReturnAsOk(ct);
         }
         catch (IOException e)

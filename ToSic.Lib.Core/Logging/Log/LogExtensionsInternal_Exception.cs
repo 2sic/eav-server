@@ -9,9 +9,9 @@ partial class LogExtensionsInternal
     internal static TException ExceptionInternal<TException>(this ILog log, TException ex, CodeRef codeRef) where TException : Exception
     {
         // Null-check
-        if (!(log.GetRealLog() is Log realLog)) return ex;
+        if (log.GetRealLog() is not Log realLog) return ex;
 
-        var wrapLog = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
+        var l = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
         var recursion = 1;
         Exception loopEx = ex;
         while (true)
@@ -19,13 +19,13 @@ partial class LogExtensionsInternal
             // avoid infinite loops
             if (recursion >= MaxExceptionRecursion)
             {
-                wrapLog.Done("max-depth reached");
+                l.Done("max-depth reached");
                 return ex;
             }
                 
             if (ex == null)
             {
-                wrapLog.Done("Exception is null");
+                l.Done("Exception is null");
                 return ex;
             }
 
@@ -40,7 +40,7 @@ partial class LogExtensionsInternal
 
             break;
         }
-        wrapLog.Done();
+        l.Done();
         return ex;
     }
 }

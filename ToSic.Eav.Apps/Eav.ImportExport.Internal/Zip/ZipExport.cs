@@ -13,10 +13,15 @@ using ToSic.Eav.Services;
 namespace ToSic.Eav.ImportExport.Internal.Zip;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ZipExport: ServiceBase
+public class ZipExport(
+    IAppStates appStates,
+    IDataSourcesService dataSourceFactory,
+    XmlExporter xmlExporter,
+    Generator<FileManager> fileManagerGenerator,
+    IGlobalConfiguration globalConfiguration)
+    : ServiceBase(EavLogs.Eav + ".ZipExp",
+        connect: [appStates, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator])
 {
-    private readonly IAppStates _appStates;
-    private readonly Generator<FileManager> _fileManagerGenerator;
     private int _appId;
     private int _zoneId;
     private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
@@ -33,25 +38,7 @@ public class ZipExport: ServiceBase
 
     #region DI Constructor
 
-    public ZipExport(
-        IAppStates appStates,
-        IDataSourcesService dataSourceFactory,
-        XmlExporter xmlExporter,
-        Generator<FileManager> fileManagerGenerator,
-        IGlobalConfiguration globalConfiguration): base(EavLogs.Eav + ".ZipExp")
-    {
-        ConnectServices(
-            _appStates = appStates,
-            _xmlExporter = xmlExporter,
-            _globalConfiguration = globalConfiguration,
-            DataSourceFactory = dataSourceFactory,
-            _fileManagerGenerator = fileManagerGenerator
-        );
-    }
-
-    private readonly XmlExporter _xmlExporter;
-    private readonly IGlobalConfiguration _globalConfiguration;
-    public IDataSourcesService DataSourceFactory { get; }
+    public IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
 
     public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal)
     {
@@ -60,12 +47,12 @@ public class ZipExport: ServiceBase
         _appFolder = appFolder;
         _physicalAppPath = physicalAppPath;
         _physicalPathGlobal = physicalPathGlobal;
-        ConnectServices(
-            FileManager = _fileManagerGenerator.New().SetFolder(_physicalAppPath),
-            FileManagerGlobal = _fileManagerGenerator.New().SetFolder(physicalPathGlobal)
-        );
+        ConnectLogs([
+            FileManager = fileManagerGenerator.New().SetFolder(appId, _physicalAppPath),
+            FileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
+        ]);
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appState = _appStates.GetReader(appIdentity);
+        _appState = appStates.GetReader(appIdentity);
         return this;
     }
 
@@ -149,7 +136,7 @@ public class ZipExport: ServiceBase
         var messages = new List<Message>();
         var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
-        var temporaryDirectoryPath = Path.Combine(_globalConfiguration.TemporaryFolder, randomShortFolderName);
+        var temporaryDirectoryPath = Path.Combine(globalConfiguration.TemporaryFolder, randomShortFolderName);
 
         Directory.CreateDirectory(temporaryDirectoryPath); // create temp dir unless exists
 
@@ -247,7 +234,7 @@ public class ZipExport: ServiceBase
         var entityIds = entities
             .Select(e => e.EntityId.ToString()).ToArray();
 
-        var xmlExport = _xmlExporter.Init(_zoneId, _appId, _appState, true, contentTypeNames, entityIds);
+        var xmlExport = xmlExporter.Init(_zoneId, _appId, _appState, true, contentTypeNames, entityIds);
 
         #region reset App Guid if necessary
 
@@ -268,7 +255,7 @@ public class ZipExport: ServiceBase
     /// <param name="targetPath"></param>
     private void AddInstructionsToPackageFolder(string targetPath)
     {
-        var srcPath = _globalConfiguration.InstructionsFolder;
+        var srcPath = globalConfiguration.InstructionsFolder;
 
         foreach (var file in Directory.GetFiles(srcPath))
             File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));

@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// The definition of a dimension / language

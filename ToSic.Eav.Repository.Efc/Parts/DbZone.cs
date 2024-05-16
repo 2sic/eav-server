@@ -24,7 +24,7 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
 
     public bool AddMissingPrimaryApps()
     {
-        var wrapLog = Log.Fn<bool>();
+        var l = Log.Fn<bool>();
 
         var zonesWithoutPrimary = DbContext.SqlDb.ToSicEavZones
             .Include(z => z.ToSicEavApps)
@@ -34,7 +34,7 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
             .Where(z => z.ToSicEavApps.All(a => a.Name != Constants.PrimaryAppGuid))
             .ToList();
 
-        if (!zonesWithoutPrimary.Any()) return wrapLog.ReturnFalse("no missing primary");
+        if (!zonesWithoutPrimary.Any()) return l.ReturnFalse("no missing primary");
 
         var newZones = zonesWithoutPrimary
             .Select(zone => new ToSicEavApps
@@ -45,6 +45,6 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
 
         DbContext.DoAndSave(() => DbContext.SqlDb.AddRange(newZones));
 
-        return wrapLog.ReturnTrue($"added {newZones.Count}");
+        return l.ReturnTrue($"added {newZones.Count}");
     }
 }

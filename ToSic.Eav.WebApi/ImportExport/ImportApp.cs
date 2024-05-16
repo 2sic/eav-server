@@ -14,35 +14,18 @@ using ISite = ToSic.Eav.Context.ISite;
 namespace ToSic.Eav.WebApi.ImportExport;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ImportApp: ServiceBase
+public class ImportApp(
+    IEnvironmentLogger envLogger,
+    ZipImport import,
+    IGlobalConfiguration globalConfiguration,
+    IUser user,
+    AppFinder appFinder,
+    ISite site,
+    Generator<XmlImportWithFiles> xmlImpExpFiles,
+    IEavFeaturesService features)
+    : ServiceBase("Bck.Export",
+        connect: [envLogger, import, globalConfiguration, user, appFinder, site, xmlImpExpFiles, features])
 {
-    #region DI Constructor
-
-    public ImportApp(IEnvironmentLogger envLogger, ZipImport zipImport, IGlobalConfiguration globalConfiguration, IUser user, AppFinder appFinder, ISite site, Generator<XmlImportWithFiles> xmlImpExpFiles, IEavFeaturesService features) : base("Bck.Export")
-    {
-        ConnectServices(
-            _envLogger = envLogger,
-            _zipImport = zipImport,
-            _globalConfiguration = globalConfiguration,
-            _user = user,
-            _appFinder = appFinder,
-            _site = site,
-            _xmlImpExpFiles = xmlImpExpFiles,
-            _features = features
-        );
-    }
-
-    private readonly IEnvironmentLogger _envLogger;
-    private readonly ZipImport _zipImport;
-    private readonly IGlobalConfiguration _globalConfiguration;
-    private readonly IUser _user;
-    private readonly AppFinder _appFinder;
-    private readonly ISite _site;
-    private readonly Generator<XmlImportWithFiles> _xmlImpExpFiles;
-    private readonly IEavFeaturesService _features;
-
-    #endregion
-
     public ImportResultDto Import(Stream stream, int zoneId, string renameApp)
     {
         Log.A("start import app from stream");
@@ -50,11 +33,11 @@ public class ImportApp: ServiceBase
 
         if (!string.IsNullOrEmpty(renameApp)) Log.A($"new app name: {renameApp}");
 
-        var zipImport = _zipImport;
+        var zipImport = import;
         try
         {
-            zipImport.Init(zoneId, null, _user.IsSystemAdmin);
-            var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
+            zipImport.Init(zoneId, null, user.IsSystemAdmin);
+            var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
 
             // Increase script timeout to prevent timeouts
             result.Success = zipImport.ImportZip(stream, temporaryDirectory, renameApp);
@@ -62,7 +45,7 @@ public class ImportApp: ServiceBase
         }
         catch (Exception ex)
         {
-            _envLogger.LogException(ex);
+            envLogger.LogException(ex);
             result.Success = false;
             result.Messages.AddRange(zipImport.Messages);
         }
@@ -76,18 +59,18 @@ public class ImportApp: ServiceBase
 
         if (!string.IsNullOrEmpty(renameApp)) Log.A($"new app name: {renameApp}");
 
-        var zipImport = _zipImport;
+        var zipImport = import;
         try
         {
-            zipImport.Init(zoneId, null, _user.IsSystemAdmin);
-            var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
+            zipImport.Init(zoneId, null, user.IsSystemAdmin);
+            var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
 
             result.Success = zipImport.ImportZip(zipPath, temporaryDirectory, renameApp, inheritAppId);
             result.Messages.AddRange(zipImport.Messages);
         }
         catch (Exception ex)
         {
-            _envLogger.LogException(ex);
+            envLogger.LogException(ex);
             result.Success = false;
             result.Messages.AddRange(zipImport.Messages);
         }
@@ -104,18 +87,18 @@ public class ImportApp: ServiceBase
     /// <returns></returns>
     public IEnumerable<PendingAppDto> GetPendingApps(int zoneId)
     {
-        var wrapLog = Log.Fn<IEnumerable<PendingAppDto>>($"list all app folders for zoneId.{zoneId}");
+        var l = Log.Fn<IEnumerable<PendingAppDto>>($"list all app folders for zoneId.{zoneId}");
         var result = new List<PendingAppDto>();
 
         // loop through each app folder and find pending apps
-        foreach (var directoryPath in Directory.GetDirectories(_site.AppsRootPhysicalFull))
+        foreach (var directoryPath in Directory.GetDirectories(site.AppsRootPhysicalFull))
         {
             Log.A($"find pending app in folder:{directoryPath}");
                 
             var folderName = Path.GetFileName(directoryPath);
 
             // skip folder when app is already installed
-            if (_appFinder.AppIdFromFolderName(zoneId, folderName) != AppConstants.AppIdNotFound)
+            if (appFinder.AppIdFromFolderName(zoneId, folderName) != AppConstants.AppIdNotFound)
             {
                 Log.A($"skip, app is already installed");
                 continue;
@@ -131,7 +114,7 @@ public class ImportApp: ServiceBase
 
             try
             {
-                var importer = _xmlImpExpFiles.New().Init(null, false);
+                var importer = xmlImpExpFiles.New().Init(null, false);
                 var importXmlReader = new ImportXmlReader(appXml, importer, Log);
                 var pendingAppDto = new PendingAppDto
                 {
@@ -150,7 +133,7 @@ public class ImportApp: ServiceBase
             }
         }
 
-        return wrapLog.ReturnAsOk(result);
+        return l.ReturnAsOk(result);
     }
 
     /// <summary>
@@ -165,7 +148,7 @@ public class ImportApp: ServiceBase
         var result = new ImportResultDto();
 
         // before installation, ensure that feature is enabled
-        if (!_features.IsEnabled(BuiltInFeatures.AppSyncWithSiteFiles))
+        if (!features.IsEnabled(BuiltInFeatures.AppSyncWithSiteFiles))
         {
             var message = $"Skip all. Can't install pending apps because feature {BuiltInFeatures.AppSyncWithSiteFiles.NameId} is not enabled.";
             var messages = new List<Message>() { new(message, Message.MessageTypes.Warning)};
@@ -177,23 +160,23 @@ public class ImportApp: ServiceBase
 
         try
         {
-            _zipImport.Init(zoneId, null, _user.IsSystemAdmin);
+            import.Init(zoneId, null, user.IsSystemAdmin);
             foreach (var pendingAppDto in pendingApps)
             {
-                var appDirectory = Path.Combine(_site.AppsRootPhysicalFull, pendingAppDto.ServerFolder);
+                var appDirectory = Path.Combine(site.AppsRootPhysicalFull, pendingAppDto.ServerFolder);
                 var importMessage = new List<Message>();
                 // do we need to rename pending app
                 var rename = pendingAppDto.ServerFolder.Equals(pendingAppDto.Folder, StringComparison.InvariantCultureIgnoreCase) ? string.Empty : pendingAppDto.ServerFolder;
                 // Increase script timeout to prevent timeouts
-                result.Success = _zipImport.ImportApp(rename, appDirectory, importMessage, pendingApp: true);
+                result.Success = import.ImportApp(rename, appDirectory, importMessage, pendingApp: true);
                 result.Messages.AddRange(importMessage);
             }
         }
         catch (Exception ex)
         {
-            _envLogger.LogException(ex);
+            envLogger.LogException(ex);
             result.Success = false;
-            result.Messages.AddRange(_zipImport.Messages);
+            result.Messages.AddRange(import.Messages);
         }
         return result;
     }

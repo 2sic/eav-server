@@ -13,7 +13,7 @@ namespace ToSic.Eav.LookUp;
 /// <param name="cultureResolver">culture resolver for multi-language scenarios</param>
 [PrivateApi("Was PublicApi till v17, previously called LookUpInDataTarget / renamed to LookUpInDataSource")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cultureResolver) : LookUpBase(InStreamName)
+public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cultureResolver) : LookUpBase(InStreamName, $"LookUp in DataSource on stream {InStreamName}")
 {
     /// <summary>
     /// The stream name to read when finding the entity which is the source of this.

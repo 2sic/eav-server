@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.StartUp;
+﻿using ToSic.Eav.StartUp;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Loaders;
@@ -18,12 +15,12 @@ public class SystemLoader : ServiceBase
         LazySvc<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
     ) : base($"{EavLogs.Eav}SysLdr")
     {
-        logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, Log);
+        logStore.Add(LogNames.LogStoreStartUp, Log);
         Log.A("EAV System Loader");
-        ConnectServices(
+        ConnectLogs([
             _registrations = registrations,
             _systemLoaderLazy = systemLoaderLazy
-        );
+        ]);
     }
 
     private readonly IEnumerable<IStartUpRegistrations> _registrations;
@@ -43,11 +40,13 @@ public class SystemLoader : ServiceBase
         _systemLoaderLazy.Value.StartUp();
     });
 
-    private void DoRegistrations() => Log.Do(() =>
+    private void DoRegistrations()
     {
+        var l = Log.Fn();
         foreach (var registration in _registrations)
             DoRegistration(registration);
-    });
+        l.Done();
+    }
 
     private void DoRegistration(IStartUpRegistrations registration) => Log.Do(registration.NameId, l =>
     {

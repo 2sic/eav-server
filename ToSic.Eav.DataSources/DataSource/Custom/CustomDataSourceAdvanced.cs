@@ -57,7 +57,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     }
     protected CustomDataSourceAdvanced(MyServicesBase<MyServices> services, string logName = null) : base(services.ParentServices, logName ?? $"{DataSourceConstants.LogPrefix}.Extern")
     {
-        ConnectServices(services);
+        ConnectLogs([services]);
         DataFactory = services.ParentServices.DataFactory;
     }
 

@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Eav.Caching;
 
 /// <summary>
 /// This is a Cache-info wrapper when multiple sources would trigger a cache-refresh

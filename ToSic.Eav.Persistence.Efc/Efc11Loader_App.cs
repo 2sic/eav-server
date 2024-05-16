@@ -24,11 +24,11 @@ partial class Efc11Loader
     /// <returns>An object with everything which an app has, usually for caching</returns>
     private IAppStateBuilder LoadAppStateFromDb(int appId, CodeRefTrail codeRefTrail)
     {
-        _logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
+        logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
-        var wrapLog = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
-        var appIdentity =_appStates.IdentityOfApp(appId);
-        var appGuidName = _appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
+        var l = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
+        var appIdentity =appStates.IdentityOfApp(appId);
+        var appGuidName = appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
         codeRefTrail.WithHere().AddMessage($"App: {appId}, {nameof(appGuidName)}: '{appGuidName}'");
 
         // This will contain the parent reference - in most cases it's the -42 App
@@ -39,52 +39,52 @@ partial class Efc11Loader
         if (ancestorAppId != 0)
         {
             // Check if feature is enabled #SharedAppFeatureEnabled
-            if (!_featuresService.Value.IsEnabled(BuiltInFeatures.SharedApps))
+            if (!featuresService.Value.IsEnabled(BuiltInFeatures.SharedApps))
                 throw new FeaturesDisabledException(BuiltInFeatures.SharedApps.NameId, 
                     $"This is required to load shared app states. " +
                     $"The App {appIdentity.Show()} has an ancestor {ancestorAppId}. " +
                     $"This implies that it has an ancestor. 0 was expected, otherwise you need the feature.");
 
             codeRefTrail.AddMessage($"Ancestor: {ancestorAppId}");
-            var testParentApp = _appStates.GetCacheState(ancestorAppId);
+            var testParentApp = appStates.GetCacheState(ancestorAppId);
             parent = new(testParentApp, true, true);
         }
         else
         {
             // New v13 - use global app by default to share content-types
-            var globalApp = _appStates.GetPresetReader();
+            var globalApp = appStates.GetPresetReader();
             parent = new(globalApp?.StateCache ?? throw new("Can't find global app - which is required to build any other apps. "),
                 true, 
                 false);
         }
 
-        var builder = _appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);
+        var builder = appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);
         Update(builder.AppState, AppStateLoadSequence.Start, codeRefTrail);
 
-        return wrapLog.ReturnAsOk(builder);
+        return l.ReturnAsOk(builder);
     }
 
     private int GetAncestorAppIdOrZero(int appId)
     {
-        var wrapLog = Log.Fn<int>($"{nameof(appId)}:{appId}");
+        var l = Log.Fn<int>($"{nameof(appId)}:{appId}");
         // Prefetch this App (new in v13 for ancestor apps)
-        var appInDb = _dbContext.ToSicEavApps.FirstOrDefault(a => a.AppId == appId);
+        var appInDb = context.ToSicEavApps.FirstOrDefault(a => a.AppId == appId);
         var appSysSettings = appInDb?.SysSettings;
         if (string.IsNullOrWhiteSpace(appSysSettings))
-            return wrapLog.Return(0, "none found");
+            return l.Return(0, "none found");
 
         var sysSettings = JsonSerializer.Deserialize<AppSysSettings>(appInDb.SysSettings, JsonOptions.SafeJsonForHtmlAttributes);
         if (!sysSettings.Inherit || sysSettings.AncestorAppId == 0) 
-            return wrapLog.Return(0, "data found but inherit not active");
+            return l.Return(0, "data found but inherit not active");
 
         if (sysSettings.AncestorAppId == appId)
         {
             Log.A($"Error: Got an {nameof(sysSettings.AncestorAppId)} of {appId}. " +
                   "It's the same as the app itself - this should never happen. Stop.");
-            return wrapLog.Return(0, "error");
+            return l.Return(0, "error");
         }
 
-        return wrapLog.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
+        return l.Return(sysSettings.AncestorAppId, $"found {sysSettings.AncestorAppId}");
     }
 
     public IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)
@@ -111,7 +111,7 @@ partial class Efc11Loader
         if (builder.Reader.NameId == Constants.DefaultAppGuid)
             return l.Return(builder.AppState, "default app, don't auto-init");
 
-        var result = _initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log)
+        var result = initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log)
             //? LoadAppStateFromDb(appId).AppState
             ? AppStateBuilderRaw(appId, codeRefTrail.WithHere()).AppState
             : builder.AppState;
@@ -123,7 +123,7 @@ partial class Efc11Loader
     {
         var lMain = Log.Fn<IAppStateCache>(message: "What happens inside this is logged in the app-state loading log");
         codeRefTrail.WithHere().AddMessage($"App: {appStateOriginal.AppId}");
-        var builder = _appStateBuilder.New().Init(appStateOriginal);
+        var builder = appStateBuilder.New().Init(appStateOriginal);
         builder.Load($"startAt: {startAt}, ids only:{entityIds != null}", state => 
         {
             var l = Log.Fn();
@@ -191,7 +191,7 @@ partial class Efc11Loader
             if (string.IsNullOrEmpty(json)) return l.Return(nullTuple, "no json");
 
             l.A("app Entity found - this json: " + json);
-            var serializer = _dataDeserializer.New(); // ServiceProvider.Build<IDataDeserializer>();
+            var serializer = dataDeserializer.New(); // ServiceProvider.Build<IDataDeserializer>();
             serializer.Initialize(appId, new List<IContentType>(), null);
             if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
                 return l.Return(nullTuple, "can't deserialize");

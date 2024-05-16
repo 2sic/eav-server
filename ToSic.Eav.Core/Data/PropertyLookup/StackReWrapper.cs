@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.PropertyLookup;
 

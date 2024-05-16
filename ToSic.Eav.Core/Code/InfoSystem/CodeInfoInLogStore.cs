@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Code.Infos;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Code.InfoSystem;
 

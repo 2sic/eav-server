@@ -75,9 +75,9 @@ public class DataTable : CustomDataSourceAdvanced
     [PrivateApi]
     public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
     {
-        ConnectServices(
+        ConnectLogs([
             _dataFactory = dataFactory
-        );
+        ]);
         ProvideOut(GetEntities);
     }
 

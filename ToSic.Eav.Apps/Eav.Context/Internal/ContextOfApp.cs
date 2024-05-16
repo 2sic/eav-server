@@ -52,11 +52,13 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     #endregion
 
-    public void ResetApp(IAppIdentity appIdentity) => Log.Do(() =>
+    public void ResetApp(IAppIdentity appIdentity)
     {
+        var l = Log.Fn();
         if (AppIdentity == null || AppIdentity.AppId != appIdentity.AppId)
             AppIdentity = appIdentity;
-    });
+        l.Done();
+    }
 
     protected virtual IAppIdentity AppIdentity
     {

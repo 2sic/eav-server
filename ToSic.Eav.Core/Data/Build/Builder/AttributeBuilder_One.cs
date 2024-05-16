@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -57,7 +52,7 @@ partial class AttributeBuilder
         bool languageReadOnly = false
     ) => Log.Func($"..., {name}, {value} ({type}), {language}, ...", l =>
     {
-        var valueLanguages = _languageBuilder.GetBestValueLanguages(language, languageReadOnly);
+        var valueLanguages = languageBuilder.GetBestValueLanguages(language, languageReadOnly);
 
         var valueWithLanguages = ValueBuilder.Build(type, value, valueLanguages?.ToImmutableList());
 

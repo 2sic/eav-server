@@ -38,8 +38,8 @@ public class DataSourceDto
     {
         var noError = dsInfo.ErrorOrNull == null;
         var dsAttribute = dsInfo.VisualQuery;
-        Name = noError ? dsInfo.Type.Name : dsInfo.Name; // will override further down if dsInfo is provided
-        Identifier = dsInfo.Name;
+        Name = noError ? dsInfo.Type.Name : dsInfo.NameId; // will override further down if dsInfo is provided
+        Identifier = dsInfo.NameId;
         if (dsAttribute == null) return;
         UiHint = dsAttribute.UiHint;
         PrimaryType = dsAttribute.Type.ToString();
@@ -57,11 +57,11 @@ public class DataSourceDto
         IsGlobal = dsInfo.IsGlobal;
 
         // If we have a substituted error-DS, give it the inner name so connections work
-        TypeNameForUi = noError ? dsInfo.Type.FullName : dsInfo.Name;
+        TypeNameForUi = noError ? dsInfo.Type.FullName : dsInfo.NameId;
         Out = noError ? outNameList : StreamNamesIfError;
         Errors = dsInfo.ErrorOrNull?.Message;
 
         // WIP try to deprecate
-        PartAssemblyAndType = dsInfo.Name;
+        PartAssemblyAndType = dsInfo.NameId;
     }
 }

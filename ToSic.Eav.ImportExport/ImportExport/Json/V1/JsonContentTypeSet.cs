@@ -1,4 +1,4 @@
-﻿using static System.Text.Json.Serialization.JsonIgnoreCondition;
+﻿
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json.V1;

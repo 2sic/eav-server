@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Code.Help;
+﻿namespace ToSic.Eav.Code.Help;
 
 /// <summary>
 /// TODO: This actually doesn't really work as expected.

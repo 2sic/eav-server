@@ -131,12 +131,11 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     /// An internally created lookup to give access to the In-streams if there are any
     /// </summary>
     [PrivateApi]
-    private IDictionary<string, ILookUp> OverrideLookUps 
-        => _overrideLookUps.Get(() => new Dictionary<string, ILookUp>
-        {
-            { "In".ToLowerInvariant(), new LookUpInDataSource(DataSourceForIn, base.Services.ZoneCultureResolverLazy.Value) }
-        });
-    private readonly GetOnce<IDictionary<string, ILookUp>> _overrideLookUps = new();
+    private IEnumerable<ILookUp> OverrideLookUps => _overrideLookUps ??=
+    [
+        new LookUpInDataSource(DataSourceForIn, Services.ZoneCultureResolverLazy.Value)
+    ];
+    private IEnumerable<ILookUp> _overrideLookUps;
 
 
     public string Get(string name) => Parse(name);

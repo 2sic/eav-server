@@ -61,12 +61,12 @@ public sealed class QueryInfo : DataSourceBase
         LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataFactory dataFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
         services, $"{LogPrefix}.EavQIn")
     {
-        ConnectServices(
+        ConnectLogs([
             QueryBuilder = queryBuilder,
             _queryManager = queryManager,
             _attributesGenerator = attributesGenerator,
             _dataFactory = dataFactory.New(options: new(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
-        );
+        ]);
         ProvideOut(GetStreamsOfQuery);
         ProvideOut(GetAttributes, "Attributes");
     }

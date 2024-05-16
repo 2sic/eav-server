@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSources.LookUp;
 using ToSic.Eav.LookUp;
@@ -49,9 +48,9 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     [PrivateApi]
     public QueryRun(MyServices services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.QryRun")
     {
-        ConnectServices(
+        ConnectLogs([
             _queryGenerator = queryGenerator
-        );
+        ]);
     }
     #endregion
 
@@ -84,9 +83,9 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         // It's a LookUpInLookUps if the QueryBuilder overwrote it with SaveDraft infos...
         // which we're not sure yet 2023-03-14 2dm if it's in use anywhere
         var lookUpRoot = Configuration.LookUpEngine.FindSource(DataSourceConstants.MyConfigurationSourceName);
-        var metadataLookUp = lookUpRoot as LookUpInQueryMetadata
+        var metadataLookUp = lookUpRoot as LookUpInQueryPartMetadata
                              ?? (lookUpRoot as LookUpInLookUps)
-                             ?.Providers.FirstOrDefault(p => p is LookUpInQueryMetadata) as LookUpInQueryMetadata;
+                             ?.Providers.FirstOrDefault(p => p is LookUpInQueryPartMetadata) as LookUpInQueryPartMetadata;
 
         // if found, initialize and get the metadata entity attached
         metadataLookUp?.Initialize();
@@ -130,9 +129,17 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// <returns></returns>
     private LookUpEngine LookUpWithoutParams()
     {
-        var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, true);
-        if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))
-            lookUpsWithoutParams.Sources.Remove(DataSourceConstants.ParamsSourceName);
+        // Get sources, but make sure it's without the params
+        // 2024-05-06 2dm changed this to make the LookUpEngine.Sources read-only,
+        // ...but there is a small chance the change didn't work as expected, because the original
+        // ...HasSource() also checked sub-sources, even if it didn't remove them.
+        // ...So I think we're safe. If all is ok, remove this comment 2024-Q3
+        var sources = Configuration.LookUpEngine.Sources.ToList();
+        sources.Remove(sources.GetSource(DataSourceConstants.ParamsSourceName));
+
+        var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, sources: sources, onlyUseProperties: true, skipOriginalSource: true);
+        //if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))
+        //    lookUpsWithoutParams.Sources.Remove(DataSourceConstants.ParamsSourceName);
         // 1.1 note: can't add Override here because the underlying params don't exist yet - so an override wouldn't keep them
         return lookUpsWithoutParams;
     }

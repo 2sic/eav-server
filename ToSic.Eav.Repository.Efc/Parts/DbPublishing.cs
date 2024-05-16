@@ -110,7 +110,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
     /// <param name="entityIds">EntityId of the Published Entity</param>
     internal Dictionary<int, int?> GetDraftBranchMap(List<int> entityIds)
     {
-        var wrapLog = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
+        var l = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
         var nullList = entityIds.Cast<int?>().ToList();
         var ids = DbContext.SqlDb.ToSicEavEntities
             .Where(e => nullList.Contains(e.PublishedEntityId) && !e.ChangeLogDeleted.HasValue)
@@ -118,7 +118,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
             .ToList();
         // note: distinct is necessary, because new entities all have 0 as the id
         var dic = entityIds.Distinct().ToDictionary(e => e, e => ids.FirstOrDefault(i => i.PublishedEntityId == e)?.EntityId);
-        return wrapLog.Return(dic, $"found {ids.Count}");
+        return l.Return(dic, $"found {ids.Count}");
     }
 }
     

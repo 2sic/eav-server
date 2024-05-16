@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Internal.Features;
+﻿namespace ToSic.Eav.Internal.Features;
 
 [PrivateApi]
 public class FeatureConstants

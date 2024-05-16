@@ -7,11 +7,11 @@ partial class Efc11Loader
     {
         var log = new Log("DB.EfLoad", null, "Zones()");
         // Add to zone-loading log, as it could
-        _logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, log);
+        logStore.Add(Lib.Logging.LogNames.LogStoreStartUp, log);
         var l = log.Fn<IDictionary<int, Zone>>(timer: true);
 
         // Build the tree of zones incl. their default(Content) and Primary apps
-        var zones = _dbContext.ToSicEavZones
+        var zones = context.ToSicEavZones
             .Include(z => z.ToSicEavApps)
             .Include(z => z.ToSicEavDimensions)
             .ThenInclude(d => d.ParentNavigation)

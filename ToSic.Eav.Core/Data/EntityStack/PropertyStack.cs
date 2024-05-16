@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Data;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data;
 
@@ -16,7 +11,7 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
     public PropertyStack Init(string name, IEnumerable<IPropertyLookup> sources)
         => Init(name,
             sources?.Select(s => new KeyValuePair<string, IPropertyLookup>((s as IHasIdentityNameId)?.NameId, s)).ToArray()
-            ?? Array.Empty<KeyValuePair<string, IPropertyLookup>>());
+            ?? []);
 
     public PropertyStack Init(string name, IReadOnlyCollection<KeyValuePair<string, IPropertyLookup>> sources)
         => Init(name, sources.ToArray());

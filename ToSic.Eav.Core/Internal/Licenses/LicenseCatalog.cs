@@ -15,10 +15,8 @@
  *
  */
 
-using System.Linq;
 using ToSic.Eav.Internal.Catalogs;
 using ToSic.Eav.SysData;
-using ToSic.Lib.Logging;
 using static ToSic.Eav.Internal.Licenses.BuiltInLicenses;
 
 namespace ToSic.Eav.Internal.Licenses;

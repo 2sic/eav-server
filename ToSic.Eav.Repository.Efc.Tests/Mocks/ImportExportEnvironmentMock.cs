@@ -3,26 +3,14 @@ using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence;
-using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 {
-    internal class ImportExportEnvironmentMock : ServiceBase, IImportExportEnvironment
+    internal class ImportExportEnvironmentMock(IAppStates appStates)
+        : ServiceBase("Mck.ImpExp", connect: [appStates]), IImportExportEnvironment
     {
-        #region Constructors
-
-        public ImportExportEnvironmentMock(IAppStates appStates) : base("Mck.ImpExp")
-        {
-            ConnectServices(
-                _appStates = appStates
-            );
-        }
-        private readonly IAppStates _appStates;
-
-        #endregion
-
         public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests\";
 
 
@@ -54,6 +42,6 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         {
         }
        
-        public SaveOptions SaveOptions(int zoneId) => new SaveOptions(DefaultLanguage, _appStates.Languages(zoneId, true)/* new ZoneRuntime().Init(zoneId, Log).Languages(true)*/);
+        public SaveOptions SaveOptions(int zoneId) => new SaveOptions(DefaultLanguage, appStates.Languages(zoneId, true)/* new ZoneRuntime().Init(zoneId, Log).Languages(true)*/);
     }
 }

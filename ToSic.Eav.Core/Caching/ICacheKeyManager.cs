@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Eav.Caching;
 
 /// <summary>
 /// Generates cache-keys for certain objects and combines them with CacheKeys of parent-objects which this object relies on.  

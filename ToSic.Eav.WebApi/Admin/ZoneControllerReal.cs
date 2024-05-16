@@ -9,25 +9,19 @@ namespace ToSic.Eav.WebApi.Admin;
 /// This one supplies portal-wide (or cross-portal) settings / configuration
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ZoneControllerReal : ServiceBase, IZoneController
+public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend, LazySvc<ZoneBackend> zoneBackend)
+    : ServiceBase("Api.ZoneRl", connect: [languagesBackend, zoneBackend]), IZoneController
 {
     public const string LogSuffix = "Zone";
-    public ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend, LazySvc<ZoneBackend> zoneBackend): base("Api.ZoneRl") =>
-        ConnectServices(
-            _languagesBackend = languagesBackend,
-            _zoneBackend = zoneBackend
-        );
-    private readonly LazySvc<LanguagesBackend> _languagesBackend;
-    private readonly LazySvc<ZoneBackend> _zoneBackend;
 
     /// <inheritdoc />
-    public IList<SiteLanguageDto> GetLanguages() => _languagesBackend.Value.GetLanguages();
+    public IList<SiteLanguageDto> GetLanguages() => languagesBackend.Value.GetLanguages();
 
     /// <inheritdoc />
     public void SwitchLanguage(string cultureCode, bool enable) 
-        => _languagesBackend.Value.Toggle(cultureCode, enable, CultureInfo.GetCultureInfo(cultureCode).EnglishName);
+        => languagesBackend.Value.Toggle(cultureCode, enable, CultureInfo.GetCultureInfo(cultureCode).EnglishName);
 
     /// <inheritdoc />
-    public SystemInfoSetDto GetSystemInfo() => _zoneBackend.Value.GetSystemInfo();
+    public SystemInfoSetDto GetSystemInfo() => zoneBackend.Value.GetSystemInfo();
 
 }

@@ -16,43 +16,28 @@ using ToSic.Lib.Documentation;
 namespace ToSic.Eav.WebApi.Sys.Licenses;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LicenseControllerReal : ServiceBase, ILicenseController
+public class LicenseControllerReal(
+    LazySvc<ILicenseService> licenseServiceLazy,
+    LazySvc<IEavFeaturesService> featuresLazy,
+    LazySvc<IGlobalConfiguration> globalConfiguration,
+    LazySvc<EavSystemLoader> systemLoaderLazy,
+    LazySvc<LicenseCatalog> licenseCatalog,
+    SystemFingerprint fingerprint)
+    : ServiceBase("Bck.Lics",
+        connect:
+        [
+            licenseServiceLazy, featuresLazy, globalConfiguration, licenseCatalog, systemLoaderLazy, fingerprint
+        ]), ILicenseController
 {
     // auto-download license file
     private const string DefaultLicenseFileName = "default.license.json";
-
-    private readonly LazySvc<ILicenseService> _licenseServiceLazy;
-    private readonly LazySvc<IEavFeaturesService> _featuresLazy;
-    private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
-    private readonly LazySvc<LicenseCatalog> _licenseCatalog;
-    private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
-    private readonly SystemFingerprint _fingerprint;
-
-    public LicenseControllerReal(
-        LazySvc<ILicenseService> licenseServiceLazy, 
-        LazySvc<IEavFeaturesService> featuresLazy,
-        LazySvc<IGlobalConfiguration> globalConfiguration,
-        LazySvc<EavSystemLoader> systemLoaderLazy,
-        LazySvc<LicenseCatalog> licenseCatalog,
-        SystemFingerprint fingerprint
-    ) : base("Bck.Lics")
-    {
-        ConnectServices(
-            _licenseServiceLazy = licenseServiceLazy,
-            _featuresLazy = featuresLazy,
-            _globalConfiguration = globalConfiguration,
-            _licenseCatalog = licenseCatalog,
-            _systemLoaderLazy = systemLoaderLazy,
-            _fingerprint = fingerprint
-        );
-    }
 
     private string ConfigurationsPath
     {
         get
         {
             if (!string.IsNullOrEmpty(_configurationsPath)) return _configurationsPath;
-            _configurationsPath =_globalConfiguration.Value.ConfigFolder;
+            _configurationsPath =globalConfiguration.Value.ConfigFolder;
 
             // ensure that path to store files already exits
             Directory.CreateDirectory(_configurationsPath);
@@ -66,12 +51,12 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
     /// <inheritdoc />
     public IEnumerable<LicenseDto> Summary()
     {
-        var licSvc = _licenseServiceLazy.Value;
-        var licenses = _licenseCatalog.Value.List
+        var licSvc = licenseServiceLazy.Value;
+        var licenses = licenseCatalog.Value.List
             .Where(l => !l.FeatureLicense)
             .OrderBy(l => l.Priority);
 
-        var features = _featuresLazy.Value.All;
+        var features = featuresLazy.Value.All;
 
         return licenses
             .Select(l =>
@@ -131,7 +116,7 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
         foreach (var file in files) SaveLicenseFile(file);
 
         // reload license and features
-        _systemLoaderLazy.Value.LoadLicenseAndFeatures();
+        systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
         return l.ReturnAndLog(new() { Success = true, Message = "ok" }, "ok");
     }
@@ -142,8 +127,8 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
     public LicenseFileResultDto Retrieve()
     {
         var l = Log.Fn<LicenseFileResultDto>();
-        var fingerprint = _fingerprint.GetFingerprint();
-        var url = $"{Aspect.PatronsUrl}/api/license/get?fingerprint={fingerprint}&version={EavSystemInfo.Version.Major}";
+        var fingerprint1 = fingerprint.GetFingerprint();
+        var url = $"{Aspect.PatronsUrl}/api/license/get?fingerprint={fingerprint1}&version={EavSystemInfo.Version.Major}";
         l.A($"retrieve license from url:{url}");
 
         string content;
@@ -182,7 +167,7 @@ public class LicenseControllerReal : ServiceBase, ILicenseController
         var success = SaveLicenseFile(DefaultLicenseFileName, content);
 
         // reload license and features
-        _systemLoaderLazy.Value.LoadLicenseAndFeatures();
+        systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
         return l.ReturnAndLog(new() { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
     }

@@ -15,10 +15,7 @@
  *
  */
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Internal.Licenses;

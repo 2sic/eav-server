@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Apps.State;
+﻿namespace ToSic.Eav.Apps.State;
 
 public interface IAppStateChanges
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using ToSic.Eav.Metadata;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Metadata;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.LookUp;
@@ -18,20 +15,20 @@ public class LookUpInMetadata : LookUpInEntity
     private readonly Guid _objectToProvideSettingsTo;
     private readonly IEntity _parent;
 
-    /// <summary>
-    /// Constructs the object with pre-filled parameters. It won't access the entity yet, because 
-    /// it's possible that the data-source wouldn't be ready yet. The access to the entity will 
-    /// only occur if it's really needed. 
-    /// </summary>
-    /// <param name="name">Name of the PropertyAccess, e.g. PipelineSettings</param>
-    /// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
-    /// <param name="metaDataSource">DataSource that provides MetaData</param>
-    [Obsolete("Should not be used, as it doesn't have dimensions included.")]
-    public LookUpInMetadata(string name, Guid objectId, IMetadataSource metaDataSource) : base(name, null, null)
-    {
-        _objectToProvideSettingsTo = objectId;
-        _metaDataSource = metaDataSource;
-    }
+    ///// <summary>
+    ///// Constructs the object with pre-filled parameters. It won't access the entity yet, because 
+    ///// it's possible that the data-source wouldn't be ready yet. The access to the entity will 
+    ///// only occur if it's really needed. 
+    ///// </summary>
+    ///// <param name="name">Name of the PropertyAccess, e.g. PipelineSettings</param>
+    ///// <param name="objectId">EntityGuid of the Entity to get assigned Entities of</param>
+    ///// <param name="metaDataSource">DataSource that provides MetaData</param>
+    //[Obsolete("Should not be used, as it doesn't have dimensions included.")]
+    //public LookUpInMetadata(string name, Guid objectId, IMetadataSource metaDataSource) : base(name, null, null)
+    //{
+    //    _objectToProvideSettingsTo = objectId;
+    //    _metaDataSource = metaDataSource;
+    //}
 
     /// <summary>
     /// Alternate constructor where the entity with attached metadata is already known.
@@ -40,7 +37,7 @@ public class LookUpInMetadata : LookUpInEntity
     /// <param name="name">Source name</param>
     /// <param name="entityWithMetadata">Entity whose metadata we'll use</param>
     /// <param name="dimensions">language / dimension data for lookup</param>
-    public LookUpInMetadata(string name, IEntity entityWithMetadata, string[] dimensions): base(name, null, dimensions)
+    public LookUpInMetadata(string name, IEntity entityWithMetadata, string[] dimensions): base(name, null, dimensions, "LookUp in Metadata")
     {
         _parent = entityWithMetadata;
     }

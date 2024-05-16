@@ -32,7 +32,7 @@ public sealed class Scopes : CustomDataSource
     [PrivateApi]
     public Scopes(MyServices services, IAppStates appStates) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
     {
-        ConnectServices(_appStates = appStates);
+        ConnectLogs([_appStates = appStates]);
         ProvideOutRaw(GetList, options: () => new(typeName: "Scope", titleField: "Name", autoId: false));
     }
     private readonly IAppStates _appStates;

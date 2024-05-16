@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using ToSic.Lib.Documentation;
+﻿using System.Text.RegularExpressions;
 
 namespace ToSic.Eav.Data;
 

@@ -10,7 +10,7 @@ public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
     public VisualQueryAttribute VisualQuery { get; }
 
     // By default the name is the global name of the VisualQuery.
-    public override string Name => VisualQuery?.NameId;
+    public override string NameId => VisualQuery?.NameId;
 
     public bool IsGlobal { get; }
 

@@ -3,20 +3,12 @@
 namespace ToSic.Eav.Data.Build;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class AttributeBuilder: ServiceBase
+public partial class AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilder languageBuilder)
+    : ServiceBase("Dta.AttBld", connect: [languageBuilder, valueBuilder])
 {
     #region Dependency Injection
 
-    public AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilder languageBuilder) : base("Dta.AttBld")
-    {
-        ConnectServices(
-            _languageBuilder = languageBuilder,
-            ValueBuilder = valueBuilder
-        );
-
-    }
-    protected readonly ValueBuilder ValueBuilder;
-    private readonly DimensionBuilder _languageBuilder;
+    protected readonly ValueBuilder ValueBuilder = valueBuilder;
 
     #endregion
 

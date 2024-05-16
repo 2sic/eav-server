@@ -122,9 +122,11 @@ partial class DbEntity
 
     private void AttributeQueueAdd(Action next) => _attributeUpdateQueue.Add(next);
 
-    private void AttributeQueueRun() => Log.Do(timer: true, action: () =>
+    private void AttributeQueueRun()
     {
+        var l = Log.Fn(timer: true);
         _attributeUpdateQueue.ForEach(a => a.Invoke());
         _attributeUpdateQueue.Clear();
-    });
+        l.Done();
+    }
 }

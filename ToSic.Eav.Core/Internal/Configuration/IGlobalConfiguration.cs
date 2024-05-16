@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Internal.Configuration;
+﻿namespace ToSic.Eav.Internal.Configuration;
 
 public interface IGlobalConfiguration: ILogShouldNeverConnect
 {

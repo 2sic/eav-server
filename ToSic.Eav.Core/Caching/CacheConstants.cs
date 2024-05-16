@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Eav.Caching;
 
 [PrivateApi]
 public class CacheConstants

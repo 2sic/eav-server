@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <remarks>
 /// Still a private API, because the naming / typing could change

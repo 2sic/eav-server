@@ -63,9 +63,9 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
     [PrivateApi]
     public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{LogPrefix}.ValSrt")
     {
-        ConnectServices(
+        ConnectLogs([
             _valLanguages = valLanguages
-        );
+        ]);
 
         ProvideOut(GetValueSort);
     }
@@ -103,7 +103,7 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
         // check if no list parameters specified
-        if (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0]))
+        if (sortAttributes.Length == 0 || (sortAttributes.Length == 1 && string.IsNullOrWhiteSpace(sortAttributes[0])))
             return l.Return(source, "no params");
 
         // if list is blank, then it didn't find the attribute to sort by - so just return unsorted

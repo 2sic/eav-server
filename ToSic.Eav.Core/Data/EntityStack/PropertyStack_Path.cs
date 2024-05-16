@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data.PropertyLookup;
+﻿using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Plumbing;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Data;
 
 partial class PropertyStack
 {
     public PropReqResult InternalGetPath(string path, ILog logOrNull = null)
-        => InternalGetPath(new(path, Array.Empty<string>(), logOrNull), new PropertyLookupPath());
+        => InternalGetPath(new(path, [], logOrNull), new PropertyLookupPath());
 
     public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path)
         => TraversePath(specs, path.KeepOrNew(), this, NameId);
@@ -20,7 +15,7 @@ partial class PropertyStack
 
     public static string[] SplitPathIntoParts(string path, string prefixToIgnore = default)
     {
-        if (path == null) return Array.Empty<string>();
+        if (path == null) return [];
         var parts = path.Split(PathSeparator);
         return prefixToIgnore != default && parts.Any() && prefixToIgnore.EqualsInsensitive(parts.First())
             ? parts.Skip(1).ToArray()

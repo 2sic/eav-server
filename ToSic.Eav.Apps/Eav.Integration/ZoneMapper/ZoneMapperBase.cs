@@ -9,19 +9,10 @@ namespace ToSic.Eav.Integration;
 /// Has prepared code which should be the same across implementations. 
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class ZoneMapperBase: ServiceBase, IZoneMapper
+public abstract class ZoneMapperBase(IAppStates appStates, string logName)
+    : ServiceBase(logName, connect: [appStates]), IZoneMapper
 {
-
-    /// <summary>
-    /// Trivial constructor
-    /// </summary>
-    protected ZoneMapperBase(IAppStates appStates, string logName) : base(logName)
-    {
-        ConnectServices(
-            AppStates = appStates
-        );
-    }
-    protected readonly IAppStates AppStates;
+    protected readonly IAppStates AppStates = appStates;
 
     /// <inheritdoc />
     public abstract int GetZoneId(int siteId);

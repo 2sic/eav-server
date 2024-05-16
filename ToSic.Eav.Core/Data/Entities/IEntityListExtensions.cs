@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 public static class IEntityListExtensions
 {

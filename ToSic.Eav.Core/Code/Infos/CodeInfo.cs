@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Code.Infos;
+﻿namespace ToSic.Eav.Code.Infos;
 
 /// <summary>
 /// Information about the current code - such as obsolete-message or important notification

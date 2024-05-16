@@ -9,7 +9,7 @@ internal static class PublicFormsPermissions
 {
     internal static bool UserCanWriteAndPublicFormsEnabled(this MultiPermissionsApp mpa, out HttpExceptionAbstraction preparedException, out string error)
     {
-        var wrapLog = mpa.Log.Fn<bool>("");
+        var l = mpa.Log.Fn<bool>("");
         // 1. check if user is restricted
         var userIsRestricted = !mpa.UserMayOnAll(GrantSets.WritePublished);
 
@@ -20,11 +20,11 @@ internal static class PublicFormsPermissions
         {
             error = $"low-permission users may not access this - {sysFeatures.MsgMissingSome(feats)}";
             preparedException = HttpException.PermissionDenied(error);
-            return wrapLog.ReturnFalse();
+            return l.ReturnFalse();
         }
         preparedException = null;
         error = null;
-        return wrapLog.ReturnTrue("ok");
+        return l.ReturnTrue("ok");
     }
 
 }

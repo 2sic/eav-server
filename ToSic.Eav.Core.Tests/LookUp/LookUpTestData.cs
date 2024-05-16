@@ -19,14 +19,15 @@ namespace ToSic.Eav.Core.Tests.LookUp
             _builder = builder;
         }
 
-        public static LookUpEngine EmptyLookupEngine => new LookUpEngine(null);
+        public static LookUpEngine EmptyLookupEngine(List<ILookUp> sources = default) => new LookUpEngine(null, sources: sources);
 
-        public LookUpEngine AppSetAndRes(int appId = AppIdX)
+        public LookUpEngine AppSetAndRes(int appId = AppIdX, List<ILookUp> sources = default)
         {
-            var vc = EmptyLookupEngine;
-            vc.TestAdd(AppSettings(appId));
-            vc.TestAdd(AppResources(appId));
-
+            sources = sources ?? new List<ILookUp>();
+            var vc = EmptyLookupEngine(sources: sources.Concat(new List<ILookUp> {
+                AppSettings(appId),
+                AppResources(appId)
+            }).ToList());
             return vc;
         }
 

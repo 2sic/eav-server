@@ -19,9 +19,9 @@ public class XmlToEntity: ServiceBase
 
     public XmlToEntity(IAppStates appStates, DataBuilder dataBuilder) : base("Imp.XmlEnt")
     {
-        ConnectServices(
+        ConnectLogs([
             _dataBuilder = dataBuilder
-        );
+        ]);
         _presetApp = appStates.GetPresetReader();
     }
 
@@ -43,7 +43,7 @@ public class XmlToEntity: ServiceBase
 
     private List<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(List<DimensionDefinition> envLanguages, string envDefLang, List<DimensionDefinition> srcLanguages, int? srcDefLang)
     {
-        var wrapLog = Log.Fn<List<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
+        var l = Log.Fn<List<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
         List<TargetLanguageToSourceLanguage> result;
         // if the environment doesn't have languages defined, we'll create a temp-entry for the main language to allow mapping
         if (envLanguages.Any())
@@ -78,7 +78,7 @@ public class XmlToEntity: ServiceBase
             ];
         }
 
-        return wrapLog.Return(result, $"LanguageMap has {result.Count} items");
+        return l.Return(result, $"LanguageMap has {result.Count} items");
     }
 
     private List<DimensionDefinition> FindPriorizedMatchingDimensions(DimensionDefinition targetLang, string envDefLang, List<DimensionDefinition> srcLangs, int? srcDefLang)

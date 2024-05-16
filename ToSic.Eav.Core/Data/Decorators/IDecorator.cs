@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// This marks add-on information for things which can be decorated.

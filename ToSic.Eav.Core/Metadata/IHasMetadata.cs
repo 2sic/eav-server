@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Metadata;
+﻿namespace ToSic.Eav.Metadata;
 
 /// <summary>
 /// Anything with this interface has a property `Metadata` which can give us more

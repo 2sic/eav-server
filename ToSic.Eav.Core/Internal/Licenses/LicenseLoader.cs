@@ -15,10 +15,7 @@
  *
  */
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using ToSic.Eav.Internal.Configuration;
@@ -29,8 +26,6 @@ using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Internal.Licenses;
 
@@ -51,11 +46,11 @@ public sealed class LicenseLoader : LoaderBase
     ) : base(logStore, $"{EavLogs.Eav}LicLdr")
     {
         Log.A("Load Licenses");
-        ConnectServices(
+        ConnectLogs([
             _licenseCatalog = licenseCatalog,
             _fingerprint = fingerprint,
             _globalConfiguration = globalConfiguration
-        );
+        ]);
     }
 
     internal LicenseLoader Init(List<EnterpriseFingerprint> entFingerprints)

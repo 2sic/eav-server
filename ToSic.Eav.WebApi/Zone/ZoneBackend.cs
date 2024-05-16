@@ -7,59 +7,40 @@ using ToSic.Eav.Security.Fingerprint;
 namespace ToSic.Eav.WebApi.Zone;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ZoneBackend: ServiceBase
+public class ZoneBackend(
+    IAppStates appStates,
+    SystemFingerprint fingerprint,
+    IZoneMapper zoneMapper,
+    IPlatformInfo platform,
+    ISite site,
+    LazySvc<ILicenseService> licenseService,
+    ILogStoreLive logStore)
+    : ServiceBase("Bck.Zones", connect: [appStates, fingerprint, zoneMapper, platform, site, licenseService, logStore])
 {
-    public ZoneBackend(
-        IAppStates appStates, 
-        SystemFingerprint fingerprint,
-        IZoneMapper zoneMapper,
-        IPlatformInfo platform,
-        ISite site,
-        LazySvc<ILicenseService> licenseService,
-        ILogStoreLive logStore
-    ) : base("Bck.Zones") =>
-        ConnectServices(
-            _appStates = appStates,
-            _fingerprint = fingerprint,
-            _zoneMapper = zoneMapper,
-            _platform = platform,
-            _site = site,
-            _licenseService = licenseService,
-            _logStore = logStore
-        );
-
-    private readonly IAppStates _appStates;
-    private readonly SystemFingerprint _fingerprint;
-    private readonly IZoneMapper _zoneMapper;
-    private readonly IPlatformInfo _platform;
-    private readonly ISite _site;
-    private readonly LazySvc<ILicenseService> _licenseService;
-    private readonly ILogStoreLive _logStore;
-
     public SystemInfoSetDto GetSystemInfo()
     {
-        var l = Log.Fn<SystemInfoSetDto>($"{_site.Id}");
+        var l = Log.Fn<SystemInfoSetDto>($"{site.Id}");
 
-        var zoneId = _site.ZoneId;
+        var zoneId = site.ZoneId;
 
         var siteStats = new SiteStatsDto
         {
-            SiteId = _site.Id,
-            ZoneId = _site.ZoneId,
-            Apps = _appStates.Apps(zoneId).Count,
-            Languages = _zoneMapper.CulturesWithState(_site).Count,
+            SiteId = site.Id,
+            ZoneId = site.ZoneId,
+            Apps = appStates.Apps(zoneId).Count,
+            Languages = zoneMapper.CulturesWithState(site).Count,
         };
 
         var sysInfo = new SystemInfoDto
         {
             EavVersion = EavSystemInfo.VersionString,
-            Fingerprint = _fingerprint.GetFingerprint(),
-            Zones = _appStates.Zones.Count,
-            Platform = _platform.Name,
-            PlatformVersion = EavSystemInfo.VersionToNiceFormat(_platform.Version)
+            Fingerprint = fingerprint.GetFingerprint(),
+            Zones = appStates.Zones.Count,
+            Platform = platform.Name,
+            PlatformVersion = EavSystemInfo.VersionToNiceFormat(platform.Version)
         };
 
-        var licenses = _licenseService.Value;
+        var licenses = licenseService.Value;
 
         // owner is coma separated list of all owners from enabled licenses 
         var owner = string.Join(", ", licenses.All
@@ -96,7 +77,7 @@ public class ZoneBackend: ServiceBase
 
     private int CountInsightsMessages(string prefix)
     {
-        var warnings = _logStore.Segments
+        var warnings = logStore.Segments
             .Where(l => l.Key.StartsWith(prefix))
             .Select(l => l.Value.Count)
             .Sum();

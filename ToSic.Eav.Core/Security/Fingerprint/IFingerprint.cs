@@ -15,8 +15,6 @@
  *
  */
 
-using ToSic.Lib.Documentation;
-
 namespace ToSic.Eav.Security.Fingerprint;
 
 /// <summary>

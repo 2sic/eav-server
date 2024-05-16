@@ -12,10 +12,16 @@ partial class DataSourceCatalog
 
     public List<DataSourceInfo> Get(int appId)
     {
-        if (_memoryCacheService.Get(AppCacheKey(appId)) is List<DataSourceInfo> dataFromCache) return dataFromCache;
+        if (memoryCacheService.Get(AppCacheKey(appId)) is List<DataSourceInfo> dataFromCache) return dataFromCache;
 
-        var (data, policy) = _appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
-        _memoryCacheService.Set(new(AppCacheKey(appId), data), policy);
+        var (data, slidingExpiration, folderPaths, cacheKeys)
+            = appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
+
+        memoryCacheService.Set(AppCacheKey(appId), data, 
+            slidingExpiration: slidingExpiration,
+            folderPaths: folderPaths?.ToDictionary(p => p, p => true),
+            cacheKeys: cacheKeys);
+
         return data;
     }
 }

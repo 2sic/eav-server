@@ -13,7 +13,7 @@ public static class HasLog_ConnectServices
     /// <param name="services">One or more services which could implement <see cref="LazySvc{T}"/> or <see cref="IHasLog"/></param>
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void ConnectServices(this IHasLog parent, params object[] services)
+    public static void ConnectLogs(this IHasLog parent, object[] services)
     {
         var depLogs = new DependencyLogs();
         depLogs.Add(services);

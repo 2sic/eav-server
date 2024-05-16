@@ -1,37 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Source;
 using ToSic.Lib.Coding;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
-using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class DataFactory : ServiceBase, IDataFactory
+internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
 {
-    #region Constructor / DI
-
-
-    /// <summary>
-    /// Constructor for DI
-    /// </summary>
-    public DataFactory(DataBuilder builder) : base("Ds.DatBld")
-    {
-        ConnectServices(
-            _builder = builder
-        );
-    }
-    private readonly DataBuilder _builder;
-
-    #endregion
-
+    private readonly DataBuilder _builder = builder;
 
     #region Properties to configure Builder / Defaults
 
@@ -41,7 +21,8 @@ internal class DataFactory : ServiceBase, IDataFactory
     /// <inheritdoc />
     public IContentType ContentType { get; }
 
-    public DataFactoryOptions Options { get; }
+    public DataFactoryOptions Options => _options ?? throw new Exception($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
+    private readonly DataFactoryOptions _options;
 
 
     public DateTime Created { get; } = DateTime.Now;
@@ -88,7 +69,7 @@ internal class DataFactory : ServiceBase, IDataFactory
     ) :this (builder)
     {
         // Store settings
-        Options = options ?? new DataFactoryOptions();
+        _options = options ?? new DataFactoryOptions();
 
         IdCounter = Options.IdSeed;
         ContentType = _builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);

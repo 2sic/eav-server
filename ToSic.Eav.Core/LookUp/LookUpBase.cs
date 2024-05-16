@@ -1,8 +1,6 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Context;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.LookUp;
 
@@ -11,12 +9,14 @@ namespace ToSic.Eav.LookUp;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PublicApi]
-public abstract class LookUpBase(string name) : ILookUp
+public abstract class LookUpBase(string name, string description = "") : ILookUp
 {
 
     #region default methods of interface
     /// <inheritdoc/>
     public string Name { get; } = name;
+
+    public virtual string Description => description;
 
     #region Sub-Token analysis and splitting
     // this is needed by some key accesses which support sub-properties like Content:Publisher:Location:City...
@@ -137,6 +137,10 @@ public abstract class LookUpBase(string name) : ILookUp
     }
 
     #endregion
+
+    public override string ToString() => $"{GetType().Name}; {Description}";
+
+    ILookUp ICanBeLookUp.LookUp => this;
 }
 
 [PrivateApi]

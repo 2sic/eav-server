@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Eav.LookUp;
 
 /// <summary>
 /// A key-value map which resolves keys like "SortOrder" to "asc". <br/>
@@ -8,13 +6,18 @@ namespace ToSic.Eav.LookUp;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PublicApi]
-public interface ILookUp
+public interface ILookUp : ICanBeLookUp
 {
     /// <summary>
     /// Gets the Name of this LookUp, e.g. QueryString or PipelineSettings
     /// </summary>
     /// <returns>The name which is used to identify this LookUp, like in a <see cref="ILookUpEngine"/></returns>
     string Name { get; }
+
+    /// <summary>
+    /// Additional description to better understand what each LookUp is for.
+    /// </summary>
+    string Description { get; }
 
     /// <summary>
     /// Gets a value by Name/key, will simply return the string or an empty string, in rare cases a null-value.

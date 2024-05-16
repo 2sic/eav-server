@@ -12,9 +12,9 @@ public class MultiPermissionsTypes: MultiPermissionsApp
 
     public MultiPermissionsTypes(MyServices services, LazySvc<IAppStates> appStates): base(services, LogName)
     {
-        ConnectServices(
+        ConnectLogs([
             _appStates = appStates
-        );
+        ]);
     }
     private readonly LazySvc<IAppStates> _appStates;
 

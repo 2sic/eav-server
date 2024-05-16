@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 partial class Entity
 {

@@ -5,19 +5,9 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.WebApi.SaveHelpers;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class SaveEntities: ServiceBase
+public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave> workEntSave)
+    : ServiceBase("Eav.SavHlp", connect: [entityBuilder, workEntSave])
 {
-    private readonly GenWorkDb<WorkEntitySave> _workEntSave;
-    private readonly EntityBuilder _entityBuilder;
-    public SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave> workEntSave) : base("Eav.SavHlp")
-    {
-        ConnectServices(
-            _entityBuilder = entityBuilder,
-            _workEntSave = workEntSave
-        );
-    }
-
-
     public void UpdateGuidAndPublishedAndSaveMany(IAppWorkCtx appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
     {
         var l = Log.Fn();
@@ -31,7 +21,7 @@ public class SaveEntities: ServiceBase
 
         var entitiesToImport = itemsToImport
             // TODO: NOTE: here a clone should work
-            .Select(bundle => _entityBuilder.CreateFrom(bundle.Entity,
+            .Select(bundle => entityBuilder.CreateFrom(bundle.Entity,
                 guid: bundle.Header.Guid,
                 isPublished: enforceDraft ? (bool?)false : null,
                 placeDraftInBranch: enforceDraft ? (bool?)true : null) as IEntity
@@ -45,7 +35,7 @@ public class SaveEntities: ServiceBase
 
         l.A($"will save {entitiesToImport.Count} items");
         // #ExtractEntitySave - verified
-        var saver = _workEntSave.New(appCtx.AppState);
+        var saver = workEntSave.New(appCtx.AppState);
         saver.Save(entitiesToImport);
         l.Done();
     }

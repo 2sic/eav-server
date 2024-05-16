@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Eav.LookUp;
 
 /// <summary>
 /// Look Up values from a .net dictionary. Case-Insensitive. <br/>
@@ -11,7 +7,7 @@ namespace ToSic.Eav.LookUp;
 /// <param name="name">Name to use</param>
 /// <param name="valueList">value list (dictionary) to reference - will convert to invariant; or create blank</param>
 [PublicApi]
-public class LookUpInDictionary(string name, IDictionary<string, string> valueList = null) : LookUpBase(name)
+public class LookUpInDictionary(string name, IDictionary<string, string> valueList = default, string description = default) : LookUpBase(name, description: description ?? "Dictionary lookup.")
 {
     /// <summary>
     /// List with static properties and Test-Values

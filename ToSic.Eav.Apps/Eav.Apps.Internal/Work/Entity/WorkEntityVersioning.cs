@@ -14,14 +14,12 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     public AppCachePurger AppCachePurger { get; }
     private readonly LazySvc<JsonSerializer> _jsonSerializer;
 
-    public WorkEntityVersioning(AppCachePurger appCachePurger, LazySvc<ImportService> import, LazySvc<JsonSerializer> jsonSerializer) : base("AWk.EntCre")
+    public WorkEntityVersioning(AppCachePurger appCachePurger, LazySvc<ImportService> import, LazySvc<JsonSerializer> jsonSerializer)
+        : base("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import])
     {
-        ConnectServices(
-            AppCachePurger = appCachePurger,
-            _jsonSerializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState)),
-            _import = import.SetInit(i => i.Init(AppWorkCtx.ZoneId, AppWorkCtx.AppId, false, false))
-
-        );
+        AppCachePurger = appCachePurger;
+        _jsonSerializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState));
+        _import = import.SetInit(i => i.Init(AppWorkCtx.ZoneId, AppWorkCtx.AppId, false, false));
     }
 
 

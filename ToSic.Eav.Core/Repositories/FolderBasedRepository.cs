@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Repositories;
+﻿namespace ToSic.Eav.Repositories;
 
 /// <summary>
 /// Use this to tell the EAV at boot time that there is another folder based repository.

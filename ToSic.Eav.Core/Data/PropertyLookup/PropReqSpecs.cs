@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.Data.PropertyLookup;
+﻿namespace ToSic.Eav.Data.PropertyLookup;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class PropReqSpecs(string field, string[] dimensions, ILog logOrNull = null, bool treatEmptyAsDefault = true)
@@ -11,7 +8,7 @@ public class PropReqSpecs(string field, string[] dimensions, ILog logOrNull = nu
 
     public readonly string Field = field;
 
-    public readonly string[] Dimensions = dimensions ?? Array.Empty<string>();
+    public readonly string[] Dimensions = dimensions ?? [];
 
     public readonly bool TreatEmptyAsDefault = treatEmptyAsDefault;
 

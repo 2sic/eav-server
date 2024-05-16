@@ -21,12 +21,12 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
 
     public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazySvc<MdRecommendations> mdRead) : base($"{EavLogs.WebApi}.{LogSuffix}Rl")
     {
-        ConnectServices(
+        ConnectLogs([
             _converter = converter,
             _appStates = appStates,
             _metadataTargets = metadataTargets,
             _mdRead = mdRead
-        );
+        ]);
         _converter.Type.Serialize = true;
         _converter.Type.WithDescription = true;
     }

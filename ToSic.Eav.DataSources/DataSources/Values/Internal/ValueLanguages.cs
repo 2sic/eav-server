@@ -4,20 +4,8 @@ namespace ToSic.Eav.DataSources.Internal;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ValueLanguages : ServiceBase
+public class ValueLanguages(IZoneCultureResolver cultureResolver) : ServiceBase("Ds.ValLng", connect: [cultureResolver])
 {
-    #region Constructor / DI
-
-    public ValueLanguages(IZoneCultureResolver cultureResolver) : base("Ds.ValLng")
-    {
-        ConnectServices(
-            _cultureResolver = cultureResolver
-        );
-    }
-    private readonly IZoneCultureResolver _cultureResolver;
-
-    #endregion
-
     /// <summary>
     /// Constants for certain resolution modes
     /// </summary>
@@ -51,7 +39,7 @@ public class ValueLanguages : ServiceBase
             return (string.Empty, LanguageDefaultPlaceholder); // empty string / no language means the default language
 
         if (lang == LanguageCurrentPlaceholder)
-            return (_cultureResolver.SafeCurrentCultureCode(), LanguageCurrentPlaceholder);
+            return (cultureResolver.SafeCurrentCultureCode(), LanguageCurrentPlaceholder);
 
         if (lang.Length == 2 || lang.Length == 5 && lang.Contains("-"))
             return (lang, "Exact" + lang);

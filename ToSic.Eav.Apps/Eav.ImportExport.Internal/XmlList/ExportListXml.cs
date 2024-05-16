@@ -9,18 +9,12 @@ namespace ToSic.Eav.ImportExport.Internal.XmlList;
 /// For exporting a content-type into xml, either just the schema or with data
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ExportListXml: ServiceBase
+public class ExportListXml(ExportImportValueConversion valueConverter)
+    : ServiceBase("App.LstExp", connect: [valueConverter])
 {
     #region Dependency Injection and Init
 
-    public ExportListXml(ExportImportValueConversion valueConverter) : base("App.LstExp")
-    {
-        ConnectServices(
-            ValueConverter = valueConverter
-        );
-    }
-
-    protected ExportImportValueConversion ValueConverter { get; }
+    protected ExportImportValueConversion ValueConverter { get; } = valueConverter;
 
     public ExportListXml Init(IAppStateInternal appState, string typeName) => Init(appState, appState.GetContentType(typeName));
     public ExportListXml Init(IAppStateInternal app, IContentType contentType)

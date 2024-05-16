@@ -1,8 +1,6 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Security.Encryption;
 
@@ -19,15 +17,15 @@ public class Sha256
     /// In v15.01 we changed this to use the CryptoServiceProvider which should be FIPS compliant
     /// </remarks>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string Hash(string value)
+    public static string Hash(string value) 
+        => Hash(new SHA256CryptoServiceProvider(), value);
+
+    internal static string Hash(HashAlgorithm hasher, string value)
     {
         var hash = new StringBuilder();
-        using (var crypt = new SHA256CryptoServiceProvider())
-        {
-            var crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(value));
-            foreach (var theByte in crypto)
-                hash.Append(theByte.ToString("x2"));
-        }
+        var crypto = hasher.ComputeHash(Encoding.UTF8.GetBytes(value));
+        foreach (var theByte in crypto)
+            hash.Append(theByte.ToString("x2"));
         return hash.ToString();
     }
 

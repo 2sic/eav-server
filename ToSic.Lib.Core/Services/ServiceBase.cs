@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
@@ -26,7 +27,7 @@ public abstract class ServiceBase(string logName) : IHasLog
     protected ServiceBase(string logName, NoParamOrder protect = default, object[] connect = default) : this(logName)
     {
         if (connect == null) return;
-        ConnectServices(connect);
+        ConnectLogs(connect);
     }
 
     /// <inheritdoc />
@@ -40,5 +41,11 @@ public abstract class ServiceBase(string logName) : IHasLog
     /// Connect Log of all dependencies listed in <see cref="services"/>
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
-    protected void ConnectServices(params object[] services) => (this as IHasLog).ConnectServices(services);
+    [Obsolete("Avoid using, will be removed soon. Use ConnectLogs([...])")]
+    protected void ConnectServices(params object[] services) => (this as IHasLog).ConnectLogs(services);
+    /// <summary>
+    /// Connect Log of all dependencies listed in <see cref="services"/>
+    /// </summary>
+    /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
+    protected void ConnectLogs(object[] services) => (this as IHasLog).ConnectLogs(services);
 }

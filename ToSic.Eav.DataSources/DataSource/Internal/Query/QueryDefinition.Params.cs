@@ -40,11 +40,11 @@ partial class QueryDefinition
     [PrivateApi]
     public static IDictionary<string, string> GenerateParamsDic(string paramsText, ILog log)
     {
-        var wrapLog = log.Fn<IDictionary<string,string>>();
+        var l = log.Fn<IDictionary<string,string>>();
 
         var paramsDic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-        if (string.IsNullOrWhiteSpace(paramsText)) return wrapLog.Return(paramsDic, "no params");
+        if (string.IsNullOrWhiteSpace(paramsText)) return l.Return(paramsDic, "no params");
 
         // extract the lines which look like key=value
         var paramMatches = ParamRegex.Matches(paramsText);
@@ -61,7 +61,7 @@ partial class QueryDefinition
                 log.A($"Params:{key} already existed, will leave as is");
         }
 
-        return wrapLog.Return(paramsDic, paramsDic.Count.ToString());
+        return l.Return(paramsDic, paramsDic.Count.ToString());
     }
 
     /// <summary>

@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
         [TestMethod]
         public void ChildrenRelationships()
         {
-            var builder = GetService<IDataFactory>();
+            var builder = GetService<IDataFactory>().New();
 
             var parentRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, new List<int> { 101, 102 });
 

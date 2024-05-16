@@ -15,8 +15,6 @@
  *
  */
 
-using System;
-
 namespace ToSic.Eav.SysData;
 
 /// <summary>
@@ -38,7 +36,7 @@ public class FeatureSet(
 
     public bool AutoEnable { get; set; } = false;
 
-    public FeatureSet[] AlsoInheritEnabledFrom { get; set; }= Array.Empty<FeatureSet>();
+    public FeatureSet[] AlsoInheritEnabledFrom { get; set; }= [];
 
     public bool FeatureLicense { get; } = featureLicense;
 

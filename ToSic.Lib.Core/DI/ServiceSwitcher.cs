@@ -4,6 +4,7 @@ using System.Linq;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
+using static System.StringComparison;
 
 namespace ToSic.Lib.DI;
 
@@ -14,7 +15,7 @@ public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{Log
     // TODO
     // - add to global log history when regenerating incl. choice
 
-    public readonly List<T> AllServices = allServices?.ToList();
+    public readonly List<T> AllServices = allServices?.ToList() ?? [];
 
 
     public T Value => _preferredService.Get(FindServiceInSwitcher);
@@ -23,13 +24,12 @@ public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{Log
     private T FindServiceInSwitcher()
     {
         var l = Log.Fn<T>();
-            
-        var all = AllServices;
-        if (all == null || !all.Any())
+
+        if (!AllServices.Any())
             throw new ArgumentException(
                 $"There ware no services for the type '{typeof(T).FullName}', cannot find best option");
 
-        foreach (var svc in all.OrderByDescending(s => s.Priority))
+        foreach (var svc in AllServices.OrderByDescending(s => s.Priority))
             if (svc.IsViable())
                 return l.ReturnAndLog(svc, $"Will keep '{svc.NameId}'");
             else l.A($"Service '{svc.NameId}' not viable");
@@ -40,5 +40,6 @@ public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{Log
 
     public bool IsValueCreated => _preferredService.IsValueCreated;
 
-    public T ByNameId(string nameId) => AllServices.Find(s => s.NameId.Equals(nameId));
+    public T ByNameId(string nameId, bool insensitive = false)
+        => AllServices.Find(s => s.NameId.Equals(nameId, insensitive ? InvariantCultureIgnoreCase : Ordinal));
 }

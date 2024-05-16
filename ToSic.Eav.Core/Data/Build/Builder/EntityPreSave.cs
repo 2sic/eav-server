@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace ToSic.Eav.Data.Build;
+﻿namespace ToSic.Eav.Data.Build;
 
 /// <summary>
 /// Helper commands to build an entity

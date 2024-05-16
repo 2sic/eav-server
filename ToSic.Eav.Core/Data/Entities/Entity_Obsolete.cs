@@ -1,9 +1,7 @@
 ﻿/* only in old old .net */
 
 #if NETFRAMEWORK
-using System;
 using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Lib.Documentation;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data;
@@ -21,7 +19,7 @@ partial class Entity
 
     [PrivateApi]
     [Obsolete("Deprecated. Do not use any more, as it cannot reliably know the real language list. Use GetBestValue(name, languageList)")]
-    public new object GetBestValue(string attributeName) => GetBestValue(attributeName, new string[0]);
+    public new object GetBestValue(string attributeName) => GetBestValue(attributeName, []);
 
     [PrivateApi]
     [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
@@ -31,7 +29,7 @@ partial class Entity
     [PrivateApi]
     [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
     public new object GetBestValue(string attributeName, bool resolveHyperlinks)
-        => GetBestValue(attributeName, Array.Empty<string>());
+        => GetBestValue(attributeName, []);
 
 
     [PrivateApi]

@@ -15,11 +15,11 @@ public class ZipFromUrlImport: ZipImport
 
     public ZipFromUrlImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, 
         IGlobalConfiguration globalConfiguration, AppCachePurger appCachePurger, IAppStates appStates)
-        : base(services, environment, xmlImpExpFiles, appCachePurger, appStates)
+        : base(services)
     {
-        ConnectServices(
+        ConnectLogs([
             _globalConfiguration = globalConfiguration
-        );
+        ]);
     }
 
     private readonly IGlobalConfiguration _globalConfiguration;

@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.LookUp;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PrivateApi]
-internal class LookUpInQueryMetadata : LookUpInEntity
+internal class LookUpInQueryPartMetadata : LookUpInEntity
 {
     private readonly IEntity _parent;
 
@@ -21,7 +21,7 @@ internal class LookUpInQueryMetadata : LookUpInEntity
     /// <param name="name">Source name</param>
     /// <param name="entityWithMetadata">Entity whose metadata we'll use</param>
     /// <param name="dimensions">language / dimension data for lookup</param>
-    public LookUpInQueryMetadata(string name, IEntity entityWithMetadata, string[] dimensions): base(name, null, dimensions)
+    public LookUpInQueryPartMetadata(string name, IEntity entityWithMetadata, string[] dimensions): base(name, null, dimensions, "LookUp in DataSource-Part Metadata")
     {
         _parent = entityWithMetadata;
     }

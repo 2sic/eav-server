@@ -14,11 +14,11 @@ public abstract class ValidatorBase(ILog parentLog, string logName) : HelperBase
     /// <returns></returns>
     protected bool BuildExceptionIfHasIssues(out HttpExceptionAbstraction preparedException, string logMessage = null)
     {
-        var wrapLog = Log.Fn<bool>();
+        var l = Log.Fn<bool>();
         preparedException = HasErrors ? HttpException.BadRequest(Errors): null;
         if (logMessage != null) Log.A($"{nameof(logMessage)}:{logMessage}");
         if (HasErrors) Log.A($"Errors:{Errors}");
-        return wrapLog.Return(!HasErrors, HasErrors ? "found errors" : "all ok");
+        return l.Return(!HasErrors, HasErrors ? "found errors" : "all ok");
     }
 
 

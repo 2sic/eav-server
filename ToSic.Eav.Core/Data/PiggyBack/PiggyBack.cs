@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using ToSic.Eav.Caching;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Data.PiggyBack;
 
@@ -31,13 +29,13 @@ public class PiggyBack
         return default;
     }
 
-    public TData GetOrGenerate<TData>(ICacheExpiring parent, string key, Func<TData> create)
+    public (TData Value, bool IsCached) GetOrGenerate<TData>(ICacheExpiring parent, string key, Func<TData> create)
     {
         // Check if exists and timestamp still ok, return that
         if (_cache.TryGetValue(key, out var result)
             && result is Timestamped<TData> typed
             && typed.CacheTimestamp == parent.CacheTimestamp
-           ) return typed.Value;
+           ) return (typed.Value, true);
 
         // else create it, add timestamp, and store
         try
@@ -45,7 +43,7 @@ public class PiggyBack
             var newValue = create();
             var timestamped = new Timestamped<TData>(newValue, parent.CacheTimestamp);
             _cache.TryAdd(key, timestamped);
-            return timestamped.Value;
+            return (timestamped.Value, false);
         }
         catch { /* ignore / silent */ }
 

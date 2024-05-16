@@ -52,7 +52,7 @@ partial class Efc11Loader
     {
         var l = Log.Fn<IList<IContentType>>();
         // must create a new loader for each app
-        var loader = _appFileContentTypesLoader.New().Init(appReader);
+        var loader = appFileContentTypesLoader.New().Init(appReader);
         var types = loader.ContentTypes(entitiesSource: appReader.StateCache);
         return l.ReturnAsOk(types);
     }
@@ -78,10 +78,10 @@ partial class Efc11Loader
         var l = Log.Fn<ImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
-        var query = _dbContext.ToSicEavAttributeSets
+        var query = context.ToSicEavAttributeSets
             .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
 
-        var serializer = _dataDeserializer.New();
+        var serializer = dataDeserializer.New();
         serializer.Initialize(appId, new List<IContentType>(), null);
 
         var contentTypesSql = query
@@ -101,7 +101,7 @@ partial class Efc11Loader
                 set.Scope,
                 Attributes = set.ToSicEavAttributesInSets
                     .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                    .Select(a => _dataBuilder.TypeAttributeBuilder
+                    .Select(a => dataBuilder.TypeAttributeBuilder
                         .Create(appId: appId,
                             name: a.Attribute.StaticName,
                             type: ValueTypeHelpers.Get(a.Attribute.Type), 
@@ -128,14 +128,14 @@ partial class Efc11Loader
         var shareids = contentTypes.Select(c => c.SharedDefinitionId).ToList();
         sqlTime.Start();
 
-        var sharedAttribs = _dbContext.ToSicEavAttributeSets
+        var sharedAttribs = context.ToSicEavAttributeSets
             .Include(s => s.ToSicEavAttributesInSets)
             .ThenInclude(a => a.Attribute)
             .Where(s => shareids.Contains(s.AttributeSetId))
             .ToDictionary(
                 s => s.AttributeSetId,
                 s => s.ToSicEavAttributesInSets.Select(a
-                    => _dataBuilder.TypeAttributeBuilder.Create(
+                    => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
                         name: a.Attribute.StaticName,
                         type: ValueTypeHelpers.Get(a.Attribute.Type),
@@ -143,7 +143,7 @@ partial class Efc11Loader
                         id: a.AttributeId,
                         sortOrder: a.SortOrder,
                         // Must get own MetaSourceFinder since they come from other apps
-                        metaSourceFinder: () => _appStates.GetCacheState(s.AppId),
+                        metaSourceFinder: () => appStates.GetCacheState(s.AppId),
                         // #SharedFieldDefinition
                         //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
                         sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)))
@@ -162,7 +162,7 @@ partial class Efc11Loader
                 .Cast<IContentTypeAttribute>()
                 .ToList();
 
-            return _dataBuilder.ContentType.Create(
+            return dataBuilder.ContentType.Create(
                 appId: appId, 
                 name: set.Name,
                 nameId: set.StaticName, 
@@ -172,7 +172,11 @@ partial class Efc11Loader
                 configZoneId: set.ZoneId,
                 configAppId: set.AppId,
                 isAlwaysShared: set.ConfigIsOmnipresent,
-                metaSourceFinder: () => notGhost ? source : _appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
+                // 2024-05-16 2dm changing to not use a Reader, as it's not needed and may cause #IServiceProviderDisposedException
+                //metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
+                metaSourceFinder: notGhost
+                    ? () => source
+                    : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId)),
                 attributes: ctAttributes
             );
         });
@@ -181,4 +185,7 @@ partial class Efc11Loader
 
         return l.Return(newTypes.ToImmutableList());
     }
+
+    //private static Func<IHasMetadataSource> GetMetaSourceFinder(IAppStates appStates, IAppIdentity appId)
+    //    => () => appStates.Get(appId);
 }

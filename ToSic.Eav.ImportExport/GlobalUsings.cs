@@ -9,5 +9,7 @@ global using ToSic.Eav.Data;
 global using ToSic.Eav.Metadata;
 global using ToSic.Eav.Plumbing;
 global using ToSic.Eav.Serialization;
+global using ToSic.Lib.Documentation;
 global using ToSic.Lib.Logging;
 global using ToSic.Lib.Services;
+global using static System.Text.Json.Serialization.JsonIgnoreCondition;

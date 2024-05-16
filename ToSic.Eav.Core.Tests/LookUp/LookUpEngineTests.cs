@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Generics;
 using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
@@ -31,8 +31,8 @@ namespace ToSic.Eav.Core.Tests.LookUp
         private void AssertLookUpEngineHasSourcesOfOriginal(ILookUpEngine lookUpEngine)
         {
             var settings = Settings();
-            Assert.IsTrue(lookUpEngine.Sources.Count == 2, "Should have 2 sources");
-            Assert.AreEqual("App Settings", lookUpEngine.Sources["appsettings"].Get(Attributes.TitleNiceName));
+            Assert.IsTrue(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
+            Assert.AreEqual("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").Get(Attributes.TitleNiceName));
             Assert.AreEqual(OriginalSettingDefaultCat, settings["DefaultCategory"]);
             Assert.AreEqual(OriginalSettingMaxItems, settings["MaxItems"]);
         }
@@ -61,15 +61,16 @@ namespace ToSic.Eav.Core.Tests.LookUp
         public void OverrideLookUps()
         {
             var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
-            var overrideSources = new DictionaryInvariant<ILookUp>();
+            //var overrideSources = new DictionaryInvariant<ILookUp>();
             const string overridenTitle = "overriden Title";
             var overrideDic = new Dictionary<string, string>
             {
                 {Attributes.TitleNiceName, overridenTitle}
             };
-            overrideSources.Add(LookUpTestData.KeyAppSettings, new LookUpInDictionary(LookUpTestData.KeyAppSettings, overrideDic));
+            var appSettingsSource = new LookUpInDictionary(LookUpTestData.KeyAppSettings, overrideDic);
+            //overrideSources.Add(appSettingsSource.Name, appSettingsSource);
             // test before override
-            var result = mainEngine.LookUp(TestTokens(), overrideSources);
+            var result = mainEngine.LookUp(TestTokens(), new List<ILookUp> { appSettingsSource });
             Assert.AreEqual(overridenTitle, result["App Settings"], "should override");
         }
 
@@ -78,7 +79,7 @@ namespace ToSic.Eav.Core.Tests.LookUp
         {
             var original = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
             var cloned = new LookUpEngine(original, null);
-            Assert.AreEqual(0, cloned.Sources.Count);
+            Assert.AreEqual(0, cloned.Sources.Count());
             AssertLookUpEngineHasSourcesOfOriginal(cloned.Downstream);
         }
 

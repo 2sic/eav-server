@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Data;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data;

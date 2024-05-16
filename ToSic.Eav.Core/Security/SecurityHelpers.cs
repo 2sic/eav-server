@@ -1,6 +1,5 @@
 ﻿using System.Security.Authentication;
 using ToSic.Eav.Context;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Security;
 

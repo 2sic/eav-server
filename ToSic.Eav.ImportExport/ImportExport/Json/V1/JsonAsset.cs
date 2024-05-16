@@ -1,6 +1,4 @@
-﻿using static System.Text.Json.Serialization.JsonIgnoreCondition;
-
-namespace ToSic.Eav.ImportExport.Json.V1;
+﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
 /// <remarks>V 1.1</remarks>
 public class JsonAsset

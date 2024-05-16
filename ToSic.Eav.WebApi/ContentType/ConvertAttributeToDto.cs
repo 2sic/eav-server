@@ -6,19 +6,10 @@ using static ToSic.Eav.Data.AttributeMetadata;
 
 namespace ToSic.Eav.WebApi;
 
-public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
+public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes)
+    : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight]),
+        IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
 {
-    private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
-    private readonly LazySvc<IConvertToEavLight> _convertToLight;
-
-    public ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes) : base("Cnv.AtrDto")
-    {
-        ConnectServices(
-            _inputTypes = inputTypes,
-            _convertToLight = convertToLight
-        );
-    }
-
     public ConvertAttributeToDto Init(int appId, bool withContentType)
     {
         var l = Log.Fn<ConvertAttributeToDto>($"{appId}, withContentType:{withContentType}");
@@ -46,7 +37,7 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
         var type = item.Type;
         var ancestorDecorator = type.GetDecorator<IAncestor>();
         var inputType = FindInputTypeOrUnknownOld(a);
-        var appInputTypes = _inputTypes.New(_appId).GetInputTypes()
+        var appInputTypes = inputTypes.New(_appId).GetInputTypes()
             .OrderBy(it => it.Type) // order for easier debugging
             .ToList();
         var inputConfigs = GetInputTypesAndMetadata(inputType, a, type, ancestorDecorator, appInputTypes);
@@ -113,7 +104,7 @@ public class ConvertAttributeToDto: ServiceBase, IConvert<PairTypeWithAttribute,
         var inputMetadata = mdDeduplicated
             .ToDictionary(
                 set => set.TypeName,
-                set => InputMetadata(type, a, set.Entity, ancestorDecorator, _convertToLight.Value)
+                set => InputMetadata(type, a, set.Entity, ancestorDecorator, convertToLight.Value)
             );
 
 

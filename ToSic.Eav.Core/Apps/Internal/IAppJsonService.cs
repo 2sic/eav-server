@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Lib.Documentation;
+﻿using ToSic.Eav.Apps.Internal.Specs;
 
 namespace ToSic.Eav.Apps.Internal;
 
@@ -10,9 +8,9 @@ public interface IAppJsonService
 {
     void MoveAppJsonTemplateFromOldToNewLocation();
 
-    AppJson GetAppJson(int appId);
+    AppJson GetAppJson(int appId, bool useShared = false);
 
-    string AppJsonCacheKey(int appId);
+    string AppJsonCacheKey(int appId, bool useShared = false);
 
-    List<string> ExcludeSearchPatterns(string sourceFolder);
+    List<string> ExcludeSearchPatterns(string sourceFolder, int appId, bool useShared = false);
 }

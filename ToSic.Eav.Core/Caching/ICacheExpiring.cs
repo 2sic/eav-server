@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Eav.Caching;
 
 /// <summary>
 /// Marks objects which are cache-based, and which may contain obsolete cached data.

@@ -116,7 +116,7 @@ public partial class Log: ILog, ILogInternal
     /// <summary>
     /// Entries of this log and all children
     /// </summary>
-    public  List<Entry> Entries { get; } = new();
+    public  List<Entry> Entries { get; } = [];
 
     /// <summary>
     /// Parent to which it's linked

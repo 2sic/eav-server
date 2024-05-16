@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Plumbing;
+﻿namespace ToSic.Eav.Plumbing;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class ExtensionToListOfOne

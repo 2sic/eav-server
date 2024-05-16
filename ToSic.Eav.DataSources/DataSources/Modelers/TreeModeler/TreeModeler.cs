@@ -66,9 +66,9 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
     [PrivateApi]
     public TreeModeler(MyServices services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstants.LogPrefix}.Tree")
     {
-        ConnectServices(
+        ConnectLogs([
             _treeMapper = treeMapper
-        );
+        ]);
         // Specify what out-streams this data-source provides. Usually just one, called "Default"
         ProvideOut(GetList);
     }

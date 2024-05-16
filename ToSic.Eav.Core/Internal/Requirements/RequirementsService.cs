@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.SysData;
+﻿using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Requirements;
@@ -10,16 +7,10 @@ namespace ToSic.Eav.Internal.Requirements;
 /// <summary>
 /// Internal service to check if a requirement has been met
 /// </summary>
-public class RequirementsService: ServiceBase
+public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> checkers)
+    : ServiceBase(EavLogs.Eav + "ReqSvc", connect: [checkers])
 {
-    public RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> checkers) : base(EavLogs.Eav + "ReqSvc")
-    {
-        ConnectServices(
-            Checkers = checkers
-        );
-    }
-
-    protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; }
+    protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; } = checkers;
 
     public List<RequirementError> Check(IEnumerable<IHasRequirements> withRequirements) => Log.Func(timer: true, func: () =>
     {

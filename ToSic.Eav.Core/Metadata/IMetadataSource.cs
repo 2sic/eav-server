@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
-using ToSic.Lib.Documentation;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Metadata;

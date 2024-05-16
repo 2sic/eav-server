@@ -7,7 +7,6 @@ using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -18,31 +17,17 @@ namespace ToSic.Eav.ImportExport.Internal;
 /// Import Content Types and/or Entities to the EAV SqlStore
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ImportService: ServiceBase
+public class ImportService(
+    Generator<DbDataController> genDbDataController,
+    IImportExportEnvironment importExportEnvironment,
+    LazySvc<EntitySaver> entitySaverLazy,
+    DataBuilder dataBuilder)
+    : ServiceBase("Eav.Import", connect: [genDbDataController, importExportEnvironment, entitySaverLazy, dataBuilder])
 {
     #region Constructor / DI
 
-    public ImportService(
-        Generator<DbDataController> genDbDataController,
-        IImportExportEnvironment importExportEnvironment,
-        LazySvc<EntitySaver> entitySaverLazy,
-        DataBuilder dataBuilder
-    ) : base("Eav.Import")
-    {
-        ConnectServices(
-            _genDbDataController = genDbDataController,
-            _importExportEnvironment = importExportEnvironment,
-            _entitySaver = entitySaverLazy,
-            _dataBuilder = dataBuilder
-        );
-    }
-
-    private readonly Generator<DbDataController> _genDbDataController;
     private const int ChunkLimitToStartChunking = 2500;
     private const int ChunkSizeAboveLimit = 500;
-    private readonly IImportExportEnvironment _importExportEnvironment;
-    private readonly LazySvc<EntitySaver> _entitySaver;
-    private readonly DataBuilder _dataBuilder;
 
 
     public ImportService Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
@@ -50,12 +35,12 @@ public class ImportService: ServiceBase
         // Get the DB controller - it can handle zoneId being null
         // It's important to not use AppWorkContext or similar, because that would
         // try to load the App into cache, and initialize the App before it's fully imported
-        var dbController = _genDbDataController.New().Init(zoneId, appId);
+        var dbController = genDbDataController.New().Init(zoneId, appId);
         Storage = dbController;
         AppId = appId;
         ZoneId = dbController.ZoneId;
 
-        SaveOptions = _importExportEnvironment.SaveOptions(ZoneId);
+        SaveOptions = importExportEnvironment.SaveOptions(ZoneId);
         SaveOptions.SkipExistingAttributes = skipExistingAttributes;
         SaveOptions.PreserveUntouchedAttributes = preserveUntouchedAttributes;
 
@@ -77,8 +62,9 @@ public class ImportService: ServiceBase
     /// <summary>
     /// Import AttributeSets and Entities
     /// </summary>
-    public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities
-    ) => Log.Do($"types: {newTypes?.Count}; entities: {newEntities?.Count}", timer: true, action: l =>
+    public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities) 
+    {
+        var l = Log.Fn($"types: {newTypes?.Count}; entities: {newEntities?.Count}", timer: true);
         Storage.DoWithDelayedCacheInvalidation(() =>
         {
             #region import AttributeSets if any were included but rollback transaction if necessary
@@ -111,17 +97,17 @@ public class ImportService: ServiceBase
                             return newTypeList.Where(a => !newSysTypes.Contains(a)).ToList();
                         });
 
-                        Log.Do(message: "Import Types in non-Sys scopes", timer: true, action: () =>
+                        var lInner = Log.Fn(message: "Import Types in non-Sys scopes", timer: true);
+                        if (nonSysTypes.Any())
                         {
-                            if (!nonSysTypes.Any()) return;
-
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
                             var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
 
                             // now the remaining attributeSets
                             MergeAndSaveContentTypes(appStateTemp, nonSysTypes);
-                        });
+                        }
+                        lInner.Done();
                     });
                 });
 
@@ -134,11 +120,12 @@ public class ImportService: ServiceBase
             else
             {
                 var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader; // load all entities
-                var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () => newEntities
-                    .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
-                    .Where(e => e != null)
-                    .Cast<IEntity>()
-                    .ToList());
+                var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () =>
+                    newEntities
+                        .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
+                        .Where(e => e != null)
+                        .Cast<IEntity>()
+                        .ToList());
 
                 // HACK 2022-05-05 2dm Import Problem
                 // If we use chunks of 500, then relationships are not imported
@@ -174,23 +161,26 @@ public class ImportService: ServiceBase
             }
 
             #endregion
-        })
-    );
+        });
+        l.Done();
+    }
 
-    private void MergeAndSaveContentTypes(IAppState appState, List<IContentType> contentTypes) => Log.Do(timer: true, action: () =>
+    private void MergeAndSaveContentTypes(IAppState appState, List<IContentType> contentTypes)
     {
+        var l = Log.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appState, type));
-        var so = _importExportEnvironment.SaveOptions(ZoneId);
+        var so = importExportEnvironment.SaveOptions(ZoneId);
         so.DiscardAttributesNotInType = true;
         Storage.Save(toUpdate.ToList(), so);
-    });
+        l.Done();
+    }
 
 
     private List<IEntity> MetadataWithResetIds(IMetadataOf metadata)
     {
         return metadata.Concat(metadata.Permissions.Select(p => p.Entity))
-            .Select(e => _dataBuilder.Entity.CreateFrom(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
+            .Select(e => dataBuilder.Entity.CreateFrom(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
             .ToList();
     }
 
@@ -208,13 +198,13 @@ public class ImportService: ServiceBase
             var newAttributes = contentType.Attributes.Select(a =>
                 {
                     var attributeMetadata = MetadataWithResetIds(a.Metadata);
-                    return _dataBuilder.TypeAttributeBuilder.CreateFrom(a, metadataItems: attributeMetadata);
+                    return dataBuilder.TypeAttributeBuilder.CreateFrom(a, metadataItems: attributeMetadata);
                 })
                 .ToList();
 
 
             var ctMetadata = MetadataWithResetIds(contentType.Metadata);
-            var newType = _dataBuilder.ContentType.CreateFrom(contentType, metadataItems: ctMetadata,
+            var newType = dataBuilder.ContentType.CreateFrom(contentType, metadataItems: ctMetadata,
                 attributes: newAttributes);
 
             return (newType, "existing not found, only reset IDs");
@@ -237,7 +227,7 @@ public class ImportService: ServiceBase
 
                 if (newAttribute.Metadata.Permissions.Any())
                     newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
-                return _dataBuilder.TypeAttributeBuilder.CreateFrom(newAttribute, metadataItems: newMetaList);
+                return dataBuilder.TypeAttributeBuilder.CreateFrom(newAttribute, metadataItems: newMetaList);
             })
             .ToList();
 
@@ -247,7 +237,7 @@ public class ImportService: ServiceBase
             .ToList();
         merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
 
-        var newContentType = _dataBuilder.ContentType.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
+        var newContentType = dataBuilder.ContentType.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
         // contentType.Metadata.Use(merged);
 
         return (newContentType, "done");
@@ -258,9 +248,9 @@ public class ImportService: ServiceBase
         var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.NameId).FirstOrDefault();
         if (existingMetadata == null)
             // Must Reset guid, reset, otherwise the save process assumes it already exists in the DB; NOTE: clone would be ok
-            return _dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0);
+            return dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0);
 
-        return _entitySaver.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
+        return entitySaverLazy.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
     }
 
 
@@ -298,14 +288,14 @@ public class ImportService: ServiceBase
 
         // Simplest case - nothing existing to update: return update-entity unchanged
         if (existingEntities == null || !existingEntities.Any())
-            return (_dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
+            return (dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
         Storage.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information,
             $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
 
         // now update (main) entity id from existing - since it already exists
         var original = existingEntities.First();
-        var result = _entitySaver.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logDetails: logDetails);
+        var result = entitySaverLazy.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logDetails: logDetails);
         return (result, "ok");
     });
 

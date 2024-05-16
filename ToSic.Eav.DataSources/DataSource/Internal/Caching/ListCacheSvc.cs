@@ -7,21 +7,18 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// <summary>
 /// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
 /// </summary>
+/// <remarks>
+/// Constructor
+/// </remarks>
 [PrivateApi("this is just fyi")]
-internal class ListCacheSvc: ServiceBase, IListCacheSvc
+[method: PrivateApi]
+internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase("DS.LstCch", connect: [memoryCacheService]), IListCacheSvc
 {
-    private readonly MemoryCacheService _memoryCacheService;
-
     /// <summary>
-    /// Constructor
+    /// The time a list stays in the cache by default - default is 3600 = 1 hour.
+    /// Is used in all Set commands where the default duration is needed.
     /// </summary>
-    [PrivateApi]
-    public ListCacheSvc(MemoryCacheService memoryCacheService) : base("DS.LstCch")
-    {
-        ConnectServices(
-            _memoryCacheService = memoryCacheService
-            );
-    }
+    internal const int DefaultDuration = 60 * 60;
 
     #region Get List
 
@@ -79,10 +76,14 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
     }
 
     /// <inheritdoc />
-    public ListCacheItem Get(string key) => _memoryCacheService.Get(key) as ListCacheItem;
+    public ListCacheItem Get(string key) => memoryCacheService.Get(key) as ListCacheItem;
 
     /// <inheritdoc />
     public ListCacheItem Get(IDataStream dataStream) => Get(DataSourceListCache.CacheKey(dataStream));
+
+    public bool HasStream(string key) => memoryCacheService.Contains(key);
+
+    public bool HasStream(IDataStream stream) => memoryCacheService.Contains(DataSourceListCache.CacheKey(stream));
 
     #endregion
 
@@ -92,13 +93,18 @@ internal class ListCacheSvc: ServiceBase, IListCacheSvc
     public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, bool refreshOnSourceRefresh, int durationInSeconds = 0, bool slidingExpiration = true)
     {
         var l = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
-        var duration = durationInSeconds > 0 ? durationInSeconds : DataSourceListCache.DefaultDuration;
+        var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
         var expiration = new TimeSpan(0, 0, duration);
+        var absoluteExpiration = DateTime.Now.AddSeconds(duration);
         var policy = slidingExpiration
-            ? new() { SlidingExpiration = expiration }
-            : new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(duration) };
+            ? new CacheItemPolicy { SlidingExpiration = expiration }
+            : new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration };
 
-        _memoryCacheService.Set(key, new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy), policy);
+        // TOD: THIS LOOKS FISHY! Why is the policy added in a way 2x?
+        memoryCacheService.Set(key, 
+            value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy),
+            absoluteExpiration: slidingExpiration ? null : absoluteExpiration, 
+            slidingExpiration: slidingExpiration ? expiration : null);
         l.Done();
     }
         

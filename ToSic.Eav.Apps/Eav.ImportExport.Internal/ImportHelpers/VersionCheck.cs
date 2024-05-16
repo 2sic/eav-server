@@ -6,8 +6,9 @@ namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
 
 internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : HelperBase(parentLog, "Imp.VerChk")
 {
-    internal void EnsureVersions(XElement appConfig) => Log.Do(() =>
+    internal void EnsureVersions(XElement appConfig)
     {
+        var l = Log.Fn();
         var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode)
             .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredVersion")
             ?.Attribute(XmlConstants.ValueAttr)?.Value;
@@ -16,11 +17,12 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
             ?.Attribute(XmlConstants.ValueAttr)?.Value;
 
         CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
-    });
+        l.Done();
+    }
 
-    private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodePlatform
-    ) => Log.Do($"{reqVersionNode}, {reqVersionNodePlatform}", () =>
+    private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodePlatform)
     {
+        var l = Log.Fn($"{reqVersionNode}, {reqVersionNodePlatform}");
         if (reqVersionNode != null)
         {
             var vEav = Version.Parse(env.ModuleVersion);
@@ -40,6 +42,8 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
                           ", installed is " + vHost +
                           ". cannot continue. see also 2sxc.org/en/help?tag=app");
         }
-    });
+
+        l.Done();
+    }
 
 }

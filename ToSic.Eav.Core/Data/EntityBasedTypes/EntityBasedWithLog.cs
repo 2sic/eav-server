@@ -1,8 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
-
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// A strongly typed object which gets its data from an entity, and also logs what it does.

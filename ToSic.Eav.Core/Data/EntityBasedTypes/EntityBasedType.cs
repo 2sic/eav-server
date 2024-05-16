@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.Documentation;
 
 
 namespace ToSic.Eav.Data;
@@ -30,10 +27,10 @@ public abstract class EntityBasedType : IEntityBasedType
     protected EntityBasedType(IEntity entity) => Entity = entity;
 
     protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
-        => LookupLanguages = languageCodes ?? Array.Empty<string>();
+        => LookupLanguages = languageCodes ?? [];
 
     protected EntityBasedType(IEntity entity, string languageCode) : this(entity)
-        => LookupLanguages = languageCode != null ? [languageCode] : Array.Empty<string>();
+        => LookupLanguages = languageCode != null ? [languageCode] : [];
 
     /// <inheritdoc />
     public virtual string Title => _title ??= Entity?.GetBestTitle() ?? "";
@@ -49,7 +46,7 @@ public abstract class EntityBasedType : IEntityBasedType
     public IMetadataOf Metadata => Entity?.Metadata;
 
     [PrivateApi]
-    protected string[] LookupLanguages { get; } = Array.Empty<string>();
+    protected string[] LookupLanguages { get; } = [];
 
 
     /// <summary>
@@ -75,5 +72,9 @@ public abstract class EntityBasedType : IEntityBasedType
     /// <param name="fallback">Value to provide if nothing was found - required</param>
     /// <param name="propertyName">The property name - will be auto-filled by the compiler</param>
     /// <returns>The typed value</returns>
-    protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default) => Get(propertyName, fallback);
+    protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default)
+        => Get(propertyName, fallback);
+
+    protected T GetThisIfEntity<T>(T fallback, [CallerMemberName] string propertyName = default)
+        => Entity == null ? fallback : GetThis(fallback, propertyName);
 }

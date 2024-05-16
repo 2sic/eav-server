@@ -61,7 +61,7 @@ public sealed class Apps: CustomDataSource
     [PrivateApi]
     public Apps(MyServices services, IAppStates appStates) : base(services, $"{LogPrefix}.Apps")
     {
-        ConnectServices(appStates);
+        ConnectLogs([appStates]);
         ProvideOutRaw(
             () => GetDefault(appStates),
             options: () => new(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())

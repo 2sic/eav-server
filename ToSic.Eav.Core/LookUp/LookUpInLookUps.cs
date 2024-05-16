@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Eav.LookUp;
 
 /// <summary>
 /// This Value Provider chains two or more LookUps and tries one after another to deliver a result
@@ -13,7 +9,7 @@ namespace ToSic.Eav.LookUp;
 public class LookUpInLookUps: LookUpBase
 {
     [PrivateApi]
-    public List<ILookUp> Providers = []; 
+    public List<ILookUp> Providers = [];
 
     /// <summary>
     /// Generate a lookup-of-lookups. 
@@ -30,6 +26,8 @@ public class LookUpInLookUps: LookUpBase
         if (third != null) Providers.Add(third);
         if (fourth != null) Providers.Add(fourth);
     }
+
+    public override string Description => $"Lookup in multiple lookups: {string.Join(",", Providers.Select(p => p?.Name))}";
 
     // not sure - doesn't seem used?
     [PrivateApi]

@@ -7,22 +7,22 @@ partial class Efc11Loader
 {
     private int[] GetEntityIdOfPartnerEntities(int[] repositoryIds)
     {
-        var wrapLog = Log.Fn<int[]>();
-        var relatedIds = from e in _dbContext.ToSicEavEntities
+        var l = Log.Fn<int[]>();
+        var relatedIds = from e in context.ToSicEavEntities
             where e.PublishedEntityId.HasValue && !e.IsPublished && repositoryIds.Contains(e.EntityId) &&
                   !repositoryIds.Contains(e.PublishedEntityId.Value) && e.ChangeLogDeleted == null
             select e.PublishedEntityId.Value;
 
         var combined = repositoryIds.Union(relatedIds).ToArray();
 
-        return wrapLog.ReturnAsOk(combined);
+        return l.ReturnAsOk(combined);
     }
 
 
     private List<TempEntity> GetRawEntities(int[] entityIds, int appId, bool filterIds, string filterType = null)
     {
-        var wrapLog = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterType)}: '{filterType}'");
-        var query = _dbContext.ToSicEavEntities
+        var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterType)}: '{filterType}'");
+        var query = context.ToSicEavEntities
             .Include(e => e.AttributeSet)
             .Where(e => e.AppId == appId)
             .Where(e => e.ChangeLogDeleted == null && e.AttributeSet.ChangeLogDeleted == null);
@@ -52,18 +52,18 @@ partial class Efc11Loader
             })
             .ToList();
 
-        return wrapLog.Return(rawEntities, $"found: {rawEntities.Count}");
+        return l.Return(rawEntities, $"found: {rawEntities.Count}");
     }
 
     private Dictionary<int, IEnumerable<TempAttributeWithValues>> GetAttributesOfEntityChunk(List<int> entityIdsFound)
     {
-        var wrapLog = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(
+        var l = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(
             $"ids: {entityIdsFound.Count}");
             
         // just get once, we'll need it in a deep loop
         var primaryLanguage = PrimaryLanguage;
 
-        var attributes = _dbContext.ToSicEavValues
+        var attributes = context.ToSicEavValues
             .Include(v => v.Attribute)
             .Include(v => v.ToSicEavValuesDimensions)
             .ThenInclude(d => d.Dimension)
@@ -96,7 +96,7 @@ partial class Efc11Loader
                                 .ToImmutableList(),
                         })
                 }));
-        return wrapLog.ReturnAsOk(attributes);
+        return l.ReturnAsOk(attributes);
     }
 
     /// <summary>
@@ -108,15 +108,15 @@ partial class Efc11Loader
     /// <returns></returns>
     private List<ToSicEavEntityRelationships> GetRelationshipChunk(int appId, ICollection<int> entityIdsFound)
     {
-        var wrapLog = Log.Fn<List<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIdsFound.Count}");
-        var relationships = _dbContext.ToSicEavEntityRelationships
+        var l = Log.Fn<List<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIdsFound.Count}");
+        var relationships = context.ToSicEavEntityRelationships
             .Include(rel => rel.Attribute)
             .Where(rel => rel.ParentEntity.AppId == appId)
             .Where(r => !r.ChildEntityId.HasValue // child can be a null-reference
                         || entityIdsFound.Contains(r.ChildEntityId.Value) // check if it's referred to as a child
                         || entityIdsFound.Contains(r.ParentEntityId)) // check if it's referred to as a parent
             .ToList();
-        return wrapLog.ReturnAsOk(relationships);
+        return l.ReturnAsOk(relationships);
     }
 
     private Dictionary<int, IEnumerable<TempRelationshipList>> GroupUniqueRelationships(IReadOnlyCollection<ToSicEavEntityRelationships> relationships)

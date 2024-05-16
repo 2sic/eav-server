@@ -1,7 +1,5 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.Metadata;
 

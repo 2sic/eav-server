@@ -4,30 +4,19 @@ using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.Services;
 
-internal class DataSourcesService: ServiceBase, IDataSourcesService
+internal class DataSourcesService(
+    IServiceProvider serviceProvider,
+    LazySvc<ILookUpEngineResolver> lookupResolveLazy)
+    : ServiceBase($"{DataSourceConstants.LogPrefix}.Factry", connect: [/* never! serviceProvider,*/ lookupResolveLazy]),
+        IDataSourcesService
 {
-    #region Constructor / DI
-
-    private readonly IServiceProvider _serviceProvider;
-    private readonly LazySvc<ILookUpEngineResolver> _lookupResolveLazy;
-        
-    public DataSourcesService(IServiceProvider serviceProvider,
-        LazySvc<ILookUpEngineResolver> lookupResolveLazy) : base($"{DataSourceConstants.LogPrefix}.Factry")
-    {
-        ConnectServices(
-            _serviceProvider = serviceProvider,
-            _lookupResolveLazy = lookupResolveLazy
-        );
-    }
-
-    #endregion
 
     #region GetDataSource
 
     /// <inheritdoc />
     public IDataSource Create(Type type, IDataSourceLinkable attach = default, IDataSourceOptions options = default) => Log.Func(() =>
     {
-        var newDs = _serviceProvider.Build<IDataSource>(type, Log);
+        var newDs = serviceProvider.Build<IDataSource>(type, Log);
         newDs.Setup(options, attach);
         return newDs;
     });
@@ -65,7 +54,7 @@ internal class DataSourcesService: ServiceBase, IDataSourcesService
             options = OptionsWithLookUp(options);
         // throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.LookUp no not be null.");
 
-        var newDs = _serviceProvider.Build<TDataSource>(Log);
+        var newDs = serviceProvider.Build<TDataSource>(Log);
         newDs.Setup(options, attach);
         return newDs;
     });
@@ -96,7 +85,7 @@ internal class DataSourcesService: ServiceBase, IDataSourcesService
     {
         return optionsOrNull?.LookUp != null 
             ? optionsOrNull 
-            : new DataSourceOptions(optionsOrNull, lookUp: _lookupResolveLazy.Value.GetLookUpEngine(0));
+            : new DataSourceOptions(optionsOrNull, lookUp: lookupResolveLazy.Value.GetLookUpEngine(0));
     }
 
     #endregion

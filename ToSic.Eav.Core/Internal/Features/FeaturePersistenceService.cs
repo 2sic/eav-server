@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Internal.Configuration;
@@ -9,24 +6,15 @@ using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Features;
 
-public class FeaturePersistenceService : ServiceBase
+public class FeaturePersistenceService(
+    LazySvc<IGlobalConfiguration> globalConfiguration,
+    LazySvc<SystemFingerprint> fingerprint)
+    : ServiceBase("FeatCfgMng", connect: [globalConfiguration, fingerprint])
 {
-    private readonly LazySvc<IGlobalConfiguration> _globalConfiguration;
-    private readonly LazySvc<SystemFingerprint> _fingerprint;
-
-    public FeaturePersistenceService(LazySvc<IGlobalConfiguration> globalConfiguration, LazySvc<SystemFingerprint> fingerprint) : base("FeatCfgMng")
-    {
-        ConnectServices(
-            _globalConfiguration = globalConfiguration,
-            _fingerprint = fingerprint
-        );
-    }
-
     /// <summary>
     /// Return content from 'features.json' file.
     /// Also return full path to 'features.json'.
@@ -35,7 +23,7 @@ public class FeaturePersistenceService : ServiceBase
     internal (string filePath, string fileContent) LoadFeaturesFile()
     {
         // folder with "features.json"
-        var configurationsPath = _globalConfiguration.Value.ConfigFolder;
+        var configurationsPath = globalConfiguration.Value.ConfigFolder;
 
         // ensure that path to store files already exits
         Directory.CreateDirectory(configurationsPath);
@@ -93,7 +81,7 @@ public class FeaturePersistenceService : ServiceBase
 
         // update finger print
         //features.Fingerprint = (string)oldFeatures["fingerprint"];
-        features.Fingerprint = _fingerprint.Value.GetFingerprint();
+        features.Fingerprint = fingerprint.Value.GetFingerprint();
 
         foreach (var f in oldFeatures["features"].AsArray())
         {
@@ -120,12 +108,12 @@ public class FeaturePersistenceService : ServiceBase
             if (features == null) features = new();
 
             // update to latest fingerprint
-            features.Fingerprint = _fingerprint.Value.GetFingerprint();
+            features.Fingerprint = fingerprint.Value.GetFingerprint();
 
             // save new format (v13)
             var fileContent = JsonSerializer.Serialize(features, JsonOptions.FeaturesJson);
 
-            var configurationsPath = _globalConfiguration.Value.ConfigFolder;
+            var configurationsPath = globalConfiguration.Value.ConfigFolder;
 
             // ensure that path to store files already exits
             Directory.CreateDirectory(configurationsPath);
@@ -197,7 +185,7 @@ public class FeaturePersistenceService : ServiceBase
             }
 
             // update to latest fingerprint
-            fileJson["fingerprint"] = _fingerprint.Value.GetFingerprint();
+            fileJson["fingerprint"] = fingerprint.Value.GetFingerprint();
 
             return (SaveFile(filePath, fileJson.ToString()), "features saved");
         }

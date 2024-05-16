@@ -15,7 +15,6 @@
  *
  */
 
-using System;
 using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Internal.Licenses;

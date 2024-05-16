@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Represents an Attribute (Property), but strongly typed
