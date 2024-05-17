@@ -21,6 +21,24 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 
     public object Get(string key) => Cache.Get(key);
 
+    public T Get<T>(string key, T fallback = default) => Cache.Get(key) is T typed ? typed : fallback;
+
+    public bool TryGet<T>(string key, out T value)
+    {
+        value = default;
+        if (!Cache.Contains(key))
+            return false;
+
+        var result = Cache.Get(key);
+
+        // check type and null
+        if (result is not T typed) return false;
+
+        value = typed;
+        return true;
+
+    }
+
     public object Remove(string key) => Cache.Remove(key);
 
     /// <summary>
