@@ -5,7 +5,8 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.DataSource.Internal.Caching;
 
 /// <summary>
-/// Responsible for caching lists / streams. Usually used in queries or sources which have an intensive loading or querying time.
+/// Responsible for caching lists / streams.
+/// Usually used in queries or sources which have an intensive loading or querying time.
 /// </summary>
 /// <remarks>
 /// Constructor
@@ -20,6 +21,21 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     /// </summary>
     internal const int DefaultDuration = 60 * 60;
 
+    #region Static Cache Checks
+
+    /// <summary>
+    /// Returns the cache key for a data stream
+    /// </summary>
+    /// <param name="dataStream"></param>
+    /// <returns></returns>
+    internal static string CacheKey(IDataStream dataStream) => dataStream.Caching.CacheFullKey;
+
+    private static readonly NamedLocks StaticLoadLocks = new();
+
+    public NamedLocks LoadLocks => StaticLoadLocks;
+
+    #endregion
+
     #region Get List
 
     /// <summary>
@@ -31,7 +47,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     /// <returns></returns>
     private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream)
     {
-        var key = DataSourceListCache.CacheKey(dataStream);
+        var key = CacheKey(dataStream);
         var l = Log.Fn<ListCacheItem>($"key: {key}");
         // Check if it's in the cache, and if it requires re-loading
         var itemInCache = Get(key);
@@ -46,7 +62,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc, int durationInSeconds = 0)
     {
         var l = Log.Fn<ListCacheItem>();
-        var key = DataSourceListCache.CacheKey(stream);
+        var key = CacheKey(stream);
 
         var cacheItem = GetValidCacheItemOrNull(stream);
         if (cacheItem != null)
@@ -57,7 +73,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
         // Otherwise slow loading data - like SharePoint lists from a remote server
         // would trigger multiple load attempts on page reloads and overload the system
         // trying to reload while still building the initial cache
-        var lockKey = DataSourceListCache.LoadLocks.Get(key);
+        var lockKey = LoadLocks.Get(key);
         lock (lockKey)
         {
             l.A("came out of lock");
@@ -76,14 +92,14 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     }
 
     /// <inheritdoc />
-    public ListCacheItem Get(string key) => memoryCacheService.Get(key) as ListCacheItem;
+    public ListCacheItem Get(string key) => memoryCacheService.Get<ListCacheItem>(key);
 
     /// <inheritdoc />
-    public ListCacheItem Get(IDataStream dataStream) => Get(DataSourceListCache.CacheKey(dataStream));
+    public ListCacheItem Get(IDataStream dataStream) => Get(CacheKey(dataStream));
 
     public bool HasStream(string key) => memoryCacheService.Contains(key);
 
-    public bool HasStream(IDataStream stream) => memoryCacheService.Contains(DataSourceListCache.CacheKey(stream));
+    public bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
 
     #endregion
 
@@ -111,7 +127,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
 
     /// <inheritdoc />
     public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
-        => Set(DataSourceListCache.CacheKey(dataStream), dataStream.List.ToImmutableList(),
+        => Set(CacheKey(dataStream), dataStream.List.ToImmutableList(),
             dataStream.Caching.CacheTimestamp, dataStream.CacheRefreshOnSourceRefresh, durationInSeconds, slidingExpiration);
 
     #endregion

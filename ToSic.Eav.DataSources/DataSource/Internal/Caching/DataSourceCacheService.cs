@@ -10,7 +10,7 @@ internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheServic
     public const int MaxRecursions = 100;
     private const string ErrRecursions = "too many recursions on UnCache";
 
-    public IListCacheSvc ListCache { get; } = listCache;
+    public IListCacheSvc ListCache => listCache;
 
     /// <inheritdoc />
     public bool Flush(IDataStream stream, bool cascade = false) => FlushStream(stream, 0, cascade);
@@ -20,9 +20,9 @@ internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheServic
     public bool FlushAll()
     {
         var l = Log.Fn<bool>();
-        var keys = DataSourceListCache.LoadLocks.Locks.Keys.ToList();
+        var keys = listCache.LoadLocks.Locks.Keys.ToList();
         foreach (var key in keys) FlushKey(key);
-        DataSourceListCache.LoadLocks.Locks.Clear();
+        listCache.LoadLocks.Locks.Clear();
         return l.ReturnTrue();
     }
 
@@ -91,7 +91,7 @@ internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheServic
     /// Remove an item from the list cache using a data-stream key
     /// </summary>
     /// <param name="dataStream">the data stream, which can provide it's cache-key</param>
-    private void FlushStream(IDataStream dataStream) => FlushKey(DataSourceListCache.CacheKey(dataStream));
+    private void FlushStream(IDataStream dataStream) => FlushKey(ListCacheSvc.CacheKey(dataStream));
 
     /// <summary>
     /// Remove an item from the list-cache using the string-key
