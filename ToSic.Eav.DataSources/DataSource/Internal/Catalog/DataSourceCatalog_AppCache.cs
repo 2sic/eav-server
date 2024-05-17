@@ -12,7 +12,8 @@ partial class DataSourceCatalog
 
     public List<DataSourceInfo> Get(int appId)
     {
-        if (memoryCacheService.Get(AppCacheKey(appId)) is List<DataSourceInfo> dataFromCache) return dataFromCache;
+        if (memoryCacheService.TryGet<List<DataSourceInfo>>(AppCacheKey(appId), out var dataFromCache))
+            return dataFromCache;
 
         var (data, slidingExpiration, folderPaths, cacheKeys)
             = appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
