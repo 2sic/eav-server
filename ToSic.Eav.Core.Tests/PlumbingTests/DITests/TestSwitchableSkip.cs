@@ -1,11 +1,10 @@
-﻿namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests
+﻿namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests;
+
+public class TestSwitchableSkip: ITestSwitchableService
 {
-    public class TestSwitchableSkip: ITestSwitchableService
-    {
-        public string NameId => "Skip This";
+    public string NameId => "Skip This";
 
-        public bool IsViable() => false;
+    public bool IsViable() => false;
 
-        public int Priority => 100;
-    }
+    public int Priority => 100;
 }
