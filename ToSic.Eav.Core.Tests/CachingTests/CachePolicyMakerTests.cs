@@ -37,4 +37,18 @@ public class CachePolicyMakerTests
         Assert.AreEqual(DateTimeOffset.MaxValue, result.AbsoluteExpiration);
         Assert.AreEqual(exp, result.SlidingExpiration);
     }
+
+    /// <summary>
+    /// Note: According to the specs this is not allowed.
+    /// But we won't catch this, since the developer should see the exception.
+    /// </summary>
+    [TestMethod]
+    public void CmpWithBothSlidingAndAbsolute()
+    {
+        var abs = DateTimeOffset.Now.AddHours(1);
+        var sld = new TimeSpan(1, 0, 0);
+        var result = Empty().SetAbsoluteExpiration(abs).SetSlidingExpiration(sld).CreateResult();
+        Assert.AreEqual(abs, result.AbsoluteExpiration);
+        Assert.AreEqual(sld, result.SlidingExpiration);
+    }
 }

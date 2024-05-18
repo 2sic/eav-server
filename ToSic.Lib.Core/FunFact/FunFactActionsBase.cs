@@ -24,7 +24,7 @@ public abstract class FunFactActionsBase<T>(ILog parentLog, IEnumerable<Action<T
     /// </summary>
     protected List<Action<T>> Actions { get; } = actions?.ToList() ?? [];
 
-    protected List<Action<T>> CloneActions(Action<T> addition) => [..actions, addition];
+    protected List<Action<T>> CloneActions(Action<T> addition) => [..Actions, addition];
 
     protected T Apply(T initial)
     {
