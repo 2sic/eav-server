@@ -108,7 +108,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     public DicString LookUp(DicString values, IEnumerable<ILookUp> overrides, int depth = 4)
     {
         var overridesList = overrides?.ToList() ?? [];
-        var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overridesList.Count()}, depth: {depth}");
+        var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overridesList.Count}, depth: {depth}");
         // start by creating a copy of the dictionary
         values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
 
@@ -153,7 +153,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         var found = SourceDic.TryGetValue(lookUp.Name, out var original);
         var l = (LogDetailed ? Log : null).Fn($"{lookUp.Name}; found existing: {found}");
         SourceDic[lookUp.Name] = found
-            ? new LookUpInLookUps(lookUp.Name, lookUp, original)
+            ? new LookUpInLookUps(lookUp.Name, [lookUp, original])
             : lookUp;
         l.Done();
     }
