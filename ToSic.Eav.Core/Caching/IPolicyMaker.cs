@@ -9,10 +9,10 @@ public interface IPolicyMaker
     CacheItemPolicy CreateResult();
     IPolicyMaker SetAbsoluteExpiration(DateTimeOffset absoluteExpiration);
     IPolicyMaker SetSlidingExpiration(TimeSpan slidingExpiration);
-    IPolicyMaker AddFiles(IList<string> filePaths);
-    IPolicyMaker AddFolders(IDictionary<string, bool> folderPaths);
-    IPolicyMaker AddCacheKeys(IEnumerable<string> cacheKeys);
-    IPolicyMaker AddAppStates(List<IAppStateChanges> appStates);
-    IPolicyMaker ConnectFeaturesService(IEavFeaturesService featuresService);
-    IPolicyMaker AddUpdateCallback(CacheEntryUpdateCallback updateCallback);
+    IPolicyMaker WatchFiles(IList<string> filePaths);
+    IPolicyMaker WatchFolders(IDictionary<string, bool> folderPaths);
+    IPolicyMaker WatchCacheKeys(IEnumerable<string> cacheKeys);
+    IPolicyMaker WatchApps(List<IAppStateChanges> appStates);
+    IPolicyMaker WatchFeaturesService(IEavFeaturesService featuresService);
+    IPolicyMaker WatchCallback(CacheEntryUpdateCallback updateCallback);
 }

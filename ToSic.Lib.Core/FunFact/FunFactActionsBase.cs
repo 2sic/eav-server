@@ -17,20 +17,24 @@ namespace ToSic.Lib.FunFact;
 /// <param name="actions"></param>
 /// <param name="logName"></param>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class FunFactActionsBase<T>(ILog parentLog, IEnumerable<Action<T>> actions, string logName) : HelperBase(parentLog, logName ?? "Eav.FnOExp")
+public abstract class FunFactActionsBase<T>(ILog parentLog, IEnumerable<(string, Action<T>)> actions, string logName) : HelperBase(parentLog, logName ?? "Eav.FnOExp")
 {
     /// <summary>
     /// List of actions to apply to the object
     /// </summary>
-    protected List<Action<T>> Actions { get; } = actions?.ToList() ?? [];
+    protected List<(string Info, Action<T> Action)> Actions { get; } = actions?.ToList() ?? [];
 
-    protected List<Action<T>> CloneActions(Action<T> addition) => [..Actions, addition];
+    protected List<(string, Action<T>)> CloneActions((string, Action<T>) addition) => [..Actions, addition];
 
     protected T Apply(T initial)
     {
+        var l = Log.Fn<T>($"{Actions.Count} actions");
         foreach (var action in Actions)
-            action(initial);
-        return initial;
+        {
+            l.A(action.Info);
+            action.Action(initial);
+        }
+        return l.Return(initial);
     }
 
     public abstract T CreateResult();

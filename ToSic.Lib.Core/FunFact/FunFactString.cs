@@ -10,19 +10,24 @@ namespace ToSic.Lib.FunFact;
 /// </summary>
 /// <param name="parentLog"></param>
 /// <param name="actions"></param>
-internal class FunFactString(ILog parentLog, IEnumerable<Func<string, string>> actions) : FunFactFunctionBase<string>(parentLog, actions, "Lib.FunStr")
+internal class FunFactString(ILog parentLog, IEnumerable<(string, Func<string, string>)> actions) : FunFactFunctionBase<string>(parentLog, actions, "Lib.FunStr")
 {
     public override string CreateResult() => Apply("");
 
-    private FunFactString Next(Func<string, string> addition) => new((Log as Log)?.Parent, CloneActions(addition));
+    private FunFactString Next(string info, Func<string, string> addition) => new((Log as Log)?.Parent, CloneActions((info, addition)));
 
-    public FunFactString Set(string value) => Next(s => value);
+    public FunFactString Set(string value)
+        => Next($"set:{value}", s => value);
 
-    public FunFactString Append(string text) => Next(s => s + text);
+    public FunFactString Append(string text)
+        => Next($"append:{text}", s => s + text);
 
-    public FunFactString Prepend(string text) => Next(s => text + s);
+    public FunFactString Prepend(string text)
+        => Next($"prepend:{text}", s => text + s);
 
-    public FunFactString Trim() => Next(s => s.Trim());
+    public FunFactString Trim()
+        => Next("trim", s => s.Trim());
 
-    public FunFactString Replace(string oldValue, string newValue) => Next(s => s.Replace(oldValue, newValue));
+    public FunFactString Replace(string oldValue, string newValue)
+        => Next($"replace:'{oldValue}' with '{newValue}'", s => s.Replace(oldValue, newValue));
 }

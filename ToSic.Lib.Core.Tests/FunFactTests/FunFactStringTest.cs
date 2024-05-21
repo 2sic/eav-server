@@ -10,11 +10,12 @@ public class FunFactStringTest
     public void ManualListOfFunctions()
     {
         var result = new FunFactString(null,
-        [
-            _ => "Hello",
-            s => s + " World",
-            s => s + "!"
-        ]).CreateResult();
+            [
+                ("", _ => "Hello"),
+                ("", s => s + " World"),
+                ("", s => s + "!")
+            ])
+            .CreateResult();
         Assert.AreEqual("Hello World!", result);
     }
 
@@ -23,7 +24,7 @@ public class FunFactStringTest
     {
         var result = new FunFactString(null,
             [
-                _ => "Hello"
+                ("", _ => "Hello")
             ])
             .Set("World")
             .CreateResult();

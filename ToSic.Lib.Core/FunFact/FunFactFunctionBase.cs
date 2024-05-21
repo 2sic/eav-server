@@ -17,16 +17,26 @@ namespace ToSic.Lib.FunFact;
 /// <param name="functions"></param>
 /// <param name="logName"></param>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class FunFactFunctionBase<T>(ILog parentLog, IEnumerable<Func<T, T>> functions, string logName) : HelperBase(parentLog, logName ?? "Eav.FnOExp")
+public abstract class FunFactFunctionBase<T>(ILog parentLog, IEnumerable<(string, Func<T, T>)> functions, string logName) : HelperBase(parentLog, logName ?? "Eav.FnOExp")
 {
     /// <summary>
     /// List of actions to apply to the object
     /// </summary>
-    protected internal List<Func<T, T>> Actions { get; } = functions?.ToList() ?? [];
+    protected internal List<(string Info, Func<T, T> Action)> Actions { get; } = functions?.ToList() ?? [];
 
-    protected List<Func<T, T>> CloneActions(Func<T, T> addition) => [..functions, addition];
+    protected List<(string, Func<T, T>)> CloneActions(Func<T, T> addition) => [..functions, ("", addition)];
+    protected List<(string, Func<T, T>)> CloneActions((string, Func<T, T>) addition) => [..functions, addition];
 
-    protected T Apply(T initial) => Actions.Aggregate(initial, (current, action) => action(current));
+    protected T Apply(T initial)
+    {
+        var l = Log.Fn<T>($"{Actions.Count} action");
+        var result = Actions.Aggregate(initial, (current, action) =>
+        {
+            l.A(action.Info);
+            return action.Action(current);
+        });
+        return l.Return(result);
+    }
 
     public abstract T CreateResult();
 }
