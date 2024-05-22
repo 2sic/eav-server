@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.Caching;
 using System.Runtime.Caching.Hosting;
+using ToSic.Eav.Helpers;
 
 namespace ToSic.Eav.Caching.CachingMonitors;
 
@@ -70,11 +71,12 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
         if (onChangedCallback == null) throw new ArgumentNullException(nameof(onChangedCallback));
             
         var directoryInfo = new DirectoryInfo(dirPath);
-        if (_dirMonitors[dirPath] is not DirectoryMonitor dirMon)
+        var key = GetKey(dirPath, includeSubdirectories);
+        if (_dirMonitors[key] is not DirectoryMonitor dirMon)
         {
             lock (_lock)
             {
-                dirMon = _dirMonitors[dirPath] as DirectoryMonitor ?? new DirectoryMonitor
+                dirMon = _dirMonitors[key] as DirectoryMonitor ?? new DirectoryMonitor
                 {
                     FileSystemWatcher = new(dirPath)
                     {
@@ -86,7 +88,7 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
                         EnableRaisingEvents = true
                     }
                 };
-                _dirMonitors[dirPath] = dirMon;
+                _dirMonitors[key] = dirMon;
             }
         }
 
@@ -106,16 +108,20 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
         fileSize = (directoryInfo.Exists) ? /*GetDirectorySize(directoryInfo)*/ 0 : -1;
     }
 
+    private static string GetKey(string dirPath, bool includeSubdirectories) 
+        => (includeSubdirectories ? $"{dirPath}*" : dirPath).Backslash();
+
     // this is very slow in case of many subfolders and files, so we will not use it.
     //private static long GetDirectorySize(DirectoryInfo directoryInfo) => 
     //    directoryInfo.GetFiles("*.*",SearchOption.AllDirectories).Sum(f => f.Length);
 
-    public void StopMonitoring(string dirPath, object state)
+    public void StopMonitoring(string dirPath, bool includeSubdirectories, object state)
     {
         if (dirPath == null) throw new ArgumentNullException(nameof(dirPath));
         if (state == null) throw new ArgumentNullException(nameof(state));
         if (state is not FolderChangeEventTarget target) throw new ArgumentException("target is null");
-        if (_dirMonitors[dirPath] is not DirectoryMonitor dirMon) return;
+        var key = GetKey(dirPath, includeSubdirectories);
+        if (_dirMonitors[key] is not DirectoryMonitor dirMon) return;
         lock (dirMon)
         {
             dirMon.FileSystemWatcher.Changed -= target.ChangedHandler;
@@ -125,4 +131,7 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
             dirMon.FileSystemWatcher.Renamed -= target.RenamedHandler;
         }
     }
+
+    public void StopMonitoring(string dirPath, object state) => StopMonitoring(dirPath, true, state);
+
 }

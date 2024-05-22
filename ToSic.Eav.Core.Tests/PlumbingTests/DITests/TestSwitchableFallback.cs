@@ -1,13 +1,12 @@
-﻿namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests
+﻿namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests;
+
+public class TestSwitchableFallback: ITestSwitchableService
 {
-    public class TestSwitchableFallback: ITestSwitchableService
-    {
-        internal const string Name = "FallbackSvc";
+    internal const string Name = "FallbackSvc";
 
-        public string NameId => Name;
+    public string NameId => Name;
 
-        public bool IsViable() => true;
+    public bool IsViable() => true;
 
-        public int Priority => 0;
-    }
+    public int Priority => 0;
 }

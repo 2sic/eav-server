@@ -48,7 +48,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
         var cacheKey = AppJsonCacheKey(appId, useShared);
         l.A($"cache key: {cacheKey}");
 
-        if (memoryCacheService.Get(cacheKey) is AppJson appJson)
+        if (memoryCacheService.TryGet<AppJson>(cacheKey, out var appJson))
             return l.Return(appJson, "ok, cache hit");
 
         var pathToAppJson = GetPathToAppJson(appId, useShared);

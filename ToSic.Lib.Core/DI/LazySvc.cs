@@ -17,16 +17,16 @@ namespace ToSic.Lib.DI;
 /// So if it's used for anything that doesn't support logging it will just behave like `Lazy`.
 /// </summary>
 /// <typeparam name="TService">Service type, ideally based on <see cref="ToSic.Lib.Services.ServiceBase"/></typeparam>
+/// <remarks>
+/// Constructor, should never be called as it's only meant to be used with Dependency Injection.
+/// </remarks>
+/// <param name="sp">
+/// Service provider, in case we need to debug something
+/// </param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LazySvc<TService>: ILazyLike<TService>, IHasLog, ILazyInitLog where TService : class
+public class LazySvc<TService>(IServiceProvider sp) : ILazyLike<TService>, IHasLog, ILazyInitLog where TService : class
 {
-    /// <summary>
-    /// Constructor, should never be called as it's only meant to be used with Dependency Injection.
-    /// </summary>
-    public LazySvc(IServiceProvider sp) => _valueLazy = new(() => sp.Build<TService>(Log));
-    private readonly Lazy<TService> _valueLazy;
-
     /// <summary>
     /// Set the init-command as needed
     /// </summary>
@@ -46,7 +46,7 @@ public class LazySvc<TService>: ILazyLike<TService>, IHasLog, ILazyInitLog where
 
     public TService Value => _valueGet.Get(() =>
     {
-        var value = _valueLazy.Value;
+        var value = sp.Build<TService>(Log);
         _initCall?.Invoke(value);
         return value;
     });

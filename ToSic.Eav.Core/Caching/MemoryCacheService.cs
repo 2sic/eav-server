@@ -21,7 +21,27 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 
     public object Get(string key) => Cache.Get(key);
 
+    public T Get<T>(string key, T fallback = default) => Cache.Get(key) is T typed ? typed : fallback;
+
+    public bool TryGet<T>(string key, out T value)
+    {
+        value = default;
+        if (!Cache.Contains(key))
+            return false;
+
+        var result = Cache.Get(key);
+
+        // check type and null
+        if (result is not T typed) return false;
+
+        value = typed;
+        return true;
+
+    }
+
     public object Remove(string key) => Cache.Remove(key);
+
+    public IPolicyMaker NewPolicyMaker() => new CacheItemPolicyMaker(Log);
 
     /// <summary>
     /// WIP experimental - possible replacement with liquid API, to better see which methods are exactly being called.
@@ -29,20 +49,15 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="func"></param>
-    public void SetNew(string key, object value, Func<CacheItemPolicyMaker, CacheItemPolicyMaker> func)
+    public void SetNew(string key, object value, Func<IPolicyMaker, IPolicyMaker> func = default)
     {
         var l = Log.Fn($"key: '{key}'");
         try
         {
-            var specs = new CacheItemPolicyMaker(key, value, Log);
-            specs = func(specs);
-            var policy = specs.Policy;
-            if (policy.AbsoluteExpiration == InfiniteAbsoluteExpiration && policy.SlidingExpiration == NoSlidingExpiration)
-            {
-                l.A("No expiration set - this might lead to memory leaks. Please set an expiration. Will auto-set.");
-                policy.SlidingExpiration = DefaultSlidingExpiration;
-            }
-            Cache.Set(new(specs.Key, specs.Value), specs.Policy);
+            var specs = new CacheItemPolicyMaker(Log);
+            var parsedSpecs = func?.Invoke(specs) ?? specs;
+            var policy = parsedSpecs.CreateResult();
+            Cache.Set(new(key, value), policy);
             l.Done();
         }
         catch (Exception ex)

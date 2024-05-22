@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource.Internal.Caching;
+﻿using ToSic.Eav.Caching;
+
+namespace ToSic.Eav.DataSource.Internal.Caching;
 
 /// <summary>
 /// Marks objects that can cache lists based on certain rules - including retention time and if up-stream changes should refresh the cache. 
@@ -7,6 +9,8 @@
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IListCacheSvc
 {
+    NamedLocks LoadLocks { get; }
+
     /// <summary>
     /// Get a list from the cache
     /// </summary>

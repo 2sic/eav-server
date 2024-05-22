@@ -1,8 +1,7 @@
-﻿namespace ToSic.Eav.Core.Tests.Signature
+﻿namespace ToSic.Eav.Core.Tests.Signature;
+
+internal class KeyPairForTesting
 {
-    internal class KeyPairForTesting
-    {
-        public string Public;
-        public string Private;
-    }
+    public string Public;
+    public string Private;
 }

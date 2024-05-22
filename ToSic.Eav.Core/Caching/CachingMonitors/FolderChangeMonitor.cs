@@ -102,13 +102,13 @@ public class FolderChangeMonitor : FileChangeMonitor
                 if (string.IsNullOrEmpty(path.Key)) continue;
                     
                 var state = fcnState[path.Key];
-                if (state != null) _folderChangeNotificationSystem.StopMonitoring(path.Key, state);
+                if (state != null) _folderChangeNotificationSystem.StopMonitoring(path.Key, path.Value, state);
             }
         }
         else
         {
             var path = _folderPaths.First();
-            if (path.Key != null && _fcnState != null) _folderChangeNotificationSystem.StopMonitoring(path.Key, _fcnState);
+            if (path.Key != null && _fcnState != null) _folderChangeNotificationSystem.StopMonitoring(path.Key, path.Value, _fcnState);
         }
     }
 }

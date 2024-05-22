@@ -1,8 +1,8 @@
-﻿namespace ToSic.Eav.Core.Tests.Signature
+﻿namespace ToSic.Eav.Core.Tests.Signature;
+
+internal class TestData
 {
-    internal class TestData
-    {
-        internal const string Json = @"[
+    internal const string Json = @"[
   {
     '_id': '5ade0ab128c25c19e3e09774',
     'index': 0,
@@ -319,5 +319,4 @@
     'favoriteFruit': 'strawberry'
   }
 ]";
-    }
 }

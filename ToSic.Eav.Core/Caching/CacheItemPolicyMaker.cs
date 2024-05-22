@@ -2,8 +2,9 @@
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching.CachingMonitors;
 using ToSic.Eav.Internal.Features;
-using ToSic.Lib.Services;
+using ToSic.Lib.FunFact;
 using static ToSic.Eav.Caching.MemoryCacheService;
+using static System.Runtime.Caching.ObjectCache;
 
 namespace ToSic.Eav.Caching;
 
@@ -11,81 +12,87 @@ namespace ToSic.Eav.Caching;
 /// WIP fluid API cache specs.
 /// It should ensure that all cache variants are possible, but that our code can easily spot which ones are used.
 /// </summary>
-/// <param name="key"></param>
-/// <param name="value"></param>
 /// <param name="parentLog"></param>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CacheItemPolicyMaker(string key, object value, ILog parentLog): HelperBase(parentLog, "Eav.CacSpx")
+public class CacheItemPolicyMaker(ILog parentLog, IEnumerable<(string, Action<CacheItemPolicy>)> actions = default) : FunFactActionsBase<CacheItemPolicy>(parentLog, actions, "Eav.CacSpx"), IPolicyMaker
 {
-    public string Key => key;
-    public object Value => value;
-    public CacheItemPolicy Policy { get; } = new();
+    private IPolicyMaker Next(string name, Action<CacheItemPolicy> addition)
+        => new CacheItemPolicyMaker(parentLog, CloneActions((name, addition)));
 
-    public CacheItemPolicyMaker SetAbsoluteExpiration(DateTimeOffset absoluteExpiration)
+    public override CacheItemPolicy CreateResult()
     {
-        Log.A($"Set {nameof(Policy.AbsoluteExpiration)} = {absoluteExpiration}");
-        Policy.AbsoluteExpiration = absoluteExpiration;
-        return this;
+        var l = Log.Fn<CacheItemPolicy>();
+        var policy = Apply(new());
+
+        if (policy.AbsoluteExpiration != InfiniteAbsoluteExpiration || policy.SlidingExpiration != NoSlidingExpiration)
+            return l.Return(policy, "expiry has been set");
+
+        policy.SlidingExpiration = DefaultSlidingExpiration;
+        return l.Return(policy, "No expiration set. Will auto-set.");
     }
 
-    public CacheItemPolicyMaker SetSlidingExpiration(TimeSpan slidingExpiration)
-    {
-        Log.A($"Set {nameof(Policy.SlidingExpiration)} = {slidingExpiration}");
-        Policy.SlidingExpiration = slidingExpiration;
-        return this;
-    }
+    public IPolicyMaker SetAbsoluteExpiration(DateTimeOffset absoluteExpiration)
+        => Next(
+            $"Set {nameof(CacheItemPolicy.AbsoluteExpiration)} = {absoluteExpiration}",
+            p => p.AbsoluteExpiration = absoluteExpiration
+        );
 
-    public CacheItemPolicyMaker AddFiles(IList<string> filePaths)
-    {
-        if (filePaths is not { Count: > 0 }) return this;
-        Log.A($"Add {filePaths.Count} {nameof(HostFileChangeMonitor)}s");
-        Policy.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths));
-        return this;
-    }
+    public IPolicyMaker SetSlidingExpiration(TimeSpan slidingExpiration)
+        => Next(
+            $"Set {nameof(CacheItemPolicy.SlidingExpiration)} = {slidingExpiration}",
+            p => p.SlidingExpiration = slidingExpiration
+        );
 
-    public CacheItemPolicyMaker AddFolders(IDictionary<string, bool> folderPaths)
-    {
-        if (folderPaths is not { Count: > 0 }) return this;
-        Log.A($"Add {folderPaths.Count} {nameof(FolderChangeMonitor)}s");
-        Policy.ChangeMonitors.Add(new FolderChangeMonitor(folderPaths));
-        return this;
-    }
+    public IPolicyMaker WatchFiles(IList<string> filePaths) =>
+        filePaths is not { Count: > 0 }
+            ? this
+            : Next(
+                $"Add {filePaths.Count} {nameof(HostFileChangeMonitor)}s",
+                p => p.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths))
+            );
 
-    public CacheItemPolicyMaker AddCacheKeys(IEnumerable<string> cacheKeys)
+    public IPolicyMaker WatchFolders(IDictionary<string, bool> folderPaths) =>
+        folderPaths is not { Count: > 0 }
+            ? this
+            : Next(
+                $"Watch {folderPaths.Count} {nameof(FolderChangeMonitor)}s: \n {string.Join("\n", folderPaths.Select(pair => $"Folders: '{pair.Key}'; Subfolder: {pair.Value}"))}",
+                p => p.ChangeMonitors.Add(new FolderChangeMonitor(folderPaths))
+            );
+
+    public IPolicyMaker WatchCacheKeys(IEnumerable<string> cacheKeys)
     {
         if (cacheKeys == null) return this;
         var keysClone = new List<string>(cacheKeys);
-        if (keysClone.Count <= 0) return this;
-        Log.A($"Add {keysClone.Count} {nameof(CreateCacheEntryChangeMonitor)}s");
-        Policy.ChangeMonitors.Add(CreateCacheEntryChangeMonitor(keysClone));
-        return this;
+        return keysClone.Count <= 0
+            ? this
+            : Next(
+                $"Watch {keysClone.Count} {nameof(CreateCacheEntryChangeMonitor)}s",
+                p => p.ChangeMonitors.Add(CreateCacheEntryChangeMonitor(keysClone))
+            );
     }
 
-    public CacheItemPolicyMaker AddAppStates(List<IAppStateChanges> appStates)
-    {
-        if (appStates is not { Count: > 0 }) return this;
-        Log.A($"Add {appStates.Count} {nameof(AppResetMonitor)}s to invalidate on App-data change");
-        foreach (var appState in appStates)
-            Policy.ChangeMonitors.Add(new AppResetMonitor(appState));
-        return this;
-    }
+    public IPolicyMaker WatchApps(List<IAppStateChanges> appStates) =>
+        appStates is not { Count: > 0 }
+            ? this
+            : Next(
+                $"Watch {appStates.Count} {nameof(AppResetMonitor)}s to invalidate on App-data change",
+                p => appStates.ForEach(appState => p.ChangeMonitors.Add(new AppResetMonitor(appState)))
+            );
 
-    public CacheItemPolicyMaker ConnectFeaturesService(IEavFeaturesService featuresService)
-    {
-        if (featuresService == null) return this;
-        Log.A($"Add {nameof(FeaturesResetMonitor)} to invalidate on Feature change");
-        Policy.ChangeMonitors.Add(new FeaturesResetMonitor(featuresService));
+    public IPolicyMaker WatchFeaturesService(IEavFeaturesService featuresService) =>
+        featuresService == null
+            ? this
+            : Next(
+                $"Add {nameof(FeaturesResetMonitor)} to invalidate on Feature change",
+                p => p.ChangeMonitors.Add(new FeaturesResetMonitor(featuresService))
+            );
 
-        return this;
-    }
-
-    public CacheItemPolicyMaker AddUpdateCallback(CacheEntryUpdateCallback updateCallback)
-    {
-        if (updateCallback == null) return this;
-        Log.A("Add UpdateCallback");
-        Policy.UpdateCallback = updateCallback;
-        return this;
-    }
-
+    public IPolicyMaker WatchCallback(CacheEntryUpdateCallback updateCallback) =>
+        updateCallback == null
+            ? this
+            : Next(
+                "Add UpdateCallback",
+                p => p.UpdateCallback = updateCallback
+            );
 }
