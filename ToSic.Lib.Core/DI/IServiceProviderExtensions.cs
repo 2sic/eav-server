@@ -20,12 +20,24 @@ public static class IServiceProviderExtensions
     /// <returns></returns>
     public static T Build<T>(this IServiceProvider serviceProvider)
     {
-        // Try to first check registered types, otherwise try to find in DLLs etc. using Activator Utilities
-        var found = serviceProvider.GetService<T>();
+        // 1. Try to first check registered types, otherwise try to find in DLLs etc. using Activator Utilities
+
+        // temp: debug with try-catch, as we're getting some strange problems
+        //try
+        //{
+            var found = serviceProvider.GetService<T>();
+            if (found != null) return found;
+        //}
+        //catch (Exception ex)
+        //{
+        //    throw;
+        //}
+
+
         // If it's an unregistered type, try to find in DLLs etc. - note that ?? doesn't work
         // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
-        if (found == null) found = ActivatorUtilities.CreateInstance<T>(serviceProvider);
-        return found;
+        var activated = ActivatorUtilities.CreateInstance<T>(serviceProvider);
+        return activated;
     }
 
     /// <summary>
@@ -37,9 +49,20 @@ public static class IServiceProviderExtensions
     /// <returns></returns>
     public static T Build<T>(this IServiceProvider serviceProvider, ILog parentLog)
     {
-        var service = serviceProvider.Build<T>();
-        if (service is IHasLog withLog && parentLog != null) withLog.LinkLog(parentLog);
-        return service;
+        // temp: debug with try-catch, as we're getting some strange problems
+        //try
+        //{
+            var service = serviceProvider.Build<T>();
+            if (service is IHasLog withLog && parentLog != null)
+                withLog.LinkLog(parentLog);
+            return service;
+        //}
+        //catch (Exception ex)
+        //{
+        //    parentLog?.A("Error using ServiceProvider to build something.");
+        //    parentLog?.Ex(ex);
+        //    throw;
+        //}
     }
 
 
