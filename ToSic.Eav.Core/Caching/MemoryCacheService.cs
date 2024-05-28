@@ -4,7 +4,6 @@ using ToSic.Eav.Caching.CachingMonitors;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Coding;
 using ToSic.Lib.Services;
-using static System.Runtime.Caching.ObjectCache;
 
 namespace ToSic.Eav.Caching;
 
@@ -57,7 +56,28 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
             var specs = new CacheItemPolicyMaker(Log);
             var parsedSpecs = func?.Invoke(specs) ?? specs;
             var policy = parsedSpecs.CreateResult();
-            Cache.Set(new(key, value), policy);
+            Cache.Set(key, value, policy);
+            l.Done();
+        }
+        catch (Exception ex)
+        {
+            l.Done(ex);
+        }
+    }
+
+    /// <summary>
+    /// WIP experimental - possible replacement with liquid API, to better see which methods are exactly being called.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <param name="policyMaker"></param>
+    public void SetNew(string key, object value, IPolicyMaker policyMaker)
+    {
+        var l = Log.Fn($"key: '{key}'");
+        try
+        {
+            var policy = policyMaker.CreateResult();
+            Cache.Set(key, value, policy);
             l.Done();
         }
         catch (Exception ex)
