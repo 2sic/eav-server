@@ -80,4 +80,23 @@ partial class ILogCallExtensions
     /// <param name="message">Message to add to the log</param>
     /// <returns></returns>
     public static T ReturnNull<T>(this ILogCall<T> logCall, string message) => logCall.Return(default, message);
+
+    #region String
+
+    /// <summary>
+    /// Return `true` for `ILogCall bool` objects.
+    /// </summary>
+    /// <param name="logCall">The log call or null</param>
+    /// <returns></returns>
+    public static string ReturnEmpty(this ILogCall<string> logCall) => logCall.Return("", "empty");
+
+    /// <summary>
+    /// Return `true` for `ILogCall bool` objects.
+    /// </summary>
+    /// <param name="logCall">The log call or null</param>
+    /// <param name="message">Message to add to the log</param>
+    /// <returns></returns>
+    public static string ReturnEmpty(this ILogCall<string> logCall, string message) => logCall.Return("", message);
+
+    #endregion
 }
