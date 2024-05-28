@@ -167,6 +167,8 @@ public class EavFeaturesService: IEavFeaturesService
     public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp != dependentTimeStamp;
 
     // Custom event for LightSpeed
+    // TODO: @STV 2024-05-28 - this looks wrong, since it's only on the instance.
+    // I don't think this will work properly since changes to the features won't be known to all instances
     [PrivateApi] 
     public event EventHandler FeaturesChanged;
 
