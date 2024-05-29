@@ -38,8 +38,11 @@ public class InsightsHtmlTable: InsightsHtmlBase
         }
 
         var contents = (data ?? "").ToString();
-        if (encode) contents = InsightsHtmlBase.HtmlEncode(contents);
-        var cell = isHeader ? Th(contents) as IHtmlTag : Td(contents);
+        if (encode) contents = HtmlEncode(contents);
+        var cell = isHeader
+            ? Th(contents) as IHtmlTag
+            : Td(contents);
+
         if (special?.Styles != null)
             cell.Style(special.Styles);
         if (special?.Tooltip != null)

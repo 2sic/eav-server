@@ -23,10 +23,10 @@ partial class InsightsControllerReal
                 Li(
                     "System Identity: ",
                     Br(),
-                    $"Fingerprint: '{_fingerprint.Value.GetFingerprint()}'")
+                    $"Fingerprint: '{fingerprint.Value.GetFingerprint()}'")
             );
 
-            foreach (var entFp in _fingerprint.Value.EnterpriseFingerprintsWIP)
+            foreach (var entFp in fingerprint.Value.EnterpriseFingerprintsWIP)
                 fingerprintList.Add(Li(
                     $"Enterprise License: for '{entFp.Title}' {EmojiTrueFalse(entFp.Valid)}",
                     Br(),
@@ -53,7 +53,7 @@ partial class InsightsControllerReal
 
         try
         {
-            var rows = _licenseServiceLazy.Value.All
+            var rows = licenseServiceLazy.Value.All
                 .ToList()
                 .Select(l => RowFields(
                         EmojiTrueFalse(l.IsEnabled),
@@ -93,7 +93,7 @@ partial class InsightsControllerReal
 
         try
         {
-            var licDefinitions = _licenseCatalog.Value.List.OrderBy(l => l.Priority);
+            var licDefinitions = licenseCatalog.Value.List.OrderBy(l => l.Priority);
 
             var licRows = licDefinitions.Select(l => RowFields(
                 new SpecialField(l.Name, tooltip: $"{l.NameId} ({l.Guid})"),

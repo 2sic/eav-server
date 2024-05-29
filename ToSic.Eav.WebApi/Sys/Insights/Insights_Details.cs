@@ -8,7 +8,7 @@ partial class InsightsControllerReal
 {
     private IInsightsProvider FindProvider(string name)
     {
-        var provider = _insightsProviders.FirstOrDefault(p => p.Name.EqualsInsensitive(name));
+        var provider = insightsProviders.FirstOrDefault(p => p.Name.EqualsInsensitive(name));
         return provider;
     }
 
@@ -83,10 +83,10 @@ partial class InsightsControllerReal
         if (view.EqualsInsensitive(nameof(Purge))) return Purge(appId);
 
         // DataSourceCache
-        if (view.EqualsInsensitive(nameof(_dsCache.Value.DataSourceCache))) return _dsCache.Value.DataSourceCache();
-        if (view.EqualsInsensitive(nameof(_dsCache.Value.DataSourceCacheItem))) return _dsCache.Value.DataSourceCacheItem(key);
-        if (view.EqualsInsensitive(nameof(_dsCache.Value.DataSourceCacheFlush))) return _dsCache.Value.DataSourceCacheFlush(key);
-        if (view.EqualsInsensitive(nameof(_dsCache.Value.DataSourceCacheFlushAll))) return _dsCache.Value.DataSourceCacheFlushAll();
+        if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCache))) return dsCache.Value.DataSourceCache();
+        if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCacheItem))) return dsCache.Value.DataSourceCacheItem(key);
+        if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCacheFlush))) return dsCache.Value.DataSourceCacheFlush(key);
+        if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCacheFlushAll))) return dsCache.Value.DataSourceCacheFlushAll();
 
         // Cache: Entities and Details, Attributes, Metadata etc.
         if (view.EqualsInsensitive(nameof(Entities))) return Entities(appId, type);

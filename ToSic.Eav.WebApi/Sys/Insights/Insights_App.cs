@@ -12,15 +12,15 @@ partial class InsightsControllerReal
             return message;
 
         Log.A($"debug app-load {appId}");
-        return InsightsHtmlParts.PageStyles() + _logHtml.DumpTree($"2sxc load log for app {appId}",
-            _appStates.GetCacheState(appId.Value).Log);
+        return InsightsHtmlParts.PageStyles() + LogHtml.DumpTree($"2sxc load log for app {appId}",
+            appStates.GetCacheState(appId.Value).Log);
     }
 
     private string Cache()
     {
         var msg = H1("Apps In Cache").ToString();
 
-        var zones = _appStates.Zones.OrderBy(z => z.Key);
+        var zones = appStates.Zones.OrderBy(z => z.Key);
 
         msg += "<table id='table'>"
                + InsightsHtmlTable.HeadFields("Zone ↕", "App ↕", Eav.Data.Attributes.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")
@@ -32,8 +32,8 @@ partial class InsightsControllerReal
                 .Select(a =>
                 {
                     var appIdentity = new AppIdentity(zone.Value.ZoneId, a.Key);
-                    var inCache = _appStates.IsCached(appIdentity);
-                    var appState = inCache ? _appStates.GetReader(appIdentity) : null;
+                    var inCache = appStates.IsCached(appIdentity);
+                    var appState = inCache ? appStates.GetReader(appIdentity) : null;
                     return new
                     {
                         Id = a.Key,
@@ -86,7 +86,7 @@ partial class InsightsControllerReal
 
         Log.A($"debug app-internals for {appId}");
         
-        var pkg = _appStates.GetCacheState(appId.Value);
+        var pkg = appStates.GetCacheState(appId.Value);
 
         var msg = H1($"App internals for {appId}").ToString();
         try

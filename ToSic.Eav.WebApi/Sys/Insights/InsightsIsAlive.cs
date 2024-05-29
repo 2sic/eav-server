@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsIsAlive(): InsightsProvider("IsAlive")
+internal class InsightsIsAlive(): InsightsProvider("IsAlive", helpCategory: HiddenFromAutoDisplay)
 {
 
     public override string HtmlBody() => true.ToString();

@@ -16,7 +16,7 @@ partial class InsightsControllerReal
             return message;
 
         Log.A($"debug app attributes for {appId} and {type}");
-        var appEntities = _workEntities.New(appId ?? 0);
+        var appEntities = workEntities.New(appId ?? 0);
 
         var typ = appEntities.AppWorkCtx.AppState.GetContentType(type);
 
@@ -65,7 +65,7 @@ partial class InsightsControllerReal
             return message;
 
         Log.A($"debug app entity metadata for {appId} and entity {entity}");
-        var ent = _workEntities.New(appId.Value).Get(entity.Value);
+        var ent = workEntities.New(appId.Value).Get(entity.Value);
 
         var msg = H1($"Entity Metadata for {entity} in {appId}\n").ToString();
         var metadata = ent.Metadata.ToList();
@@ -79,7 +79,7 @@ partial class InsightsControllerReal
             return message;
 
         Log.A($"debug app entity permissions for {appId} and entity {entity}");
-        var ent = _workEntities.New(appId.Value).Get(entity.Value);
+        var ent = workEntities.New(appId.Value).Get(entity.Value);
 
         var msg = H1($"Entity Permissions for {entity} in {appId}\n").ToString();
         var permissions = ent.Metadata.Permissions.Select(p => p.Entity).ToList();
@@ -93,7 +93,7 @@ partial class InsightsControllerReal
             return message;
 
         Log.A($"debug app entity metadata for {appId} and entity {nameId}");
-        var entities = _workEntities.New(appId.Value);
+        var entities = workEntities.New(appId.Value);
 
         IEntity ent;
         if (int.TryParse(nameId, out var entityId))
@@ -103,7 +103,7 @@ partial class InsightsControllerReal
         else
             throw CreateBadRequest("can't use entityid - must be number or guid");
 
-        var ser = _jsonSerializer.New().SetApp(entities.AppWorkCtx.AppState);
+        var ser = jsonSerializer.New().SetApp(entities.AppWorkCtx.AppState);
         var json = ser.Serialize(ent);
 
         var msg = H1($"Entity Debug for {nameId} in {appId}\n")

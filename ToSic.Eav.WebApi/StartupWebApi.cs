@@ -87,6 +87,7 @@ public static class StartupWebApi
         services.AddTransient<IInsightsProvider, InsightsIsAlive>();
         services.AddTransient<IInsightsProvider, InsightsTypes>();
         services.AddTransient<IInsightsProvider, InsightsGlobalTypes>();
+        services.AddTransient<IInsightsProvider, InsightsMemoryCache>();
 
         return services;
     }

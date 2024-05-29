@@ -4,7 +4,7 @@ using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsTypes(IAppStates appStates, string name) : InsightsProvider(name)
+internal class InsightsTypes(IAppStates appStates, string name) : InsightsProvider(name, helpCategory: HiddenFromAutoDisplay)
 {
     protected readonly IAppStates AppStates = appStates;
 

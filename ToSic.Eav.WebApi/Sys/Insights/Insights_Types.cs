@@ -8,11 +8,11 @@ partial class InsightsControllerReal
 
     private string GlobalTypesLog()
     {
-        var msg = InsightsHtmlParts.PageStyles() + _logHtml.LogHeader(null, false);
+        var msg = InsightsHtmlParts.PageStyles() + LogHtml.LogHeader(null, false);
         var log = InternalAppLoader.LoadLog;
         return msg + (log == null
             ? P("log is null").ToString()
-            : _logHtml.DumpTree("Log for Global Types loading", log));
+            : LogHtml.DumpTree("Log for Global Types loading", log));
     }
 
     private string TypeMetadata(int? appId = null, string type = null)

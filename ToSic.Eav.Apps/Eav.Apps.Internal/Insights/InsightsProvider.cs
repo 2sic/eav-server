@@ -11,6 +11,8 @@ public abstract class InsightsProvider(string name,
     string helpCategory = default
     ): ServiceBase($"Ins.{name}"), IInsightsProvider
 {
+    public const string HiddenFromAutoDisplay = "Hidden";
+
     public string HelpCategory => helpCategory;
 
     public string Name => name;

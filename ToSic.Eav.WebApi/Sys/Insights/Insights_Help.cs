@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Coding;
+﻿using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Lib.Coding;
 using ToSic.Razor.Html5;
 using static ToSic.Razor.Blade.Tag;
 
@@ -10,23 +11,38 @@ partial class InsightsControllerReal
     {
         var l = Log.Fn<string>();
             
+        // ReSharper disable IdentifierTypo
+        // ReSharper disable StringLiteralTypo
         const string typeattribs = "typeattributes?appid=&type=";
         const string typeMeta = "typemetadata?appid=&type=";
         const string typePerms = "typepermissions?appid=&type=";
         const string attribMeta = "attributemetadata?appid=&type=&attribute=";
         const string attribPerms = "attributepermissions?appid=&type=&attribute=";
+        // ReSharper restore IdentifierTypo
+        // ReSharper restore StringLiteralTypo
 
-        var providersWithCategory = _insightsProviders
+        var providersWithCategory = insightsProviders
+            // Skip self
             .Where(p => !p.Name.EqualsInsensitive(nameof(Help)))
-            .Where(p => p.HelpCategory.HasValue())
-            .GroupBy(p => p.HelpCategory)
+            // Skip hidden - these are usually sub-providers which require additional parameters
+            .Where(p => p.HelpCategory != InsightsProvider.HiddenFromAutoDisplay)
+            // Group by category - if not set, use a default
+            .GroupBy(p => p.HelpCategory ?? "Uncategorized (please add Category)")
             .OrderBy(g => g.Key)
             .ToList();
 
         var extras = providersWithCategory
             .Select(g =>
                 H2(g.Key)
-                + Ol(g.Select(p => Li(LinkTo(p.Title, p.Name), $" {p.Teaser}")))
+                + Ol(g.Select(p =>
+                        Li(
+                            LinkTo(p.Title, p.Name),
+                            p.Teaser.HasValue()
+                                ? $"<br>{p.Teaser}"
+                                : ""
+                        )
+                    )
+                )
             )
             .ToList();
 
@@ -45,7 +61,7 @@ partial class InsightsControllerReal
                     Li(LinkTo("Help (this screen", nameof(Help))),
                     Li(LinkTo("All Logs", nameof(Logs))),
                     Li(LinkTo("In Memory Cache", nameof(Cache))),
-                    Li(LinkTo("In Memory DataSource Cache", nameof(_dsCache.Value.DataSourceCache))),
+                    Li(LinkTo("In Memory DataSource Cache", nameof(dsCache.Value.DataSourceCache))),
                     Li(LinkTo("ping the system / IsAlive", ProviderName(nameof(InsightsIsAlive))))
                 ),
 
