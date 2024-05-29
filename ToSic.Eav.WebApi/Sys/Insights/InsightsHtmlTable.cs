@@ -30,15 +30,11 @@ public class InsightsHtmlTable: InsightsHtmlBase
     {
         var data = fresh;
         var special = fresh as SpecialField;
-        //var styles = special?.Styles;
-        if (special != null)
-        {
-            data = special.Value;
-            //styles = special.Styles;
-        }
+        if (special != null) data = special.Value;
 
         var contents = (data ?? "").ToString();
-        if (encode) contents = HtmlEncode(contents);
+        if (encode && special?.IsEncoded != true)
+            contents = HtmlEncode(contents);
         var cell = isHeader
             ? Th(contents) as IHtmlTag
             : Td(contents);
