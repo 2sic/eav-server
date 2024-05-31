@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata;
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Apps.State;
 partial class AppState
 {
     /// <summary>
-    /// The builder must be a sub-class of AppState, so it can access its private properties
+    /// The builder must be a subclass of AppState, so it can access its private properties.
     /// </summary>
     internal class AppStateBuilder(IAppStates appStates) : ServiceBase("App.SttBld"), IAppStateBuilder
     {
@@ -27,13 +28,15 @@ partial class AppState
         public IAppStateBuilder InitForPreset()
         {
             _appState = new AppState(new(null, false, false), PresetIdentity, PresetName, Log);
+            MemoryCacheService.Notify(_appState);
             _reader = appStates.ToReader(AppState, Log);
             return this;
         }
 
-        public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog)
+        public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog)
         {
-            _appState = new AppState(parentApp, id, nameId, parentLog);
+            _appState = new AppState(parentApp, identity, nameId, parentLog);
+            MemoryCacheService.Notify(_appState);
             _reader = appStates.ToReader(AppState, Log);
             return this;
         }

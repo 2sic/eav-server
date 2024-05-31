@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching.CachingMonitors;
 using ToSic.Lib.Coding;
 using ToSic.Lib.Services;
@@ -92,7 +91,6 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         IList<string> filePaths = null,
         IDictionary<string, bool> folderPaths = null,
         IEnumerable<string> cacheKeys = null,
-        List<IAppStateChanges> appStates = null,
         CacheEntryUpdateCallback updateCallback = null)
     {
         var l = Log.Fn($"key: '{key}'");
@@ -122,13 +120,6 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
                     l.A($"Add {keysClone.Count} Cache-Entry Change Monitors");
                     policy.ChangeMonitors.Add(CreateCacheEntryChangeMonitor(keysClone));
                 }
-            }
-
-            if (appStates?.Any() == true)
-            {
-                l.A($"Add {appStates.Count} {nameof(AppResetMonitor)}s to invalidate on App-data change");
-                foreach (var appState in appStates)
-                    policy.ChangeMonitors.Add(new AppResetMonitor(appState));
             }
 
             if (updateCallback != null)
@@ -169,6 +160,9 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 
     private const string NotifyCachePrefix = "Eav-Notify-";
 
+    public static void Notify(ICanBeCacheDependency obj)
+        => Cache.Set($"{NotifyCachePrefix}{obj.CacheId}", DateTime.Now, ObjectCache.InfiniteAbsoluteExpiration);
+
     public static void Notify(string key)
         => Cache.Set($"{NotifyCachePrefix}{key}", DateTime.Now, ObjectCache.InfiniteAbsoluteExpiration);
 
@@ -178,9 +172,15 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// </summary>
     /// <param name="keys">list of cache cacheKeys of existing cache items to depend on</param>
     /// <returns></returns>
-    internal static CacheEntryChangeMonitor CreateCacheNotifyMonitor(IEnumerable<string> keys)
+    //internal static CacheEntryChangeMonitor CreateCacheNotifyMonitor(IEnumerable<string> keys)
+    //{
+    //    var prefixed = (keys ?? []).Select(k => $"{NotifyCachePrefix}{k}");
+    //    return Cache.CreateCacheEntryChangeMonitor(prefixed);
+    //}
+
+    internal static CacheEntryChangeMonitor CreateCacheNotifyMonitor(IEnumerable<ICanBeCacheDependency> keys)
     {
-        var prefixed = (keys ?? []).Select(k => $"{NotifyCachePrefix}{k}");
+        var prefixed = (keys ?? []).Select(k => $"{NotifyCachePrefix}{k.CacheId}");
         return Cache.CreateCacheEntryChangeMonitor(prefixed);
     }
 

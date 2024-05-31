@@ -7,7 +7,7 @@ using ToSic.Lib.Data;
 namespace ToSic.Eav.Apps.State;
 
 public interface IAppStateCache: ICacheExpiring, IHasMetadata, IHasPiggyBack, IAppIdentity, IHasMetadataSource, IHasIdentityNameId, 
-    IEntitiesSource, IHasLog
+    IEntitiesSource, ICanBeCacheDependency, IHasLog
 {
 
     string Folder { get; }

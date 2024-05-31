@@ -3,23 +3,13 @@ using ToSic.Eav.Data.PiggyBack;
 
 namespace ToSic.Eav.Apps.State;
 
-partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppStateChanges
+partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, ICanBeCacheDependency
 {
     /// <summary>
     /// Helper object to keep track of cache changes
     /// </summary>
     [PrivateApi]
     ICacheStatistics IAppStateCache.CacheStatistics { get; } = new CacheStatistics();
-
-
-    // Custom event for LightSpeed
-    [PrivateApi] private event EventHandler AppStateChanged;
-    [PrivateApi]
-    event EventHandler IAppStateChanges.AppStateChanged
-    {
-        add => this.AppStateChanged += value;
-        remove => this.AppStateChanged -= value;
-    }
 
     /// <inheritdoc />
     public long CacheTimestamp => CacheTimestampDelegate.CacheTimestamp;
@@ -38,7 +28,8 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppState
         Log.A($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
         Log.A($"Stats: ItemCount: {Index.Count}; ResetCount: {(this as IAppStateCache).CacheStatistics.ResetCount}  Message: '{message}'");
 
-        AppStateChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
+        // publish event so lightspeed can flush cache
+        MemoryCacheService.Notify(this);
     }
 
     /// <summary>
@@ -78,4 +69,5 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, IAppState
     public PiggyBack PiggyBack => _piggyBack ??= new();
     private PiggyBack _piggyBack;
 
+    string ICanBeCacheDependency.CacheId => $"{typeof(AppState).FullName}({this.Show()})";
 }

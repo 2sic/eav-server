@@ -15,6 +15,8 @@ namespace ToSic.Eav.Internal.Features;
 /// <remarks>
 /// WARNING: singleton - don't use any complex services/dependencies here
 /// REASON is probably cache connection, since it should notify the system to release caches as settings change?
+///
+/// 2024-05-31 changing to non-singleton, must monitor if all is ok...
 /// </remarks>
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -103,7 +105,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         CacheTimestamp = DateTime.Now.Ticks;
 
         // Notify the cache that the features have changed
-        MemoryCacheService.Notify(typeof(IEavFeaturesService).FullName);
+        MemoryCacheService.Notify(this);
 
         return true;
     }
