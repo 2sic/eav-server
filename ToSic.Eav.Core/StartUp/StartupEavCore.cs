@@ -52,7 +52,9 @@ public static class StartUpEavCore
         // Make sure that IFeaturesInternal and IFeatures use the same singleton!
         services.AddSingleton<LicenseCatalog>();    // Must be singleton
         services.AddSingleton<FeaturesCatalog>();   // Must be singleton
-        services.TryAddSingleton<IEavFeaturesService, EavFeaturesService>();    // this must come first!
+
+        // Features - 2024-05-31 changing to non-singleton, must monitor if all is ok...
+        services.TryAddTransient<IEavFeaturesService, EavFeaturesService>();    // this must come first!
 
         // New SystemCapability
         services.TryAddTransient<SysFeaturesService>();
