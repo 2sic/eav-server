@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Caching;
+using ToSic.Eav.Apps.Assets.Internal;
 using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
@@ -51,9 +52,9 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
             .OrderBy(pair => pair.Key)
             .Select(pair => new
             {
-                Key = pair.Key,
-                Value = pair.Value,
-                TypeName = (pair.Value?.GetType().Name ?? "unknown"),
+                pair.Key,
+                pair.Value,
+                TypeName = pair.Value?.GetType().Name ?? "unknown",
             })
             .ToList();
 
@@ -65,10 +66,6 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
         if (filterType != null)
             filtered = filtered.Where(pair => pair.TypeName == filterType).ToList();
 
-
-
-        //var cacheItems = all
-        //    .ToDictionary(pair => pair.Key, pair => pair.Value);
 
         var msg = "";
         if (filtered.Count > ShowMax)
@@ -112,13 +109,16 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
 
                 var typeName = cacheItem.Value?.GetType().Name ?? "null";
 
+                var sizeInfo = new SizeInfo(estimate.Total);
+
                 msg += InsightsHtmlTable.RowFields(
                     ++count,
                     Span(visibleKey).Title(fullKey),
                     Linker.LinkTo(view: Link, label: typeName, type: typeName),
-                    SpecialField.Right(estimate.Total > 0
-                        ? estimate.Total.ToString()
-                        : "-"
+                    SpecialField.Right(sizeInfo.Bytes > 0
+                        ? $"{sizeInfo.Mb:N} MB"
+                        : "-",
+                        tooltip: $"{sizeInfo.BestSize} {sizeInfo.BestUnit}"
                     ),
                     InsightsHtmlBase.HtmlEncode(estimate.Icon)
                 ) + "\n";
@@ -134,20 +134,21 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
                 .GroupBy(pair => pair.TypeName)
                 .Count();
 
+            var totSizeInfo = new SizeInfo(totalSize.Total);
+
             msg += InsightsHtmlTable.RowFields(
                 Strong($"{filtered.Count} of {all.Count}"),
                 "",
                 $"{typeCountFiltered} of {typeCountAll}",
-                SpecialField.Right(totalSize.Total > 0
-                                        ? totalSize.Total.ToString()
-                                        : "-"
-                                    ),
+                SpecialField.Right(totSizeInfo.Bytes > 0
+                        ? $"{totSizeInfo.Mb:N} MB"
+                        : "-",
+                    tooltip: $"{totSizeInfo.BestSize} {totSizeInfo.BestUnit}"
+                ),
                 InsightsHtmlBase.HtmlEncode(totalSize.Icon)
             );
             msg += "</table>";
             msg += "\n\n";
-            //msg += P(
-            //    $"Total item in system: {items?.Count} - in types: {totalItems} - numbers {Em("should")} match!");
             msg += InsightsHtmlParts.JsTableSort();
         }
         catch (Exception ex)
