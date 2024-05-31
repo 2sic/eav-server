@@ -24,21 +24,25 @@ public class ItemIdentifier
     /// </summary>
     public JsonMetadataFor For { get; set; }
 
-    /// <summary>
-    /// Prefill information for the UI to add values to new / empty fields
-    /// This is not needed on the server, but must be passed through,
-    /// so it's still attached to this item if in use
-    /// </summary>
-    public dynamic Prefill { get; set; }
+    #region Change v17.10 - stop passing Prefill and ClientData back and forth, let the UI remember using clientId
 
-    /// <summary>
-    /// Additional data to preserve during client requests.
-    /// The contents of which is not important for the server,
-    /// but the client should get it again on the identifier bundle.
-    /// </summary>
-    /// <remarks>Added v16.01</remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Dictionary<string, object> ClientData { get; set; }
+    ///// <summary>
+    ///// Prefill information for the UI to add values to new / empty fields
+    ///// This is not needed on the server, but must be passed through,
+    ///// so it's still attached to this item if in use
+    ///// </summary>
+    //public dynamic Prefill { get; set; }
+
+    ///// <summary>
+    ///// Additional data to preserve during client requests.
+    ///// The contents of which is not important for the server,
+    ///// but the client should get it again on the identifier bundle.
+    ///// </summary>
+    ///// <remarks>Added v16.01</remarks>
+    //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    //public Dictionary<string, object> ClientData { get; set; }
+
+    #endregion
 
     /// <summary>
     /// The client id of the item, used to identify it in the edit-ui.
