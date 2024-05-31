@@ -4,7 +4,7 @@ using ToSic.Eav.SysData;
 namespace ToSic.Eav.Internal.Features;
 
 [PrivateApi("Internal stuff only")]
-public interface IEavFeaturesService: ICacheExpiring
+public interface IEavFeaturesService: ICacheExpiring, ICanBeCacheDependency
 {
     #region WIP trying to remove the old IFeaturesService from our used API - this is temporary - should rename later as is better
 
@@ -64,7 +64,6 @@ public interface IEavFeaturesService: ICacheExpiring
 
 
     FeatureStatesPersisted Stored { get; }
-    event EventHandler FeaturesChanged;
 
     bool UpdateFeatureList(FeatureStatesPersisted newList, List<FeatureState> sysFeatures);
 }

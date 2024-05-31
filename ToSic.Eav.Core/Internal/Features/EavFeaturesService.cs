@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Internal.Licenses;
+﻿using ToSic.Eav.Caching;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.SysData;
 using ToSic.Lib.Helpers;
@@ -25,7 +26,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     /// <summary>
     /// List of all enabled features with their guids and nameIds
     /// </summary>
-    internal HashSet<string> EnabledFeatures => _enabledFeatures ??= new(All
+    private HashSet<string> EnabledFeatures => _enabledFeatures ??= new(All
             .Where(f => f.IsEnabled)
             .SelectMany(f => new[] { f.NameId, f.Aspect.Guid.ToString() })
             .Distinct(InvariantCultureIgnoreCase),
@@ -43,7 +44,8 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
 
     public bool IsEnabled(params string[] nameIds)
     {
-        if (nameIds == null || nameIds.Length == 0) return true;
+        if (nameIds == null || nameIds.Length == 0)
+            return true;
         return nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
     }
 
@@ -99,7 +101,10 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         AllStaticCache.Reset();
         _enabledFeatures = null;
         CacheTimestamp = DateTime.Now.Ticks;
-        FeaturesChanged?.Invoke(this, EventArgs.Empty); // publish event so lightspeed can flush cache
+
+        // Notify the cache that the features have changed
+        MemoryCacheService.Notify(typeof(IEavFeaturesService).FullName);
+
         return true;
     }
 
@@ -179,11 +184,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     public bool CacheChanged(long dependentTimeStamp)
         => CacheTimestamp != dependentTimeStamp;
 
-    // Custom event for LightSpeed
-    // TODO: @STV 2024-05-28 - this looks wrong, since it's only on the instance.
-    // I don't think this will work properly since changes to the features won't be known to all instances
-    [PrivateApi] 
-    public event EventHandler FeaturesChanged;
-
     #endregion
+
+    string ICanBeCacheDependency.CacheId => typeof(IEavFeaturesService).FullName;
 }

@@ -82,7 +82,8 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
                            isEncoded: true
                        ),
                        SpecialField.Left("Size ca. ↕", tooltip: "Size is estimated, which cannot always be done"),
-                       SpecialField.Center("Quality", tooltip: "Size estimate reliability")
+                       SpecialField.Center("Quality", tooltip: "Size estimate reliability"),
+                       SpecialField.Left("Value ↕", tooltip: "Value if easily displayable")
                    )
                    + "<tbody>"
                    + "\n";
@@ -111,6 +112,9 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
 
                 var sizeInfo = new SizeInfo(estimate.Total);
 
+                var value = cacheItem.Value?.ToString()?.Ellipsis(500);
+                var valueShort = value?.Ellipsis(25);
+
                 msg += InsightsHtmlTable.RowFields(
                     ++count,
                     Span(visibleKey).Title(fullKey),
@@ -120,7 +124,8 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
                         : "-",
                         tooltip: $"{sizeInfo.BestSize} {sizeInfo.BestUnit}"
                     ),
-                    InsightsHtmlBase.HtmlEncode(estimate.Icon)
+                    InsightsHtmlBase.HtmlEncode(estimate.Icon),
+                    SpecialField.Left(valueShort, tooltip: value)
                 ) + "\n";
             }
             msg += "</tbody>" + "\n";
