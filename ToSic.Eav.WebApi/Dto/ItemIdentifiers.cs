@@ -26,7 +26,8 @@ public class ItemIdentifier
 
     /// <summary>
     /// Prefill information for the UI to add values to new / empty fields
-    /// This is not needed on the server, but must be passed through so it's still attached to this item if in use
+    /// This is not needed on the server, but must be passed through,
+    /// so it's still attached to this item if in use
     /// </summary>
     public dynamic Prefill { get; set; }
 
@@ -38,6 +39,16 @@ public class ItemIdentifier
     /// <remarks>Added v16.01</remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Dictionary<string, object> ClientData { get; set; }
+
+    /// <summary>
+    /// The client id of the item, used to identify it in the edit-ui.
+    /// This should help ensure that set #1 is not mixed up with set #2
+    /// especially when sometimes the request contains more items than the result
+    ///
+    /// Goal is to replace sending ClientData and prefill back and forth
+    /// </summary>
+    [JsonPropertyName("clientId")] // new JS-Case
+    public int ClientId { get; set; }
 
     public int? DuplicateEntity { get; set; }
 
