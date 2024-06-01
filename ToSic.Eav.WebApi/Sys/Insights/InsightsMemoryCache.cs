@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Caching;
 using ToSic.Eav.Apps.Assets.Internal;
 using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Caching;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
@@ -83,11 +84,13 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
                        ),
                        SpecialField.Left("Size ca. ↕", tooltip: "Size is estimated, which cannot always be done"),
                        SpecialField.Center("Quality", tooltip: "Size estimate reliability"),
-                       SpecialField.Left("Value ↕", tooltip: "Value if easily displayable")
+                       SpecialField.Left("Age ↕", tooltip: "Estimated age of the data"),
+                       SpecialField.Left("Contents ↕", tooltip: "Value if easily displayable")
                    )
                    + "<tbody>"
                    + "\n";
 
+            var timeStampNow = DateTime.Now.Ticks;
             var count = 0;
             var totalSize = new SizeEstimate();
             foreach (var cacheItem in filtered)
@@ -113,7 +116,14 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
                 var sizeInfo = new SizeInfo(estimate.Total);
 
                 var value = cacheItem.Value?.ToString()?.Ellipsis(500);
-                var valueShort = value?.Ellipsis(25);
+                var valueShort = value?.Ellipsis(75);
+
+                var tsCache = (cacheItem.Value as ITimestamped)?.CacheTimestamp;
+                var tsDate = tsCache == null ? DateTime.MinValue : new(tsCache.Value);
+                var tsTooltip = tsCache == null ? "" : tsDate.ToString("O");
+                var tsAge = tsCache == null
+                    ? "unknown"
+                    : MillisecondsToNiceText((long)new TimeSpan(timeStampNow - tsCache.Value).TotalMilliseconds);
 
                 msg += InsightsHtmlTable.RowFields(
                     ++count,
@@ -125,6 +135,7 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
                         tooltip: $"{sizeInfo.BestSize} {sizeInfo.BestUnit}"
                     ),
                     InsightsHtmlBase.HtmlEncode(estimate.Icon),
+                    SpecialField.Left(tsAge, tooltip: tsTooltip),
                     SpecialField.Left(valueShort, tooltip: value)
                 ) + "\n";
             }
@@ -162,6 +173,21 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
         }
 
         return l.ReturnAsOk(msg);
+    }
+
+    private string MillisecondsToNiceText(long ms)
+    {
+        // Create code which will convert milliseconds to a nice text
+        // for example 1000 would be "1 second", 60000 would be "1 minute", 3600000 would be "1 hour", 86400000 would be "1 day"
+        return ms switch
+        {
+            < 1000 => "now",
+            < 60000 => $"{ms / 1000} seconds",
+            < 3600000 => $"{ms / 60000} minutes",
+            < 86400000 => $"{ms / 3600000} hours",
+            _ => $"{ms / 86400000} days"
+        };
+        
     }
 
     //private int TryToFigureOutObjectSize(object value)

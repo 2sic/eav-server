@@ -161,10 +161,10 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     private const string NotifyCachePrefix = "Eav-Notify-";
 
     public static void Notify(ICanBeCacheDependency obj)
-        => Cache.Set($"{NotifyCachePrefix}{obj.CacheId}", DateTime.Now, ObjectCache.InfiniteAbsoluteExpiration);
+        => Cache.Set(ExpandDependencyId(obj), new Timestamped<DateTime>(DateTime.Now, DateTime.Now.Ticks), ObjectCache.InfiniteAbsoluteExpiration);
 
-    public static void Notify(string key)
-        => Cache.Set($"{NotifyCachePrefix}{key}", DateTime.Now, ObjectCache.InfiniteAbsoluteExpiration);
+    //public static void Notify(string key)
+    //    => Cache.Set($"{NotifyCachePrefix}{key}", DateTime.Now, ObjectCache.InfiniteAbsoluteExpiration);
 
     /// <summary>
     /// Used to create cache item dependency on other cache items
@@ -180,9 +180,11 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 
     internal static CacheEntryChangeMonitor CreateCacheNotifyMonitor(IEnumerable<ICanBeCacheDependency> keys)
     {
-        var prefixed = (keys ?? []).Select(k => $"{NotifyCachePrefix}{k.CacheId}");
+        var prefixed = (keys ?? []).Where(x => x != null).Select(ExpandDependencyId);
         return Cache.CreateCacheEntryChangeMonitor(prefixed);
     }
+
+    private static string ExpandDependencyId(ICanBeCacheDependency obj) => $"{(obj.CacheIsNotifyOnly ? NotifyCachePrefix : "")}{obj.CacheDependencyId}";
 
     #endregion
 

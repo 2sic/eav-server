@@ -188,5 +188,12 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
 
     #endregion
 
-    string ICanBeCacheDependency.CacheId => typeof(IEavFeaturesService).FullName;
+    #region CacheDependency
+
+    public bool CacheIsNotifyOnly => true;
+
+    string ICanBeCacheDependency.CacheDependencyId => typeof(IEavFeaturesService).FullName;
+
+    #endregion
+
 }

@@ -27,4 +27,11 @@ public class Timestamped<T>: ITimestamped
 
     /// <inheritdoc />
     public long CacheTimestamp { get; }
+
+    /// <summary>
+    /// ToString for better debugging.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString() 
+        => $"{nameof(Timestamped<T>)}({CacheTimestamp} / {new DateTime(CacheTimestamp):O})={Value}";
 }

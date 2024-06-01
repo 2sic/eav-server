@@ -69,5 +69,11 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, ICanBeCac
     public PiggyBack PiggyBack => _piggyBack ??= new();
     private PiggyBack _piggyBack;
 
-    string ICanBeCacheDependency.CacheId => $"{typeof(AppState).FullName}({this.Show()})";
+    #region CacheDependency
+
+    public bool CacheIsNotifyOnly => true;
+
+    string ICanBeCacheDependency.CacheDependencyId => $"{typeof(AppState).FullName}({this.Show()})";
+
+    #endregion
 }
