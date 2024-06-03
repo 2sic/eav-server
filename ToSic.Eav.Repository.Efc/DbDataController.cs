@@ -10,7 +10,18 @@ using ToSic.Eav.Repository.Efc.Parts;
 namespace ToSic.Eav.Repository.Efc;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class DbDataController : ServiceBase, IStorage, IAppIdentity
+public class DbDataController(
+    EavDbContext dbContext,
+    LazySvc<Efc11Loader> efcLoaderLazy,
+    LazySvc<IUser> userLazy,
+    AppsCacheSwitch appsCache,
+    Generator<JsonSerializer> jsonSerializerGenerator,
+    ILogStore logStore,
+    LazySvc<Compressor> compressor,
+    DataBuilder builder)
+    : ServiceBase("Db.Data",
+        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder]
+    ), IStorage, IAppIdentity
 {
 
     #region Properties like AppId, ZoneId, UserName etc.
@@ -46,7 +57,7 @@ public class DbDataController : ServiceBase, IStorage, IAppIdentity
             try
             {
                 // try to get using dependency injection
-                return _userName = _userLazy.Value?.IdentityToken ?? UserNameUnknown;
+                return _userName = userLazy.Value?.IdentityToken ?? UserNameUnknown;
             }
             catch
             {
@@ -64,9 +75,9 @@ public class DbDataController : ServiceBase, IStorage, IAppIdentity
 
     #region Parts
 
-    internal DbVersioning Versioning => _versioning ??= new(this, _compressor);
+    internal DbVersioning Versioning => _versioning ??= new(this, compressor);
     private DbVersioning _versioning;
-    internal DbEntity Entities => _entities ??= new(this, _builder);
+    internal DbEntity Entities => _entities ??= new(this, builder);
     private DbEntity _entities;
     internal DbValue Values => _values ??= new(this);
     private DbValue _values;
@@ -76,7 +87,7 @@ public class DbDataController : ServiceBase, IStorage, IAppIdentity
     private DbRelationship _relationships;
     internal DbAttributeSet AttribSet => _attributeSet ??= new(this);
     private DbAttributeSet _attributeSet;
-    internal DbPublishing Publishing => _publishing ??= new(this, _builder);
+    internal DbPublishing Publishing => _publishing ??= new(this, builder);
     private DbPublishing _publishing;
     internal DbDimensions Dimensions => _dimensions ??= new(this);
     private DbDimensions _dimensions;
@@ -95,47 +106,20 @@ public class DbDataController : ServiceBase, IStorage, IAppIdentity
 
     #region Constructor and Init
 
-    public DbDataController(
-        EavDbContext dbContext,
-        LazySvc<Efc11Loader> efcLoaderLazy,
-        LazySvc<IUser> userLazy,
-        AppsCacheSwitch appsCache,
-        Generator<JsonSerializer> jsonSerializerGenerator,
-        ILogStore logStore,
-        LazySvc<Compressor> compressor,
-        DataBuilder builder
-    ) : base("Db.Data", connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder])
-    {
-        _efcLoaderLazy = efcLoaderLazy;
-        _userLazy = userLazy;
-        _appsCache = appsCache;
-        _logStore = logStore;
-        SqlDb = dbContext;
-        JsonSerializerGenerator = jsonSerializerGenerator;
-        _compressor = compressor;
-        _builder = builder;
-    }
-
-    private readonly DataBuilder _builder;
-    private readonly LazySvc<Efc11Loader> _efcLoaderLazy;
-    private readonly LazySvc<IUser> _userLazy;
-    private readonly AppsCacheSwitch _appsCache;
-    private readonly ILogStore _logStore;
-    private readonly LazySvc<Compressor> _compressor;
-
     public EavDbContext SqlDb
     {
-        get => _sqlDb;
-        set
+        get
         {
-            _sqlDb = value;
-            _sqlDb.AlternateSaveHandler += SaveChanges;
+            if (_sqlDbPostInit != null) return _sqlDbPostInit;
+            // When used the first time, make sure we have the save handle attached
+            dbContext.AlternateSaveHandler += SaveChanges;
+            return _sqlDbPostInit = dbContext;
         }
     }
 
-    private EavDbContext _sqlDb;
+    private EavDbContext _sqlDbPostInit;
 
-    internal Generator<JsonSerializer> JsonSerializerGenerator { get; }
+    internal Generator<JsonSerializer> JsonSerializerGenerator { get; } = jsonSerializerGenerator;
 
     /// <summary>
     /// Set ZoneId, AppId and ParentAppId on current context.
@@ -219,7 +203,7 @@ public class DbDataController : ServiceBase, IStorage, IAppIdentity
 
     private void PurgeAppCacheIfReady() => Log.Do($"{_purgeAppCacheOnSave}", () =>
     {
-        if (_purgeAppCacheOnSave) _appsCache.Value.Purge(this);
+        if (_purgeAppCacheOnSave) appsCache.Value.Purge(this);
     });
 
     #endregion
@@ -317,7 +301,7 @@ public class DbDataController : ServiceBase, IStorage, IAppIdentity
     /// The loader must use the same connection, to ensure it runs in existing transactions.
     /// Otherwise, the loader would be blocked from getting intermediate data while we're running changes. 
     /// </summary>
-    public IRepositoryLoader Loader => _loader ??= _efcLoaderLazy.Value.UseExistingDb(SqlDb);
+    public IRepositoryLoader Loader => _loader ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
     private IRepositoryLoader _loader;
 
     public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);
@@ -326,7 +310,7 @@ public class DbDataController : ServiceBase, IStorage, IAppIdentity
     public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
     {
         var callLog = Log.Fn<List<int>>(timer: true);
-        _logStore.Add("save-data", Log);
+        logStore.Add("save-data", Log);
         return callLog.ReturnAsOk(Entities.SaveEntity(entities, saveOptions));
     }
 
