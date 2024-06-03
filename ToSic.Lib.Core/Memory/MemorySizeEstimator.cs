@@ -1,7 +1,10 @@
-﻿using System.Collections;
-using ToSic.Lib.Data;
+﻿using System;
+using System.Collections;
+using System.Linq;
+using ToSic.Lib.Logging;
+using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Internal.Insights;
+namespace ToSic.Lib.Memory;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MemorySizeEstimator(ILog parentLog) : HelperBase(parentLog, "Eav.MemSiz")

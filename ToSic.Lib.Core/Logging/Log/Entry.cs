@@ -1,9 +1,11 @@
 ﻿using System;
+using ToSic.Lib.Data;
+using ToSic.Lib.Memory;
 
 namespace ToSic.Lib.Logging;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Entry
+public class Entry: ICanEstimateSize
 {
     public string Message { get; }
     public string Result { get; private set; }
@@ -57,4 +59,9 @@ public class Entry
     public CodeRef Code;
 
     #endregion
+
+    public SizeEstimate EstimateSize(ILog log = default)
+    {
+        throw new NotImplementedException();
+    }
 }

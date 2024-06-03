@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Logging;
 
-namespace ToSic.Lib.Data;
+namespace ToSic.Lib.Memory;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICanEstimateSize
