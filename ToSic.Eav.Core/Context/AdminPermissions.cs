@@ -18,5 +18,9 @@ public class AdminPermissions(bool isContentAdmin, bool isSiteAdmin)
 
     public bool IsContentAdmin { get; } = isContentAdmin;
 
+    public bool IsContentEditor { get; } = isContentAdmin;
+
     public bool IsSiteAdmin { get; } = isSiteAdmin;
+
+    public bool ShowDraftData => IsContentAdmin;
 }
