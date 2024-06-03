@@ -51,8 +51,9 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
         return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
     });
 
-    AdminPermissions IContextOfUserPermissions.Permissions => _permissions ??= UserMayAdmin.Map(mayAdmin => new AdminPermissions(mayAdmin || (User?.IsContentAdmin ?? false), mayAdmin));
-    private AdminPermissions _permissions;
+    EffectivePermissions IContextOfUserPermissions.Permissions => _permissions
+        ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(isSiteAdmin: mayAdmin, isContentAdmin: mayAdmin || (User?.IsContentAdmin ?? false)));
+    private EffectivePermissions _permissions;
 
     /// <inheritdoc />
     public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);

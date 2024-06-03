@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources;
     DynamicOut = false, 
     HelpLink = "https://go.2sxc.org/DsPublishingFilter")]
 
-public class PublishingFilter : Eav.DataSource.DataSourceBase
+public class PublishingFilter : DataSourceBase
 {
 
     #region Configuration-properties
@@ -54,7 +54,9 @@ public class PublishingFilter : Eav.DataSource.DataSourceBase
     {
         var showDraftsAsSet = ShowDrafts;
         var l = Log.Fn<IImmutableList<IEntity>>();
-        var finalShowDrafts = showDraftsAsSet ?? _userPermissions.UserPermissions()?.IsContentAdmin ?? QueryConstants.ParamsShowDraftsDefault;
+        var finalShowDrafts = showDraftsAsSet
+                              ?? _userPermissions.UserPermissions()?.ShowDraftData
+                              ?? QueryConstants.ParamsShowDraftsDefault;
         var outStreamName = finalShowDrafts ? StreamDraftsName : StreamPublishedName;
         var result = In[outStreamName].List.ToImmutableList();
         return l.Return(result, $"showDraftSet:'{showDraftsAsSet}'; final:{finalShowDrafts}; stream: {outStreamName}; count: {result.Count}");

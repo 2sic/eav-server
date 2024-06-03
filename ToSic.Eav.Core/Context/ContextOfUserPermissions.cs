@@ -8,14 +8,14 @@ namespace ToSic.Eav.Context;
 /// </summary>
 internal class ContextOfUserPermissions(IUser user) : ServiceBase("Eav.CtxSec"), IContextOfUserPermissions
 {
-    AdminPermissions IContextOfUserPermissions.Permissions => _permissions ??= GetPermissions();
-    private AdminPermissions _permissions;
+    EffectivePermissions IContextOfUserPermissions.Permissions => _permissions ??= GetPermissions();
+    private EffectivePermissions _permissions;
 
-    private AdminPermissions GetPermissions()
+    private EffectivePermissions GetPermissions()
     {
         var userIsSiteAdmin = UserMayAdmin();
         var isContentAdmin = userIsSiteAdmin || (user?.IsContentAdmin ?? false);
-        return new(isContentAdmin, userIsSiteAdmin);
+        return new(isSiteAdmin: userIsSiteAdmin, isContentAdmin: isContentAdmin);
     }
 
     private bool UserMayAdmin()
