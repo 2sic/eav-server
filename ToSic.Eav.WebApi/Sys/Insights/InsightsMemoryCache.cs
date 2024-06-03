@@ -104,12 +104,6 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
                 // Try to figure out memory size
                 var estimate = SizeEstimator.Estimate(cacheItem.Value);
                 totalSize += estimate;
-                //var size = estimate.Known + estimate.Estimated;
-                //var icon = estimate.Error
-                //    ? "⚠️"
-                //    : estimate.Unknown || estimate.Known == 0
-                //        ? "❔"
-                //        : "✅";
 
                 var typeName = cacheItem.Value?.GetType().Name ?? "null";
 
