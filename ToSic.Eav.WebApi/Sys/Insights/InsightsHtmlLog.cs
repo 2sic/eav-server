@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using ToSic.Eav.Apps.Assets.Internal;
+using ToSic.Lib.Memory;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
@@ -111,6 +113,7 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
         var hasSite = HasKey("SiteId");
         var hasPage = HasKey("PageId");
         var hasMod = HasKey("ModuleId");
+        var totalSize = new SizeEstimate();
         msg += P($"Logs Overview: {set.Count}\n");
         msg += Table().Id("table").Wrap(
             HeadFields("#", "Timestamp",
@@ -118,7 +121,12 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                 hasSite ? "Site ↕" : null,
                 hasPage ? "Page ↕" : null,
                 hasMod ? "Mod ↕" : null,
-                "Lines", "First Message", "Info", "Time"),
+                SpecialField.Right("Lines"),
+                SpecialField.Right("Size ca.", tooltip: "Estimated size of this log in memory"),
+                "First Message",
+                "Info",
+                "Time"
+            ),
             Tbody(logItems
                 .Select((bundle, i) =>
                 {
@@ -126,6 +134,10 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                     var firstIfExists = realLog?.Entries.FirstOrDefault();
                     var specs = bundle.Specs;
                     var timestamp = realLog?.Created.ToUniversalTime().ToString("O").Substring(5) ?? "no timestamp";
+                    var size = realLog?.EstimateSize(null);
+                    var sizeInfo = size == null ? null : new SizeInfo(size.Total);
+                    if (size != null)
+                        totalSize += size;
                     return RowFields(
                         $"{i + 1}",
                         LinkTo(timestamp, nameof(InsightsControllerReal.Logs), key: key, more: $"position={i + 1}"),
@@ -133,14 +145,17 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                         GetValOrAlt(hasSite, specs, "SiteId"),
                         GetValOrAlt(hasPage, specs, "PageId"),
                         GetValOrAlt(hasMod, specs, "ModuleId"),
-                        $"{realLog?.Entries.Count}",
+                        SpecialField.Right($"{realLog?.Entries.Count:##,###}"),
+                        SpecialField.Right(sizeInfo != null ? $"{sizeInfo.Kb:N} KB" : "-"),
                         HtmlEncode((firstIfExists?.Message).NeverNull().Ellipsis(150, "…")),
                         HtmlEncode(firstIfExists?.Result),
-                        new InsightsTime().ShowTime(realLog)
+                        SpecialField.Right(new InsightsTime().ShowTime(realLog))
                     );
                 })
                 .ToArray<object>()));
         msg += "\n\n";
+        var totalSizeInfo = new SizeInfo(totalSize.Total);
+        msg += Br() + Strong($"Total Log Size in Memory: {totalSizeInfo.Mb:N} MB") + Br();
         msg += InsightsHtmlParts.JsTableSort();
 
         return msg;

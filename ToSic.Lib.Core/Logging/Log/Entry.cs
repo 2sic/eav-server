@@ -1,5 +1,4 @@
 ﻿using System;
-using ToSic.Lib.Data;
 using ToSic.Lib.Memory;
 
 namespace ToSic.Lib.Logging;
@@ -62,6 +61,12 @@ public class Entry: ICanEstimateSize
 
     public SizeEstimate EstimateSize(ILog log = default)
     {
-        throw new NotImplementedException();
+        if (_estimate != null) return _estimate;
+        var estimator = new MemorySizeEstimator(log);
+        _estimate = estimator.EstimateMany([Message, Result, Elapsed, Depth, WrapOpen, WrapClose, WrapOpenWasClosed])
+            + new SizeEstimate(0, 10);
+        return _estimate;
     }
+
+    private SizeEstimate _estimate;
 }

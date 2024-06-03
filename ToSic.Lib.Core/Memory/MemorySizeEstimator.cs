@@ -9,7 +9,11 @@ namespace ToSic.Lib.Memory;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MemorySizeEstimator(ILog parentLog) : HelperBase(parentLog, "Eav.MemSiz")
 {
-    public SizeEstimate Estimate(object value) => EstimateInternal(value, 5);
+    public SizeEstimate Estimate(object value)
+        => EstimateInternal(value, 5);
+
+    public SizeEstimate EstimateMany(object[] values)
+        => values.Aggregate(new SizeEstimate(), (current, value) => current + Estimate(value));
 
     public SizeEstimate EstimateInternal(object value, int recursion)
     {
