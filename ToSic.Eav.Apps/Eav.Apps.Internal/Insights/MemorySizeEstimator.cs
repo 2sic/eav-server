@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Apps.Internal.Insights;
 

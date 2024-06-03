@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Internal.Insights;
+﻿namespace ToSic.Lib.Data;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public record SizeEstimate(int Known = 0, int Estimated = 0, bool Unknown = false, bool Error = false)
