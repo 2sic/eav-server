@@ -84,7 +84,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = app1.List.One(test.ExistingItem);
 
             // todo: make some minor changes
-            var itmNewTitle = GetService<EntityBuilder>().TestCreate(appId: test.AppId, entityId: 0, contentType: itm1.Type, values: new Dictionary<string, object>
+            var itmNewTitle = GetService<EntityBuilder>().TestCreate(appId: test.AppId, entityId: 0, contentType: itm1.Type, values: new()
             {
                 {test.TitleField, "changed title on " + DateTime.Now}
             });
@@ -124,7 +124,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var app1 = loader1.AppStateReaderRawTA(test.AppId);
             var ct1 = app1.GetContentType(ctName);
 
-            var newE = GetService<EntityBuilder>().TestCreate(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new Dictionary<string, object>
+            var newE = GetService<EntityBuilder>().TestCreate(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new()
             {
                 { test.TitleField, ctTitle }
             });

@@ -24,7 +24,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
 
 
-        private DimensionBuilder LanguageBuilder => _langBuilder ??= new DimensionBuilder();
+        private DimensionBuilder LanguageBuilder => _langBuilder ??= new();
         private DimensionBuilder _langBuilder;
         private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageBuilder.CreateFrom(orig, readOnly);
 
@@ -57,7 +57,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         });
         Entity _origENull = null;
 
-        private Entity GirlSingle => Builder.Entity.TestCreate(appId: AppId, entityId: 999, contentType: _ctPerson, values: new Dictionary<string, object>
+        private Entity GirlSingle => Builder.Entity.TestCreate(appId: AppId, entityId: 999, contentType: _ctPerson, values: new()
         {
             {"FullName", "Sandra Unmarried"},
             {"FirstName", "Sandra"},
@@ -65,7 +65,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"Birthday", new DateTime(1981, 5, 14) }
         });
 
-        private Entity GirlMarried => Builder.Entity.TestCreate(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new Dictionary<string, object>
+        private Entity GirlMarried => Builder.Entity.TestCreate(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new()
         {
             {"FullName", "Sandra Unmarried-Married"},
             {"FirstName", "Sandra"},
@@ -75,7 +75,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"WeddingDate", DateTime.Today }
         });
 
-        private Entity GirlMarriedUpdate => Builder.Entity.TestCreate(appId: AppId, contentType: _ctPerson, values: new Dictionary<string, object>
+        private Entity GirlMarriedUpdate => Builder.Entity.TestCreate(appId: AppId, contentType: _ctPerson, values: new()
         {
             {"FullName", "Sandra Unmarried-Married"},
             //{"FirstName", "Sandra"},
@@ -91,16 +91,16 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         #region languge definitions
 
-        private static Language langEn = new Language("en-US", false, 1);// {DimensionId = 1, Key = "en-US"};
-        private static Language langDeDe = new Language ("de-DE", false, 42); //{DimensionId = 42, Key = "de-DE"};
-        private static Language langDeCh = new Language ("de-CH", false, 39);//{DimensionId = 39, Key = "de-CH"};
-        private static Language langFr = new Language ("fr-FR", false, 99);//{DimensionId = 99, Key = "fr-FR"};
+        private static Language langEn = new("en-US", false, 1);// {DimensionId = 1, Key = "en-US"};
+        private static Language langDeDe = new("de-DE", false, 42); //{DimensionId = 42, Key = "de-DE"};
+        private static Language langDeCh = new("de-CH", false, 39);//{DimensionId = 39, Key = "de-CH"};
+        private static Language langFr = new("fr-FR", false, 99);//{DimensionId = 99, Key = "fr-FR"};
 
-        private static DimensionDefinition langEnDef = new DimensionDefinition { DimensionId = 1, EnvironmentKey = "en-US" };
-        private static DimensionDefinition langDeDeDef = new DimensionDefinition { DimensionId = 42, EnvironmentKey = "de-DE" };
-        private static DimensionDefinition langDeChDef = new DimensionDefinition { DimensionId = 39, EnvironmentKey = "de-CH" };
-        private static DimensionDefinition langFrDef = new DimensionDefinition { DimensionId = 99, EnvironmentKey = "fr-FR" };
-        private static List<DimensionDefinition> activeLangs = new List<DimensionDefinition> { langEnDef, langDeDeDef, langDeChDef };
+        private static DimensionDefinition langEnDef = new() { DimensionId = 1, EnvironmentKey = "en-US" };
+        private static DimensionDefinition langDeDeDef = new() { DimensionId = 42, EnvironmentKey = "de-DE" };
+        private static DimensionDefinition langDeChDef = new() { DimensionId = 39, EnvironmentKey = "de-CH" };
+        private static DimensionDefinition langFrDef = new() { DimensionId = 99, EnvironmentKey = "fr-FR" };
+        private static List<DimensionDefinition> activeLangs = new() { langEnDef, langDeDeDef, langDeChDef };
 
         #endregion
 
@@ -141,7 +141,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         );
 
         private readonly Entity _prodNull = null;
-        private Entity ProdNoLang => Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new Dictionary<string, object>
+        private Entity ProdNoLang => Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new()
         {
             { Attributes.TitleNiceName, "Original Product No Lang" },
             { "Teaser", "Original Teaser no lang" },
@@ -165,7 +165,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
             });
 
-            return Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
+            return Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new()
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
@@ -207,7 +207,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
             });
 
-            return Builder.Entity.TestCreate(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new Dictionary<string, object>
+            return Builder.Entity.TestCreate(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new()
             {
                 {title.Name, title},
                 {teaser.Name, teaser},

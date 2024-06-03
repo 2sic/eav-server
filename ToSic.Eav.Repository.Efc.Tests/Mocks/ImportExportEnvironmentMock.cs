@@ -16,10 +16,10 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 
         public virtual List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
         {
-            return new List<Message>();
+            return new();
         }
 
-        public virtual Version TenantVersion => new Version(8, 0);
+        public virtual Version TenantVersion => new(8, 0);
 
         public virtual string ModuleVersion => "08.12.00";
 
@@ -42,6 +42,6 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         {
         }
        
-        public SaveOptions SaveOptions(int zoneId) => new SaveOptions(DefaultLanguage, appStates.Languages(zoneId, true)/* new ZoneRuntime().Init(zoneId, Log).Languages(true)*/);
+        public SaveOptions SaveOptions(int zoneId) => new(DefaultLanguage, appStates.Languages(zoneId, true)/* new ZoneRuntime().Init(zoneId, Log).Languages(true)*/);
     }
 }

@@ -100,7 +100,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
         var sysSettings = Serializer.Serialize(contentTypeAttribute.SysSettings);
 
-        var attributeSet = DbContext.AttribSet.GetDbAttribSet(attributeSetId);
+        var attributeSet = DbContext.AttribSet.GetDbContentType(DbContext.AppId, attributeSetId);
 
         if (!Attributes.StaticNameValidation.IsMatch(staticName))
             throw new("Attribute static name \"" + staticName + "\" is invalid. " + Attributes.StaticNameErrorMessage);

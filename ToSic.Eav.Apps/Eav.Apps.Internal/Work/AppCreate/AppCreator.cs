@@ -53,7 +53,7 @@ public class AppCreator(
     private int CreateInDb(string appGuid, int? inheritAppId)
     {
         Log.A("create new app");
-        var app = db.Init(_zoneId, null).App.AddApp(null, appGuid, inheritAppId);
+        var app = db.Init(_zoneId, null, inheritAppId).App.AddApp(null, appGuid, inheritAppId);
 
         AppCachePurger.PurgeZoneList();
         Log.A($"app created a:{app.AppId}, guid:{appGuid}");

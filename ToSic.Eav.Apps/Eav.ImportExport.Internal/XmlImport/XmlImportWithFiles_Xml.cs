@@ -13,10 +13,10 @@ partial class XmlImportWithFiles
     /// <summary>
     /// Do the import
     /// </summary>
-    public bool ImportXml(int zoneId, int appId, XDocument doc, bool leaveExistingValuesUntouched = true)
+    public bool ImportXml(int zoneId, int appId, int? parentAppId, XDocument doc, bool leaveExistingValuesUntouched = true)
     {
         var l = Log.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
-        _eavContext = base.Services.DbDataForAppImport.Value.Init(zoneId, appId);
+        _eavContext = Services.DbDataForAppImport.Value.Init(zoneId, appId, parentAppId);
             
         AppId = appId;
         ZoneId = zoneId;
@@ -46,9 +46,9 @@ partial class XmlImportWithFiles
 
         Log.A($"source def dim:{sourceDefaultDimensionId}");
 
-        _targetDimensions = base.Services.AppStates.Languages(zoneId, true);
+        _targetDimensions = Services.AppStates.Languages(zoneId, true);
 
-        _xmlBuilder = base.Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+        _xmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
         #endregion
 
         var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet).ToList();
@@ -58,12 +58,12 @@ partial class XmlImportWithFiles
         var importEntities = BuildEntities(entNodes, (int)TargetTypes.None);
 
 
-        var import = base.Services.ImporterLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true);
+        var import = Services.ImporterLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, parentAppId: parentAppId);
 
         import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
 
-        Log.A($"Purging {ZoneId}/{AppId}");
-        base.Services.AppCachePurger.Purge(ZoneId, AppId);
+        l.A($"Purging {ZoneId}/{AppId}");
+        Services.AppCachePurger.Purge(ZoneId, AppId);
 
         Messages.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
 

@@ -39,7 +39,7 @@ partial class XmlImportWithFiles
                 appGuid = Guid.NewGuid().ToString();
 
             // Adding app to EAV
-            var eavDc = base.Services.DbDataForNewApp.Value.Init(zoneId, null);
+            var eavDc = Services.DbDataForNewApp.Value.Init(zoneId, null);
 
             // ParentApp
             parentAppId = inheritAppId ?? GetParentAppId(xmlSource, eavDc);
@@ -56,24 +56,29 @@ partial class XmlImportWithFiles
         if (appId <= 0)
             return l.ReturnFalse(LogError("App was not created. Please try again or make sure the package you are importing is correct."));
 
-        Log.A("Purging all Zones");
-        base.Services.AppCachePurger.PurgeZoneList();
-        return l.Return(ImportXml(zoneId, appId, doc), "done");
+        l.A("Purging all Zones");
+        Services.AppCachePurger.PurgeZoneList();
+        var result = ImportXml(zoneId, appId, parentAppId, doc);
+        return l.Return(result, "done");
     }
 
-    private static int? GetParentAppId(XElement xmlSource, Repository.Efc.DbDataController eavDc)
+    private int? GetParentAppId(XElement xmlSource, Repository.Efc.DbDataController eavDc)
     {
+        var l = Log.Fn<int?>();
         var parentAppXElement = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.ParentApp);
-        if (parentAppXElement != null)
-        {
-            var parentAppGuidOrName = parentAppXElement?.Attribute(XmlConstants.Guid)?.Value;
-            if (!string.IsNullOrEmpty(parentAppGuidOrName) && parentAppGuidOrName != XmlConstants.ParentApp)
-            {
-                if (int.TryParse(parentAppXElement?.Attribute(XmlConstants.AppId)?.Value, out int parAppId))
-                    return eavDc.GetParentAppId(parentAppGuidOrName, parAppId);
-            }
-        }
-        return null;
+        if (parentAppXElement == null)
+            return l.ReturnNull("app doesn't have inherit-data");
+        
+        var parentAppGuidOrName = parentAppXElement?.Attribute(XmlConstants.Guid)?.Value;
+        if (string.IsNullOrEmpty(parentAppGuidOrName) || parentAppGuidOrName == XmlConstants.ParentApp)
+            return l.ReturnNull("app inherits default or nothing");
+
+        var parentIdString = parentAppXElement?.Attribute(XmlConstants.AppId)?.Value;
+        if (!int.TryParse(parentIdString, out var parAppId))
+            return l.ReturnNull($"app inherit data not useful int: {parentIdString}");
+        
+        var parentAppId = eavDc.GetParentAppId(parentAppGuidOrName, parAppId);
+        return l.Return(parentAppId, $"parentAppId: {parentAppId}");
     }
 
 }

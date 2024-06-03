@@ -45,10 +45,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
             public string Guid;
             public string Zip;
         }
-        internal Dictionary<string, AppImportDef> Apps = new Dictionary<string, AppImportDef>
+        internal Dictionary<string, AppImportDef> Apps = new()
         {
-            { "tile", new AppImportDef { Name = "Tile", Guid = "efba5a03-2926-488e-a30d-0bf9b6541bbb", Zip = "2sxcApp_Tiles_01.02.00.zip"}},
-            { "qr", new AppImportDef { Name = "QR Code", Guid = "55e57a39-e506-416a-aed0-1c7459d31e86", Zip = "2sxcApp_QRCode_01.00.03.zip"}}
+            { "tile", new() { Name = "Tile", Guid = "efba5a03-2926-488e-a30d-0bf9b6541bbb", Zip = "2sxcApp_Tiles_01.02.00.zip"}},
+            { "qr", new() { Name = "QR Code", Guid = "55e57a39-e506-416a-aed0-1c7459d31e86", Zip = "2sxcApp_QRCode_01.00.03.zip"}}
 
         };
 

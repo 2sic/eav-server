@@ -14,7 +14,7 @@ namespace ToSic.Eav.Core.Tests
     {
         public string TestRootPath = @"C:\Projects\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\";
 
-        public override List<string> RootPaths => new List<string>
+        public override List<string> RootPaths => new()
         {
             BuildPath(Constants.FolderOldDotData),
             //BuildPath("dist/edit/" + Constants.FolderData),

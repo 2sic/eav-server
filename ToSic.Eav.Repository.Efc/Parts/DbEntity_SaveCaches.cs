@@ -15,7 +15,7 @@ partial class DbEntity
         {
             var typeNameId = newEnt.Type.NameId;
             if (!_ctNameIdCache.ContainsKey(typeNameId))
-                _ctNameIdCache[typeNameId] = DbContext.AttribSet.GetId(typeNameId);
+                _ctNameIdCache[typeNameId] = DbContext.AttribSet.GetDbContentTypeId(typeNameId);
             contentTypeId = _ctNameIdCache[typeNameId];
         }
 
