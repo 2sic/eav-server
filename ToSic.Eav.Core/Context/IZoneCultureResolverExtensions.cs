@@ -39,16 +39,16 @@ public static class IZoneCultureResolverExtensions
         if (resolver == null) return [SafeCurrentCultureCode(null), null];
 
         var list = (resolver as IZoneCultureResolverProWIP)?.CultureCodesWithFallbacks
-                   ?? UnsafeLanguagePriorityCodesWithoutProWIP(resolver);
+                   ?? UnsafeLanguagePriorityCodesWithoutPrioWIP(resolver);
 
         if (list == null) return [SafeCurrentCultureCode(null), null];
 
         ListBuildAddFinalFallback(list);
-        return list.ToArray();
+        return [.. list];
     }
 
 
-    private static List<string> UnsafeLanguagePriorityCodesWithoutProWIP(this IZoneCultureResolver resolver)
+    private static List<string> UnsafeLanguagePriorityCodesWithoutPrioWIP(this IZoneCultureResolver resolver)
     {
         if (resolver == null)
             throw new ArgumentNullException(

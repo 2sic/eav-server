@@ -31,4 +31,6 @@ public interface IZoneMapper: IHasLog
     /// </summary>
     /// <returns></returns>
     List<ISiteLanguageState> CulturesWithState(ISite site);
+
+    List<ISiteLanguageState> CulturesEnabledWithState(ISite site);
 }
