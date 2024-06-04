@@ -14,14 +14,14 @@ namespace ToSic.Eav.Core.Tests
     {
         public string TestRootPath = @"C:\Projects\2sxc-dnn742\Website\DesktopModules\ToSIC_SexyContent\";
 
-        public override List<string> RootPaths => new()
-        {
+        public override List<string> RootPaths =>
+        [
             BuildPath(Constants.FolderOldDotData),
             //BuildPath("dist/edit/" + Constants.FolderData),
             //BuildPath("dist/sxc-edit/" + Constants.FolderData),
             BuildPath(Constants.FolderOldDotDataBeta),
             BuildPath(Constants.FolderOldDotDataCustom)
-        };
+        ];
 
         private string BuildPath(string pathEnd) => System.IO.Path.Combine(TestRootPath, pathEnd);
     }

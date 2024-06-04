@@ -53,7 +53,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = app1.List.One(test.ExistingItem);
 
             // save it
-            dbi.Save(new List<IEntity> {itm1}, so);
+            dbi.Save([itm1], so);
 
             // re-load it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
@@ -91,7 +91,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var saveEntity = _entitySaver.TestCreateMergedForSaving(itm1, itmNewTitle, so);
 
             // save it
-            dbi.Save(new List<IEntity> {saveEntity}, so);
+            dbi.Save([saveEntity], so);
 
             // reload it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
@@ -132,7 +132,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var saveEntity = _entitySaver.TestCreateMergedForSaving(null, newE, so);
 
             // save it
-            var newId = dbi.Save(new List<IEntity> {saveEntity}, so);
+            var newId = dbi.Save([saveEntity], so);
 
             // reload it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open

@@ -151,15 +151,13 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
         return l.ReturnAsOk(final);
     }
 
-    private Func<IEntity, object> GetPropertyToSortFunc(char propertyCode, string fieldName, string[] languages)
-    {
-        switch (propertyCode)
+    private static Func<IEntity, object> GetPropertyToSortFunc(char propertyCode, string fieldName, string[] languages)
+        => propertyCode switch
         {
-            case FieldId: return e => e.EntityId;
-            case FieldMod: return e => e.Modified;
-            case FieldCreate: return e => e.Created;
-            case FieldTitle: return e => e.GetBestTitle(languages);
-            default: return e => e.GetBestValue(fieldName, languages);
-        }
-    }
+            FieldId => e => e.EntityId,
+            FieldMod => e => e.Modified,
+            FieldCreate => e => e.Created,
+            FieldTitle => e => e.GetBestTitle(languages),
+            _ => e => e.Get(fieldName, languages: languages)
+        };
 }

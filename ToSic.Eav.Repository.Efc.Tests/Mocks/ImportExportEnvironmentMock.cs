@@ -16,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 
         public virtual List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
         {
-            return new();
+            return [];
         }
 
         public virtual Version TenantVersion => new(8, 0);
