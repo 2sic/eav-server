@@ -15,7 +15,8 @@ partial class Entity
 
     // ReSharper disable once InheritdocInvalidUsage
     /// <inheritdoc />
-    public TVal GetBestValue<TVal>(string name, string[] languages) => GetBestValue(name, languages).ConvertOrDefault<TVal>();
+    public TVal GetBestValue<TVal>(string name, string[] languages)
+        => GetBestValue(name, languages).ConvertOrDefault<TVal>();
 
 
     [PrivateApi("Internal")]
