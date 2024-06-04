@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Data.PropertyLookup;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PropReqSpecs(string field, string[] dimensions, ILog logOrNull = null, bool treatEmptyAsDefault = true)
+public class PropReqSpecs(string field, string[] dimensions, ILog logOrNull = null, bool treatEmptyAsDefault = true, bool skipAddingDefaultDimension = false)
     : ICanDump
 {
     public PropReqSpecs(string field): this(field, null) { }
@@ -10,6 +10,8 @@ public class PropReqSpecs(string field, string[] dimensions, ILog logOrNull = nu
 
     public readonly string[] Dimensions = dimensions ?? [];
 
+    public readonly bool SkipAddingDefaultDimension = skipAddingDefaultDimension;
+
     public readonly bool TreatEmptyAsDefault = treatEmptyAsDefault;
 
     /// <summary>
@@ -17,12 +19,14 @@ public class PropReqSpecs(string field, string[] dimensions, ILog logOrNull = nu
     /// </summary>
     public readonly ILog LogOrNull = logOrNull;
 
-    public PropReqSpecs ForOtherField(string field) => new(field, Dimensions, LogOrNull, TreatEmptyAsDefault);
+    public PropReqSpecs ForOtherField(string field)
+        => new(field, Dimensions, LogOrNull, TreatEmptyAsDefault, SkipAddingDefaultDimension);
 
-    public PropReqSpecs SubLog(string title) =>
-        new(Field, Dimensions, LogOrNull.SubLogOrNull(title), TreatEmptyAsDefault);
-    public PropReqSpecs SubLog(string title, bool enabled) => new(Field, Dimensions,
-        LogOrNull.SubLogOrNull(title, enabled), TreatEmptyAsDefault);
+    public PropReqSpecs SubLog(string title)
+        => new(Field, Dimensions, LogOrNull.SubLogOrNull(title), TreatEmptyAsDefault, SkipAddingDefaultDimension);
+
+    public PropReqSpecs SubLog(string title, bool enabled)
+        => new(Field, Dimensions, LogOrNull.SubLogOrNull(title, enabled), TreatEmptyAsDefault, SkipAddingDefaultDimension);
 
     public string Dump() => _dump ??= $"{nameof(PropReqSpecs)} {{ {nameof(Field)}:{Field}, {nameof(Dimensions)}:{string.Join(",", Dimensions)} }}";
     private string _dump;
