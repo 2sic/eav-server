@@ -74,14 +74,14 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     object IAttribute.this[string languageKey]
-        => GetInternal([languageKey], IsDefault, FindHavingDimensions);
+        => GetInternal([languageKey.ToLowerInvariant()], IsDefault, FindHavingDimensionsLowerCase);
 
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys)
     {
-        var iVal = GetInternalValue(languageKeys, IsDefault, FindHavingDimensions);
+        var iVal = GetInternalValue(languageKeys, IsDefault, FindHavingDimensionsLowerCase);
         return (iVal, iVal == null ? default : iVal.TypedContents);
     }
 
@@ -196,12 +196,25 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
         return valuesHavingDimensions;
     }
 
-    private IValue FindHavingDimensions(string[] keys)
+    //private IValue FindHavingDimensions(string[] keys)
+    //{
+    //    // ensure language Keys in lookup-list are lowered
+    //    var langsLower = keys.Select(l => l.ToLowerInvariant()).ToArray();
+    //    var valuesHavingDimensions = MyValues
+    //        .FirstOrDefault(va => langsLower.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
+    //    return valuesHavingDimensions;
+    //}
+
+    /// <summary>
+    /// Find the values. For performance, it requires the keys to already be lower cased. 
+    /// </summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
+    private IValue FindHavingDimensionsLowerCase(string[] keys)
     {
         // ensure language Keys in lookup-list are lowered
-        var langsLower = keys.Select(l => l.ToLowerInvariant()).ToArray();
         var valuesHavingDimensions = MyValues
-            .FirstOrDefault(va => langsLower.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
+            .FirstOrDefault(va => keys.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
         return valuesHavingDimensions;
     }
 

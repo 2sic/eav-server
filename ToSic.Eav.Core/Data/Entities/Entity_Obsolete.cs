@@ -1,7 +1,6 @@
 ﻿/* only in old old .net */
 
 #if NETFRAMEWORK
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data;
@@ -13,7 +12,7 @@ partial class Entity
     [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
     public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks)
     {
-        var set = FindPropertyInternal(new(attributeName, languages), null);
+        var set = FindPropertyInternal(new(attributeName, languages, false), null);
         return set.Result;
     }
 

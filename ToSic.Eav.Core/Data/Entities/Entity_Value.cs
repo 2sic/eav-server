@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Data;
@@ -22,7 +23,7 @@ partial class Entity
     // ReSharper disable once MethodOverloadWithOptionalParameter
     public object Get(string name, NoParamOrder noParamOrder = default, string language = default, string[] languages = default) 
         // till v17.10 GetBestValue(name, HandleLanguageParams(language, languages));
-        => FindPropertyInternal(new(name, HandleLanguageParams(language, languages)), null).Result;
+        => FindPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result;
 
     public TValue Get<TValue>(string name)
         // till v17.10 GetBestValue<TValue>(name, null);
@@ -32,9 +33,13 @@ partial class Entity
     // ReSharper disable once MethodOverloadWithOptionalParameter
     public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default)
         // till v17.10 GetBestValue(name, HandleLanguageParams(language, languages)).ConvertOrFallback(fallback);
-        => FindPropertyInternal(new(name, HandleLanguageParams(language, languages)), null).Result
+        => FindPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result
             .ConvertOrFallback(fallback);
 
     private static string[] HandleLanguageParams(string language, string[] languages) 
-        => languages.SafeAny() ? languages : language.HasValue() ? [language] : null;
+        => languages.SafeAny()
+            ? PropReqSpecs.ExtendDimsWithDefault(languages)
+            : language.HasValue()
+                ? [language, null]
+                : PropReqSpecs.EmptyDimensions;
 }

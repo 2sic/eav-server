@@ -10,7 +10,7 @@ partial class Entity
     // ReSharper disable once InheritdocInvalidUsage
     /// <inheritdoc />
     public object GetBestValue(string attributeName, string[] languages)
-        => FindPropertyInternal(new(attributeName, languages), null).Result;
+        => FindPropertyInternal(new(attributeName, languages, false), null).Result;
 
 
     // ReSharper disable once InheritdocInvalidUsage
@@ -24,7 +24,8 @@ partial class Entity
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {
         path = path?.Add("Entity", EntityId.ToString(), specs.Field);
-        var languages = PropReqSpecs.ExtendDimsWithDefault(specs);
+        // the languages are "safe" - meaning they are already all lower-cased and have the optional null-fallback key
+        var languages = specs.Dimensions; // PropReqSpecs.ExtendDimsWithDefault(specs);
         var field = specs.Field.ToLowerInvariant();
         if (Attributes.ContainsKey(field))
         {

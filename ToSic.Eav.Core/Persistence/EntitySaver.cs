@@ -305,7 +305,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     {
         // check IsPublished
         values.TryGetValue(Attributes.EntityFieldIsPublished, out var isPublishedAttr);
-        var isPublished = isPublishedAttr?.GetTypedValue([]).Result;
+        var isPublished = isPublishedAttr?.Values.FirstOrDefault()?.ObjectContents;
         bool? newIsPublished = null;
         if (isPublished != null)
         {
@@ -320,7 +320,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
         // check EntityGuid
         values.TryGetValue(Attributes.EntityFieldGuid, out var probablyGuidAttr);
-        var probablyGuid = probablyGuidAttr?.GetTypedValue([]).Result;
+        var probablyGuid = probablyGuidAttr?.Values.FirstOrDefault()?.ObjectContents;
         Guid? newGuid = null;
         if (probablyGuid != null)
         {

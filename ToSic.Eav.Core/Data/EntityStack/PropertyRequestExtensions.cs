@@ -12,42 +12,42 @@ public static class PropertyRequestExtensions
     /// Also optionally log the decision process. 
     /// </summary>
     /// <returns></returns>
-    public static PropReqResult MarkAsFinalOrNot(this PropReqResult result, string sourceName, int sourceIndex,
-        ILog logOrNull, bool treatEmptyAsDefault) => logOrNull.Func(l =>
+    public static PropReqResult MarkAsFinalOrNot(this PropReqResult result, string sourceName, int sourceIndex, ILog logOrNull, bool treatEmptyAsFinal)
     {
+        var l = logOrNull.Fn<PropReqResult>();
         // Check nulls and prevent multiple executions
-        if (result == null) return (null, "null");
-        if (result.IsFinal) return (result, "already final");
+        if (result == null) return l.ReturnNull("null");
+        if (result.IsFinal) return l.Return(result, "already final");
 
         result.Name = sourceName ?? result.Name;
 
 
         // if any non-null is ok, use that.
-        if (!treatEmptyAsDefault)
-            return (result.AsFinal(sourceIndex), "empty is ok");
+        if (!treatEmptyAsFinal)
+            return l.Return(result.AsFinal(sourceIndex), "empty is ok");
 
         // this may set a null, but may also set an empty string or empty array
         if (result.Result.IsNullOrDefault())
-            return (result, "NullOrDefault - not final");
+            return l.Return(result, "NullOrDefault - not final");
 
         if (result.Result is string foundString)
             return string.IsNullOrEmpty(foundString)
-                ? (result, "empty string, not final")
-                : (result.AsFinal(sourceIndex), "string, non-empty - final");
+                ? l.Return(result, "empty string, not final")
+                : l.Return(result.AsFinal(sourceIndex), "string, non-empty - final");
 
         // Return entity-list if it has elements, otherwise continue searching
         if (result.Result is IEnumerable<IEntity> entityList)
             return !entityList.Any()
-                ? (result, "empty list, not final")
-                : (result.AsFinal(sourceIndex), "list, non empty, final");
+                ? l.Return(result, "empty list, not final")
+                : l.Return(result.AsFinal(sourceIndex), "list, non empty, final");
 
         // not sure if this will ever hit
         if (result.Result is ICollection list)
             return list.Count == 0
-                ? (result, "empty collection, not final")
-                : (result.AsFinal(sourceIndex), "list, non-empty, final");
+                ? l.Return(result, "empty collection, not final")
+                : l.Return(result.AsFinal(sourceIndex), "list, non-empty, final");
 
         // All seems ok, special checks passed, return result
-        return (result.AsFinal(sourceIndex), "all ok/final");
-    });
+        return l.Return(result.AsFinal(sourceIndex), "all ok/final");
+    }
 }
