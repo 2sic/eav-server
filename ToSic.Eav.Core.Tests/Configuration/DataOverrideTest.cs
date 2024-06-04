@@ -43,7 +43,7 @@ public class DataOverrideTest : TestBaseDiEavFullAndDb
         Assert.AreEqual(1, entities.Count());
 
         var entity = primaryApp.List.One(guid);
-        var html = entity.GetBestValue<string>(htmlField, Array.Empty<string>());
+        var html = entity.Get<string>(htmlField);
 
         Assert.AreEqual(expected, html.Contains(testString));
     }

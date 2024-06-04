@@ -18,11 +18,14 @@ public class EntityTest: TestBaseEavCore
 
         Assert.AreEqual(1, entDaniel.EntityId);
         Assert.AreEqual(Guid.Empty, entDaniel.EntityGuid);
-        Assert.AreEqual("Daniel", entDaniel.Attributes["FirstName"].Values.FirstOrDefault()?.ObjectContents.ToString());// .Title[0].ToString());
+        Assert.AreEqual("Daniel", entDaniel.Attributes["FirstName"].Values.FirstOrDefault()?.ObjectContents.ToString());
         Assert.AreEqual("Daniel", entDaniel.GetBestTitle());
         Assert.AreEqual("Daniel", entDaniel.Value("FirstName"));
         Assert.AreEqual("Daniel", entDaniel.Value<string>("FirstName"));
-        Assert.AreEqual("Mettler", entDaniel.GetBestValue("LastName", ["EN"]));
+        Assert.AreEqual("Mettler", entDaniel.Get("LastName", languages: ["EN"]));
+        Assert.AreEqual("Mettler", entDaniel.Get("LastName", language: "EN"));
+        Assert.AreEqual("Mettler", entDaniel.Get<string>("LastName", languages: ["EN"]));
+        Assert.AreEqual("Mettler", entDaniel.Get<string>("LastName", language: "EN"));
     }
 
     [TestMethod]

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data;
 partial class PropertyStack
 {
     public PropReqResult InternalGetPath(string path, ILog logOrNull = null)
-        => InternalGetPath(new(path, [], logOrNull), new PropertyLookupPath());
+        => InternalGetPath(new(path, null, logOrNull), new PropertyLookupPath());
 
     public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path)
         => TraversePath(specs, path.KeepOrNew(), this, NameId);

@@ -115,7 +115,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// <remarks>
     /// * Was renamed in 15.04 to `NameIds` from `PreviousNames`
     /// </remarks>
-    public string[] NameIds { get; set; } = Array.Empty<string>();
+    public string[] NameIds { get; set; } = [];
 
     /// <summary>
     /// This marks the audience of a DataSource.

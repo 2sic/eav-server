@@ -37,7 +37,7 @@ public class LookUpInEntity : LookUpIn<IEntity>
             return string.Empty;
 
         // Try to just find, and format the result if all is ok
-        var valueObject = Data.GetBestValue(key, _dimensions);
+        var valueObject = Data.Get(key, languages: _dimensions);
         if (valueObject != null)
             return FormatValue(valueObject, format, _dimensions);
 
@@ -45,11 +45,9 @@ public class LookUpInEntity : LookUpIn<IEntity>
         var subTokens = CheckAndGetSubToken(key);
         if (!subTokens.HasSubtoken)
             return string.Empty;
-        valueObject = Data.GetBestValue(subTokens.Source, _dimensions);
-        if (valueObject == null)
-            return string.Empty;
+        valueObject = Data.Get(subTokens.Source, languages: _dimensions);
 
-        // Finally: Handle child-Entity-Field (sorted list of related entities)
+        // Finally: Handle child-Entity-Field (sorted list of related entities) / null check
         if (valueObject is not IEnumerable<IEntity> relationshipList)
             return string.Empty;
         var first = relationshipList.FirstOrDefault();

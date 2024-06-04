@@ -67,7 +67,7 @@ public class WorkQueryMod(
         var qdef = Get(queryId);
 
         const string AllowEdit = "AllowEdit";
-        if (qdef.Entity.GetBestValue<bool>(AllowEdit, Array.Empty<string>()) == false)
+        if (!qdef.Entity.Get<bool>(AllowEdit))
             throw new InvalidOperationException($"Query has {AllowEdit} set to false");
 
         var addedSources = SavePartsAndGenerateRenameMap(partDefs, qdef.Entity.EntityGuid);

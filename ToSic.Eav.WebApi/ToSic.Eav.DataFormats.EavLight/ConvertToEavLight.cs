@@ -146,7 +146,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         var entityValues = attributes
             .ToEavLight(attribute => attribute.Name, attribute =>
             {
-                var rawValue = entity.GetBestValue(attribute.Name, Languages);
+                var rawValue = entity.Get(attribute.Name, languages: Languages);
 
                 return attribute.Type switch
                 {

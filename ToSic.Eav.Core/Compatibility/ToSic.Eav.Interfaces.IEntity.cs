@@ -31,7 +31,8 @@ namespace ToSic.Eav.Interfaces
         /// An object OR a null - for example when retrieving the title and no title exists
         /// the object is string, int or even a EntityRelationship
         /// </returns>
-        [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")] 
+        [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
+        [Obsolete("Should not be used anymore, use Get instead. planned to keep till ca. v20")]
         object GetBestValue(string attributeName, string[] languages);
 
 
@@ -47,6 +48,7 @@ namespace ToSic.Eav.Interfaces
         /// the object is string, int or even a EntityRelationship
         /// </returns>
         [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
+        [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
         T GetBestValue<T>(string attributeName, string[] languages);
 
 

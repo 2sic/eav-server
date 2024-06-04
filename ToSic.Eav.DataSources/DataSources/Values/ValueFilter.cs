@@ -201,7 +201,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
             //try
             //{
             //if (res.Value[attr][lang].ToString() == filter)
-            if ((res.GetBestValue(attr, langArr) ?? "").ToString() == filter)
+            if (res.Get(attr, fallback: "", languages: langArr) == filter)
                 result.Add(res);
         //}
         //catch { }

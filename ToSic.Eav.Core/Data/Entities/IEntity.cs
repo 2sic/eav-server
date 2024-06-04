@@ -43,6 +43,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// the object is string, int or even a EntityRelationship
     /// </returns>
     [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
+    [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
 #if NETFRAMEWORK
     new
 #endif

@@ -15,6 +15,7 @@ partial class Entity
 
     // ReSharper disable once InheritdocInvalidUsage
     /// <inheritdoc />
+    [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
     public TVal GetBestValue<TVal>(string name, string[] languages)
         => GetBestValue(name, languages).ConvertOrDefault<TVal>();
 
@@ -70,10 +71,10 @@ partial class Entity
     /// </summary>
     /// <param name="dimensions"></param>
     /// <returns></returns>
-    public string[] ExtendDimsWithDefault(string[] dimensions)
+    private static string[] ExtendDimsWithDefault(string[] dimensions)
     {
         // empty list - add the default dimension
-        if (dimensions == null || dimensions.Length == 0) return [null as string];
+        if (dimensions == null || dimensions.Length == 0) return [null];
 
         // list already has a default at the end, don't change
 
@@ -81,6 +82,6 @@ partial class Entity
         if (dimensions.Last() == default) return dimensions;
         var newDims = dimensions.ToList();
         newDims.Add(default);
-        return newDims.ToArray();
+        return [.. newDims];
     }
 }

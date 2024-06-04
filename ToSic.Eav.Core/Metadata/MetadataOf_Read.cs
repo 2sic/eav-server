@@ -22,7 +22,7 @@ partial class MetadataOf<T>
     {
         var list = typeName == null ? MetadataWithoutPermissions : OfType(typeName);
         var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
-        return found == null ? default : found.GetBestValue<TVal>(name, null);
+        return found == null ? default : found.Get<TVal>(name);
     }
 
     /// <inheritdoc />

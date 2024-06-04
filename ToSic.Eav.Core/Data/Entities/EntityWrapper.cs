@@ -25,15 +25,13 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     {
         Entity = baseEntity;
         RootContentsForEqualityCheck = Entity;
-        if (Entity is IEntityWrapper wrapper)
-        {
-            RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? Entity;
-            Decorators.AddRange(wrapper.Decorators);
-        }
+        if (Entity is not IEntityWrapper wrapper) return;
+        RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? Entity;
+        Decorators.AddRange(wrapper.Decorators);
     }
 
     /// <summary>
-    /// Initialize the object and store the underlying IEntity. - adding an additional decorator
+    /// Initialize the object and store the underlying IEntity. - adding another decorator
     /// </summary>
     /// <param name="baseEntity"></param>
     /// <param name="decorator">Additional wrapper to add</param>
@@ -44,12 +42,6 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
 
 
     #region IEntity Implementation
-
-    /// <inheritdoc />
-    // public IEntity GetDraft() => Entity.GetDraft(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
-
-    /// <inheritdoc />
-    //public IEntity GetPublished() => Entity.GetPublished(); // 2023-03-27 v15.06 remove GetDraft/GetPublished from Entity
 
     /// <inheritdoc />
     public int AppId => Entity.AppId;
@@ -96,16 +88,21 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public int OwnerId => Entity.OwnerId;
 
     /// <inheritdoc />
-    public object GetBestValue(string attributeName, string[] languages) => Entity.GetBestValue(attributeName, languages);
+    [Obsolete("Should not be used anymore, use Get instead. planned to keep till ca. v20")]
+    public object GetBestValue(string attributeName, string[] languages)
+        => Entity.GetBestValue(attributeName, languages);
+
+    [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
+    public T GetBestValue<T>(string attributeName, string[] languages)
+        => Entity.GetBestValue<T>(attributeName, languages);
 
     /// <inheritdoc />
-    public T GetBestValue<T>(string attributeName, string[] languages) => Entity.GetBestValue<T>(attributeName, languages);
+    public string GetBestTitle()
+        => Entity.GetBestTitle();
 
     /// <inheritdoc />
-    public string GetBestTitle() => Entity.GetBestTitle();
-
-    /// <inheritdoc />
-    public string GetBestTitle(string[] dimensions) => Entity.GetBestTitle(dimensions);
+    public string GetBestTitle(string[] dimensions)
+        => Entity.GetBestTitle(dimensions);
 
     /// <inheritdoc />
     object IEntityLight.Title => ((IEntityLight) Entity).Title;
@@ -144,6 +141,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public object Get(string name) => Entity.Get(name);
 
     /// <inheritdoc />
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     public object Get(string name, NoParamOrder noParamOrder = default, string language = default,
         string[] languages = default) =>
         Entity.Get(name, noParamOrder, language, languages);
@@ -152,6 +150,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public TValue Get<TValue>(string name) => Entity.Get<TValue>(name);
 
     /// <inheritdoc />
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default,
         string language = default, string[] languages = default) =>
         Entity.Get(name, noParamOrder, fallback, language, languages);

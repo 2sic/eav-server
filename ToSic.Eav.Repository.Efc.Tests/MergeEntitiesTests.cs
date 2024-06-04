@@ -100,7 +100,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         private static DimensionDefinition langDeDeDef = new() { DimensionId = 42, EnvironmentKey = "de-DE" };
         private static DimensionDefinition langDeChDef = new() { DimensionId = 39, EnvironmentKey = "de-CH" };
         private static DimensionDefinition langFrDef = new() { DimensionId = 99, EnvironmentKey = "fr-FR" };
-        private static List<DimensionDefinition> activeLangs = new() { langEnDef, langDeDeDef, langDeChDef };
+        private static List<DimensionDefinition> activeLangs = [langEnDef, langDeDeDef, langDeChDef];
 
         #endregion
 
@@ -268,17 +268,30 @@ namespace ToSic.Eav.Repository.Efc.Tests
         [TestMethod]
         public void MergeEnIntoML_KeepLangs()
         {
-            var original = ProductEntityMl;
-            var update = ProductEntityEn;
-            var merged = _entitySaver.TestCreateMergedForSaving(original, update, _saveKeepExistingLangs);
+            var mainMultiLang = ProductEntityMl;
+            var additionEn = ProductEntityEn;
+            var merged = _entitySaver.TestCreateMergedForSaving(mainMultiLang, additionEn, _saveKeepExistingLangs);
 
             // check the titles as expected
             Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Count(), "should have 2 titles with languages - EN and a shared DE+CH");
             Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count(), "should have 2 languages on the shared DE+CH");
-            Assert.AreEqual(ProductEntityEn.Value<string>(Attributes.TitleNiceName), merged.GetBestValue<string>(Attributes.TitleNiceName, new[] { langEn.Key }), "en title should be the en-value");
-            Assert.AreEqual(ProductEntityMl.GetBestValue(Attributes.TitleNiceName, new [] {langDeDe.Key}).ToString(), merged.GetBestValue(Attributes.TitleNiceName, new[] { langDeDe.Key }), "de title should be the ML-value");
-            Assert.AreEqual(ProductEntityMl.GetBestValue(Attributes.TitleNiceName, new [] {langDeCh.Key}).ToString(), merged.GetBestValue(Attributes.TitleNiceName, new[] { langDeCh.Key }), "ch title should be the ML-value");
-            Assert.AreNotEqual(ProductEntityEn.GetBestValue(Attributes.TitleNiceName, new [] {langDeCh.Key}).ToString(), merged.GetBestValue(Attributes.TitleNiceName, new[] { langDeCh.Key }).ToString(), "ch title should be the ML-value");
+            Assert.AreEqual(ProductEntityEn.Value<string>(Attributes.TitleNiceName), merged.Get<string>(Attributes.TitleNiceName, languages: [langEn.Key]), "en title should be the en-value");
+            Assert.AreEqual(
+                mainMultiLang.Get<string>(Attributes.TitleNiceName, language: langDeDe.Key),
+                merged.Get(Attributes.TitleNiceName, language: langDeDe.Key),
+                "de title should be the ML-value"
+            );
+            Assert.AreEqual(
+                mainMultiLang.Get<string>(Attributes.TitleNiceName, language: langDeCh.Key),
+                merged.Get(Attributes.TitleNiceName, language: langDeCh.Key),
+                "ch title should be the ML-value"
+            );
+
+            Assert.AreNotEqual(
+                additionEn.Get<string>(Attributes.TitleNiceName, language: langDeCh.Key),
+                merged.Get(Attributes.TitleNiceName, languages: [langDeCh.Key]).ToString(),
+                "ch title should not be replaced with the the ML-value"
+            );
             var firstVal = merged[Attributes.TitleNiceName].Values.First();
             Assert.AreEqual(1, firstVal.Languages.Count(), "should have 1 language");
             Assert.AreEqual(langEn.Key, firstVal.Languages.First().Key, "language should be EN-US");

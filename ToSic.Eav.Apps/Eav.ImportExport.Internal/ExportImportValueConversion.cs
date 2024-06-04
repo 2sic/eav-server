@@ -26,7 +26,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
     /// </summary>
     internal string ValueWithFullFallback(IEntity entity, IContentTypeAttribute attribute, string language, string languageFallback, bool resolveLinks)
     {
-        var value = entity.GetBestValue(attribute.Name, [language, languageFallback]) as string;
+        var value = entity.Get<string>(attribute.Name, languages: [language, languageFallback]);
         return ResolveValue(entity, attribute.Type, value, resolveLinks);
     }
 
