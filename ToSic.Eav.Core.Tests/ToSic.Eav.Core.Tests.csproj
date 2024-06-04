@@ -100,6 +100,7 @@
     <Compile Include="Data\ContentType_Test.cs" />
     <Compile Include="Data\SampleData.cs" />
     <Compile Include="Data\Entity_Test.cs" />
+    <Compile Include="Data\EqualityComparerPerformance.cs" />
     <Compile Include="IdentityTests\MapperTest.cs" />
     <Compile Include="LookUp\LookUpTestData.cs" />
     <Compile Include="LookUp\Tokens\TokenReplaceTst.cs" />
