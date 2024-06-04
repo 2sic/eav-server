@@ -24,7 +24,7 @@ partial class Entity
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {
         path = path?.Add("Entity", EntityId.ToString(), specs.Field);
-        var languages = ExtendDimsWithDefault(specs);
+        var languages = PropReqSpecs.ExtendDimsWithDefault(specs);
         var field = specs.Field.ToLowerInvariant();
         if (Attributes.ContainsKey(field))
         {
@@ -63,23 +63,5 @@ partial class Entity
 
         // Now handle the ones that EntityLight has
         return base.GetInternalPropertyByName(attributeNameLowerInvariant);
-    }
-
-    /// <summary>
-    /// Make sure the dimensions list also has a null-entry,
-    /// for fallback to the first/only language (if any are provided and no match was made first)
-    /// </summary>
-    /// <returns></returns>
-    private static string[] ExtendDimsWithDefault(PropReqSpecs specs)
-    {
-        // empty list - add the default dimension
-        var dimensions = specs.Dimensions;
-        if (dimensions == null || dimensions.Length == 0)
-            return specs.SkipAddingDefaultDimension ? [] : [null];
-
-        // we have dimensions but no default, add it
-        return specs.SkipAddingDefaultDimension || dimensions.Last() == default
-            ? dimensions
-            : [.. dimensions, default];
     }
 }

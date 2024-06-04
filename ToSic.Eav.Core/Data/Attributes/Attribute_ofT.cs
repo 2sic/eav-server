@@ -98,7 +98,7 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
     private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
     {
         // Value with Dimensions specified
-        if (keys != null && keys.Length > 0 && Values != null && Values.Any())
+        if (keys is { Length: > 0 } && Values != null && Values.Any())
         {
             // try match all specified Dimensions
             // note that as of now, the dimensions are always just 1 language, not more
