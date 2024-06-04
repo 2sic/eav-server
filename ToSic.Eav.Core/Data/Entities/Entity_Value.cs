@@ -21,6 +21,6 @@ partial class Entity
     public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default) 
         => GetBestValue(name, HandleLanguageParams(language, languages)).ConvertOrFallback(fallback);
 
-    private string[] HandleLanguageParams(string language, string[] languages) 
-        => language.SafeAny() ? languages : language.HasValue() ? [language] : null;
+    private static string[] HandleLanguageParams(string language, string[] languages) 
+        => languages.SafeAny() ? languages : language.HasValue() ? [language] : null;
 }
