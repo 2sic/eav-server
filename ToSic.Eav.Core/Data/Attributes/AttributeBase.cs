@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace ToSic.Eav.Data;
 
 /// <summary>
@@ -29,4 +31,10 @@ public class AttributeBase : IAttributeBase
     public string Name { get; }
 
     public ValueTypes Type { get; }
+
+
+    /// <summary>
+    /// Empty values are always the same, and immutable, so create once only for speed & memory use.
+    /// </summary>
+    protected static readonly IImmutableList<IValue> EmptyValues = new List<IValue>().ToImmutableList();
 }

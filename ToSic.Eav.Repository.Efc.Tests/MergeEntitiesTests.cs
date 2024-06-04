@@ -227,8 +227,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.TestCreateMergedForSaving(_prodNull, ProdNoLang, _saveDefault);
 
-            Assert.AreEqual(1, merged[Attributes.TitleNiceName].Values.Count(), "should only have 1");
-            var firstVal = merged[Attributes.TitleNiceName].Values.First();
+            Assert.AreEqual(1, merged[Attributes.TitleNiceName].TacValues().Count(), "should only have 1");
+            var firstVal = merged[Attributes.TitleNiceName].TacValues().First();
             Assert.AreEqual(0, firstVal.Languages.Count(), "should still have no languages");
         }
 
@@ -238,8 +238,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.TestCreateMergedForSaving(ProdNoLang, ProductEntityMl, _saveDefault);
 
-            Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Count(), "should only have 2, no FR");
-            var deVal = merged[Attributes.TitleNiceName].Values.First(v => v.Languages.Any(l => l.Key == langDeDe.Key));
+            Assert.AreEqual(2, merged[Attributes.TitleNiceName].TacValues().Count(), "should only have 2, no FR");
+            var deVal = merged[Attributes.TitleNiceName].TacValues().First(v => v.Languages.Any(l => l.Key == langDeDe.Key));
             Assert.AreEqual(2, deVal.Languages.Count(), "should have 2 language");
         }
 
@@ -248,8 +248,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.TestCreateMergedForSaving(ProdNoLang, ProductEntityMl, _saveKeepUnknownLangs);
 
-            Assert.AreEqual(3, merged[Attributes.TitleNiceName].Values.Count(), "should have 3, with FR");
-            var deVal = merged[Attributes.TitleNiceName].Values.First(v => v.Languages.Any(l => l.Key == langFr.Key));
+            Assert.AreEqual(3, merged[Attributes.TitleNiceName].TacValues().Count(), "should have 3, with FR");
+            var deVal = merged[Attributes.TitleNiceName].TacValues().First(v => v.Languages.Any(l => l.Key == langFr.Key));
             Assert.AreEqual(1, deVal.Languages.Count(), "should have 1 language");
         }
         #endregion
@@ -260,8 +260,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.TestCreateMergedForSaving(ProdNoLang, ProductEntityEn, _saveDefault);
 
-            Assert.AreEqual(1, merged[Attributes.TitleNiceName].Values.Count(), "should only have 1");
-            var firstVal = merged[Attributes.TitleNiceName].Values.First();
+            Assert.AreEqual(1, merged[Attributes.TitleNiceName].TacValues().Count(), "should only have 1");
+            var firstVal = merged[Attributes.TitleNiceName].TacValues().First();
             Assert.AreEqual(1, firstVal.Languages.Count(), "should have 1 language");
         }
 
@@ -273,8 +273,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var merged = _entitySaver.TestCreateMergedForSaving(mainMultiLang, additionEn, _saveKeepExistingLangs);
 
             // check the titles as expected
-            Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Count(), "should have 2 titles with languages - EN and a shared DE+CH");
-            Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count(), "should have 2 languages on the shared DE+CH");
+            Assert.AreEqual(2, merged[Attributes.TitleNiceName].TacValues()
+                .Count(), "should have 2 titles with languages - EN and a shared DE+CH");
+            Assert.AreEqual(2, merged[Attributes.TitleNiceName].TacValues()
+                .Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count(), "should have 2 languages on the shared DE+CH");
             Assert.AreEqual(ProductEntityEn.Value<string>(Attributes.TitleNiceName), merged.Get<string>(Attributes.TitleNiceName, languages: [langEn.Key]), "en title should be the en-value");
             Assert.AreEqual(
                 mainMultiLang.Get<string>(Attributes.TitleNiceName, language: langDeDe.Key),
@@ -292,7 +294,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 merged.Get(Attributes.TitleNiceName, languages: [langDeCh.Key]).ToString(),
                 "ch title should not be replaced with the the ML-value"
             );
-            var firstVal = merged[Attributes.TitleNiceName].Values.First();
+            var firstVal = merged[Attributes.TitleNiceName].TacValues().First();
             Assert.AreEqual(1, firstVal.Languages.Count(), "should have 1 language");
             Assert.AreEqual(langEn.Key, firstVal.Languages.First().Key, "language should be EN-US");
 
@@ -304,7 +306,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var merged = _entitySaver.TestCreateMergedForSaving(ProductEntityMl, ProductEntityEn, _saveKeepExistingLangs);
 
             // check the titles as expected
-            Assert.AreEqual(2, merged[Attributes.TitleNiceName].Values.Count(), "should have 2 titles with languages - EN and a shared DE+CH");
+            Assert.AreEqual(2, merged[Attributes.TitleNiceName].TacValues().Count(), "should have 2 titles with languages - EN and a shared DE+CH");
         }
 
         // todo!
@@ -322,8 +324,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.TestCreateMergedForSaving(ProductEntityEn, ProdNoLang, _saveDefault);
 
-            Assert.AreEqual(1, merged.Title.Values.Count(), "should only have 1");
-            var firstVal = merged.Title.Values.First();
+            Assert.AreEqual(1, merged.Title.TacValues().Count(), "should only have 1");
+            var firstVal = merged.Title.TacValues().First();
             Assert.AreEqual(0, firstVal.Languages.Count(), "should not have languages left");
         }
 
@@ -332,8 +334,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
         {
             var merged = _entitySaver.TestCreateMergedForSaving(ProductEntityEn, ProdNoLang, _saveKeepExistingLangs);
 
-            Assert.AreEqual(1, merged.Title.Values.Count(), "should only have 1");
-            var firstVal = merged.Title.Values.First();
+            Assert.AreEqual(1, merged.Title.TacValues().Count(), "should only have 1");
+            var firstVal = merged.Title.TacValues().First();
             Assert.AreEqual(0, firstVal.Languages.Count(), "should not have languages left");
         }
 

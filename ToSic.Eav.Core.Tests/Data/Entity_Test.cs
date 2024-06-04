@@ -18,7 +18,7 @@ public class EntityTest: TestBaseEavCore
 
         Assert.AreEqual(1, entDaniel.EntityId);
         Assert.AreEqual(Guid.Empty, entDaniel.EntityGuid);
-        Assert.AreEqual("Daniel", entDaniel.Attributes["FirstName"].Values.FirstOrDefault()?.ObjectContents.ToString());
+        Assert.AreEqual("Daniel", entDaniel.Attributes["FirstName"].TacValues().FirstOrDefault()?.ObjectContents.ToString());
         Assert.AreEqual("Daniel", entDaniel.GetBestTitle());
         Assert.AreEqual("Daniel", entDaniel.Value("FirstName"));
         Assert.AreEqual("Daniel", entDaniel.Value<string>("FirstName"));

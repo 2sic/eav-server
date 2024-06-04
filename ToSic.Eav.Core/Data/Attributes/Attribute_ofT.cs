@@ -12,26 +12,22 @@ namespace ToSic.Eav.Data;
 /// <typeparam name="T">Type of the Value</typeparam>
 [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Attribute<T> : AttributeBase, IAttribute<T>
+internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue> values = null)
+    : AttributeBase(name, type), IAttribute<T>
 {
-    /// <summary>
-    /// Create an attribute object - usually when building up the data-model for caching.
-    /// </summary>
-    internal Attribute(string name, ValueTypes type, IImmutableList<IValue> values = null) : base(name, type)
-    {
-        _values = values ?? new List<IValue>().ToImmutableList();
-    }
-
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public IAttribute CloneWithNewValues(IImmutableList<IValue> values)
-    {
-        return new Attribute<T>(Name, Type, values);
-    }
+        => new Attribute<T>(Name, Type, values);
 
     /// <inheritdoc/>
-    public IEnumerable<IValue> Values => _values;
-    private readonly IImmutableList<IValue> _values;
+    public IEnumerable<IValue> Values => MyValues;
+
+    /// <summary>
+    /// Private immutable values - never null - for direct access & better performance.
+    /// </summary>
+    private IImmutableList<IValue> MyValues { get; } = values ?? EmptyValues;
+
 
     /// <inheritdoc/>
     public T TypedContents
@@ -55,7 +51,7 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
         try
         {
             // in some cases Values can be null
-            return Values?.FirstOrDefault() as IValue<T>;
+            return MyValues.FirstOrDefault() as IValue<T>;
         }
         catch
         {
@@ -64,73 +60,138 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
     }
 
     /// <inheritdoc/>
-    public IEnumerable<IValue<T>> Typed => Values.Cast<IValue<T>>().ToList();
+    public IEnumerable<IValue<T>> Typed
+        => MyValues.Cast<IValue<T>>().ToList();
 
     /// <inheritdoc/>
-    public T this[int languageId] => GetInternal([languageId], FindHavingDimensions);
+    [PrivateApi]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    T IAttribute<T>.this[int languageId]
+        => GetInternal([languageId], IsDefault, FindHavingDimensions);
 
     #region IAttribute Implementations
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    object IAttribute.this[string languageKey] => GetInternal([languageKey], FindHavingDimensions);
+    object IAttribute.this[string languageKey]
+        => GetInternal([languageKey], IsDefault, FindHavingDimensions);
 
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys)
     {
-        var iVal = GetInternalValue(languageKeys, FindHavingDimensions);
+        var iVal = GetInternalValue(languageKeys, IsDefault, FindHavingDimensions);
         return (iVal, iVal == null ? default : iVal.TypedContents);
     }
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    object IAttribute.this[int languageId] => this[languageId];
+    object IAttribute.this[int languageId]
+        => GetInternal([languageId], IsDefault, FindHavingDimensions);
     #endregion
 
-
-    private T GetInternal<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
+    private T GetInternal<TKey>(TKey[] keys, Func<TKey, bool> isDefault, Func<TKey[], IValue> lookupCallback)
     {
-        var valT = GetInternalValue(keys, lookupCallback);
+        var valT = GetInternalValue(keys, isDefault, lookupCallback);
         return valT == null ? default : valT.TypedContents;
     }
 
-    private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
+    // 2024-06-04 2dm changing to use IsDefault methods instead of generic checks (faster)
+    //private T GetInternal<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
+    //{
+    //    var valT = GetInternalValue(keys, lookupCallback);
+    //    return valT == null ? default : valT.TypedContents;
+    //}
+
+
+    //private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
+    //{
+    //    // no values, exit early, return default
+    //    if (MyValues.Count == 0) return default;
+
+    //    // If no keys, return first value
+    //    if (keys is not { Length: > 0 }) return GetTypedValue();
+
+    //    // Value with Dimensions specified
+    //    // try match all specified Dimensions
+    //    // note that as of now, the dimensions are always just 1 language, not more
+    //    // so the dimensions are _not_ a list of languages, but would contain other dimensions
+    //    // that is why we match ALL - but in truth it's a "feature" that's never been used
+    //    foreach (var key in keys)
+    //    {
+    //        IValue valueHavingSpecifiedLanguages;
+    //        // if it's null or 0, try to just get anything
+    //        if (EqualityComparer<TKey>.Default.Equals(key, default))
+    //            valueHavingSpecifiedLanguages = MyValues.FirstOrDefault();
+    //        else if (key != null)
+    //            valueHavingSpecifiedLanguages = lookupCallback([key]);
+    //        else
+    //            continue;
+
+                
+    //        if (valueHavingSpecifiedLanguages == null) continue;
+
+    //        // stop at first non-null match
+    //        try
+    //        {
+    //            return (IValue<T>)valueHavingSpecifiedLanguages;
+    //        }
+    //        catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
+    //        break;
+    //    }
+
+    //    // Fallback to use Default
+    //    return GetTypedValue();
+    //}
+
+    private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey, bool> isDefault, Func<TKey[], IValue> lookupCallback)
     {
+        // no values, exit early, return default
+        if (MyValues.Count == 0) return default;
+
+        // If no keys, return first value
+        if (keys is not { Length: > 0 }) return GetTypedValue();
+
         // Value with Dimensions specified
-        if (keys is { Length: > 0 } && Values != null && Values.Any())
+        // try match all specified Dimensions
+        // note that as of now, the dimensions are always just 1 language, not more
+        // so the dimensions are _not_ a list of languages, but would contain other dimensions
+        // that is why we match ALL - but in truth it's a "feature" that's never been used
+        foreach (var key in keys)
         {
-            // try match all specified Dimensions
-            // note that as of now, the dimensions are always just 1 language, not more
-            // so the dimensions are _not_ a list of languages, but would contain other dimensions
-            // that is why we match ALL - but in truth it's a "feature" that's never been used
-            IValue valueHavingSpecifiedLanguages = null;
-            foreach (var key in keys)
+            IValue valueHavingSpecifiedLanguages;
+            // if it's null or 0, try to just get anything
+            if (isDefault(key))
+                valueHavingSpecifiedLanguages = MyValues.FirstOrDefault();
+            else if (key != null)
+                valueHavingSpecifiedLanguages = lookupCallback([key]);
+            else
+                continue;
+
+
+            if (valueHavingSpecifiedLanguages == null) continue;
+
+            // stop at first non-null match
+            try
             {
-                // if it's null or 0, try to just get anything
-                if (EqualityComparer<TKey>.Default.Equals(key, default))
-                    valueHavingSpecifiedLanguages = Values.FirstOrDefault();
-                else if (key != null)
-                    valueHavingSpecifiedLanguages = lookupCallback([key]);
-
-                // stop at first hit
-                if (valueHavingSpecifiedLanguages != null) break;
+                return (IValue<T>)valueHavingSpecifiedLanguages;
             }
-
-            if (valueHavingSpecifiedLanguages != null)
-                try
-                {
-                    return (IValue<T>)valueHavingSpecifiedLanguages;
-                }
-                catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
+            catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
+            break;
         }
-        // use Default
+
+        // Fallback to use Default
         return GetTypedValue();
     }
 
+    private static bool IsDefault(string key) => key == default;
+
+    private static bool IsDefault(int key) => key == default;
+
     private IValue FindHavingDimensions(int[] keys)
     {
-        var valuesHavingDimensions = Values.FirstOrDefault(va => keys.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
+        var valuesHavingDimensions = MyValues
+            .FirstOrDefault(va => keys.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
         return valuesHavingDimensions;
     }
 
@@ -138,14 +199,14 @@ public class Attribute<T> : AttributeBase, IAttribute<T>
     {
         // ensure language Keys in lookup-list are lowered
         var langsLower = keys.Select(l => l.ToLowerInvariant()).ToArray();
-        var valuesHavingDimensions = Values
+        var valuesHavingDimensions = MyValues
             .FirstOrDefault(va => langsLower.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
         return valuesHavingDimensions;
     }
 
     #region ToString to improve debugging experience
 
-    public override string ToString() => $"[{GetType()}:{Values?.Count()}x] - first={GetTypedValue()?.Serialized}";
+    public override string ToString() => $"[{GetType()}:{MyValues.Count}x] - first={GetTypedValue()?.Serialized}";
 
     #endregion
 }
