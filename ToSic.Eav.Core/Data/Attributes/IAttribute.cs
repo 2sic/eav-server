@@ -47,7 +47,7 @@ public interface IAttribute : IAttributeBase
     /// <returns></returns>
     [PrivateApi("experimental in 12.05")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    (IValue ValueField, object Result) GetTypedValue(string[] languageKeys);
+    (IValue ValueField, object Result) GetTypedValue(string[] languageKeys, bool fallbackToAny);
 
     [PrivateApi("internal only")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

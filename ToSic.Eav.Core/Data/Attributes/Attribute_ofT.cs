@@ -74,26 +74,26 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     object IAttribute.this[string languageKey]
-        => GetInternal([languageKey.ToLowerInvariant()], IsDefault, FindHavingDimensionsLowerCase);
+        => GetInternal([languageKey.ToLowerInvariant(), null], IsDefault, FindHavingDimensionsLowerCase, fallbackToAny: true);
 
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys)
+    public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys, bool fallbackToAny)
     {
-        var iVal = GetInternalValue(languageKeys, IsDefault, FindHavingDimensionsLowerCase);
+        var iVal = GetInternalValue(languageKeys, IsDefault, FindHavingDimensionsLowerCase, fallbackToAny: fallbackToAny);
         return (iVal, iVal == null ? default : iVal.TypedContents);
     }
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     object IAttribute.this[int languageId]
-        => GetInternal([languageId], IsDefault, FindHavingDimensions);
+        => GetInternal([languageId], IsDefault, FindHavingDimensions, fallbackToAny: true);
     #endregion
 
-    private T GetInternal<TKey>(TKey[] keys, Func<TKey, bool> isDefault, Func<TKey[], IValue> lookupCallback)
+    private T GetInternal<TKey>(TKey[] keys, Func<TKey, bool> isDefault, Func<TKey[], IValue> lookupCallback, bool fallbackToAny)
     {
-        var valT = GetInternalValue(keys, isDefault, lookupCallback);
+        var valT = GetInternalValue(keys, isDefault, lookupCallback, fallbackToAny);
         return valT == null ? default : valT.TypedContents;
     }
 
@@ -145,13 +145,13 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
     //    return GetTypedValue();
     //}
 
-    private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey, bool> isDefault, Func<TKey[], IValue> lookupCallback)
+    private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey, bool> isDefault, Func<TKey[], IValue> lookupCallback, bool fallbackToAny)
     {
         // no values, exit early, return default
         if (MyValues.Count == 0) return default;
 
         // If no keys, return first value
-        if (keys is not { Length: > 0 }) return GetTypedValue();
+        if (keys is not { Length: > 0 }) return fallbackToAny ? GetTypedValue() : default;
 
         // Value with Dimensions specified
         // try match all specified Dimensions
@@ -163,7 +163,7 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
             IValue valueHavingSpecifiedLanguages;
             // if it's null or 0, try to just get anything
             if (isDefault(key))
-                valueHavingSpecifiedLanguages = MyValues.FirstOrDefault();
+                valueHavingSpecifiedLanguages = GetTypedValue();
             else if (key != null)
                 valueHavingSpecifiedLanguages = lookupCallback([key]);
             else
@@ -173,16 +173,16 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
             if (valueHavingSpecifiedLanguages == null) continue;
 
             // stop at first non-null match
-            try
-            {
-                return (IValue<T>)valueHavingSpecifiedLanguages;
-            }
-            catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
+            //try
+            //{
+                return valueHavingSpecifiedLanguages as IValue<T>;
+            //}
+            //catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
             break;
         }
 
         // Fallback to use Default
-        return GetTypedValue();
+        return fallbackToAny ? GetTypedValue() : default;
     }
 
     private static bool IsDefault(string key) => key == default;

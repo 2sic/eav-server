@@ -30,14 +30,14 @@ partial class Entity
         if (Attributes.ContainsKey(field))
         {
             var attribute = Attributes[field];
-            var (valueField, result) = attribute.GetTypedValue(languages);
+            var (valueField, result) = attribute.GetTypedValue(languages, false);
             return new(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
         }
             
         if (field == EntityFieldTitle)
         {
             var attribute = Title;
-            var valT = attribute?.GetTypedValue(languages);
+            var valT = attribute?.GetTypedValue(languages, false);
             return new(result: valT?.Result, fieldType: attribute?.Type.ToString() ?? FieldIsNotFound, path: path) { Value = valT?.ValueField, Source = this };
         }
 
