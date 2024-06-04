@@ -120,7 +120,11 @@ ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol ol li { border-left-
 span.time {
   float: right;
   font-size: small;
+  background: lightgoldenrodyellow;
+  width: 200px;
+  text-align: left;
 }
+
 /*
 span.time span.emoji {
   font-size: smaller;
@@ -137,11 +141,11 @@ span.time-of-total {
 }
 
 ol li                       span.time { color: black;         }
-ol ol li                    span.time { color: #222;          }
-ol ol ol li                 span.time { color: #444;         }
-ol ol ol ol li              span.time { color: #666;           }
-ol ol ol ol ol li           span.time { color: #888;    }
-ol ol ol ol ol ol li        span.time { color: #aaa;     }
+ol ol li                    span.time { color: #111;          }
+ol ol ol li                 span.time { color: #222;         }
+ol ol ol ol li              span.time { color: #444;           }
+ol ol ol ol ol li           span.time { color: #666;    }
+ol ol ol ol ol ol li        span.time { color: #888;     }
 
 /*
 ol ol ol ol ol ol ol li     span.time { color: turquoise;     }

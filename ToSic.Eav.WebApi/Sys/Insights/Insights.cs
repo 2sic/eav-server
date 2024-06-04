@@ -40,7 +40,7 @@ public partial class InsightsControllerReal(
 
     #endregion
 
-    private Exception CreateBadRequest(string msg) => HttpException.BadRequest(msg);
+    private static Exception CreateBadRequest(string msg) => HttpException.BadRequest(msg);
 
     private void ThrowIfNotSystemAdmin()
     {

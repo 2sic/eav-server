@@ -163,19 +163,25 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
 
     internal string DumpTree(string title, ILog log)
     {
+        var typedLog = (Log)log;
         var lg = new StringBuilder(
             H1($"{title}") +
-            Div($"{(log as Log)?.Created.Dump()}") +
+            Div($"{typedLog.Created.Dump()}") +
             "\n\n"
         );
-        if ((log as Log)?.Entries.Count == 0) return "";
+
+        if (typedLog is { Entries.Count: 0 })
+            return "";
+
         lg.AppendLine("<ol>");
 
         var breadcrumb = new Stack<string>();
         var times = new Stack<TimeSpan>();
 
-        var entries = (log as Log)?.Entries;
-        var time = new InsightsTime(entries?.FirstOrDefault()?.Elapsed ?? default);
+        var entries = typedLog.Entries;
+        var firstEntry = entries.FirstOrDefault();
+        var startTime = new InsightsTime(firstEntry?.Elapsed ?? default);
+        var startCreated = typedLog.Created;
 
         foreach (var e in entries)
         {
@@ -192,7 +198,7 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                 // Create an entry
                 lg.AppendLine("<li>");
                 var prevBreadcrumb = breadcrumb.Count > 0 ? breadcrumb.Peek() : "";
-                lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0 ? times.Peek() : default, time));
+                lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0 ? times.Peek() : default, startTime, startCreated));
                 // 
                 if (e.WrapOpen)
                 {
@@ -222,7 +228,7 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
             ? label.Substring(0, label.Length - 2).AfterLast("]") + "]" 
             : label;
 
-    private string TreeDumpOneLine(Entry e, string parentBreadcrumb, TimeSpan parentTime, InsightsTime time)
+    private string TreeDumpOneLine(Entry e, string parentBreadcrumb, TimeSpan parentTime, InsightsTime time, DateTime mainStart)
     {
         // if it's just a close, only repeat the result
         if (e.WrapClose)
@@ -271,7 +277,7 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                 + (e.Result != null
                     ? $" {ResStart}{HtmlEncode(e.Result)}{ResEnd}"
                     : string.Empty)
-                + time.ShowTime(e, parentTime)
+                + time.ShowTime(e, parentTime, mainStart)
                 + (e.Code != null && e.Options?.HideCodeReference != true
                     ? " " + HoverLabel("C#", $"{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}", "codePeek")
                     : string.Empty)

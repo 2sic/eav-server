@@ -23,6 +23,8 @@ public class Entry: ICanEstimateSize
 
     public string ShortSource => _log.NameId;
 
+    public DateTime Created { get; } = DateTime.Now;
+
     internal Entry(ILog log, string message, int depth, CodeRef code, EntryOptions options = default)
     {
         _log = log;
