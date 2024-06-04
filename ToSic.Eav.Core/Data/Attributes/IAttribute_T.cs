@@ -20,10 +20,11 @@ public interface IAttribute<out T> : IAttribute
     /// </summary>
     IEnumerable<IValue<T>> Typed { get; }
 
-    /// <summary>
-    /// Gets the Value for the specified Language/Dimension using the ID accessor. Usually not needed. Typed.
-    /// </summary>
-    /// <param name="languageId">the language id (number)</param>
-    new T this[int languageId] { get; }
+    // 2024-06-04 2dm disabled completely, cannot imagine anybody using this on the Typed-Interface - clean-up 2024-Q3
+    ///// <summary>
+    ///// Gets the Value for the specified Language/Dimension using the ID accessor. Usually not needed. Typed.
+    ///// </summary>
+    ///// <param name="languageId">the language id (number)</param>
+    //new T this[int languageId] { get; }
 
 }

@@ -63,11 +63,12 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
     public IEnumerable<IValue<T>> Typed
         => MyValues.Cast<IValue<T>>().ToList();
 
-    /// <inheritdoc/>
-    [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    T IAttribute<T>.this[int languageId]
-        => GetInternal([languageId], IsDefault, FindHavingDimensions);
+    // 2024-06-04 2dm disabled completely, cannot imagine anybody using this on the Typed-Interface - clean-up 2024-Q3
+    ///// <inheritdoc/>
+    //[PrivateApi]
+    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //T IAttribute<T>.this[int languageId]
+    //    => GetInternal([languageId], IsDefault, FindHavingDimensions);
 
     #region IAttribute Implementations
     [PrivateApi]
