@@ -60,7 +60,7 @@ partial class InsightsControllerReal
                 Ol(
                     Li(LinkTo("Help (this screen", nameof(Help))),
                     Li(LinkTo("All Logs", InsightsLogs.Link)),
-                    Li(LinkTo("In Memory Cache", nameof(Cache))),
+                    Li(LinkTo("In Memory Cache", InsightsAppsCache.Link)),
                     Li(LinkTo("In Memory DataSource Cache", nameof(dsCache.Value.DataSourceCache))),
                     Li(LinkTo("ping the system / IsAlive", ProviderName(nameof(InsightsIsAlive))))
                 ),
@@ -78,9 +78,9 @@ partial class InsightsControllerReal
                 Ol(
                     Li("flush an app cache: " + DemoLink("purge?appid=")),
                     Li(
-                        $"look at the load-log of an app-cache: <a href='{nameof(LoadLog)}?appid='>{nameof(LoadLog)}?appid=</a>"),
+                        $"look at the load-log of an app-cache: <a href='{InsightsAppLoadLog.Link}?appid='>{InsightsAppLoadLog.Link}?appid=</a>"),
                     Li(
-                        $"look at the cache-stats of an app: <a href='{nameof(Stats)}?appid='>{nameof(Stats)}?appid=</a>"),
+                        $"look at the cache-stats of an app: <a href='{InsightsAppStats.Link}?appid='>{InsightsAppStats.Link}?appid=</a>"),
                     Li(
                         $"look at the content-types of an app: <a href='{ProviderName(nameof(InsightsTypes))}?appid='>{ProviderName(nameof(InsightsTypes))}?appid=</a>"),
                     Li("look at attributes of a type: " + DemoLink(typeattribs)),

@@ -3,12 +3,9 @@
 partial class InsightsControllerReal
 {
     private bool UrlParamsIncomplete(int? appId, out string message)
-    {
-        ThrowIfNotSystemAdmin();
-        return UrlParamIncomplete("appid", appId, out message);
-    }
+        => UrlParamIncomplete("appid", appId, out message);
 
-        
+
     private bool UrlParamsIncomplete(int? appId, string type, out string message)
         => UrlParamsIncomplete(appId, out message)
            || UrlParamIncomplete("type", type, out message);

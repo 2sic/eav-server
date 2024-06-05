@@ -6,6 +6,8 @@ namespace ToSic.Eav.WebApi.Sys.Insights;
 
 internal class InsightsTypes(IAppStates appStates, string name) : InsightsProvider(name, helpCategory: HiddenFromAutoDisplay)
 {
+    public static string Link = "Types";
+
     protected readonly IAppStates AppStates = appStates;
 
     public InsightsTypes(IAppStates appStates) : this(appStates, "Types") { }

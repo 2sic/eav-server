@@ -62,12 +62,6 @@ partial class InsightsControllerReal
 
         if (view.EqualsInsensitive(nameof(GlobalTypesLog))) return GlobalTypesLog();
 
-        // Cache and Cache-Details
-        if (view.EqualsInsensitive(nameof(Cache))) return Cache();
-        if (view.EqualsInsensitive(nameof(LoadLog))) return LoadLog(appId);
-        if (view.EqualsInsensitive(nameof(Stats))) return Stats(appId);
-        if (view.EqualsInsensitive(nameof(Purge))) return Purge(appId);
-
         // DataSourceCache
         if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCache))) return dsCache.Value.DataSourceCache();
         if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCacheItem))) return dsCache.Value.DataSourceCacheItem(key);
