@@ -7,13 +7,15 @@ partial class InsightsControllerReal
     internal string Logs()
     {
         Log.A("debug log load");
-        return LogHtml.LogHeader("Overview", false) + LogHtml.LogHistoryOverview();
+        return LogHtml.LogHeader("Overview", false)
+               + LogHtml.LogHistoryOverview();
     }
 
     private string Logs(string key, string filter)
     {
         Log.A($"debug log load for {key}");
-        return LogHtml.LogHeader(key, true, filter.HasValue()) + LogHtml.LogHistoryList(key, filter);
+        return LogHtml.LogHeader(key, true, filter.HasValue())
+               + LogHtml.LogHistoryList(key, filter);
     }
 
     private string Logs(string key, int position)

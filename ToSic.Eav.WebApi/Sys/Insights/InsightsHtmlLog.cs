@@ -92,7 +92,9 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
         // Helper to get the correct value depending of if it should fill the column, or it's found...
         string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => !use 
             ? null 
-            : specs?.TryGetValue(k, out var a) == true ? a : "";
+            : specs?.TryGetValue(k, out var value) == true
+                ? value
+                : "";
 
         var logItems = set as IEnumerable<LogStoreEntry>;
         if (filter.HasValue())
@@ -123,7 +125,7 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                 hasMod ? "Mod ↕" : null,
                 SpecialField.Right("Lines"),
                 SpecialField.Right("Size ca.", tooltip: "Estimated size of this log in memory"),
-                "First Message",
+                "Title / First Message",
                 "Info",
                 "Time"
             ),
@@ -138,6 +140,9 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                     var sizeInfo = size == null ? null : new SizeInfo(size.Total);
                     if (size != null)
                         totalSize += size;
+
+                    var bestTitle = (bundle.Title ?? firstIfExists?.Message).NeverNull();
+
                     return RowFields(
                         $"{i + 1}",
                         LinkTo(timestamp, nameof(InsightsControllerReal.Logs), key: key, more: $"position={i + 1}"),
@@ -147,7 +152,7 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                         GetValOrAlt(hasMod, specs, "ModuleId"),
                         SpecialField.Right($"{realLog?.Entries.Count:##,###}"),
                         SpecialField.Right(sizeInfo != null ? $"{sizeInfo.Kb:N} KB" : "-"),
-                        HtmlEncode((firstIfExists?.Message).NeverNull().Ellipsis(150, "…")),
+                        SpecialField.Left(HtmlEncode(bestTitle.Ellipsis(150, "…")), tooltip: bestTitle),
                         HtmlEncode(firstIfExists?.Result),
                         SpecialField.Right(new InsightsTime().ShowTime(realLog))
                     );
