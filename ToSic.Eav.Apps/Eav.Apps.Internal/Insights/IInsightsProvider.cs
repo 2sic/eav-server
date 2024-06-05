@@ -11,7 +11,7 @@ public interface IInsightsProvider
 
     string Title { get; }
 
-    void SetContext(IInsightsLinker linker, int? appId = default, IDictionary<string, object> parameters = default);
+    void SetContext(IInsightsLinker linker, int? appId, IDictionary<string, object> parameters, string key, int? position, string type, bool? toggle, string nameId, string filter);
 
     string HtmlBody();
 }

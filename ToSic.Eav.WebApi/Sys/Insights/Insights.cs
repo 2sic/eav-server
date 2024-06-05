@@ -35,8 +35,8 @@ public partial class InsightsControllerReal(
     protected readonly AppCachePurger AppCachePurger = appCachePurger;
 
     private InsightsHtmlTable HtmlTableBuilder { get; } = new();
-    private InsightsHtmlLog LogHtml => _logHtml ??= new(logStore);
-    private InsightsHtmlLog _logHtml;
+    private InsightsLogsHelper LogHtml => _logHtml ??= new(logStore);
+    private InsightsLogsHelper _logHtml;
 
     #endregion
 

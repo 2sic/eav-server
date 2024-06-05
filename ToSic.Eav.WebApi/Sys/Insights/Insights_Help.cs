@@ -59,7 +59,7 @@ partial class InsightsControllerReal
                 H2("Most used"),
                 Ol(
                     Li(LinkTo("Help (this screen", nameof(Help))),
-                    Li(LinkTo("All Logs", nameof(Logs))),
+                    Li(LinkTo("All Logs", InsightsLogs.Link)),
                     Li(LinkTo("In Memory Cache", nameof(Cache))),
                     Li(LinkTo("In Memory DataSource Cache", nameof(dsCache.Value.DataSourceCache))),
                     Li(LinkTo("ping the system / IsAlive", ProviderName(nameof(InsightsIsAlive))))
@@ -69,7 +69,7 @@ partial class InsightsControllerReal
                 Ol(
                     Li(LinkTo("Global Types in cache", ProviderName(nameof(InsightsGlobalTypes)))),
                     Li(LinkTo("Global Types loading log", nameof(GlobalTypesLog))),
-                    Li(LinkTo("Global logs", nameof(Logs), key: LogNames.LogStoreStartUp)),
+                    Li(LinkTo("Global logs", InsightsLogs.Link, key: LogNames.LogStoreStartUp)),
                     Li(LinkTo("Licenses &amp; Features", nameof(Licenses)))
                 ),
                 RawHtml(extras.Cast<object>().ToArray()),

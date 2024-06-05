@@ -1,9 +1,24 @@
-﻿using static ToSic.Razor.Blade.Tag;
+﻿using ToSic.Eav.Apps.Internal.Insights;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-partial class InsightsControllerReal
+internal class InsightsLogs(LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, teaser: "Logs of Modules, APIs and more", helpCategory: "Logging", connect: [logStore])
 {
+    public static string Link = "Logs";
+
+    public override string Title => "Insights into Logs";
+
+    private InsightsLogsHelper LogHtml => _logHtml ??= new(logStore.Value);
+    private InsightsLogsHelper _logHtml;
+
+    public override string HtmlBody()
+        => Key == null
+            ? Logs()
+            : Position == null
+                ? Logs(Key, Filter)
+                : Logs(Key, Position.Value);
+
     internal string Logs()
     {
         Log.A("debug log load");
@@ -23,7 +38,7 @@ partial class InsightsControllerReal
         Log.A($"debug log load for {key}/{position}");
         var msg = InsightsHtmlParts.PageStyles() + LogHtml.LogHeader($"{key}[{position}]", false);
 
-        if (!logStore.Segments.TryGetValue(key, out var set))
+        if (!logStore.Value.Segments.TryGetValue(key, out var set))
             return msg + $"position {position} not found in log set {key}";
 
         if (set.Count < position - 1)
@@ -36,17 +51,5 @@ partial class InsightsControllerReal
             : LogHtml.ShowSpecs(bundle) + LogHtml.DumpTree($"Log for {key}[{position}]", bundle.Log));
     }
 
-    internal string PauseLogs(bool pause)
-    {
-        Log.A($"pause log {pause}");
-        logStore.Pause = pause;
-        return $"pause set to {pause}";
-    }
 
-    internal string LogsFlush(string key)
-    {
-        Log.A($"flush log for {key}");
-        logStore.FlushSegment(key);
-        return $"flushed log history for {key}";
-    }
 }

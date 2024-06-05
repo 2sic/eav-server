@@ -2,12 +2,16 @@
 using ToSic.Eav.Apps.Assets.Internal;
 using ToSic.Lib.Memory;
 using ToSic.Razor.Blade;
+using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
+using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
+internal class InsightsLogsHelper(ILogStoreLive logStore)
 {
+    private InsightsHtmlBase Linker { get; } = new();
+
     internal string LogHistoryOverview()
     {
         var msg = "";
@@ -23,9 +27,9 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
                 Tbody(
                     segments.OrderBy(segPair => segPair.Key)
                         .Select(segPair => RowFields((++count).ToString(),
-                            LinkTo(segPair.Key, nameof(InsightsControllerReal.Logs), key: segPair.Key),
+                            Linker.LinkTo(segPair.Key, InsightsLogs.Link, key: segPair.Key),
                             $"{segPair.Value.Count}",
-                            LinkTo("flush", nameof(InsightsControllerReal.LogsFlush), key: segPair.Key))
+                            Linker.LinkTo("flush", InsightsLogsFlush.Link, key: segPair.Key))
                         )
                         .Cast<object>()
                         .ToArray())
@@ -41,7 +45,7 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
     }
 
 
-    public IHtmlTag ShowSpecs(LogStoreEntry entry)
+    internal IHtmlTag ShowSpecs(LogStoreEntry entry)
     {
         var specs = entry?.Specs;
         if (specs == null) return null;
@@ -58,23 +62,23 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
     internal string LogHeader(string key, bool showFlush, bool showReset = false)
     {
         var msg =
-            +Div("back to " + LinkTo("2sxc insights home", nameof(InsightsControllerReal.Help)))
+            +Div("back to " + Linker.LinkTo("2sxc insights home", nameof(InsightsControllerReal.Help)))
             + H1($"2sxc Insights: Log {key}")
             + P("Status: ",
                 Strong(logStore.Pause ? "paused" : "collecting"),
                 ", toggle: ",
-                LinkTo(HtmlEncode("▶"), nameof(InsightsControllerReal.PauseLogs), more: "toggle=false"),
+                Linker.LinkTo(HtmlEncode("▶"), InsightsPauseLogs.Link, more: "toggle=false"),
                 " | ",
-                LinkTo(HtmlEncode("⏸"), nameof(InsightsControllerReal.PauseLogs), more: "toggle=true"),
+                Linker.LinkTo(HtmlEncode("⏸"), InsightsPauseLogs.Link, more: "toggle=true"),
                 $" collecting #{logStore.AddCount} of max {logStore.MaxItems} (keep max {logStore.SegmentSize} per set, then FIFO)"
                 + (showFlush
-                    ? " " + LinkTo("flush " + key, nameof(InsightsControllerReal.LogsFlush), key: key).ToString()
+                    ? " " + Linker.LinkTo("flush " + key, InsightsLogsFlush.Link, key: key).ToString()
                     : "")
             );
         if (showReset)
             msg += Br()
                    + Strong("This list has filters applied. ")
-                   + LinkTo(HtmlEncode("❌") + "remove filters", nameof(InsightsControllerReal.Logs), key: key);
+                   + Linker.LinkTo(HtmlEncode("❌") + "remove filters", InsightsLogs.Link, key: key);
                 
         return msg.ToString();
     }
@@ -115,17 +119,21 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
         var hasSite = HasKey("SiteId");
         var hasPage = HasKey("PageId");
         var hasMod = HasKey("ModuleId");
+        var hasUsr = HasKey("UserId");
         var totalSize = new SizeEstimate();
         msg += P($"Logs Overview: {set.Count}\n");
         msg += Table().Id("table").Wrap(
-            HeadFields("#", "Timestamp",
+            HeadFields(
+                "#",
+                "Timestamp",
                 hasApp ? "App ↕" : null,
                 hasSite ? "Site ↕" : null,
                 hasPage ? "Page ↕" : null,
                 hasMod ? "Mod ↕" : null,
+                hasUsr ? "Usr ↕" : null,
                 SpecialField.Right("Lines"),
                 SpecialField.Right("Size ca.", tooltip: "Estimated size of this log in memory"),
-                "Title / First Message",
+                SpecialField.Left("Title / First Message"),
                 "Info",
                 "Time"
             ),
@@ -145,11 +153,12 @@ internal class InsightsHtmlLog(ILogStoreLive logStore) : InsightsHtmlTable
 
                     return RowFields(
                         $"{i + 1}",
-                        LinkTo(timestamp, nameof(InsightsControllerReal.Logs), key: key, more: $"position={i + 1}"),
-                        GetValOrAlt(hasApp, specs, nameof(IAppIdentity.AppId)),
-                        GetValOrAlt(hasSite, specs, "SiteId"),
-                        GetValOrAlt(hasPage, specs, "PageId"),
-                        GetValOrAlt(hasMod, specs, "ModuleId"),
+                        Linker.LinkTo(timestamp, InsightsLogs.Link, key: key, more: $"position={i + 1}"),
+                        SpecialField.Right(GetValOrAlt(hasApp, specs, nameof(IAppIdentity.AppId)), tooltip: GetValOrAlt(hasApp, specs, "AppName") ),
+                        SpecialField.Right(GetValOrAlt(hasSite, specs, "SiteId")),
+                        SpecialField.Right(GetValOrAlt(hasPage, specs, "PageId")),
+                        SpecialField.Right(GetValOrAlt(hasMod, specs, "ModuleId")),
+                        SpecialField.Right(GetValOrAlt(hasUsr, specs, "UserId")),
                         SpecialField.Right($"{realLog?.Entries.Count:##,###}"),
                         SpecialField.Right(sizeInfo != null ? $"{sizeInfo.Kb:N} KB" : "-"),
                         SpecialField.Left(HtmlEncode(bestTitle.Ellipsis(150, "…")), tooltip: bestTitle),

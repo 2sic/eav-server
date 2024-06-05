@@ -39,7 +39,7 @@ partial class InsightsControllerReal
                 {"toggle", toggle},
                 {"nameId", nameId},
                 {"filter", filter}
-            });
+            }, key, position, type, toggle, nameId, filter);
             var result = provider.HtmlBody();
 
             var wrapper = Tag.Custom("html",
@@ -60,26 +60,12 @@ partial class InsightsControllerReal
 
         if (view.EqualsInsensitive(nameof(Licenses))) return Licenses();
 
-        //if (view.EqualsInsensitive(nameof(IsAlive))) return IsAlive();
-
-        //if (view.EqualsInsensitive(nameof(GlobalTypes))) return GlobalTypes();
         if (view.EqualsInsensitive(nameof(GlobalTypesLog))) return GlobalTypesLog();
-
-        if (view.EqualsInsensitive(nameof(Logs)))
-            return key == null
-                ? Logs()
-                : position == null
-                    ? Logs(key, filter)
-                    : Logs(key, position.Value);
-
-        if (view.EqualsInsensitive(nameof(LogsFlush))) return LogsFlush(key);
-        if (view.EqualsInsensitive(nameof(PauseLogs))) return PauseLogs(toggle ?? true);
 
         // Cache and Cache-Details
         if (view.EqualsInsensitive(nameof(Cache))) return Cache();
         if (view.EqualsInsensitive(nameof(LoadLog))) return LoadLog(appId);
         if (view.EqualsInsensitive(nameof(Stats))) return Stats(appId);
-        //if (view.EqualsInsensitive(nameof(Types))) return Types(appId);
         if (view.EqualsInsensitive(nameof(Purge))) return Purge(appId);
 
         // DataSourceCache
