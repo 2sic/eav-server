@@ -22,14 +22,15 @@ public abstract class InsightsProvider(string name,
 
     public virtual string Title => name;
 
-    protected string Key { get; private set;  } // => Parameters.TryGetValue("key", out var key) ? key as string : null;
+    protected string Key { get; private set;  }
 
-    protected bool? Toggle { get; set; } //=> Parameters.TryGetValue("toggle", out var toggle) && toggle is true;
+    protected bool? Toggle { get; set; }
 
     protected int? Position { get; private set; } 
 
     protected string Filter { get; private set; }
     protected string Type { get; private set; }
+    protected string NameId { get; private set; }
 
     public void SetContext(IInsightsLinker linker, int? appId, IDictionary<string, object> parameters, string key, int? position, string type, bool? toggle, string nameId, string filter)
     {
@@ -41,6 +42,7 @@ public abstract class InsightsProvider(string name,
         Position = position;
         Filter = filter;
         Type = type;
+        NameId = nameId;
     }
     protected IInsightsLinker Linker { get; private set; }
     protected int? AppId { get; private set; }

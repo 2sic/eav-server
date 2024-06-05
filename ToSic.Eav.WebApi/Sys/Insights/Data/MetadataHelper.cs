@@ -1,11 +1,12 @@
-﻿using static ToSic.Razor.Blade.Tag;
+﻿using ToSic.Eav.Apps.Internal.Insights;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsMetadataHelper
+internal class MetadataHelper
 {
 
-    internal static string MetadataTable(string msg, List<IEntity> metadata)
+    internal static string MetadataTable(string msg, int appId, List<IEntity> metadata, IInsightsLinker linker)
     {
         try
         {
@@ -27,9 +28,11 @@ internal class InsightsMetadataHelper
 
                 msg += InsightsHtmlTable.RowFields(
                     ++count,
+                    linker.LinkTo($"{md.EntityId}", InsightsEntity.Link, appId, nameId: md.EntityId.ToString()),
                     md.EntityId,
                     md.GetBestTitle(),
-                    md.Type.Name,
+                    linker.LinkTo(md.Type.Name, InsightsEntities.Link, appId, type: md.Type.Name),
+                    // md.Type.Name,
                     mdFor.TargetType,
                     key
                 );

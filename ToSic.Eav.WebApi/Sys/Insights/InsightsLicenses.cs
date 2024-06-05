@@ -1,20 +1,30 @@
-﻿using ToSic.Razor.Markup;
+﻿using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.Security.Fingerprint;
+using ToSic.Razor.Markup;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-partial class InsightsControllerReal
+internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
+    LazySvc<ILicenseService> licenseServiceLazy,
+    LazySvc<LicenseCatalog> licenseCatalog) 
+    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [fingerprint, licenseServiceLazy, licenseCatalog])
 {
-    private string Licenses()
+    public static string Link = "Licenses";
+
+    public override string Title => "Licenses Overview";
+
+    public override string HtmlBody()
     {
         var body = H1("Licenses and Features") as TagBase;
 
         #region Fingerprints List
 
-        var fpSection = 
-            + H2("Fingerprints")
+        var fpSection =
+            +H2("Fingerprints")
             + P("These are the identities as loaded by the system:");
 
         try
@@ -31,7 +41,7 @@ partial class InsightsControllerReal
                     $"Enterprise License: for '{entFp.Title}' {EmojiTrueFalse(entFp.Valid)}",
                     Br(),
                     $"Fingerprint: '{entFp.Fingerprint}' ",
-                    "(guid: " + LinkTo($"{entFp.Guid}", nameof(Entity), Constants.PresetAppId,
+                    "(guid: " + Linker.LinkTo($"{entFp.Guid}", nameof(Entity), Constants.PresetAppId,
                         nameId: entFp.Guid.ToString()) + ")"
                 ));
 

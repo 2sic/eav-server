@@ -5,12 +5,21 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-partial class InsightsControllerReal
+/// <summary>
+/// Home / Help screen for insights
+/// </summary>
+/// <param name="insightsProviders">All providers - MUST BE LAZY - otherwise we get circular DI dependencies</param>
+internal class InsightsHelp(LazySvc<IEnumerable<IInsightsProvider>> insightsProviders)
+    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay)
 {
-    internal string Help()
+    public static string Link = "Help";
+
+    public override string Title => "Insights Help / Home";
+
+    public override string HtmlBody()
     {
         var l = Log.Fn<string>();
-            
+
         // ReSharper disable IdentifierTypo
         // ReSharper disable StringLiteralTypo
         const string typeattribs = "typeattributes?appid=&type=";
@@ -21,11 +30,11 @@ partial class InsightsControllerReal
         // ReSharper restore IdentifierTypo
         // ReSharper restore StringLiteralTypo
 
-        var providersWithCategory = insightsProviders
+        var providersWithCategory = insightsProviders.Value
             // Skip self
-            .Where(p => !p.Name.EqualsInsensitive(nameof(Help)))
+            .Where(p => !p.Name.EqualsInsensitive(Name))
             // Skip hidden - these are usually sub-providers which require additional parameters
-            .Where(p => p.HelpCategory != InsightsProvider.HiddenFromAutoDisplay)
+            .Where(p => p.HelpCategory != HiddenFromAutoDisplay)
             // Group by category - if not set, use a default
             .GroupBy(p => p.HelpCategory ?? "Uncategorized (please add Category)")
             .OrderBy(g => g.Key)
@@ -58,10 +67,10 @@ partial class InsightsControllerReal
 
                 H2("Most used"),
                 Ol(
-                    Li(LinkTo("Help (this screen", nameof(Help))),
+                    Li(LinkTo("Help (this screen", InsightsHelp.Link)),
                     Li(LinkTo("All Logs", InsightsLogs.Link)),
                     Li(LinkTo("In Memory Cache", InsightsAppsCache.Link)),
-                    Li(LinkTo("In Memory DataSource Cache", nameof(dsCache.Value.DataSourceCache))),
+                    Li(LinkTo("In Memory DataSource Cache", nameof(InsightsDataSourceCache.DataSourceCache))),
                     Li(LinkTo("ping the system / IsAlive", ProviderName(nameof(InsightsIsAlive))))
                 ),
 
@@ -70,7 +79,7 @@ partial class InsightsControllerReal
                     Li(LinkTo("Global Types in cache", ProviderName(nameof(InsightsGlobalTypes)))),
                     Li(LinkTo("Global Types loading log", InsightsGlobalTypesLog.Link)),
                     Li(LinkTo("Global logs", InsightsLogs.Link, key: LogNames.LogStoreStartUp)),
-                    Li(LinkTo("Licenses &amp; Features", nameof(Licenses)))
+                    Li(LinkTo("Licenses &amp; Features", InsightsLicenses.Link))
                 ),
                 RawHtml(extras.Cast<object>().ToArray()),
 
@@ -88,28 +97,31 @@ partial class InsightsControllerReal
                     Li("look at type permissions:" + DemoLink(typePerms)),
                     Li("look at attribute Metadata :" + DemoLink(attribMeta)),
                     Li("look at attribute permissions:" + DemoLink(attribPerms)),
-                    Li("look at entities of a type:" + DemoLink($"{nameof(Entities)}?appid=&type=")),
-                    Li("look at all entities:" + DemoLink($"{nameof(Entities)}?appid=&type=all")),
-                    Li("look at a single entity by id:" + DemoLink($"{nameof(Entity)}?appId=&entity=")),
+                    Li("look at entities of a type:" + DemoLink($"{InsightsEntities.Link}?appid=&type=")),
+                    Li("look at all entities:" + DemoLink($"{InsightsEntities.Link}?appid=&type=all")),
+                    Li("look at a single entity by id:" + DemoLink($"{InsightsEntity.Link}?appId=&entity=")),
                     Li("look at entity metadata using entity-id:" +
-                       DemoLink($"{nameof(EntityMetadata)}?appid=&entity=")),
+                       DemoLink($"{InsightsEntityMetadata.Link}?appid=&entity=")),
                     Li("look at entity permissions using entity-id:" +
-                       DemoLink($"{nameof(EntityPermissions)}?appid=&entity=")
+                       DemoLink($"{InsightsEntityPermissions.Link}?appid=&entity=")
                     )
                 ))
             ;
         return l.ReturnAsOk(result.ToString());
     }
 
-    private static string ProviderName(string longName) => longName.Replace("Insights", "").Replace("Provider", "").Trim();
+    private static string ProviderName(string longName)
+        => longName.Replace("Insights", "").Replace("Provider", "").Trim();
+
+    private InsightsHtmlTable HtmlTableBuilder { get; } = new();
 
     internal A DemoLink(string labelAndLink) => HtmlTableBuilder.DemoLink(labelAndLink);
-        
-    internal A LinkTo(string label, string view, 
+
+    internal A LinkTo(string label, string view,
         int? appId = null, NoParamOrder noParamOrder = default,
         string key = null, string type = null, string nameId = null, string more = null)
     {
-        return HtmlTableBuilder.LinkTo(label, view, appId, noParamOrder, key, type, nameId,more);
+        return HtmlTableBuilder.LinkTo(label, view, appId, noParamOrder, key, type, nameId, more);
     }
 
 }

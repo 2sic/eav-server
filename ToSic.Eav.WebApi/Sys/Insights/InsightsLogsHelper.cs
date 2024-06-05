@@ -62,7 +62,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
     internal string LogHeader(string key, bool showFlush, bool showReset = false)
     {
         var msg =
-            +Div("back to " + Linker.LinkTo("2sxc insights home", nameof(InsightsControllerReal.Help)))
+            +Div("back to " + Linker.LinkTo("2sxc insights home", InsightsHelp.Link))
             + H1($"2sxc Insights: Log {key}")
             + P("Status: ",
                 Strong(logStore.Pause ? "paused" : "collecting"),

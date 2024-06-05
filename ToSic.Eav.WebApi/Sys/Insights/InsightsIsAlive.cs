@@ -6,5 +6,7 @@ internal class InsightsIsAlive(): InsightsProvider(Link, helpCategory: HiddenFro
 {
     public static string Link = "IsAlive";
 
+    public override string Title => "Is Alive Check / Ping";
+
     public override string HtmlBody() => true.ToString();
 }

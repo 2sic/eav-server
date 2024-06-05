@@ -98,9 +98,20 @@ public static class StartupWebApi
         services.AddTransient<IInsightsProvider, InsightsAppLoadLog>();
 
         services.AddTransient<IInsightsProvider, InsightsGlobalTypesLog>();
-        services.AddTransient<IInsightsProvider, InsightsTypePermissions>();
         services.AddTransient<IInsightsProvider, InsightsTypeMetadata>();
+        services.AddTransient<IInsightsProvider, InsightsTypePermissions>();
 
+        services.AddTransient<IInsightsProvider, InsightsLicenses>();
+        services.AddTransient<IInsightsProvider, InsightsAttributes>();
+        services.AddTransient<IInsightsProvider, InsightsAttributeMetadata>();
+        services.AddTransient<IInsightsProvider, InsightsAttributePermissions>();
+
+        services.AddTransient<IInsightsProvider, InsightsEntity>();
+        services.AddTransient<IInsightsProvider, InsightsEntities>();
+        services.AddTransient<IInsightsProvider, InsightsEntityPermissions>();
+        services.AddTransient<IInsightsProvider, InsightsEntityMetadata>();
+
+        services.AddTransient<IInsightsProvider, InsightsHelp>();
 
         return services;
     }

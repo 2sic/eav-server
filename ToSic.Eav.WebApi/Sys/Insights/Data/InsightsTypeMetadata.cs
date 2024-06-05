@@ -21,7 +21,7 @@ internal class InsightsTypeMetadata(LazySvc<IAppStates> appStates) : InsightsPro
         var msg = H1($"Metadata for {typ.Name} ({typ.NameId}) in {AppId}\n").ToString();
         var metadata = typ.Metadata.ToList();
 
-        return l.ReturnAsOk(InsightsMetadataHelper.MetadataTable(msg, metadata));
+        return l.ReturnAsOk(MetadataHelper.MetadataTable(msg, AppId.Value, metadata, Linker));
     }
 
 }
