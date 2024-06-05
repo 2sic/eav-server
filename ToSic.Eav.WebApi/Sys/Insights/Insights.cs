@@ -35,8 +35,6 @@ public partial class InsightsControllerReal(
     protected readonly AppCachePurger AppCachePurger = appCachePurger;
 
     private InsightsHtmlTable HtmlTableBuilder { get; } = new();
-    private InsightsLogsHelper LogHtml => _logHtml ??= new(logStore);
-    private InsightsLogsHelper _logHtml;
 
     #endregion
 
@@ -44,7 +42,7 @@ public partial class InsightsControllerReal(
 
     private void ThrowIfNotSystemAdmin()
     {
-        if(!user.IsSystemAdmin) throw HttpException.PermissionDenied("requires Superuser permissions");
+        if (!user.IsSystemAdmin) throw HttpException.PermissionDenied("requires Superuser permissions");
     }
 
     private IAppState AppState(int appId) => appStates.GetReader(appId);

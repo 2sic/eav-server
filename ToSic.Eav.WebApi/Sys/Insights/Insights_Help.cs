@@ -68,7 +68,7 @@ partial class InsightsControllerReal
                 H2("Global Data &amp; Types"),
                 Ol(
                     Li(LinkTo("Global Types in cache", ProviderName(nameof(InsightsGlobalTypes)))),
-                    Li(LinkTo("Global Types loading log", nameof(GlobalTypesLog))),
+                    Li(LinkTo("Global Types loading log", InsightsGlobalTypesLog.Link)),
                     Li(LinkTo("Global logs", InsightsLogs.Link, key: LogNames.LogStoreStartUp)),
                     Li(LinkTo("Licenses &amp; Features", nameof(Licenses)))
                 ),

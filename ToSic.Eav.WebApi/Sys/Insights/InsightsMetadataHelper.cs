@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-partial class InsightsControllerReal
+internal class InsightsMetadataHelper
 {
 
     internal static string MetadataTable(string msg, List<IEntity> metadata)

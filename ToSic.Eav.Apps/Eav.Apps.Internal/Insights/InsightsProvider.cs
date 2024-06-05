@@ -29,6 +29,7 @@ public abstract class InsightsProvider(string name,
     protected int? Position { get; private set; } 
 
     protected string Filter { get; private set; }
+    protected string Type { get; private set; }
 
     public void SetContext(IInsightsLinker linker, int? appId, IDictionary<string, object> parameters, string key, int? position, string type, bool? toggle, string nameId, string filter)
     {
@@ -39,6 +40,7 @@ public abstract class InsightsProvider(string name,
         Toggle = toggle;
         Position = position;
         Filter = filter;
+        Type = type;
     }
     protected IInsightsLinker Linker { get; private set; }
     protected int? AppId { get; private set; }

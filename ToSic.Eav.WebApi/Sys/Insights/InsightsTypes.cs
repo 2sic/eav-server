@@ -71,9 +71,9 @@ internal class InsightsTypes(IAppStates appStates, string name) : InsightsProvid
                     type.NameId,
                     HtmlEncode(type.Name),
                     //type.Name,
-                    Linker.LinkTo($"{type.Attributes.Count()}", "Attributes", appId, type: type.NameId),
-                    Linker.LinkTo($"{type.Metadata.Count()}", "TypeMetadata", appId, type: type.NameId),
-                    Linker.LinkTo($"{type.Metadata.Permissions.Count()}", "TypePermissions", appId, type: type.NameId),
+                    Linker.LinkTo($"{type.Attributes.Count()}", nameof(Attributes), appId, type: type.NameId),
+                    Linker.LinkTo($"{type.Metadata.Count()}", InsightsTypeMetadata.Link, appId, type: type.NameId),
+                    Linker.LinkTo($"{type.Metadata.Permissions.Count()}", InsightsTypePermissions.Link, appId, type: type.NameId),
                     type.IsDynamic.ToString(),
                     type.RepositoryType.ToString(),
                     Linker.LinkTo($"{itemCount}", "Entities", appId, type: type.NameId)

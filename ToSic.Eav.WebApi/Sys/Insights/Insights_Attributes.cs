@@ -62,7 +62,7 @@ partial class InsightsControllerReal
         var msg = H1($"Attribute Metadata for {typ.Name}.{nameId} in {appId}\n").ToString();
         var metadata = att.Metadata.ToList();
 
-        return MetadataTable(msg, metadata);
+        return InsightsMetadataHelper.MetadataTable(msg, metadata);
     }
 
     private string AttributePermissions(int? appId, string type, string attribute)
@@ -78,6 +78,6 @@ partial class InsightsControllerReal
         var msg = H1($"Attribute Permissions for {typ.Name}.{attribute} in {appId}\n").ToString();
         var metadata = att.Metadata.Permissions.Select(p => p.Entity).ToList();
 
-        return MetadataTable(msg, metadata);
+        return InsightsMetadataHelper.MetadataTable(msg, metadata);
     }
 }

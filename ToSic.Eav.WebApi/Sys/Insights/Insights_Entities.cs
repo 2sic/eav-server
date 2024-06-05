@@ -70,7 +70,7 @@ partial class InsightsControllerReal
         var msg = H1($"Entity Metadata for {entity} in {appId}\n").ToString();
         var metadata = ent.Metadata.ToList();
 
-        return MetadataTable(msg, metadata);
+        return InsightsMetadataHelper.MetadataTable(msg, metadata);
     }
 
     private string EntityPermissions(int? appId = null, int? entity = null)
@@ -84,7 +84,7 @@ partial class InsightsControllerReal
         var msg = H1($"Entity Permissions for {entity} in {appId}\n").ToString();
         var permissions = ent.Metadata.Permissions.Select(p => p.Entity).ToList();
 
-        return MetadataTable(msg, permissions);
+        return InsightsMetadataHelper.MetadataTable(msg, permissions);
     }
 
     private string Entity(int? appId, string nameId)

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsLogsFlush(ILogStoreLive logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [logStore])
+internal class InsightsLogsFlush(LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [logStore])
 {
     public static string Link = "LogsFlush";
 
@@ -14,7 +14,7 @@ internal class InsightsLogsFlush(ILogStoreLive logStore) : InsightsProvider(Link
     internal string LogsFlush(string key)
     {
         Log.A($"flush log for {key}");
-        logStore.FlushSegment(key);
+        logStore.Value.FlushSegment(key);
         return $"flushed log history for {key}";
     }
 }

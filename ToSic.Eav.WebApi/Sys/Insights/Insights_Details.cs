@@ -60,7 +60,7 @@ partial class InsightsControllerReal
 
         if (view.EqualsInsensitive(nameof(Licenses))) return Licenses();
 
-        if (view.EqualsInsensitive(nameof(GlobalTypesLog))) return GlobalTypesLog();
+        //if (view.EqualsInsensitive(InsightsGlobalTypesLog.Link)) return GlobalTypesLog();
 
         // DataSourceCache
         if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCache))) return dsCache.Value.DataSourceCache();
@@ -77,8 +77,8 @@ partial class InsightsControllerReal
         if (view.EqualsInsensitive(nameof(Attributes))) return Attributes(appId, type);
         if (view.EqualsInsensitive(nameof(AttributeMetadata))) return AttributeMetadata(appId, type, nameId);
         if (view.EqualsInsensitive(nameof(AttributePermissions))) return AttributePermissions(appId, type, nameId);
-        if (view.EqualsInsensitive(nameof(TypeMetadata))) return TypeMetadata(appId, type);
-        if (view.EqualsInsensitive(nameof(TypePermissions))) return TypePermissions(appId, type);
+        //if (view.EqualsInsensitive(nameof(TypeMetadata))) return TypeMetadata(appId, type);
+        //if (view.EqualsInsensitive(nameof(TypePermissions))) return TypePermissions(appId, type);
 
         return $"Error: View name {view} unknown";
     }
