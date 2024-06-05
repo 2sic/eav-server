@@ -7,16 +7,15 @@ internal class InsightsTypeMetadata(LazySvc<IAppStates> appStates) : InsightsPro
 {
     public static string Link = "TypeMetadata";
 
-    public override string Title => "Types Permissions";
+    public override string Title => "Type Metadata";
 
     public override string HtmlBody()
     {
-        var l = Log.Fn<string>($"appId:{AppId}");
+        var l = Log.Fn<string>($"appId:{AppId}; Type: {Type}");
 
         if (UrlParamsIncomplete(AppId, Type, out var message))
             return message;
 
-        l.A($"debug app metadata for {AppId} and {Type}");
         var typ = appStates.Value.GetReader(AppId.Value).GetContentType(Type);
 
         var msg = H1($"Metadata for {typ.Name} ({typ.NameId}) in {AppId}\n").ToString();
