@@ -1,8 +1,9 @@
-﻿using static ToSic.Razor.Blade.Tag;
+﻿using ToSic.Eav.Apps.Internal.Insights;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAttributes(LazySvc<IAppStates> appStates) : InsightsProviderWeb(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
+internal class InsightsAttributes(LazySvc<IAppStates> appStates) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
 {
     public static string Link = "Attributes";
 

@@ -1,8 +1,9 @@
-﻿using static ToSic.Razor.Blade.Tag;
+﻿using ToSic.Eav.Apps.Internal.Insights;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsEntityPermissions(GenWorkPlus<WorkEntities> workEntities) : InsightsProviderWeb(Link, helpCategory: HiddenFromAutoDisplay, connect: [workEntities])
+internal class InsightsEntityPermissions(GenWorkPlus<WorkEntities> workEntities) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [workEntities])
 {
     public static string Link = "EntityPermissions";
 

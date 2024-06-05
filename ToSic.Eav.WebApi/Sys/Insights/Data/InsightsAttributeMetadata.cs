@@ -1,8 +1,10 @@
-﻿using static ToSic.Razor.Blade.Tag;
+﻿using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.WebApi.Errors;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAttributeMetadata(LazySvc<IAppStates> appStates) : InsightsProviderWeb(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
+internal class InsightsAttributeMetadata(LazySvc<IAppStates> appStates) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
 {
     public static string Link = "AttributeMetadata";
 
@@ -16,7 +18,7 @@ internal class InsightsAttributeMetadata(LazySvc<IAppStates> appStates) : Insigh
         Log.A($"debug app metadata for {AppId} and {Type}");
         var typ = appStates.Value.GetReader(AppId.Value).GetContentType(Type);
         var att = typ.Attributes.First(a => a.Name == NameId)
-                  ?? throw CreateBadRequest($"can't find attribute {NameId}");
+                  ?? throw HttpException.BadRequest($"can't find attribute {NameId}");
 
         var msg = H1($"Attribute Metadata for {typ.Name}.{NameId} in {AppId}\n").ToString();
         var metadata = att.Metadata.ToList();

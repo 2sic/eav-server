@@ -61,8 +61,6 @@ public partial class InsightsControllerReal(IUser user, LazySvc<InsightsDataSour
             return l.ReturnAsOk(wrapper.ToString());
         }
 
-        //if (view.EqualsInsensitive(nameof(Help))) return Help();
-
         // DataSourceCache
         if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCache))) return dsCache.Value.DataSourceCache();
         if (view.EqualsInsensitive(nameof(dsCache.Value.DataSourceCacheItem))) return dsCache.Value.DataSourceCacheItem(key);
