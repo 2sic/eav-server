@@ -32,23 +32,25 @@ partial class Entity
         if (Attributes.TryGetValue(field, out var attribute))
         {
             var (valueField, result) = attribute.GetTypedValue(languages, false);
-            // TODO: consider returning field type without ToString...
-            return new(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
+            return new(result: result, valueType: (ValueTypesWithState)attribute.Type, path: path)
+                { Value = valueField, Source = this };
         }
             
         if (field == EntityFieldTitle)
         {
             attribute = Title;
             if (attribute == null)
-                return new(result: null, fieldType: FieldIsNotFound, path: path) { Value = null, Source = this };
+                return new(result: null, valueType: ValueTypesWithState.NotFound, path: path)
+                    { Value = null, Source = this };
             var (valueField, result) = attribute.GetTypedValue(languages, false);
-            return new(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
+            return new(result: result, valueType: (ValueTypesWithState)attribute.Type, path: path)
+                { Value = valueField, Source = this };
         }
 
         // directly return internal properties, mark as virtual to not cause further Link resolution
         var valueFromInternalProperty = GetInternalPropertyByName(field);
         if (valueFromInternalProperty != null)
-            return new(result: valueFromInternalProperty, fieldType: FieldIsVirtual, path: path) { Source = this };
+            return new(result: valueFromInternalProperty, valueType: ValueTypesWithState.Virtual, path: path) { Source = this };
 
         // New Feature in 12.03 - Sub-Item Navigation if the data contains information what the sub-entity identifiers are
         try
@@ -58,7 +60,7 @@ partial class Entity
             if (subItem != null) return subItem;
         } catch { /* ignore */ }
 
-        return new(result: null, fieldType: FieldIsNotFound, path: path) { Source = this };
+        return new(result: null, valueType: ValueTypesWithState.NotFound, path: path) { Source = this };
     }
 
     protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)

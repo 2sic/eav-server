@@ -6,8 +6,13 @@
 [PublicApi]
 public enum ValueTypes
 {
-    /// <summary> Used for unknown cases, where you would otherwise use null </summary>
-    Undefined,  // note: must be first! this is important, otherwise certain code will break as the first value is the "default" / null-value
+    /// <summary>
+    /// Used for unknown cases, where you would otherwise use null
+    /// </summary>
+    /// <remarks>
+    /// note: must be first! this is important, otherwise certain code will break as the first value is the "default" / null-value
+    /// </remarks>
+    Undefined,
 
 
     /// <summary>Boolean Value Type</summary>
@@ -35,6 +40,5 @@ public enum ValueTypes
     /// <remarks>
     /// Experimentally added in 12.05, but not fully useful yet, as the DB must also be updated
     /// </remarks>
-    Json
-
+    Json,
 }

@@ -6,7 +6,7 @@
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class PropReqResult(object result, string fieldType, PropertyLookupPath path)
+public class PropReqResult(object result, ValueTypesWithState valueType, PropertyLookupPath path)
 {
     /// <summary>
     /// The result of the request - null if not found
@@ -19,28 +19,28 @@ public class PropReqResult(object result, string fieldType, PropertyLookupPath p
     internal object ResultOriginal;
 
     /// <summary>
-    /// The IValue object, in case we need to use it's cache
+    /// The IValue object, in case we need to use its cache
     /// </summary>
-    public IValue Value;
+    public IValue Value { get; init; }
         
     /// <summary>
     /// A field type, like "Hyperlink" or "Entity" etc.
     /// </summary>
-    public string FieldType = fieldType;
+    public ValueTypesWithState ValueType = valueType;
         
     /// <summary>
     /// The entity which returned this property
     /// </summary>
-    public object Source;
+    public object Source { get; init; }
 
     /// <summary>
     /// An optional name
     /// </summary>
-    public string Name;
+    public string Name { get; set; }
 
     public readonly PropertyLookupPath Path = path;
 
-    public int SourceIndex = -1;
+    public int SourceIndex { get; set; } = -1;
 
     public bool IsFinal => SourceIndex != -1;
 
@@ -49,8 +49,11 @@ public class PropReqResult(object result, string fieldType, PropertyLookupPath p
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static PropReqResult Null(PropertyLookupPath path) => new(result: null, fieldType: null, path: path);
-    public static PropReqResult NullFinal(PropertyLookupPath path) => Null(path).AsFinal(0);
+    public static PropReqResult Null(PropertyLookupPath path)
+        => new(result: null, valueType: ValueTypesWithState.Null, path: path);
+
+    public static PropReqResult NullFinal(PropertyLookupPath path)
+        => Null(path).AsFinal(0);
 
     public PropReqResult AsFinal(int sourceIndex)
     {

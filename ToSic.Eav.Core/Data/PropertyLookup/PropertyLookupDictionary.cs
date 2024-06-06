@@ -22,7 +22,7 @@ public class PropertyLookupDictionary(string nameId, IDictionary<string, object>
     {
         path = path?.Add(SourceTypeId, NameId, specs.Field);
         return Values.TryGetValue(specs.Field, out var result)
-            ? new(result: result, fieldType: Attributes.FieldIsDynamic /* I believe this would only be used for certain follow up work */, path: path)
+            ? new(result: result /* I believe this would only be used for certain follow up work */, valueType: ValueTypesWithState.Dynamic, path: path)
             {
                 Value = null,
                 Source = this,
