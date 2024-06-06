@@ -24,21 +24,25 @@ partial class Entity
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {
         path = path?.Add("Entity", EntityId.ToString(), specs.Field);
+
         // the languages are "safe" - meaning they are already all lower-cased and have the optional null-fallback key
-        var languages = specs.Dimensions; // PropReqSpecs.ExtendDimsWithDefault(specs);
+        var languages = specs.Dimensions;
         var field = specs.Field.ToLowerInvariant();
-        if (Attributes.ContainsKey(field))
+        
+        if (Attributes.TryGetValue(field, out var attribute))
         {
-            var attribute = Attributes[field];
             var (valueField, result) = attribute.GetTypedValue(languages, false);
+            // TODO: consider returning field type without ToString...
             return new(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
         }
             
         if (field == EntityFieldTitle)
         {
-            var attribute = Title;
-            var valT = attribute?.GetTypedValue(languages, false);
-            return new(result: valT?.Result, fieldType: attribute?.Type.ToString() ?? FieldIsNotFound, path: path) { Value = valT?.ValueField, Source = this };
+            attribute = Title;
+            if (attribute == null)
+                return new(result: null, fieldType: FieldIsNotFound, path: path) { Value = null, Source = this };
+            var (valueField, result) = attribute.GetTypedValue(languages, false);
+            return new(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
         }
 
         // directly return internal properties, mark as virtual to not cause further Link resolution
@@ -58,11 +62,9 @@ partial class Entity
     }
 
     protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)
-    {
-        // first check a field which doesn't exist on EntityLight
-        if (attributeNameLowerInvariant == EntityFieldIsPublished) return IsPublished;
-
-        // Now handle the ones that EntityLight has
-        return base.GetInternalPropertyByName(attributeNameLowerInvariant);
-    }
+        => attributeNameLowerInvariant == EntityFieldIsPublished
+            // first check a field which doesn't exist on EntityLight
+            ? IsPublished
+            // Now handle the ones that EntityLight has
+            : base.GetInternalPropertyByName(attributeNameLowerInvariant);
 }
