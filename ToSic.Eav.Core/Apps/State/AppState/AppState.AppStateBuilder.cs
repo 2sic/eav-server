@@ -121,10 +121,13 @@ partial class AppState
             // so we must try to fix this now
             l.A("Trying to load Name/Folder from App package entity");
             // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
-            // so the OfType().OrderBy() should ensure that we really only take the oldest one.
-            var config = st.List.OfType(AppLoadConstants.TypeAppConfig).OrderBy(e => e.EntityId).FirstOrDefault();
-            if (st.Name.IsEmptyOrWs()) st.Name = config?.Value<string>(AppLoadConstants.FieldName);
-            if (st.Folder.IsEmptyOrWs()) st.Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
+            // so the OfType().OrderBy() should ensure that we really only take the first=oldest one.
+            var config = st.List
+                .OfType(AppLoadConstants.TypeAppConfig)
+                .OrderBy(e => e.EntityId)
+                .FirstOrDefault();
+            if (st.Name.IsEmptyOrWs()) st.Name = config?.Get<string>(AppLoadConstants.FieldName);
+            if (st.Folder.IsEmptyOrWs()) st.Folder = config?.Get<string>(AppLoadConstants.FieldFolder);
 
             // Last corrections for the DefaultApp "Content"
             if (st.NameId == DefaultAppGuid)

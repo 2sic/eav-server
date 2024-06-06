@@ -19,7 +19,7 @@ public enum ValueTypesWithState
     Json = ValueTypes.Json,
 
     /// <summary>
-    /// Virtual field like IsPublished which is a real internal property but not a real field
+    /// Virtual fields are not real fields, but information properties like title, etc.
     /// </summary>
     Virtual = 101,
 
@@ -31,7 +31,7 @@ public enum ValueTypesWithState
     Error = 201,
 
     /// <summary>
-    /// Not found - used when a property is not found
+    /// Not found - used to mark a get-result when a property is not found
     /// </summary>
     NotFound = Error + 1,
 
