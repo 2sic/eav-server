@@ -7,6 +7,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
+using ToSic.Testing.Shared.Data;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 
 namespace ToSic.Eav.DataSourceTests
@@ -124,10 +125,10 @@ namespace ToSic.Eav.DataSourceTests
 
         private void ValidateFieldIsSorted(List<IEntity> list, string field, bool asc)
         {
-            var previous = list.First().Value<string>(field);
+            var previous = list.First().TacGet<string>(field);
             foreach (var entity in list)
             {
-                var next = entity.Value<string>(field);
+                var next = entity.TacGet<string>(field);
                 var comp = string.Compare(previous, next, StringComparison.Ordinal);
                 if (asc)
                     Assert.IsTrue(comp < 1, "new " + field + " " + next + " should be = or larger than prev " + previous);

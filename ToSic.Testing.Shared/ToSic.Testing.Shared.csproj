@@ -20,6 +20,7 @@
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -90,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataSourceFactoryTestExtensions.cs" />
+    <Compile Include="Data\TestAccessorsEntity.cs" />
     <Compile Include="IServiceBuilder.cs" />
     <Compile Include="IStorageExtensions.cs" />
     <Compile Include="Mocks\MockGlobalMetadataProvider.cs" />
@@ -154,6 +156,7 @@
       <Version>2.0.3</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,7 +1,6 @@
-﻿namespace ToSic.Testing.Shared
+﻿namespace ToSic.Testing.Shared;
+
+public interface IServiceBuilder
 {
-    public interface IServiceBuilder
-    {
-        T GetService<T>();
-    }
+    T GetService<T>();
 }

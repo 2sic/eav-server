@@ -1,15 +1,14 @@
-﻿namespace ToSic.Testing.Shared
+﻿namespace ToSic.Testing.Shared;
+
+public abstract class TestServiceBase: IServiceBuilder
 {
-    public abstract class TestServiceBase: IServiceBuilder
+    protected readonly TestBaseEavDataSource Parent;
+
+    protected TestServiceBase(TestBaseEavDataSource serviceProvider)
     {
-        protected readonly TestBaseEavDataSource Parent;
-
-        protected TestServiceBase(TestBaseEavDataSource serviceProvider)
-        {
-            Parent = serviceProvider;
-        }
-
-        public T GetService<T>() => Parent.GetService<T>();
-
+        Parent = serviceProvider;
     }
+
+    public T GetService<T>() => Parent.GetService<T>();
+
 }

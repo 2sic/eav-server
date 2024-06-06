@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
+using ToSic.Testing.Shared.Data;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -19,10 +20,10 @@ namespace ToSic.Eav.DataSourceTests
         {
             var ds = CreatePagingForTesting(1000);
             var pgStream = ds["Paging"].ListForTests().First();
-            Assert.AreEqual(1.ToDecimal(), pgStream.Value<int>("PageNumber"));
-            Assert.AreEqual(10.ToDecimal(), pgStream.Value<int>("PageSize"));
-            Assert.AreEqual(100.ToDecimal(), pgStream.Value<int>("PageCount"));
-            Assert.AreEqual(1000.ToDecimal(), pgStream.Value<int>("ItemCount"));
+            Assert.AreEqual(1.ToDecimal(), pgStream.TacGet<int>("PageNumber"));
+            Assert.AreEqual(10.ToDecimal(), pgStream.TacGet<int>("PageSize"));
+            Assert.AreEqual(100.ToDecimal(), pgStream.TacGet<int>("PageCount"));
+            Assert.AreEqual(1000.ToDecimal(), pgStream.TacGet<int>("ItemCount"));
 
             var result = ds.ListForTests();
             Assert.AreEqual(10, result.Count());
@@ -35,10 +36,10 @@ namespace ToSic.Eav.DataSourceTests
             var ds = CreatePagingForTesting(1001);
             ds.PageNumber = 7;
             var pgstream = ds["Paging"].ListForTests().First();
-            Assert.AreEqual(7.ToDecimal(), pgstream.Value<int>("PageNumber"));
-            Assert.AreEqual(10.ToDecimal(), pgstream.Value<int>("PageSize"));
-            Assert.AreEqual(101.ToDecimal(), pgstream.Value<int>("PageCount"));
-            Assert.AreEqual(1001.ToDecimal(), pgstream.Value<int>("ItemCount"));
+            Assert.AreEqual(7.ToDecimal(), pgstream.TacGet<int>("PageNumber"));
+            Assert.AreEqual(10.ToDecimal(), pgstream.TacGet<int>("PageSize"));
+            Assert.AreEqual(101.ToDecimal(), pgstream.TacGet<int>("PageCount"));
+            Assert.AreEqual(1001.ToDecimal(), pgstream.TacGet<int>("ItemCount"));
 
             var result = ds.ListForTests();
             Assert.AreEqual(10, result.Count());
@@ -52,10 +53,10 @@ namespace ToSic.Eav.DataSourceTests
             ds.PageSize = 50;
             ds.PageNumber = 5;
             var pgstream = ds["Paging"].ListForTests().First();
-            Assert.AreEqual(5.ToDecimal(), pgstream.Value<int>("PageNumber"));
-            Assert.AreEqual(50.ToDecimal(), pgstream.Value<int>("PageSize"));
-            Assert.AreEqual(5.ToDecimal(), pgstream.Value<int>("PageCount"));
-            Assert.AreEqual(223.ToDecimal(), pgstream.Value<int>("ItemCount"));
+            Assert.AreEqual(5.ToDecimal(), pgstream.TacGet<int>("PageNumber"));
+            Assert.AreEqual(50.ToDecimal(), pgstream.TacGet<int>("PageSize"));
+            Assert.AreEqual(5.ToDecimal(), pgstream.TacGet<int>("PageCount"));
+            Assert.AreEqual(223.ToDecimal(), pgstream.TacGet<int>("ItemCount"));
 
             var result = ds.ListForTests();
             Assert.AreEqual(23, result.Count());

@@ -7,6 +7,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Persistence;
 using ToSic.Testing.Shared;
+using ToSic.Testing.Shared.Data;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc.Tests
@@ -55,7 +56,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
             ContentTypeAttribute(AppId, "Husband", "String", true, 0, 0),
             ContentTypeAttribute(AppId, "UnusedField", "String", true, 0,0)
         });
-        Entity _origENull = null;
+
+        readonly Entity _origENull = null;
 
         private Entity GirlSingle => Builder.Entity.TestCreate(appId: AppId, entityId: 999, contentType: _ctPerson, values: new()
         {
@@ -277,21 +279,22 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 .Count(), "should have 2 titles with languages - EN and a shared DE+CH");
             Assert.AreEqual(2, merged[Attributes.TitleNiceName].TacValues()
                 .Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count(), "should have 2 languages on the shared DE+CH");
-            Assert.AreEqual(ProductEntityEn.Value<string>(Attributes.TitleNiceName), merged.Get<string>(Attributes.TitleNiceName, languages: [langEn.Key]), "en title should be the en-value");
+            Assert.AreEqual(ProductEntityEn.TacGet<string>(Attributes.TitleNiceName),
+                merged.TacGet<string>(Attributes.TitleNiceName, languages: [langEn.Key]), "en title should be the en-value");
             Assert.AreEqual(
-                mainMultiLang.Get<string>(Attributes.TitleNiceName, language: langDeDe.Key),
-                merged.Get(Attributes.TitleNiceName, language: langDeDe.Key),
+                mainMultiLang.TacGet<string>(Attributes.TitleNiceName, language: langDeDe.Key),
+                merged.TacGet(Attributes.TitleNiceName, language: langDeDe.Key),
                 "de title should be the ML-value"
             );
             Assert.AreEqual(
-                mainMultiLang.Get<string>(Attributes.TitleNiceName, language: langDeCh.Key),
-                merged.Get(Attributes.TitleNiceName, language: langDeCh.Key),
+                mainMultiLang.TacGet<string>(Attributes.TitleNiceName, language: langDeCh.Key),
+                merged.TacGet(Attributes.TitleNiceName, language: langDeCh.Key),
                 "ch title should be the ML-value"
             );
 
             Assert.AreNotEqual(
-                additionEn.Get<string>(Attributes.TitleNiceName, language: langDeCh.Key),
-                merged.Get(Attributes.TitleNiceName, languages: [langDeCh.Key]).ToString(),
+                additionEn.TacGet<string>(Attributes.TitleNiceName, language: langDeCh.Key),
+                merged.TacGet(Attributes.TitleNiceName, languages: [langDeCh.Key]).ToString(),
                 "ch title should not be replaced with the the ML-value"
             );
             var firstVal = merged[Attributes.TitleNiceName].TacValues().First();
@@ -359,7 +362,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             AssertBasicsInMerge(_origENull, GirlMarried, merged, GirlMarried);
             Assert.AreNotSame(GirlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same object in this case");
 
-            Assert.AreEqual(merged.Value<string>("FullName"), GirlMarried.Value<string>("FullName"), "full name should be that of married");
+            Assert.AreEqual(merged.TacGet<string>("FullName"), GirlMarried.TacGet<string>("FullName"), "full name should be that of married");
         }
 
         [TestMethod]
@@ -370,8 +373,8 @@ namespace ToSic.Eav.Repository.Efc.Tests
             Assert.AreEqual(GirlSingle.Attributes.Count, merged.Attributes.Count, "this test case should keep all values of the first type");
             AssertBasicsInMerge(_origENull, GirlMarried, merged, GirlSingle);
             Assert.AreNotSame(GirlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same");
-            Assert.AreEqual(merged.Value<string>("FullName"), GirlMarried.Value<string>("FullName"), "full name should be that of married");
-            Assert.AreNotEqual(merged.Value<string>("FullName"), GirlSingle.Value<string>("FullName"), "full name should be that of married");
+            Assert.AreEqual(merged.TacGet<string>("FullName"), GirlMarried.TacGet<string>("FullName"), "full name should be that of married");
+            Assert.AreNotEqual(merged.TacGet<string>("FullName"), GirlSingle.TacGet<string>("FullName"), "full name should be that of married");
 
             // Merge keeping 
             merged = _entitySaver.TestCreateMergedForSaving(GirlSingle, GirlMarried, _saveKeepAttribs);
@@ -420,9 +423,9 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var merged = _entitySaver.TestCreateMergedForSaving(GirlSingle, GirlMarried, _saveSkipExisting);
             // var expectedFields = new List<string> {"FullName", "FirstName", "LastName", "Birthday", "Husband"};
             Assert.IsNotNull(merged, "result should never be null");
-            Assert.AreEqual(GirlSingle.Value<string>("FullName"), merged.Value<string>("FullName"), "should keep single name");
-            Assert.AreEqual(GirlSingle.Value<string>("LastName"), merged.Value<string>("LastName"), "should keep single name");
-            Assert.AreEqual(GirlMarried.Value<string>("Husband"), merged.Value<string>("Husband"), "should keep single name");
+            Assert.AreEqual(GirlSingle.TacGet<string>("FullName"), merged.TacGet<string>("FullName"), "should keep single name");
+            Assert.AreEqual(GirlSingle.TacGet<string>("LastName"), merged.TacGet<string>("LastName"), "should keep single name");
+            Assert.AreEqual(GirlMarried.TacGet<string>("Husband"), merged.TacGet<string>("Husband"), "should keep single name");
         }
 
         [TestMethod]
