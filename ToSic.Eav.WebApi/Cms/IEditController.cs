@@ -26,28 +26,14 @@ public interface IEditController
     /// <param name="partOfPage">Tell the save operation if this may be tied to a page-publishing workflow</param>
     /// <returns></returns>
     Dictionary<Guid, int> Save(EditDto package, int appId, bool partOfPage);
-
-    // #RemoveOldEntityPicker - commented out 2024-03-05, remove ca. 2024-06-01
-    ///// <summary>
-    ///// Used to be GET or POST Ui/GetAvailableEntities.
-    ///// By default it uses GET, but usually the items-array is passed in through a POST.
-    ///// </summary>
-    ///// <param name="appId"></param>
-    ///// <param name="contentTypeName"></param>
-    ///// <param name="items"></param>
-    ///// <returns></returns>
-    //// security check happens internally
-    // interface method is commented because aspnetcore implementation have different signature
-    // IEnumerable<EntityForPickerDto> EntityPicker(int appId, string contentTypeName = null);
-
-
+    
     /// <summary>
     /// This GET-call will resolve links to files and to pages.
     /// For page-resolving, it only needs Hyperlink and AppId.
     /// For file resolves it needs the item context so it can verify that an item is in the ADAM folder of this object.
     /// </summary>
     /// <param name="link">The link to resolve - required. Can be a real link or a file:xx page:xx reference</param>
-    /// <param name="appId">App id to which this link (or or file/page) belongs to</param>
+    /// <param name="appId">App id to which this link (or file/page) belongs to</param>
     /// <param name="contentType">Content Type (optional). Relevant for checking ADAM links inside an item.</param>
     /// <param name="guid">Item GUID (optional). Relevant for checking ADAM links inside an item.</param>
     /// <param name="field">Item field (optional). Relevant for checking ADAM links inside an item.</param>
