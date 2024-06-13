@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Services;
+﻿using ToSic.Eav.Apps.Internal.Work;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -17,13 +18,19 @@ namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 /// </summary>
 /// <remarks>new in v13.02</remarks>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MdRecommendations(LazySvc<MdRequirements> requirements)
+public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus<WorkInputTypes> inputTypes)
     : ServiceBase($"{AppConstants.LogName}.MdRead", connect: [requirements])
 {
-    public void Init(IAppDataAndMetadataService appState) => _appState = appState;
+    public void Setup(IAppDataAndMetadataService appState, int appId)
+    {
+        _appState = appState;
+        AppId = appId;
+    }
 
     private IAppDataAndMetadataService AppState => _appState ?? throw new("Can't use this Read class before setting AppState");
     private IAppDataAndMetadataService _appState;
+
+    private int AppId;
 
 
     public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string recommendedTypeName = null)
@@ -56,7 +63,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements)
             var recommendedType = AppState.GetContentType(reqTypeName);
             if (recommendedType == null) return l.ReturnNull("type name not found");
             return l.Return(
-                new[] { new MetadataRecommendation(recommendedType, null, -1, "Use preset type", PrioMax) },
+                [new(recommendedType, null, -1, "Use preset type", PrioMax)],
                 "use existing name");
         }
 
@@ -130,7 +137,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements)
                 {
                     l.A($"Error on {ct.Name} ({ct.NameId}), will skip this");
                     l.Ex(e);
-                    return Array.Empty<RecommendationInfos>();
+                    return [];
                 }
             })
             .ToList();
@@ -190,8 +197,30 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements)
             case TargetTypes.None:
                 return l.ReturnNull("no target");
             case TargetTypes.Attribute:
-                // TODO - PROBABLY TRY TO FIND THE ATTRIBUTE
-                return l.ReturnNull("attributes not supported ATM");
+                if (!int.TryParse(key, out var attributeId))
+                    return l.ReturnNull("attribute: key is not int");
+
+                var attribute = AppState.ContentTypes
+                    .SelectMany(ct => ct.Attributes)
+                    .FirstOrDefault(attr => attr.AttributeId == attributeId);
+
+                if (attribute == null)
+                    return l.ReturnNull($"attribute '{attributeId}' not found");
+
+                // figure out what field input type it is
+                var inputType = attribute.InputType();
+
+                // Find the input type definition
+                var inputTypeDef = inputTypes.New(AppId).GetInputTypes()
+                    .FirstOrDefault(it => it.Type.EqualsInsensitive(inputType));
+
+                if (inputTypeDef == null)
+                    return l.ReturnNull($"input type '{inputType}' not found");
+
+                var attrMdOnField = GetMetadataExpectedDecorators(inputTypeDef.Metadata, TargetTypes.Attribute, "attached to Attribute", PrioHigh);
+
+
+                return l.Return(attrMdOnField);
             case TargetTypes.App:
                 // TODO: this won't work - needs another way of finding assignments
                 return l.Return(GetMetadataExpectedDecorators(AppState.Metadata, TargetTypes.Undefined, "attached to App", PrioMax), "app");
