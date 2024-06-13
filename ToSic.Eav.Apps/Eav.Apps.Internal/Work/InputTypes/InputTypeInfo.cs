@@ -18,6 +18,8 @@ public class InputTypeInfo(string type, string label, string description, string
     {
         if (metadata == null) return;
 
+        Metadata = metadata;
+
         if (metadata.HasType(IsObsoleteDecoratorId))
         {
             IsObsolete = true;
@@ -41,6 +43,8 @@ public class InputTypeInfo(string type, string label, string description, string
     public string Description => description;
 
     public string Assets => assets;
+
+    public IMetadataOf Metadata { get; }
 
     #region new in 2sxc 10 / eav 5
 
@@ -104,7 +108,8 @@ public class InputTypeInfo(string type, string label, string description, string
     /// all inputs need. 
     /// </summary>
     /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
-    public static Dictionary<string, bool> NewDefaultConfigTypesDic() => new(InvariantCultureIgnoreCase) { [AttributeMetadata.TypeGeneral] = true };
+    public static Dictionary<string, bool> NewDefaultConfigTypesDic()
+        => new(InvariantCultureIgnoreCase) { [AttributeMetadata.TypeGeneral] = true };
 
     /// <summary>
     /// Internal processing to get the config-types in the format we need.
