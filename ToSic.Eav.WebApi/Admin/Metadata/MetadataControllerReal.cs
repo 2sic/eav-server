@@ -13,29 +13,15 @@ namespace ToSic.Eav.WebApi.Admin.Metadata;
 /// Metadata-entities (content-items) are additional information about some other object
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MetadataControllerReal: ServiceBase, IMetadataController
+public class MetadataControllerReal(
+    IConvertToEavLight converter,
+    IAppStates appStates,
+    ITargetTypes metadataTargets,
+    LazySvc<MdRecommendations> mdRead)
+    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appStates, metadataTargets, mdRead]),
+        IMetadataController
 {
     public const string LogSuffix = "MetaDt";
-
-    #region Constructor
-
-    public MetadataControllerReal(IConvertToEavLight converter, IAppStates appStates, ITargetTypes metadataTargets, LazySvc<MdRecommendations> mdRead) : base($"{EavLogs.WebApi}.{LogSuffix}Rl")
-    {
-        ConnectLogs([
-            _converter = converter,
-            _appStates = appStates,
-            _metadataTargets = metadataTargets,
-            _mdRead = mdRead
-        ]);
-        _converter.Type.Serialize = true;
-        _converter.Type.WithDescription = true;
-    }
-    private readonly IConvertToEavLight _converter;
-    private readonly IAppStates _appStates;
-    private readonly ITargetTypes _metadataTargets;
-    private readonly LazySvc<MdRecommendations> _mdRead;
-
-    #endregion
 
     /// <summary>
     /// Get Entities with specified AssignmentObjectTypeId and Key
@@ -43,17 +29,17 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
     {
         var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
-        var appState = _appStates.GetReader(appId);
+        var appState = appStates.GetReader(appId);
 
-        var (entityList, mdFor) = GetEntityListAndMd(targetType, keyType, key, contentType, appState);
+        var (entityList, mdFor) = GetExistingEntitiesAndMd(targetType, keyType, key, contentType, appState);
 
-        if(entityList == null)
+        if (entityList == null)
         {
             l.A("error: entityList is null");
             throw l.Done(new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel"));
         }
 
-        _mdRead.Value.Init(appState);
+        mdRead.Value.Setup(appState, appId);
 
         // When retrieving all items, make sure that permissions are _not_ included
         if (IsNullOrEmpty(contentType))
@@ -65,7 +51,7 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
         IEnumerable<MetadataRecommendation> recommendations = null;
         try
         {
-            recommendations = _mdRead.Value.GetAllowedRecommendations(targetType, key, contentType);
+            recommendations = mdRead.Value.GetAllowedRecommendations(targetType, key, contentType);
         }
         catch (Exception e)
         {
@@ -80,11 +66,14 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
         }
         catch { /* experimental / ignore */ }
 
-        _converter.WithGuid = true;
+        converter.Type.Serialize = true;
+        converter.Type.WithDescription = true;
+        converter.WithGuid = true;
+
         var result = new MetadataListDto
         {
             For = mdFor,
-            Items = _converter.Convert(entityList),
+            Items = converter.Convert(entityList),
             Recommendations = recommendations,
         };
 
@@ -106,13 +95,13 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    private (List<IEntity> entityList, JsonMetadataFor mdFor) GetEntityListAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource appState)
+    private (List<IEntity> entityList, JsonMetadataFor mdFor) GetExistingEntitiesAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource appState)
     {
         var l = Log.Fn<(List<IEntity> entityList, JsonMetadataFor mdFor)>($"targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
         var mdFor = new JsonMetadataFor
         {
             // #TargetTypeIdInsteadOfTarget
-            Target = _metadataTargets.GetName(targetType),
+            Target = metadataTargets.GetName(targetType),
             TargetType = targetType,
         };
         l.A($"Target: {mdFor.Target} ({targetType})");
@@ -120,7 +109,8 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
         switch (keyType)
         {
             case "guid":
-                if (!Guid.TryParse(key, out var guidKey)) return l.Return((null, mdFor), $"error: invalid guid:{key}");
+                if (!Guid.TryParse(key, out var guidKey))
+                    return l.Return((null, mdFor), $"error: invalid guid:{key}");
                 mdFor.Guid = guidKey;
                 var md = appState.GetMetadata(targetType, guidKey, contentType).ToList();
                 return l.Return((md, mdFor), $"guid:{guidKey}; count:{md.Count}");
@@ -129,7 +119,8 @@ public class MetadataControllerReal: ServiceBase, IMetadataController
                 md = appState.GetMetadata(targetType, key, contentType).ToList();
                 return l.Return((md, mdFor), $"string:{key}; count:{md.Count}");
             case "number":
-                if (!int.TryParse(key, out var keyInt)) return l.Return((null, mdFor), $"error: invalid number:{key}");
+                if (!int.TryParse(key, out var keyInt))
+                    return l.Return((null, mdFor), $"error: invalid number:{key}");
                 mdFor.Number = keyInt;
                 md = appState.GetMetadata(targetType, keyInt, contentType).ToList();
                 return l.Return((md, mdFor), $"number:{keyInt}; count:{md.Count}");
