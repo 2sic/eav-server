@@ -8,7 +8,7 @@ namespace ToSic.Eav.Core.Tests.IdentityTests;
 [TestClass]
 public class MapperTest
 {
-    public string TacGuidCompress(Guid value) => Mapper.GuidCompress(value);
+    public string TacGuidCompress(Guid value) => value.GuidCompress();
     public Guid TacGuidRestore(string value) => Mapper.GuidRestore(value);
 
     [TestMethod]
@@ -23,7 +23,7 @@ public class MapperTest
     [TestMethod]
     public void CompressAndUnCompressEmpty()
     {
-        var data = new Guid("8aa5315d-56b4-4b0b-8a27-8843324bd4fe");
+        var data = new Guid("883668ac-b1fd-47fa-acef-00500e5979fa");
         var compressed = TacGuidCompress(data);
         Trace.WriteLine($"Compressed: {compressed}");
         var uncompressed = TacGuidRestore(compressed);
