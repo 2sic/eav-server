@@ -17,7 +17,7 @@ public class PropReqSpecsTests
 
     [DataRow(new[] { (string)null }, null, DisplayName = "null, Auto Expand")]
     [DataRow(new[] { (string)null }, DisplayName = "null, Auto Expand")]
-    [DataRow(new[] { (string)null }, [], DisplayName = "empty, Auto Expand")]
+    [DataRow(new[] { (string)null }, new[] { (string)null }, DisplayName = "empty, Auto Expand")]
     [DataRow(new[] { "a", null }, "a", DisplayName = "Auto Expand")]
     [DataRow(new[] { "a", "b", null }, "a", "b", DisplayName = "Auto Expand")]
     [DataRow(new[] { "a", "b", null }, "a", "b", null, DisplayName = "Keep, don't add second null")]

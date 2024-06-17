@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net7.0;</TargetFrameworks>
+    <TargetFrameworks>net472;net8.0;</TargetFrameworks>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <Deterministic>true</Deterministic>
@@ -41,7 +41,7 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Reference Include="ToSic.Razor">
       <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net6.0\ToSic.Razor.dll</HintPath>
