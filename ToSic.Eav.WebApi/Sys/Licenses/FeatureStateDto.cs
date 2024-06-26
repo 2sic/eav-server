@@ -9,40 +9,40 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state)
     //LicenseEnabled = state.AllowedByLicense;
 
     [JsonPropertyName("guid")]
-    public Guid Guid { get; } = state.Aspect.Guid;
+    public Guid Guid => state.Aspect.Guid;
 
     [JsonPropertyName("description")]
-    public string Description { get; } = state.Aspect.Description;
+    public string Description => state.Aspect.Description;
 
     [JsonPropertyName("enabledReason")]
-    public string EnabledReason { get; } = state.EnabledReason;
+    public string EnabledReason => state.EnabledReason;
 
     [JsonPropertyName("enabledReasonDetailed")]
-    public string EnabledReasonDetailed { get; } = state.EnabledReasonDetailed;
+    public string EnabledReasonDetailed => state.EnabledReasonDetailed;
 
     [JsonPropertyName("enabledByDefault")]
-    public bool EnabledByDefault { get; } = state.EnabledByDefault;
+    public bool EnabledByDefault => state.EnabledByDefault;
 
     [JsonPropertyName("enabledInConfiguration")]
-    public bool? EnabledInConfiguration { get; } = state.EnabledInConfiguration;
+    public bool? EnabledInConfiguration => state.EnabledInConfiguration;
 
     [JsonPropertyName("expiration")]
-    public DateTime Expiration { get; } = state.Expiration;
+    public DateTime Expiration => state.Expiration;
 
     //public string License { get; }
 
     //public bool LicenseEnabled { get; }
 
     [JsonPropertyName("security")]
-    public FeatureSecurity Security { get; } = state.Security;
+    public FeatureSecurity Security => state.Security;
 
     //public bool Public { get; }
 
     //public bool Ui { get; }
 
     [JsonPropertyName("link")]
-    public string Link { get; } = state.Aspect.Link;
+    public string Link => state.Aspect.Link;
 
     [JsonPropertyName("isConfigurable")]
-    public bool IsConfigurable { get; } = state.Aspect.IsConfigurable;
+    public bool IsConfigurable => state.Aspect.IsConfigurable;
 }
