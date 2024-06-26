@@ -9,7 +9,6 @@ namespace ToSic.Eav.SysData;
 
 /// <summary>
 /// Information about an enabled feature
-/// Note that this is also used as a DTO for the edit-UI, so don't just rename fields or anything.
 /// </summary>
 [PrivateApi("no good reason to publish this")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -28,7 +27,6 @@ public class FeatureState(
         => new(definition, BuiltInLicenses.UnlimitedExpiry, enabled,
             "System Feature", "System Feature, managed by the system; can't be changed interactively.", true, true,
             null);
-
 
     public string NameId => Aspect.NameId;
 
@@ -68,6 +66,7 @@ public class FeatureState(
     /// Determines if non-admins should still know about this feature in the UI
     /// </summary>
     public bool IsPublic => Aspect.Public;
+
     public FeatureSecurity Security => Aspect.Security;
 
     /// <summary>
