@@ -17,6 +17,9 @@ public class ContentTypeFieldDto
     public InputTypeInfo InputTypeConfig { get; set; }
 
     public HasPermissionsDto Permissions { get; set; }
+
+    [JsonPropertyName("imageConfiguration")]
+    public ContentTypeFieldMetadataDto ImageConfiguration { get; set; }
         
     /// <summary>
     /// Tells the system that it will not save the field value / temporary
