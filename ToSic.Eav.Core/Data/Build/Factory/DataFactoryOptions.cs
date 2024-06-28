@@ -56,8 +56,7 @@ public class DataFactoryOptions
         string typeName = default,
         string titleField = default,
         bool? autoId = default,
-        int? idSeed = default,
-        bool? allowUnknownValueTypes = default
+        int? idSeed = default
     )
     {
         AppId = appId ?? original?.AppId ?? 0;
@@ -65,6 +64,6 @@ public class DataFactoryOptions
         TitleField = titleField.UseFallbackIfNoValue(original?.TitleField).UseFallbackIfNoValue(Attributes.TitleNiceName);
         AutoId = autoId ?? original?.AutoId ?? true;
         IdSeed = idSeed ?? original?.IdSeed ?? 1;
-        AllowUnknownValueTypes = allowUnknownValueTypes ?? original?.AllowUnknownValueTypes ?? false;
+        AllowUnknownValueTypes = original?.AllowUnknownValueTypes ?? false;
     }
 }
