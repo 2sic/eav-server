@@ -41,4 +41,7 @@ public enum ValueTypes
     /// Experimentally added in 12.05, but not fully useful yet, as the DB must also be updated
     /// </remarks>
     Json,
+
+    /// <summary>Object Value Type, e.g. from an external DataSource</summary>
+    Object,
 }

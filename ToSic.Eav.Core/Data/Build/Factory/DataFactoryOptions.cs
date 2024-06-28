@@ -36,6 +36,8 @@ public class DataFactoryOptions
 
     public int IdSeed { get; }
 
+    public bool AllowUnknownValueTypes { get; init; }
+
     /// <summary>
     /// Main Constructor to create such options.
     /// </summary>
@@ -46,6 +48,7 @@ public class DataFactoryOptions
     /// <param name="titleField">Optional Title field to use instead of the default `Title`</param>
     /// <param name="autoId">Determines if items with Id 0 should get an automatic ID</param>
     /// <param name="idSeed">A root ID seed for numbering the items</param>
+    /// <param name="allowUnknownValueTypes">Define whether entities can have unknown ValueTypes (like values containing a custom object)</param>
     public DataFactoryOptions(
         DataFactoryOptions original = default,
         NoParamOrder noParamOrder = default,
@@ -53,7 +56,8 @@ public class DataFactoryOptions
         string typeName = default,
         string titleField = default,
         bool? autoId = default,
-        int? idSeed = default
+        int? idSeed = default,
+        bool? allowUnknownValueTypes = default
     )
     {
         AppId = appId ?? original?.AppId ?? 0;
@@ -61,5 +65,6 @@ public class DataFactoryOptions
         TitleField = titleField.UseFallbackIfNoValue(original?.TitleField).UseFallbackIfNoValue(Attributes.TitleNiceName);
         AutoId = autoId ?? original?.AutoId ?? true;
         IdSeed = idSeed ?? original?.IdSeed ?? 1;
+        AllowUnknownValueTypes = allowUnknownValueTypes ?? original?.AllowUnknownValueTypes ?? false;
     }
 }

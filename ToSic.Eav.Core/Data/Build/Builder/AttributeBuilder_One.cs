@@ -28,6 +28,7 @@ partial class AttributeBuilder
                     imValues.SafeAny() ? imValues : ValueBuilder.NewEmptyRelationshipValues),
             // ReSharper disable RedundantCaseLabel
             ValueTypes.String => new Attribute<string>(name, type, imValues),
+            ValueTypes.Object => new Attribute<object>(name, type, imValues),
             ValueTypes.Hyperlink => new Attribute<string>(name, type, imValues),
             ValueTypes.Custom => new Attribute<string>(name, type, imValues),
             ValueTypes.Json => new Attribute<string>(name, type, imValues),
