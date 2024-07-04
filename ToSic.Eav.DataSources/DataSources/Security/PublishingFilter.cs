@@ -7,8 +7,18 @@ namespace ToSic.Eav.DataSources;
 
 /// <inheritdoc />
 /// <summary>
-/// Filter entities to show Drafts or only Published Entities
+/// Filter entities to show Drafts or only Published Entities.
+///
+/// It will decide based on the current users authorizations to deliver the inbound "draft" stream or the "published" stream
+/// on the out stream.This is usually used when an App is its main input, as it provides these two streams for performance reasons.
+///
+/// Enhanced in v18 for scenarios where the data is not pre-split but comes as a normal stream.
+/// In this case it will take the "Default" In-Stream and filter it based on the user's permissions. (beta)
 /// </summary>
+/// <remarks>
+/// * Created ca. v07.00
+/// * Enhanced v18.00 to also support filtering data on the "Default" in stream in addition to the original (beta)
+/// </remarks>
 [PublicApi]
 
 [VisualQuery(
