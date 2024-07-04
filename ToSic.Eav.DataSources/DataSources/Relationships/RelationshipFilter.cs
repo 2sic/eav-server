@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.DataSource.Internal.Errors;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -260,56 +259,62 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     /// <param name="internalCompare">internal compare method</param>
     /// <param name="valuesToFind">value-list to compare to</param>
     /// <returns></returns>
-    private ResultOrError<Func<IEntity, bool>> PickMode(string modeToPick, string relationship,
-        Func<IEntity, string, bool> internalCompare, string[] valuesToFind) => Log.Func(l =>
+    private ResultOrError<Func<IEntity, bool>> PickMode(string modeToPick, string relationship, Func<IEntity, string, bool> internalCompare, string[] valuesToFind)
     {
+        var l = Log.Fn<ResultOrError<Func<IEntity, bool>>>();
         switch (modeToPick)
         {
             case CompareModeContains:
                 if (valuesToFind.Length > 1)
-                    return (new(true,
-                        entity =>
+                    return l.Return(new(true, entity =>
                         {
                             var rels = entity.Relationships.Children[relationship];
                             return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
-                        }), "contains all");
-                return (new(true,
-                    entity => entity.Relationships.Children[relationship]
-                        .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""))
-                ), "contains one");
+                        }),
+                        "contains all");
+                return l.Return(new(true, entity => entity.Relationships.Children[relationship]
+                            .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""))
+                    ),
+                    "contains one");
+
             case CompareModeContainsAny:
                 // Condition that of the needed relationships, at least one must exist
-                return (new(true, entity =>
-                {
-                    var rels = entity.Relationships.Children[relationship];
-                    return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
-                }), "will use contains any");
+                return l.Return(new(true, entity =>
+                    {
+                        var rels = entity.Relationships.Children[relationship];
+                        return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
+                    }),
+                    "will use contains any");
+
             case CompareModeAny:
-                return (new(true,
-                    entity => entity.Relationships.Children[relationship].Any()), "will use any");
+                return l.Return(new(true,
+                    entity => entity.Relationships.Children[relationship].Any()), 
+                    "will use any");
+
             case CompareModeFirst:
                 // Condition that of the needed relationships, the first must be what we want
-                return (new(true, entity =>
-                {
-                    var first = entity.Relationships.Children[relationship].FirstOrDefault();
-                    return first != null && valuesToFind.Any(v => internalCompare(first, v));
-                }), "will use first is");
+                return l.Return(new(true, entity =>
+                    {
+                        var first = entity.Relationships.Children[relationship].FirstOrDefault();
+                        return first != null && valuesToFind.Any(v => internalCompare(first, v));
+                    }),
+                    "will use first is");
+
             case CompareModeCount:
                 // Count relationships
                 if (int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out var count))
-                    return (new(true,
-                        entity => entity.Relationships.Children[relationship].Count() == count), "count");
+                    return l.Return(new(true,
+                            entity => entity.Relationships.Children[relationship].Count() == count),
+                        "count");
 
-                return (new(true, _ => false), "count");
+                return l.Return(new(true, _ => false), "count");
 
             default:
-                return (
-                    new ResultOrError<Func<IEntity, bool>>(false, null,
-                        Error.Create(source: this, title: "Mode unknown", message: $"The mode '{modeToPick}' is invalid")), "error, unknown compare mode");
-            //SetError("Mode unknown", $"The mode '{modeToPick}' is invalid");
-            //return (null, "error, unknown compare mode");
+                return l.Return(new(false, null, Error.Create(source: this, title: "Mode unknown",
+                            message: $"The mode '{modeToPick}' is invalid")),
+                    "error, unknown compare mode");
         }
-    });
+    }
 
 
 
