@@ -52,14 +52,31 @@ public class PublishingFilter : DataSourceBase
 
     private IImmutableList<IEntity> PublishingFilterList()
     {
-        var showDraftsAsSet = ShowDrafts;
+        var showDraftsSetting = ShowDrafts;
         var l = Log.Fn<IImmutableList<IEntity>>();
-        var finalShowDrafts = showDraftsAsSet
+        var finalShowDrafts = showDraftsSetting
                               ?? _userPermissions.UserPermissions()?.ShowDraftData
                               ?? QueryConstants.ParamsShowDraftsDefault;
-        var outStreamName = finalShowDrafts ? StreamDraftsName : StreamPublishedName;
-        var result = In[outStreamName].List.ToImmutableList();
-        return l.Return(result, $"showDraftSet:'{showDraftsAsSet}'; final:{finalShowDrafts}; stream: {outStreamName}; count: {result.Count}");
+        var inStreamName = finalShowDrafts
+            ? StreamDraftsName
+            : StreamPublishedName;
+
+        // Standard / old case: if the inputs already have the correct streams, use them.
+        if (In.TryGetValue(inStreamName, out var inStream))
+        {
+            var result = inStream.List.ToImmutableList();
+            return l.Return(result, $"Show Draft setting:'{showDraftsSetting}'; final:{finalShowDrafts}; stream: {inStreamName}; count: {result.Count}");
+        }
+
+        if (In.TryGetValue(StreamDefaultName, out var inDefault))
+        {
+            var filtered = finalShowDrafts
+                ? inDefault.List.ToImmutableList()
+                : inDefault.List.Where(e => e.IsPublished).ToImmutableList();
+            return l.Return(filtered, $"Refiltering the Default; setting:'{showDraftsSetting}'; final:{finalShowDrafts}; stream: {StreamDefaultName}; count: {filtered.Count}");
+        }
+
+        return l.ReturnAsError(Error.TryGetInFailed(name: $"{inStreamName}/{StreamDefaultName}"));
     }
 
 }
