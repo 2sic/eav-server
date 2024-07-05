@@ -5,6 +5,9 @@ namespace ToSic.Eav.DataSources.Internal;
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code
 /// </summary>
+/// <remarks>
+/// * in v18.00 we optimized it to also check draft-permissions of the returned data - previously this was not checked
+/// </remarks>
 public abstract class RelationshipDataSourceBase : DataSourceBase
 {
     /// <summary>

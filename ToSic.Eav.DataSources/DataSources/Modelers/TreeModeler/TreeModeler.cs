@@ -64,11 +64,9 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
     /// Initializes this data source
     /// </summary>
     [PrivateApi]
-    public TreeModeler(MyServices services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstants.LogPrefix}.Tree")
+    public TreeModeler(MyServices services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstants.LogPrefix}.Tree", connect: [treeMapper])
     {
-        ConnectLogs([
-            _treeMapper = treeMapper
-        ]);
+        _treeMapper = treeMapper;
         // Specify what out-streams this data-source provides. Usually just one, called "Default"
         ProvideOut(GetList);
     }
@@ -85,16 +83,15 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
         var source = TryGetIn();
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
-        var tm = _treeMapper;
         switch (Identifier)
         {
             case Attributes.EntityGuidPascalCase:
-                var resultGuid = tm.AddParentChild(
+                var resultGuid = _treeMapper.AddParentChild(
                     source, Identifier, ParentReferenceField,
                     NewChildrenField, NewParentField);
                 return l.Return(resultGuid, $"Guid: {resultGuid.Count}");
             case Attributes.EntityIdPascalCase:
-                var resultInt = tm.AddParentChild(
+                var resultInt = _treeMapper.AddParentChild(
                     source, Identifier, ParentReferenceField,
                     NewChildrenField, NewParentField);
                 return l.Return(resultInt, $"int: {resultInt.Count}");
