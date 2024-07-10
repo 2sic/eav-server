@@ -261,10 +261,13 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
     {
         var l = Log.Fn<List<MetadataRecommendation>>($"for {targetTypeFor}");
 
+        // meta data is sometimes null
+        if (md is null)
+            return l.Return([], "null metadata");
+
         var all = md
             .OfType(MetadataExpectedDecorator.ContentTypeNameId)
             .ToList();
-
 
         // var meantFor = (int)targetTypeFor;
         if (targetTypeFor > 0)
