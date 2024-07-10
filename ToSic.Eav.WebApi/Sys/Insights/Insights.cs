@@ -7,15 +7,10 @@ using static System.StringComparer;
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders)
+public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders)
     : ServiceBase("Api.SysIns", connect: [user, dsCache, insightsProviders])
 {
     public const string LogSuffix = "Insight";
-    #region Constructor / DI
-
-    private InsightsHtmlTable HtmlTableBuilder { get; } = new();
-
-    #endregion
 
     /// <summary>
     /// WIP
@@ -36,7 +31,7 @@ public partial class InsightsControllerReal(IUser user, LazySvc<InsightsDataSour
         if (provider != null)
         {
             l.A($"found provider {provider.Name}");
-            provider.SetContext(HtmlTableBuilder, appId, new Dictionary<string, object>(InvariantCultureIgnoreCase)
+            provider.SetContext(new InsightsHtmlTable(), appId, new Dictionary<string, object>(InvariantCultureIgnoreCase)
             {
                 {"key", key},
                 {"position", position},

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using ToSic.Eav.StartUp;
 using static System.StringComparison;
 
 namespace ToSic.Eav.Plumbing;
@@ -44,12 +45,15 @@ public class AssemblyHandling
     {
         if (_typeCache != null) return _typeCache;
 
+        var bl = BootLog.Log.Fn("Creating list of Types", timer: true);
+
         var l = log.Fn<List<Type>>(timer: true);
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         l.A($"GetTypes() - found {assemblies.Length} assemblies");
 
         _typeCache = assemblies.SelectMany(a => GetLoadableTypes(a, log)).ToList();
 
+        bl.Done();
         return l.Return(_typeCache, $"{_typeCache.Count}");
     }
 

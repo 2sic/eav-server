@@ -1,16 +1,24 @@
 ﻿using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.StartUp;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsLogs(LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, teaser: "Logs of Modules, APIs and more", helpCategory: "Logging", connect: [logStore])
+internal class InsightsLogs : InsightsProvider
 {
     public static string Link = "Logs";
 
     public override string Title => "Insights into Logs";
 
-    private InsightsLogsHelper LogHtml => _logHtml ??= new(logStore.Value);
+    private InsightsLogsHelper LogHtml => _logHtml ??= new(_logStore.Value);
     private InsightsLogsHelper _logHtml;
+    private readonly LazySvc<ILogStoreLive> _logStore;
+
+    public InsightsLogs(LazySvc<ILogStoreLive> logStore) : base(Link, teaser: "Logs of Modules, APIs and more", helpCategory: "Logging", connect: [logStore])
+    {
+        _logStore = logStore;
+        BootLog.AddToStore(logStore.Value);
+    }
 
     public override string HtmlBody()
         => Key == null
@@ -38,7 +46,7 @@ internal class InsightsLogs(LazySvc<ILogStoreLive> logStore) : InsightsProvider(
         Log.A($"debug log load for {key}/{position}");
         var msg = InsightsHtmlParts.PageStyles() + LogHtml.LogHeader($"{key}[{position}]", false);
 
-        if (!logStore.Value.Segments.TryGetValue(key, out var set))
+        if (!_logStore.Value.Segments.TryGetValue(key, out var set))
             return msg + $"position {position} not found in log set {key}";
 
         if (set.Count < position - 1)

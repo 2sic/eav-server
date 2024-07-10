@@ -17,16 +17,14 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
     {
         if (e == null) return "";
         
-        var (_, secondsText, style) = PercentString(e, mainStart);
+        var (secondsText, style) = PercentString(e, mainStart);
 
         if (e.Elapsed == TimeSpan.Zero)
-            return e.WrapOpen
-                ? Span(secondsText)
-                    .Class("time")
-                    .Style(style)
-                    .Style("text-align: right")
-                    .ToString()
-                : "";
+            return Span(secondsText + " since " + HtmlEncode("▶️"))
+                .Class("time")
+                .Style(style)
+                //.Style("text-align: right")
+                .ToString();
 
         var seconds = e.Elapsed.TotalSeconds;
         var ms = e.Elapsed.TotalMilliseconds;
@@ -62,17 +60,25 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
     /// <param name="e"></param>
     /// <param name="mainStart"></param>
     /// <returns></returns>
-    private (int percent, string secondsText, string style) PercentString(Entry e, DateTime mainStart)
+    private (string secondsText, string style) PercentString(Entry e, DateTime mainStart)
     {
         var sinceStart = e.Created - mainStart;
-        // var msSinceStart = sinceStart.TotalMilliseconds;
-        var secondsSinceStart = sinceStart.TotalSeconds;
-        var secondsText = $"{secondsSinceStart:F}";
+        var secSinceStart = sinceStart.TotalSeconds;
+        var secText = $"{secSinceStart:F}";
         var max = fullTime == default ? 5 : fullTime.TotalSeconds;
-        var percentSinceStart = (int)(secondsSinceStart / max * 100);
-        var style = $"background: linear-gradient(90deg, #e9dfe0 {100 - percentSinceStart}%, #b9b8ff 0)";
-        return (percentSinceStart, secondsText, style);
+        var perSinceStart = (int)(secSinceStart / max * 100);
+
+        var secElapsedSinceStart = e.Elapsed.TotalSeconds + secSinceStart;
+        var perElapsed = (int)(secElapsedSinceStart / max * 100);
+
+
+        var style = $"background: linear-gradient(90deg, {ColorBefore} {perSinceStart}%, {ColorElapsed} {perSinceStart}%, {ColorElapsed} {perElapsed}%, {ColorRemaining} {perElapsed}%)";
+        return (secText, style);
     }
+
+    private const string ColorRemaining = "#eeeeee";
+    private const string ColorBefore = "#bbbbbb";
+    private const string ColorElapsed = "#b9b8ff";
 
 
     private static string PercentString1(double ownMs, TimeSpan compareTime)

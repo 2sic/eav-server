@@ -7,6 +7,7 @@ using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
+using ToSic.Eav.StartUp;
 using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Internal.Loaders;
@@ -60,6 +61,7 @@ public class EavSystemLoader : LoaderBase
     /// </summary>
     public void StartUp()
     {
+        var bl = BootLog.Log.Fn("Eav: StartUp", timer: true);
         // Prevent multiple Inits
         if (_startupAlreadyRan) throw new("Startup should never be called twice.");
         _startupAlreadyRan = true;
@@ -77,6 +79,7 @@ public class EavSystemLoader : LoaderBase
         _appsCache.Value.Add(presetApp.AppState);
 
         LoadLicenseAndFeatures();
+        bl.Done();
         l.Done("ok");
     }
 

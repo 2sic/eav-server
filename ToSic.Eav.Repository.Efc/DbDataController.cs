@@ -6,6 +6,7 @@ using ToSic.Eav.Internal.Compression;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Parts;
+using ToSic.Eav.StartUp;
 
 namespace ToSic.Eav.Repository.Efc;
 
@@ -106,11 +107,21 @@ public class DbDataController(
 
     #region Constructor and Init
 
+    private static bool _loggedToBootLog;
+
     public EavDbContext SqlDb
     {
         get
         {
-            if (_sqlDbPostInit != null) return _sqlDbPostInit;
+            if (_sqlDbPostInit != null)
+                return _sqlDbPostInit;
+
+            if (!_loggedToBootLog)
+            {
+                BootLog.Log.A("DbDataController DB accessed");
+                _loggedToBootLog = true;
+            }
+
             // When used the first time, make sure we have the save handle attached
             dbContext.AlternateSaveHandler += SaveChanges;
             return _sqlDbPostInit = dbContext;

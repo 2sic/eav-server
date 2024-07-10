@@ -21,18 +21,27 @@ partial class Efc11Loader
 
     private List<TempEntity> GetRawEntities(int[] entityIds, int appId, bool filterIds, string filterType = null)
     {
-        var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterType)}: '{filterType}'");
+        var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterType)}: '{filterType}'", timer: true);
+
         var query = context.ToSicEavEntities
             .Include(e => e.AttributeSet)
             .Where(e => e.AppId == appId)
             .Where(e => e.ChangeLogDeleted == null && e.AttributeSet.ChangeLogDeleted == null);
 
+        l.A("initial query created");
+
         // filter by EntityIds (if set)
         if (filterIds)
+        {
             query = query.Where(e => entityIds.Contains(e.EntityId));
+            l.A("filtered by entityIds");
+        }
 
         if (filterType != null)
+        {
             query = query.Where(e => e.ContentType == filterType);
+            l.A("filtered by type");
+        }
 
         var rawEntities = query
             .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
@@ -51,6 +60,7 @@ partial class Efc11Loader
                 Json = e.Json,
             })
             .ToList();
+        l.A($"Query executed and converted to {nameof(TempEntity)}");
 
         return l.Return(rawEntities, $"found: {rawEntities.Count}");
     }

@@ -47,11 +47,29 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
 
     internal IHtmlTag ShowSpecs(LogStoreEntry entry)
     {
-        var specs = entry?.Specs;
-        if (specs == null) return null;
+        if (entry == null) return null;
+
+        var specs = entry.Specs ?? new Dictionary<string, string>();
+        // if (specs == null) return null;
 
         var specList = Table(HeadFields(SpecialField.Left("Aspect ↕"), SpecialField.Left("Value ↕")));
-        specList = specs
+
+        var specsCopy = new Dictionary<string, string>(specs, StringComparer.InvariantCultureIgnoreCase);
+        if (entry.Log is Log log && log.Entries.Count > 0)
+        {
+            specsCopy["Z Timespan A-Start"] = log.Created.Dump();
+
+            var first = log.Entries.First()?.Created;
+            specsCopy["Z Timespan B-First"] = first?.Dump();
+            var last = log.Entries.Last()?.Created;
+            specsCopy["Z Timespan C-Last"] = last?.Dump();
+            if (last != null)
+                specsCopy["Z Timespan D-Duration SL"] = (last - log.Created).ToString();
+            if (first != null && last != null)
+                specsCopy["Z Timespan D-Duration FL"] = (last - first).ToString();
+        }
+
+        specList = specsCopy
             .OrderBy(s => s.Key)
             .Aggregate(specList, (current, spec) 
                 => current.Add(Tr(Td(spec.Key), Td(spec.Value))));
@@ -193,8 +211,19 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         var times = new Stack<TimeSpan>();
 
         var entries = typedLog.Entries;
-        var firstEntry = entries.FirstOrDefault();
-        var startTime = new InsightsTime(firstEntry?.Elapsed ?? default);
+        //var firstEntry = entries.FirstOrDefault();
+        //var lastEntry = entries.LastOrDefault();
+
+        //var lastTime = (lastEntry?.Created ?? default) + typedLog.Created;
+        //var fullTimeSpan = firstEntry == null
+        //    ? default
+        //    : firstEntry.Elapsed != default
+        //        ? firstEntry.Elapsed
+        //        : lastEntry == null
+        //            ? default
+        //            : lastEntry.Created - typedLog.Created;// firstEntry.Created;
+        var ts = FullTimespan(typedLog);
+        var maxTimeSpan = new InsightsTime(ts); //fullTimeSpan);
         var startCreated = typedLog.Created;
 
         foreach (var e in entries)
@@ -212,7 +241,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                 // Create an entry
                 lg.AppendLine("<li>");
                 var prevBreadcrumb = breadcrumb.Count > 0 ? breadcrumb.Peek() : "";
-                lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0 ? times.Peek() : default, startTime, startCreated));
+                lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0 ? times.Peek() : default, maxTimeSpan, startCreated));
                 // 
                 if (e.WrapOpen)
                 {
@@ -229,6 +258,18 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         lg.Append("</ol>");
         lg.Append("end of log");
         return lg.ToString();
+    }
+
+    private static TimeSpan FullTimespan(Log log)
+    {
+        if (log.Entries.Count == 0) return default;
+        var startTime = log.Created;
+
+        var last = log.Entries.Last();
+        var endTime = last.Created.Add(last.Elapsed);
+
+        var timeSpan = endTime - startTime;
+        return timeSpan;
     }
 
     /// <summary>

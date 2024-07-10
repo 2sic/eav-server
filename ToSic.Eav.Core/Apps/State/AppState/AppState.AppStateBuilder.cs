@@ -4,6 +4,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.StartUp;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Constants;
 
@@ -51,12 +52,16 @@ partial class AppState
 
         #region Loading
 
+        private static bool _loggedLoadToBootLog = false;
+
 
         public void Load(string message, Action<IAppStateCache> loader)
         {
             var st = (AppState)AppState;
             var msg = $"zone/app:{st.Show()} - Hash: {st.GetHashCode()}";
             var l = Log.Fn($"{msg} {message}", timer: true);
+            var bl = _loggedLoadToBootLog ? null : BootLog.Log.Fn($"{msg} {message}", timer: true);
+
             var lState = st.Log.Fn(message, timer: true);
             try
             {
@@ -84,6 +89,9 @@ partial class AppState
                 lState.Done();
             }
 
+            bl.Done();
+            // only keep logging for the preset and first app, then stop.
+            if (st.AppId != PresetAppId) _loggedLoadToBootLog = true;
             l.Done();
         }
 
