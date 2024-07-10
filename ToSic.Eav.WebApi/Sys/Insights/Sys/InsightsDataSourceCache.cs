@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.Security.Encryption;
 using ToSic.Razor.Blade;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
@@ -27,7 +28,7 @@ public class InsightsDataSourceCache(
 
         m.AppendLine(H1(
                 $"In Cache ({namesInMemory.Count})",
-                Html.LinkTo(HtmlEncode("🚽"), nameof(DataSourceCacheFlushAll))
+                Html.LinkTo(HtmlEncode("🚽 flush all"), nameof(DataSourceCacheFlushAll))
             )
             .ToString());
 
@@ -38,6 +39,7 @@ public class InsightsDataSourceCache(
         var rows = namesInMemory.Select(name =>
         {
             var cacheItem = listCacheSvc.Get(name);
+            var keyHash = Sha256.Hash(name);
             return InsightsHtmlTable.RowFields(
                 HoverLabel(name.Ellipsis(100), name.Replace(">", "\n>"), ""),
                 SpecialField.Right(
@@ -47,8 +49,7 @@ public class InsightsDataSourceCache(
                 SpecialField.Center(
                     EmojiTrueFalse(cacheItem?.RefreshOnSourceRefresh ?? false)
                 ),
-                Html.LinkTo(HtmlEncode("🚽"), nameof(DataSourceCacheFlush), key: name)
-
+                Html.LinkTo(HtmlEncode("🚽"), nameof(DataSourceCacheFlush), key: keyHash)
             );
         });
 
@@ -62,7 +63,7 @@ public class InsightsDataSourceCache(
             .Where(n => !listCacheSvc.HasStream(n))
             .ToList();
 
-        m.AppendLine(H2($"Not In Cache ({namesOutOfMemory.Count})").ToString());
+        m.AppendLine(H2($"Not in Cache any More ({namesOutOfMemory.Count})").ToString());
 
         if (!namesOutOfMemory.Any())
             m.AppendLine("(none)");
@@ -122,7 +123,15 @@ public class InsightsDataSourceCache(
 
     public string DataSourceCacheFlush(string key)
     {
-        dsCacheSvc.Value.Flush(key);
-        return $"key {key} Flushed" + Br() + Html.LinkBack();
+        // find entry with this key, since the key is a Sha256 hash of the name
+        var locks = listCacheSvc.LoadLocks.Locks;
+        var name = locks.Select(l => l.Key)
+            .FirstOrDefault(k => Sha256.Hash(k) == key);
+
+        if (name == null)
+            return $"key {key} not found" + Br() + Html.LinkBack();
+
+        dsCacheSvc.Value.Flush(name);
+        return $"Key flushed: '{key}'. {Br()}Name was: {Pre(Tags.Nl2Br(name))}" + Br() + Html.LinkBack();
     }
 }
