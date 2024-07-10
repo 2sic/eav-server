@@ -119,7 +119,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="7.0.4" />
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.3" /><!-- from Oqtane.Shared.csproj -->
+    <PackageReference Include="System.Text.Json" Version="8.0.4" /><!-- from Oqtane.Shared.csproj -->
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
