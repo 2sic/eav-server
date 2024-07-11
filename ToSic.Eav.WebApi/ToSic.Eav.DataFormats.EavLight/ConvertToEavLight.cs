@@ -126,7 +126,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         var rules = new EntitySerializationDecorator(PresetFilters, attachedRules);
 
         // Figure out how to serialize relationships
-        var serRels = SubEntitySerialization.Stabilize(rules.SerializeRelationships, true, false, true, false, true);
+        var serRels = SubEntitySerialization.Stabilize(original: rules.SerializeRelationships, serialize: true, "object", id: true, guid: false, title: true);
 
         var excludeAttributes = ExcludeAttributesOfType(entity);
 

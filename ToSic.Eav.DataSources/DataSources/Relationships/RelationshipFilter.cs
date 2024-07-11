@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSource.Internal.Errors;
+﻿using ToSic.Eav.Context;
+using ToSic.Eav.DataSource.Internal.Errors;
 using ToSic.Eav.DataSource.Streams.Internal;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -138,26 +139,25 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new RelationshipFilter
     /// </summary>
     [PrivateApi]
-    public RelationshipFilter(MyServices services): base(services, $"{LogPrefix}.Relfil")
+    public RelationshipFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{LogPrefix}.Relfil", connect: [userPermissions])
     {
+        _userPermissions = userPermissions;
         ProvideOut(GetRelationshipsOrFallback);
-        //ConfigMask(nameof(Relationship));
-        //ConfigMask(nameof(Filter));
-        //ConfigMaskMyConfig(nameof(CompareAttribute), $"{Settings.AttributeOnRelationship}||{Attributes.EntityFieldTitle}");
-        //ConfigMaskMyConfig(nameof(CompareMode), $"{Settings.Comparison}||{CompareModes.contains}");
-        //ConfigMask($"{nameof(Separator)}||{DefaultSeparator}");
         // todo: unclear if implemented...
         //ConfigMaskMyConfig(nameof(ChildOrParent), $"{Settings.Direction}||{DefaultDirection}");
     }
+    private readonly IContextResolverUserPermissions _userPermissions;
 
-    private IImmutableList<IEntity> GetRelationshipsOrFallback() => Log.Func(() =>
+
+    private IImmutableList<IEntity> GetRelationshipsOrFallback()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         var res = GetEntities();
         if (!res.Any() && In.HasStreamWithItems(StreamFallbackName))
-            return (In[StreamFallbackName].List.ToImmutableList(), "fallback");
+            return l.Return(In[StreamFallbackName].List.ToImmutableList(), "fallback");
 
-        return (res, "ok");
-    });
+        return l.Return(res, "ok");
+    }
 
     private IImmutableList<IEntity> GetEntities()
     {
@@ -194,7 +194,8 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         l.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         var compType = lowAttribName == Attributes.EntityFieldAutoSelect
             ? CompareType.Auto
@@ -209,16 +210,19 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         if (compType == CompareType.Auto)
         {
             var getId = GetFieldValue(CompareType.Id, null);
-            if (getId.IsError) return l.ReturnAsError(getId.Errors);
+            if (getId.IsError)
+                return l.ReturnAsError(getId.Errors);
             var getTitle = GetFieldValue(CompareType.Title, null);
-            if (getTitle.IsError) return l.ReturnAsError(getTitle.Errors);
+            if (getTitle.IsError)
+                return l.ReturnAsError(getTitle.Errors);
             comparisonOnRelatedItem = CompareTwo(getId.Result, getTitle.Result);
 
         }
         else
         {
             var getValue = GetFieldValue(compType, compAttr);
-            if (getValue.IsError) return l.ReturnAsError(getValue.Errors);
+            if (getValue.IsError)
+                return l.ReturnAsError(getValue.Errors);
             comparisonOnRelatedItem = CompareOne(getValue.Result);
         }
 
@@ -231,7 +235,8 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
 
         // pick the correct list-comparison - atm ca. 6 options
         var modeCompareOrError = PickMode(strMode, relationship, comparisonOnRelatedItem, filterList);
-        if (modeCompareOrError.IsError) return l.ReturnAsError(modeCompareOrError.Errors);
+        if (modeCompareOrError.IsError)
+            return l.ReturnAsError(modeCompareOrError.Errors);
         var modeCompare = modeCompareOrError.Result;
 
         var finalCompare = useNot
@@ -240,7 +245,9 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
 
         try
         {
-            var results = source.Where(finalCompare).ToImmutableList();
+            var selection = source.Where(finalCompare).ToList();
+
+            var results = selection.ToImmutableList();
 
             return l.Return(results, $"{results.Count}");
         }
