@@ -48,7 +48,7 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
         RawConvertOptions rawConvertOptions = default
     )
     {
-        var clone = new DataFactory(_builder,
+        var clone = new DataFactory(builder.New(options?.AllowUnknownValueTypes ?? false),
             options: options,
             relationships: relationships,
             rawConvertOptions: rawConvertOptions

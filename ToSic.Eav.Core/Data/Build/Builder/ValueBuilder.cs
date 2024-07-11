@@ -13,9 +13,17 @@ namespace ToSic.Eav.Data.Build;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : ServiceBase("Eav.ValBld")
 {
+    private bool _allowUnknownValueTypes;
+
     #region Constructor
 
     #endregion
+
+    public ValueBuilder Setup(bool allowUnknownValueTypes = false)
+    {
+        _allowUnknownValueTypes = allowUnknownValueTypes;
+        return this;
+    }
 
     /// <summary>
     /// Create/clone a value based on an original which will supply most of the values.
@@ -101,6 +109,7 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
                 ValueTypes.DateTime => DateTime(value, langs),
                 ValueTypes.Number => Number(value, langs),
                 ValueTypes.Entity => RelationshipWip(value, null),
+                ValueTypes.Object => new Value<object>(value, languages),
                 // ReSharper disable RedundantCaseLabel
                 ValueTypes.String => // most common case
                     String(stringValue, langs) // new Value<string>(stringValue, langs);

@@ -6,9 +6,17 @@ namespace ToSic.Eav.Data.Build;
 
 partial class AttributeBuilder
 {
+    private bool _allowUnknownValueTypes;
+
+    public AttributeBuilder Setup(bool allowUnknownValueTypes = false)
+    {
+        _allowUnknownValueTypes = allowUnknownValueTypes;
+        return this;
+    }
+
     public IImmutableDictionary<string, IAttribute> Empty() => EmptyList;
     private static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableInvariant();
-
+    
     public IImmutableDictionary<string, IAttribute> Create(IContentType contentType, ILookup<string, IValue> preparedValues)
     {
         var attributes = contentType.Attributes.ToImmutableDictionary(
@@ -45,7 +53,7 @@ partial class AttributeBuilder
                 return typedValue;
 
             // Not yet a proper IAttribute, construct from value
-            var attributeType = DataTypes.GetAttributeTypeName(oAttrib.Value);
+            var attributeType = DataTypes.GetAttributeTypeName(oAttrib.Value, _allowUnknownValueTypes);
             var valuesModelList = new List<IValue>();
             if (oAttrib.Value != null)
             {
