@@ -30,12 +30,12 @@ public class ImportService(
     private const int ChunkSizeAboveLimit = 500;
 
 
-    public ImportService Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes)
+    public ImportService Init(int? zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes, int? parentAppId = default)
     {
         // Get the DB controller - it can handle zoneId being null
         // It's important to not use AppWorkContext or similar, because that would
         // try to load the App into cache, and initialize the App before it's fully imported
-        var dbController = genDbDataController.New().Init(zoneId, appId);
+        var dbController = genDbDataController.New().Init(zoneId, appId, parentAppId);
         Storage = dbController;
         AppId = appId;
         ZoneId = dbController.ZoneId;

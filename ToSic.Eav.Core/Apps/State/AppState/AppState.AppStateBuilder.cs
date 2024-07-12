@@ -1,8 +1,10 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using ToSic.Eav.StartUp;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Constants;
 
@@ -11,7 +13,7 @@ namespace ToSic.Eav.Apps.State;
 partial class AppState
 {
     /// <summary>
-    /// The builder must be a sub-class of AppState, so it can access its private properties
+    /// The builder must be a subclass of AppState, so it can access its private properties.
     /// </summary>
     internal class AppStateBuilder(IAppStates appStates) : ServiceBase("App.SttBld"), IAppStateBuilder
     {
@@ -27,13 +29,15 @@ partial class AppState
         public IAppStateBuilder InitForPreset()
         {
             _appState = new AppState(new(null, false, false), PresetIdentity, PresetName, Log);
+            MemoryCacheService.Notify(_appState);
             _reader = appStates.ToReader(AppState, Log);
             return this;
         }
 
-        public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog)
+        public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog)
         {
-            _appState = new AppState(parentApp, id, nameId, parentLog);
+            _appState = new AppState(parentApp, identity, nameId, parentLog);
+            MemoryCacheService.Notify(_appState);
             _reader = appStates.ToReader(AppState, Log);
             return this;
         }
@@ -48,12 +52,16 @@ partial class AppState
 
         #region Loading
 
+        private static bool _loggedLoadToBootLog = false;
+
 
         public void Load(string message, Action<IAppStateCache> loader)
         {
             var st = (AppState)AppState;
             var msg = $"zone/app:{st.Show()} - Hash: {st.GetHashCode()}";
             var l = Log.Fn($"{msg} {message}", timer: true);
+            var bl = _loggedLoadToBootLog ? null : BootLog.Log.Fn($"{msg} {message}", timer: true);
+
             var lState = st.Log.Fn(message, timer: true);
             try
             {
@@ -81,6 +89,9 @@ partial class AppState
                 lState.Done();
             }
 
+            bl.Done();
+            // only keep logging for the preset and first app, then stop.
+            if (st.AppId != PresetAppId) _loggedLoadToBootLog = true;
             l.Done();
         }
 
@@ -118,10 +129,13 @@ partial class AppState
             // so we must try to fix this now
             l.A("Trying to load Name/Folder from App package entity");
             // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
-            // so the OfType().OrderBy() should ensure that we really only take the oldest one.
-            var config = st.List.OfType(AppLoadConstants.TypeAppConfig).OrderBy(e => e.EntityId).FirstOrDefault();
-            if (st.Name.IsEmptyOrWs()) st.Name = config?.Value<string>(AppLoadConstants.FieldName);
-            if (st.Folder.IsEmptyOrWs()) st.Folder = config?.Value<string>(AppLoadConstants.FieldFolder);
+            // so the OfType().OrderBy() should ensure that we really only take the first=oldest one.
+            var config = st.List
+                .OfType(AppLoadConstants.TypeAppConfig)
+                .OrderBy(e => e.EntityId)
+                .FirstOrDefault();
+            if (st.Name.IsEmptyOrWs()) st.Name = config?.Get<string>(AppLoadConstants.FieldName);
+            if (st.Folder.IsEmptyOrWs()) st.Folder = config?.Get<string>(AppLoadConstants.FieldFolder);
 
             // Last corrections for the DefaultApp "Content"
             if (st.NameId == DefaultAppGuid)

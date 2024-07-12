@@ -42,7 +42,7 @@ partial class DbContentType
 
     private int? GetOrCreateContentType(ContentType contentType)
     {
-        var destinationSet = DbContext.AttribSet.GetDbAttribSet(contentType.NameId);
+        var destinationSet = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
 
         // add new AttributeSet, do basic configuration if possible, then save
         if (destinationSet == null)

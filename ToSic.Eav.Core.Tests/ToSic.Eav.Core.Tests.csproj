@@ -100,6 +100,9 @@
     <Compile Include="Data\ContentType_Test.cs" />
     <Compile Include="Data\SampleData.cs" />
     <Compile Include="Data\Entity_Test.cs" />
+    <Compile Include="Data\EqualityComparerPerformance.cs" />
+    <Compile Include="Data\PropReqSpecsTests.cs" />
+    <Compile Include="EavDataTestAccessors.cs" />
     <Compile Include="IdentityTests\MapperTest.cs" />
     <Compile Include="LookUp\LookUpTestData.cs" />
     <Compile Include="LookUp\Tokens\TokenReplaceTst.cs" />
@@ -174,10 +177,10 @@
       <Version>2.1.1</Version>
     </PackageReference>
     <PackageReference Include="MSTest.TestAdapter">
-      <Version>2.2.9</Version>
+      <Version>3.4.3</Version>
     </PackageReference>
     <PackageReference Include="MSTest.TestFramework">
-      <Version>2.2.9</Version>
+      <Version>3.4.3</Version>
     </PackageReference>
     <PackageReference Include="NETStandard.Library">
       <Version>2.0.3</Version>

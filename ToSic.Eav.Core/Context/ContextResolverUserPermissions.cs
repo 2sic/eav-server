@@ -3,5 +3,5 @@
 internal class ContextResolverUserPermissions(IContextOfUserPermissions userPermissions)
     : IContextResolverUserPermissions
 {
-    public AdminPermissions UserPermissions() => userPermissions.Permissions;
+    public EffectivePermissions UserPermissions() => userPermissions.Permissions;
 }

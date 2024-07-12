@@ -5,27 +5,31 @@ public class SubEntitySerialization: ISubEntitySerialization
 {
     public bool? Serialize { get; init; }
 
-    public bool? SerializesAsCsv { get; init; }
-        
+    /// <summary>
+    /// WIP expected values "csv", "array", "object" (default)
+    /// </summary>
+    public string SerializeFormat { get; init; }
+
     public bool? SerializeId { get; init; }
 
     public bool? SerializeGuid { get; init; }
 
     public bool? SerializeTitle { get; init; }
 
-    public static ISubEntitySerialization AllTrue()
-        => Stabilize(null, false, true, true, true, true);
+    public static ISubEntitySerialization NeverSerializeChildren()
+        => Stabilize(null, false, "object", true, true, true);
 
-    public static ISubEntitySerialization Stabilize(ISubEntitySerialization original,
-        bool serialize = false, bool asCsv = false, bool id = false, bool guid = false, bool title = false) =>
-        new SubEntitySerialization
+    public static ISubEntitySerialization Stabilize(
+        ISubEntitySerialization original, bool serialize, string format, bool id, bool guid, bool title)
+        => new SubEntitySerialization
         {
             Serialize = original?.Serialize ?? serialize,
-            SerializesAsCsv = original?.SerializesAsCsv ?? asCsv,
+            SerializeFormat = original?.SerializeFormat ?? format ?? "object",
             SerializeId = original?.SerializeId ?? id,
             SerializeGuid = original?.SerializeGuid ?? guid,
             SerializeTitle = original?.SerializeTitle ?? title
         };
+
     public static ISubEntitySerialization Stabilize(
         ISubEntitySerialization original, 
         ISubEntitySerialization addition = null, 

@@ -4,7 +4,12 @@ namespace ToSic.Eav.WebApi.Context;
 
 public class FeatureDto(FeatureState state)
 {
-    public string NameId { get; } = state.NameId;
-    public bool IsEnabled { get; } = state.IsEnabled;
-    public string Name { get; } = state.Aspect.Name;
+    [JsonPropertyName("nameId")]
+    public string NameId => state.NameId;
+
+    [JsonPropertyName("isEnabled")]
+    public bool IsEnabled => state.IsEnabled;
+
+    [JsonPropertyName("name")]
+    public string Name => state.Aspect.Name;
 }

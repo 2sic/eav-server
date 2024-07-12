@@ -2,41 +2,79 @@
 
 internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
 {
-    private IQueryable<ToSicEavAttributeSets> GetSetCoreQuery(int? appId = null)
+    private IQueryable<ToSicEavAttributeSets> GetDbContentTypeCoreQuery(int appId)
         => DbContext.SqlDb.ToSicEavAttributeSets
             .Include(a => a.ToSicEavAttributesInSets)
             .ThenInclude(a => a.Attribute)
-            .Where(a => a.AppId == (appId ?? DbContext.AppId) && !a.ChangeLogDeleted.HasValue);
+            .Where(a => a.AppId == appId && !a.ChangeLogDeleted.HasValue);
 
     /// <summary>
     /// Get a single AttributeSet
     /// </summary>
-    internal ToSicEavAttributeSets GetDbAttribSet(int attributeSetId)
-        => GetSetCoreQuery().SingleOrDefault(a => a.AttributeSetId == attributeSetId);
+    internal ToSicEavAttributeSets GetDbContentType(int appId, int attributeSetId)
+        => GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.AttributeSetId == attributeSetId);
 
     /// <summary>
     /// Get a single AttributeSet
     /// </summary>
-    public ToSicEavAttributeSets GetDbAttribSet(string staticName)
-        => GetSetCoreQuery().SingleOrDefault(a => a.StaticName == staticName);
-
-
-    internal int GetId(string name)
+    public ToSicEavAttributeSets GetDbContentType(int appId, string name, bool alsoCheckNiceName = false)
     {
+        var byStaticName = GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.StaticName == name);
+        if (byStaticName != null || !alsoCheckNiceName)
+            return byStaticName;
+        return GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.Name == name);
+    }
+
+    private List<ToSicEavAttributeSets> GetDbContentTypes(int appId, string name, bool alsoCheckNiceName = false)
+    {
+        var l = Log.Fn<List<ToSicEavAttributeSets>>($"{nameof(appId)}: {appId}; {nameof(name)}: {name}; {nameof(alsoCheckNiceName)}: {alsoCheckNiceName}");
+        var byStaticName = GetDbContentTypeCoreQuery(appId)
+            .Where(s => s.StaticName == name)
+            .ToList();
+        if (byStaticName.Any() || !alsoCheckNiceName)
+            return byStaticName;
+
+        var byNiceName = GetDbContentTypeCoreQuery(appId)
+            .Where(s => s.Name == name)
+            .ToList();
+
+        return byNiceName;
+    }
+
+
+    internal int GetDbContentTypeId(string name)
+    {
+        var l = Log.Fn<int>($"{nameof(name)}: {name}");
         try
         {
-            var found = GetSetCoreQuery()
-                .Where(s => s.StaticName == name)
-                .ToList();
+            var preparedError = $"too many or too few content types found for the content-type '{name}'.";
+            var found = GetDbContentTypes(DbContext.AppId, name, alsoCheckNiceName: true);
 
-            // if not found, try the non-static name as fallback
+            // If nothing found check parent app
             if (found.Count == 0)
-                found = GetSetCoreQuery()
-                    .Where(s => s.Name == name)
-                    .ToList();
+            {
+                // If we have exactly 1 parent, it's not inherited, so we should stop now.
+                var parentAppIds = DbContext.AppIds.Skip(1).ToArray();
+                if (parentAppIds.Length == 0)
+                    throw l.Ex(new Exception($"{preparedError} No custom parent apps found for app {DbContext.AppId}"));
+
+                var parentId = parentAppIds.First();
+                l.A($"Not found on main app, will check parent: {parentId}");
+                found = GetDbContentTypes(parentId, name, alsoCheckNiceName: true);
+            }
+
+            //var found = GetSetCoreQuery(appId)
+            //    .Where(s => s.StaticName == name)
+            //    .ToList();
+
+            //// if not found, try the non-static name as fallback
+            //if (found.Count == 0)
+            //    found = GetSetCoreQuery(appId)
+            //        .Where(s => s.Name == name)
+            //        .ToList();
 
             if (found.Count != 1)
-                throw new($"too many or too few content types found for the content-type {name} - found {found.Count}");
+                throw new($"{preparedError} Found {found.Count}");
 
             return found.First().AttributeSetId;
         }
@@ -50,7 +88,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
     /// Test whether AttributeSet exists on specified App and is not deleted
     /// </summary>
     private bool DbAttribSetExists(int appId, string staticName)
-        => GetSetCoreQuery(appId).Any(a => a.StaticName == staticName);
+        => GetDbContentTypeCoreQuery(appId).Any(a => a.StaticName == staticName);
 
     internal ToSicEavAttributeSets PrepareDbAttribSet(string name, string nameId, string scope, bool skipExisting, int? appId)
     {

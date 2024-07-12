@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Testing.Shared;
+using ToSic.Testing.Shared.Data;
 
 namespace ToSic.Eav.Core.Tests.Data;
 
@@ -18,11 +19,14 @@ public class EntityTest: TestBaseEavCore
 
         Assert.AreEqual(1, entDaniel.EntityId);
         Assert.AreEqual(Guid.Empty, entDaniel.EntityGuid);
-        Assert.AreEqual("Daniel", entDaniel.Attributes["FirstName"].Values.FirstOrDefault()?.ObjectContents.ToString());// .Title[0].ToString());
+        Assert.AreEqual("Daniel", entDaniel.Attributes["FirstName"].TacValues().FirstOrDefault()?.ObjectContents.ToString());
         Assert.AreEqual("Daniel", entDaniel.GetBestTitle());
-        Assert.AreEqual("Daniel", entDaniel.Value("FirstName"));
-        Assert.AreEqual("Daniel", entDaniel.Value<string>("FirstName"));
-        Assert.AreEqual("Mettler", entDaniel.GetBestValue("LastName", ["EN"]));
+        Assert.AreEqual("Daniel", entDaniel.TacGet("FirstName"));
+        Assert.AreEqual("Daniel", entDaniel.TacGet<string>("FirstName"));
+        Assert.AreEqual("Mettler", entDaniel.TacGet("LastName", languages: ["EN"]));
+        Assert.AreEqual("Mettler", entDaniel.TacGet("LastName", language: "EN"));
+        Assert.AreEqual("Mettler", entDaniel.TacGet<string>("LastName", languages: ["EN"]));
+        Assert.AreEqual("Mettler", entDaniel.TacGet<string>("LastName", language: "EN"));
     }
 
     [TestMethod]

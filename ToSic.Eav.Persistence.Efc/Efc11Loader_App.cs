@@ -193,10 +193,10 @@ partial class Efc11Loader
             l.A("app Entity found - this json: " + json);
             var serializer = dataDeserializer.New(); // ServiceProvider.Build<IDataDeserializer>();
             serializer.Initialize(appId, new List<IContentType>(), null);
-            if (!(serializer.Deserialize(json, true, true) is Entity appEntity))
+            if (serializer.Deserialize(json, true, true) is not Entity appEntity)
                 return l.Return(nullTuple, "can't deserialize");
-            var path = appEntity.Value<string>(AppLoadConstants.FieldFolder);
-            var name = appEntity.Value<string>(AppLoadConstants.FieldName);
+            var path = appEntity.Get<string>(AppLoadConstants.FieldFolder);
+            var name = appEntity.Get<string>(AppLoadConstants.FieldName);
 
             return string.IsNullOrWhiteSpace(path)
                 ? l.Return((name, path), "no folder")

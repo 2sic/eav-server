@@ -77,25 +77,6 @@ public class Attributes
 
     #endregion
 
-    #region Internal Attribute Information
-
-    /// <summary>
-    /// Virtual fields are not real fields, but information properties like title, etc.
-    /// </summary>
-    public static string FieldIsVirtual = "virtual";
-
-    /// <summary>
-    /// Dynamic fields were constructed and are not real IEntity properties
-    /// </summary>
-    public static string FieldIsDynamic = "dynamic";
-
-    /// <summary>
-    /// Mark result types as not found
-    /// </summary>
-    public static string FieldIsNotFound = "not-found";
-
-    #endregion
-
     /// <summary>
     /// Reserved field names - the UI should prevent creating fields with this name
     /// </summary>

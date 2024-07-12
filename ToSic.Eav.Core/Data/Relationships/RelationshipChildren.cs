@@ -29,8 +29,8 @@ public class RelationshipChildren : IRelationshipChildren
         get
         {
             if (_attributes == null) return new List<IEntity>();
-            return _attributes.ContainsKey(attributeName) 
-                ? (_attributes[attributeName] as Attribute<IEnumerable<IEntity>>)?.TypedContents 
+            return _attributes.TryGetValue(attributeName, out var attribute) 
+                ? (attribute as Attribute<IEnumerable<IEntity>>)?.TypedContents 
                 : new List<IEntity>();
         }
     }

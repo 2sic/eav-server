@@ -23,11 +23,6 @@ namespace ToSic.Eav.DataSources.Sys;
 // ReSharper disable once UnusedMember.Global
 public sealed class Features : CustomDataSource
 {
-
-    #region Configuration-properties (no config)
-
-    #endregion
-
     /// <inheritdoc />
     /// <summary>
     /// Constructs a new Scopes DS

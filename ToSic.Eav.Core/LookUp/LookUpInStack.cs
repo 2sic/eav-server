@@ -53,7 +53,7 @@ public class LookUpInStack: LookUpIn<IPropertyStack>
         key = key.Replace(":", ".");
 
         // Try to just find, and format the result if all is ok
-        var propReqResult = Data.InternalGetPath(new(key, _dimensions), new());
+        var propReqResult = Data.InternalGetPath(new(key, _dimensions, true), new());
         if (propReqResult.Result != null)
             return FormatValue(propReqResult.Result, format, _dimensions);
 

@@ -1,10 +1,7 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching.CachingMonitors;
-using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Coding;
 using ToSic.Lib.Services;
-using static System.Runtime.Caching.ObjectCache;
 
 namespace ToSic.Eav.Caching;
 
@@ -57,7 +54,28 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
             var specs = new CacheItemPolicyMaker(Log);
             var parsedSpecs = func?.Invoke(specs) ?? specs;
             var policy = parsedSpecs.CreateResult();
-            Cache.Set(new(key, value), policy);
+            Cache.Set(key, value, policy);
+            l.Done();
+        }
+        catch (Exception ex)
+        {
+            l.Done(ex);
+        }
+    }
+
+    /// <summary>
+    /// WIP experimental - possible replacement with liquid API, to better see which methods are exactly being called.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <param name="policyMaker"></param>
+    public void SetNew(string key, object value, IPolicyMaker policyMaker)
+    {
+        var l = Log.Fn($"key: '{key}'");
+        try
+        {
+            var policy = policyMaker.CreateResult();
+            Cache.Set(key, value, policy);
             l.Done();
         }
         catch (Exception ex)
@@ -73,8 +91,6 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         IList<string> filePaths = null,
         IDictionary<string, bool> folderPaths = null,
         IEnumerable<string> cacheKeys = null,
-        List<IAppStateChanges> appStates = null,
-        IEavFeaturesService featuresService = null,
         CacheEntryUpdateCallback updateCallback = null)
     {
         var l = Log.Fn($"key: '{key}'");
@@ -106,21 +122,6 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
                 }
             }
 
-            if (appStates?.Any() == true)
-            {
-                l.A($"Add {appStates.Count} {nameof(AppResetMonitor)}s to invalidate on App-data change");
-                foreach (var appState in appStates)
-                    policy.ChangeMonitors.Add(new AppResetMonitor(appState));
-            }
-
-            // flush cache when any feature is changed
-            // IMPORTANT: The featuresDoNotConnect service should NOT be connected to the log chain!
-            if (featuresService != null)
-            {
-                l.A($"Add {nameof(FeaturesResetMonitor)} to invalidate on Feature change");
-                policy.ChangeMonitors.Add(new FeaturesResetMonitor(featuresService));
-            }
-
             if (updateCallback != null)
             {
                 l.A("Add UpdateCallback");
@@ -144,7 +145,46 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// </summary>
     /// <param name="keys">list of cache cacheKeys of existing cache items to depend on</param>
     /// <returns></returns>
-    internal static CacheEntryChangeMonitor CreateCacheEntryChangeMonitor(IEnumerable<string> keys) => Cache.CreateCacheEntryChangeMonitor(keys);
+    internal static CacheEntryChangeMonitor CreateCacheEntryChangeMonitor(IEnumerable<string> keys)
+        => Cache.CreateCacheEntryChangeMonitor(keys);
+
+    #endregion
+
+
+    #region Experimental - communicate through cachekey
+
+    // Idea is that any large objects which should communicate expiry would leave a key in the cache with a permanent expiry
+    // This way if something changes - eg. the features service, it can notify the cache, and everything dependant will be invalidated
+
+    // Temporarily this is static, because the features service is singleton, but this should be changed to a service
+
+    private const string NotifyCachePrefix = "Eav-Notify-";
+
+    public static void Notify(ICanBeCacheDependency obj)
+        => Cache.Set(ExpandDependencyId(obj), new Timestamped<DateTime>(DateTime.Now, DateTime.Now.Ticks), ObjectCache.InfiniteAbsoluteExpiration);
+
+    //public static void Notify(string key)
+    //    => Cache.Set($"{NotifyCachePrefix}{key}", DateTime.Now, ObjectCache.InfiniteAbsoluteExpiration);
+
+    /// <summary>
+    /// Used to create cache item dependency on other cache items
+    /// with CacheEntryChangeMonitor in cache policy.
+    /// </summary>
+    /// <param name="keys">list of cache cacheKeys of existing cache items to depend on</param>
+    /// <returns></returns>
+    //internal static CacheEntryChangeMonitor CreateCacheNotifyMonitor(IEnumerable<string> keys)
+    //{
+    //    var prefixed = (keys ?? []).Select(k => $"{NotifyCachePrefix}{k}");
+    //    return Cache.CreateCacheEntryChangeMonitor(prefixed);
+    //}
+
+    internal static CacheEntryChangeMonitor CreateCacheNotifyMonitor(IEnumerable<ICanBeCacheDependency> keys)
+    {
+        var prefixed = (keys ?? []).Where(x => x != null).Select(ExpandDependencyId);
+        return Cache.CreateCacheEntryChangeMonitor(prefixed);
+    }
+
+    private static string ExpandDependencyId(ICanBeCacheDependency obj) => $"{(obj.CacheIsNotifyOnly ? NotifyCachePrefix : "")}{obj.CacheDependencyId}";
 
     #endregion
 

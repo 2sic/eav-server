@@ -113,6 +113,6 @@ public class QueryManager(
     
     private static IEntity FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
         queries.FirstOrDefault(
-            q => q.Value<string>("Name").EqualsInsensitive(nameOrGuid)
+            q => q.Get<string>("Name").EqualsInsensitive(nameOrGuid)
                  || q.EntityGuid.ToString().EqualsInsensitive(nameOrGuid));
 }

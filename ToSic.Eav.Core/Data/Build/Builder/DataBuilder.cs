@@ -11,19 +11,31 @@ public class DataBuilder(
     LazySvc<ValueBuilder> valueBuilder,
     LazySvc<ContentTypeBuilder> contentTypeBuilder,
     LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder,
-    LazySvc<DimensionBuilder> languageBuilder)
+    LazySvc<DimensionBuilder> languageBuilder,
+    Generator<DataBuilder> builderGen)
     : ServiceBase(EavLogs.Eav + "MltBld",
         connect:
         [
-            entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder
+            entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder, builderGen
         ])
 {
+    private bool _allowUnknownValueTypes;
+    private AttributeBuilder _attribute;
+    private ValueBuilder _value;
+
+    public DataBuilder New(bool allowUnknownValueTypes = false)
+    {
+        var clone = builderGen.New();
+        clone._allowUnknownValueTypes = allowUnknownValueTypes;
+        return clone;
+    }
+
     public ContentTypeBuilder ContentType => contentTypeBuilder.Value;
     public EntityBuilder Entity => entityBuilder.Value;
 
-    public AttributeBuilder Attribute => attributeBuilder.Value;
+    public AttributeBuilder Attribute => _attribute ??= attributeBuilder.Value.Setup(_allowUnknownValueTypes);
 
-    public ValueBuilder Value => valueBuilder.Value;
+    public ValueBuilder Value => _value ??= valueBuilder.Value.Setup(_allowUnknownValueTypes);
 
     public ContentTypeAttributeBuilder TypeAttributeBuilder => typeAttributeBuilder.Value;
 

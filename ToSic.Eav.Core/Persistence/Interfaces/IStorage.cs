@@ -79,5 +79,5 @@ public interface IStorage: IHasLog
 
     #endregion
 
-    int? ParentAppId { get; set; }
+    int? ParentAppId { get; }
 }

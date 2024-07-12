@@ -151,7 +151,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// <returns></returns>
     private IDictionary<string, string> ResolveParams(IEntity runEntity)
     {
-        var fieldParams = runEntity.Value<string>(FieldParams);
+        var fieldParams = runEntity.Get<string>(FieldParams);
         var newParamsDic = QueryDefinition.GenerateParamsDic(fieldParams, Log);
         var resultingParams = Configuration.Parse(newParamsDic);
         Log.A($"Resolved wrapper params - found {resultingParams.Count} ["

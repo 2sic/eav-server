@@ -39,10 +39,15 @@ public interface IAttribute : IAttributeBase
     #endregion
 
 
-
+    /// <summary>
+    /// Get the value and internal object result.
+    /// Note that the language keys MUST be lower-cased and everything.
+    /// </summary>
+    /// <param name="languageKeys"></param>
+    /// <returns></returns>
     [PrivateApi("experimental in 12.05")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    (IValue ValueField, object Result) GetTypedValue(string[] languageKeys);
+    (IValue ValueField, object Result) GetTypedValue(string[] languageKeys, bool fallbackToAny);
 
     [PrivateApi("internal only")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

@@ -1,13 +1,15 @@
-﻿using ToSic.Eav.Data.Shared;
+﻿using ToSic.Eav.Apps.Internal.MetadataDecorators;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.Metadata;
 using static ToSic.Eav.Data.AttributeMetadata;
 
 
 namespace ToSic.Eav.WebApi;
 
-public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes)
-    : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight]),
+public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes, IAppStates appStates, LazySvc<MdRecommendations> mdRead)
+    : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight, mdRead]),
         IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
 {
     public ConvertAttributeToDto Init(int appId, bool withContentType)
@@ -31,7 +33,8 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     public ContentTypeFieldDto Convert(PairTypeWithAttribute item)
     {
         var l = Log.Fn<ContentTypeFieldDto>();
-        if (item == null) return l.ReturnNull("no item");
+        if (item == null)
+            return l.ReturnNull("no item");
 
         var a = item.Attribute;
         var type = item.Type;
@@ -41,6 +44,11 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
             .OrderBy(it => it.Type) // order for easier debugging
             .ToList();
         var inputConfigs = GetInputTypesAndMetadata(inputType, a, type, ancestorDecorator, appInputTypes);
+
+        // note: "ImageDecorator" is hardwired here, because it's a constant in 2sxc, not eav
+        const string imageDecorator = "ImageDecorator";
+        var isRecommended = IsRecommended(a.AttributeId.ToString(), imageDecorator);
+        var imgDecorator = a.Metadata.FirstOrDefaultOfType(imageDecorator);
 
         var dto= new ContentTypeFieldDto
         {
@@ -53,7 +61,17 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
             AttributeId = a.AttributeId,
             Metadata = inputConfigs.InputMetadata,
             InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
-            Permissions = new() { Count = a.Metadata.Permissions.Count() },
+            Permissions = new()
+            {
+                Count = a.Metadata.Permissions.Count()
+            },
+
+            ImageConfiguration = new()
+            {
+                EntityId = imgDecorator?.EntityId ?? 0,
+                IsRecommended = isRecommended,
+                TypeName = imageDecorator
+            },
 
             // new in 12.01
             IsEphemeral = a.Metadata.GetBestValue<bool>(MetadataFieldAllIsEphemeral, TypeGeneral),
@@ -200,4 +218,26 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         InputTypeInfo FindInputType(string name)
             => inputTypes.FirstOrDefault(i => i.Type.EqualsInsensitive(name));
     }
+
+    #region Metadata Recommendations
+
+
+    private bool IsRecommended(string targetIdentifier, string typeName)
+    {
+        var mdRecommendations = MdRecommendations();
+        var recommendations= mdRecommendations.GetRecommendations((int)TargetTypes.Attribute, targetIdentifier);
+        return recommendations.Any(r => r.Name == typeName);
+    }
+
+    private MdRecommendations MdRecommendations()
+    {
+        if (_mdRecs != null) return _mdRecs;
+        _mdRecs = mdRead.Value;
+        var appState = appStates.GetReader(_appId);
+        _mdRecs.Setup(appState, _appId);
+        return _mdRecs;
+    }
+    private MdRecommendations _mdRecs;
+
+    #endregion
 }

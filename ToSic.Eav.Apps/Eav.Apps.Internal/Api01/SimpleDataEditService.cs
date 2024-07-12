@@ -71,7 +71,7 @@ public partial class SimpleDataEditService(
         var site = zoneMapper.SiteOfZone(zoneId);
         if (site == null) return l.Return("", "site is null");
 
-        var usesLanguages = zoneMapper.CulturesWithState(site).Any(c => c.IsEnabled);
+        var usesLanguages = zoneMapper.CulturesEnabledWithState(site).Any(); // c => c.IsEnabled);
         return l.Return(usesLanguages ? site.DefaultCultureCode : "", $"ok, usesLanguages:{usesLanguages}");
     }
         

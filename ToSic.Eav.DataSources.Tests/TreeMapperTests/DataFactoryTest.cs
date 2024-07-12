@@ -4,8 +4,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
+using ToSic.Testing.Shared.Data;
 
 namespace ToSic.Eav.DataSourceTests.TreeMapperTests
 {
@@ -33,11 +33,11 @@ namespace ToSic.Eav.DataSourceTests.TreeMapperTests
             var parent = all.First();
 
             // Control - to be sure the test can make sense
-            var getTitle = parent.Entity.GetBestValue("Title", Array.Empty<string>());
+            var getTitle = parent.Entity.TacGet("Title");
             Assert.IsNotNull(getTitle);
             Assert.AreEqual(getTitle, parentRaw.Title);
 
-            var childrenProperty = parent.Entity.GetBestValue(childrenField, Array.Empty<string>());
+            var childrenProperty = parent.Entity.TacGet(childrenField);
             Assert.IsNotNull(childrenProperty);
             var childrenList = childrenProperty as IEnumerable<IEntity>;
             Assert.IsNotNull(childrenList);

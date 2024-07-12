@@ -16,7 +16,7 @@ public class PropertyDumpItem
         return new()
         {
             Path = errPath,
-            Property = new(result: "error", fieldType: Attributes.FieldIsVirtual, path: new PropertyLookupPath().Add(errPath))
+            Property = new(result: "error", valueType: ValueTypesWithState.Virtual, path: new PropertyLookupPath().Add(errPath))
             {
                 Name = "error",
             }

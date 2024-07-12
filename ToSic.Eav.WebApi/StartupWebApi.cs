@@ -87,6 +87,31 @@ public static class StartupWebApi
         services.AddTransient<IInsightsProvider, InsightsIsAlive>();
         services.AddTransient<IInsightsProvider, InsightsTypes>();
         services.AddTransient<IInsightsProvider, InsightsGlobalTypes>();
+        services.AddTransient<IInsightsProvider, InsightsMemoryCache>();
+
+        services.AddTransient<IInsightsProvider, InsightsLogs>();
+        services.AddTransient<IInsightsProvider, InsightsPauseLogs>();
+        services.AddTransient<IInsightsProvider, InsightsLogsFlush>();
+        services.AddTransient<IInsightsProvider, InsightsAppStats>();
+        services.AddTransient<IInsightsProvider, InsightsPurgeApp>();
+        services.AddTransient<IInsightsProvider, InsightsAppsCache>();
+        services.AddTransient<IInsightsProvider, InsightsAppLoadLog>();
+
+        services.AddTransient<IInsightsProvider, InsightsGlobalTypesLog>();
+        services.AddTransient<IInsightsProvider, InsightsTypeMetadata>();
+        services.AddTransient<IInsightsProvider, InsightsTypePermissions>();
+
+        services.AddTransient<IInsightsProvider, InsightsLicenses>();
+        services.AddTransient<IInsightsProvider, InsightsAttributes>();
+        services.AddTransient<IInsightsProvider, InsightsAttributeMetadata>();
+        services.AddTransient<IInsightsProvider, InsightsAttributePermissions>();
+
+        services.AddTransient<IInsightsProvider, InsightsEntity>();
+        services.AddTransient<IInsightsProvider, InsightsEntities>();
+        services.AddTransient<IInsightsProvider, InsightsEntityPermissions>();
+        services.AddTransient<IInsightsProvider, InsightsEntityMetadata>();
+
+        services.AddTransient<IInsightsProvider, InsightsHelp>();
 
         return services;
     }

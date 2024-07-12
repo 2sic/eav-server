@@ -1,7 +1,5 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching.CachingMonitors;
-using ToSic.Eav.Internal.Features;
 using ToSic.Lib.FunFact;
 using static ToSic.Eav.Caching.MemoryCacheService;
 using static System.Runtime.Caching.ObjectCache;
@@ -72,21 +70,17 @@ public class CacheItemPolicyMaker(ILog parentLog, IEnumerable<(string, Action<Ca
             );
     }
 
-    public IPolicyMaker WatchApps(List<IAppStateChanges> appStates) =>
-        appStates is not { Count: > 0 }
+    public IPolicyMaker WatchNotifyKeys(IEnumerable<ICanBeCacheDependency> cacheKeys)
+    {
+        if (cacheKeys == null) return this;
+        var keysClone = new List<ICanBeCacheDependency>(cacheKeys);
+        return !keysClone.Any()
             ? this
             : Next(
-                $"Watch {appStates.Count} {nameof(AppResetMonitor)}s to invalidate on App-data change",
-                p => appStates.ForEach(appState => p.ChangeMonitors.Add(new AppResetMonitor(appState)))
+                $"Watch {keysClone.Count} {nameof(CreateCacheNotifyMonitor)}s",
+                p => p.ChangeMonitors.Add(CreateCacheNotifyMonitor(keysClone))
             );
-
-    public IPolicyMaker WatchFeaturesService(IEavFeaturesService featuresService) =>
-        featuresService == null
-            ? this
-            : Next(
-                $"Add {nameof(FeaturesResetMonitor)} to invalidate on Feature change",
-                p => p.ChangeMonitors.Add(new FeaturesResetMonitor(featuresService))
-            );
+    }
 
     public IPolicyMaker WatchCallback(CacheEntryUpdateCallback updateCallback) =>
         updateCallback == null

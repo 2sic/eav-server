@@ -9,5 +9,5 @@
 public interface IContextOfUserPermissions
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    AdminPermissions Permissions { get; }
+    EffectivePermissions Permissions { get; }
 }

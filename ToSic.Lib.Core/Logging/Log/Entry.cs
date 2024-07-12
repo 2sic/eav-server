@@ -1,9 +1,10 @@
 ﻿using System;
+using ToSic.Lib.Memory;
 
 namespace ToSic.Lib.Logging;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Entry
+public class Entry: ICanEstimateSize
 {
     public string Message { get; }
     public string Result { get; private set; }
@@ -21,6 +22,8 @@ public class Entry
     public string Source => (_log as Log)?.FullIdentifier;
 
     public string ShortSource => _log.NameId;
+
+    public DateTime Created { get; } = DateTime.Now;
 
     internal Entry(ILog log, string message, int depth, CodeRef code, EntryOptions options = default)
     {
@@ -57,4 +60,15 @@ public class Entry
     public CodeRef Code;
 
     #endregion
+
+    public SizeEstimate EstimateSize(ILog log = default)
+    {
+        if (_estimate != null) return _estimate;
+        var estimator = new MemorySizeEstimator(log);
+        _estimate = estimator.EstimateMany([Message, Result, Elapsed, Depth, WrapOpen, WrapClose, WrapOpenWasClosed])
+            + new SizeEstimate(0, 10);
+        return _estimate;
+    }
+
+    private SizeEstimate _estimate;
 }

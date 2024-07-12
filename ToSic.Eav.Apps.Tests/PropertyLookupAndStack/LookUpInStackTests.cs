@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.LookUp;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
@@ -17,7 +18,7 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack
 
         private LookUpInStack GetLookup()
         {
-            var lookup = new LookUpInStack("Settings", FirstJungleboy, Array.Empty<string>());
+            var lookup = new LookUpInStack("Settings", FirstJungleboy, PropReqSpecs.EmptyDimensions);
             return lookup;
         }
     }

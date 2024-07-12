@@ -5,11 +5,24 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Compression;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Repository.Efc.Parts;
+using ToSic.Eav.StartUp;
 
 namespace ToSic.Eav.Repository.Efc;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
+public class DbDataController(
+    EavDbContext dbContext,
+    LazySvc<Efc11Loader> efcLoaderLazy,
+    LazySvc<IUser> userLazy,
+    AppsCacheSwitch appsCache,
+    Generator<JsonSerializer> jsonSerializerGenerator,
+    ILogStore logStore,
+    LazySvc<Compressor> compressor,
+    DataBuilder builder)
+    : ServiceBase("Db.Data",
+        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder]
+    ), IStorage, IAppIdentity
 {
 
     #region Properties like AppId, ZoneId, UserName etc.
@@ -18,8 +31,13 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     /// AppId of this whole Context
     /// </summary>
     public int AppId => _appId == Constants.AppIdEmpty ? Constants.MetaDataAppId : _appId;
-    public int[] AppIds => _parentAppId == null ? [AppId] : [AppId, _parentAppId.Value];
     private int _appId;
+
+    /// <summary>
+    /// AppIds with parent AppId if it's set.
+    /// Will only have another ID if a non-default parent is used, e.g. in inherited apps.
+    /// </summary>
+    public int[] AppIds => ParentAppId == null ? [AppId] : [AppId, ParentAppId.Value];
 
     /// <summary>
     /// ZoneId of this whole Context
@@ -40,58 +58,79 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
             try
             {
                 // try to get using dependency injection
-                _userName = _userLazy.Value?.IdentityToken ?? UserNameUnknown;
+                return _userName = userLazy.Value?.IdentityToken ?? UserNameUnknown;
             }
             catch
             {
-                _userName = UserNameUnknown;
+                return _userName = UserNameUnknown;
             }
-            return _userName;
         }
     }
 
-    public List<LogItem> ImportLogToBeRefactored { get; } = [];
-
-    public int? ParentAppId { get; set; }
-    private int? _parentAppId;
+    /// <summary>
+    /// ParentAppId of this whole Context, for scenarios where we have inherited apps.
+    /// </summary>
+    public int? ParentAppId { get; private set; }
 
     #endregion
 
+    #region Parts
+
+    internal DbVersioning Versioning => _versioning ??= new(this, compressor);
+    private DbVersioning _versioning;
+    internal DbEntity Entities => _entities ??= new(this, builder);
+    private DbEntity _entities;
+    internal DbValue Values => _values ??= new(this);
+    private DbValue _values;
+    internal DbAttribute Attributes => _attributes ??= new(this);
+    private DbAttribute _attributes;
+    internal DbRelationship Relationships => _relationships ??= new(this);
+    private DbRelationship _relationships;
+    internal DbAttributeSet AttribSet => _attributeSet ??= new(this);
+    private DbAttributeSet _attributeSet;
+    internal DbPublishing Publishing => _publishing ??= new(this, builder);
+    private DbPublishing _publishing;
+    internal DbDimensions Dimensions => _dimensions ??= new(this);
+    private DbDimensions _dimensions;
+    internal DbZone Zone => _dbZone ??= new(this);
+    private DbZone _dbZone;
+    internal DbApp App => _dbApp ??= new(this);
+    private DbApp _dbApp;
+    internal DbContentType ContentType => _contentType ??= new(this);
+    private DbContentType _contentType;
+
+    #endregion
+
+
+    public List<LogItem> ImportLogToBeRefactored { get; } = [];
+
+
     #region Constructor and Init
 
-    public DbDataController(
-        EavDbContext dbContext,
-        LazySvc<Efc11Loader> efcLoaderLazy,
-        LazySvc<IUser> userLazy,
-        AppsCacheSwitch appsCache,
-        Generator<JsonSerializer> jsonSerializerGenerator,
-        ILogStore logStore,
-        LazySvc<Compressor> compressor,
-        DataBuilder builder
-    ) : base("Db.Data")
+    private static bool _loggedToBootLog;
+
+    public EavDbContext SqlDb
     {
-        ConnectLogs([
-            _efcLoaderLazy = efcLoaderLazy,
-            _userLazy = userLazy,
-            _appsCache = appsCache,
-            _logStore = logStore,
-            SqlDb = dbContext,
-            JsonSerializerGenerator = jsonSerializerGenerator,
-            _compressor = compressor,
-            _builder = builder
-        ]);
-        SqlDb.AlternateSaveHandler += SaveChanges;
+        get
+        {
+            if (_sqlDbPostInit != null)
+                return _sqlDbPostInit;
+
+            if (!_loggedToBootLog)
+            {
+                BootLog.Log.A("DbDataController DB accessed");
+                _loggedToBootLog = true;
+            }
+
+            // When used the first time, make sure we have the save handle attached
+            dbContext.AlternateSaveHandler += SaveChanges;
+            return _sqlDbPostInit = dbContext;
+        }
     }
 
-    private readonly DataBuilder _builder;
-    private readonly LazySvc<Efc11Loader> _efcLoaderLazy;
-    private readonly LazySvc<IUser> _userLazy;
-    private readonly AppsCacheSwitch _appsCache;
-    private readonly ILogStore _logStore;
-    private readonly LazySvc<Compressor> _compressor;
+    private EavDbContext _sqlDbPostInit;
 
-    public EavDbContext SqlDb { get; }
-    internal Generator<JsonSerializer> JsonSerializerGenerator { get; }
+    internal Generator<JsonSerializer> JsonSerializerGenerator { get; } = jsonSerializerGenerator;
 
     /// <summary>
     /// Set ZoneId, AppId and ParentAppId on current context.
@@ -99,34 +138,37 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     /// <param name="appState"></param>
     /// <returns></returns>
     public DbDataController Init(IAppStateInternal appState)
-    {
-        _parentAppId = appState.ParentAppState?.AppId;
-        return Init(appState.ZoneId, appState.AppId);
-    }
+        => Init(appState.ZoneId, appState.AppId, appState.ParentAppState?.AppId);
 
     /// <summary>
     /// Set ZoneId and AppId on current context.
     /// </summary>
-    public DbDataController Init(int? zoneId, int? appId)
+    public DbDataController Init(int? zoneId, int? appId, int? parentAppId = default)
     {
-        // If nothing is supplied, use defaults
-        if (!zoneId.HasValue && !appId.HasValue)
-        {
-            _zoneId = Constants.DefaultZoneId;
-            _appId = Constants.MetaDataAppId;
-            return this;
-        }
+        // No matter what scenario we have, always set the parent app id - if given
+        // todo: maybe later also try to detect it, if we see the need for it
+        ParentAppId = parentAppId;
 
-        // If only AppId is supplied, look up it's zone and use that
-        if (!zoneId.HasValue && appId.HasValue)
-        {
-            var zoneIdOfApp = SqlDb.ToSicEavApps.Where(a => a.AppId == appId.Value).Select(a => (int?)a.ZoneId).SingleOrDefault();
-            if (!zoneIdOfApp.HasValue)
-                throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
-            _appId = appId.Value;
-            _zoneId = zoneIdOfApp.Value;
-            return this;
-        }
+        // If we don't have a zoneId, ensure we set everything from defaults or lookup
+        if (!zoneId.HasValue)
+            // If nothing is supplied, use defaults
+            if (!appId.HasValue)
+            {
+                _zoneId = Constants.DefaultZoneId;
+                _appId = Constants.MetaDataAppId;
+                return this;
+            }
+            // If only AppId is supplied, look up it's zone and use that
+            else
+            {
+                var zoneIdOfApp = SqlDb.ToSicEavApps.Where(a => a.AppId == appId.Value).Select(a => (int?)a.ZoneId)
+                    .SingleOrDefault();
+                if (!zoneIdOfApp.HasValue)
+                    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
+                _appId = appId.Value;
+                _zoneId = zoneIdOfApp.Value;
+                return this;
+            }
 
         // if only ZoneId was supplied, use that...
         _zoneId = zoneId.Value;
@@ -172,7 +214,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
 
     private void PurgeAppCacheIfReady() => Log.Do($"{_purgeAppCacheOnSave}", () =>
     {
-        if (_purgeAppCacheOnSave) _appsCache.Value.Purge(this);
+        if (_purgeAppCacheOnSave) appsCache.Value.Purge(this);
     });
 
     #endregion
@@ -188,8 +230,9 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     }
 
 
-    internal void DoAndSaveWithoutChangeDetection(Action action, string message = null) => Log.Do(timer: true, message: message, action: l =>
+    internal void DoAndSaveWithoutChangeDetection(Action action, string message = null)
     {
+        var l = Log.Fn(timer: true, message: message);
         action.Invoke();
 
         var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
@@ -206,22 +249,26 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
         finally
         {
             SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
+            l.Done();
         }
-    });
+    }
 
 
     public void DoInTransaction(Action action)
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-        var ownTransaction = SqlDb.Database.CurrentTransaction == null ? SqlDb.Database.BeginTransaction() : null;
-        Log.Do(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}", action: l =>
+        var ownTransaction = SqlDb.Database.CurrentTransaction == null
+            ? SqlDb.Database.BeginTransaction()
+            : null;
+
+        var l = Log.Fn(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}");
         {
             try
             {
                 action.Invoke();
                 ownTransaction?.Commit();
                 l.A($"Transaction {randomId} - completed"); // adds ok to end of block
-                return "transaction ok"; // adds ok to top of block
+                l.Done("transaction ok");   // adds ok to top of block
             }
             catch (Exception e)
             {
@@ -231,7 +278,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
                 l.Ex(e);
                 throw;
             }
-        });
+        }
     }
 
     /// <summary>
@@ -263,9 +310,9 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
 
     /// <summary>
     /// The loader must use the same connection, to ensure it runs in existing transactions.
-    /// Otherwise the loader would be blocked from getting intermediate data while we're running changes. 
+    /// Otherwise, the loader would be blocked from getting intermediate data while we're running changes. 
     /// </summary>
-    public IRepositoryLoader Loader => _loader ??= _efcLoaderLazy.Value.UseExistingDb(SqlDb);
+    public IRepositoryLoader Loader => _loader ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
     private IRepositoryLoader _loader;
 
     public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);
@@ -274,7 +321,7 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
     {
         var callLog = Log.Fn<List<int>>(timer: true);
-        _logStore.Add("save-data", Log);
+        logStore.Add("save-data", Log);
         return callLog.ReturnAsOk(Entities.SaveEntity(entities, saveOptions));
     }
 
@@ -284,24 +331,19 @@ public partial class DbDataController : ServiceBase, IStorage, IAppIdentity
     #endregion
 
     public int? GetParentAppId(string parentAppGuid, int parentAppId)
-    {
-        switch (SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid))
+        => SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid) switch
         {
-            case 0:
-                throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid}. Please import ParentApp first.");
-            case 1:
-                return SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid).AppId;
-        }
-
-        // we have more apps with requested guid
-        switch (SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid && a.AppId == parentAppId))
-        {
-            case 0:
-                throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} but nither has AppId:{parentAppId}. Can't import.");
-            case 1:
-                return SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid && a.AppId == parentAppId).AppId;
-        }
-
-        throw new ArgumentException($"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} and AppId:{parentAppId}. Can't import.");
-    }
+            0 => throw new ArgumentException(
+                $"ParentApp is missing. Can't find app with guid:{parentAppGuid}. Please import ParentApp first."),
+            1 => SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid).AppId,
+            // we have more apps with requested guid
+            _ => SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid && a.AppId == parentAppId) switch
+            {
+                0 => throw new ArgumentException(
+                    $"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} but neither has AppId:{parentAppId}. Can't import."),
+                1 => SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid && a.AppId == parentAppId).AppId,
+                _ => throw new ArgumentException(
+                    $"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} and AppId:{parentAppId}. Can't import.")
+            }
+        };
 }

@@ -25,8 +25,9 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         int? newId = default,
         IContentType newType = default,
         bool logDetails = true
-    ) => Log.Func($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", enabled: logDetails, func: l =>
+    )
     {
+        var l = (logDetails ? Log : null).Fn<IEntity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
         if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
         l.A(l.Try(() => "opts " + saveOptions.LogInfo));
 
@@ -122,8 +123,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
             attributes: dataBuilder.Attribute.Create(preCleaned.Attributes),
             isPublished: preCleaned.NewIsPublished);
         //var result = CorrectPublishedAndGuidImports(clone, clone.Attributes, logDetails); // as Entity;
-        return (clone, "ok");
-    });
+        return l.ReturnAsOk(clone);
+    }
 
     private void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool? isPublished) 
     {
@@ -134,11 +135,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
     private IAttribute CreateIsPublishedAttribute(bool isPublished)
     {
-        //var values = new List<IValue> { _dataBuilder.Value.Build(ValueTypes.Boolean, isPublished) };
         var values = new List<IValue> { dataBuilder.Value.Bool(isPublished) };
         var attribute = dataBuilder.Attribute.Create(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
-        // #immutable
-        //attribute.Values = values;
         return attribute;
     }
 
@@ -151,8 +149,9 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     /// <remarks>
     /// this expects that saveOptions contain Languages & PrimaryLanguage, and that this is reliable
     /// </remarks>
-    private IDictionary<string, IAttribute> StripUnknownLanguages(IDictionary<string, IAttribute> allFields, SaveOptions saveOptions) => Log.Func(() =>
+    private IDictionary<string, IAttribute> StripUnknownLanguages(IDictionary<string, IAttribute> allFields, SaveOptions saveOptions)
     {
+        var l = Log.Fn<IDictionary<string, IAttribute>>();
         var languages = saveOptions.Languages;
 
         var modified = allFields.ToDictionary(
@@ -180,8 +179,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                 return dataBuilder.Attribute.CreateFrom(field.Value, values.ToImmutableList());
             }, InvariantCultureIgnoreCase);
 
-        return modified;
-    });
+        return l.Return(modified);
+    }
 
     private static IList<IValue> ValuesOrderedForProcessing(IEnumerable<IValue> values, SaveOptions saveOptions)
     {
@@ -214,8 +213,9 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     /// <param name="update"></param>
     /// <param name="saveOptions"></param>
     /// <returns></returns>
-    private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions) => Log.Func(() =>
+    private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
     {
+        var l = Log.Fn<IAttribute>();
         // everything in the update will be kept, and optionally some stuff in the original may be preserved
         var result = update.Values.ToList();
         foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
@@ -241,8 +241,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         }
 
         var final = dataBuilder.Attribute.CreateFrom(update, result.ToImmutableList());
-        return final;
-    });
+        return l.Return(final);
+    }
 
     // 2023-03-23 2dm - this new more functional code didn't produce the same result, so disabling it for now. Tests not passing with this.
     ///// <summary>
@@ -290,22 +290,24 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     //    return result;
     //});
 
-    private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, List<string> keys) => Log.Func(() =>
+    private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, List<string> keys)
     {
+        var l = Log.Fn<IDictionary<string, IAttribute>>();
         var lowerKeys = keys.Select(k => k.ToLowerInvariant()).ToList();
         var result = orig
             .Where(a => lowerKeys.Contains(a.Key.ToLowerInvariant()))
             .ToDictionary(a => a.Key, a => a.Value);
-        return (result, $"{result.Count}");
-    });
+        return l.Return(result, $"{result.Count}");
+    }
 
     private (IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
-        CorrectPublishedAndGuidImports(IDictionary<string, IAttribute> values, bool logDetails
-        ) => Log.Func(enabled: logDetails, func: l =>
+        CorrectPublishedAndGuidImports(IDictionary<string, IAttribute> values, bool logDetails) 
     {
+        var l = (logDetails ? Log : null)
+            .Fn<(IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)>();
         // check IsPublished
         values.TryGetValue(Attributes.EntityFieldIsPublished, out var isPublishedAttr);
-        var isPublished = isPublishedAttr?.GetTypedValue([]).Result;
+        var isPublished = isPublishedAttr?.Values.FirstOrDefault()?.ObjectContents;
         bool? newIsPublished = null;
         if (isPublished != null)
         {
@@ -320,7 +322,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
         // check EntityGuid
         values.TryGetValue(Attributes.EntityFieldGuid, out var probablyGuidAttr);
-        var probablyGuid = probablyGuidAttr?.GetTypedValue([]).Result;
+        var probablyGuid = probablyGuidAttr?.Values.FirstOrDefault()?.ObjectContents;
         Guid? newGuid = null;
         if (probablyGuid != null)
         {
@@ -330,7 +332,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                 newGuid = eGuid;
         }
 
-        return ((values, newGuid, newIsPublished), "ok");
-    });
+        return l.Return((values, newGuid, newIsPublished), "ok");
+    }
 
 }

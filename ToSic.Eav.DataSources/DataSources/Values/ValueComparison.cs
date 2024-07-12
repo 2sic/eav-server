@@ -73,7 +73,7 @@ internal class ValueComparison: HelperBase
             return (null as Func<IEntity, bool>, "error");
         }
 
-        return (e => stringCompare(e.GetBestValue(fieldName, languages)), "ok");
+        return (e => stringCompare(e.Get(fieldName, languages: languages)), "ok");
     });
 
 
@@ -87,8 +87,8 @@ internal class ValueComparison: HelperBase
         switch (operation)
         {
             case OpEquals:
-            case OpExactly: return (e => e.GetBestValue(fieldName, languages) as bool? == boolFilter, "ok");
-            case OpNotEquals: return (e => e.GetBestValue(fieldName, languages) as bool? != boolFilter, "ok");
+            case OpExactly: return (e => e.Get(fieldName, languages: languages) as bool? == boolFilter, "ok");
+            case OpNotEquals: return (e => e.Get(fieldName, languages: languages) as bool? != boolFilter, "ok");
         }
 
         _errCallback(ErrorInvalidOperator, $"Bad operator for boolean compare, can't find comparison '{operation}'");
@@ -144,7 +144,7 @@ internal class ValueComparison: HelperBase
 
         return (e =>
         {
-            var value = e.GetBestValue(fieldName, languages);
+            var value = e.Get(fieldName, languages: languages);
             if (value == null) return false;
             try
             {
@@ -219,7 +219,7 @@ internal class ValueComparison: HelperBase
             try
             {
                 // This will treat null as DateTime.MinValue - because that's also how the null-parameter is parsed when creating the filter
-                var value = e.GetBestValue<DateTime>(fieldName, languages);
+                var value = e.Get<DateTime>(fieldName, languages: languages);
                 return innerFunc(value);
             }
             catch

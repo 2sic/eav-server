@@ -134,7 +134,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         var (isSpecial, fieldType) = Attributes.InternalOnlyIsSpecialEntityProperty(fieldName);
         var firstEntity = isSpecial
             ? source.FirstOrDefault()
-            : source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Value(fieldName) != null)
+            : source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Get(fieldName) != null)
               // 2022-03-09 2dm If none is found with a real value, get the first that has this attribute
               ?? source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName));
 
@@ -201,7 +201,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
             //try
             //{
             //if (res.Value[attr][lang].ToString() == filter)
-            if ((res.GetBestValue(attr, langArr) ?? "").ToString() == filter)
+            if (res.Get(attr, fallback: "", languages: langArr) == filter)
                 result.Add(res);
         //}
         //catch { }

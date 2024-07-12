@@ -7,8 +7,18 @@ namespace ToSic.Eav.DataSources;
 
 /// <inheritdoc />
 /// <summary>
-/// Filter entities to show Drafts or only Published Entities
+/// Filter entities to show Drafts or only Published Entities.
+///
+/// It will decide based on the current users authorizations to deliver the inbound "draft" stream or the "published" stream
+/// on the out stream.This is usually used when an App is its main input, as it provides these two streams for performance reasons.
+///
+/// Enhanced in v18 for scenarios where the data is not pre-split but comes as a normal stream.
+/// In this case it will take the "Default" In-Stream and filter it based on the user's permissions. (beta)
 /// </summary>
+/// <remarks>
+/// * Created ca. v07.00
+/// * Enhanced v18.00 to also support filtering data on the "Default" in stream in addition to the original (beta)
+/// </remarks>
 [PublicApi]
 
 [VisualQuery(
@@ -21,7 +31,7 @@ namespace ToSic.Eav.DataSources;
     DynamicOut = false, 
     HelpLink = "https://go.2sxc.org/DsPublishingFilter")]
 
-public class PublishingFilter : Eav.DataSource.DataSourceBase
+public class PublishingFilter : DataSourceBase
 {
 
     #region Configuration-properties
@@ -52,12 +62,31 @@ public class PublishingFilter : Eav.DataSource.DataSourceBase
 
     private IImmutableList<IEntity> PublishingFilterList()
     {
-        var showDraftsAsSet = ShowDrafts;
+        var showDraftsSetting = ShowDrafts;
         var l = Log.Fn<IImmutableList<IEntity>>();
-        var finalShowDrafts = showDraftsAsSet ?? _userPermissions.UserPermissions()?.IsContentAdmin ?? QueryConstants.ParamsShowDraftsDefault;
-        var outStreamName = finalShowDrafts ? StreamDraftsName : StreamPublishedName;
-        var result = In[outStreamName].List.ToImmutableList();
-        return l.Return(result, $"showDraftSet:'{showDraftsAsSet}'; final:{finalShowDrafts}; stream: {outStreamName}; count: {result.Count}");
+        var finalShowDrafts = showDraftsSetting
+                              ?? _userPermissions.UserPermissions()?.ShowDraftData
+                              ?? QueryConstants.ParamsShowDraftsDefault;
+        var inStreamName = finalShowDrafts
+            ? StreamDraftsName
+            : StreamPublishedName;
+
+        // Standard / old case: if the inputs already have the correct streams, use them.
+        if (In.TryGetValue(inStreamName, out var inStream))
+        {
+            var result = inStream.List.ToImmutableList();
+            return l.Return(result, $"Show Draft setting:'{showDraftsSetting}'; final:{finalShowDrafts}; stream: {inStreamName}; count: {result.Count}");
+        }
+
+        if (In.TryGetValue(StreamDefaultName, out var inDefault))
+        {
+            var filtered = finalShowDrafts
+                ? inDefault.List.ToImmutableList()
+                : inDefault.List.Where(e => e.IsPublished).ToImmutableList();
+            return l.Return(filtered, $"Refiltering the Default; setting:'{showDraftsSetting}'; final:{finalShowDrafts}; stream: {StreamDefaultName}; count: {filtered.Count}");
+        }
+
+        return l.ReturnAsError(Error.TryGetInFailed(name: $"{inStreamName}/{StreamDefaultName}"));
     }
 
 }

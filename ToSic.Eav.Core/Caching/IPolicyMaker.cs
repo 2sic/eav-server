@@ -1,6 +1,5 @@
 ﻿using System.Runtime.Caching;
 using ToSic.Eav.Apps.State;
-using ToSic.Eav.Internal.Features;
 
 namespace ToSic.Eav.Caching;
 
@@ -12,7 +11,7 @@ public interface IPolicyMaker
     IPolicyMaker WatchFiles(IList<string> filePaths);
     IPolicyMaker WatchFolders(IDictionary<string, bool> folderPaths);
     IPolicyMaker WatchCacheKeys(IEnumerable<string> cacheKeys);
-    IPolicyMaker WatchApps(List<IAppStateChanges> appStates);
-    IPolicyMaker WatchFeaturesService(IEavFeaturesService featuresService);
+
+    IPolicyMaker WatchNotifyKeys(IEnumerable<ICanBeCacheDependency> cacheKeys);
     IPolicyMaker WatchCallback(CacheEntryUpdateCallback updateCallback);
 }

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Plumbing;
-using ToSic.Lib.Helpers;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Context;
 
@@ -10,20 +8,25 @@ namespace ToSic.Eav.Context;
 /// </summary>
 internal class ContextOfUserPermissions(IUser user) : ServiceBase("Eav.CtxSec"), IContextOfUserPermissions
 {
-    public IUser User { get; } = user;
+    EffectivePermissions IContextOfUserPermissions.Permissions => _permissions ??= GetPermissions();
+    private EffectivePermissions _permissions;
+
+    private EffectivePermissions GetPermissions()
+    {
+        var userIsSiteAdmin = UserMayAdmin();
+        var isContentAdmin = userIsSiteAdmin || (user?.IsContentAdmin ?? false);
+        return new(isSiteAdmin: userIsSiteAdmin, isContentAdmin: isContentAdmin);
+    }
 
     private bool UserMayAdmin()
     {
         var l = Log.Fn<bool>();
-        var u = User;
-        if (u == null) return l.Return(false, "user unknown, false");
-        // Case 1: Superuser always may
-        if (u.IsSystemAdmin) return l.Return(true, "super");
-
-        return l.Return(u.IsSiteAdmin || u.IsSiteDeveloper, "admin/developer");
+        if (user == null)
+            return l.Return(false, "user unknown, false");
+        return user.IsSystemAdmin 
+            ? l.Return(true, "super")
+            : l.Return(user.IsSiteAdmin || user.IsSiteDeveloper, "admin/developer");
     }
 
-    AdminPermissions IContextOfUserPermissions.Permissions => _permissions ??= UserMayAdmin().Map(userMay => new AdminPermissions(userMay || (User?.IsContentAdmin ?? false), userMay));
-    private AdminPermissions _permissions;
 
 }

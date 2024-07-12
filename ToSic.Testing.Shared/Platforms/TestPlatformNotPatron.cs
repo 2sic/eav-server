@@ -1,7 +1,6 @@
-﻿namespace ToSic.Testing.Shared.Platforms
+﻿namespace ToSic.Testing.Shared.Platforms;
+
+public class TestPlatformNotPatron : TestPlatformPatronPerfectionist
 {
-    public class TestPlatformNotPatron : TestPlatformPatronPerfectionist
-    {
-        public override string Name => "Test-Not-Patron";
-    }
+    public override string Name => "Test-Not-Patron";
 }

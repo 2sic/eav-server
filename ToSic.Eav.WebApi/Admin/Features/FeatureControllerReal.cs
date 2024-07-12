@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.SysData;
+using ToSic.Eav.WebApi.Sys.Licenses;
 
 namespace ToSic.Eav.WebApi.Admin.Features;
 
@@ -27,10 +27,11 @@ public class FeatureControllerReal(
         return l.ReturnAsOk(_systemLoaderLazy.Value.UpdateFeatures(changes));
     }
 
-    public FeatureState Details(string nameId)
+    public FeatureStateDto Details(string nameId)
     {
-        var l = Log.Fn<FeatureState>(nameId);
+        var l = Log.Fn<FeatureStateDto>(nameId);
         var details = featuresLazy.Value.All.FirstOrDefault(f => f.NameId.EqualsInsensitive(nameId));
-        return l.ReturnAsOk(details);
+        var dto = new FeatureStateDto(details);
+        return l.ReturnAsOk(dto);
     }
 }

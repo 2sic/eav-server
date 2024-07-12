@@ -63,7 +63,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
         return l.ReturnAsOk(appJson);
     }
 
-    public string AppJsonCacheKey(int appId, bool useShared) => $"{nameof(AppJsonService)}:{nameof(appId)}:{appId}:{nameof(useShared)}:{useShared}";
+    public string AppJsonCacheKey(int appId, bool useShared) => $"Eav-{nameof(AppJsonService)}:{nameof(appId)}:{appId}:{nameof(useShared)}:{useShared}";
 
     /// <summary>
     /// Find parent path that exist to use it as cache dependency (folder cache monitor) 

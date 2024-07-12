@@ -1,21 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.StartUp;
 
-namespace ToSic.Testing.Shared
+namespace ToSic.Testing.Shared;
+
+public abstract class TestBaseEavCore: TestBaseLib
 {
-    public abstract class TestBaseEavCore: TestBaseLib
+    protected TestBaseEavCore(TestConfiguration testConfiguration = default) : base(testConfiguration)
     {
-        protected TestBaseEavCore(TestConfiguration testConfiguration = default) : base(testConfiguration)
-        {
-        }
-
-        protected override void SetupServices(IServiceCollection services)
-        {
-            base.SetupServices(services);
-            services
-                .AddEavCore()
-                .AddEavCoreFallbackServices();
-        }
-
     }
+
+    protected override void SetupServices(IServiceCollection services)
+    {
+        base.SetupServices(services);
+        services
+            .AddEavCore()
+            .AddEavCoreFallbackServices();
+    }
+
 }

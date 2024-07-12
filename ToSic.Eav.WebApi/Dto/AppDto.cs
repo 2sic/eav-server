@@ -2,30 +2,31 @@
 
 public class AppDto
 {
-    public int Id { get; set; }
-    public bool IsApp { get; set; }
-    public string Guid { get; set; }
-    public string Name { get; set; }
-    public string Folder { get; set; }
-    public string AppRoot { get; set; }
-    public bool IsHidden { get; set; }
-    public int? ConfigurationId { get; set; }
-    public int Items { get; set; }
-    public string Thumbnail { get; set; }
-    public string Version { get; set; }
+    public int Id { get; init; }
+    public bool IsApp { get; init; }
+    public string Guid { get; init; }
+    public string Name { get; init; }
+    public string Folder { get; init; }
+    public string AppRoot { get; init; }
+    public bool IsHidden { get; init; }
+    public int? ConfigurationId { get; init; }
+    public int Items { get; init; }
+    public string Thumbnail { get; init; }
+    public string Version { get; init; }
 
     /// <summary>
     /// Determines if the App is global / should only use templates/resources in the global storage
     /// </summary>
     /// <remarks>New in 13.0</remarks>
-    public bool IsGlobal { get; set; }
+    public bool IsGlobal { get; init; }
 
     /// <summary>
     /// Determines if this app was inherited from another App
     /// </summary>
-    public bool IsInherited { get; set; }
+    public bool IsInherited { get; init; }
 
-    public AppMetadataDto Lightspeed { get; set; }
+    [JsonPropertyName("lightSpeed")]
+    public AppMetadataDto Lightspeed { get; init; }
 
-    public bool HasCodeWarnings { get; set; }
+    public bool HasCodeWarnings { get; init; }
 }

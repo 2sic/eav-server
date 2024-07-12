@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.StartUp;
 using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Persistence.File;
@@ -11,13 +12,12 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     #region Constructor and DI
 
     public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
-        : base("Eav.RunTme")
+        : base("Eav.RunTme", connect: [fslGenerator, stateBuilder])
     {
+        BootLog.Log.Fn("App Loader constructor", timer: true).Done();
         _serviceProvider = sp;  // never add to connect, as it's not a service
-        ConnectLogs([
-            _fslGenerator = fslGenerator,
-            _stateBuilder = stateBuilder
-        ]);
+        _fslGenerator = fslGenerator;
+        _stateBuilder = stateBuilder;
         // Only add the first time it's really used
         InternalAppLoader.LoadLog ??= Log;
     }
@@ -71,6 +71,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
 
     public IAppStateBuilder LoadFullAppState()
     {
+        var bl = BootLog.Log.Fn("Load Full AppState", timer: true);
         var outerLog = Log.Fn<IAppStateBuilder>(timer: true);
 
         var builder = _stateBuilder.New().InitForPreset();
@@ -119,6 +120,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
             }
         });
 
+        bl.Done();
         return outerLog.ReturnAsOk(builder);
     }
 

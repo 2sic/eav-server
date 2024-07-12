@@ -52,7 +52,9 @@ public static class StartUpEavCore
         // Make sure that IFeaturesInternal and IFeatures use the same singleton!
         services.AddSingleton<LicenseCatalog>();    // Must be singleton
         services.AddSingleton<FeaturesCatalog>();   // Must be singleton
-        services.TryAddSingleton<IEavFeaturesService, EavFeaturesService>();    // this must come first!
+
+        // Features - 2024-05-31 changing to non-singleton, must monitor if all is ok...
+        services.TryAddTransient<IEavFeaturesService, EavFeaturesService>();    // this must come first!
 
         // New SystemCapability
         services.TryAddTransient<SysFeaturesService>();
@@ -79,9 +81,6 @@ public static class StartUpEavCore
         // We actually only use the direct object in DI
         //services.TryAddTransient<IFingerprint, Fingerprint>();
         services.TryAddTransient<SystemFingerprint>();
-
-        // 2024-04-02 2dm - removed from DI
-        //services.TryAddSingleton<LightSpeedStats>();
 
         // V14 Requirements Checks - don't use try-add, as we'll add many
         services.TryAddTransient<RequirementsService>();

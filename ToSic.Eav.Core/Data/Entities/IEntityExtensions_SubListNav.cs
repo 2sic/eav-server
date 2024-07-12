@@ -38,7 +38,7 @@ static partial class IEntityExtensions
 
             if (dynEntityWithTitle == null) return (null, "no matching child");
 
-            var result = new PropReqResult(result: new List<IEntity> { dynEntityWithTitle }, fieldType: DataTypes.Entity, path: path)
+            var result = new PropReqResult(result: new List<IEntity> { dynEntityWithTitle }, valueType: ValueTypesWithState.Entity, path: path)
             {
                 Name = field,
                 Source = parentDynEntity,

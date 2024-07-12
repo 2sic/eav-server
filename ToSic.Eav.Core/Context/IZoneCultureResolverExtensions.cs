@@ -7,6 +7,11 @@ namespace ToSic.Eav.Context;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class IZoneCultureResolverExtensions
 {
+    /// <summary>
+    /// Get the lower-cased current culture code, or the thread's current culture if the resolver is null
+    /// </summary>
+    /// <param name="resolver"></param>
+    /// <returns></returns>
     public static string SafeCurrentCultureCode(this IZoneCultureResolver resolver)
         => (resolver?.CurrentCultureCode ?? ThreadCurrentCultureInfo.Name).ToLowerInvariant();
 
@@ -25,8 +30,8 @@ public static class IZoneCultureResolverExtensions
 
     private static CultureInfo ThreadCurrentCultureInfo => CultureInfo.CurrentCulture;
 
-    public static CultureInfo SafeCurrentCultureInfo(this IZoneCultureResolver resolver) =>
-        resolver == null 
+    public static CultureInfo SafeCurrentCultureInfo(this IZoneCultureResolver resolver)
+        => resolver == null 
             ? ThreadCurrentCultureInfo 
             : CultureInfo.GetCultureInfo(resolver.SafeCurrentCultureCode());
 
@@ -34,21 +39,37 @@ public static class IZoneCultureResolverExtensions
 
     #region Language Priorities list
 
+    /// <summary>
+    /// Complete list of culture codes with fallbacks, lower-cased guaranteed.
+    /// Includes trailing `null` for auto-null fallback.
+    /// </summary>
+    /// <param name="resolver"></param>
+    /// <returns></returns>
     public static string[] SafeLanguagePriorityCodes(this IZoneCultureResolver resolver)
     {
-        if (resolver == null) return [SafeCurrentCultureCode(null), null];
+        // no resolver - return current culture; safe, lower-case, with auto-null fallback
+        if (resolver == null)
+            return [SafeCurrentCultureCode(null), null];
 
+        // If priorities are possible, return them - lower case guaranteed
         var list = (resolver as IZoneCultureResolverProWIP)?.CultureCodesWithFallbacks
-                   ?? UnsafeLanguagePriorityCodesWithoutProWIP(resolver);
+                   ?? UnsafeLanguagePriorityCodesWithoutPrioWIP(resolver);
 
-        if (list == null) return [SafeCurrentCultureCode(null), null];
+        // if list is null, return current culture; safe, lower-case, with auto-null fallback
+        if (list == null)
+            return [SafeCurrentCultureCode(null), null];
 
-        ListBuildAddFinalFallback(list);
-        return list.ToArray();
+        // Finalize, with trailing null.
+        return [.. list, null];
     }
 
-
-    private static List<string> UnsafeLanguagePriorityCodesWithoutProWIP(this IZoneCultureResolver resolver)
+    /// <summary>
+    /// Get a list of culture codes with fallback by primary, then default. 
+    /// </summary>
+    /// <param name="resolver"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    private static List<string> UnsafeLanguagePriorityCodesWithoutPrioWIP(this IZoneCultureResolver resolver)
     {
         if (resolver == null)
             throw new ArgumentNullException(
@@ -67,15 +88,17 @@ public static class IZoneCultureResolverExtensions
         return priorities;
     }
 
+    /// <summary>
+    /// Add the code if it's not in the list yet, - lowercased guaranteed
+    /// </summary>
+    /// <param name="list"></param>
+    /// <param name="code"></param>
     public static void ListBuildAddCodeIfNew(List<string> list, string code)
     {
         if (code == null) return;
         code = code.ToLowerInvariant();
         if (!list.Contains(code)) list.Add(code);
     }
-
-    public static void ListBuildAddFinalFallback(List<string> list)
-        => list.Add(null);
 
     #endregion
 }

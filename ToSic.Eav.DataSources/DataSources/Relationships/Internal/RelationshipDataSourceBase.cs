@@ -1,9 +1,14 @@
-﻿namespace ToSic.Eav.DataSources.Internal;
+﻿using ToSic.Eav.Context;
+
+namespace ToSic.Eav.DataSources.Internal;
 
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code
 /// </summary>
-public abstract class RelationshipDataSourceBase : Eav.DataSource.DataSourceBase
+/// <remarks>
+/// * in v18.00 we optimized it to also check draft-permissions of the returned data - previously this was not checked
+/// </remarks>
+public abstract class RelationshipDataSourceBase : DataSourceBase
 {
     /// <summary>
     /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
@@ -26,10 +31,13 @@ public abstract class RelationshipDataSourceBase : Eav.DataSource.DataSourceBase
     /// <summary>
     /// Constructor
     /// </summary>
-    protected RelationshipDataSourceBase(MyServices services, string logName): base(services, logName)
+    protected RelationshipDataSourceBase(MyServices services, IContextResolverUserPermissions userPermissions, string logName): base(services, logName, connect: [userPermissions])
     {
+        _userPermissions = userPermissions;
         ProvideOut(GetRelated);
     }
+
+    private readonly IContextResolverUserPermissions _userPermissions;
 
     private IImmutableList<IEntity> GetRelated()
     {
@@ -38,24 +46,32 @@ public abstract class RelationshipDataSourceBase : Eav.DataSource.DataSourceBase
 
         // Make sure we have an In - otherwise error
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         var fieldName = FieldName;
         if (string.IsNullOrWhiteSpace(fieldName)) fieldName = null;
-        Log.A($"Field Name: {fieldName}");
+        l.A($"Field Name: {fieldName}");
 
         var typeName = ContentTypeName;
         if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
-        Log.A($"Content Type Name: {typeName}");
+        l.A($"Content Type Name: {typeName}");
 
         var find = InnerGet(fieldName, typeName);
 
         var relationships = source
-            .SelectMany(o => find(o));
+            .SelectMany(o => find(o))
+            .ToList();
 
+        // In case the current user should not see draft data,
+        // we must ensure that we didn't accidentally include any.
+        // Because it could be that the original data was public, but a related item was not.
+        if (!(_userPermissions.UserPermissions()?.ShowDraftData ?? false))
+            relationships = relationships.Where(e => e.IsPublished).ToList();
 
         // ReSharper disable PossibleMultipleEnumeration
-        var result = (FilterDuplicates)
+        l.A($"{nameof(FilterDuplicates)}: {FilterDuplicates}");
+        var result = FilterDuplicates
             ? relationships.Distinct()
             : relationships;
 

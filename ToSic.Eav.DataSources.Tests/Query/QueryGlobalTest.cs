@@ -6,6 +6,7 @@ using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Testing.Shared;
+using ToSic.Testing.Shared.Data;
 
 namespace ToSic.Eav.DataSourceTests.Query
 {
@@ -47,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests.Query
         {
             var queryName = $"{DataSourceConstants.SystemQueryPrefix}Zones";
             var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, queryName);
-            Assert.AreEqual(queryName, queryEnt.Value<string>("Name"), "should find zones");
+            Assert.AreEqual(queryName, queryEnt.TacGet<string>("Name"), "should find zones");
 
             var qdef = _queryDefinitionBuilder.Create(queryEnt, queryEnt.AppId);
             Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the qdef, should have the zone + sort = 2 parts");

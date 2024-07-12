@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Lib.Documentation;
+using ToSic.Lib.Memory;
 
 namespace ToSic.Lib.Logging;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class Log: ILog, ILogInternal
+public partial class Log: ILog, ILogInternal, ICanEstimateSize
 {
     /// <summary>
     /// Max logging depth, we should never attach loggers if we are past this level
@@ -95,7 +96,7 @@ public partial class Log: ILog, ILogInternal
         (Parent as Log)?.AddEntry(entry);
     }
 
-    public Entry CreateAndAdd(string message, CodeRef code, EntryOptions options = default)
+    Entry ILogInternal.CreateAndAdd(string message, CodeRef code, EntryOptions options = default)
     {
         var e = new Entry(this, message, WrapDepth, code, options);
         AddEntry(e);
@@ -116,7 +117,7 @@ public partial class Log: ILog, ILogInternal
     /// <summary>
     /// Entries of this log and all children
     /// </summary>
-    public  List<Entry> Entries { get; } = [];
+    public List<Entry> Entries { get; } = [];
 
     /// <summary>
     /// Parent to which it's linked
@@ -143,4 +144,16 @@ public partial class Log: ILog, ILogInternal
     private bool _preserve = true;
 
     #endregion
+
+    public SizeEstimate EstimateSize(ILog log = default)
+    {
+        if (_estimate != null && Entries.Count == _entriesOnLastEstimate)
+            return _estimate;
+        _entriesOnLastEstimate = Entries.Count;
+        var estimator = new MemorySizeEstimator(log);
+        _estimate = estimator.EstimateMany([Id, Scope, Name, Created, Entries, WrapDepth, Preserve]);
+        return _estimate;
+    }
+    private SizeEstimate _estimate;
+    private int _entriesOnLastEstimate = -1;
 }

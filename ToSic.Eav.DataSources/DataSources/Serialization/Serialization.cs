@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Serialization;
+﻿using ToSic.Eav.Plumbing;
+using ToSic.Eav.Serialization;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -176,9 +177,15 @@ public partial class Serialization : DataSourceBase
 
     /// <summary>
     /// Should the Relationships be included as CSV like "42,27,999".
-    /// Default is `false` in which case they are sub-objects.
+    /// Possible values
+    /// * null or false: they are sub-objects
+    /// * true or "csv": they are CSV strings
+    /// * "array" return array of ID or GUID
     /// </summary>
-    /// <remarks>WIP / adding in v15.03</remarks>
+    /// <remarks>
+    /// * adding in v15.03
+    /// * extended purpose in v18.00 to also have "array" as possible value
+    /// </remarks>
     [Configuration(Fallback = false)]
     public string IncludeRelationshipsAsCsv => Configuration.GetThis();
 
@@ -232,6 +239,19 @@ public partial class Serialization : DataSourceBase
         var noRules = string.IsNullOrWhiteSpace(string.Join("", Configuration));
         if (noRules) return (before, "no rules, unmodified");
 
+        var decorator = Decorator;
+
+        var result = before
+            .Select(e => (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator));
+
+        return (result.ToImmutableList(), "modified");
+    });
+
+    private EntitySerializationDecorator Decorator => _decorator ??= CreateDecorator();
+    private EntitySerializationDecorator _decorator;
+
+    private EntitySerializationDecorator CreateDecorator()
+    {
         var id = TryParseIncludeRule(IncludeId);
         var title = TryParseIncludeRule(IncludeTitle);
         var guid = TryParseIncludeRule(IncludeGuid);
@@ -264,7 +284,11 @@ public partial class Serialization : DataSourceBase
         var relSer = new SubEntitySerialization
         {
             Serialize = TryParseIncludeRule(IncludeRelationships),
-            SerializesAsCsv = TryParseIncludeRule(IncludeRelationshipsAsCsv),
+            // Serialize as CSV can be null, false, true, "array"
+            //SerializesAsCsv = TryParseIncludeRule(IncludeRelationshipsAsCsv) ?? IncludeRelationshipsAsCsv.HasValue(),
+            //SerializeListAsString = !IncludeRelationshipsAsCsv.EqualsInsensitive("array"),
+            SerializeFormat = GetOutputFormat(),
+
             SerializeId = TryParseIncludeRule(IncludeRelationshipId),
             SerializeGuid = TryParseIncludeRule(IncludeRelationshipGuid),
             SerializeTitle = TryParseIncludeRule(IncludeRelationshipTitle)
@@ -293,13 +317,18 @@ public partial class Serialization : DataSourceBase
             SerializeCreated = created,
             SerializeModified = modified
         };
+        return decorator;
+    }
 
-        var result = before
-            .Select(e => (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator));
+    private string GetOutputFormat()
+    {
+        if (IncludeRelationshipsAsCsv.IsEmptyOrWs()) return null;
+        var csvAsBool = TryParseIncludeRule(IncludeRelationshipsAsCsv);
+        if (csvAsBool == true) return "csv";
+        if (csvAsBool == false) return null;
+        return IncludeRelationshipsAsCsv; // could be "array"
+    }
 
-        return (result.ToImmutableList(), "modified");
-    });
-        
     private bool? TryParseIncludeRule(string original)
         => bool.TryParse(original, out var include) ? (bool?)include : null;
 

@@ -76,7 +76,7 @@ public class SystemStack: Eav.DataSource.DataSourceBase
         var settings = _dataStackService.Init(appState).GetStack(stackName);
 
         // Dump results
-        var dump = settings._Dump(new(null, languages, Log), null);
+        var dump = settings._Dump(new(null, languages, true, Log), null);
 
         dump = SystemStackHelpers.ApplyKeysFilter(dump, Keys);
 

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Services;
+﻿using ToSic.Eav.Apps.Internal.Work;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -17,13 +18,19 @@ namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 /// </summary>
 /// <remarks>new in v13.02</remarks>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MdRecommendations(LazySvc<MdRequirements> requirements)
+public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus<WorkInputTypes> inputTypes)
     : ServiceBase($"{AppConstants.LogName}.MdRead", connect: [requirements])
 {
-    public void Init(IAppDataAndMetadataService appState) => _appState = appState;
+    public void Setup(IAppDataAndMetadataService appState, int appId)
+    {
+        _appState = appState;
+        AppId = appId;
+    }
 
     private IAppDataAndMetadataService AppState => _appState ?? throw new("Can't use this Read class before setting AppState");
     private IAppDataAndMetadataService _appState;
+
+    private int AppId;
 
 
     public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string recommendedTypeName = null)
@@ -56,7 +63,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements)
             var recommendedType = AppState.GetContentType(reqTypeName);
             if (recommendedType == null) return l.ReturnNull("type name not found");
             return l.Return(
-                new[] { new MetadataRecommendation(recommendedType, null, -1, "Use preset type", PrioMax) },
+                [new(recommendedType, null, -1, "Use preset type", PrioMax)],
                 "use existing name");
         }
 
@@ -130,7 +137,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements)
                 {
                     l.A($"Error on {ct.Name} ({ct.NameId}), will skip this");
                     l.Ex(e);
-                    return Array.Empty<RecommendationInfos>();
+                    return [];
                 }
             })
             .ToList();
@@ -190,26 +197,49 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements)
             case TargetTypes.None:
                 return l.ReturnNull("no target");
             case TargetTypes.Attribute:
-                // TODO - PROBABLY TRY TO FIND THE ATTRIBUTE
-                return l.ReturnNull("attributes not supported ATM");
+                if (!int.TryParse(key, out var attributeId))
+                    return l.ReturnNull("attribute: key is not int");
+
+                var attribute = AppState.ContentTypes
+                    .SelectMany(ct => ct.Attributes)
+                    .FirstOrDefault(attr => attr.AttributeId == attributeId);
+
+                if (attribute == null)
+                    return l.ReturnNull($"attribute '{attributeId}' not found");
+
+                // figure out what field input type it is
+                var inputType = attribute.InputType();
+
+                // Find the input type definition
+                var inputTypeDef = inputTypes.New(AppId).GetInputTypes()
+                    .FirstOrDefault(it => it.Type.EqualsInsensitive(inputType));
+
+                if (inputTypeDef == null)
+                    return l.ReturnNull($"input type '{inputType}' not found");
+
+                var attrMdOnField = GetMetadataExpectedDecorators(inputTypeDef.Metadata, TargetTypes.Attribute, "attached to Attribute", PrioHigh);
+
+
+                return l.Return(attrMdOnField);
             case TargetTypes.App:
                 // TODO: this won't work - needs another way of finding assignments
-                return l.Return(GetMetadataExpectedDecorators(AppState.Metadata, 0, "attached to App", PrioMax), "app");
+                return l.Return(GetMetadataExpectedDecorators(AppState.Metadata, TargetTypes.Undefined, "attached to App", PrioMax), "app");
             case TargetTypes.Entity:
                 if (!Guid.TryParse(key, out var guidKey)) return l.ReturnNull("entity not guid");
                 var entity = AppState.List.One(guidKey);
                 if (entity == null) return l.ReturnNull("entity not found");
-                var onEntity = GetMetadataExpectedDecorators(entity.Metadata, (int)TargetTypes.Entity, "attached to Entity", PrioMax)
+                var onEntity = GetMetadataExpectedDecorators(entity.Metadata, TargetTypes.Entity, "attached to Entity", PrioMax)
                                ?? [];
 
                 // Now also ask the content-type for MD related to this
-                var onEntType = GetMetadataExpectedDecorators(entity.Type.Metadata, (int)TargetTypes.Entity, "attached to entity-type", PrioHigh);
+                // So we ask the Type Metadata for all recommendations for Entities (since it will be attached to the entity of this type)
+                var onEntType = GetMetadataExpectedDecorators(entity.Type.Metadata, TargetTypes.Entity, "attached to entity-type", PrioHigh);
                 var merged = onEntity.Union(onEntType).ToList();
                 return l.Return(merged, $"entity {onEntity.Count} type {onEntType.Count} all {merged.Count}");
             case TargetTypes.ContentType:
                 var ct = AppState.GetContentType(key);
                 if (ct == null) return l.ReturnNull("type not found");
-                var onType = GetMetadataExpectedDecorators(ct.Metadata, (int)TargetTypes.ContentType, "attached to Content-Type", PrioHigh);
+                var onType = GetMetadataExpectedDecorators(ct.Metadata, TargetTypes.ContentType, "attached to Content-Type", PrioHigh);
                 return l.Return(onType, "content type");
             case TargetTypes.Zone:
             case TargetTypes.CmsItem:
@@ -227,29 +257,39 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements)
     /// <param name="debug"></param>
     /// <param name="priority"></param>
     /// <returns></returns>
-    private List<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf md, int meantFor, string debug, int priority)
+    private List<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf md, TargetTypes targetTypeFor, string debug, int priority)
     {
-        var l = Log.Fn<List<MetadataRecommendation>>();
-        var all = md.OfType(MetadataExpectedDecorator.ContentTypeNameId).ToList();
-        if (meantFor > 0) all = all.Where(r => meantFor == new MetadataForDecorator(r).TargetType).ToList();
-        if (!all.Any()) return l.Return([], "no recommendations");
+        var l = Log.Fn<List<MetadataRecommendation>>($"for {targetTypeFor}");
 
-        var resultAll = all.SelectMany(rEntity =>
+        // meta data is sometimes null
+        if (md is null)
+            return l.Return([], "null metadata");
+
+        var all = md
+            .OfType(MetadataExpectedDecorator.ContentTypeNameId)
+            .ToList();
+
+        // var meantFor = (int)targetTypeFor;
+        if (targetTypeFor > 0)
+            all = all
+                .Where(r => (int)targetTypeFor == new MetadataForDecorator(r).TargetType)
+                .ToList();
+        if (!all.Any())
+            return l.Return([], "no recommendations");
+
+        var resultAll = all
+            .SelectMany(rEntity =>
             {
                 var rec = new MetadataExpectedDecorator(rEntity);
                 var config = rec.Types;
                 var delWarning = rec.DeleteWarning;
-                if (IsNullOrWhiteSpace(config))
-                {
-                    l.W("Found case with no values in config");
-                    return new List<MetadataRecommendation>();
-                }
-
-                return config
-                    .CsvToArrayWithoutEmpty()
-                    .Select(name => TypeAsRecommendation(name, debug, priority, delWarning))
-                    .Where(x => x != null)
-                    .ToList();
+                return IsNullOrWhiteSpace(config)
+                    ? l.Return([], "Found case with no values in config")
+                    : config
+                        .CsvToArrayWithoutEmpty()
+                        .Select(name => TypeAsRecommendation(name, debug, priority, delWarning))
+                        .Where(x => x != null)
+                        .ToList();
             })
             .ToList();
 

@@ -12,6 +12,8 @@ static partial class ObjectExtensions
     /// <param name="obj"></param>
     /// <param name="func"></param>
     /// <returns></returns>
+
+    // TODO: PROBABLY rename to NullOrMap
     public static TResult NullOrGetWith<T, TResult>(this T obj, Func<T, TResult> func)
         where T : class
         where TResult : class

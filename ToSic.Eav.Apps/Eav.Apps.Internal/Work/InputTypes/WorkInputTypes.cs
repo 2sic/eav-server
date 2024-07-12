@@ -18,19 +18,6 @@ public class WorkInputTypes(
     public List<InputTypeInfo> GetInputTypes()
     {
         var l = Log.Fn<List<InputTypeInfo>>();
-        // Inner helper to log each intermediate state
-        void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog) 
-        {
-            var lInner = Log.Fn($"{title}, {inputsToLog.Count}");
-            try
-            {
-                lInner.Done(string.Join(",", inputsToLog.Select(it => it.Type)));
-            }
-            catch (Exception)
-            {
-                lInner.Done("error");
-            }
-        }
 
         // Initial list is the global, file-system based types
         var globalDef = GetPresetInputTypesBasedOnContentTypes();
@@ -61,9 +48,23 @@ public class WorkInputTypes(
         LogListOfInputTypes("All combined", inputTypes);
 
         // Sort for better debugging
-        inputTypes = inputTypes.OrderBy(i => i.Type).ToList();
+        inputTypes = [.. inputTypes.OrderBy(i => i.Type)];
 
         return l.Return(inputTypes, $"found {inputTypes.Count}");
+
+        // Inner helper to log each intermediate state
+        void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog)
+        {
+            var lInner = Log.Fn($"{title}, {inputsToLog.Count}");
+            try
+            {
+                lInner.Done(string.Join(",", inputsToLog.Select(it => it.Type)));
+            }
+            catch (Exception)
+            {
+                lInner.Done("error");
+            }
+        }
     }
 
     /// <summary>

@@ -48,27 +48,20 @@ public class QueryBuilder(
     });
 
 
-    public QueryResult BuildQuery(QueryDefinition queryDef,
+    public QueryResult BuildQuery(
+        QueryDefinition queryDef,
         ILookUpEngine lookUpEngineToClone,
         List<ILookUp> overrideLookUps) 
     {
         var l = Log.Fn<QueryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
         #region prepare shared / global value providers
             
-        var showDrafts = userPermissions.UserPermissions().IsContentAdmin;
+        var showDrafts = userPermissions.UserPermissions().ShowDraftData;
         if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
             paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 
         // centralizing building of the primary configuration template for each part
         var baseLookUp = new LookUpEngine(lookUpEngineToClone, Log, sources: [queryDef.ParamsLookUp], overrides: overrideLookUps);
-
-        //baseLookUp.Add(queryDef.ParamsLookUp);      // Add [params:...]
-        //baseLookUp.AddOverride(overrideLookUps);    // add override
-
-        // 2023-03-13 2dm - #removedQueryPartShowDrafts - it's available on [Params:ShowDrafts] and I don't think every source needs it too
-        // provide global settings for ShowDrafts, ATM just if showdrafts are to be used
-        //var itemSettingsShowDrafts = new Dictionary<string, string>(InvariantCultureIgnoreCase)
-        //    {{QueryConstants.ParamsShowDraftKey, showDrafts.ToString()}};
 
         #endregion
 

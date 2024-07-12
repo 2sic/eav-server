@@ -48,7 +48,8 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// <param name="temporaryDirectory">temporary storage</param>
     /// <param name="rename">App rename</param>
     /// <returns></returns>
-    public bool ImportZip(Stream zipStream, string temporaryDirectory, string rename = null) => _ImportZip(temporaryDirectory, rename, zipStream);
+    public bool ImportZip(Stream zipStream, string temporaryDirectory, string rename = null)
+        => ImportZipInternal(temporaryDirectory, rename, zipStream);
 
     /// <summary>
     /// Imports a ZIP file (from file)
@@ -58,12 +59,12 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// <param name="rename">App rename</param>
     /// <param name="inheritAppId">optional inherit AppId</param>
     /// <returns></returns>
-    public bool ImportZip(string zipPath, string temporaryDirectory, string rename = null, int? inheritAppId = null) => _ImportZip(temporaryDirectory, rename, null, zipPath, inheritAppId);
+    public bool ImportZip(string zipPath, string temporaryDirectory, string rename = null, int? inheritAppId = null)
+        => ImportZipInternal(temporaryDirectory, rename, null, zipPath, inheritAppId);
 
-    private bool _ImportZip(string temporaryDirectory, string rename = null, Stream zipStream = null, string zipPath = null, int? inheritAppId = null)
+    private bool ImportZipInternal(string temporaryDirectory, string rename = null, Stream zipStream = null, string zipPath = null, int? inheritAppId = null)
     {
         var l = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
-        var messages = Messages;
         Exception finalException = null;
 
         try
@@ -89,14 +90,12 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             // For now only it should only contain the "Apps" folder.
             foreach (var directoryPath in Directory.GetDirectories(temporaryDirectory))
             {
-                Log.A($"folder:{directoryPath}");
+                l.A($"folder:{directoryPath}");
                 if (Path.GetFileName(directoryPath) != "Apps") continue;
                 var packageDir = Path.Combine(temporaryDirectory, "Apps");
                 // Loop through each app directory
                 foreach (var appDirectory in Directory.GetDirectories(packageDir))
-                    ImportApp(rename, appDirectory, messages, pendingApp: false, inheritAppId);
-
-                //ImportApps(rename, packageDir, messages);
+                    ImportApp(rename, appDirectory, Messages, pendingApp: false, inheritAppId);
             }
         }
         catch (IOException e)
@@ -104,13 +103,13 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             // The app could not be installed because the app-folder already exists. Install app in different folder?
             finalException = e;
             // Add error message and return false, but use MessageTypes.Warning so we can prompt user for new different rename
-            messages.Add(new("Could not import the app / package: " + e.Message, Message.MessageTypes.Warning));
+            Messages.Add(new("Could not import the app / package: " + e.Message, Message.MessageTypes.Warning));
         }
         catch (Exception e)
         {
             finalException = e;
             // Add error message and return false
-            messages.Add(new("Could not import the app / package: " + e.Message, Message.MessageTypes.Error));
+            Messages.Add(new("Could not import the app / package: " + e.Message, Message.MessageTypes.Error));
         }
         finally
         {
@@ -120,7 +119,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
 
         if (finalException != null)
         {
-            Log.A("had found errors during import, will throw");
+            l.A("had found errors during import, will throw");
             l.ReturnFalse("error");
             throw finalException; // must throw, to enable logging outside
         }
@@ -217,9 +216,9 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             if (!string.IsNullOrEmpty(rename))
             {
                 l.A($"User rename to '{rename}'");
-                var renamer = new RenameOnImport(folder, rename, l);
-                renamer.FixAppXmlForImportAsDifferentApp(imp);
-                renamer.FixPortalFilesAdamAppFolderName(appDirectory, pendingApp);
+                var renameHelper = new RenameOnImport(folder, rename, l);
+                renameHelper.FixAppXmlForImportAsDifferentApp(imp);
+                renameHelper.FixPortalFilesAdamAppFolderName(appDirectory, pendingApp);
                 folder = rename;
             }
             else l.A("No rename of app requested");
@@ -244,7 +243,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             if (importer.IsCompatible(imp.XmlDoc))
                 HandlePortalFilesFolder(appDirectory, pendingApp);
 
-            importer.ImportXml(_zoneId, appId, imp.XmlDoc);
+            importer.ImportXml(_zoneId, appId, parentAppId: null /* not sure if we never have a parent here */, imp.XmlDoc);
         }
 
         importMessages.AddRange(importer.Messages);

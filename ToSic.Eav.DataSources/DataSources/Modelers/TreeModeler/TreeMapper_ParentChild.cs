@@ -69,7 +69,7 @@ partial class TreeMapper
     {
         try
         {
-            var val = e.GetBestValue(attribute, Array.Empty<string>());
+            var val = e.Get(attribute);
             l.A(Debug, $"Entity: {e.EntityId}[{attribute}]={val} ({val.GetType().Name})");
             return val.ToString();
         }

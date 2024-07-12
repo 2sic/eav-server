@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net7.0;</TargetFrameworks>
+    <TargetFrameworks>net472;net8.0;</TargetFrameworks>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <Deterministic>true</Deterministic>
@@ -34,21 +34,15 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Web" />
+    <!-- this is needed for Insights to caching -->
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="ToSic.Razor">
       <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net472\ToSic.Razor.dll</HintPath>
     </Reference>
   </ItemGroup>
 
-  <!--<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <Reference Include="ToSic.Razor">
-	    <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\netstandard2.0\ToSic.Razor.dll</HintPath>
-    </Reference>
-  </ItemGroup>-->
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	<!--<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />-->
     <Reference Include="ToSic.Razor">
       <HintPath>..\..\2sxc\Dependencies\RazorBlade\Release\net6.0\ToSic.Razor.dll</HintPath>
     </Reference>

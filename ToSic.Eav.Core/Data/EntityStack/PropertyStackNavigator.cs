@@ -46,7 +46,8 @@ public partial class PropertyStackNavigator(IPropertyLookup child, StackAddress 
         // This shouldn't happen, but if it ever does we don't want the server to run into buffer overflows
         if (path.Parts.Count > 1000)
             return l.Return(
-                new(result: MaxLookupError, fieldType: "error", path: path) { Name = "error", Source = "error", SourceIndex = StackAddress.Index },
+                new(result: MaxLookupError, valueType: ValueTypesWithState.Error, path: path)
+                    { Name = "error", Source = "error", SourceIndex = StackAddress.Index },
                 "Error: Maximum lookup depth achieved");
 
         // Try to find on child - but only if startAt == 0

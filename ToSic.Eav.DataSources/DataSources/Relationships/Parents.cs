@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources.Internal;
+﻿using ToSic.Eav.Context;
+using ToSic.Eav.DataSources.Internal;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
@@ -21,7 +22,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
     HelpLink = "https://go.2sxc.org/DsParents")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class Parents(DataSourceBase.MyServices services) : RelationshipDataSourceBase(services, $"{LogPrefix}.Parent")
+public class Parents(DataSourceBase.MyServices services, IContextResolverUserPermissions userPermissions) : RelationshipDataSourceBase(services, userPermissions, $"{LogPrefix}.Parent")
 {
     /// <summary>
     /// Name of the field (in the parent) pointing to the child.

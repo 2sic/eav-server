@@ -5,6 +5,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
+using ToSic.Testing.Shared.Data;
 
 namespace ToSic.Eav.DataSourceTests
 {
@@ -39,8 +40,8 @@ namespace ToSic.Eav.DataSourceTests
             Assert.AreNotEqual(original, modified, "This test should never receive the same items!");
             fieldNew = fieldNew ?? fieldOriginal;
             Assert.AreEqual(
-                original.Value<string>(fieldOriginal),
-                modified.Value<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
+                original.TacGet<string>(fieldOriginal),
+                modified.TacGet<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
 
         }
 

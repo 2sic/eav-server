@@ -33,7 +33,7 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
 
     public QueryPartDefinition CreatePart(IEntity entity)
     {
-        var assemblyAndType = entity.GetBestValue<string>(QueryConstants.PartAssemblyAndType, null)
+        var assemblyAndType = entity.Get<string>(QueryConstants.PartAssemblyAndType)
                               ?? throw new("Tried to get DataSource Type of a query part, but didn't find anything");
 
         var correctedName = GetCorrectedTypeName(assemblyAndType);

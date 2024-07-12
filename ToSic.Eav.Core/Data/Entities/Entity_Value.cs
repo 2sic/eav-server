@@ -1,26 +1,45 @@
-﻿using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Data.PropertyLookup;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Data;
 partial class Entity
 {
     /// <inheritdoc />
-    public object Value(string field) => GetBestValue(field, null);
+    public object Value(string field)
+        // till 17.10 GetBestValue(field, null);
+        => FindPropertyInternal(new(field), null).Result;
 
     /// <inheritdoc />
-    public T Value<T>(string field) => GetBestValue<T>(field, null);
+    public TValue Value<TValue>(string field)
+        // till 17.10 GetBestValue<T>(field, null);
+        => FindPropertyInternal(new(field), null).Result
+            .ConvertOrDefault<TValue>();
 
+    public object Get(string name)
+        // till v17.10 GetBestValue(name, null);
+        => FindPropertyInternal(new(name), null).Result;
 
-    public object Get(string name) => GetBestValue(name, null);
-
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     public object Get(string name, NoParamOrder noParamOrder = default, string language = default, string[] languages = default) 
-        => GetBestValue(name, HandleLanguageParams(language, languages));
+        // till v17.10 GetBestValue(name, HandleLanguageParams(language, languages));
+        => FindPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result;
 
-    public TValue Get<TValue>(string name) => GetBestValue<TValue>(name, null);
+    public TValue Get<TValue>(string name)
+        // till v17.10 GetBestValue<TValue>(name, null);
+        => FindPropertyInternal(new(name), null).Result
+            .ConvertOrDefault<TValue>();
 
-    public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default) 
-        => GetBestValue(name, HandleLanguageParams(language, languages)).ConvertOrFallback(fallback);
+    // ReSharper disable once MethodOverloadWithOptionalParameter
+    public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default)
+        // till v17.10 GetBestValue(name, HandleLanguageParams(language, languages)).ConvertOrFallback(fallback);
+        => FindPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result
+            .ConvertOrFallback(fallback);
 
-    private string[] HandleLanguageParams(string language, string[] languages) 
-        => language.SafeAny() ? languages : language.HasValue() ? [language] : null;
+    private static string[] HandleLanguageParams(string language, string[] languages) 
+        => languages.SafeAny()
+            ? PropReqSpecs.ExtendDimsWithDefault(languages)
+            : language.HasValue()
+                ? [language, null]
+                : PropReqSpecs.EmptyDimensions;
 }

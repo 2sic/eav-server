@@ -10,38 +10,47 @@ partial class Entity
     // ReSharper disable once InheritdocInvalidUsage
     /// <inheritdoc />
     public object GetBestValue(string attributeName, string[] languages)
-        => FindPropertyInternal(new(attributeName, languages), null).Result;
+        => FindPropertyInternal(new(attributeName, languages, false), null).Result;
 
 
     // ReSharper disable once InheritdocInvalidUsage
     /// <inheritdoc />
-    public TVal GetBestValue<TVal>(string name, string[] languages) => GetBestValue(name, languages).ConvertOrDefault<TVal>();
+    [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
+    public TVal GetBestValue<TVal>(string name, string[] languages)
+        => GetBestValue(name, languages).ConvertOrDefault<TVal>();
 
 
     [PrivateApi("Internal")]
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {
         path = path?.Add("Entity", EntityId.ToString(), specs.Field);
-        var languages = ExtendDimsWithDefault(specs.Dimensions);
+
+        // the languages are "safe" - meaning they are already all lower-cased and have the optional null-fallback key
+        var languages = specs.Dimensions;
         var field = specs.Field.ToLowerInvariant();
-        if (Attributes.ContainsKey(field))
+        
+        if (Attributes.TryGetValue(field, out var attribute))
         {
-            var attribute = Attributes[field];
-            var (valueField, result) = attribute.GetTypedValue(languages);
-            return new(result: result, fieldType: attribute.Type.ToString(), path: path) { Value = valueField, Source = this };
+            var (valueField, result) = attribute.GetTypedValue(languages, false);
+            return new(result: result, valueType: (ValueTypesWithState)attribute.Type, path: path)
+                { Value = valueField, Source = this };
         }
             
         if (field == EntityFieldTitle)
         {
-            var attribute = Title;
-            var valT = attribute?.GetTypedValue(languages);
-            return new(result: valT?.Result, fieldType: attribute?.Type.ToString() ?? FieldIsNotFound, path: path) { Value = valT?.ValueField, Source = this };
+            attribute = Title;
+            if (attribute == null)
+                return new(result: null, valueType: ValueTypesWithState.NotFound, path: path)
+                    { Value = null, Source = this };
+            var (valueField, result) = attribute.GetTypedValue(languages, false);
+            return new(result: result, valueType: (ValueTypesWithState)attribute.Type, path: path)
+                { Value = valueField, Source = this };
         }
 
         // directly return internal properties, mark as virtual to not cause further Link resolution
         var valueFromInternalProperty = GetInternalPropertyByName(field);
         if (valueFromInternalProperty != null)
-            return new(result: valueFromInternalProperty, fieldType: FieldIsVirtual, path: path) { Source = this };
+            return new(result: valueFromInternalProperty, valueType: ValueTypesWithState.Virtual, path: path) { Source = this };
 
         // New Feature in 12.03 - Sub-Item Navigation if the data contains information what the sub-entity identifiers are
         try
@@ -51,35 +60,13 @@ partial class Entity
             if (subItem != null) return subItem;
         } catch { /* ignore */ }
 
-        return new(result: null, fieldType: FieldIsNotFound, path: path) { Source = this };
+        return new(result: null, valueType: ValueTypesWithState.NotFound, path: path) { Source = this };
     }
 
     protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)
-    {
-        // first check a field which doesn't exist on EntityLight
-        if (attributeNameLowerInvariant == EntityFieldIsPublished) return IsPublished;
-
-        // Now handle the ones that EntityLight has
-        return base.GetInternalPropertyByName(attributeNameLowerInvariant);
-    }
-
-    /// <summary>
-    /// Make sure the dimensions list also has a null-entry,
-    /// for fallback to the first/only language (if any are provided and no match was made first)
-    /// </summary>
-    /// <param name="dimensions"></param>
-    /// <returns></returns>
-    public string[] ExtendDimsWithDefault(string[] dimensions)
-    {
-        // empty list - add the default dimension
-        if (dimensions == null || dimensions.Length == 0) return [null as string];
-
-        // list already has a default at the end, don't change
-
-        // we have dimensions but no default, add it
-        if (dimensions.Last() == default) return dimensions;
-        var newDims = dimensions.ToList();
-        newDims.Add(default);
-        return newDims.ToArray();
-    }
+        => attributeNameLowerInvariant == EntityFieldIsPublished
+            // first check a field which doesn't exist on EntityLight
+            ? IsPublished
+            // Now handle the ones that EntityLight has
+            : base.GetInternalPropertyByName(attributeNameLowerInvariant);
 }

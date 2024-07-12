@@ -21,13 +21,17 @@ public abstract class ZoneMapperBase(IAppStates appStates, string logName)
     public abstract ISite SiteOfZone(int zoneId);
 
     /// <inheritdoc />
-    public ISite SiteOfApp(int appId) => Log.Func($"{appId}", () =>
+    public ISite SiteOfApp(int appId)
     {
+        var l = Log.Fn<ISite>($"{appId}");
         var appIdentifier = AppStates.IdentityOfApp(appId);
-        var tenant = SiteOfZone(appIdentifier.ZoneId);
-        return tenant;
-    });
+        var site = SiteOfZone(appIdentifier.ZoneId);
+        return l.Return(site);
+    }
 
     /// <inheritdoc />
     public abstract List<ISiteLanguageState> CulturesWithState(ISite site);
+
+    public List<ISiteLanguageState> CulturesEnabledWithState(ISite site)
+        => CulturesWithState(site).Where(c => c.IsEnabled).ToList();
 }

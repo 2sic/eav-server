@@ -22,7 +22,7 @@ public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
 
     public object Value { get; set; } = original.Property.Result;
 
-    public string Type { get; set; } = original.Property.FieldType;
+    public string Type { get; set; } = original.Property.ValueType.ToString();
 
     public int TotalResults { get; set; } = original.AllOptions?.GroupBy(i => i.SourceName)?.Count() ?? 0; // do not count "duplicate" by SourceName
 

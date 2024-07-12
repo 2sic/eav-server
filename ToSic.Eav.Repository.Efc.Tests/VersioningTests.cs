@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 using ToSic.Testing.Shared;
@@ -22,7 +21,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             public int AppId => 3012;
         }
 
-        public VersioningTestSpecs Specs = new VersioningTestSpecs();
+        public VersioningTestSpecs Specs = new();
 
         private int TestItemWithCa20Changes = 20853;
         private int TestItemWithCa20ChangesCount = 22;

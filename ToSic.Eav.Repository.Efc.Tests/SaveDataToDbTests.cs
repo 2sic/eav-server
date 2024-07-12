@@ -53,7 +53,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = app1.List.One(test.ExistingItem);
 
             // save it
-            dbi.Save(new List<IEntity> {itm1}, so);
+            dbi.Save([itm1], so);
 
             // re-load it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
@@ -84,14 +84,14 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var itm1 = app1.List.One(test.ExistingItem);
 
             // todo: make some minor changes
-            var itmNewTitle = GetService<EntityBuilder>().TestCreate(appId: test.AppId, entityId: 0, contentType: itm1.Type, values: new Dictionary<string, object>
+            var itmNewTitle = GetService<EntityBuilder>().TestCreate(appId: test.AppId, entityId: 0, contentType: itm1.Type, values: new()
             {
                 {test.TitleField, "changed title on " + DateTime.Now}
             });
             var saveEntity = _entitySaver.TestCreateMergedForSaving(itm1, itmNewTitle, so);
 
             // save it
-            dbi.Save(new List<IEntity> {saveEntity}, so);
+            dbi.Save([saveEntity], so);
 
             // reload it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
@@ -124,7 +124,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var app1 = loader1.AppStateReaderRawTA(test.AppId);
             var ct1 = app1.GetContentType(ctName);
 
-            var newE = GetService<EntityBuilder>().TestCreate(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new Dictionary<string, object>
+            var newE = GetService<EntityBuilder>().TestCreate(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new()
             {
                 { test.TitleField, ctTitle }
             });
@@ -132,7 +132,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var saveEntity = _entitySaver.TestCreateMergedForSaving(null, newE, so);
 
             // save it
-            var newId = dbi.Save(new List<IEntity> {saveEntity}, so);
+            var newId = dbi.Save([saveEntity], so);
 
             // reload it
             var loader2 = _loader2.UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
