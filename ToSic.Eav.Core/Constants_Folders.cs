@@ -88,4 +88,9 @@ partial class Constants
     /// HotBuild AppCode folder
     /// </summary>
     public const string AppCode = "AppCode";
+
+    /// <summary>
+    /// Temp folder where the 2sxc app temp assemblies for AppCode, assembly dependencies... are stored.
+    /// </summary>
+    public const string TempAssemblyFolder = "2sxc.bin";
 }
