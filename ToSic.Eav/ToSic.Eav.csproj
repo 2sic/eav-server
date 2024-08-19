@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net481;net8.0;</TargetFrameworks>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <Deterministic>true</Deterministic>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>

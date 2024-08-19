@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net481;net8.0;</TargetFrameworks>
     <AssemblyName>ToSic.Eav.Persistence.Efc</AssemblyName>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <Deterministic>true</Deterministic>
@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <!-- Entity Framework for net451 (DNN) should be 1.1.1 because of DI, but newer version for MVC-->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net481'">
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1">
       <PrivateAssets>all</PrivateAssets>

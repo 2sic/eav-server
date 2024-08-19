@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net481;net8.0;</TargetFrameworks>
     <AssemblyName>ToSic.Eav.DataSources</AssemblyName>
     <RootNamespace>ToSic.Eav</RootNamespace>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
@@ -17,7 +17,7 @@
     <!-- end: Don't generate... -->
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <!-- generate xml docs -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -38,7 +38,7 @@
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net481'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Caching" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />

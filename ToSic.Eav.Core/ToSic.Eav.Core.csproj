@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net472;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net481;net8.0;</TargetFrameworks>
     <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
     <Deterministic>true</Deterministic>
@@ -122,7 +122,7 @@
     <PackageReference Include="System.Text.Json" Version="8.0.4" /><!-- from Oqtane.Shared.csproj -->
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net481'">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Collections" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -142,7 +142,7 @@
   <!--<PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0'">
     <DefineConstants>NETCORE</DefineConstants>
   </PropertyGroup>-->
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472'">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net481'">
     <DefineConstants>NETFULL</DefineConstants>
   </PropertyGroup>
 </Project>

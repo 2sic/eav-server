@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net8.0;</TargetFrameworks>
+    <TargetFrameworks>net481;net8.0;</TargetFrameworks>
     <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic.Eav</RootNamespace>
     <Deterministic>true</Deterministic>
@@ -16,7 +16,7 @@
     <!-- end: Don't generate... -->
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <!-- generate xml docs -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -32,7 +32,7 @@
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net481'">
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
 
