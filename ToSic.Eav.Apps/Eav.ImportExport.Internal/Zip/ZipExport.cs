@@ -110,7 +110,7 @@ public class ZipExport(
                 var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForSiteFiles);
 
                 // Copy SiteFiles for version control
-                CopyPortalFiles(xmlExport, portalFilesDirectory);
+                CopyPortalFiles(xmlExport, portalFilesDirectory, assetsAdam: true, assetsSite: true);
             }
             catch (Exception e)
             {
@@ -122,7 +122,7 @@ public class ZipExport(
         File.WriteAllText(Path.Combine(appDataPath, SourceControlDataFile), xml);
     }
 
-    public MemoryStream ExportApp(bool includeContentGroups = false, bool resetAppGuid = false)
+    public MemoryStream ExportApp(bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite)
     {
         // generate the XML
         var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
@@ -162,7 +162,7 @@ public class ZipExport(
                 FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
         // Copy SiteFiles
-        CopyPortalFiles(xmlExport, siteFilesDirectory);
+        CopyPortalFiles(xmlExport, siteFilesDirectory, assetsAdam, assetsSite);
         #endregion
 
         // create tmp App_Data unless exists
@@ -181,7 +181,7 @@ public class ZipExport(
         return stream;
     }
 
-    private static void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory)
+    private static void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory, bool assetsAdam, bool assetsSite)
     {
         foreach (var file in xmlExport.ReferencedFiles)
         {
@@ -194,7 +194,9 @@ public class ZipExport(
             var fullPath = Path.Combine(siteFilesDirectory.FullName, file.RelativePath);
             try
             {
-                File.Copy(file.Path, fullPath, overwrite: true);
+                if (assetsAdam && file.RelativePath.StartsWith("adam") // Adam assets
+                    || assetsSite && !file.RelativePath.StartsWith("adam")) // Site assets
+                    File.Copy(file.Path, fullPath, overwrite: true);
             }
             catch (Exception e)
             {
