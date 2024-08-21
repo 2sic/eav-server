@@ -12,9 +12,9 @@ using ToSic.Sxc.Apps;
 
 namespace ToSic.Eav.Apps.Services;
 
-internal class AppStateDataService() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWithStateAndCache, IMetadataSource
+internal class AppReader() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWithStateAndCache, IMetadataSource, IHasMetadataSource
 {
-    internal AppStateDataService Init(IAppStateCache appState, ILog parentLog)
+    internal AppReader Init(IAppStateCache appState, ILog parentLog)
     {
         _appState = appState as AppState;
         this.LinkLog(parentLog);
@@ -118,4 +118,5 @@ internal class AppStateDataService() : ServiceBase("App.Reader"), IAppReader, IA
     IAppStateCache IAppSpecsWithStateAndCache.Cache => _appState;
 
     IAppSpecsWithStateAndCache IHas<IAppSpecsWithStateAndCache>.Value => this;
+    public IMetadataSource MetadataSource => ((IHasMetadataSource)_appState).MetadataSource;
 }

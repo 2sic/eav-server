@@ -21,7 +21,7 @@ internal class RelationshipManager(IEntityLight entity, IAppStateCache app, IEnu
     /// <summary>
     /// This should be reworked, it often contains all relationships of the entire app
     /// </summary>
-    private IEnumerable<EntityRelationship> AllRelationships { get; } = app?.Relationships ?? fallbackRels ?? new List<EntityRelationship>();
+    private IEnumerable<EntityRelationship> AllRelationships { get; } = app?.Relationships ?? fallbackRels ?? [];
 
     private readonly IAppStateCache _appStateCache = app;
     private readonly IEnumerable<EntityRelationship> _fallbackRels = fallbackRels;

@@ -242,7 +242,7 @@ public abstract class QueryControllerBase<TImplementation>(
         try
         {
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
-            var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppState);
+            var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppReader);
             var ents = deser.Deserialize(args.GetContentString());
             var qdef = QueryBuilder.Create(ents, args.AppId);
             workUnit.SaveCopy(qdef);

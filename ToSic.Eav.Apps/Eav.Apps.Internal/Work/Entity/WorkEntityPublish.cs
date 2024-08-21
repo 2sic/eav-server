@@ -36,7 +36,7 @@ public class WorkEntityPublish(AppsCacheSwitch appsCache)
         var l = Log.Fn($"PublishWithoutPurge({entityId})");
 
         // 1. make sure we're publishing the draft, because the entityId might be the published one...
-        var contEntity = AppWorkCtx.AppState.List.FindRepoId(entityId);
+        var contEntity = AppWorkCtx.AppReader.List.FindRepoId(entityId);
         if (contEntity == null)
             l.A($"Will skip, couldn't find the entity {entityId}");
         else
@@ -45,7 +45,7 @@ public class WorkEntityPublish(AppsCacheSwitch appsCache)
                 $"rid: {contEntity.RepositoryId}, isPublished: {contEntity.IsPublished}");
 
             var maybeDraft = contEntity.IsPublished
-                ? AppWorkCtx.AppState.GetDraft(contEntity) ?? contEntity // if no draft exists, use current
+                ? AppWorkCtx.AppReader.GetDraft(contEntity) ?? contEntity // if no draft exists, use current
                 : contEntity; // if it isn't published, use current
 
             var repoId = maybeDraft.RepositoryId;

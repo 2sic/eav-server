@@ -44,12 +44,12 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         foreach (var id in ids) CollectMetaDataIdsRecursively(id, ref metaDataIds);
 
         var deleteIds = ids.ToList();
-        if (metaDataIds.Any()) deleteIds.AddRange(metaDataIds);
+        if (metaDataIds.Count != 0) deleteIds.AddRange(metaDataIds);
 
         // check if we can delete entities with metadata, or throw exception
         var oks = BatchCheckCanDelete(deleteIds.ToArray(), force, skipIfCant, parentId, parentField);
 
-        // than delete entities with metadata without app cache purge
+        // then delete entities with metadata without app cache purge
         var repositoryIds = deleteIds.ToArray();
         var ok = false;
         var dc = AppWorkCtx.DataController;
@@ -59,7 +59,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         // introduced in v15.05 to reduce work on entity delete
         // in past we PurgeApp in whole on each entity delete
         // this should be much faster, but side effects are possible.
-        var builder = stateBuilder.New().Init(AppWorkCtx.AppState.StateCache);
+        var builder = stateBuilder.New().Init(AppWorkCtx.AppReader.StateCache);
         builder.RemoveEntities(repositoryIds, true);
 
         return l.Return(ok);
@@ -68,7 +68,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
 
     private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
     {
-        var childrenMetaDataIds = AppWorkCtx.AppState.List.FindRepoId(id).Metadata.Select(md => md.EntityId).ToList();
+        var childrenMetaDataIds = AppWorkCtx.AppReader.List.FindRepoId(id).Metadata.Select(md => md.EntityId).ToList();
         if (!childrenMetaDataIds.Any()) return;
         foreach (var childrenMetadataId in childrenMetaDataIds)
             CollectMetaDataIdsRecursively(childrenMetadataId, ref metaDataIds);
@@ -94,7 +94,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     {
         foreach (var id in ids)
         {
-            var found = AppWorkCtx.AppState.List.FindRepoId(id); // Parent.Read.Entities.Get(id);
+            var found = AppWorkCtx.AppReader.List.FindRepoId(id); // Parent.Read.Entities.Get(id);
             if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
         }
@@ -108,7 +108,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     {
         var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
-        var relationships = AppWorkCtx.AppState.Relationships;
+        var relationships = AppWorkCtx.AppReader.Relationships;
 
         foreach (var entityId in ids)
         {

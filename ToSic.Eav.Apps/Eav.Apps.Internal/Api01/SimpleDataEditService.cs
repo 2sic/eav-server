@@ -94,7 +94,7 @@ public partial class SimpleDataEditService(
         if (multiValues == null) return l.Return(null, "attributes were null");
 
         // ensure the type really exists
-        var type = _ctxWithDb.AppState.GetContentType(contentTypeName);
+        var type = _ctxWithDb.AppReader.GetContentType(contentTypeName);
         if (type == null)
             throw l.Done(new ArgumentException("Error: Content type '" + contentTypeName + "' does not exist."));
 
@@ -103,7 +103,7 @@ public partial class SimpleDataEditService(
         var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
 
         // #ExtractEntitySave - verified
-        var ids = entSave.New(_ctxWithDb.AppState).Save(importEntity);
+        var ids = entSave.New(_ctxWithDb.AppReader).Save(importEntity);
 
         return l.Return(ids, "ok");
     }
@@ -169,10 +169,10 @@ public partial class SimpleDataEditService(
     public void Update(int entityId, Dictionary<string, object> values)
     {
         var l = Log.Fn($"update i:{entityId}");
-        var original = _ctxWithDb.AppState.List.FindRepoId(entityId);
+        var original = _ctxWithDb.AppReader.List.FindRepoId(entityId);
         var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
         // #ExtractEntitySave - verified
-        entUpdate.New(_ctxWithDb.AppState).UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
+        entUpdate.New(_ctxWithDb.AppReader).UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
         l.Done();
     }
 
@@ -182,14 +182,14 @@ public partial class SimpleDataEditService(
     /// </summary>
     /// <param name="entityId">Entity ID</param>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-    public void Delete(int entityId) => entDelete.New(_ctxWithDb.AppState).Delete(entityId);
+    public void Delete(int entityId) => entDelete.New(_ctxWithDb.AppReader).Delete(entityId);
 
 
     /// <summary>
     /// Delete the entity specified by GUID.
     /// </summary>
     /// <param name="entityGuid">Entity GUID</param>
-    public void Delete(Guid entityGuid) => entDelete.New(_ctxWithDb.AppState).Delete(entityGuid);
+    public void Delete(Guid entityGuid) => entDelete.New(_ctxWithDb.AppReader).Delete(entityGuid);
 
 
     private IDictionary<string, object> ConvertRelationsToNullArray(IContentType contentType, IDictionary<string, object> values)

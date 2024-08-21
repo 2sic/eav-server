@@ -70,8 +70,8 @@ partial class App: IDataSourceReset
 
         // now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
         // because the "real" source already applies filters like published
-        var appState = AppState;
-        var listOfTypes = appState.ContentTypes;
+        var appReader = AppReader;
+        var listOfTypes = appReader.ContentTypes;
         var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().IsContentAdmin;
         var typeList = "";
         foreach (var contentType in listOfTypes)
@@ -83,7 +83,7 @@ partial class App: IDataSourceReset
 
             var deferredStream = new DataStreamWithCustomCaching(
                 Services.CacheService,
-                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), ((IAppReader)appState).StateCache,
+                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appReader.StateCache,
                     $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                 this,
                 typeName,

@@ -2,12 +2,13 @@
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
+using ToSic.Eav.Metadata;
 using ToSic.Lib.DI;
 using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps;
 
-internal class AppReaders(IAppStates appStates, Generator<AppStateDataService> readerGenerator) : IAppReaders
+internal class AppReaders(IAppStates appStates, Generator<AppReader> readerGenerator) : IAppReaders
 {
     public IAppSpecs GetAppSpecs(int appId)
         => (appStates.GetCacheState(appId) as IHas<IAppSpecs>).Value;

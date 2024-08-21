@@ -22,7 +22,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     {
         _entSave = entSave;
         _queryManager = queryManager;
-        _serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState));
+        _serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppReader));
         _builder = builder;
     }
 
@@ -31,7 +31,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     private readonly LazySvc<QueryManager> _queryManager;
     private readonly LazySvc<JsonSerializer> _serializer;
 
-    private QueryDefinition Get(int queryId) => _queryManager.Value.Get(AppWorkCtx.AppState, queryId);
+    private QueryDefinition Get(int queryId) => _queryManager.Value.Get(AppWorkCtx.AppReader, queryId);
 
 
     public void SaveCopy(int id) => SaveCopy(Get(id));
@@ -74,7 +74,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         saveList.Add(newQuery);
 
         // #ExtractEntitySave - verified
-        _entSave.New(AppWorkCtx.AppState).Save(saveList);
+        _entSave.New(AppWorkCtx.AppReader).Save(saveList);
         l.Done();
     }
 

@@ -34,8 +34,7 @@ partial class JsonSerializer
         {
             var relationshipsSource = AppStateOrNull?.StateCache as IEntitiesSource ?? relationships.Source;
 
-            IEntity ConvertPart(JsonEntity e) =>
-                Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
+            IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
 
             var l = Log.Fn<IContentType>();
             try

@@ -65,7 +65,7 @@ public static class StartUpEavCore
         services.TryAddTransient<IAppStates, AppStates>();
         services.TryAddTransient<IAppReaders, AppReaders>(); // new v18
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
-        services.TryAddTransient<AppStateDataService>();
+        services.TryAddTransient<AppReader>();
         services.TryAddTransient<AppDataStackService>();
 
         // v13 #SwitchableAppsCache

@@ -17,13 +17,13 @@ public class WorkMetadata(
             throw new NotSupportedException("atm this command only creates metadata for entities with id-keys");
 
         // see if a metadata already exists which we would update
-        var existingEntity = AppWorkCtx.AppState.List
+        var existingEntity = AppWorkCtx.AppReader.List
             .FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
         if (existingEntity != null)
             entityUpdate.New(AppWorkCtx).UpdateParts(existingEntity.EntityId, values);
         else
         {
-            var appState = AppWorkCtx.AppState;
+            var appState = AppWorkCtx.AppReader;
             var saveEnt = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
                 contentType: appState.GetContentType(typeName),
                 attributes: builder.Attribute.Create(values),

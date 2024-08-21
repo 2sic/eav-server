@@ -11,7 +11,7 @@ public class WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate)
 {
     public void FieldListUpdate(IEntity target, string[] fields, bool asDraft, Callback callback)
     {
-        target = AppWorkCtx.AppState.GetDraftOrKeep(target);
+        target = AppWorkCtx.AppReader.GetDraftOrKeep(target);
         var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
         var values = callback.Invoke(lists);
         entityUpdate.New(AppWorkCtx).UpdatePartsFromValues(target, values, new(!asDraft, asDraft));

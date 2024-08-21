@@ -4,10 +4,11 @@ using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps;
 
-public interface IAppReader: IAppState, IHasPiggyBack, IMetadataOfSource, IHas<IAppSpecs>, IAppSpecsWithStateAndCache
+public interface IAppReader: IAppState, IHasPiggyBack, IMetadataOfSource, IHas<IAppSpecs>, IAppSpecsWithStateAndCache, IHasMetadataSource
 {
     IAppStateCache StateCache { get; }
 

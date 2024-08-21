@@ -34,9 +34,9 @@ public class AppWorkContextService(
         => new AppWorkCtxPlus(dataSourceSvc.Value, appReaders.Value.KeepOrGetReader(appIdentity), showDrafts, data);
 
     public IAppWorkCtxPlus ToCtxPlus(IAppWorkCtx appCtx, bool? showDrafts = default, IDataSource data = default)
-        => new AppWorkCtxPlus(appCtx, dataSourceSvc.Value, appCtx.AppState, showDrafts, data);
+        => new AppWorkCtxPlus(appCtx, dataSourceSvc.Value, appCtx.AppReader, showDrafts, data);
 
-    public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity) => CtxWithDb(Context(identity).AppState);
+    public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity) => CtxWithDb(Context(identity).AppReader);
 
     public IAppWorkCtxWithDb CtxWithDb(IAppReader appState, DbDataController existingDb = default)
         => existingDb == null

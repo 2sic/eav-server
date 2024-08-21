@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Caching;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.Metadata;
@@ -12,12 +13,13 @@ public interface IAppStateCache: ICacheExpiring, IHasMetadata, IHasPiggyBack, IA
     IEntitiesSource, ICanBeCacheDependency, IHasLog,
     IHas<IAppSpecs>,
     IHas<IAppSpecsWithState>,
-    IHas<IAppSpecsWithStateAndCache>
+    IHas<IAppSpecsWithStateAndCache>,
+    IRelationshipSource
 {
 
     string Folder { get; }
 
-    AppRelationshipManager Relationships { get; }
+    //AppRelationshipManager Relationships { get; }
 
     AppStateMetadata ThingInApp(AppThingsToStack target);
 

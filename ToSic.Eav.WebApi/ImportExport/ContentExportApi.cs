@@ -70,7 +70,7 @@ public class ContentExportApi(
             throw new("trouble finding selected IDs to export", e);
         }
 
-        var tableExporter = exportListXmlGenerator.New().Init(_appCtx.AppState, contentType);
+        var tableExporter = exportListXmlGenerator.New().Init(_appCtx.AppReader, contentType);
         var fileContent = exportSelection == ExportSelection.Blank
             ? tableExporter.EmptyListTemplate()
             : tableExporter.GenerateXml(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,
@@ -91,8 +91,8 @@ public class ContentExportApi(
     {
         var l = Log.Fn<THttpResponseType>($"get fields type:{name}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
-        var type = _appCtx.AppState.GetContentType(name);
-        var serializer = jsonSerializer.New().SetApp(_appCtx.AppState);
+        var type = _appCtx.AppReader.GetContentType(name);
+        var serializer = jsonSerializer.New().SetApp(_appCtx.AppReader);
         var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
             .RemoveNonFilenameCharacters();
 
@@ -109,8 +109,8 @@ public class ContentExportApi(
     {
         var l = Log.Fn<THttpResponseType>($"get fields id:{id}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
-        var entity = _appCtx.AppState.List.FindRepoId(id);
-        var serializer = jsonSerializer.New().SetApp(_appCtx.AppState);
+        var entity = _appCtx.AppReader.List.FindRepoId(id);
+        var serializer = jsonSerializer.New().SetApp(_appCtx.AppReader);
 
         return l.ReturnAsOk(responseMaker.File(
             serializer.Serialize(entity, withMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0),
@@ -132,7 +132,7 @@ public class ContentExportApi(
         // find all decorator metadata of type SystemExportDecorator
         l.A($"metadataExportMarkers:{export.ExportMarkers.Count}");
 
-        var serializer = jsonSerializer.New().SetApp(_appCtx.AppState);
+        var serializer = jsonSerializer.New().SetApp(_appCtx.AppReader);
 
         var bundle = BundleBuild(export, serializer);
 
@@ -147,7 +147,7 @@ public class ContentExportApi(
     public ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfiguration)
     {
         var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfiguration}");
-        var systemExportConfiguration = _appCtx.AppState.List.One(exportConfiguration);
+        var systemExportConfiguration = _appCtx.AppReader.List.One(exportConfiguration);
         if (systemExportConfiguration == null)
         {
             var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is missing");
@@ -179,7 +179,7 @@ public class ContentExportApi(
             CtIncludeInherited = true,
             CtAttributeIncludeInheritedMetadata = false
         };
-        var appState = _appCtx.AppState;
+        var appState = _appCtx.AppReader;
         foreach (var contentTypeName in export.ContentTypes)
         {
             if (bundleList.ContentTypes == null) bundleList.ContentTypes = new();

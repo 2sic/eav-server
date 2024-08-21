@@ -19,7 +19,7 @@ public class AppWorkCtx : IAppWorkCtx
     {
         AppId = appState.AppId;
         ZoneId = appState.ZoneId;
-        AppState = appState;
+        AppReader = appState;
     }
 
     public AppWorkCtx(IAppWorkCtx original, IAppReader appState = default)
@@ -27,9 +27,9 @@ public class AppWorkCtx : IAppWorkCtx
         if (original == null) throw new ArgumentException(@"Original must exist", nameof(original));
         AppId = appState?.AppId ?? original.AppId;
         ZoneId = appState?.ZoneId ?? original.ZoneId;
-        AppState = appState ?? original.AppState;
+        AppReader = appState ?? original.AppReader;
     }
 
-    public IAppReader AppState { get; }
+    public IAppReader AppReader { get; }
 
 }

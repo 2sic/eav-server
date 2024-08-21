@@ -56,10 +56,10 @@ public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stac
         var l = Log.Fn<AppStateStack>(target.Target.ToString());
         // Site should be skipped on the global zone
         l.A($"Owner: {AppSpecs.Show()}");
-        var site = AppSpecs.ZoneId == Constants.DefaultZoneId
+        var siteAppReader = AppSpecs.ZoneId == Constants.DefaultZoneId
             ? null
             : appReaders.GetPrimaryReader(AppSpecs.ZoneId, Log);
-        l.A($"Site: {site?.Show()}");
+        l.A($"Site: {siteAppReader?.Show()}");
         var global = appReaders.GetReader(Constants.GlobalIdentity);
         l.A($"Global: {global?.Show()}");
         var preset = appReaders.GetPresetReader();
@@ -70,7 +70,7 @@ public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stac
         var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId ? null : appAncestor;
         l.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
 
-        var stackCache = new AppStateStack(AppSpecs.Cache, ancestorIfNotPreset, site?.StateCache, global?.StateCache, preset?.StateCache, target);
+        var stackCache = new AppStateStack(AppSpecs.Cache, ancestorIfNotPreset, siteAppReader?.StateCache, global?.StateCache, preset?.StateCache, target);
 
         return l.ReturnAndLog(stackCache, "created");
     }

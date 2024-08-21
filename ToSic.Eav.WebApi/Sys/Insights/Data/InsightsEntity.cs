@@ -30,7 +30,7 @@ internal class InsightsEntity(GenWorkPlus<WorkEntities> workEntities, Generator<
         else
             throw HttpException.BadRequest("can't use entityid - must be number or guid");
 
-        var ser = jsonSerializer.New().SetApp(entities.AppWorkCtx.AppState);
+        var ser = jsonSerializer.New().SetApp(entities.AppWorkCtx.AppReader);
         var json = ser.Serialize(ent);
 
         var msg = H1($"Entity Debug for {NameId} in {AppId}\n")

@@ -22,7 +22,7 @@ public partial class DataSourceOptions
 
             // Most complex case, both are now "real" - must merge
             return new DataSourceOptions(original,
-                appIdentity: secondDs.AppIdentity,
+                appIdentity: secondDs.AppIdentityOrReader,
                 values: secondDs.Values,
                 lookUp: secondDs.LookUp,
                 showDrafts: secondDs.ShowDrafts);

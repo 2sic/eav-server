@@ -14,7 +14,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     /// <summary>
     /// All entities in the app - this also includes system entities like data-source configuration etc.
     /// </summary>
-    public IImmutableList<IEntity> All() => AppWorkCtx.AppState.List;
+    public IImmutableList<IEntity> All() => AppWorkCtx.AppReader.List;
 
     /// <summary>
     /// All content-entities. It does not include system-entity items.
@@ -33,13 +33,13 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     /// <summary>
     /// Get this item or return null if not found
     /// </summary>
-    public IEntity Get(int entityId) => AppWorkCtx.AppState.List.FindRepoId(entityId);
+    public IEntity Get(int entityId) => AppWorkCtx.AppReader.List.FindRepoId(entityId);
 
     /// <summary>
     /// Get this item or return null if not found
     /// </summary>
     /// <returns></returns>
-    public IEntity Get(Guid entityGuid) => AppWorkCtx.AppState.List.One(entityGuid);
+    public IEntity Get(Guid entityGuid) => AppWorkCtx.AppReader.List.One(entityGuid);
 
 
     public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus overrideWorkCtx = default)
