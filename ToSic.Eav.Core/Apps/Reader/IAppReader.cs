@@ -14,7 +14,7 @@ public interface IAppReader: IAppState, IHasPiggyBack, IMetadataOfSource, IHas<I
 
     IAppStateCache ParentAppState { get; }
 
-    SynchronizedEntityList ListCache { get; }
+    //SynchronizedEntityList ListCache { get; }
 
     public SynchronizedList<IEntity> ListPublished { get; }
 

@@ -73,7 +73,7 @@ public abstract class XmlExporter(
         ContextResolver.SetApp(new AppIdentity(zoneId, appId));
         var ctxOfApp = ContextResolver.AppRequired();
         PostContextInit(ctxOfApp);
-        Constructor(zoneId, appRuntime, ctxOfApp.AppState.NameId, appExport, attrSetIds, entityIds);
+        Constructor(zoneId, appRuntime, ctxOfApp.AppReader.NameId, appExport, attrSetIds, entityIds);
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
         InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);

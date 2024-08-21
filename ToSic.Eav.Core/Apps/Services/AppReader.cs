@@ -62,7 +62,7 @@ internal class AppReader() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWit
 
     IAppStateCache IAppReader.StateCache => _appState;
     IAppStateCache IAppReader.ParentAppState => _appState.ParentApp?.AppState;
-    SynchronizedEntityList IAppReader.ListCache => _appState.ListCache;
+    //SynchronizedEntityList IAppReader.ListCache => _appState.ListCache;
 
     SynchronizedList<IEntity> IAppReader.ListPublished => _appState.ListPublished;
 

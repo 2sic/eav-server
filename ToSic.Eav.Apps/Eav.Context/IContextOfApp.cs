@@ -8,7 +8,7 @@ public interface IContextOfApp: IContextOfSite
     /// <summary>
     /// The App State which the current context has
     /// </summary>
-    IAppReader AppState { get; }
+    IAppReader AppReader { get; }
 
     /// <summary>
     /// Reset call to change what AppState is in the context.

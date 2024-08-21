@@ -78,14 +78,14 @@ public class QueryManager(
     internal IImmutableList<IEntity> AllQueryItems(IAppIdentity appIdOrReader, int recurseParents = 0)
     {
         var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
-        var appState = appReaders.Value.KeepOrGetReader(appIdOrReader);
-        var result = appState.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
+        var appReader = appReaders.Value.KeepOrGetReader(appIdOrReader);
+        var result = appReader.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
         if (recurseParents <= 0)
             return l.Return(result, "ok, no recursions");
         l.A($"Try to recurse parents {recurseParents}");
-        if (appState.ParentAppState == null)
+        if (appReader.ParentAppState == null)
             return l.Return(result, "no more parents to recurse on");
-        var resultFromParents = AllQueryItems(appState.ParentAppState, recurseParents -1);
+        var resultFromParents = AllQueryItems(appReader.ParentAppState, recurseParents -1);
         result = [.. result, .. resultFromParents];
         return l.Return(result, "ok");
     }

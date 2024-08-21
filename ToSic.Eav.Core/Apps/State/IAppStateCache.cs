@@ -19,8 +19,6 @@ public interface IAppStateCache: ICacheExpiring, IHasMetadata, IHasPiggyBack, IA
 
     string Folder { get; }
 
-    //AppRelationshipManager Relationships { get; }
-
     AppStateMetadata ThingInApp(AppThingsToStack target);
 
     ParentAppState ParentApp { get; }

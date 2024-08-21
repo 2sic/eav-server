@@ -87,7 +87,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
             return (true, "super");
 
         // Case 2: No App-State
-        if (AppState == null)
+        if (AppReader == null)
         {
             if (UserMayAdmin)
                 return (true, "no app, use UserMayAdmin checks");
@@ -102,12 +102,12 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
         // Case 3: From App
         var fromApp = Services.AppPermissionCheck.New()
-            .ForAppInInstance(this, AppState)
+            .ForAppInInstance(this, AppReader)
             .UserMay(GrantSets.WriteSomething);
 
         // Check if language permissions may alter / remove edit permissions
         if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppState) ?? true;
+            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReader) ?? true;
 
         return (fromApp, $"{fromApp}");
     }));
@@ -116,12 +116,12 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     #endregion
 
 
-    public IAppReader AppState => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppReaders.GetReader(AppIdentity));
+    public IAppReader AppReader => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppReaders.GetReader(AppIdentity));
     private readonly GetOnce<IAppReader> _appStateInternal = new();
 
     #region Settings and Resources
 
-    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppState));
+    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppReader));
     private readonly GetOnce<AppDataStackService> _appSettingsStack = new();
 
     public PropertyStack AppSettings => _settings.Get(() => AppDataStackService.GetStack(RootNameSettings));

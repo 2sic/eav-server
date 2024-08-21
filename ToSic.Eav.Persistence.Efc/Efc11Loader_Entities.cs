@@ -111,7 +111,7 @@ partial class Efc11Loader
 
 
 
-    private IEntity BuildNewEntity(IAppReader app, TempEntity e, 
+    private IEntity BuildNewEntity(IAppReader appReader, TempEntity e, 
         IDataDeserializer serializer,
         Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
         Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,
@@ -136,14 +136,14 @@ partial class Efc11Loader
             return clonedExtended; // fromJson;
         }
 
-        var contentType = app.GetContentType(e.AttributeSetId);
+        var contentType = appReader.GetContentType(e.AttributeSetId);
         if (contentType == null)
             throw new NullReferenceException("content type is not found for type " + e.AttributeSetId);
 
         // Prepare relationships to add to AttributeGenerator
         var emptyValueList = new List<(string StaticName, IValue)>();
         var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
-            ? rawRels.Select(r => (r.StaticName, dataBuilder.Value.Relationship(r.Children, app.StateCache))).ToList()
+            ? rawRels.Select(r => (r.StaticName, dataBuilder.Value.Relationship(r.Children, appReader.StateCache))).ToList()
             : emptyValueList;
 
         var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
@@ -172,9 +172,9 @@ partial class Efc11Loader
 
         // Get all Attributes of that Content-Type
         var newAttributes = dataBuilder.Attribute.Create(contentType, mergedValueLookups);
-        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: app.StateCache, metadata: null);
+        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: appReader.StateCache, metadata: null);
         var newEntity = dataBuilder.Entity.Create(
-            appId: app.AppId,
+            appId: appReader.AppId,
             guid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,
             metadataFor: e.MetadataFor, 
             contentType: contentType, isPublished: e.IsPublished,

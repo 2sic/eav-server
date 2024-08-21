@@ -25,21 +25,22 @@ internal class InsightsAppsCache(LazySvc<IAppStates> appStates, LazySvc<IAppRead
                 {
                     var appIdentity = new AppIdentity(zone.Value.ZoneId, a.Key);
                     var inCache = appStates.Value.IsCached(appIdentity);
-                    var appState = inCache ? appReaders.Value.GetReader(appIdentity) : null;
+                    var appReader = inCache ? appReaders.Value.GetReader(appIdentity) : null;
+                    var appState = inCache ? appStates.Value.Get(appIdentity) : null;
                     return new
                     {
                         Id = a.Key,
                         Guid = a.Value,
                         InCache = inCache,
                         Name = inCache
-                            ? appState?.Name ?? "unknown, app-infos not json"
+                            ? appReader?.Name ?? "unknown, app-infos not json"
                             : "not-loaded",
                         Folder = inCache
-                            ? appState?.Folder ?? "unknown, app-infos not json"
+                            ? appReader?.Folder ?? "unknown, app-infos not json"
                             : "not-loaded",
-                        Hash = appState?.StateCache?.GetHashCode(),
-                        TS = appState?.StateCache?.CacheTimestamp,
-                        ListTs = appState?.ListCache?.CacheTimestamp,
+                        Hash = appState?.GetHashCode(),
+                        TS = appState?.CacheTimestamp,
+                        ListTs = appState?.CacheTimestamp,
                     };
                 })
                 .OrderBy(a => a.Id);

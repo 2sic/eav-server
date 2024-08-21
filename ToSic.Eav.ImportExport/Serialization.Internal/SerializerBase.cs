@@ -35,7 +35,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     public void Initialize(IAppReader appState)
     {
-        AppStateOrNull = appState.Internal();
+        AppReaderOrNull = appState.Internal();
         AppId = appState.AppId;
     }
 
@@ -50,14 +50,14 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     #endregion
 
-    public IAppReader AppStateOrError => AppStateOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
-    protected IAppReader AppStateOrNull { get; private set; }
+    public IAppReader AppReaderOrError => AppReaderOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+    protected IAppReader AppReaderOrNull { get; private set; }
 
     public bool PreferLocalAppTypes = false;
 
-    protected IContentType GetContentType(string staticName
-    ) => Log.Func($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", () =>
+    protected IContentType GetContentType(string staticName)
     {
+        var l = Log.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}");
         // There is a complex lookup we must protocol, to better detect issues, which is why we assemble a message
         var msg = "";
 
@@ -66,14 +66,16 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
         // ReSharper disable once InvertIf
         if (PreferLocalAppTypes)
         {
-            var type = AppStateOrError.GetContentType(staticName);
-            if (type != null) return (type, $"app: found");
+            var type = AppReaderOrError.GetContentType(staticName);
+            if (type != null)
+                return l.Return(type, $"app: found");
             msg += "app: not found, ";
         }
 
         var globalType = _globalAppOrNull?.GetContentType(staticName);
 
-        if (globalType != null) return (globalType, $"{msg}global: found");
+        if (globalType != null)
+            return l.Return(globalType, $"{msg}global: found");
         msg += "global: not found, ";
 
         if (_types != null)
@@ -84,11 +86,11 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
         else
         {
             msg += "app: ";
-            globalType = AppStateOrError.GetContentType(staticName);
+            globalType = AppReaderOrError.GetContentType(staticName);
         }
 
-        return (globalType, $"{msg}{(globalType == null ? "not " : "")}found");
-    });
+        return l.Return(globalType, $"{msg}{(globalType == null ? "not " : "")}found");
+    }
 
     protected IContentType GetTransientContentType(string name, string nameId)
     {
@@ -103,7 +105,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
     /// </summary>
     internal JsonDeSerializationSettings DeserializationSettings { get; set; } = null;
 
-    protected IEntity Lookup(int entityId) => AppStateOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
+    protected IEntity Lookup(int entityId) => AppReaderOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 
     public abstract string Serialize(IEntity entity);
 
@@ -113,7 +115,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 
-    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppStateOrError.StateCache;
+    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppReaderOrError.StateCache;
     private IEntitiesSource _relList;
 
 }

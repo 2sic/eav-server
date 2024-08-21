@@ -47,13 +47,13 @@ internal class AppWithParents: DataSourceBase
 
     private IImmutableList<IEntity> GetList() => Log.Func(() =>
     {
-        var appState = _appReaders.GetReader(this);
+        var appReader = _appReaders.GetReader(this);
             
-        var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appState));
+        var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appReader));
         var initialLink = initialSource.Link;
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-        var parentAppState = appState.ParentAppState;
+        var parentAppState = appReader.ParentAppState;
         var countRecursions = 0;
         while (parentAppState != null && countRecursions++ < 5)
         {
