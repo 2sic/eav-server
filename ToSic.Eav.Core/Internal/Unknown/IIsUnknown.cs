@@ -5,6 +5,4 @@
 /// This will often reduce functionality if such objects are found
 /// </summary>
 [PrivateApi]
-public interface IIsUnknown
-{
-}
+public interface IIsUnknown;

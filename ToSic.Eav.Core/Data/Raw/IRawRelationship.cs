@@ -9,6 +9,4 @@
 /// </remarks>
 [PrivateApi("was internal till 16.09")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public interface IRawRelationship
-{
-}
+public interface IRawRelationship;

@@ -1,5 +1,3 @@
 ﻿namespace ToSic.Eav.Apps;
 
-public interface IAppIdentityPure: IAppIdentity
-{
-}
+public interface IAppIdentityPure: IAppIdentity;

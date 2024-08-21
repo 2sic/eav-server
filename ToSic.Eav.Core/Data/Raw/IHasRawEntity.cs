@@ -16,7 +16,4 @@ public interface IHasRawEntity<out T>: IHasRawEntity where T: IRawEntity
 }
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public interface IHasRawEntity
-{
-
-}
+public interface IHasRawEntity;

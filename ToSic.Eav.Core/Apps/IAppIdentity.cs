@@ -8,6 +8,4 @@
 /// But this would be inefficient, so for optimization, many items identify themselves with both the app and zone Ids
 /// </remarks>
 [PublicApi]
-public interface IAppIdentity: IZoneIdentity, IAppIdentityLight
-{
-}
+public interface IAppIdentity: IZoneIdentity, IAppIdentityLight;
