@@ -111,7 +111,7 @@ partial class Efc11Loader
 
 
 
-    private IEntity BuildNewEntity(IAppStateInternal app, TempEntity e, 
+    private IEntity BuildNewEntity(IAppReader app, TempEntity e, 
         IDataDeserializer serializer,
         Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
         Dictionary<int, IEnumerable<TempAttributeWithValues>> attributes,

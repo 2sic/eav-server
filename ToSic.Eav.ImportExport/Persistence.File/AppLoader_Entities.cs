@@ -1,13 +1,14 @@
-﻿using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Loaders;
 
 namespace ToSic.Eav.Persistence.File;
 
 partial class AppLoader
 {
-    private List<IEntity> LoadGlobalEntities(IAppState appState)
+    private List<IEntity> LoadGlobalEntities(IAppReader appReader)
     {
-        var l = Log.Fn<List<IEntity>>($"appId:{appState.AppId}");
+        var l = Log.Fn<List<IEntity>>($"appId:{appReader.AppId}");
         // Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;
         Loaders.ForEach(ldr => ldr.EntityIdSeed = FsDataConstants.GlobalEntityIdMin + FsDataConstants.GlobalEntitySourceSkip * loaderIndex++);
@@ -21,7 +22,7 @@ partial class AppLoader
                 .Select(folder => new EntitySetsToLoad
                 {
                     Folder = folder,
-                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appState) ?? []
+                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appReader) ?? []
                 })
                 .ToList();
 
@@ -58,7 +59,7 @@ partial class AppLoader
         return l.ReturnAsOk(final);
     }
 
-    private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppState appState) 
+    private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
     {
         var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}");
         if (!FsDataConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
@@ -69,7 +70,7 @@ partial class AppLoader
         var entities = new List<IEntity>();
         foreach (var loader in Loaders)
         {
-            loader.ResetSerializer(appState);
+            loader.ResetSerializer(appReader);
             entities.AddRange(loader.Entities(groupIdentifier, loader.EntityIdSeed, relationshipSource));
         }
 

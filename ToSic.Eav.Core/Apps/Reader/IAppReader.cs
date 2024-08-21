@@ -1,12 +1,13 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps;
 
-public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource, IHas<IAppSpecs>, IAppSpecsWithStateAndCache
+public interface IAppReader: IAppState, IHasPiggyBack, IMetadataOfSource, IHas<IAppSpecs>, IAppSpecsWithStateAndCache
 {
     IAppStateCache StateCache { get; }
 
@@ -25,10 +26,7 @@ public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource,
 
     IEntity ConfigurationEntity { get; }
 
-    //IContentType GetContentType(int contentTypeId);
-
     ParentAppState ParentApp { get; }
 
     AppRelationshipManager Relationships { get; }
-
 }

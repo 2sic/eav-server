@@ -43,7 +43,7 @@ public class EntityApi(
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
-    public IEnumerable<IDictionary<string, object>> GetEntities(IAppStateInternal appState, string contentType, bool showDrafts, string oDataSelect)
+    public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appState, string contentType, bool showDrafts, string oDataSelect)
     {
         var list = workEntities.New(appState, showDrafts).Get(contentType);
         var converter= entitiesToDicLazy.New();

@@ -25,7 +25,7 @@ public class LanguagesBackend(
         return l.Return(cultures, "found:" + cultures.Count);
     }
 
-    public List<SiteLanguageDto> GetLanguagesOfApp(IAppStateInternal appStateOrNull, bool withCount = false)
+    public List<SiteLanguageDto> GetLanguagesOfApp(IAppReader appStateOrNull, bool withCount = false)
     {
         try
         {

@@ -26,11 +26,11 @@ namespace ToSic.Eav.ImportExport.Tests
         public void Xml_SerializeItemOnHome()
         {
             var test = new SpecsTestExportSerialize();
-            var app = GetService<IRepositoryLoader>().AppStateReaderRawTA(test.AppId);
+            var appReader = GetService<IRepositoryLoader>().AppStateReaderRawTA(test.AppId);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
             var languageMap = GetService<IAppStates>().Languages(test.ZoneId)
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
-            var exBuilder = _xmlSerializer.Init(languageMap, app);
+            var exBuilder = _xmlSerializer.Init(languageMap, appReader);
             var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
             Assert.IsTrue(xmlEnt.Length > 200, "should get a long xml string");
             Trace.Write(xmlEnt);
@@ -43,16 +43,16 @@ namespace ToSic.Eav.ImportExport.Tests
         {
             var test = new SpecsTestExportSerialize();
             var appId = test.AppId;
-            var app = GetService<IRepositoryLoader>().AppStateReaderRawTA(appId);
+            var appReader = GetService<IRepositoryLoader>().AppStateReaderRawTA(appId);
             var languageMap = GetService<IAppStates>().Languages(test.ZoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
-            var exBuilder = _xmlSerializer.Init(languageMap, app);
+            var exBuilder = _xmlSerializer.Init(languageMap, appReader);
 
             var maxCount = 500;
             var skip = 0;
             var count = 0;
             try
             {
-                foreach (var appEntity in app.List)
+                foreach (var appEntity in appReader.List)
                 {
                     // maybe skip some
                     if (count++ < skip) continue;

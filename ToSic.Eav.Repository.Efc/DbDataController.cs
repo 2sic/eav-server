@@ -137,7 +137,7 @@ public class DbDataController(
     /// </summary>
     /// <param name="appState"></param>
     /// <returns></returns>
-    public DbDataController Init(IAppStateInternal appState)
+    public DbDataController Init(IAppReader appState)
         => Init(appState.ZoneId, appState.AppId, appState.ParentAppState?.AppId);
 
     /// <summary>

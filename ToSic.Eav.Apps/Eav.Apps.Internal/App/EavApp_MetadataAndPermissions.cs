@@ -1,11 +1,10 @@
-﻿using ToSic.Eav.Apps.State;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.Internal;
 
-partial class EavApp: IHasPermissions
+partial class EavApp: IHasPermissions, IAppWithInternal
 {
     #region Metadata and Permission Accessors
 
@@ -29,28 +28,29 @@ partial class EavApp: IHasPermissions
     protected void InitializeResourcesSettingsAndMetadata()
     {
         var l = Log.Fn();
-        var appState = AppStateInt;
-        Metadata = appState.Metadata;
+        var appReader = AppStateInt;
+        Metadata = appReader.Metadata;
 
         // Get the content-items describing various aspects of this app
-        AppResources = appState.ResourcesInApp.MetadataItem;
-        AppSettings = appState.SettingsInApp.MetadataItem;
+        AppResources = appReader.ResourcesInApp.MetadataItem;
+        AppSettings = appReader.SettingsInApp.MetadataItem;
         // in some cases these things may be null, if the app was created not allowing side-effects
         // This can usually happen when new apps are being created
         l.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppStateInt.ConfigurationEntity != null}");
 
         // resolve some values for easier access
-        Name = appState.Name ?? Constants.ErrorAppName;
-        Folder = appState.Folder ?? Constants.ErrorAppName;
+        Name = appReader.Name ?? Constants.ErrorAppName;
+        Folder = appReader.Folder ?? Constants.ErrorAppName;
 
-        // 2024-01-11 2dm - #RemoveIApp.Hidden for v17 - kill code ca. 2024-07 (Q3)
-        //Hidden = AppStateInt.ConfigurationEntity?.Value<bool>(AppLoadConstants.FieldHidden) ?? false;
         l.Done($"Name: {Name}, Folder: {Folder}");
     }
     #endregion
 
-    [PrivateApi("kind of slipped into public till 16.09, but only on the object, never on the IApp, so probably never discovered")]
-    public IAppState AppState => AppStateInt;
+    // 2024-08-21 2dm - commented out now, for 18.01
+    //[PrivateApi("kind of slipped into public till 16.09, but only on the object, never on the IApp, so probably never discovered")]
+    //public IAppState AppState => AppStateInt;
 
-    protected internal IAppStateInternal AppStateInt { get; private set; }
+    protected internal IAppReader AppStateInt { get; private set; }
+
+    IAppReader IAppWithInternal.AppReader => AppStateInt;
 }

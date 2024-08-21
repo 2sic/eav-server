@@ -27,35 +27,33 @@ internal class AppReaders(IAppStates appStates, Generator<AppStateDataService> r
             ? GetPresetReader()
             : null;
 
-    public IAppStateInternal KeepOrGetReader(IAppIdentity app)
-        => app as IAppStateInternal
+    public IAppReader KeepOrGetReader(IAppIdentity app)
+        => app as IAppReader
             ?? (app is IAppStateCache stateCache ? ToReader(stateCache) : null)
            ?? GetReader(app);
 
-    public IAppStateInternal GetReader(IAppIdentity app, ILog log = default)
+    public IAppReader GetReader(IAppIdentity app, ILog log = default)
     {
         var state = appStates.Get(app);
         return state is null ? null : ToReader(state, log);
     }
 
-    public IAppStateInternal GetReader(int appId, ILog log = default)
+    public IAppReader GetReader(int appId, ILog log = default)
     {
         var state = appStates.GetCacheState(appId);
         return state is null ? null : ToReader(state, log);
     }
 
-    public IAppStateInternal GetPrimaryReader(int zoneId, ILog log)
+    public IAppReader GetPrimaryReader(int zoneId, ILog log)
     {
-        var l = log.Fn<IAppStateInternal>($"{zoneId}");
+        var l = log.Fn<IAppReader>($"{zoneId}");
         var primaryAppId = appStates.IdentityOfPrimary(zoneId);
         return l.Return(GetReader(primaryAppId, log), primaryAppId.Show());
     }
 
-    public IAppStateInternal GetPresetReader()
+    public IAppReader GetPresetReader()
         => GetReader(PresetIdentity);
 
-
-    // todo: move the to-reader code here once we've changed all access
-    public IAppStateInternal ToReader(IAppStateCache state, ILog log = default)
+    public IAppReader ToReader(IAppStateCache state, ILog log = default)
         => readerGenerator.New().Init(state, log);
 }

@@ -20,9 +20,9 @@ public class AppWorkContextService(
     /// </summary>
     public IAppReaders AppReaders => appReaders.Value;
     
-    public IAppWorkCtx Context(IAppState appState) => new AppWorkCtx(appState);
+    public IAppWorkCtx Context(IAppReader appState) => new AppWorkCtx(appState);
 
-    public IAppWorkCtxPlus ContextPlus(IAppState appState, bool? showDrafts = default, IDataSource data = default)
+    public IAppWorkCtxPlus ContextPlus(IAppReader appState, bool? showDrafts = default, IDataSource data = default)
         => new AppWorkCtxPlus(dataSourceSvc.Value, appState, showDrafts, data);
 
     public IAppWorkCtx Context(int appId) => new AppWorkCtx(appReaders.Value.GetReader(appId));
@@ -38,7 +38,7 @@ public class AppWorkContextService(
 
     public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity) => CtxWithDb(Context(identity).AppState);
 
-    public IAppWorkCtxWithDb CtxWithDb(IAppStateInternal appState, DbDataController existingDb = default)
+    public IAppWorkCtxWithDb CtxWithDb(IAppReader appState, DbDataController existingDb = default)
         => existingDb == null
             ? new(dbGen.New().SetInit(dc => dc.Init(appState)), appState)
             : new AppWorkCtxWithDb(existingDb, appState);

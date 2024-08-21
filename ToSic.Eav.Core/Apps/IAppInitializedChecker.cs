@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps.State;
+
+namespace ToSic.Eav.Apps;
 
 /// <summary>
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
@@ -14,5 +16,5 @@ public interface IAppInitializedChecker
     /// <param name="codeRefTrail"></param>
     /// <param name="parentLog"></param>
     /// <returns></returns>
-    bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppState appIdentity, string appName, CodeRefTrail codeRefTrail, ILog parentLog);
+    bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appIdentity, string appName, CodeRefTrail codeRefTrail, ILog parentLog);
 }

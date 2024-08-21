@@ -15,21 +15,14 @@ public class AppWorkCtx : IAppWorkCtx
     /// <inheritdoc />
     public int AppId { get; }
 
-    public AppWorkCtx(IAppState appState)
-    {
-        AppId = appState.AppId;
-        ZoneId = appState.ZoneId;
-        AppState = appState.Internal();
-    }
-
-    public AppWorkCtx(IAppStateInternal appState)
+    public AppWorkCtx(IAppReader appState)
     {
         AppId = appState.AppId;
         ZoneId = appState.ZoneId;
         AppState = appState;
     }
 
-    public AppWorkCtx(IAppWorkCtx original, IAppStateInternal appState = default)
+    public AppWorkCtx(IAppWorkCtx original, IAppReader appState = default)
     {
         if (original == null) throw new ArgumentException(@"Original must exist", nameof(original));
         AppId = appState?.AppId ?? original.AppId;
@@ -37,8 +30,6 @@ public class AppWorkCtx : IAppWorkCtx
         AppState = appState ?? original.AppState;
     }
 
-
-    //public AppState AppState { get; }
-    public IAppStateInternal AppState { get; }
+    public IAppReader AppState { get; }
 
 }

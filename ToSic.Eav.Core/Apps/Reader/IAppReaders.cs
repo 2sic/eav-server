@@ -18,16 +18,16 @@ public interface IAppReaders
 
     IAppContentTypeService GetPresetReaderIfAlreadyLoaded();
 
-    IAppStateInternal KeepOrGetReader(IAppIdentity app);
+    IAppReader KeepOrGetReader(IAppIdentity app);
 
-    IAppStateInternal GetReader(IAppIdentity app, ILog log = default);
+    IAppReader GetReader(IAppIdentity app, ILog log = default);
 
-    IAppStateInternal GetReader(int appId, ILog log = default);
+    IAppReader GetReader(int appId, ILog log = default);
 
-    IAppStateInternal GetPrimaryReader(int zoneId, ILog log);
+    IAppReader GetPrimaryReader(int zoneId, ILog log);
 
-    IAppStateInternal GetPresetReader();
+    IAppReader GetPresetReader();
 
-    IAppStateInternal ToReader(IAppStateCache state, ILog log = default);
+    IAppReader ToReader(IAppStateCache state, ILog log = default);
 
 }

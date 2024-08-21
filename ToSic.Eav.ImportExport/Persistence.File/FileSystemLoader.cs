@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
@@ -59,9 +60,9 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
     }
     private JsonSerializer _ser;
 
-    internal void ResetSerializer(IAppState appState)
+    internal void ResetSerializer(IAppReader appReader)
     {
-        var serializer = jsonSerializerGenerator.New().SetApp(appState);
+        var serializer = jsonSerializerGenerator.New().SetApp(appReader);
         _ser = serializer;
     }
     internal void ResetSerializer(List<IContentType> types)

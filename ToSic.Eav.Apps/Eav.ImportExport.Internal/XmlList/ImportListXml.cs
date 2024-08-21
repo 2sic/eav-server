@@ -24,16 +24,12 @@ public partial class ImportListXml(
     : ServiceBase("App.ImpVtT", connect: [builder, importerLazy, entDelete])
 {
 
-    #region Dependency Injection
-
-    #endregion
-
     #region Init
 
     private IContentType ContentType { get; set; }
     private List<IEntity> ExistingEntities { get; set; }
 
-    private IAppState AppState { get; set; }
+    private IAppReader AppReader { get; set; }
 
     /// <summary>
     /// Create a xml import. The data stream passed will be imported to memory, and checked 
@@ -47,7 +43,7 @@ public partial class ImportListXml(
     /// <param name="deleteSetting">How to handle entities already in the repository</param>
     /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
     public ImportListXml Init(
-        IAppState appState,
+        IAppReader appState,
         string typeName,
         Stream dataStream, 
         IEnumerable<string> languages, 
@@ -58,8 +54,8 @@ public partial class ImportListXml(
         ErrorLog = new(Log);
         var contentType = appState.GetContentType(typeName);
 
-        AppState = appState;
-        _appId = AppState.AppId;
+        AppReader = appState;
+        _appId = AppReader.AppId;
 
         ContentType = contentType;
         if (ContentType == null)
@@ -69,12 +65,12 @@ public partial class ImportListXml(
         }
         Log.A("Content type ok:" + contentType.Name);
 
-        ExistingEntities = AppState.List.Where(e => e.Type == contentType).ToList();
+        ExistingEntities = AppReader.List.Where(e => e.Type == contentType).ToList();
         Log.A($"Existing entities: {ExistingEntities.Count}");
 
         _languages = languages?.ToList();
         if (_languages == null || !_languages.Any())
-            _languages = new[] { string.Empty };
+            _languages = [string.Empty];
 
         _languages = _languages.Select(l => l.ToLowerInvariant()).ToList();
         _docLangPrimary = documentLanguageFallback.ToLowerInvariant();
@@ -284,7 +280,7 @@ public partial class ImportListXml(
         if (_deleteSetting == ImportDeleteUnmentionedItems.All)
         {
             var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
-            entDelete.New(AppState.Internal()).Delete(idsToDelete);
+            entDelete.New(AppReader).Delete(idsToDelete);
         }
 
         var import = importerLazy.Value.Init(null, _appId, false, true);

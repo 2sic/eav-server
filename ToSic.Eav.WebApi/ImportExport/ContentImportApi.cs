@@ -24,12 +24,12 @@ public class ContentImportApi(
     IAppReaders appReaders
 ) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appStates, appReaders])
 {
-    private IAppStateInternal _appState;
+    private IAppReader _appReader;
 
     public ContentImportApi Init(int appId)
     {
         var l = Log.Fn<ContentImportApi>($"app: {appId}");
-        _appState = appReaders.GetReader(appId);
+        _appReader = appReaders.GetReader(appId);
         return l.Return(this);
     }
 
@@ -74,10 +74,10 @@ public class ContentImportApi(
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
     {
         var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
-        var contextLanguages = appStates.Languages(_appState.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
+        var contextLanguages = appStates.Languages(_appReader.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
 
         using var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64));
-        var importer = importListXml.Value.Init(_appState, args.ContentType, contentSteam,
+        var importer = importListXml.Value.Init(_appReader, args.ContentType, contentSteam,
             contextLanguages, args.DefaultLanguage,
             args.ClearEntities, args.ImportResourcesReferences);
         return l.Return(importer);
@@ -89,13 +89,13 @@ public class ContentImportApi(
         var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
         try
         {
-            var deserializer = jsonSerializerLazy.Value.SetApp(_appState);
+            var deserializer = jsonSerializerLazy.Value.SetApp(_appReader);
             // Since we're importing directly into this app, we prefer local content-types
             deserializer.PreferLocalAppTypes = true;
 
             var listToImport = new List<IEntity> { deserializer.Deserialize(args.GetContentString()) };
 
-            workEntSave.New(_appState).Import(listToImport);
+            workEntSave.New(_appReader).Import(listToImport);
 
             return l.ReturnTrue();
         }

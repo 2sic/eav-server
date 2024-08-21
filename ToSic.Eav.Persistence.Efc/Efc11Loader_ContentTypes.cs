@@ -13,7 +13,7 @@ partial class Efc11Loader
         => LoadContentTypesFromDb(appId, source);
 
 
-    private IList<IContentType> LoadExtensionsTypesAndMerge(IAppStateInternal appReader, IList<IContentType> dbTypes)
+    private IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         try
@@ -48,7 +48,7 @@ partial class Efc11Loader
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private IList<IContentType> InitFileSystemContentTypes(IAppStateInternal appReader)
+    private IList<IContentType> InitFileSystemContentTypes(IAppReader appReader)
     {
         var l = Log.Fn<IList<IContentType>>();
         // must create a new loader for each app

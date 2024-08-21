@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Eav.Metadata;
 using static ToSic.Eav.Apps.AppLoadConstants;
 
 namespace ToSic.Eav.Apps.Internal.Work;
@@ -11,7 +12,7 @@ public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) :
     connect: [appInitGenerator]), IAppInitializedChecker
 {
     /// <inheritdoc />
-    public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppState appState, string appName, CodeRefTrail codeRefTrail, ILog parentLog)
+    public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appState, string appName, CodeRefTrail codeRefTrail, ILog parentLog)
     {
         var log = new Log("Eav.AppChk", parentLog);
         codeRefTrail.WithHere();

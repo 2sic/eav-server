@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
@@ -82,7 +83,7 @@ partial class App: IDataSourceReset
 
             var deferredStream = new DataStreamWithCustomCaching(
                 Services.CacheService,
-                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), ((IAppStateInternal)appState).StateCache,
+                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), ((IAppReader)appState).StateCache,
                     $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                 this,
                 typeName,

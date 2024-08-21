@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
@@ -35,7 +36,7 @@ public class AppInitializer(
     /// <param name="appState">The app State</param>
     /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
     /// <param name="codeRefTrail">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
-    public bool InitializeApp(IAppState appState, string newAppName, CodeRefTrail codeRefTrail)
+    public bool InitializeApp(IAppReader appState, string newAppName, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
         codeRefTrail.WithHere().AddMessage($"App: {appState.AppId}");
@@ -79,7 +80,7 @@ public class AppInitializer(
             addList.Add(new(TypeAppResources));
 
         // If the Types are missing, create these first
-        if (CreateAllMissingContentTypes(appState.Internal(), addList))
+        if (CreateAllMissingContentTypes(appState, addList))
         {
             // since the types were re-created, we must flush it from the cache
             // this is because other APIs may access the AppStates (though they shouldn't)
@@ -96,25 +97,22 @@ public class AppInitializer(
         return l.ReturnFalse("ok");
     }
 
-    private static string PickCorrectFolderName(string newAppName, string eavAppName)
-    {
-        if (eavAppName == Constants.DefaultAppGuid)
-            return Constants.ContentAppFolder;
-        if (eavAppName is Constants.PrimaryAppGuid or Constants.PrimaryAppName)
-            return Constants.PrimaryAppName;
-        return string.IsNullOrEmpty(newAppName)
-            ? eavAppName
-            : RemoveIllegalCharsFromPath(newAppName);
-    }
+    private static string PickCorrectFolderName(string newAppName, string eavAppName) =>
+        eavAppName switch
+        {
+            Constants.DefaultAppGuid => Constants.ContentAppFolder,
+            Constants.PrimaryAppGuid or Constants.PrimaryAppName => Constants.PrimaryAppName,
+            _ => string.IsNullOrEmpty(newAppName) ? eavAppName : RemoveIllegalCharsFromPath(newAppName)
+        };
 
 
-    private bool CreateAllMissingContentTypes(IAppState appStateRaw, List<AddContentTypeAndOrEntityTask> newItems)
+    private bool CreateAllMissingContentTypes(IAppReader appState, List<AddContentTypeAndOrEntityTask> newItems)
     {
         var l = Log.Fn<bool>($"Check for {newItems.Count}");
-        var typesMod = contentTypesMod.New(appStateRaw.Internal());
+        var typesMod = contentTypesMod.New(appState);
         var addedTypes = false;
         foreach (var item in newItems)
-            if (item.InAppType && FindContentType(appStateRaw, item.SetName, item.InAppType) == null)
+            if (item.InAppType && FindContentType(appState, item.SetName, item.InAppType) == null)
             {
                 l.A("couldn't find type, will create");
                 // create App-Man if not created yet
@@ -139,17 +137,17 @@ public class AppInitializer(
             throw l.Done(new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel"));
         }
 
-        var values = cTypeAndOrEntity.Values ?? new Dictionary<string, object>();
+        var values = cTypeAndOrEntity.Values ?? [];
         var attrs = builder.Value.Attribute.Create(values);
         var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appStateRaw.AppId);
         var newEnt = builder.Value.Entity
             .Create(appId: appStateRaw.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
 
-        entitySave.New(appStateRaw.Internal()).Save(newEnt);
+        entitySave.New(appStateRaw).Save(newEnt);
         l.Done();
     }
 
-    private IContentType FindContentType(IAppState appStateRaw, string setName, bool inAppType)
+    private IContentType FindContentType(IAppContentTypeService appStateRaw, string setName, bool inAppType)
     {
         // if it's an in-app type, it should check the app, otherwise it should check the global type
         // we're NOT asking the app for all types (which would be the normal way)

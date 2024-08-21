@@ -45,8 +45,8 @@ partial class AppState
         public IAppStateCache AppState => _appState ?? throw new("Can't use before calling some init");
         private IAppStateCache _appState;
 
-        public IAppStateInternal Reader => _reader ?? throw new("Can't use before calling some init");
-        private IAppStateInternal _reader;
+        public IAppReader Reader => _reader ?? throw new("Can't use before calling some init");
+        private IAppReader _reader;
 
         #endregion
 

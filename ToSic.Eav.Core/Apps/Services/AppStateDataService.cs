@@ -12,7 +12,7 @@ using ToSic.Sxc.Apps;
 
 namespace ToSic.Eav.Apps.Services;
 
-internal class AppStateDataService() : ServiceBase("App.Reader"), IAppStateInternal, IAppSpecsWithStateAndCache, IMetadataSource
+internal class AppStateDataService() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWithStateAndCache, IMetadataSource
 {
     internal AppStateDataService Init(IAppStateCache appState, ILog parentLog)
     {
@@ -60,20 +60,20 @@ internal class AppStateDataService() : ServiceBase("App.Reader"), IAppStateInter
     #region Internal
 
 
-    IAppStateCache IAppStateInternal.StateCache => _appState;
-    IAppStateCache IAppStateInternal.ParentAppState => _appState.ParentApp?.AppState;
-    SynchronizedEntityList IAppStateInternal.ListCache => _appState.ListCache;
+    IAppStateCache IAppReader.StateCache => _appState;
+    IAppStateCache IAppReader.ParentAppState => _appState.ParentApp?.AppState;
+    SynchronizedEntityList IAppReader.ListCache => _appState.ListCache;
 
-    SynchronizedList<IEntity> IAppStateInternal.ListPublished => _appState.ListPublished;
+    SynchronizedList<IEntity> IAppReader.ListPublished => _appState.ListPublished;
 
-    SynchronizedList<IEntity> IAppStateInternal.ListNotHavingDrafts => _appState.ListNotHavingDrafts;
-    AppStateMetadata IAppStateInternal.SettingsInApp => _appState.SettingsInApp;
+    SynchronizedList<IEntity> IAppReader.ListNotHavingDrafts => _appState.ListNotHavingDrafts;
+    AppStateMetadata IAppReader.SettingsInApp => _appState.SettingsInApp;
 
-    AppStateMetadata IAppStateInternal.ResourcesInApp => _appState.ResourcesInApp;
+    AppStateMetadata IAppReader.ResourcesInApp => _appState.ResourcesInApp;
 
-    ParentAppState IAppStateInternal.ParentApp => _appState.ParentApp;
+    ParentAppState IAppReader.ParentApp => _appState.ParentApp;
 
-    AppRelationshipManager IAppStateInternal.Relationships => _appState.Relationships;
+    AppRelationshipManager IAppReader.Relationships => _appState.Relationships;
 
     #endregion
 

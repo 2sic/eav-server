@@ -56,7 +56,7 @@ public class ZipExport(
         return this;
     }
 
-    private IAppStateInternal _appState;
+    private IAppReader _appState;
     #endregion
 
     public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool withSiteFiles = false)

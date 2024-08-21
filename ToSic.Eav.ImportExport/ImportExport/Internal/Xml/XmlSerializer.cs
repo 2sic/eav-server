@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Internal;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -10,9 +11,9 @@ public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(
 {
     private Dictionary<string, int> _dimensions;
 
-    public XmlSerializer Init(Dictionary<string, int> dimensionMapping, IAppState appState)
+    public XmlSerializer Init(Dictionary<string, int> dimensionMapping, IAppReader appReader)
     {
-        Initialize(appState);
+        Initialize(appReader);
         _dimensions = dimensionMapping;
         return this;
     }

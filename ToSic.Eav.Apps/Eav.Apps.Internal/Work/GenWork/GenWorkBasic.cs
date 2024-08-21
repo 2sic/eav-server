@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Apps.Internal.Work;
+﻿using ToSic.Eav.Apps.State;
+
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Helper to generate a App Work Unit class to get a single / simple thing done.
@@ -20,7 +22,7 @@ public class GenWorkBasic<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generato
     }
 
 
-    public TWork New(IAppState appState) => NewInternal(ctxSvc.Value.Context(appState));
+    public TWork New(IAppReader appState) => NewInternal(ctxSvc.Value.Context(appState));
 
     public TWork New(int appId) => NewInternal(ctxSvc.Value.Context(appId));
 

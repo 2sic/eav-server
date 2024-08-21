@@ -7,10 +7,13 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Serialization.Internal;
 
+/// <summary>
+/// Constructor for inheriting classes
+/// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, IDataSerializer
+public abstract class SerializerBase(SerializerBase.MyServices services, string logName) : ServiceBase<SerializerBase.MyServices>(services, logName), IDataSerializer
 {
-    #region Constructor / DI
+    #region MyServices
 
     public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaders appStates)
         : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates])
@@ -21,20 +24,16 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
         public IAppReaders AppStates { get; } = appStates;
     }
 
-    /// <summary>
-    /// Constructor for inheriting classes
-    /// </summary>
-    protected SerializerBase(MyServices services, string logName): base(services, logName)
-    {
-        MetadataTargets = services.MetadataTargets;
-        _globalAppOrNull = services.AppStates.GetPresetReaderIfAlreadyLoaded(); // important that it uses GlobalOrNull - because it may not be loaded yet
-    }
-    private readonly IAppContentTypeService _globalAppOrNull;
+    #endregion
 
-    public ITargetTypes MetadataTargets { get; }
+    #region Constructor / DI
+
+    private readonly IAppContentTypeService _globalAppOrNull = services.AppStates.GetPresetReaderIfAlreadyLoaded();
+
+    public ITargetTypes MetadataTargets { get; } = services.MetadataTargets;
 
 
-    public void Initialize(IAppState appState)
+    public void Initialize(IAppReader appState)
     {
         AppStateOrNull = appState.Internal();
         AppId = appState.AppId;
@@ -51,8 +50,8 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
     #endregion
 
-    public IAppStateInternal AppStateOrError => AppStateOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
-    protected IAppStateInternal AppStateOrNull { get; private set; }
+    public IAppReader AppStateOrError => AppStateOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+    protected IAppReader AppStateOrNull { get; private set; }
 
     public bool PreferLocalAppTypes = false;
 

@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.State;
-using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps;
 

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Serialization;
@@ -10,13 +11,7 @@ namespace ToSic.Eav.Serialization;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataSerializer
 {
-    ///// <summary>
-    ///// Initializer - necessary for most serializations
-    ///// </summary>
-    ///// <param name="appState">the app which contains the data to be serialized</param>
-    //void Initialize(AppState appState);
-
-    void Initialize(IAppState appState);
+    void Initialize(IAppReader appState);
 
     /// <summary>
     /// Serialize an entity to a string

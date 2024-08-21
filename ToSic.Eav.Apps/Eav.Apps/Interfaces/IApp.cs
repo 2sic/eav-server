@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Context;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Eav.Context;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Metadata;
 
@@ -21,15 +22,6 @@ public interface IApp : IAppIdentity, IHasMetadata
     /// </summary>
     /// <returns>The folder as configured in the app configuration.</returns>
     string Folder { get; }
-
-    // 2024-01-11 2dm - #RemoveIApp.Hidden for v17 - kill code ca. 2024-07 (Q3)
-    ///// <summary>
-    ///// If the app should be hidden from the normal app-picker.
-    ///// Important to configure apps once and then hide from normal users. 
-    ///// </summary>
-    ///// <returns>The hidden-state as configured in the app configuration.</returns>
-    //[PrivateApi("Made private in 16.04, previously public, but don't think that's how it should be.")]
-    //bool Hidden { get; }
 
     /// <summary>
     /// NameId of the App - usually a string-GUID
@@ -71,13 +63,19 @@ public interface IApp : IAppIdentity, IHasMetadata
     ILookUpEngine ConfigurationProvider { get; }
 
 
-    /// <summary>
-    /// The stored / cached, read-only App State
-    /// </summary>
-    [PrivateApi("Was public till 14.7 but probably never communicated / used except internally. Made Private again in 15.06. Till then was AppState, not interface")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    [Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
-    IAppState AppState { get; }
+    // 2024-08-21 2dm - commented out now, for 18.01
+    ///// <summary>
+    ///// The stored / cached, read-only App State
+    ///// </summary>
+    //[PrivateApi("Was public till 14.7 but probably never communicated / used except internally. Made Private again in 15.06. Till then was AppState, not interface")]
+    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //[Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
+    //IAppState AppState { get; }
 
     #endregion
+}
+
+public interface IAppWithInternal : IApp
+{
+    IAppReader AppReader { get; }
 }

@@ -36,7 +36,7 @@ public abstract class XmlExporter(
     public string[] EntityIDs;
     public List<Message> Messages = [];
 
-    public IAppStateInternal AppState { get; private set; }
+    public IAppReader AppState { get; private set; }
 
     public int ZoneId { get; private set; }
 
@@ -49,11 +49,11 @@ public abstract class XmlExporter(
     public XmlSerializer Serializer { get; } = xmlSerializer;
     protected readonly IAppStates AppStates = appStates;
 
-    protected void Constructor(int zoneId, IAppStateInternal appState, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
+    protected void Constructor(int zoneId, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
     {
         ZoneId = zoneId;
         Log.A("start XML exporter using app-package");
-        AppState = appState;
+        AppState = appReader;
         Serializer.Init(AppStates.Languages(zoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),
             AppState);
 
@@ -68,7 +68,7 @@ public abstract class XmlExporter(
     /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
     /// </summary>
     /// <returns></returns>
-    public virtual XmlExporter Init(int zoneId, int appId, IAppStateInternal appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+    public virtual XmlExporter Init(int zoneId, int appId, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
     {
         ContextResolver.SetApp(new AppIdentity(zoneId, appId));
         var ctxOfApp = ContextResolver.AppRequired();

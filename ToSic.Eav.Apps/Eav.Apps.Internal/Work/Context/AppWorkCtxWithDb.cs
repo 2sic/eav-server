@@ -13,7 +13,7 @@ public class AppWorkCtxWithDb : AppWorkCtx, IAppWorkCtxWithDb
     //{
     //    _dbLazy = dbLazy;
     //}
-    public AppWorkCtxWithDb(LazySvc<DbDataController> dbLazy, IAppStateInternal appState) : base(appState)
+    public AppWorkCtxWithDb(LazySvc<DbDataController> dbLazy, IAppReader appState) : base(appState)
     {
         _dbLazy = dbLazy;
     }
@@ -21,7 +21,7 @@ public class AppWorkCtxWithDb : AppWorkCtx, IAppWorkCtxWithDb
     //{
     //    _db = db;
     //}
-    public AppWorkCtxWithDb(DbDataController db, IAppStateInternal appState) : base(appState)
+    public AppWorkCtxWithDb(DbDataController db, IAppReader appState) : base(appState)
     {
         _db = db;
     }
