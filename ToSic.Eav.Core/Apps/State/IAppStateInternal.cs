@@ -1,10 +1,12 @@
-﻿using ToSic.Eav.Caching;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 
 namespace ToSic.Eav.Apps.State;
 
-public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource
+public interface IAppStateInternal: IAppState, IHasPiggyBack, IMetadataOfSource, IHas<IAppSpecs>, IAppSpecsWithStateAndCache
 {
     IAppStateCache StateCache { get; }
 

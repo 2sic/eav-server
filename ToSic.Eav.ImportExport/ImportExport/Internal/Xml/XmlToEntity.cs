@@ -17,12 +17,13 @@ public class XmlToEntity: ServiceBase
         public List<DimensionDefinition> PrioritizedDimensions = [];
     }
 
-    public XmlToEntity(IAppStates appStates, DataBuilder dataBuilder) : base("Imp.XmlEnt")
+    public XmlToEntity(IAppReaders appReaders, DataBuilder dataBuilder) : base("Imp.XmlEnt")
     {
         ConnectLogs([
-            _dataBuilder = dataBuilder
+            _dataBuilder = dataBuilder,
+            appReaders,
         ]);
-        _presetApp = appStates.GetPresetReader();
+        _presetApp = appReaders.GetPresetReader();
     }
 
     private readonly DataBuilder _dataBuilder;

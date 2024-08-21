@@ -4,13 +4,13 @@ using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsTypes(IAppStates appStates, string name) : InsightsProvider(name, helpCategory: HiddenFromAutoDisplay)
+internal class InsightsTypes(IAppReaders appStates, string name) : InsightsProvider(name, helpCategory: HiddenFromAutoDisplay)
 {
     public static string Link = "Types";
 
-    protected readonly IAppStates AppStates = appStates;
+    protected readonly IAppReaders AppStates = appStates;
 
-    public InsightsTypes(IAppStates appStates) : this(appStates, "Types") { }
+    public InsightsTypes(IAppReaders appStates) : this(appStates, "Types") { }
 
     public override string Title => $"Content Types for App: {AppId}";
 

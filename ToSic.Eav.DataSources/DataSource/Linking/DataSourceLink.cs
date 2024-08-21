@@ -47,7 +47,7 @@ internal class DataSourceLink(IDataSourceLink original,
     public IEnumerable<IDataSourceLink> Flatten(int recursion = 0)
     {
         var list = Enumerable.Empty<IDataSourceLink>();
-        if (recursion > 10) return Enumerable.Empty<IDataSourceLink>();
+        if (recursion > 10) return [];
         list = list.Concat(new[] { this });
         if (More.SafeAny()) list = list.Concat(More.SelectMany(m => m.Flatten(recursion + 1)));
         return list;

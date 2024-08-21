@@ -2,7 +2,6 @@
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSources.Sys.Internal;
 using static ToSic.Eav.Apps.AppStackConstants;
@@ -20,7 +19,8 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "f9aca0f0-1b1b-4414-b42e-b337de124124"
     // HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes"
 )]
-public class SystemStack: Eav.DataSource.DataSourceBase
+// ReSharper disable once UnusedMember.Global
+public class SystemStack: DataSourceBase
 {
     #region Configuration
 
@@ -65,7 +65,7 @@ public class SystemStack: Eav.DataSource.DataSourceBase
     {
         Configuration.Parse();
 
-        var appState = _appStates.GetReader(this);
+        var appState = _appStates.Get(this.PureIdentity());
 
         var languages = _zoneCulture.SafeLanguagePriorityCodes();
 

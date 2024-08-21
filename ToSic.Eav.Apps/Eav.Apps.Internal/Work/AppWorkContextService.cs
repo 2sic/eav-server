@@ -11,27 +11,27 @@ namespace ToSic.Eav.Apps.Internal.Work;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppWorkContextService(
     LazySvc<IDataSourcesService> dataSourceSvc,
-    LazySvc<IAppStates> appStates,
+    LazySvc<IAppReaders> appReaders,
     Generator<LazySvc<DbDataController>> dbGen)
-    : ServiceBase("App.WrkCtx", connect: [appStates, dataSourceSvc, dbGen])
+    : ServiceBase("App.WrkCtx", connect: [appReaders, dataSourceSvc, dbGen])
 {
     /// <summary>
     /// In rare cases this is helpful outside; for now we surface it, may change later
     /// </summary>
-    public IAppStates AppStates => appStates.Value;
+    public IAppReaders AppReaders => appReaders.Value;
     
     public IAppWorkCtx Context(IAppState appState) => new AppWorkCtx(appState);
 
     public IAppWorkCtxPlus ContextPlus(IAppState appState, bool? showDrafts = default, IDataSource data = default)
         => new AppWorkCtxPlus(dataSourceSvc.Value, appState, showDrafts, data);
 
-    public IAppWorkCtx Context(int appId) => new AppWorkCtx(appStates.Value.GetReader(appId));
+    public IAppWorkCtx Context(int appId) => new AppWorkCtx(appReaders.Value.GetReader(appId));
     public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource data = default)
-        => new AppWorkCtxPlus(dataSourceSvc.Value, appState: appStates.Value.GetReader(appId), showDrafts, data);
+        => new AppWorkCtxPlus(dataSourceSvc.Value, appState: appReaders.Value.GetReader(appId), showDrafts, data);
 
-    public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(appStates.Value.KeepOrGetReader(appIdentity));
+    public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(appReaders.Value.KeepOrGetReader(appIdentity));
     public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource data = default)
-        => new AppWorkCtxPlus(dataSourceSvc.Value, appStates.Value.KeepOrGetReader(appIdentity), showDrafts, data);
+        => new AppWorkCtxPlus(dataSourceSvc.Value, appReaders.Value.KeepOrGetReader(appIdentity), showDrafts, data);
 
     public IAppWorkCtxPlus ToCtxPlus(IAppWorkCtx appCtx, bool? showDrafts = default, IDataSource data = default)
         => new AppWorkCtxPlus(appCtx, dataSourceSvc.Value, appCtx.AppState, showDrafts, data);

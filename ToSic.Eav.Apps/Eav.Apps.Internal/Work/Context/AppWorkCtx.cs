@@ -22,6 +22,13 @@ public class AppWorkCtx : IAppWorkCtx
         AppState = appState.Internal();
     }
 
+    public AppWorkCtx(IAppStateInternal appState)
+    {
+        AppId = appState.AppId;
+        ZoneId = appState.ZoneId;
+        AppState = appState;
+    }
+
     public AppWorkCtx(IAppWorkCtx original, IAppStateInternal appState = default)
     {
         if (original == null) throw new ArgumentException(@"Original must exist", nameof(original));

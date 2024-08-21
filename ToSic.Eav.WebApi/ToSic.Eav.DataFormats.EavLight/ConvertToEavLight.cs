@@ -16,20 +16,15 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 {
     #region Constructor / DI
 
-    public class MyServices: MyServicesBase
+    public class MyServices(
+        LazySvc<IAppReaders> appReaders,
+        IValueConverter valueConverter,
+        IZoneCultureResolver zoneCultureResolver)
+        : MyServicesBase(connect: [appReaders, valueConverter, zoneCultureResolver])
     {
-        public LazySvc<IAppStates> AppStates { get; }
-        public IValueConverter ValueConverter { get; }
-        public IZoneCultureResolver ZoneCultureResolver { get; }
-
-        public MyServices(LazySvc<IAppStates> appStates, IValueConverter valueConverter, IZoneCultureResolver zoneCultureResolver)
-        {
-            ConnectLogs([
-                AppStates = appStates,
-                ValueConverter = valueConverter,
-                ZoneCultureResolver = zoneCultureResolver
-            ]);
-        }
+        public LazySvc<IAppReaders> AppReaders { get; } = appReaders;
+        public IValueConverter ValueConverter { get; } = valueConverter;
+        public IZoneCultureResolver ZoneCultureResolver { get; } = zoneCultureResolver;
     }
 
     /// <summary>
@@ -178,7 +173,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
         if (WithPublishing)
         {
-            var appState = Services.AppStates.Value.GetReader(entity.AppId);
+            var appState = Services.AppReaders.Value.GetReader(entity.AppId);
             AddPublishingInformation(entity, entityValues, appState);
         };
 

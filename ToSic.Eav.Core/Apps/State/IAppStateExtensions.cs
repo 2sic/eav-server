@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.State;
@@ -8,8 +10,8 @@ public static class AppStateExtensions
 {
     public static IAppStateInternal Internal(this IAppState appState) => appState as IAppStateInternal;
 
-    public static bool IsInherited(this IAppState reader)
-        => reader.Internal().StateCache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
+    public static bool IsInherited(this IAppSpecsWithStateAndCache reader)
+        => reader.Cache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
     public static bool HasCustomParentApp(this IAppState reader)
     {
@@ -22,17 +24,17 @@ public static class AppStateExtensions
            && (parentAppGuid == Constants.PresetName || parentAppGuid == Constants.GlobalPresetName);
 
     // TODO: @STV - try to use this where possible
-    public static bool IsContentApp(this IAppState appState)
-        => appState.NameId == Constants.DefaultAppGuid;
+    public static bool IsContentApp(this IHas<IAppSpecs> hasAppSpecs)
+        => hasAppSpecs.Value.NameId == Constants.DefaultAppGuid;
 
 
     // TODO: @STV - try to use this where possible
-    public static bool IsGlobalSettingsApp(this IAppState appState)
-        => appState.AppId == Constants.MetaDataAppId;
+    public static bool IsGlobalSettingsApp(this IHas<IAppSpecs> hasAppSpecs)
+        => hasAppSpecs.Value.AppId == Constants.MetaDataAppId;
 
     // TODO: @STV - try to use this where possible
-    public static bool IsSiteSettingsApp(this IAppState appState)
-        => appState.NameId == Constants.PrimaryAppGuid;
+    public static bool IsSiteSettingsApp(this IHas<IAppSpecs> hasAppSpecs)
+        => hasAppSpecs.Value.NameId == Constants.PrimaryAppGuid;
 
     public static IEntity GetDraftOrKeep(this IAppState appState, IEntity entity)
         => appState.GetDraft(entity) ?? entity;

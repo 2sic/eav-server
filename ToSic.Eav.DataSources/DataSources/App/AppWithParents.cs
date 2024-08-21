@@ -30,16 +30,16 @@ internal class AppWithParents: DataSourceBase
     //}
 
 
-    private readonly IAppStates _appStates;
+    private readonly IAppReaders _appReaders;
     private readonly IDataSourcesService _dataSourceFactory;
     private int _appId;
     private int _zoneId;
 
-    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppStates appStates, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaders appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
     {
         ConnectLogs([
             _dataSourceFactory = dataSourceFactory,
-            _appStates = appStates,
+            _appReaders = appReaders,
             _mergeGenerator = mergeGenerator
         ]);
         ProvideOut(GetList);
@@ -47,7 +47,7 @@ internal class AppWithParents: DataSourceBase
 
     private IImmutableList<IEntity> GetList() => Log.Func(() =>
     {
-        var appState = _appStates.GetReader(this);
+        var appState = _appReaders.GetReader(this);
             
         var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appState));
         var initialLink = initialSource.Link;

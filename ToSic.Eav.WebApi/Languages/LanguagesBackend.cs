@@ -42,7 +42,7 @@ public class LanguagesBackend(
         catch (Exception ex)
         {
             Log.Ex(ex);
-            return new();
+            return [];
         }
 
     }

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
+public sealed class AppFinder(IAppStates appStates, IAppReaders appReaders) : ServiceBase("App.ZoneRt")
 {
     /// <summary>
     /// Find the app id from the app-name (usually a guid or "Default").
@@ -46,7 +46,7 @@ public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
         {
             foreach (var p in appStates.Apps(zoneId))
             {
-                var appState = appStates.GetReader(new AppIdentity(zoneId, p.Key));
+                var appState = appReaders.GetReader(new AppIdentity(zoneId, p.Key));
                 if (appState.Folder.EqualsInsensitive(folderName))
                     return l.Return(p.Key, "folder matched");
             }
@@ -71,7 +71,7 @@ public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
 
         foreach (var p in appStates.Apps(zoneId))
         {
-            var appState = appStates.GetReader(new AppIdentity(zoneId, p.Key));
+            var appState = appReaders.GetReader(new AppIdentity(zoneId, p.Key));
 
             if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
                 return (p.Key, "name matched");

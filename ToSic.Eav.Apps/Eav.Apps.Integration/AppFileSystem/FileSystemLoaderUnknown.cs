@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Internal.Work;
+﻿using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Internal.Unknown;
 #pragma warning disable CS9113 // Parameter is unread.
 
@@ -8,9 +9,10 @@ internal sealed class FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderU
 {
 
     // do nothing
-    public IAppFileSystemLoader Init(IAppState app) => this;
+    public IAppFileSystemLoader Init(IAppSpecsWithState app) => this;
 
     public string Path { get; set; }
+
     public string PathShared { get; set; }
 
     // do nothing

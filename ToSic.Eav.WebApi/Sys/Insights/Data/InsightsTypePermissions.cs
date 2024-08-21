@@ -3,7 +3,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsTypePermissions(LazySvc<IAppStates> appStates) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
+internal class InsightsTypePermissions(LazySvc<IAppReaders> appReaders) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
 {
     public static string Link = "TypePermissions";
 
@@ -16,7 +16,7 @@ internal class InsightsTypePermissions(LazySvc<IAppStates> appStates) : Insights
         if (UrlParamsIncomplete(AppId, Type, out var message))
             return message;
 
-        var typ = appStates.Value.GetReader(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.GetContentTypes(AppId.Value).GetContentType(Type);
 
         var msg = H1($"Permissions for {typ.Name} ({typ.NameId}) in {AppId}\n").ToString();
         var metadata = typ.Metadata.Permissions.Select(p => p.Entity).ToList();

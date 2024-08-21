@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
@@ -59,25 +58,23 @@ public sealed class Apps: CustomDataSource
     /// Constructs a new Apps DS
     /// </summary>
     [PrivateApi]
-    public Apps(MyServices services, IAppStates appStates) : base(services, $"{LogPrefix}.Apps")
+    public Apps(MyServices services, IAppStates appStates, IAppReaders appReaders) : base(services, $"{LogPrefix}.Apps")
     {
-        ConnectLogs([appStates]);
+        ConnectLogs([appStates, appReaders]);
         ProvideOutRaw(
-            () => GetDefault(appStates),
+            () => GetDefault(appStates, appReaders),
             options: () => new(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
         );
     }
 
     #endregion
 
-    private IEnumerable<IRawEntity> GetDefault(IAppStates appStates) => Log.Func(l =>
+    private IEnumerable<IRawEntity> GetDefault(IAppStates appStates, IAppReaders appReaders) => Log.Func(l =>
     {
         // try to load the content-type - if it fails, return empty list
         var allZones = appStates.Zones;
-        if (!allZones.ContainsKey(OfZoneId)) 
+        if (!allZones.TryGetValue(OfZoneId, out var zone)) 
             return (EmptyRawList,"fails load content-type");
-            
-        var zone = allZones[OfZoneId];
 
         var list = zone.Apps
             .OrderBy(a => a.Key)
@@ -88,7 +85,7 @@ public sealed class Apps: CustomDataSource
                 string error = null;
                 try
                 {
-                    appState = appStates.GetReader(new AppIdentityPure(zone.ZoneId, app.Key));
+                    appState = appReaders.GetReader(new AppIdentityPure(zone.ZoneId, app.Key));
                     // this will get the guid, if the identity is not "default"
                     if (Guid.TryParse(appState.NameId, out var g)) guid = g;
                 }

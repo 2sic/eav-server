@@ -27,7 +27,7 @@ public class GenWorkDb<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generator<T
     //public TWork New(AppState appState) => NewInternal(CtxSvc.CtxWithDb(appState));
     public TWork New(IAppStateInternal appState) => NewInternal(CtxSvc.CtxWithDb(appState));
 
-    public TWork New(IAppIdentity identity) => NewInternal(ctxSvc.Value.CtxWithDb(ctxSvc.Value.AppStates.GetReader(identity)));
+    public TWork New(IAppIdentity identity) => NewInternal(ctxSvc.Value.CtxWithDb(ctxSvc.Value.AppReaders.GetReader(identity)));
 
-    public TWork New(int appId) => NewInternal(ctxSvc.Value.CtxWithDb(ctxSvc.Value.AppStates.GetReader(appId)));
+    public TWork New(int appId) => NewInternal(ctxSvc.Value.CtxWithDb(ctxSvc.Value.AppReaders.GetReader(appId)));
 }

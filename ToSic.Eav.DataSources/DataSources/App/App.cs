@@ -82,15 +82,15 @@ public partial class App : DataSourceBase
     {
         public IContextResolverUserPermissions UserPermissions { get; }
         public IDataSourcesService DataSourceFactory { get; }
-        public IAppStates AppStates { get; }
+        public IAppReaders AppReaders { get; }
 
         public MyServices(Eav.DataSource.DataSourceBase.MyServices parentServices,
-            IAppStates appStates,
+            IAppReaders appReaders,
             IDataSourcesService dataSourceFactory,
             IContextResolverUserPermissions userPermissions) : base(parentServices)
         {
             ConnectLogs([
-                AppStates = appStates,
+                AppReaders = appReaders,
                 DataSourceFactory = dataSourceFactory,
                 UserPermissions = userPermissions
             ]);
@@ -154,6 +154,6 @@ public partial class App : DataSourceBase
     //// TODO: cause obsolete warning when used! #Deprecated
     //public IMetadataSource Metadata => AppState;
 
-    protected IAppState AppState => _appState.Get(() => _services.AppStates.GetReader(this));
+    protected IAppState AppState => _appState.Get(() => _services.AppReaders.GetReader(this));
     private readonly GetOnce<IAppState> _appState = new();
 }

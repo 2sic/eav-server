@@ -16,14 +16,14 @@ namespace ToSic.Eav.DataSources;
 public class AppRoot : DataSourceBase, IAppRoot
 {
     [PrivateApi]
-    public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.Root")
+    public AppRoot(IAppReaders appReaders, MyServices services) : base(services, $"{LogPrefix}.Root")
     {
-        _appStates = appStates;
+        _appReaders = appReaders;
         ProvideOut(() => AppReader.List);
         ProvideOut(() => AppReader.ListPublished.List, StreamPublishedName);
         ProvideOut(() => AppReader.ListNotHavingDrafts.List, StreamDraftsName);
     }
-    private readonly IAppStates _appStates;
+    private readonly IAppReaders _appReaders;
 
     public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
         .AddStream(name: StreamPublishedName)
@@ -42,7 +42,7 @@ public class AppRoot : DataSourceBase, IAppRoot
     /// <summary>
     /// Get the <see cref="AppReader"/> of this app from the cache.
     /// </summary>
-    private IAppStateInternal AppReader => _appReader ??= _appStates.GetReader(this);
+    private IAppStateInternal AppReader => _appReader ??= _appReaders.GetReader(this);
     private IAppStateInternal _appReader;
 
     #region Cache-Chain

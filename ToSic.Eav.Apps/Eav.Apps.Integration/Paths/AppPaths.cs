@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Helpers;
@@ -35,15 +36,21 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     /// <param name="site">The site - in some cases the site of the App can be different from the context-site, so it must be passed in</param>
     /// <param name="appState"></param>
     /// <returns></returns>
-    public IAppPaths Init(ISite site, IAppState appState)
+    public IAppPaths Init(ISite site, IHas<IAppSpecsWithState> appState)
     {
         _site = site;
-        _appState = appState;
+        _appState = appState.Value;
         InitDone = true;
         return this;
     }
+
+    public IAppPaths Init(ISite site, IAppState appState)
+    {
+        return Init(site, (IHas<IAppSpecsWithState>)appState);
+    }
+
     private ISite _site;
-    private IAppState _appState;
+    private IAppSpecsWithState _appState;
     public bool InitDone { get; private set; }
 
     /// <summary>
@@ -63,7 +70,7 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
         // 2024-02-01 2dm WIP trouble with App listing apps in other sites
         // it seems that the paths
         var key = $"AppPath-{name}" + _site.Id; // + _site.Id;
-        var final = _appState.Internal().GetPiggyBack(key,
+        var final = _appState.GetPiggyBack(key,
             () =>
             {
                 var result = callIfNotFound();

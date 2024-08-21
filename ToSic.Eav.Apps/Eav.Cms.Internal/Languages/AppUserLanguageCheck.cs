@@ -16,9 +16,9 @@ public class AppUserLanguageCheck(
     LazySvc<IZoneMapper> zoneMapperLazy,
     IContextOfSite ctx,
     Generator<AppPermissionCheck> checkGenerator,
-    LazySvc<IAppStates> appStatesLazy,
+    LazySvc<IAppReaders> appReadersLazy,
     LazySvc<IEavFeaturesService> featuresLazy)
-    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, checkGenerator, appStatesLazy, featuresLazy])
+    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, checkGenerator, appReadersLazy, featuresLazy])
 {
     /// <summary>
     /// Test if the current user has explicit language editing permissions.
@@ -43,15 +43,16 @@ public class AppUserLanguageCheck(
         return l.Return(currentLang?.IsAllowed, $"permission: {currentLang?.IsAllowed}");
     }
 
-    public List<AppUserLanguageState> LanguagesWithPermissions(IAppState appStateOrNull) => Log.Func<List<AppUserLanguageState>>(l =>
+    public List<AppUserLanguageState> LanguagesWithPermissions(IAppState appStateOrNull)
     {
+        var l = Log.Fn<List<AppUserLanguageState>>();
         // to solves the issue with globals settings languages that can not be saved if 
         // app languages are different from languages in global app and because global
         // settings are in primary appid=1, zoneId=1 without portal site we just return empty list for it
         // in other cases we get the languages from the app state or from context (http headers)
         var zoneMapper = zoneMapperLazy.Value;
         var site = appStateOrNull != null ? zoneMapper.SiteOfZone(appStateOrNull.ZoneId) : ctx.Site;
-        if (site == null) return ([], "null site");
+        if (site == null) return l.Return([], "null site");
 
         var languages = zoneMapper.CulturesWithState(site);
 
@@ -64,19 +65,21 @@ public class AppUserLanguageCheck(
             var noAppResult = languages
                 .Select<ISiteLanguageState, AppUserLanguageState>(lng => new(lng, true, -1))
                 .ToList();
-            return (noAppResult, $"no-app {noAppResult.Count}");
+            return l.Return(noAppResult, $"no-app {noAppResult.Count}");
         }
 
-        var set = GetLanguagePermissions(appStateOrNull, languages);
+        var appStateSafe = appStateOrNull;
+
+        var set = GetLanguagePermissions(appStateSafe, languages);
         l.A($"Found {set.Count} sets");
         var hasPermissions = set.Any(s => s.Permissions.Any());
 
         // Find primary app, or stop if we're already there
-        if (!hasPermissions && appStateOrNull.NameId != Constants.PrimaryAppGuid)
+        if (!hasPermissions && appStateSafe.NameId != Constants.PrimaryAppGuid)
         {
             l.A("No permissions, and not primary app - will try that");
             //var primaryId = _appStatesLazy.Value.PrimaryAppId(appStateOrNull.ZoneId);
-            var primaryApp = appStatesLazy.Value.GetPrimaryReader(appStateOrNull.ZoneId, Log); //.Get(primaryId);
+            var primaryApp = appReadersLazy.Value.GetPrimaryReader(appStateSafe.ZoneId, Log);
             set = GetLanguagePermissions(primaryApp, languages);
             hasPermissions = set.Any(s => s.Permissions.Any());
         }
@@ -92,7 +95,7 @@ public class AppUserLanguageCheck(
             {
                 var pChecker = checkGenerator.New();
                 var permissions = permissionEntities.Select(p => new Permission(p));
-                pChecker.ForCustom(ctx, appStateOrNull, permissions);
+                pChecker.ForCustom(ctx, appStateSafe, permissions);
                 ok = pChecker.PermissionsAllow(GrantSets.WriteSomething);
             }
 
@@ -107,8 +110,8 @@ public class AppUserLanguageCheck(
         var result = newSet
             .Select(s => new AppUserLanguageState(s.Language, s.Allowed, s.PermissionCount))
             .ToList();
-        return (result, $"ok {result.Count}");
-    });
+        return l.Return(result, $"ok {result.Count}");
+    }
 
     /// <summary>
     /// 
@@ -121,7 +124,7 @@ public class AppUserLanguageCheck(
         var set = languages.Select(l => new LanguagePermission
         {
             Permissions = appStateOrNull?.GetMetadata(TargetTypes.Dimension, l.Code?.ToLowerInvariant(), Permission.TypeName)
-                          ?? Array.Empty<IEntity>(),
+                          ?? [],
             Language = l
         }).ToList();
         return set;

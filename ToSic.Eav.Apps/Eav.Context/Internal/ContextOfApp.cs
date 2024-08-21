@@ -22,15 +22,15 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// </summary>
     public new class MyServices(
         ContextOfSite.MyServices siteServices,
-        IAppStates appStates,
+        IAppReaders appReaders,
         LazySvc<IEavFeaturesService> features,
         LazySvc<AppUserLanguageCheck> langChecks,
         Generator<IEnvironmentPermission> environmentPermissions,
         LazySvc<AppDataStackService> settingsStack)
         : MyServicesBase<ContextOfSite.MyServices>(siteServices,
-            connect: [environmentPermissions, appStates, features, langChecks, settingsStack])
+            connect: [environmentPermissions, appReaders, features, langChecks, settingsStack])
     {
-        public IAppStates AppStates { get; } = appStates;
+        public IAppReaders AppReaders { get; } = appReaders;
         public LazySvc<IEavFeaturesService> Features { get; } = features;
         public LazySvc<AppUserLanguageCheck> LangChecks { get; } = langChecks;
         public LazySvc<AppDataStackService> SettingsStack { get; } = settingsStack;
@@ -116,7 +116,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     #endregion
 
 
-    public IAppStateInternal AppState => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppStates.GetReader(AppIdentity));
+    public IAppStateInternal AppState => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppReaders.GetReader(AppIdentity));
     private readonly GetOnce<IAppStateInternal> _appStateInternal = new();
 
     #region Settings and Resources

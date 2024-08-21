@@ -30,12 +30,12 @@ public sealed class Scopes : CustomDataSource
     /// Constructs a new Scopes DS
     /// </summary>
     [PrivateApi]
-    public Scopes(MyServices services, IAppStates appStates) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+    public Scopes(MyServices services, IAppReaders appStates) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
     {
         ConnectLogs([_appStates = appStates]);
         ProvideOutRaw(GetList, options: () => new(typeName: "Scope", titleField: "Name", autoId: false));
     }
-    private readonly IAppStates _appStates;
+    private readonly IAppReaders _appStates;
 
     private IEnumerable<IRawEntity> GetList() => Log.Func(l =>
     {

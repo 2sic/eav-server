@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Source;
@@ -58,7 +59,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
 
     #region Inits
 
-    public IAppFileSystemLoader Init(IAppState app)
+    public IAppFileSystemLoader Init(IAppSpecsWithState app)
     {
         var l = Log.Fn<IAppFileSystemLoader>($"{app.AppId}, {app.Folder}, ...");
         AppIdentity = app;
@@ -67,7 +68,8 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
         return l.Return(this);
     }
 
-    IAppContentTypesLoader IAppContentTypesLoader.Init(IAppState app) => Init(app) as IAppContentTypesLoader;
+    IAppContentTypesLoader IAppContentTypesLoader.Init(IAppSpecsWithState app)
+        => Init(app) as IAppContentTypesLoader;
 
     /// <summary>
     /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this

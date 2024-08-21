@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Services;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
@@ -11,21 +12,13 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 {
     #region Constructor / DI
 
-    public class MyServices: MyServicesBase
+    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaders appStates)
+        : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates])
     {
-        public DataBuilder DataBuilder { get; }
+        public DataBuilder DataBuilder { get; } = dataBuilder;
 
-        public MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppStates appStates)
-        {
-            ConnectLogs([
-                MetadataTargets = metadataTargets,
-                DataBuilder = dataBuilder,
-                AppStates = appStates
-            ]);
-        }
-
-        public ITargetTypes MetadataTargets { get; }
-        public IAppStates AppStates { get; }
+        public ITargetTypes MetadataTargets { get; } = metadataTargets;
+        public IAppReaders AppStates { get; } = appStates;
     }
 
     /// <summary>
@@ -34,9 +27,9 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
     protected SerializerBase(MyServices services, string logName): base(services, logName)
     {
         MetadataTargets = services.MetadataTargets;
-        _globalApp = services.AppStates.GetPresetReaderIfAlreadyLoaded(); // important that it uses GlobalOrNull - because it may not be loaded yet
+        _globalAppOrNull = services.AppStates.GetPresetReaderIfAlreadyLoaded(); // important that it uses GlobalOrNull - because it may not be loaded yet
     }
-    private readonly IAppState _globalApp;
+    private readonly IAppContentTypeService _globalAppOrNull;
 
     public ITargetTypes MetadataTargets { get; }
 
@@ -79,7 +72,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
             msg += "app: not found, ";
         }
 
-        var globalType = _globalApp?.GetContentType(staticName);
+        var globalType = _globalAppOrNull?.GetContentType(staticName);
 
         if (globalType != null) return (globalType, $"{msg}global: found");
         msg += "global: not found, ";

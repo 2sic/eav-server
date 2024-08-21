@@ -21,8 +21,6 @@ public interface IAppStates
     /// <param name="appId">App id if zone unknown.</param>
     IAppStateCache GetCacheState(int appId);
 
-    IAppStateInternal ToReader(IAppStateCache state, ILog log = default);
-
     #endregion
 
     #region Look up IDs

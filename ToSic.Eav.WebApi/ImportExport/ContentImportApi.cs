@@ -20,15 +20,16 @@ public class ContentImportApi(
     LazySvc<JsonSerializer> jsonSerializerLazy,
     AppCachePurger appCachePurger,
     GenWorkDb<WorkEntitySave> workEntSave,
-    IAppStates appStates)
-    : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appStates])
+    IAppStates appStates,
+    IAppReaders appReaders
+) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appStates, appReaders])
 {
     private IAppStateInternal _appState;
 
     public ContentImportApi Init(int appId)
     {
         var l = Log.Fn<ContentImportApi>($"app: {appId}");
-        _appState = appStates.GetReader(appId);
+        _appState = appReaders.GetReader(appId);
         return l.Return(this);
     }
 

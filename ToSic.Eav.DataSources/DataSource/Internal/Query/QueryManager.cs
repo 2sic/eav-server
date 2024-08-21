@@ -14,9 +14,9 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryManager(
     Generator<Query> queryGenerator,
-    LazySvc<IAppStates> appStates,
+    LazySvc<IAppReaders> appReaders,
     LazySvc<QueryDefinitionBuilder> queryDefBuilder)
-    : ServiceBase($"{LogPrefix}.QryMan", connect: [queryGenerator, appStates, queryDefBuilder])
+    : ServiceBase($"{LogPrefix}.QryMan", connect: [queryGenerator, appReaders, queryDefBuilder])
 {
     /// <summary>
     /// Get a query definition from the current app
@@ -24,7 +24,7 @@ public class QueryManager(
     public QueryDefinition Get(IAppIdentity appIdentity, int queryId)
     {
         var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
-        var app = appStates.KeepOrGetReader(appIdentity);
+        var app = appReaders.Value.KeepOrGetReader(appIdentity);
         var qEntity = GetQueryEntity(queryId, app);
         var qDef = queryDefBuilder.Value.Create(qEntity, app.AppId);
         return l.Return(qDef);
@@ -35,11 +35,11 @@ public class QueryManager(
     /// Get an Entity Describing a Query
     /// </summary>
     /// <param name="entityId">EntityId</param>
-    /// <param name="appIdentity">DataSource to load Entity from</param>
-    internal IEntity GetQueryEntity(int entityId, IAppIdentity appIdentity)
+    /// <param name="appReaderOrId">DataSource to load Entity from</param>
+    internal IEntity GetQueryEntity(int entityId, IAppIdentity appReaderOrId)
     {
         var l = Log.Fn<IEntity>($"{entityId}");
-        var app = appStates.KeepOrGetReader(appIdentity);
+        var app = appReaders.Value.KeepOrGetReader(appReaderOrId);
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
@@ -75,17 +75,20 @@ public class QueryManager(
         return (dict);
     });
 
-    internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app, int recurseParents = 0) => Log.Func($"App: {app.AppId}, recurse: {recurseParents}", l =>
+    internal IImmutableList<IEntity> AllQueryItems(IAppIdentity app, int recurseParents = 0)
     {
-        var appState = appStates.KeepOrGetReader(app).Internal();
+        var l = Log.Fn<IImmutableList<IEntity>>($"App: {app.AppId}, recurse: {recurseParents}");
+        var appState = appReaders.Value.KeepOrGetReader(app).Internal();
         var result = appState.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
-        if (recurseParents <= 0) return (result, "ok, no recursions");
+        if (recurseParents <= 0)
+            return l.Return(result, "ok, no recursions");
         l.A($"Try to recurse parents {recurseParents}");
-        if (appState.ParentAppState == null) return (result, "no more parents to recurse on");
+        if (appState.ParentAppState == null)
+            return l.Return(result, "no more parents to recurse on");
         var resultFromParents = AllQueryItems(appState.ParentAppState, recurseParents -1);
         result = result.Concat(resultFromParents).ToImmutableList();
-        return (result, "ok");
-    });
+        return l.Return(result, "ok");
+    }
 
     public IQuery GetQuery(IAppIdentity appIdentity, string nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)
     {

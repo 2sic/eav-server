@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Internal.Specs;
 /// </summary>
 [PrivateApi("Note: was public till 16.08")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class AppConfiguration : EntityBasedWithLog, IAppConfiguration
+internal class AppConfiguration : EntityBasedType, IAppConfiguration
 {
     // todo: probably move most to Eav.Apps.AppConstants
     [PrivateApi] public const string FieldAllowRazor = "AllowRazorTemplates";
@@ -20,9 +20,8 @@ internal class AppConfiguration : EntityBasedWithLog, IAppConfiguration
     [PrivateApi] public const string FieldSupportsAjax = "SupportsAjaxReload";
 
     [PrivateApi]
-    internal AppConfiguration(IEntity entity, ILog parentLog) : base(entity, parentLog, "Sxc.AppCnf")
-    {
-    }
+    internal AppConfiguration(IEntity entity) : base(entity)
+    { }
 
     public Version Version => GetVersionOrDefault(nameof(Version));
 

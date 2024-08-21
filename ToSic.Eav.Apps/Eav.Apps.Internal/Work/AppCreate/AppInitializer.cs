@@ -23,8 +23,8 @@ public class AppInitializer(
     GenWorkDb<WorkEntitySave> entitySave,
     GenWorkDb<WorkContentTypesMod> contentTypesMod,
     AppCachePurger cachePurger,
-    IAppStates appStates)
-    : ServiceBase("Eav.AppBld", connect: [contentTypesMod, entitySave, builder, cachePurger, repoLoader, appStates])
+    IAppReaders appReaders)
+    : ServiceBase("Eav.AppBld", connect: [contentTypesMod, entitySave, builder, cachePurger, repoLoader, appReaders])
 {
 
     protected readonly AppCachePurger CachePurger = cachePurger;
@@ -160,7 +160,7 @@ public class AppInitializer(
         // discuss w/2dm if you think you want to change this
         var ct = inAppType
             ? appStateRaw.GetContentType(setName)
-            : appStates.GetPresetReader().GetContentType(setName);
+            : appReaders.GetPresetReader().GetContentType(setName);
         return ct;
     }
 

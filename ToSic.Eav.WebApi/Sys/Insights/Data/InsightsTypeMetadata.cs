@@ -3,7 +3,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsTypeMetadata(LazySvc<IAppStates> appStates) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
+internal class InsightsTypeMetadata(LazySvc<IAppReaders> appReaders) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
 {
     public static string Link = "TypeMetadata";
 
@@ -16,7 +16,7 @@ internal class InsightsTypeMetadata(LazySvc<IAppStates> appStates) : InsightsPro
         if (UrlParamsIncomplete(AppId, Type, out var message))
             return message;
 
-        var typ = appStates.Value.GetReader(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.GetContentTypes(AppId.Value).GetContentType(Type);
 
         var msg = H1($"Metadata for {typ.Name} ({typ.NameId}) in {AppId}\n").ToString();
         var metadata = typ.Metadata.ToList();

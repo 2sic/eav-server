@@ -5,4 +5,4 @@ using ToSic.Eav.Metadata;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;
 
-public interface IAppState: IAppSpecs, IAppDataAndMetadataService, IMetadataSource;
+public interface IAppState: IAppSpecsWithState, IAppDataAndMetadataService, IMetadataSource, IAppSpecsWithStateAndCache;

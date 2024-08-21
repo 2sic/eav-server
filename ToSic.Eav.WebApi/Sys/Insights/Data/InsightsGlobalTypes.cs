@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsGlobalTypes(IAppStates appStates) : InsightsTypes(appStates, "GlobalTypes")
+internal class InsightsGlobalTypes(IAppReaders appStates) : InsightsTypes(appStates, "GlobalTypes")
 {
     public override string Title => $"Global {base.Title}";
 

@@ -15,7 +15,7 @@ partial class AppState
     /// <summary>
     /// The builder must be a subclass of AppState, so it can access its private properties.
     /// </summary>
-    internal class AppStateBuilder(IAppStates appStates) : ServiceBase("App.SttBld"), IAppStateBuilder
+    internal class AppStateBuilder(IAppReaders appStates) : ServiceBase("App.SttBld"), IAppStateBuilder
     {
         #region Constructor / DI / Init (2 variants)
 

@@ -14,13 +14,13 @@ namespace ToSic.Eav.ImportExport.Internal.Zip;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZipExport(
-    IAppStates appStates,
+    IAppReaders appReaders,
     IDataSourcesService dataSourceFactory,
     XmlExporter xmlExporter,
     Generator<FileManager> fileManagerGenerator,
     IGlobalConfiguration globalConfiguration)
     : ServiceBase(EavLogs.Eav + ".ZipExp",
-        connect: [appStates, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator])
+        connect: [appReaders, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator])
 {
     private int _appId;
     private int _zoneId;
@@ -52,7 +52,7 @@ public class ZipExport(
             FileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
         ]);
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appState = appStates.GetReader(appIdentity);
+        _appState = appReaders.GetReader(appIdentity);
         return this;
     }
 

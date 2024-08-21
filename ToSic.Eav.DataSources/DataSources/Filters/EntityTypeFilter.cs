@@ -44,13 +44,13 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new EntityTypeFilter
     /// </summary>
     [PrivateApi]
-    public EntityTypeFilter(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.TypeF")
+    public EntityTypeFilter(IAppReaders appReaders, MyServices services) : base(services, $"{LogPrefix}.TypeF")
 
     {
-        _appStates = appStates;
+        _appReaders = appReaders;
         ProvideOut(GetList);
     }
-    private readonly IAppStates _appStates;
+    private readonly IAppReaders _appReaders;
 
 
     private IImmutableList<IEntity> GetList() 
@@ -65,7 +65,7 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
 
         try
         {
-            var appState = _appStates.GetReader(this);
+            var appState = _appReaders.GetReader(this);
             var foundType = appState?.GetContentType(TypeName);
             if (foundType != null) // maybe it doesn't find it!
             {

@@ -15,10 +15,10 @@ namespace ToSic.Eav.WebApi.Admin.Metadata;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MetadataControllerReal(
     IConvertToEavLight converter,
-    IAppStates appStates,
+    IAppReaders appReaders,
     ITargetTypes metadataTargets,
     LazySvc<MdRecommendations> mdRead)
-    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appStates, metadataTargets, mdRead]),
+    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appReaders, metadataTargets, mdRead]),
         IMetadataController
 {
     public const string LogSuffix = "MetaDt";
@@ -29,7 +29,7 @@ public class MetadataControllerReal(
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
     {
         var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
-        var appState = appStates.GetReader(appId);
+        var appState = appReaders.GetReader(appId);
 
         var (entityList, mdFor) = GetExistingEntitiesAndMd(targetType, keyType, key, contentType, appState);
 

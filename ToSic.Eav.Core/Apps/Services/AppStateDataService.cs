@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
@@ -11,7 +12,7 @@ using ToSic.Sxc.Apps;
 
 namespace ToSic.Eav.Apps.Services;
 
-internal class AppStateDataService() : ServiceBase("App.Reader"), IAppStateInternal, IMetadataSource
+internal class AppStateDataService() : ServiceBase("App.Reader"), IAppStateInternal, IAppSpecsWithStateAndCache, IMetadataSource
 {
     internal AppStateDataService Init(IAppStateCache appState, ILog parentLog)
     {
@@ -41,7 +42,7 @@ internal class AppStateDataService() : ServiceBase("App.Reader"), IAppStateInter
 
     #region Advanced Properties
 
-    public IAppConfiguration Configuration => _appConfig.Get(() => new AppConfiguration(ConfigurationEntity, Log));
+    public IAppConfiguration Configuration => _appConfig.Get(() => new AppConfiguration(ConfigurationEntity));
     private readonly GetOnce<IAppConfiguration> _appConfig = new();
 
     public IEntity ConfigurationEntity => _appConfiguration ??= _appState.SettingsInApp.AppConfiguration;
@@ -110,4 +111,11 @@ internal class AppStateDataService() : ServiceBase("App.Reader"), IAppStateInter
 
 
     IMetadataOf IMetadataOfSource.GetMetadataOf<T>(TargetTypes targetType, T key, string title) => _appState.GetMetadataOf(targetType, key, title);
+
+    IAppSpecs IHas<IAppSpecs>.Value => this;
+    IAppSpecsWithState IHas<IAppSpecsWithState>.Value => this;
+
+    IAppStateCache IAppSpecsWithStateAndCache.Cache => _appState;
+
+    IAppSpecsWithStateAndCache IHas<IAppSpecsWithStateAndCache>.Value => this;
 }

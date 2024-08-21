@@ -27,7 +27,7 @@ partial class Efc11Loader
         logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
         var l = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
-        var appIdentity =appStates.IdentityOfApp(appId);
+        var appIdentity = appStates.IdentityOfApp(appId);
         var appGuidName = appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
         codeRefTrail.WithHere().AddMessage($"App: {appId}, {nameof(appGuidName)}: '{appGuidName}'");
 
@@ -52,8 +52,8 @@ partial class Efc11Loader
         else
         {
             // New v13 - use global app by default to share content-types
-            var globalApp = appStates.GetPresetReader();
-            parent = new(globalApp?.StateCache ?? throw new("Can't find global app - which is required to build any other apps. "),
+            var globalApp = appStates.Get(Constants.PresetIdentity);
+            parent = new(globalApp ?? throw new("Can't find global app - which is required to build any other apps. "),
                 true, 
                 false);
         }

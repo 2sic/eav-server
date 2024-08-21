@@ -4,7 +4,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAppsCache(LazySvc<IAppStates> appStates): InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
+internal class InsightsAppsCache(LazySvc<IAppStates> appStates, LazySvc<IAppReaders> appReaders): InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates, appReaders])
 {
     public static string Link = "AppsCache";
 
@@ -25,7 +25,7 @@ internal class InsightsAppsCache(LazySvc<IAppStates> appStates): InsightsProvide
                 {
                     var appIdentity = new AppIdentity(zone.Value.ZoneId, a.Key);
                     var inCache = appStates.Value.IsCached(appIdentity);
-                    var appState = inCache ? appStates.Value.GetReader(appIdentity) : null;
+                    var appState = inCache ? appReaders.Value.GetReader(appIdentity) : null;
                     return new
                     {
                         Id = a.Key,

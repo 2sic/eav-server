@@ -91,7 +91,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
 
     private string GetAppFullPath(int appId, bool useShared)
     {
-        if (!appPaths.InitDone) appPaths.Init(site, appStates.ToReader(appStates.GetCacheState(appId)));
+        if (!appPaths.InitDone) appPaths.Init(site, appStates.GetCacheState(appId));
         return useShared ? appPaths.PhysicalPathShared : appPaths.PhysicalPath;
     }
 

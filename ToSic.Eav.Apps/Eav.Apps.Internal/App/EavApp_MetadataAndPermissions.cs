@@ -52,6 +52,5 @@ partial class EavApp: IHasPermissions
     [PrivateApi("kind of slipped into public till 16.09, but only on the object, never on the IApp, so probably never discovered")]
     public IAppState AppState => AppStateInt;
 
-    protected internal IAppStateInternal AppStateInt => _appStateReader ??= Services.AppStates.GetReader(this);
-    private IAppStateInternal _appStateReader;
+    protected internal IAppStateInternal AppStateInt { get; private set; }
 }

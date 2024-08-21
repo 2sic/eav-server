@@ -27,17 +27,17 @@ public abstract partial class EavApp(EavApp.MyServices services, string logName 
     public class MyServices(
         IZoneMapper zoneMapper,
         ISite site,
-        IAppStates appStates,
+        IAppReaders appReaders,
         IDataSourcesService dataSourceFactory,
         LazySvc<QueryManager> queryManager,
         IAppDataConfigProvider dataConfigProvider)
-        : MyServicesBase(connect: [zoneMapper, site, appStates, dataSourceFactory, queryManager, dataConfigProvider])
+        : MyServicesBase(connect: [zoneMapper, site, appReaders, dataSourceFactory, queryManager, dataConfigProvider])
     {
         public IAppDataConfigProvider DataConfigProvider { get; } = dataConfigProvider;
         public LazySvc<QueryManager> QueryManager { get; } = queryManager;
         internal IZoneMapper ZoneMapper { get; } = zoneMapper;
         internal ISite Site { get; } = site;
-        internal IAppStates AppStates { get; } = appStates;
+        internal IAppReaders AppReaders { get; } = appReaders;
         internal IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
     }
 
@@ -85,7 +85,8 @@ public abstract partial class EavApp(EavApp.MyServices services, string logName 
         l.A($"prep App #{appIdentity.Show()}, has{nameof(dataSpecs)}:{dataSpecs != null}");
 
         // Look up name in cache
-        NameId = Services.AppStates.GetReader(this).NameId;
+        AppStateInt = services.AppReaders.GetReader(this);
+        NameId = AppStateInt.NameId;
 
         InitializeResourcesSettingsAndMetadata();
 

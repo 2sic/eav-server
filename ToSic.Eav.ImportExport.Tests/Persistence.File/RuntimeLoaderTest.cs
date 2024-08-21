@@ -15,7 +15,7 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public RuntimeLoaderTest()
         {
             _appLoader = GetService<IAppLoader>();
-            _globalAppState = GetService<IAppStates>().GetPresetReader();
+            _globalAppState = GetService<IAppReaders>().GetPresetReader();
         }
         private readonly IAppLoader _appLoader;
         private readonly IAppState _globalAppState;
