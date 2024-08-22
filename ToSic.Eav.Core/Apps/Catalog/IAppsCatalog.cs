@@ -4,10 +4,11 @@ namespace ToSic.Eav.Apps;
 /// <summary>
 /// Global service providing information about apps and zones.
 /// </summary>
+[PublicApi]
 public interface IAppsCatalog
 {
     // TODO: MAKE READ ONLY
-    IDictionary<int, string> Apps(int zoneId);
+    IReadOnlyDictionary<int, string> Apps(int zoneId);
 
     IReadOnlyDictionary<int, Zone> Zones { get; }
 

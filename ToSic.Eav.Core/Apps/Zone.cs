@@ -6,13 +6,7 @@ namespace ToSic.Eav.Apps;
 /// Contains all the basic infos about a Zone - usually cached
 /// </summary>
 [PrivateApi("was Internal till 16.09, but no need to show implementation")]
-public class Zone(
-    int zoneId,
-    int primaryAppId,
-    int contentAppId,
-    Dictionary<int, string> apps,
-    List<DimensionDefinition> languages)
-    : IZoneIdentity
+public class Zone(int zoneId, int primaryAppId, int contentAppId, IReadOnlyDictionary<int, string> apps, List<DimensionDefinition> languages) : IZoneIdentity
 {
     /// <inheritdoc />
     public int ZoneId { get; internal set; } = zoneId;
@@ -31,7 +25,7 @@ public class Zone(
     /// <summary>
     /// All Apps in this Zone with Id and Name
     /// </summary>
-    public Dictionary<int, string> Apps { get; internal set; } = apps;
+    public IReadOnlyDictionary<int, string> Apps { get; internal set; } = apps;
 
     /// <summary>
     /// Languages available in this Zone

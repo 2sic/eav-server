@@ -27,7 +27,7 @@ partial class Efc11Loader
                         ? Constants.MetaDataAppId
                         : z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.DefaultAppGuid)?.AppId ?? -1;
                     return new Zone(z.ZoneId, primary, content,
-                        z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name),
+                        z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name).AsReadOnly(),
                         z.ToSicEavDimensions
                             .Where(d => d.ParentNavigation?.Key == Constants.CultureSystemKey)
                             .Cast<DimensionDefinition>().ToList());

@@ -35,7 +35,7 @@ internal class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
     public int PrimaryAppId(int zoneId)
         => Zones[zoneId].PrimaryAppId;
 
-    public IDictionary<int, string> Apps(int zoneId)
+    public IReadOnlyDictionary<int, string> Apps(int zoneId)
         => Zones[zoneId].Apps;
 
     public IReadOnlyDictionary<int, Zone> Zones => _zones ??= AppsCacheSwitch.Value.Zones(AppsCacheSwitch.AppLoaderTools);

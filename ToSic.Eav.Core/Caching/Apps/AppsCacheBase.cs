@@ -35,7 +35,10 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
         var presetZone = new Zone(Constants.PresetZoneId,
             Constants.PresetAppId,
             Constants.PresetAppId,
-            new() { { Constants.PresetAppId, Constants.PresetName } },
+            new Dictionary<int, string>
+            {
+                { Constants.PresetAppId, Constants.PresetName }
+            }.AsReadOnly(),
             [
                 new()
                 {
