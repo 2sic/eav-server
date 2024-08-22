@@ -82,7 +82,7 @@ public class ImportService(
                         {
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
+                            var appReaderRaw = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
                             var newTypeList = newTypes.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -92,7 +92,7 @@ public class ImportService(
                             var newSysTypes = newTypeList
                                 .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false).ToList();
                             if (newSysTypes.Any())
-                                MergeAndSaveContentTypes(appStateTemp, newSysTypes);
+                                MergeAndSaveContentTypes(appReaderRaw, newSysTypes);
 
                             return newTypeList.Where(a => !newSysTypes.Contains(a)).ToList();
                         });
@@ -102,10 +102,10 @@ public class ImportService(
                         {
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
-                            var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
+                            var appReaderRaw = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
 
                             // now the remaining attributeSets
-                            MergeAndSaveContentTypes(appStateTemp, nonSysTypes);
+                            MergeAndSaveContentTypes(appReaderRaw, nonSysTypes);
                         }
                         lInner.Done();
                     });
@@ -165,11 +165,11 @@ public class ImportService(
         l.Done();
     }
 
-    private void MergeAndSaveContentTypes(IAppState appState, List<IContentType> contentTypes)
+    private void MergeAndSaveContentTypes(IAppReader appReader, List<IContentType> contentTypes)
     {
         var l = Log.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
-        var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appState, type));
+        var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appReader, type));
         var so = importExportEnvironment.SaveOptions(ZoneId);
         so.DiscardAttributesNotInType = true;
         Storage.Save(toUpdate.ToList(), so);
@@ -184,13 +184,13 @@ public class ImportService(
             .ToList();
     }
 
-    private IContentType MergeContentTypeUpdateWithExisting(IAppState appState, IContentType contentType) => Log.Func(l =>
+    private IContentType MergeContentTypeUpdateWithExisting(IAppReader appReader, IContentType contentType) => Log.Func(l =>
     {
 
         l.A("New CT, must reset attributes");
 
         // Is it an update or new?
-        var existing = appState.GetContentType(contentType.NameId);
+        var existing = appReader.GetContentType(contentType.NameId);
         if (existing == null)
         {
             // must ensure that attribute Metadata is officially seen as new
@@ -222,7 +222,7 @@ public class ImportService(
                 }
 
                 var newMetaList = newAttribute.Metadata
-                    .Select(impMd => MergeOneMd(appState, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
+                    .Select(impMd => MergeOneMd(appReader.Metadata, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
                     .ToList();
 
                 if (newAttribute.Metadata.Permissions.Any())
@@ -233,7 +233,7 @@ public class ImportService(
 
         // check if the content-type has metadata, which needs merging
         var merged = contentType.Metadata
-            .Select(impMd => MergeOneMd(appState, (int)TargetTypes.ContentType, contentType.NameId, impMd))
+            .Select(impMd => MergeOneMd(appReader.Metadata, (int)TargetTypes.ContentType, contentType.NameId, impMd))
             .ToList();
         merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
 
@@ -257,8 +257,10 @@ public class ImportService(
     /// <summary>
     /// Import an Entity with all values
     /// </summary>
-    private IEntity CreateMergedForSaving(IEntity update, IAppDataService appState, SaveOptions saveOptions) => Log.Func(l =>
+    private IEntity CreateMergedForSaving<T>(IEntity update, T appState, SaveOptions saveOptions)
+        where T : IAppReadEntities, IAppReadContentTypes
     {
+        var l = Log.Fn<IEntity>();
         _mergeCountToStopLogging++;
         var logDetails = _mergeCountToStopLogging <= LogMaxMerges;
         if (_mergeCountToStopLogging == LogMaxMerges)
@@ -271,7 +273,7 @@ public class ImportService(
         if (contentType == null) // AttributeSet not Found
         {
             Storage.ImportLogToBeRefactored.Add(new(EventLogEntryType.Error, $"ContentType not found for {update.Type.NameId}"));
-            return (null, "error");
+            return l.ReturnNull("error");
         }
 
         // set type only if is not set yet 
@@ -288,7 +290,7 @@ public class ImportService(
 
         // Simplest case - nothing existing to update: return update-entity unchanged
         if (existingEntities == null || !existingEntities.Any())
-            return (dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
+            return l.Return(dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
         Storage.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information,
             $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
@@ -296,8 +298,8 @@ public class ImportService(
         // now update (main) entity id from existing - since it already exists
         var original = existingEntities.First();
         var result = entitySaverLazy.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logDetails: logDetails);
-        return (result, "ok");
-    });
+        return l.Return(result, "ok");
+    }
 
     private int _mergeCountToStopLogging;
     private const int LogMaxMerges = 100;

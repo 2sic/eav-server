@@ -15,7 +15,7 @@ internal class InsightsAttributes(LazySvc<IAppReaders> appReaders) : InsightsPro
             return message;
 
         Log.A($"debug app attributes for {AppId} and {Type}");
-        var typ = appReaders.Value.GetContentTypes(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
 
         var msg = "" + H1($"Attributes for {typ.Name} ({typ.NameId}) in {AppId}\n");
         try

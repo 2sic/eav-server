@@ -76,7 +76,7 @@ public class EavSystemLoader(
         var l = Log.Fn();
         try
         {
-            var presetApp = appReaders.GetPresetReader();
+            var presetApp = appReaders.GetSystemPreset();
             l.A($"presetApp:{presetApp != null}");
 
             var licEntities = presetApp?.List

@@ -9,7 +9,7 @@ partial class Efc11Loader
     /// Get all ContentTypes for specified AppId. 
     /// If uses temporary caching, so if called multiple times it loads from a private field.
     /// </summary>
-    public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source) 
+    public IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source) 
         => LoadContentTypesFromDb(appId, source);
 
 
@@ -18,7 +18,7 @@ partial class Efc11Loader
         var l = Log.Fn<IList<IContentType>>(timer: true);
         try
         {
-            if (string.IsNullOrEmpty(appReader.Folder)) return l.Return(dbTypes, "no path");
+            if (string.IsNullOrEmpty(appReader.Specs.Folder)) return l.Return(dbTypes, "no path");
 
             var fileTypes = InitFileSystemContentTypes(appReader);
             if (fileTypes == null || fileTypes.Count == 0) return l.Return(dbTypes, "no app file types");
@@ -60,7 +60,7 @@ partial class Efc11Loader
     /// <summary>
     /// Load DB content-types into loader-cache
     /// </summary>
-    private ImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSource source)
+    private ImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSourceAndExpiring source)
     {
         // WARNING: 2022-01-18 2dm
         // I believe there is an issue which can pop up from time to time, but I'm not sure if it's only in dev setup

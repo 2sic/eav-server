@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Apps.Services;
+namespace ToSic.Eav.Apps;
 
-public interface IAppContentTypeService
+public interface IAppReadContentTypes
 {
     /// <summary>
     /// All content types of the app.

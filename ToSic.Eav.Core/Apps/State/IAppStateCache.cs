@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.Caching;
+﻿using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Data.Source;
@@ -9,11 +7,14 @@ using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Apps.State;
 
-public interface IAppStateCache: ICacheExpiring, IHasMetadata, IHasPiggyBack, IAppIdentity, IHasMetadataSource, IHasIdentityNameId, 
+public interface IAppStateCache: ICacheExpiring,
+    IHasMetadata,
+    IHasPiggyBack,
+    IAppIdentity,
+    IHasMetadataSourceAndExpiring,
+    IHasIdentityNameId, 
     IEntitiesSource, ICanBeCacheDependency, IHasLog,
-    IHas<IAppSpecs>,
-    IHas<IAppSpecsWithState>,
-    IHas<IAppSpecsWithStateAndCache>,
+    // IHas<IAppSpecs>,
     IRelationshipSource
 {
 

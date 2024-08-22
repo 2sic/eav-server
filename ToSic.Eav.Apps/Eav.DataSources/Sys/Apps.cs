@@ -81,14 +81,14 @@ public sealed class Apps: CustomDataSource
             .OrderBy(a => a.Key)
             .Select(app =>
             {
-                IAppSpecs appState = null;
+                IAppSpecs appSpecs = null;
                 Guid? guid = null;
                 string error = null;
                 try
                 {
-                    appState = appReaders.GetReader(new AppIdentityPure(zone.ZoneId, app.Key)).Specs;
+                    appSpecs = appReaders.Get(new AppIdentityPure(zone.ZoneId, app.Key)).Specs;
                     // this will get the guid, if the identity is not "default"
-                    if (Guid.TryParse(appState.NameId, out var g)) guid = g;
+                    if (Guid.TryParse(appSpecs.NameId, out var g)) guid = g;
                 }
                 catch (Exception ex)
                 {
@@ -99,9 +99,9 @@ public sealed class Apps: CustomDataSource
                 var appEnt = new Dictionary<string, object>
                 {
                     { AppType.Id.ToString(), app.Key },
-                    { AppType.Name.ToString(), appState?.Name ?? "error - can't lookup name" },
-                    { AppType.Folder.ToString(), appState?.Folder ?? "" },
-                    { AppType.IsHidden.ToString(), appState?.Configuration.IsHidden ?? false },
+                    { AppType.Name.ToString(), appSpecs?.Name ?? "error - can't lookup name" },
+                    { AppType.Folder.ToString(), appSpecs?.Folder ?? "" },
+                    { AppType.IsHidden.ToString(), appSpecs?.Configuration.IsHidden ?? false },
                     { AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId },
                     { AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId },
                 };

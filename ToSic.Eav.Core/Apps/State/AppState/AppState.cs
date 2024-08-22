@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.State;
 /// </summary>
 [PrivateApi("this is just fyi - was marked as internal till v16.09")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect, IHas<IAppSpecsWithStateAndCache>
+internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
 {
     private static bool _loggedToBootLog = false;
 
@@ -89,10 +89,4 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
         if (!Loading) throw new($"Can't set AppState.{property} when not in loading state");
         return value;
     }
-
-    IAppSpecs IHas<IAppSpecs>.Value => new AppSpecsForAppStateInCache(this);
-
-    IAppSpecsWithState IHas<IAppSpecsWithState>.Value => new AppSpecsForAppStateInCache(this);
-
-    IAppSpecsWithStateAndCache IHas<IAppSpecsWithStateAndCache>.Value => new AppSpecsForAppStateInCache(this);
 }

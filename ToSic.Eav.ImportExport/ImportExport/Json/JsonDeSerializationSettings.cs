@@ -13,7 +13,7 @@ public class JsonDeSerializationSettings
 {
     public JsonDeSerializationSettings() { }
 
-    public IHasMetadataSource CtAttributeMetadataAppState { get; set; }
+    public IHasMetadataSourceAndExpiring CtAttributeMetadataAppState { get; set; }
 
     public IDeferredContentTypeProvider EntityContentTypeProvider { get; set; }
 }

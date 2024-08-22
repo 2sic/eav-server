@@ -116,7 +116,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     #endregion
 
 
-    public IAppReader AppReader => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppReaders.GetReader(AppIdentity));
+    public IAppReader AppReader => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppReaders.Get(AppIdentity));
     private readonly GetOnce<IAppReader> _appStateInternal = new();
 
     #region Settings and Resources

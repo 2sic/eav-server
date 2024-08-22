@@ -60,7 +60,7 @@ partial class MetadataOf<T>
         var mdProvider = GetMetadataSource();
         var mdOfKey = Source.SourceDirect?.List
                       ?? mdProvider?.GetMetadata(_targetType, Key)
-                      ?? new List<IEntity>();
+                      ?? [];
         //_debugUse++;
         return (additions == null ? mdOfKey : mdOfKey.Concat(additions)).ToList();
     }

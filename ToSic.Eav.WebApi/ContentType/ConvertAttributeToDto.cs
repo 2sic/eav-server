@@ -233,8 +233,8 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     {
         if (_mdRecs != null) return _mdRecs;
         _mdRecs = mdRead.Value;
-        var appState = appReaders.GetReader(_appId);
-        _mdRecs.Setup(appState, _appId);
+        var appReader = appReaders.Get(_appId);
+        _mdRecs.Setup(appReader, _appId);
         return _mdRecs;
     }
     private MdRecommendations _mdRecs;

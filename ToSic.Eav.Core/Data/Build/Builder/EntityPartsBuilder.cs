@@ -35,7 +35,7 @@ public class EntityPartsBuilder
 
     private static IMetadataOf EmptyGetMetadataOf(Guid guid, string title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
 
-    private static Func<Guid, string, IMetadataOf> CreateMetadataOfAppSources(IHasMetadataSource appSource)
+    private static Func<Guid, string, IMetadataOf> CreateMetadataOfAppSources(IHasMetadataSourceAndExpiring appSource)
         => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title,
             appSource: appSource);
 
@@ -47,8 +47,8 @@ public class EntityPartsBuilder
 
     public static Func<TKey, string, IMetadataOf> CloneMetadataFunc<TKey>(IMetadataOf original,
         List<IEntity> items = default,
-        IHasMetadataSource appSource = default,
-        Func<IHasMetadataSource> deferredSource = default
+        IHasMetadataSourceAndExpiring appSource = default,
+        Func<IHasMetadataSourceAndExpiring> deferredSource = default
     )
     {
         var specs = ((IMetadataInternals)original).GetCloneSpecs();

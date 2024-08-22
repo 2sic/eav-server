@@ -5,7 +5,7 @@ namespace ToSic.Eav.Persistence.File;
 
 partial class AppLoader
 {
-    public List<IContentType> LoadGlobalContentTypes(IHasMetadataSource appState)
+    public List<IContentType> LoadGlobalContentTypes(IHasMetadataSourceAndExpiring appState)
     {
         var l = Log.Fn<List<IContentType>>();
 

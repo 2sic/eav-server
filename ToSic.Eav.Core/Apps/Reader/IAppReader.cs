@@ -1,10 +1,13 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Apps.Reader;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Apps;
 
@@ -15,9 +18,18 @@ namespace ToSic.Eav.Apps;
 ///
 /// To get an app Reader, use the ??? TODO
 /// </summary>
-public interface IAppReader: IAppState, IHasPiggyBack, IMetadataOfSource, IHas<IAppSpecs>, IAppSpecsWithStateAndCache, IHasMetadataSource
+public interface IAppReader:
+    IAppIdentity,
+    IAppReadEntities,
+    IAppReadContentTypes,
+    IHasPiggyBack,
+    IMetadataOfSource
 {
     IAppSpecs Specs { get; }
+
+    IAppReadEntities Entities { get; }
+
+    IAppReadContentTypes ContentTypesSvc { get; }
 
     IAppStateCache StateCache { get; }
 
@@ -27,14 +39,9 @@ public interface IAppReader: IAppState, IHasPiggyBack, IMetadataOfSource, IHas<I
 
     SynchronizedList<IEntity> ListNotHavingDrafts { get; }
 
-
-    AppStateMetadata SettingsInApp { get; }
-
-    AppStateMetadata ResourcesInApp { get; }
-
-    IEntity ConfigurationEntity { get; }
-
-    ParentAppState ParentApp { get; }
+    //ParentAppState ParentApp { get; }
 
     AppRelationshipManager Relationships { get; }
+
+    IMetadataSource Metadata { get; }
 }

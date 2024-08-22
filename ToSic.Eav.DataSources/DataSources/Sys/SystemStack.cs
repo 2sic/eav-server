@@ -61,7 +61,7 @@ public class SystemStack: DataSourceBase
     {
         Configuration.Parse();
 
-        var appState = _appStates.GetReader(this.PureIdentity());
+        var appState = _appStates.Get(this.PureIdentity());
 
         var languages = _zoneCulture.SafeLanguagePriorityCodes();
 

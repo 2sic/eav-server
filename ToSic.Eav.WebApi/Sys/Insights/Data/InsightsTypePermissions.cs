@@ -16,7 +16,7 @@ internal class InsightsTypePermissions(LazySvc<IAppReaders> appReaders) : Insigh
         if (UrlParamsIncomplete(AppId, Type, out var message))
             return message;
 
-        var typ = appReaders.Value.GetContentTypes(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
 
         var msg = H1($"Permissions for {typ.Name} ({typ.NameId}) in {AppId}\n").ToString();
         var metadata = typ.Metadata.Permissions.Select(p => p.Entity).ToList();

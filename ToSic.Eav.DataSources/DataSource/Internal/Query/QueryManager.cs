@@ -24,7 +24,7 @@ public class QueryManager(
     public QueryDefinition Get(IAppIdentity appIdentity, int queryId)
     {
         var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
-        var app = appReaders.Value.KeepOrGetReader(appIdentity);
+        var app = appReaders.Value.GetOrKeep(appIdentity);
         var qEntity = GetQueryEntity(queryId, app);
         var qDef = queryDefBuilder.Value.Create(qEntity, app.AppId);
         return l.Return(qDef);
@@ -39,7 +39,7 @@ public class QueryManager(
     internal IEntity GetQueryEntity(int entityId, IAppIdentity appReaderOrId)
     {
         var l = Log.Fn<IEntity>($"{entityId}");
-        var app = appReaders.Value.KeepOrGetReader(appReaderOrId);
+        var app = appReaders.Value.GetOrKeep(appReaderOrId);
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
@@ -78,7 +78,7 @@ public class QueryManager(
     internal IImmutableList<IEntity> AllQueryItems(IAppIdentity appIdOrReader, int recurseParents = 0)
     {
         var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
-        var appReader = appReaders.Value.KeepOrGetReader(appIdOrReader);
+        var appReader = appReaders.Value.GetOrKeep(appIdOrReader);
         var result = appReader.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
         if (recurseParents <= 0)
             return l.Return(result, "ok, no recursions");

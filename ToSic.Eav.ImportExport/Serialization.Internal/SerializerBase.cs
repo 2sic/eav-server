@@ -28,7 +28,8 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     #region Constructor / DI
 
-    private readonly IAppContentTypeService _globalAppOrNull = services.AppStates.GetPresetReaderIfAlreadyLoaded();
+    //private readonly IAppReadContentTypes _globalAppOrNull = services.AppStates.GetPresetReaderIfAlreadyLoaded();
+    private readonly IAppReadContentTypes _globalAppOrNull = services.AppStates.GetSystemPreset(nullIfNotLoaded: true);
 
     public ITargetTypes MetadataTargets { get; } = services.MetadataTargets;
 

@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Data.PiggyBack;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.State;
 
@@ -8,7 +9,7 @@ namespace ToSic.Eav.Apps.State;
 /// Special helper class to provide <see cref="IAppSpecs"/> for the AppState.
 /// It's primary purpose is to provide a Configuration Object on demand, since the underlying entity will change from time to time.
 /// </summary>
-internal class AppSpecsForAppStateInCache(AppState appState): IAppSpecsWithStateAndCache
+internal class AppSpecs(AppState appState): IAppSpecs
 {
     public int ZoneId => appState.ZoneId;
 
@@ -28,11 +29,10 @@ internal class AppSpecsForAppStateInCache(AppState appState): IAppSpecsWithState
     /// </summary>
     public IAppConfiguration Configuration => new AppConfiguration(appState.SettingsInApp.AppConfiguration);
 
-    IAppSpecs IHas<IAppSpecs>.Value => this;
+    public IMetadataOf Metadata => appState.Metadata;
 
-    IAppSpecsWithState IHas<IAppSpecsWithState>.Value => this;
+    public AppStateMetadata Settings => appState.SettingsInApp;
 
-    IAppStateCache IAppSpecsWithStateAndCache.Cache => appState;
+    public AppStateMetadata Resources => appState.ResourcesInApp;
 
-    IAppSpecsWithStateAndCache IHas<IAppSpecsWithStateAndCache>.Value => this;
 }

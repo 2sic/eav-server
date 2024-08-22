@@ -36,7 +36,7 @@ public abstract class XmlExporter(
     public string[] EntityIDs;
     public List<Message> Messages = [];
 
-    public IAppReader AppState { get; private set; }
+    public IAppReader AppReader { get; private set; }
 
     public int ZoneId { get; private set; }
 
@@ -53,14 +53,14 @@ public abstract class XmlExporter(
     {
         ZoneId = zoneId;
         Log.A("start XML exporter using app-package");
-        AppState = appReader;
+        AppReader = appReader;
         Serializer.Init(
             AppsCatalog.Zone(zoneId).LanguagesActive
                 .ToDictionary(
                     l => l.EnvironmentKey.ToLowerInvariant(),
                     l => l.DimensionId
                 ),
-            AppState);
+            AppReader);
 
         _appStaticName = appStaticName;
         _isAppExport = appExport;
@@ -78,7 +78,7 @@ public abstract class XmlExporter(
         ContextResolver.SetApp(new AppIdentity(zoneId, appId));
         var ctxOfApp = ContextResolver.AppRequired();
         PostContextInit(ctxOfApp);
-        Constructor(zoneId, appRuntime, ctxOfApp.AppReader.NameId, appExport, attrSetIds, entityIds);
+        Constructor(zoneId, appRuntime, ctxOfApp.AppReader.Specs.NameId, appExport, attrSetIds, entityIds);
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
         InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
@@ -175,8 +175,8 @@ public abstract class XmlExporter(
         foreach (var attributeSetId in AttributeSetNamesOrIds)
         {
             var set = int.TryParse(attributeSetId, out var id)
-                ? AppState.GetContentType(id)
-                : AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
+                ? AppReader.GetContentType(id)
+                : AppReader.GetContentType(attributeSetId);  // in case it's the name, not the number
 
             // skip system/code-types
             if (set.HasPresetAncestor()) continue;
@@ -184,6 +184,7 @@ public abstract class XmlExporter(
             var attributes = new XElement(XmlConstants.Attributes);
 
             // Add all Attributes to AttributeSet including meta information
+            var appMetadata = AppReader.Metadata;
             foreach (var a in set.Attributes.OrderBy(a => a.SortOrder))
             {
                 var xmlAttribute = new XElement(XmlConstants.Attribute,
@@ -191,7 +192,7 @@ public abstract class XmlExporter(
                     new XAttribute(XmlConstants.Type, a.Type.ToString()),
                     new XAttribute(XmlConstants.IsTitle, a.IsTitle),
                     // Add Attribute MetaData
-                    AppState.GetMetadata(TargetTypes.Attribute, a.AttributeId)
+                    appMetadata.GetMetadata(TargetTypes.Attribute, a.AttributeId)
                         .Select(c => GetEntityXElement(c.EntityId, c.Type.NameId))
                 );
 
@@ -232,7 +233,7 @@ public abstract class XmlExporter(
             var id = int.Parse(entityId);
 
             // Get the entity and ContentType from ContentContext add Add it to ContentItems
-            var entity = AppState.List.FindRepoId(id);
+            var entity = AppReader.List.FindRepoId(id);
             entities.Add(GetEntityXElement(entity.EntityId, entity.Type.NameId));
         }
 
@@ -256,10 +257,10 @@ public abstract class XmlExporter(
 
     private XElement GetParentAppXElement()
     {
-        if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid && AppState.HasCustomParentApp())
+        if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid && AppReader.HasCustomParentApp())
             return new(XmlConstants.ParentApp,
-                new XAttribute(XmlConstants.Guid, AppState.ParentAppState.NameId),
-                new XAttribute(XmlConstants.AppId, AppState.ParentAppState.AppId)
+                new XAttribute(XmlConstants.Guid, AppReader.ParentAppState.NameId),
+                new XAttribute(XmlConstants.AppId, AppReader.ParentAppState.AppId)
             );
         return null;
     }

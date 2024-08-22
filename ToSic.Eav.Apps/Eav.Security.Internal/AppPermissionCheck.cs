@@ -68,7 +68,7 @@ public class AppPermissionCheck: PermissionCheckBase
             : (appIdentity as IApp)?.Metadata.Permissions.ToList()
               //?? (appIdentity as AppState)?.Metadata.Permissions.ToList()
               //?? (appIdentity as IAppState)?.Metadata.Permissions?.ToList()
-              ??  _appReaders.KeepOrGetReader(appIdentity).Metadata.Permissions.ToList();
+              ??  _appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();
         return permissions;
     }
 

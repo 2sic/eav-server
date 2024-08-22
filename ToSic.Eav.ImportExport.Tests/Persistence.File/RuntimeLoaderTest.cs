@@ -15,10 +15,10 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File
         public RuntimeLoaderTest()
         {
             _appLoader = GetService<IAppLoader>();
-            _globalAppState = GetService<IAppReaders>().GetPresetReader();
+            _globalAppState = GetService<IAppReaders>().GetSystemPreset();
         }
         private readonly IAppLoader _appLoader;
-        private readonly IAppState _globalAppState;
+        private readonly IAppReader _globalAppState;
 
         private int expectedTypesSysAndJson = 5;
         [Ignore("currently work in progress - as sys/json types keep changing and testing isn't updated yet")]

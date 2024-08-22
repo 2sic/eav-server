@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.State;
@@ -21,23 +19,16 @@ public static class AppStateExtensions
         => parentAppGuid.HasValue() 
            && (parentAppGuid == Constants.PresetName || parentAppGuid == Constants.GlobalPresetName);
 
-    // TODO: @STV - try to use this where possible
-    public static bool IsContentApp(this IHas<IAppSpecs> hasAppSpecs)
-        => hasAppSpecs.Value.NameId == Constants.DefaultAppGuid;
-
 
     // TODO: @STV - try to use this where possible
     public static bool IsGlobalSettingsApp(this IAppIdentity hasAppSpecs)
         => hasAppSpecs.AppId == Constants.MetaDataAppId;
 
-    // TODO: @STV - try to use this where possible
-    public static bool IsSiteSettingsApp(this IHas<IAppSpecs> hasAppSpecs)
-        => hasAppSpecs.Value.NameId == Constants.PrimaryAppGuid;
 
-    public static IEntity GetDraftOrKeep(this IAppState appState, IEntity entity)
+    public static IEntity GetDraftOrKeep(this IAppReader appState, IEntity entity)
         => appState.GetDraft(entity) ?? entity;
 
-    public static IEntity GetDraftOrPublished(this IAppState appState, Guid guid)
+    public static IEntity GetDraftOrPublished(this IAppReader appState, Guid guid)
         => appState.GetDraftOrKeep(appState.List.One(guid));
 
 }

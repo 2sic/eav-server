@@ -54,7 +54,7 @@ public static class IHasPiggyBackExtensions
     /// <param name="create"></param>
     /// <returns></returns>
     public static (TData Value, bool IsCached) GetPiggyBackExpiring<TData>(this IAppReader parent, string key, Func<TData> create)
-        => parent.PiggyBack.GetOrGenerate(parent, key, create);
+        => parent.StateCache.PiggyBack.GetOrGenerate(parent.StateCache, key, create);
 
 
     /// <summary>
@@ -70,6 +70,6 @@ public static class IHasPiggyBackExtensions
     /// <returns></returns>
     public static (TData Value, bool IsCached) GetPiggyBackPropExpiring<TData>(this IAppReader parent, Func<TData> create,
         [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default)
-        => parent.PiggyBack.GetOrGenerate(parent, $"autokey:{cPath};{cName}()", create);
+        => parent.StateCache.PiggyBack.GetOrGenerate(parent.StateCache, $"autokey:{cPath};{cName}()", create);
 
 }

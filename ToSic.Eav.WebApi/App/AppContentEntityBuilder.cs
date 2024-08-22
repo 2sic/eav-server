@@ -12,7 +12,8 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
     /// Construct an import-friendly, type-controlled value-dictionary to create or update an entity
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, object> CreateEntityDictionary<T>(string contentType, Dictionary<string, object> newContentItem, T appState) where T: IAppIdentity, IAppDataService
+    public Dictionary<string, object> CreateEntityDictionary<T>(string contentType, Dictionary<string, object> newContentItem, T appState)
+        where T: IAppIdentity, IAppReadEntities, IAppReadContentTypes
     {
         Log.A($"create ent dic a#{appState.AppId}, type:{contentType}");
         // Retrieve content-type definition and check all the fields that this content-type has

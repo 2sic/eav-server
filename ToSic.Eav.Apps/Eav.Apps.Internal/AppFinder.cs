@@ -46,8 +46,8 @@ public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaders appReaders) 
         {
             foreach (var p in appsCatalog.Apps(zoneId))
             {
-                var appState = appReaders.GetReader(new AppIdentity(zoneId, p.Key));
-                if (appState.Folder.EqualsInsensitive(folderName))
+                var appSpecs = appReaders.Get(new AppIdentity(zoneId, p.Key)).Specs;
+                if (appSpecs.Folder.EqualsInsensitive(folderName))
                     return l.Return(p.Key, "folder matched");
             }
 
@@ -71,9 +71,9 @@ public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaders appReaders) 
 
         foreach (var p in appsCatalog.Apps(zoneId))
         {
-            var appState = appReaders.GetReader(new AppIdentity(zoneId, p.Key));
+            var specs = appReaders.Get(new AppIdentity(zoneId, p.Key)).Specs;
 
-            if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
+            if (!string.IsNullOrEmpty(specs.Name) && specs.Name.ToLowerInvariant() == nameLower)
                 return (p.Key, "name matched");
         }
 

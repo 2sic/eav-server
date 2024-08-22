@@ -21,14 +21,14 @@ namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus<WorkInputTypes> inputTypes)
     : ServiceBase($"{AppConstants.LogName}.MdRead", connect: [requirements])
 {
-    public void Setup(IAppDataAndMetadataService appState, int appId)
+    public void Setup(IAppReader appReader, int appId)
     {
-        _appState = appState;
+        _appState = appReader;
         AppId = appId;
     }
 
-    private IAppDataAndMetadataService AppState => _appState ?? throw new("Can't use this Read class before setting AppState");
-    private IAppDataAndMetadataService _appState;
+    private IAppReader AppReader => _appState ?? throw new("Can't use this Read class before setting AppState");
+    private IAppReader _appState;
 
     private int AppId;
 
@@ -60,7 +60,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
         // This is the case for a Permissions dialog
         if (!IsNullOrWhiteSpace(reqTypeName))
         {
-            var recommendedType = AppState.GetContentType(reqTypeName);
+            var recommendedType = AppReader.GetContentType(reqTypeName);
             if (recommendedType == null) return l.ReturnNull("type name not found");
             return l.Return(
                 [new(recommendedType, null, -1, "Use preset type", PrioMax)],
@@ -110,7 +110,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
         var keyForward = (targetKey ?? "").ForwardSlash().Trim();
 
         // Do this #StepByStep to better debug in case of issues
-        var allTypes = AppState.ContentTypes;
+        var allTypes = AppReader.ContentTypes;
         var recommendedTypes = allTypes
             .SelectMany(ct =>
             {
@@ -159,7 +159,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
                         return false;
                     case (int)TargetTypes.Attribute:
                         if (targetName.EqualsInsensitive(targetKey)) return true;
-                        var attr = AppState.ContentTypes.FindAttribute(targetKey);
+                        var attr = AppReader.ContentTypes.FindAttribute(targetKey);
                         return keyForward.EqualsInsensitive($"{attr.Item1.NameId}/{attr.Item2.Name}")
                                || keyForward.EqualsInsensitive($"{attr.Item1.Name}/{attr.Item2.Name}");
                     // App and ContentType don't need extra conditions / specifiers
@@ -170,7 +170,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
                         if (targetName == "*") return true;
                         // Test if the current item (targetKey) is the expected type
                         if (!Guid.TryParse(targetKey, out var guidKey)) return false;
-                        var currentEntity = AppState.List.One(guidKey);
+                        var currentEntity = AppReader.List.One(guidKey);
                         return currentEntity?.Type?.Is(targetName) ?? false;
                     // App and ContentType don't need extra conditions / specifiers
                     case (int)TargetTypes.ContentType:
@@ -200,7 +200,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
                 if (!int.TryParse(key, out var attributeId))
                     return l.ReturnNull("attribute: key is not int");
 
-                var attribute = AppState.ContentTypes
+                var attribute = AppReader.ContentTypes
                     .SelectMany(ct => ct.Attributes)
                     .FirstOrDefault(attr => attr.AttributeId == attributeId);
 
@@ -223,10 +223,10 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
                 return l.Return(attrMdOnField);
             case TargetTypes.App:
                 // TODO: this won't work - needs another way of finding assignments
-                return l.Return(GetMetadataExpectedDecorators(AppState.Metadata, TargetTypes.Undefined, "attached to App", PrioMax), "app");
+                return l.Return(GetMetadataExpectedDecorators(AppReader.Specs.Metadata, TargetTypes.Undefined, "attached to App", PrioMax), "app");
             case TargetTypes.Entity:
                 if (!Guid.TryParse(key, out var guidKey)) return l.ReturnNull("entity not guid");
-                var entity = AppState.List.One(guidKey);
+                var entity = AppReader.List.One(guidKey);
                 if (entity == null) return l.ReturnNull("entity not found");
                 var onEntity = GetMetadataExpectedDecorators(entity.Metadata, TargetTypes.Entity, "attached to Entity", PrioMax)
                                ?? [];
@@ -237,7 +237,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
                 var merged = onEntity.Union(onEntType).ToList();
                 return l.Return(merged, $"entity {onEntity.Count} type {onEntType.Count} all {merged.Count}");
             case TargetTypes.ContentType:
-                var ct = AppState.GetContentType(key);
+                var ct = AppReader.GetContentType(key);
                 if (ct == null) return l.ReturnNull("type not found");
                 var onType = GetMetadataExpectedDecorators(ct.Metadata, TargetTypes.ContentType, "attached to Content-Type", PrioHigh);
                 return l.Return(onType, "content type");
@@ -305,7 +305,7 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
         var l = Log.Fn<MetadataRecommendation>($"name: {name}");
         if (IsNullOrWhiteSpace(name)) return l.ReturnNull("empty name");
 
-        var type = AppState.GetContentType(name);
+        var type = AppReader.GetContentType(name);
         return type == null
             ? l.ReturnNull("name not found")
             : l.Return(new(type, null, null, debug, priority)

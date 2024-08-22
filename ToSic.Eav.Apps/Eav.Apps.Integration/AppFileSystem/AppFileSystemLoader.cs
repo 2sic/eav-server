@@ -59,11 +59,11 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
 
     #region Inits
 
-    public IAppFileSystemLoader Init(IAppReader app)
+    public IAppFileSystemLoader Init(IAppReader appReader)
     {
-        var l = Log.Fn<IAppFileSystemLoader>($"{app.AppId}, {app.Folder}, ...");
-        AppIdentity = app;
-        _appPaths = Services.AppPathsLazy.Value.Get(app, Site);
+        var l = Log.Fn<IAppFileSystemLoader>($"{appReader.AppId}, {appReader.Specs.Folder}, ...");
+        AppIdentity = appReader;
+        _appPaths = Services.AppPathsLazy.Value.Get(appReader, Site);
         InitPathAfterAppId();
         return l.Return(this);
     }

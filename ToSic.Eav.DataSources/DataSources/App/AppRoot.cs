@@ -42,16 +42,16 @@ public class AppRoot : DataSourceBase, IAppRoot
     /// <summary>
     /// Get the <see cref="AppReader"/> of this app from the cache.
     /// </summary>
-    private IAppReader AppReader => _appReader ??= _appReaders.GetReader(this);
+    private IAppReader AppReader => _appReader ??= _appReaders.Get(this);
     private IAppReader _appReader;
 
     #region Cache-Chain
 
     /// <inheritdoc />
-    public override long CacheTimestamp => AppReader.CacheTimestamp;
+    public override long CacheTimestamp => AppReader.StateCache.CacheTimestamp;
 
     /// <inheritdoc />
-    public override bool CacheChanged(long dependentTimeStamp) => AppReader.CacheChanged(dependentTimeStamp);
+    public override bool CacheChanged(long dependentTimeStamp) => AppReader.StateCache.CacheChanged(dependentTimeStamp);
 
     /// <summary>
     /// Combination of the current key and all keys of upstream cached items, to create a long unique key for this context.

@@ -52,7 +52,7 @@ public class ZipExport(
             FileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
         ]);
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appState = appReaders.GetReader(appIdentity);
+        _appState = appReaders.Get(appIdentity);
         return this;
     }
 
@@ -156,7 +156,7 @@ public class ZipExport(
             FileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
 
         // Copy global app folder only for ParentApp
-        var parentAppGuid = xmlExport.AppState.ParentAppState?.NameId;
+        var parentAppGuid = xmlExport.AppReader.ParentAppState?.NameId;
         if (parentAppGuid == null || AppStateExtensions.AppGuidIsAPreset(parentAppGuid))
             if (Directory.Exists(_physicalPathGlobal))
                 FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);

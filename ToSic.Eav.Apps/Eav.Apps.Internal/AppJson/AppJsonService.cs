@@ -92,7 +92,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
 
     private string GetAppFullPath(int appId, bool useShared)
     {
-        var appPaths = _appPathsCache.GetOrCreate(appId, () => appPathsFactory.Get(appReaders.GetReader(appId), site));
+        var appPaths = _appPathsCache.GetOrCreate(appId, () => appPathsFactory.Get(appReaders.Get(appId), site));
         return useShared ? appPaths.PhysicalPathShared : appPaths.PhysicalPath;
     }
     private readonly Dictionary<int, IAppPaths> _appPathsCache = [];

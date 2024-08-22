@@ -27,7 +27,7 @@ internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IApp
                 {
                     var appIdentity = new AppIdentity(zone.Value.ZoneId, a.Key);
                     var inCache = appStates.Value.IsCached(appIdentity);
-                    var appReader = inCache ? appReaders.Value.GetReader(appIdentity) : null;
+                    var appReader = inCache ? appReaders.Value.Get(appIdentity) : null;
                     var appState = inCache ? appStates.Value.Get(appIdentity) : null;
                     return new
                     {
@@ -35,10 +35,10 @@ internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IApp
                         Guid = a.Value,
                         InCache = inCache,
                         Name = inCache
-                            ? appReader?.Name ?? "unknown, app-infos not json"
+                            ? appReader?.Specs.Name ?? "unknown, app-infos not json"
                             : "not-loaded",
                         Folder = inCache
-                            ? appReader?.Folder ?? "unknown, app-infos not json"
+                            ? appReader?.Specs.Folder ?? "unknown, app-infos not json"
                             : "not-loaded",
                         Hash = appState?.GetHashCode(),
                         TS = appState?.CacheTimestamp,

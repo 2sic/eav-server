@@ -6,7 +6,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Apps.State;
 
 [PrivateApi("internal use only")]
-internal class AppMetadataManager: IMetadataSource
+internal class AppMetadataManager: IMetadataSource, IHasMetadataSourceAndExpiring
 {
     #region cache value objects: Types, _guid, _number, _string
 
@@ -50,9 +50,9 @@ internal class AppMetadataManager: IMetadataSource
     /// </summary>
     internal void Reset()
     {
-        _guid = new();
-        _number = new();
-        _string = new();
+        _guid = [];
+        _number = [];
+        _string = [];
     }
 
     #region Cache Timestamp & Invalidation
@@ -133,6 +133,8 @@ internal class AppMetadataManager: IMetadataSource
             return contentTypeName == null
                 ? entities
                 : entities.Where(e => e.Type.Is(contentTypeName));
-        return Array.Empty<IEntity>();
+        return [];
     }
+
+    public IMetadataSource MetadataSource => this;
 }

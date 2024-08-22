@@ -154,7 +154,7 @@ public class WorkInputTypes(
         var l = Log.Fn<List<InputTypeInfo>>(timer: true);
         if (_presetInpTypeCache != null) return l.Return(_presetInpTypeCache, $"cached {_presetInpTypeCache.Count}");
 
-        var presetApp = appReaders.Value.GetPresetReader();
+        var presetApp = appReaders.Value.GetSystemPreset();
 
         var types = presetApp.ContentTypes
             .Where(p => p.NameId.StartsWith(FieldTypePrefix)

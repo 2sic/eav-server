@@ -18,7 +18,7 @@ public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stac
 
     public AppDataStackService InitForPrimaryAppOfZone(int zoneId)
     {
-        AppSpecs = appReaders.GetPrimaryReader(zoneId);
+        AppSpecs = appReaders.GetZonePrimary(zoneId);
         return this;
     }
 
@@ -63,11 +63,11 @@ public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stac
         l.A($"Owner: {AppSpecs.Show()}");
         var siteAppReader = AppSpecs.ZoneId == Constants.DefaultZoneId
             ? null
-            : appReaders.GetPrimaryReader(AppSpecs.ZoneId);
+            : appReaders.GetZonePrimary(AppSpecs.ZoneId);
         l.A($"Site: {siteAppReader?.Show()}");
-        var global = appReaders.GetReader(Constants.GlobalIdentity);
+        var global = appReaders.Get(Constants.GlobalIdentity);
         l.A($"Global: {global?.Show()}");
-        var preset = appReaders.GetPresetReader();
+        var preset = appReaders.GetSystemPreset();
         l.A($"Preset: {preset?.Show()}");
 
         // Find the ancestor, but only use it if it's _not_ the Preset

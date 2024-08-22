@@ -63,7 +63,7 @@ public class MetadataTargets(IAppReaders appReaders, DataSourceBase.MyServices s
     [PrivateApi]
     private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator()
     {
-        var appState = appReaders.GetReader(this);
+        var appState = appReaders.Get(this);
         return o =>
         {
             var mdFor = o.MetadataFor;

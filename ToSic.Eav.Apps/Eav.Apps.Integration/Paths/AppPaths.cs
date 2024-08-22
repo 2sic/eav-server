@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Context;
+﻿using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Internal.Configuration;
@@ -29,6 +30,7 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     private const bool Debug = true;
     private ISite Site => _finalSite ??= siteOrNull ?? siteLazy.Value;
     private ISite _finalSite;
+    private readonly IAppSpecs _appSpecs = appReader.Specs;
 
     /// <summary>
     /// We are having some difficulties that the App is caching the wrong path, so temporarily we'll log
@@ -59,23 +61,23 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     }
 
     public string Path => GetInternal(nameof(Path), 
-        () => Site.AppAssetsLinkTemplate.Replace(AppLoadConstants.AppFolderPlaceholder, appReader.Folder)
+        () => Site.AppAssetsLinkTemplate.Replace(AppLoadConstants.AppFolderPlaceholder, _appSpecs.Folder)
             .ToAbsolutePathForwardSlash());
 
     public string PathShared => GetInternal(nameof(PathShared), 
-        () => Combine(config.Value.SharedAppsFolder, appReader.Folder)
+        () => Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)
             .ToAbsolutePathForwardSlash());
 
     public string PhysicalPath => GetInternal(nameof(PhysicalPath), 
-        () => Combine(Site.AppsRootPhysicalFull, appReader.Folder));
+        () => Combine(Site.AppsRootPhysicalFull, _appSpecs.Folder));
 
     public string PhysicalPathShared => GetInternal(nameof(PhysicalPathShared), 
-        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder, appReader.Folder)));
+        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)));
 
     public string RelativePath => GetInternal(nameof(RelativePath), 
-        () => Combine(Site.AppsRootPhysical, appReader.Folder).Backslash());
+        () => Combine(Site.AppsRootPhysical, _appSpecs.Folder).Backslash());
         
     public string RelativePathShared => GetInternal(nameof(RelativePathShared), 
-        () => Combine(config.Value.SharedAppsFolder, appReader.Folder)
+        () => Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)
             .ToAbsolutePathForwardSlash());
 }

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Apps.Services;
+namespace ToSic.Eav.Apps;
 
-public interface IAppEntityService
+public interface IAppReadEntities
 {
     IImmutableList<IEntity> List { get; }
 

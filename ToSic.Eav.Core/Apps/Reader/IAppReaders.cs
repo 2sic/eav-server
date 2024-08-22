@@ -1,28 +1,26 @@
-﻿using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Apps;
 
 public interface IAppReaders
 {
-    IAppSpecs GetAppSpecs(int appId);
+    IAppReader GetOrKeep(IAppIdentity appOrReader);
 
-    IAppContentTypeService GetContentTypes(IAppIdentity app);
+    IAppReader Get(IAppIdentity app);
 
-    IAppContentTypeService GetContentTypes(int appId);
+    IAppReader Get(int appId);
 
-    IAppContentTypeService GetPresetReaderIfAlreadyLoaded();
+    IAppReader GetZonePrimary(int zoneId);
 
-    IAppReader KeepOrGetReader(IAppIdentity app);
-
-    IAppReader GetReader(IAppIdentity app);
-
-    IAppReader GetReader(int appId);
-
-    IAppReader GetPrimaryReader(int zoneId);
-
-    IAppReader GetPresetReader();
+    /// <summary>
+    /// Get the preset App of the system.
+    /// In a very special case, it should skip this if it's not loaded.
+    /// </summary>
+    /// <param name="protector"></param>
+    /// <param name="nullIfNotLoaded"></param>
+    /// <returns></returns>
+    IAppReader GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false);
 
     IAppReader ToReader(IAppStateCache state);
 }

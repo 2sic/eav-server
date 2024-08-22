@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data.PiggyBack;
+using ToSic.Eav.Metadata;
 using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Apps.Internal.Specs;
@@ -9,18 +9,21 @@ namespace ToSic.Eav.Apps.Internal.Specs;
 /// It's primarily used so helper functions can tell us more about the App
 /// by receiving a TODO object which has this hidden somewhere.
 /// </summary>
-public interface IAppSpecs : IAppIdentity, IHasIdentityNameId, IHas<IAppSpecs>
+public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
 {
     string Name { get; }
 
     string Folder { get; }
 
     IAppConfiguration Configuration { get; }
-}
 
-public interface IAppSpecsWithState : IAppSpecs, IHasPiggyBack, IHas<IAppSpecsWithState>;
+    /// <summary>
+    /// Metadata describing the current App.
+    /// </summary>
+    IMetadataOf Metadata { get; }
 
-public interface IAppSpecsWithStateAndCache : IAppSpecsWithState, IHas<IAppSpecsWithStateAndCache>
-{
-    //public IAppStateCache Cache { get; }
+    AppStateMetadata Settings { get; }
+
+    AppStateMetadata Resources { get; }
+
 }

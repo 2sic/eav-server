@@ -29,7 +29,7 @@ public class ContentImportApi(
     public ContentImportApi Init(int appId)
     {
         var l = Log.Fn<ContentImportApi>($"app: {appId}");
-        _appReader = appReaders.GetReader(appId);
+        _appReader = appReaders.Get(appId);
         return l.Return(this);
     }
 

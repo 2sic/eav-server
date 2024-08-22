@@ -16,7 +16,7 @@ internal class InsightsTypeMetadata(LazySvc<IAppReaders> appReaders) : InsightsP
         if (UrlParamsIncomplete(AppId, Type, out var message))
             return message;
 
-        var typ = appReaders.Value.GetContentTypes(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
 
         var msg = H1($"Metadata for {typ.Name} ({typ.NameId}) in {AppId}\n").ToString();
         var metadata = typ.Metadata.ToList();

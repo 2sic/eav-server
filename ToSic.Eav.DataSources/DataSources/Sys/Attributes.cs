@@ -74,7 +74,7 @@ public sealed class Attributes: DataSourceBase
             ? In[StreamDefaultName]?.List.ToImmutableList()
             : null;
 
-        var appReader = _appReaders.GetReader(this);
+        var appReader = _appReaders.Get(this);
         var firstEntityInStream = useStream ? optionalList?.FirstOrDefault() : null;
         var types = useStream 
             ? (firstEntityInStream?.Type).ToListOfOne()

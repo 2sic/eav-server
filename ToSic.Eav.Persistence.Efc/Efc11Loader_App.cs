@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Serialization;
@@ -108,7 +109,7 @@ partial class Efc11Loader
 
         var builder = AppStateBuilderRaw(appId, codeRefTrail.WithHere().AddMessage("First Build")); // LoadAppStateFromDb(appId);
 
-        if (builder.Reader.NameId == Constants.DefaultAppGuid)
+        if (builder.Reader.Specs.IsContentApp())
             return l.Return(builder.AppState, "default app, don't auto-init");
 
         var result = initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log)

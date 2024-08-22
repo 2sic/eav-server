@@ -6,6 +6,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Internal;
 using ToSic.Eav.Security.Permissions;
+using ToSic.Eav.Apps.Internal;
 using static System.StringComparison;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
@@ -28,7 +29,7 @@ public class AppUserLanguageCheck(
     /// <returns>true in most admin-cases, false if feature enabled AND permissions configured AND not allowed</returns>
     public bool? UserRestrictedByLanguagePermissions(IAppReader appReader)
     {
-        var l = Log.Fn<bool?>($"{appReader.Name}({appReader.AppId})");
+        var l = Log.Fn<bool?>($"{appReader.Specs.Name}({appReader.AppId})");
         // Note: it's important that all cases where we don't detect a forbidden
         // we return null, and DON'T access _ctx.UserMayEdit, as it will recurse to here again
         if (!featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
@@ -77,18 +78,18 @@ public class AppUserLanguageCheck(
             return l.Return(noAppResult, $"no-app {noAppResult.Count}");
         }
 
-        var appStateSafe = appReaderOrNull;
+        var readerSafe = appReaderOrNull;
 
-        var set = GetLanguagePermissions(appStateSafe, languages);
+        var set = GetLanguagePermissions(readerSafe.Metadata, languages);
         l.A($"Found {set.Count} sets");
         var hasPermissions = set.Any(s => s.Permissions.Any());
 
         // Find primary app, or stop if we're already there
-        if (!hasPermissions && appStateSafe.NameId != Constants.PrimaryAppGuid)
+        if (!hasPermissions && !readerSafe.Specs.IsSiteSettingsApp())
         {
             l.A("No permissions, and not primary app - will try that");
-            var primaryAppReader = appReadersLazy.Value.GetPrimaryReader(appStateSafe.ZoneId);
-            set = GetLanguagePermissions(primaryAppReader, languages);
+            var primaryAppReader = appReadersLazy.Value.GetZonePrimary(readerSafe.ZoneId);
+            set = GetLanguagePermissions(primaryAppReader.Metadata, languages);
             hasPermissions = set.Any(s => s.Permissions.Any());
         }
 
@@ -103,7 +104,7 @@ public class AppUserLanguageCheck(
             {
                 var pChecker = checkGenerator.New();
                 var permissions = permissionEntities.Select(p => new Permission(p));
-                pChecker.ForCustom(ctx, appStateSafe, permissions);
+                pChecker.ForCustom(ctx, readerSafe, permissions);
                 ok = pChecker.PermissionsAllow(GrantSets.WriteSomething);
             }
 

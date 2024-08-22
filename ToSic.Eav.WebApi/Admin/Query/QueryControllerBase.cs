@@ -81,7 +81,7 @@ public abstract class QueryControllerBase<TImplementation>(
 
         if (!id.HasValue) return l.Return(query, "no id, empty");
 
-        var appState = Services.AppStates.New().GetReader(appId);
+        var appState = Services.AppStates.New().Get(appId);
         var qDef = Services.QueryManager.Value.Get(appState, id.Value);
 
         #region Deserialize some Entity-Values
@@ -97,7 +97,7 @@ public abstract class QueryControllerBase<TImplementation>(
         foreach (var part in qDef.Parts)
         {
             var partDto = part.AsDictionary();
-            var metadata = appState.GetMetadata(TargetTypes.Entity, part.Guid);
+            var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
             partDto.Add("Metadata", converter.Convert(metadata));
             query.DataSources.Add(partDto);
         }

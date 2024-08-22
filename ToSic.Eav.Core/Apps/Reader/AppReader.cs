@@ -1,17 +1,16 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Apps.Services;
+namespace ToSic.Eav.Apps;
 
-public class AppReader() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWithStateAndCache, IMetadataSource, IHasMetadataSource
+public class AppReader() : ServiceBase("App.Reader"), IAppReader
 {
     internal AppReader Init(IAppStateCache appState, ILog parentLog)
     {
@@ -22,7 +21,7 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWithS
     private AppState _appState;
 
     /// <inheritdoc />
-    public IAppSpecs Specs => _specs ??= new AppSpecsForAppStateInCache(_appState);
+    public IAppSpecs Specs => _specs ??= new AppSpecs(_appState);
     private IAppSpecs _specs;
 
     #region Identity
@@ -33,48 +32,40 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWithS
 
     #endregion
 
-    #region Basic Properties
-
-    public string Name => _appState.Name;
-
-    public string Folder => _appState.Folder;
-
-    public string NameId => _appState.NameId;
-
-    #endregion
-
-    #region Advanced Properties
-
-    public IAppConfiguration Configuration => _appConfig.Get(() => new AppConfiguration(ConfigurationEntity));
-    private readonly GetOnce<IAppConfiguration> _appConfig = new();
-
-    public IEntity ConfigurationEntity => _appConfiguration ??= _appState.SettingsInApp.AppConfiguration;
-
-    private IEntity _appConfiguration;
-
-    #endregion
-
+    
     #region PiggyBack
 
     PiggyBack IHasPiggyBack.PiggyBack => _appState.PiggyBack;
 
     #endregion
 
+    #region Normal Data / Entities / List / Draft / Publish
+
+    public IAppReadEntities Entities => _entities ??= new AppReadEntities(_appState);
+    private IAppReadEntities _entities;
+
+    public IAppReadContentTypes ContentTypesSvc => _contentTypes ??= new AppReadContentTypes(_appState);
+    private IAppReadContentTypes _contentTypes;
+
+    public IImmutableList<IEntity> List => _appState.List;
+
+    public SynchronizedList<IEntity> ListPublished => _appState.ListPublished;
+
+    public SynchronizedList<IEntity> ListNotHavingDrafts => _appState.ListNotHavingDrafts;
+
+    public IEntity GetDraft(IEntity entity) => _appState.GetDraft(entity);
+
+    public IEntity GetPublished(IEntity entity) => _appState.GetPublished(entity);
+
+    #endregion
+
     #region Internal
 
+    public IAppStateCache StateCache => _appState;
 
-    IAppStateCache IAppReader.StateCache => _appState;
-    IAppStateCache IAppReader.ParentAppState => _appState.ParentApp?.AppState;
-    //SynchronizedEntityList IAppReader.ListCache => _appState.ListCache;
+    public IAppStateCache ParentAppState => _appState.ParentApp?.AppState;
 
-    SynchronizedList<IEntity> IAppReader.ListPublished => _appState.ListPublished;
-
-    SynchronizedList<IEntity> IAppReader.ListNotHavingDrafts => _appState.ListNotHavingDrafts;
-    AppStateMetadata IAppReader.SettingsInApp => _appState.SettingsInApp;
-
-    AppStateMetadata IAppReader.ResourcesInApp => _appState.ResourcesInApp;
-
-    ParentAppState IAppReader.ParentApp => _appState.ParentApp;
+    //ParentAppState IAppReader.ParentApp => _appState.ParentApp;
 
     AppRelationshipManager IAppReader.Relationships => _appState.Relationships;
 
@@ -83,10 +74,6 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWithS
 
 
 
-    public IImmutableList<IEntity> List => _appState.List;
-    public IEntity GetDraft(IEntity entity) => _appState.GetDraft(entity);
-
-    public IEntity GetPublished(IEntity entity) => _appState.GetPublished(entity);
 
 
     public IEnumerable<IContentType> ContentTypes => _appState.ContentTypes;
@@ -95,31 +82,16 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader, IAppSpecsWithS
 
     public IContentType GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
 
-    public IMetadataOf Metadata => _appState.Metadata;
+    #region Get Metadata
 
-    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
-        => _appState.GetMetadata(targetType, key, contentTypeName);
+    /// <summary>
+    /// Get a MetadataOf object containing a list of items + target information.
+    /// </summary>
+    IMetadataOf IMetadataOfSource.GetMetadataOf<T>(TargetTypes targetType, T key, string title)
+        => _appState.GetMetadataOf(targetType, key, title);
 
-    public IEnumerable<IEntity> GetMetadata<TKey>(TargetTypes targetType, TKey key, string contentTypeName = null) 
-        => _appState.GetMetadata(targetType, key, contentTypeName);
-
-
-    #region Timestamps
-
-    public long CacheTimestamp => _appState.CacheTimestamp;
-
-    public bool CacheChanged(long dependentTimeStamp) => _appState.CacheChanged(dependentTimeStamp);
+    public IMetadataSource Metadata => _appState.MetadataSource;
 
     #endregion
 
-
-    IMetadataOf IMetadataOfSource.GetMetadataOf<T>(TargetTypes targetType, T key, string title) => _appState.GetMetadataOf(targetType, key, title);
-
-    IAppSpecs IHas<IAppSpecs>.Value => this;
-    IAppSpecsWithState IHas<IAppSpecsWithState>.Value => this;
-
-    IAppStateCache IAppSpecsWithStateAndCache.Cache => _appState;
-
-    IAppSpecsWithStateAndCache IHas<IAppSpecsWithStateAndCache>.Value => this;
-    public IMetadataSource MetadataSource => ((IHasMetadataSource)_appState).MetadataSource;
 }

@@ -29,18 +29,19 @@ partial class EavApp: IHasPermissions, IAppWithInternal
     {
         var l = Log.Fn();
         var appReader = AppReaderInt;
-        Metadata = appReader.Metadata;
+        var appSpecs = appReader.Specs;
+        Metadata = appSpecs.Metadata;
 
         // Get the content-items describing various aspects of this app
-        AppResources = appReader.ResourcesInApp.MetadataItem;
-        AppSettings = appReader.SettingsInApp.MetadataItem;
+        AppResources = appSpecs.Resources.MetadataItem;
+        AppSettings = appSpecs.Settings.MetadataItem;
         // in some cases these things may be null, if the app was created not allowing side-effects
         // This can usually happen when new apps are being created
-        l.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppReaderInt.ConfigurationEntity != null}");
+        l.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {appSpecs.Configuration?.Entity != null}");
 
         // resolve some values for easier access
-        Name = appReader.Name ?? Constants.ErrorAppName;
-        Folder = appReader.Folder ?? Constants.ErrorAppName;
+        Name = appSpecs.Name ?? Constants.ErrorAppName;
+        Folder = appSpecs.Folder ?? Constants.ErrorAppName;
 
         l.Done($"Name: {Name}, Folder: {Folder}");
     }

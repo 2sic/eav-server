@@ -111,14 +111,14 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
 
     /// <inheritdoc />
     public IEnumerable<IEntity> GetMetadata<TKey>(int targetType, TKey key, string contentTypeName = null) 
-        => AppReader.GetMetadata(targetType, key, contentTypeName);
+        => AppReader.Metadata.GetMetadata(targetType, key, contentTypeName);
 
     /// <inheritdoc />
     public IEnumerable<IEntity> GetMetadata<TKey>(TargetTypes targetType, TKey key, string contentTypeName = null) 
-        => AppReader.GetMetadata(targetType, key, contentTypeName);
+        => AppReader.Metadata.GetMetadata(targetType, key, contentTypeName);
 
     /// <inheritdoc />
     public IEnumerable<IEntity> GetCustomMetadata<TKey>(TKey key, string contentTypeName = null)
-        => AppReader.GetMetadata(TargetTypes.Custom, key, contentTypeName);
+        => AppReader.Metadata.GetMetadata(TargetTypes.Custom, key, contentTypeName);
 
 }
