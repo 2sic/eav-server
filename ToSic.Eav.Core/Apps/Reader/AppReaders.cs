@@ -9,6 +9,7 @@ namespace ToSic.Eav.Apps;
 
 internal class AppReaders(IAppStates appStates, Generator<AppReader> readerGenerator) : IAppReaders
 {
+    public IAppsCatalog AppsCatalog => appStates.AppsCatalog;
 
     public IAppSpecs GetAppSpecs(int appId)
         => (appStates.GetCacheState(appId) as IHas<IAppSpecs>).Value;
@@ -48,7 +49,7 @@ internal class AppReaders(IAppStates appStates, Generator<AppReader> readerGener
     public IAppReader GetPrimaryReader(int zoneId, ILog log)
     {
         var l = log.Fn<IAppReader>($"{zoneId}");
-        var primaryAppId = appStates.IdentityOfPrimary(zoneId);
+        var primaryAppId = appStates.AppsCatalog.PrimaryAppIdentity(zoneId);
         return l.Return(GetReader(primaryAppId, log), primaryAppId.Show());
     }
 

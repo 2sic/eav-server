@@ -27,7 +27,7 @@ public class ZoneBackend(
         {
             SiteId = site.Id,
             ZoneId = site.ZoneId,
-            Apps = appStates.Apps(zoneId).Count,
+            Apps = appStates.AppsCatalog.Apps(zoneId).Count,
             Languages = zoneMapper.CulturesWithState(site).Count,
         };
 
@@ -35,7 +35,7 @@ public class ZoneBackend(
         {
             EavVersion = EavSystemInfo.VersionString,
             Fingerprint = fingerprint.GetFingerprint(),
-            Zones = appStates.Zones.Count,
+            Zones = appStates.AppsCatalog.Zones.Count,
             Platform = platform.Name,
             PlatformVersion = EavSystemInfo.VersionToNiceFormat(platform.Version)
         };

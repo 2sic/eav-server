@@ -51,7 +51,7 @@ public abstract class EavImportExportEnvironmentBase: ServiceBase, IImportExport
 
     public SaveOptions SaveOptions(int zoneId) => Log.Func($"{nameof(zoneId)}:{zoneId}", () =>
     {
-        var langs = _appStates.Languages(zoneId, true);
+        var langs = _appStates.AppsCatalog.Zone(zoneId).Languages;
         var opts = new SaveOptions(DefaultLanguage, langs);
         return (opts, $"langs: {langs.Count}");
     });

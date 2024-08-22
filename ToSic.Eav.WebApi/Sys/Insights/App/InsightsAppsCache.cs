@@ -12,7 +12,7 @@ internal class InsightsAppsCache(LazySvc<IAppStates> appStates, LazySvc<IAppRead
     {
         var msg = H1("Apps In Cache").ToString();
 
-        var zones = appStates.Value.Zones.OrderBy(z => z.Key);
+        var zones = appStates.Value.AppsCatalog.Zones.OrderBy(z => z.Key);
 
         msg += "<table id='table'>"
                + InsightsHtmlTable.HeadFields("Zone ↕", "App ↕", Eav.Data.Attributes.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")

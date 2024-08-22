@@ -24,7 +24,7 @@ public abstract class ZoneMapperBase(IAppStates appStates, string logName)
     public ISite SiteOfApp(int appId)
     {
         var l = Log.Fn<ISite>($"{appId}");
-        var appIdentifier = AppStates.IdentityOfApp(appId);
+        var appIdentifier = AppStates.AppsCatalog.AppIdentity(appId);
         var site = SiteOfZone(appIdentifier.ZoneId);
         return l.Return(site);
     }

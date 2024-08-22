@@ -73,7 +73,7 @@ public sealed class Apps: CustomDataSource
     private IEnumerable<IRawEntity> GetDefault(IAppStates appStates, IAppReaders appReaders) => Log.Func(l =>
     {
         // try to load the content-type - if it fails, return empty list
-        var allZones = appStates.Zones;
+        var allZones = appStates.AppsCatalog.Zones;
         if (!allZones.TryGetValue(OfZoneId, out var zone)) 
             return (EmptyRawList,"fails load content-type");
 

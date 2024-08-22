@@ -18,7 +18,7 @@ public sealed class AppFinder(IAppStates appStates, IAppReaders appReaders) : Se
                 return l.Return(Constants.AppIdEmpty, "no name");
 
             var nameLower = appName.ToLowerInvariant();
-            var appId = appStates.Apps(zoneId)
+            var appId = appStates.AppsCatalog.Apps(zoneId)
                 .Where(p => p.Value.EqualsInsensitive(nameLower))
                 .Select(p => p.Key).FirstOrDefault();
 
@@ -44,7 +44,7 @@ public sealed class AppFinder(IAppStates appStates, IAppReaders appReaders) : Se
         var l = Log.Fn<int>($"{nameof(zoneId)}: {zoneId}; {nameof(folderName)}: {folderName}");
         try
         {
-            foreach (var p in appStates.Apps(zoneId))
+            foreach (var p in appStates.AppsCatalog.Apps(zoneId))
             {
                 var appState = appReaders.GetReader(new AppIdentity(zoneId, p.Key));
                 if (appState.Folder.EqualsInsensitive(folderName))
@@ -69,7 +69,7 @@ public sealed class AppFinder(IAppStates appStates, IAppReaders appReaders) : Se
     {
         var nameLower = appName.ToLowerInvariant();
 
-        foreach (var p in appStates.Apps(zoneId))
+        foreach (var p in appStates.AppsCatalog.Apps(zoneId))
         {
             var appState = appReaders.GetReader(new AppIdentity(zoneId, p.Key));
 

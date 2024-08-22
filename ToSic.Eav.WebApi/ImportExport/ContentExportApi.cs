@@ -56,7 +56,9 @@ public class ContentExportApi(
         var l = Log.Fn<(string, string)>($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
         SecurityHelpers.ThrowIfNotContentAdmin(user, l);
 
-        var contextLanguages = appStates.Languages(_appCtx.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
+        var contextLanguages = appStates.AppsCatalog.Zone(_appCtx.ZoneId).LanguagesActive
+            .Select(lng => lng.EnvironmentKey)
+            .ToArray();
 
         // check if we have an array of ids
         int[] ids = null;

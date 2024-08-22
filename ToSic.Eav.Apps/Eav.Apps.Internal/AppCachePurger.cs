@@ -39,7 +39,7 @@ public class AppCachePurger(IAppStates appStates, AppsCacheSwitch appsCache) : S
     /// Purge the cache of one app
     /// </summary>
     /// <param name="appId"></param>
-    public void PurgeApp(int appId) => Log.Do($"{appId}", () => Purge(appStates.IdentityOfApp(appId)));
+    public void PurgeApp(int appId) => Log.Do($"{appId}", () => Purge(appStates.AppsCatalog.AppIdentity(appId)));
 
     /// <summary>
     /// Run some code and then purge the cache after that for full rebuild

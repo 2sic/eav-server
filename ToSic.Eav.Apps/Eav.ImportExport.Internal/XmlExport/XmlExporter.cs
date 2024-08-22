@@ -54,7 +54,12 @@ public abstract class XmlExporter(
         ZoneId = zoneId;
         Log.A("start XML exporter using app-package");
         AppState = appReader;
-        Serializer.Init(AppStates.Languages(zoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),
+        Serializer.Init(
+            AppStates.AppsCatalog.Zone(zoneId).LanguagesActive
+                .ToDictionary(
+                    l => l.EnvironmentKey.ToLowerInvariant(),
+                    l => l.DimensionId
+                ),
             AppState);
 
         _appStaticName = appStaticName;
@@ -141,7 +146,7 @@ public abstract class XmlExporter(
 
         #region Header
 
-        var dimensions = AppStates.Languages(ZoneId);
+        var dimensions = AppStates.AppsCatalog.Zone(ZoneId).LanguagesActive;
 
         var header = new XElement(XmlConstants.Header,
             _isAppExport && _appStaticName != XmlConstants.AppContentGuid

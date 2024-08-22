@@ -37,4 +37,7 @@ public class Zone(
     /// Languages available in this Zone
     /// </summary>
     public List<DimensionDefinition> Languages { get; } = languages;
+
+    public List<DimensionDefinition> LanguagesActive => _languagesActive ??= Languages.Where(l => l.Active).ToList();
+    private List<DimensionDefinition> _languagesActive;
 }

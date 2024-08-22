@@ -27,7 +27,7 @@ public class AppInternalsControllerReal(
 
         var appState = appStates.Value.GetCacheState(appId);
         var isGlobal = appState.IsGlobalSettingsApp();
-        var isPrimary = appState.AppId == appStates.Value.PrimaryAppId(appState.ZoneId);
+        var isPrimary = appState.AppId == appStates.Value.AppsCatalog.PrimaryAppIdentity(appState.ZoneId).AppId;
 
         var isGlobalOrPrimary = isGlobal || isPrimary;
 
@@ -102,7 +102,7 @@ public class AppInternalsControllerReal(
         => ctApiLazy.Value/*.Init(appId)*/.List(appId, scope, withStatistics);
 
     private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
-        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.IdentityOfApp(appId), contentType, GrantSets.ReadSomething)
+        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.AppsCatalog.AppIdentity(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType, excludeAncestor);
 
     private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)

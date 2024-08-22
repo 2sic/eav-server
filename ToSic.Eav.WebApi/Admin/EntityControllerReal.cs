@@ -15,31 +15,31 @@ namespace ToSic.Eav.WebApi.Admin;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntityControllerReal(
     LazySvc<IContextOfSite> context,
-    LazySvc<IAppStates> appStates,
+    LazySvc<IAppReaders> appReaders,
     LazySvc<EntityApi> entityApi,
     LazySvc<ContentExportApi> contentExport,
     LazySvc<ContentImportApi> contentImport,
     LazySvc<IUser> user,
     IResponseMaker responseMaker)
     : ServiceBase("Api.EntityRl",
-        connect: [context, appStates, entityApi, contentExport, contentImport, user, responseMaker]), IEntityController
+        connect: [context, appReaders, entityApi, contentExport, contentImport, user, responseMaker]), IEntityController
 {
     public const string LogSuffix = "Entity";
 
 
     /// <inheritdoc/>
     public IEnumerable<Dictionary<string, object>> List(int appId, string contentType)
-        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.IdentityOfApp(appId), contentType, GrantSets.ReadSomething)
+        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appReaders.Value.AppsCatalog.AppIdentity(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType);
 
 
     /// <inheritdoc/>
-    public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null,
-        string parentField = null)
+    public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null, string parentField = null)
     {
-        if (id.HasValue) entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
+        var catalog = appReaders.Value.AppsCatalog;
+        if (id.HasValue) entityApi.Value.InitOrThrowBasedOnGrants(context.Value, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
             .Delete(contentType, id.Value, force, parentId, parentField);
-        else if (guid.HasValue) entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.IdentityOfApp(appId), contentType, GrantSets.DeleteSomething)
+        else if (guid.HasValue) entityApi.Value.InitOrThrowBasedOnGrants(context.Value, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
             .Delete(contentType, guid.Value, force, parentId, parentField);
         else
             throw new($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");

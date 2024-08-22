@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
 
 namespace ToSic.Eav.Apps;
 
@@ -23,30 +22,13 @@ public interface IAppStates
 
     #endregion
 
-    #region Look up IDs
-
-    IAppIdentityPure IdentityOfApp(int appId);
-
-    IAppIdentityPure IdentityOfPrimary(int zoneId);
-
-    IAppIdentityPure IdentityOfDefault(int zoneId);
-
-    string AppIdentifier(int zoneId, int appId);
-
-    #endregion
-
     #region Zone Stuff
 
-    int DefaultAppId(int zoneId);
+    IAppsCatalog AppsCatalog { get; }
 
-    int PrimaryAppId(int zoneId);
+    //IDictionary<int, string> Apps(int zoneId);
 
-
-    IDictionary<int, string> Apps(int zoneId);
-
-    List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false);
-
-    IReadOnlyDictionary<int, Zone> Zones { get; }
+    //List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false);
 
     #endregion
 

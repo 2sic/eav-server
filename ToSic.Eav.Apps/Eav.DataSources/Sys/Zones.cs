@@ -57,7 +57,7 @@ public sealed class Zones: Eav.DataSource.DataSourceBase
     private IImmutableList<IEntity> GetList() => Log.Func(l =>
     {
         // Get cache, which manages a list of zones
-        var zones = _appStates.Zones;
+        var zones = _appStates.AppsCatalog.Zones;
         var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
         {
             var site = _zoneMapper.SiteOfZone(zone.ZoneId);

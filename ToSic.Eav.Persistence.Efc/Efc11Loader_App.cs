@@ -27,8 +27,8 @@ partial class Efc11Loader
         logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
         var l = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
-        var appIdentity = appStates.IdentityOfApp(appId);
-        var appGuidName = appStates.AppIdentifier(appIdentity.ZoneId, appIdentity.AppId);
+        var appIdentity = appStates.AppsCatalog.AppIdentity(appId);
+        var appGuidName = appStates.AppsCatalog.AppNameId(appIdentity.ZoneId, appIdentity.AppId);
         codeRefTrail.WithHere().AddMessage($"App: {appId}, {nameof(appGuidName)}: '{appGuidName}'");
 
         // This will contain the parent reference - in most cases it's the -42 App
