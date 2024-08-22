@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Internal.Caching;
@@ -20,8 +21,8 @@ public class AppRoot : DataSourceBase, IAppRoot
     {
         _appReaders = appReaders;
         ProvideOut(() => AppReader.List);
-        ProvideOut(() => AppReader.ListPublished.List, StreamPublishedName);
-        ProvideOut(() => AppReader.ListNotHavingDrafts.List, StreamDraftsName);
+        ProvideOut(() => AppReader.GetListPublished(), StreamPublishedName);
+        ProvideOut(() => AppReader.GetListNotHavingDrafts(), StreamDraftsName);
     }
     private readonly IAppReaders _appReaders;
 
@@ -48,10 +49,10 @@ public class AppRoot : DataSourceBase, IAppRoot
     #region Cache-Chain
 
     /// <inheritdoc />
-    public override long CacheTimestamp => AppReader.StateCache.CacheTimestamp;
+    public override long CacheTimestamp => AppReader.GetCache().CacheTimestamp;
 
     /// <inheritdoc />
-    public override bool CacheChanged(long dependentTimeStamp) => AppReader.StateCache.CacheChanged(dependentTimeStamp);
+    public override bool CacheChanged(long dependentTimeStamp) => AppReader.GetCache().CacheChanged(dependentTimeStamp);
 
     /// <summary>
     /// Combination of the current key and all keys of upstream cached items, to create a long unique key for this context.

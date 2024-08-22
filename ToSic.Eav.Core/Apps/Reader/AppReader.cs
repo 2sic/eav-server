@@ -1,8 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.Apps.Reader;
 using ToSic.Eav.Apps.State;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
@@ -19,6 +17,11 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
         return this;
     }
     private AppState _appState;
+
+    /// <summary>
+    /// internal, but in some cases it will be given out by hidden extension methods
+    /// </summary>
+    internal IAppStateCache AppState => _appState;
 
     /// <inheritdoc />
     public IAppSpecs Specs => _specs ??= new AppSpecs(_appState);
@@ -41,17 +44,11 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     #region Normal Data / Entities / List / Draft / Publish
 
-    public IAppReadEntities Entities => _entities ??= new AppReadEntities(_appState);
-    private IAppReadEntities _entities;
-
-    public IAppReadContentTypes ContentTypesSvc => _contentTypes ??= new AppReadContentTypes(_appState);
-    private IAppReadContentTypes _contentTypes;
-
     public IImmutableList<IEntity> List => _appState.List;
 
-    public SynchronizedList<IEntity> ListPublished => _appState.ListPublished;
+    //public IImmutableList<IEntity> ListPublished => _appState.ListPublished.List;
 
-    public SynchronizedList<IEntity> ListNotHavingDrafts => _appState.ListNotHavingDrafts;
+    //public IImmutableList<IEntity> ListNotHavingDrafts => _appState.ListNotHavingDrafts.List;
 
     public IEntity GetDraft(IEntity entity) => _appState.GetDraft(entity);
 
@@ -61,13 +58,13 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     #region Internal
 
-    public IAppStateCache StateCache => _appState;
+    //public IAppStateCache StateCache => _appState;
 
     public IAppStateCache ParentAppState => _appState.ParentApp?.AppState;
 
     //ParentAppState IAppReader.ParentApp => _appState.ParentApp;
 
-    AppRelationshipManager IAppReader.Relationships => _appState.Relationships;
+    //AppRelationshipManager IAppReader.Relationships => _appState.Relationships;
 
     #endregion
 
@@ -83,12 +80,6 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
     public IContentType GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
 
     #region Get Metadata
-
-    /// <summary>
-    /// Get a MetadataOf object containing a list of items + target information.
-    /// </summary>
-    IMetadataOf IMetadataOfSource.GetMetadataOf<T>(TargetTypes targetType, T key, string title)
-        => _appState.GetMetadataOf(targetType, key, title);
 
     public IMetadataSource Metadata => _appState.MetadataSource;
 

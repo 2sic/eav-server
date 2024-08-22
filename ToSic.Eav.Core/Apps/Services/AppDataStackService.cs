@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Services;
@@ -71,7 +72,8 @@ public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stac
         l.A($"Preset: {preset?.Show()}");
 
         // Find the ancestor, but only use it if it's _not_ the Preset
-        var appAncestor = AppSpecs.StateCache.ParentApp?.AppState;
+        var appState = AppSpecs.GetCache();
+        var appAncestor = appState.ParentApp?.AppState;
         var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId
             ? null
             : appAncestor;
@@ -79,11 +81,11 @@ public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stac
 
         var stackCache = new AppStateStackSourcesBuilder(
             target,
-            AppSpecs.StateCache,
+            appState,
             ancestorIfNotPreset,
-            siteAppReader?.StateCache,
-            global?.StateCache,
-            preset?.StateCache
+            siteAppReader?.GetCache(),
+            global?.GetCache(),
+            preset?.GetCache()
         );
 
         return l.ReturnAndLog(stackCache, "created");

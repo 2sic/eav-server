@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Apps.Internal;
 
 namespace ToSic.Eav.Persistence.Efc;
 
@@ -53,7 +54,7 @@ partial class Efc11Loader
         var l = Log.Fn<IList<IContentType>>();
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New().Init(appReader);
-        var types = loader.ContentTypes(entitiesSource: appReader.StateCache);
+        var types = loader.ContentTypes(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
 

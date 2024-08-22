@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Services;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
@@ -116,7 +117,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 
-    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppReaderOrError.StateCache;
+    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppReaderOrError.GetCache();
     private IEntitiesSource _relList;
 
 }

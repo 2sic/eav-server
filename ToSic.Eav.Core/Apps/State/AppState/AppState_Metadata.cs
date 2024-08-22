@@ -1,10 +1,8 @@
 ﻿using ToSic.Eav.Metadata;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.State;
 
 partial class AppState:
-    // IMetadataSource,
     IHasMetadata,
     IHasMetadataSourceAndExpiring
 {

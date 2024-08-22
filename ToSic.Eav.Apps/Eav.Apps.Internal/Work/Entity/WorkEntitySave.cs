@@ -53,7 +53,7 @@ public class WorkEntitySave(
         var appReader = AppWorkCtx.AppReader;
         saveOptions ??= environmentLazy.Value.SaveOptions(appReader.ZoneId);
         List<int> ids = null;
-        appReader.StateCache.DoInLock(Log, () => ids = InnerSaveInLock());
+        appReader.GetCache().DoInLock(Log, () => ids = InnerSaveInLock());
         return l.Return(ids, $"ids:{ids.Count}");
 
         // Inner call which will be executed with the Lock of the AppState
@@ -79,7 +79,7 @@ public class WorkEntitySave(
                 .ToList();
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
-            entities = AttachRelationshipResolver(entities, appReader.StateCache);
+            entities = AttachRelationshipResolver(entities, appReader.GetCache());
 
             List<int> intIds = null;
             var dc = AppWorkCtx.DataController;

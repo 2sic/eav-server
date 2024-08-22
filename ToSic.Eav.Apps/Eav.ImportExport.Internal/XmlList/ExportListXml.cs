@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.ImportExport.Internal.Options;
 using ToSic.Eav.ImportExport.Internal.Xml;
@@ -94,8 +95,8 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
         var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
         // Query all entities, or just the ones with specified IDs
-        var entities = AppState.ListPublished.List.Where(e => e.Type == ContentType);
-        if (selectedIds != null && selectedIds.Length > 0)
+        var entities = AppState.GetListPublished().OfType(ContentType);
+        if (selectedIds is { Length: > 0 })
             entities = entities.Where(e => selectedIds.Contains(e.EntityId));
         var entList = entities.ToList();
 

@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Coding;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.State;
@@ -137,4 +138,7 @@ internal class AppMetadataManager: IMetadataSource, IHasMetadataSourceAndExpirin
     }
 
     public IMetadataSource MetadataSource => this;
+
+    public IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder protector, string title = null)
+        => new MetadataOf<T>((int)targetType, key, title, appSource: this);
 }

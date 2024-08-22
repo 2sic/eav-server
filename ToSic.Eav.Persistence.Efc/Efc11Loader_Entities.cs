@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Persistence.Efc.Intermediate;
@@ -142,8 +143,9 @@ partial class Efc11Loader
 
         // Prepare relationships to add to AttributeGenerator
         var emptyValueList = new List<(string StaticName, IValue)>();
+        var stateCache = appReader.GetCache();
         var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
-            ? rawRels.Select(r => (r.StaticName, dataBuilder.Value.Relationship(r.Children, appReader.StateCache))).ToList()
+            ? rawRels.Select(r => (r.StaticName, dataBuilder.Value.Relationship(r.Children, stateCache))).ToList()
             : emptyValueList;
 
         var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
@@ -172,7 +174,7 @@ partial class Efc11Loader
 
         // Get all Attributes of that Content-Type
         var newAttributes = dataBuilder.Attribute.Create(contentType, mergedValueLookups);
-        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: appReader.StateCache, metadata: null);
+        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: stateCache, metadata: null);
         var newEntity = dataBuilder.Entity.Create(
             appId: appReader.AppId,
             guid: e.EntityGuid, entityId: e.EntityId, repositoryId: e.EntityId,

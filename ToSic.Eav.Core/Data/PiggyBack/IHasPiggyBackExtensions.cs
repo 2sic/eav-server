@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data.PropertyLookup;
 
 namespace ToSic.Eav.Data.PiggyBack;
@@ -54,7 +54,10 @@ public static class IHasPiggyBackExtensions
     /// <param name="create"></param>
     /// <returns></returns>
     public static (TData Value, bool IsCached) GetPiggyBackExpiring<TData>(this IAppReader parent, string key, Func<TData> create)
-        => parent.StateCache.PiggyBack.GetOrGenerate(parent.StateCache, key, create);
+    {
+        var appState = parent.GetCache();
+        return appState.PiggyBack.GetOrGenerate(appState, key, create);
+    }
 
 
     /// <summary>
@@ -70,6 +73,8 @@ public static class IHasPiggyBackExtensions
     /// <returns></returns>
     public static (TData Value, bool IsCached) GetPiggyBackPropExpiring<TData>(this IAppReader parent, Func<TData> create,
         [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default)
-        => parent.StateCache.PiggyBack.GetOrGenerate(parent.StateCache, $"autokey:{cPath};{cName}()", create);
-
+    {
+        var appState = parent.GetCache();
+        return appState.PiggyBack.GetOrGenerate(appState, $"autokey:{cPath};{cName}()", create);
+    }
 }

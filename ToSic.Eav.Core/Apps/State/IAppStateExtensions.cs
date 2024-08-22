@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.State;
@@ -7,7 +8,7 @@ namespace ToSic.Eav.Apps.State;
 public static class AppStateExtensions
 {
     public static bool IsInherited(this IAppReader reader)
-        => reader.StateCache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
+        => reader.GetCache().ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
     public static bool HasCustomParentApp(this IAppReader reader)
     {

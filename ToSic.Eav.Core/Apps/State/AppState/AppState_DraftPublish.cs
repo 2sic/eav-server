@@ -17,13 +17,11 @@ partial class AppState
     {
         if (entity == null) return null;
         if (!entity.IsPublished) return null;
-        // 2023-03-28 2dm - I don't think the RepoId is correct here, the publish item still has it's original EntityId...?
-        var publishedEntityId = entity.EntityId; // ((Entity) entity).RepositoryId;
+        var publishedEntityId = entity.EntityId;
         // Try to get it, but make sure we only return it if it has a different repo-id - very important
         if (ListDrafts.Value.TryGetValue(publishedEntityId, out var result) && result.RepositoryId == publishedEntityId)
             return null;
         return result;
-        //return Index.Values.FirstOrDefault(draftEntity => draftEntity.IsPublished == false && draftEntity.EntityId == publishedEntityId);
     }
 
     /// <summary>

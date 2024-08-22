@@ -1,13 +1,10 @@
-﻿using ToSic.Eav.Apps.Internal;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.Apps.Reader;
-using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Apps;
 
@@ -22,26 +19,21 @@ public interface IAppReader:
     IAppIdentity,
     IAppReadEntities,
     IAppReadContentTypes,
-    IHasPiggyBack,
-    IMetadataOfSource
+    IHasPiggyBack
 {
     IAppSpecs Specs { get; }
 
-    IAppReadEntities Entities { get; }
-
-    IAppReadContentTypes ContentTypesSvc { get; }
-
-    IAppStateCache StateCache { get; }
+    //IAppStateCache StateCache { get; }
 
     IAppStateCache ParentAppState { get; }
 
-    public SynchronizedList<IEntity> ListPublished { get; }
+    //IImmutableList<IEntity> ListPublished { get; }
 
-    SynchronizedList<IEntity> ListNotHavingDrafts { get; }
+    //IImmutableList<IEntity> ListNotHavingDrafts { get; }
 
     //ParentAppState ParentApp { get; }
 
-    AppRelationshipManager Relationships { get; }
+    //AppRelationshipManager Relationships { get; }
 
     IMetadataSource Metadata { get; }
 }

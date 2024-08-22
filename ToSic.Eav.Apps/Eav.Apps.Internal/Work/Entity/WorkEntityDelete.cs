@@ -47,7 +47,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         if (metaDataIds.Count != 0) deleteIds.AddRange(metaDataIds);
 
         // check if we can delete entities with metadata, or throw exception
-        var oks = BatchCheckCanDelete(deleteIds.ToArray(), force, skipIfCant, parentId, parentField);
+        var oks = BatchCheckCanDelete([.. deleteIds], force, skipIfCant, parentId, parentField);
 
         // then delete entities with metadata without app cache purge
         var repositoryIds = deleteIds.ToArray();
@@ -59,7 +59,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         // introduced in v15.05 to reduce work on entity delete
         // in past we PurgeApp in whole on each entity delete
         // this should be much faster, but side effects are possible.
-        var builder = stateBuilder.New().Init(AppWorkCtx.AppReader.StateCache);
+        var builder = stateBuilder.New().Init(AppWorkCtx.AppReader.GetCache());
         builder.RemoveEntities(repositoryIds, true);
 
         return l.Return(ok);
@@ -108,22 +108,27 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     {
         var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
-        var relationships = AppWorkCtx.AppReader.Relationships;
+        var relationships = AppWorkCtx.AppReader.GetRelationships();
 
         foreach (var entityId in ids)
         {
             var messages = new List<string>();
 
-            var parents = relationships.List.Where(r => r.Child.EntityId == entityId).ToList();
+            var parents = relationships.List
+                .Where(r => r.Child.EntityId == entityId)
+                .ToList();
 
             // when have it, ignore first relation with part
             if (parentId.HasValue && !string.IsNullOrEmpty(parentField))
             {
-                var parentToIgnore = parents.FirstOrDefault(r => r.Parent.EntityId == parentId && r.Parent.Attributes.ContainsKey(parentField));
+                var parentToIgnore = parents
+                    .FirstOrDefault(r => r.Parent.EntityId == parentId && r.Parent.Attributes.ContainsKey(parentField));
                 if (parentToIgnore != null) parents.Remove(parentToIgnore);
             }
 
-            var parentsInfoForMessages = parents.Select(r => TryToGetMoreInfosAboutDependency(r.Parent)).ToList();
+            var parentsInfoForMessages = parents
+                .Select(r => TryToGetMoreInfosAboutDependency(r.Parent))
+                .ToList();
 
             if (parentsInfoForMessages.Any())
                 messages.Add(
