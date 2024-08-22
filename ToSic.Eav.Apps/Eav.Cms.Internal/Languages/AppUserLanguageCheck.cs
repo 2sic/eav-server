@@ -87,7 +87,7 @@ public class AppUserLanguageCheck(
         if (!hasPermissions && appStateSafe.NameId != Constants.PrimaryAppGuid)
         {
             l.A("No permissions, and not primary app - will try that");
-            var primaryAppReader = appReadersLazy.Value.GetPrimaryReader(appStateSafe.ZoneId, Log);
+            var primaryAppReader = appReadersLazy.Value.GetPrimaryReader(appStateSafe.ZoneId);
             set = GetLanguagePermissions(primaryAppReader, languages);
             hasPermissions = set.Any(s => s.Permissions.Any());
         }

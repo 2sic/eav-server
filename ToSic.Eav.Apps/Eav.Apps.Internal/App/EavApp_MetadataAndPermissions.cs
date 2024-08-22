@@ -28,7 +28,7 @@ partial class EavApp: IHasPermissions, IAppWithInternal
     protected void InitializeResourcesSettingsAndMetadata()
     {
         var l = Log.Fn();
-        var appReader = AppStateInt;
+        var appReader = AppReaderInt;
         Metadata = appReader.Metadata;
 
         // Get the content-items describing various aspects of this app
@@ -36,7 +36,7 @@ partial class EavApp: IHasPermissions, IAppWithInternal
         AppSettings = appReader.SettingsInApp.MetadataItem;
         // in some cases these things may be null, if the app was created not allowing side-effects
         // This can usually happen when new apps are being created
-        l.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppStateInt.ConfigurationEntity != null}");
+        l.A($"HasResources: {AppResources != null}, HasSettings: {AppSettings != null}, HasConfiguration: {AppReaderInt.ConfigurationEntity != null}");
 
         // resolve some values for easier access
         Name = appReader.Name ?? Constants.ErrorAppName;
@@ -50,7 +50,7 @@ partial class EavApp: IHasPermissions, IAppWithInternal
     //[PrivateApi("kind of slipped into public till 16.09, but only on the object, never on the IApp, so probably never discovered")]
     //public IAppState AppState => AppStateInt;
 
-    protected internal IAppReader AppStateInt { get; private set; }
+    protected internal IAppReader AppReaderInt { get; private set; }
 
-    IAppReader IAppWithInternal.AppReader => AppStateInt;
+    IAppReader IAppWithInternal.AppReader => AppReaderInt;
 }

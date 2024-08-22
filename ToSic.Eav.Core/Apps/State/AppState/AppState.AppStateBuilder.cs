@@ -22,7 +22,7 @@ partial class AppState
         public IAppStateBuilder Init(IAppStateCache appState)
         {
             _appState = appState;
-            _reader = appStates.ToReader(AppState, Log);
+            _reader = appStates.ToReader(AppState);
             return this;
         }
 
@@ -30,7 +30,7 @@ partial class AppState
         {
             _appState = new AppState(new(null, false, false), PresetIdentity, PresetName, Log);
             MemoryCacheService.Notify(_appState);
-            _reader = appStates.ToReader(AppState, Log);
+            _reader = appStates.ToReader(AppState);
             return this;
         }
 
@@ -38,7 +38,7 @@ partial class AppState
         {
             _appState = new AppState(parentApp, identity, nameId, parentLog);
             MemoryCacheService.Notify(_appState);
-            _reader = appStates.ToReader(AppState, Log);
+            _reader = appStates.ToReader(AppState);
             return this;
         }
 

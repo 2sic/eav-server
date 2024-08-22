@@ -8,10 +8,8 @@ namespace ToSic.Eav.Apps.State;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class AppStateExtensions
 {
-    public static IAppReader Internal(this IAppState appState) => appState as IAppReader;
-
-    public static bool IsInherited(this IAppSpecsWithStateAndCache reader)
-        => reader.Cache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
+    public static bool IsInherited(this IAppReader reader)
+        => reader.StateCache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
     public static bool HasCustomParentApp(this IAppReader reader)
     {

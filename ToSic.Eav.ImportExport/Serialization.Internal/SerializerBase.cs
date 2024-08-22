@@ -33,10 +33,10 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
     public ITargetTypes MetadataTargets { get; } = services.MetadataTargets;
 
 
-    public void Initialize(IAppReader appState)
+    public void Initialize(IAppReader appReader)
     {
-        AppReaderOrNull = appState.Internal();
-        AppId = appState.AppId;
+        AppReaderOrNull = appReader;
+        AppId = appReader.AppId;
     }
 
     protected int AppId;

@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Specs;
+﻿using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 
@@ -9,9 +8,6 @@ public interface IAppReaders
 {
     IAppSpecs GetAppSpecs(int appId);
 
-    IAppSpecsWithState GetAppSpecsWithState(int appId);
-
-
     IAppContentTypeService GetContentTypes(IAppIdentity app);
 
     IAppContentTypeService GetContentTypes(int appId);
@@ -20,14 +16,13 @@ public interface IAppReaders
 
     IAppReader KeepOrGetReader(IAppIdentity app);
 
-    IAppReader GetReader(IAppIdentity app, ILog log = default);
+    IAppReader GetReader(IAppIdentity app);
 
-    IAppReader GetReader(int appId, ILog log = default);
+    IAppReader GetReader(int appId);
 
-    IAppReader GetPrimaryReader(int zoneId, ILog log);
+    IAppReader GetPrimaryReader(int zoneId);
 
     IAppReader GetPresetReader();
 
-    IAppReader ToReader(IAppStateCache state, ILog log = default);
-
+    IAppReader ToReader(IAppStateCache state);
 }

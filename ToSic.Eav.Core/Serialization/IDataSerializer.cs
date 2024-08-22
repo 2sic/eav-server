@@ -11,7 +11,7 @@ namespace ToSic.Eav.Serialization;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IDataSerializer
 {
-    void Initialize(IAppReader appState);
+    void Initialize(IAppReader appReader);
 
     /// <summary>
     /// Serialize an entity to a string

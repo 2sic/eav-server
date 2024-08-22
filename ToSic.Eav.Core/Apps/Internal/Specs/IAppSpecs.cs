@@ -22,5 +22,5 @@ public interface IAppSpecsWithState : IAppSpecs, IHasPiggyBack, IHas<IAppSpecsWi
 
 public interface IAppSpecsWithStateAndCache : IAppSpecsWithState, IHas<IAppSpecsWithStateAndCache>
 {
-    public IAppStateCache Cache { get; }
+    //public IAppStateCache Cache { get; }
 }

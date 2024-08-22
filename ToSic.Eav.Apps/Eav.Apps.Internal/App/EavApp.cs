@@ -85,8 +85,8 @@ public abstract partial class EavApp(EavApp.MyServices services, string logName 
         l.A($"prep App #{appIdentity.Show()}, has{nameof(dataSpecs)}:{dataSpecs != null}");
 
         // Look up name in cache
-        AppStateInt = services.AppReaders.GetReader(this);
-        NameId = AppStateInt.NameId;
+        AppReaderInt = services.AppReaders.GetReader(this);
+        NameId = AppReaderInt.NameId;
 
         InitializeResourcesSettingsAndMetadata();
 
