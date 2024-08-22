@@ -1,5 +1,9 @@
-﻿namespace ToSic.Eav.Apps;
+﻿// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Apps;
 
+/// <summary>
+/// Global service providing information about apps and zones.
+/// </summary>
 public interface IAppsCatalog
 {
     // TODO: MAKE READ ONLY

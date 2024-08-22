@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Catalog;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
@@ -62,7 +64,7 @@ public static class StartUpEavCore
         // App-State and Cache
         services.TryAddSingleton<IAppsCache, AppsCache>();
         services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
-        services.TryAddTransient<IAppStates, AppStates>();
+        services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
         services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
         services.TryAddTransient<IAppReaders, AppReaders>(); // new v18
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();

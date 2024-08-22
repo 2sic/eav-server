@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Catalog;
 
 /// <summary>
 /// This is the implementation of States which doesn't use the static Eav.Apps.State

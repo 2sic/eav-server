@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-
-namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class AppStatesExtensions

@@ -11,10 +11,10 @@ public class AppInternalsControllerReal(
     LazySvc<IContextOfSite> context,
     LazySvc<ContentTypeDtoService> ctApiLazy,
     IAppsCatalog appsCatalog,
-    LazySvc<IAppStates> appStates,
+    LazySvc<IAppsCatalog> appCatalog,
     LazySvc<EntityApi> entityApi,
     LazySvc<MetadataControllerReal> metadataControllerReal)
-    : ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appsCatalog, appStates, entityApi, metadataControllerReal]),
+    : ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appsCatalog, appCatalog, entityApi, metadataControllerReal]),
         IAppInternalsController
 {
     public const string LogSuffix = "AppInternals";
@@ -26,7 +26,7 @@ public class AppInternalsControllerReal(
         var settingsCustomExists = systemConfiguration.Any(ct => ct.Name == "SettingsCustom");
         var resourcesCustomExists = systemConfiguration.Any(ct => ct.Name == "ResourcesCustom");
 
-        var appState = appStates.Value.GetCacheState(appId);
+        var appState = appCatalog.Value.AppIdentity(appId);
         var isGlobal = appState.IsGlobalSettingsApp();
         var isPrimary = appState.AppId == appsCatalog.PrimaryAppIdentity(appState.ZoneId).AppId;
 
@@ -100,14 +100,14 @@ public class AppInternalsControllerReal(
     }
 
     private IEnumerable<ContentTypeDto> TypeListInternal(int appId, string scope = null, bool withStatistics = false)
-        => ctApiLazy.Value/*.Init(appId)*/.List(appId, scope, withStatistics);
+        => ctApiLazy.Value.List(appId, scope, withStatistics);
 
     private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
         => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appsCatalog.AppIdentity(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType, excludeAncestor);
 
     private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)
-        => ctApiLazy.Value/*.Init(appId)*/.GetFields(appId, typeName);
+        => ctApiLazy.Value.GetFields(appId, typeName);
 
     private MetadataListDto MetadataListInternal(int appId, int targetType, string keyType, string key, string contentType = null)
         => metadataControllerReal.Value.Get(appId, targetType, keyType, key, contentType);

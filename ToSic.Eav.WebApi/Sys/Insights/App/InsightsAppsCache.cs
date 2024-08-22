@@ -1,10 +1,11 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IAppStates> appStates, LazySvc<IAppReaders> appReaders)
+internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IAppStateCacheService> appStates, LazySvc<IAppReaders> appReaders)
     : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appsCatalog, appStates, appReaders])
 {
     public static string Link = "AppsCache";

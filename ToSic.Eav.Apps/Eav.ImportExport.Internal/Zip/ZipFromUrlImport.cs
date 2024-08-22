@@ -1,10 +1,7 @@
 ﻿using System.IO;
 using System.Net;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Identity;
 using ToSic.Eav.Internal.Configuration;
-using ToSic.Eav.Internal.Environment;
 
 namespace ToSic.Eav.ImportExport.Internal.Zip;
 
@@ -13,9 +10,7 @@ public class ZipFromUrlImport: ZipImport
 {
     #region DI Constructor
 
-    public ZipFromUrlImport(MyServices services, IImportExportEnvironment environment, Generator<XmlImportWithFiles> xmlImpExpFiles, 
-        IGlobalConfiguration globalConfiguration, AppCachePurger appCachePurger, IAppStates appStates)
-        : base(services)
+    public ZipFromUrlImport(MyServices services, IGlobalConfiguration globalConfiguration) : base(services)
     {
         ConnectLogs([
             _globalConfiguration = globalConfiguration

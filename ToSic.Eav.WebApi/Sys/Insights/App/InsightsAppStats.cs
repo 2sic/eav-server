@@ -1,11 +1,12 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.Caching;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAppStats(IAppStates appStates) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
+internal class InsightsAppStats(IAppStateCacheService appStates) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
 {
     public static string Link = "AppStats";
 
@@ -17,7 +18,7 @@ internal class InsightsAppStats(IAppStates appStates) : InsightsProvider(Link, h
 
         Log.A($"debug app-internals for {appId}");
 
-        var pkg = appStates.GetCacheState(appId.Value);
+        var pkg = appStates.Get(appId.Value);
 
         var msg = H1($"App internals for {appId}").ToString();
         try

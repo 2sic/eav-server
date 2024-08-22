@@ -21,13 +21,12 @@ public class EavSystemLoader(
     FeaturePersistenceService featurePersistenceService,
     LicenseLoader licenseLoader,
     ILogStore logStore,
-    IAppStates appStates,
     IAppReaders appReaders,
     SysFeaturesService sysFeaturesService)
     : LoaderBase(logStore, $"{EavLogs.Eav}SysLdr",
         connect:
         [
-            fingerprint, appsCache, logStore, appStates, appReaders, appLoader, features, featurePersistenceService, licenseLoader,
+            fingerprint, appsCache, logStore, appReaders, appLoader, features, featurePersistenceService, licenseLoader,
             sysFeaturesService
         ])
 {

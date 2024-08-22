@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Context;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Loaders;
@@ -15,7 +16,7 @@ public partial class Efc11Loader(
     LazySvc<IZoneCultureResolver> environmentLazy,
     IAppInitializedChecker initializedChecker,
     IAppsCatalog appsCatalog,
-    IAppStates appStates,
+    IAppStateCacheService appStates,
     ILogStore logStore,
     LazySvc<IEavFeaturesService> featuresService,
     DataBuilder dataBuilder,

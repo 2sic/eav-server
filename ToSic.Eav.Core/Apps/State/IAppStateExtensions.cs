@@ -29,8 +29,8 @@ public static class AppStateExtensions
 
 
     // TODO: @STV - try to use this where possible
-    public static bool IsGlobalSettingsApp(this IHas<IAppSpecs> hasAppSpecs)
-        => hasAppSpecs.Value.AppId == Constants.MetaDataAppId;
+    public static bool IsGlobalSettingsApp(this IAppIdentity hasAppSpecs)
+        => hasAppSpecs.AppId == Constants.MetaDataAppId;
 
     // TODO: @STV - try to use this where possible
     public static bool IsSiteSettingsApp(this IHas<IAppSpecs> hasAppSpecs)

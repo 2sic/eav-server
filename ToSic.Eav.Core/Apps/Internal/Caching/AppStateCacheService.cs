@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Internal;
 
 /// <summary>
 /// This is the implementation of States which doesn't use the static Eav.Apps.State
@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps;
 /// The names of the Get etc. will probably change a few more times
 /// </summary>
 [PrivateApi("internal")]
-internal class AppStates(AppsCacheSwitch appsCacheSwitch) : IAppStates
+internal class AppStateCacheService(AppsCacheSwitch appsCacheSwitch) : IAppStateCacheService
 {
     internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
 
@@ -18,7 +18,7 @@ internal class AppStates(AppsCacheSwitch appsCacheSwitch) : IAppStates
         => AppsCacheSwitch.Value.Get(app, AppsCacheSwitch.AppLoaderTools);
 
     /// <inheritdoc />
-    public IAppStateCache GetCacheState(int appId)
+    public IAppStateCache Get(int appId)
         => AppsCacheSwitch.Value.Get(AppIdentity(appId), AppsCacheSwitch.AppLoaderTools);
 
     public bool IsCached(IAppIdentity appId)

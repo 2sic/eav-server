@@ -143,7 +143,7 @@ partial class Efc11Loader
                         id: a.AttributeId,
                         sortOrder: a.SortOrder,
                         // Must get own MetaSourceFinder since they come from other apps
-                        metaSourceFinder: () => appStates.GetCacheState(s.AppId),
+                        metaSourceFinder: () => appStates.Get(s.AppId),
                         // #SharedFieldDefinition
                         //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
                         sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)))

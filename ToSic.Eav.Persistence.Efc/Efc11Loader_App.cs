@@ -46,7 +46,7 @@ partial class Efc11Loader
                     $"This implies that it has an ancestor. 0 was expected, otherwise you need the feature.");
 
             codeRefTrail.AddMessage($"Ancestor: {ancestorAppId}");
-            var testParentApp = appStates.GetCacheState(ancestorAppId);
+            var testParentApp = appStates.Get(ancestorAppId);
             parent = new(testParentApp, true, true);
         }
         else

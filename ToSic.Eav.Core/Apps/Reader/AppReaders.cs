@@ -7,13 +7,13 @@ using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps;
 
-internal class AppReaders(LazySvc<IAppsCatalog> appsCatalog, IAppStates appStates, Generator<AppReader> readerGenerator) : IAppReaders
+internal class AppReaders(LazySvc<IAppsCatalog> appsCatalog, IAppStateCacheService appStates, Generator<AppReader> readerGenerator) : IAppReaders
 {
     public IAppSpecs GetAppSpecs(int appId)
-        => (appStates.GetCacheState(appId) as IHas<IAppSpecs>).Value;
+        => (appStates.Get(appId) as IHas<IAppSpecs>).Value;
 
     public IAppSpecsWithState GetAppSpecsWithState(int appId)
-        => (appStates.GetCacheState(appId) as IHas<IAppSpecsWithState>).Value;
+        => (appStates.Get(appId) as IHas<IAppSpecsWithState>).Value;
 
 
     public IAppContentTypeService GetContentTypes(IAppIdentity app)
@@ -23,7 +23,7 @@ internal class AppReaders(LazySvc<IAppsCatalog> appsCatalog, IAppStates appState
         => GetReader(appId);
 
     public IAppContentTypeService GetPresetReaderIfAlreadyLoaded()
-        => (appStates as AppStates)?.AppsCacheSwitch.Value.Has(PresetIdentity) ?? false
+        => (appStates as AppStateCacheService)?.AppsCacheSwitch.Value.Has(PresetIdentity) ?? false
             ? GetPresetReader()
             : null;
 
@@ -40,7 +40,7 @@ internal class AppReaders(LazySvc<IAppsCatalog> appsCatalog, IAppStates appState
 
     public IAppReader GetReader(int appId, ILog log = default)
     {
-        var state = appStates.GetCacheState(appId);
+        var state = appStates.Get(appId);
         return state is null ? null : ToReader(state, log);
     }
 
