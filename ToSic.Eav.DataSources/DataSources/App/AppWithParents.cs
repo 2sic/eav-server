@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSources;
@@ -53,7 +54,7 @@ internal class AppWithParents: DataSourceBase
         var initialLink = initialSource.Link;
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-        var parentAppState = appReader.ParentAppState;
+        var parentAppState = appReader.GetParentCache();
         var countRecursions = 0;
         while (parentAppState != null && countRecursions++ < 5)
         {

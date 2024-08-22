@@ -53,7 +53,7 @@ public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stac
     private List<KeyValuePair<string, IPropertyLookup>> GetOrGenerate(AppThingsIdentifiers target)
     {
         var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
-        var sourcesBuilder = AppSpecs.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target).FullStack(Log));
+        var sourcesBuilder = AppSpecs.GetCache().PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target).FullStack(Log));
         return l.ReturnAndLog(sourcesBuilder);
     }
 

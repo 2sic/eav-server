@@ -2,7 +2,6 @@
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Services;
 
@@ -35,20 +34,9 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     #endregion
 
-    
-    #region PiggyBack
-
-    PiggyBack IHasPiggyBack.PiggyBack => _appState.PiggyBack;
-
-    #endregion
-
     #region Normal Data / Entities / List / Draft / Publish
 
     public IImmutableList<IEntity> List => _appState.List;
-
-    //public IImmutableList<IEntity> ListPublished => _appState.ListPublished.List;
-
-    //public IImmutableList<IEntity> ListNotHavingDrafts => _appState.ListNotHavingDrafts.List;
 
     public IEntity GetDraft(IEntity entity) => _appState.GetDraft(entity);
 
@@ -56,22 +44,7 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     #endregion
 
-    #region Internal
-
-    //public IAppStateCache StateCache => _appState;
-
-    public IAppStateCache ParentAppState => _appState.ParentApp?.AppState;
-
-    //ParentAppState IAppReader.ParentApp => _appState.ParentApp;
-
-    //AppRelationshipManager IAppReader.Relationships => _appState.Relationships;
-
-    #endregion
-
-
-
-
-
+    #region Content Types
 
     public IEnumerable<IContentType> ContentTypes => _appState.ContentTypes;
 
@@ -79,7 +52,10 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     public IContentType GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
 
-    #region Get Metadata
+    #endregion
+
+
+    #region Metadata
 
     public IMetadataSource Metadata => _appState.MetadataSource;
 

@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
@@ -257,12 +258,14 @@ public abstract class XmlExporter(
 
     private XElement GetParentAppXElement()
     {
-        if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid && AppReader.HasCustomParentApp())
-            return new(XmlConstants.ParentApp,
-                new XAttribute(XmlConstants.Guid, AppReader.ParentAppState.NameId),
-                new XAttribute(XmlConstants.AppId, AppReader.ParentAppState.AppId)
-            );
-        return null;
+        if (!_isAppExport || _appStaticName == XmlConstants.AppContentGuid || !AppReader.HasCustomParentApp())
+            return null;
+
+        var parentAppState = AppReader.GetParentCache();
+        return new(XmlConstants.ParentApp,
+            new XAttribute(XmlConstants.Guid, parentAppState.NameId),
+            new XAttribute(XmlConstants.AppId, parentAppState.AppId)
+        );
     }
 
     public abstract void AddFilesToExportQueue();

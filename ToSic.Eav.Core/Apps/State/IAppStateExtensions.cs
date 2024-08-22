@@ -12,7 +12,7 @@ public static class AppStateExtensions
 
     public static bool HasCustomParentApp(this IAppReader reader)
     {
-        var parentAppGuid = reader?.ParentAppState?.NameId;
+        var parentAppGuid = reader?.GetParentCache()?.NameId;
         return !string.IsNullOrEmpty(parentAppGuid) && !AppGuidIsAPreset(parentAppGuid);
     }
 

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -83,9 +84,10 @@ public class QueryManager(
         if (recurseParents <= 0)
             return l.Return(result, "ok, no recursions");
         l.A($"Try to recurse parents {recurseParents}");
-        if (appReader.ParentAppState == null)
+        var parentAppState = appReader.GetParentCache();
+        if (parentAppState == null)
             return l.Return(result, "no more parents to recurse on");
-        var resultFromParents = AllQueryItems(appReader.ParentAppState, recurseParents -1);
+        var resultFromParents = AllQueryItems(parentAppState, recurseParents -1);
         result = [.. result, .. resultFromParents];
         return l.Return(result, "ok");
     }

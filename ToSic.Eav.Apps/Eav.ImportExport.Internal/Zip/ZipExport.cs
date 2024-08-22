@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Xml.XPath;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSource;
@@ -156,7 +157,7 @@ public class ZipExport(
             FileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
 
         // Copy global app folder only for ParentApp
-        var parentAppGuid = xmlExport.AppReader.ParentAppState?.NameId;
+        var parentAppGuid = xmlExport.AppReader.GetParentCache()?.NameId;
         if (parentAppGuid == null || AppStateExtensions.AppGuidIsAPreset(parentAppGuid))
             if (Directory.Exists(_physicalPathGlobal))
                 FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);

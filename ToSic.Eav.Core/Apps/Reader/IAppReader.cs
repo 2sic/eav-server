@@ -18,22 +18,9 @@ namespace ToSic.Eav.Apps;
 public interface IAppReader:
     IAppIdentity,
     IAppReadEntities,
-    IAppReadContentTypes,
-    IHasPiggyBack
+    IAppReadContentTypes
 {
     IAppSpecs Specs { get; }
-
-    //IAppStateCache StateCache { get; }
-
-    IAppStateCache ParentAppState { get; }
-
-    //IImmutableList<IEntity> ListPublished { get; }
-
-    //IImmutableList<IEntity> ListNotHavingDrafts { get; }
-
-    //ParentAppState ParentApp { get; }
-
-    //AppRelationshipManager Relationships { get; }
 
     IMetadataSource Metadata { get; }
 }

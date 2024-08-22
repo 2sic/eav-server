@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Json;
@@ -138,7 +139,7 @@ public class DbDataController(
     /// <param name="appState"></param>
     /// <returns></returns>
     public DbDataController Init(IAppReader appState)
-        => Init(appState.ZoneId, appState.AppId, appState.ParentAppState?.AppId);
+        => Init(appState.ZoneId, appState.AppId, appState.GetParentCache()?.AppId);
 
     /// <summary>
     /// Set ZoneId and AppId on current context.

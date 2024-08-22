@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Internal.Specs;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Helpers;
@@ -49,7 +50,7 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
         // 2024-02-01 2dm WIP trouble with App listing apps in other sites
         // it seems that the paths
         var key = $"AppPath-{name}" + Site.Id; // + _site.Id;
-        var final = appReader.GetPiggyBack(key,
+        var final = appReader.GetCache().GetPiggyBack(key,
             () =>
             {
                 var result = callIfNotFound();
