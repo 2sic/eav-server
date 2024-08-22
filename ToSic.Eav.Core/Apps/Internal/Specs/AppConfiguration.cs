@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data;
-using ToSic.Sxc.Apps;
+
 // ReSharper disable UnusedMember.Global - we need these, as it's a public API
 
 namespace ToSic.Eav.Apps.Internal.Specs;

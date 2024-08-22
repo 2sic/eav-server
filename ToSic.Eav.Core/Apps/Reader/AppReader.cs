@@ -8,7 +8,6 @@ using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
-using ToSic.Sxc.Apps;
 
 namespace ToSic.Eav.Apps.Services;
 

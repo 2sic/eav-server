@@ -7,10 +7,8 @@
 public sealed class AppIdentityPure: AppIdentity, IAppIdentityPure
 {
     public AppIdentityPure(int zoneId, int appId) : base(zoneId, appId)
-    {
-    }
+    { }
 
     public AppIdentityPure(IAppIdentity parent) : base(parent)
-    {
-    }
+    { }
 }

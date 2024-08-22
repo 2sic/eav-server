@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Data.PiggyBack;
-using ToSic.Sxc.Apps;
 
 namespace ToSic.Eav.Apps.State;
 
