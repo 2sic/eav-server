@@ -1,6 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.ComponentModel;
-using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.State;
@@ -8,7 +6,6 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 using ToSic.Sxc.Apps;
