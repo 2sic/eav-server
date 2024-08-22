@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Internal.Specs;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
 
@@ -14,7 +15,7 @@ public interface IAppContentTypesLoader
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
-    IAppContentTypesLoader Init(IAppSpecsWithState app);
+    IAppContentTypesLoader Init(IAppReader app);
 
     /// <summary>
     /// Get all ContentTypes for specified AppId.

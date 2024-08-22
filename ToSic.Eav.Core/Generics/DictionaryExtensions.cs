@@ -51,4 +51,14 @@ public static class DictionaryExtensions
         result = typed;
         return true;
     }
+
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TValue> factory)
+    {
+        if (dict.TryGetValue(key, out var val))
+            return val;
+        val = factory();
+        dict[key] = val;
+        return val;
+    }
 }

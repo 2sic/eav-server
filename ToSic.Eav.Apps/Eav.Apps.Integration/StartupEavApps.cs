@@ -77,7 +77,7 @@ public static class StartupEavApps
         services.TryAddTransient<IContextOfApp, ContextOfApp>();
         services.TryAddTransient<ContextOfApp.MyServices>();
         services.TryAddTransient<ContextOfSite.MyServices>();
-        services.TryAddTransient<IAppPathsMicroSvc, AppPaths>(); // WIP trying to remove direct access to AppPaths
+        services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
         // File System Loaders (note: Dnn will introduce it's own to work around a DI issue)
         services.TryAddTransient<IAppFileSystemLoader, AppFileSystemLoader>();

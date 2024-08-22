@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal.Specs;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Unknown;
@@ -10,7 +10,7 @@ internal class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader
 {
     public AppContentTypesLoaderUnknown(WarnUseOfUnknown<AppContentTypesLoaderUnknown> _) : base(LogScopes.NotImplemented + ".RepLdr") { }
 
-    public IAppContentTypesLoader Init(IAppSpecsWithState app)
+    public IAppContentTypesLoader Init(IAppReader app)
     {
         Log.A("Unknown App Repo loader - won't load anything");
         return this;

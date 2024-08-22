@@ -1,15 +1,11 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.Context;
+﻿using ToSic.Eav.Context;
 
 namespace ToSic.Eav.Apps.Integration;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public interface IAppPathsMicroSvc: IAppPaths
+public interface IAppPathsMicroSvc
 {
-    IAppPaths Init(ISite site, IHas<IAppSpecsWithState> appState);
+    IAppPaths Get(IAppReader appReader, ISite site = default);
 
-    IAppPaths Init(ISite site, IAppState appState);
-
-    bool InitDone { get; }
+    //bool InitDone { get; }
 }

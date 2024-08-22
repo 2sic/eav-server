@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Internal;
+﻿using ToSic.Eav.Apps.Integration;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
@@ -10,6 +11,7 @@ namespace ToSic.Eav.Apps;
 
 internal class AppReaders(IAppStates appStates, Generator<AppReader> readerGenerator) : IAppReaders
 {
+
     public IAppSpecs GetAppSpecs(int appId)
         => (appStates.GetCacheState(appId) as IHas<IAppSpecs>).Value;
 

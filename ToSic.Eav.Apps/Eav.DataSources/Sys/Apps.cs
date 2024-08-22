@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
@@ -80,12 +81,12 @@ public sealed class Apps: CustomDataSource
             .OrderBy(a => a.Key)
             .Select(app =>
             {
-                IAppState appState = null;
+                IAppSpecs appState = null;
                 Guid? guid = null;
                 string error = null;
                 try
                 {
-                    appState = appReaders.GetReader(new AppIdentityPure(zone.ZoneId, app.Key));
+                    appState = appReaders.GetReader(new AppIdentityPure(zone.ZoneId, app.Key)).Specs;
                     // this will get the guid, if the identity is not "default"
                     if (Guid.TryParse(appState.NameId, out var g)) guid = g;
                 }
