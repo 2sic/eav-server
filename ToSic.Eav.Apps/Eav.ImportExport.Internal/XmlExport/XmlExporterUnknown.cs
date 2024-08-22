@@ -8,8 +8,8 @@ namespace ToSic.Eav.ImportExport.Internal;
 
 internal sealed class XmlExporterUnknown: XmlExporter, IIsUnknown
 {
-    public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppStates appStates, IContextResolver ctxResolver, WarnUseOfUnknown<XmlExporterUnknown> _) 
-        : base(xmlSerializer, appStates, ctxResolver, LogScopes.NotImplemented)
+    public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, IContextResolver ctxResolver, WarnUseOfUnknown<XmlExporterUnknown> _) 
+        : base(xmlSerializer, appsCatalog, ctxResolver, LogScopes.NotImplemented)
     {
     }
 

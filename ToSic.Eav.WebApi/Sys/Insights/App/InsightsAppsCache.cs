@@ -4,7 +4,8 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAppsCache(LazySvc<IAppStates> appStates, LazySvc<IAppReaders> appReaders): InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates, appReaders])
+internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IAppStates> appStates, LazySvc<IAppReaders> appReaders)
+    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appsCatalog, appStates, appReaders])
 {
     public static string Link = "AppsCache";
 
@@ -12,7 +13,7 @@ internal class InsightsAppsCache(LazySvc<IAppStates> appStates, LazySvc<IAppRead
     {
         var msg = H1("Apps In Cache").ToString();
 
-        var zones = appStates.Value.AppsCatalog.Zones.OrderBy(z => z.Key);
+        var zones = appsCatalog.Value.Zones.OrderBy(z => z.Key);
 
         msg += "<table id='table'>"
                + InsightsHtmlTable.HeadFields("Zone ↕", "App ↕", Eav.Data.Attributes.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")

@@ -46,7 +46,7 @@ partial class XmlImportWithFiles
 
         Log.A($"source def dim:{sourceDefaultDimensionId}");
 
-        _targetDimensions = Services.AppStates.AppsCatalog.Zone(zoneId).Languages;
+        _targetDimensions = Services.AppsCatalog.Zone(zoneId).Languages;
 
         _xmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
         #endregion

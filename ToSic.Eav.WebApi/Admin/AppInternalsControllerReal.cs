@@ -10,10 +10,11 @@ namespace ToSic.Eav.WebApi.Admin;
 public class AppInternalsControllerReal(
     LazySvc<IContextOfSite> context,
     LazySvc<ContentTypeDtoService> ctApiLazy,
+    IAppsCatalog appsCatalog,
     LazySvc<IAppStates> appStates,
     LazySvc<EntityApi> entityApi,
     LazySvc<MetadataControllerReal> metadataControllerReal)
-    : ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appStates, entityApi, metadataControllerReal]),
+    : ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appsCatalog, appStates, entityApi, metadataControllerReal]),
         IAppInternalsController
 {
     public const string LogSuffix = "AppInternals";
@@ -27,7 +28,7 @@ public class AppInternalsControllerReal(
 
         var appState = appStates.Value.GetCacheState(appId);
         var isGlobal = appState.IsGlobalSettingsApp();
-        var isPrimary = appState.AppId == appStates.Value.AppsCatalog.PrimaryAppIdentity(appState.ZoneId).AppId;
+        var isPrimary = appState.AppId == appsCatalog.PrimaryAppIdentity(appState.ZoneId).AppId;
 
         var isGlobalOrPrimary = isGlobal || isPrimary;
 
@@ -102,7 +103,7 @@ public class AppInternalsControllerReal(
         => ctApiLazy.Value/*.Init(appId)*/.List(appId, scope, withStatistics);
 
     private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
-        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appStates.Value.AppsCatalog.AppIdentity(appId), contentType, GrantSets.ReadSomething)
+        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appsCatalog.AppIdentity(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType, excludeAncestor);
 
     private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)

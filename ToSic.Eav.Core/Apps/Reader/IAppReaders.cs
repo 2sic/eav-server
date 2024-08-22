@@ -7,7 +7,6 @@ namespace ToSic.Eav.Apps;
 
 public interface IAppReaders
 {
-    IAppsCatalog AppsCatalog { get; }
     IAppSpecs GetAppSpecs(int appId);
 
     IAppSpecsWithState GetAppSpecsWithState(int appId);

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppCachePurger(IAppStates appStates, AppsCacheSwitch appsCache) : ServiceBase("App.SysMng")
+public class AppCachePurger(IAppsCatalog appsCatalog, AppsCacheSwitch appsCache) : ServiceBase("App.SysMng")
 {
 
     #region purge cache stuff
@@ -39,7 +39,7 @@ public class AppCachePurger(IAppStates appStates, AppsCacheSwitch appsCache) : S
     /// Purge the cache of one app
     /// </summary>
     /// <param name="appId"></param>
-    public void PurgeApp(int appId) => Log.Do($"{appId}", () => Purge(appStates.AppsCatalog.AppIdentity(appId)));
+    public void PurgeApp(int appId) => Log.Do($"{appId}", () => Purge(appsCatalog.AppIdentity(appId)));
 
     /// <summary>
     /// Run some code and then purge the cache after that for full rebuild

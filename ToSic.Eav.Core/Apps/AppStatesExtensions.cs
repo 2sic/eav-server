@@ -31,13 +31,13 @@ public static class AppStatesExtensions
         return l.Return(primaryIdentity.AppId, primaryIdentity.Show());
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static IAppStateCache GetPrimaryAppOfZoneId(this IAppStates appStates, int zoneId, ILog log)
-    {
-        var l = log.Fn<IAppStateCache>($"{zoneId}");
-        var primaryIdentity = appStates.AppsCatalog.PrimaryAppIdentity(zoneId);
-        return l.Return(appStates.Get(primaryIdentity), primaryIdentity.Show());
-    }
+    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //public static IAppStateCache GetPrimaryAppOfZoneId(this IAppStates appStates, int zoneId, ILog log)
+    //{
+    //    var l = log.Fn<IAppStateCache>($"{zoneId}");
+    //    var primaryIdentity = appStates.AppsCatalog.PrimaryAppIdentity(zoneId);
+    //    return l.Return(appStates.Get(primaryIdentity), primaryIdentity.Show());
+    //}
 
     //public static IAppStateInternal GetReader(this IAppStates appStates, IAppIdentity app, ILog log = default)
     //{

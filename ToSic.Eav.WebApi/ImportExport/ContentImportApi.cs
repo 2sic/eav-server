@@ -20,9 +20,9 @@ public class ContentImportApi(
     LazySvc<JsonSerializer> jsonSerializerLazy,
     AppCachePurger appCachePurger,
     GenWorkDb<WorkEntitySave> workEntSave,
-    IAppStates appStates,
+    IAppsCatalog appsCatalog,
     IAppReaders appReaders
-) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appStates, appReaders])
+) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appsCatalog, appReaders])
 {
     private IAppReader _appReader;
 
@@ -74,7 +74,7 @@ public class ContentImportApi(
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
     {
         var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
-        var contextLanguages = appStates.AppsCatalog.Zone(_appReader.ZoneId).LanguagesActive
+        var contextLanguages = appsCatalog.Zone(_appReader.ZoneId).LanguagesActive
             .Select(lng => lng.EnvironmentKey)
             .ToArray();
 

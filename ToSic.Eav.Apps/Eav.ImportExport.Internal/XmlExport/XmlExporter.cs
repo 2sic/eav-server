@@ -20,10 +20,10 @@ namespace ToSic.Eav.ImportExport.Internal;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class XmlExporter(
     XmlSerializer xmlSerializer,
-    IAppStates appStates,
+    IAppsCatalog appsCatalog,
     IContextResolver contextResolver,
     string logPrefix)
-    : ServiceBase(logPrefix + "XmlExp", connect: [appStates, xmlSerializer, contextResolver])
+    : ServiceBase(logPrefix + "XmlExp", connect: [appsCatalog, xmlSerializer, contextResolver])
 {
 
     #region simple properties
@@ -47,7 +47,7 @@ public abstract class XmlExporter(
 
     protected IContextResolver ContextResolver { get; } = contextResolver;
     public XmlSerializer Serializer { get; } = xmlSerializer;
-    protected readonly IAppStates AppStates = appStates;
+    protected readonly IAppsCatalog AppsCatalog = appsCatalog;
 
     protected void Constructor(int zoneId, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
     {
@@ -55,7 +55,7 @@ public abstract class XmlExporter(
         Log.A("start XML exporter using app-package");
         AppState = appReader;
         Serializer.Init(
-            AppStates.AppsCatalog.Zone(zoneId).LanguagesActive
+            AppsCatalog.Zone(zoneId).LanguagesActive
                 .ToDictionary(
                     l => l.EnvironmentKey.ToLowerInvariant(),
                     l => l.DimensionId
@@ -146,7 +146,7 @@ public abstract class XmlExporter(
 
         #region Header
 
-        var dimensions = AppStates.AppsCatalog.Zone(ZoneId).LanguagesActive;
+        var dimensions = AppsCatalog.Zone(ZoneId).LanguagesActive;
 
         var header = new XElement(XmlConstants.Header,
             _isAppExport && _appStaticName != XmlConstants.AppContentGuid

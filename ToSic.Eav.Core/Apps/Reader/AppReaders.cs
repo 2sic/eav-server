@@ -7,10 +7,8 @@ using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps;
 
-internal class AppReaders(IAppStates appStates, Generator<AppReader> readerGenerator) : IAppReaders
+internal class AppReaders(LazySvc<IAppsCatalog> appsCatalog, IAppStates appStates, Generator<AppReader> readerGenerator) : IAppReaders
 {
-    public IAppsCatalog AppsCatalog => appStates.AppsCatalog;
-
     public IAppSpecs GetAppSpecs(int appId)
         => (appStates.GetCacheState(appId) as IHas<IAppSpecs>).Value;
 
@@ -49,7 +47,7 @@ internal class AppReaders(IAppStates appStates, Generator<AppReader> readerGener
     public IAppReader GetPrimaryReader(int zoneId, ILog log)
     {
         var l = log.Fn<IAppReader>($"{zoneId}");
-        var primaryAppId = appStates.AppsCatalog.PrimaryAppIdentity(zoneId);
+        var primaryAppId = appsCatalog.Value.PrimaryAppIdentity(zoneId);
         return l.Return(GetReader(primaryAppId, log), primaryAppId.Show());
     }
 

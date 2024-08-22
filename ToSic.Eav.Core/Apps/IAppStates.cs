@@ -22,15 +22,5 @@ public interface IAppStates
 
     #endregion
 
-    #region Zone Stuff
-
-    IAppsCatalog AppsCatalog { get; }
-
-    //IDictionary<int, string> Apps(int zoneId);
-
-    //List<DimensionDefinition> Languages(int zoneId, bool includeInactive = false);
-
-    #endregion
-
     bool IsCached(IAppIdentity appId);
 }

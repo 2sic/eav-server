@@ -1,21 +1,48 @@
-﻿namespace ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Eav.Caching;
 
-internal class AppsCatalog(AppStates appStates) : IAppsCatalog
+namespace ToSic.Eav.Apps;
+
+/// <summary>
+/// This is the implementation of States which doesn't use the static Eav.Apps.State
+/// It's not final, so please keep very internal
+/// The names of the Get etc. will probably change a few more times
+/// </summary>
+[PrivateApi("internal")]
+internal class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
 {
-    public IReadOnlyDictionary<int, Zone> Zones => appStates.Zones;
+    internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
 
-    public Zone Zone(int zoneId) => appStates.Zones.TryGetValue(zoneId, out var zone)
+    /// <inheritdoc />
+    public IAppStateCache Get(IAppIdentity app)
+        => AppsCacheSwitch.Value.Get(app, AppsCacheSwitch.AppLoaderTools);
+
+    public IAppIdentityPure AppIdentity(int appId)
+        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, AppsCacheSwitch.AppLoaderTools), appId);
+
+    public IAppIdentityPure PrimaryAppIdentity(int zoneId)
+        => new AppIdentityPure(zoneId, PrimaryAppId(zoneId));
+
+    public IAppIdentityPure DefaultAppIdentity(int zoneId)
+        => new AppIdentityPure(zoneId, DefaultAppId(zoneId));
+
+    public string AppNameId(int zoneId, int appId)
+        => Zones[zoneId].Apps[appId];
+
+    public int DefaultAppId(int zoneId)
+        => Zones[zoneId].DefaultAppId;
+
+    public int PrimaryAppId(int zoneId)
+        => Zones[zoneId].PrimaryAppId;
+
+    public IDictionary<int, string> Apps(int zoneId)
+        => Zones[zoneId].Apps;
+
+    public IReadOnlyDictionary<int, Zone> Zones => _zones ??= AppsCacheSwitch.Value.Zones(AppsCacheSwitch.AppLoaderTools);
+    private IReadOnlyDictionary<int, Zone> _zones;
+
+    public Zone Zone(int zoneId) => Zones.TryGetValue(zoneId, out var zone)
         ? zone
         : throw new ArgumentOutOfRangeException(nameof(zoneId), zoneId, $@"Zone {zoneId} found");
-
-    public IDictionary<int, string> Apps(int zoneId) => appStates.Apps(zoneId);
-
-    public IAppIdentityPure DefaultAppIdentity(int zoneId) => appStates.DefaultAppIdentity(zoneId);
-
-    public IAppIdentityPure PrimaryAppIdentity(int zoneId) => appStates.PrimaryAppIdentity(zoneId);
-
-    public IAppIdentityPure AppIdentity(int appId) => appStates.AppIdentity(appId);
-
-    public string AppNameId(int zoneId, int appId) => appStates.AppNameId(zoneId, appId);
 
 }

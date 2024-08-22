@@ -6,7 +6,8 @@ using ToSic.Eav.Internal.Unknown;
 
 namespace ToSic.Eav.Integration;
 
-internal class ZoneMapperUnknown(IAppStates appStates, WarnUseOfUnknown<ZoneMapperUnknown> _, Generator<ISite> site) : ZoneMapperBase(appStates, $"{LogScopes.NotImplemented}.ZonMap"), IIsUnknown
+internal class ZoneMapperUnknown(IAppsCatalog appsCatalog, WarnUseOfUnknown<ZoneMapperUnknown> _, Generator<ISite> site)
+    : ZoneMapperBase(appsCatalog, $"{LogScopes.NotImplemented}.ZonMap", connect: []), IIsUnknown
 {
     public override int GetZoneId(int siteId) => siteId;
         

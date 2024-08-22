@@ -8,14 +8,14 @@ namespace ToSic.Eav.WebApi.Zone;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZoneBackend(
-    IAppStates appStates,
+    IAppsCatalog appsCatalog,
     SystemFingerprint fingerprint,
     IZoneMapper zoneMapper,
     IPlatformInfo platform,
     ISite site,
     LazySvc<ILicenseService> licenseService,
     ILogStoreLive logStore)
-    : ServiceBase("Bck.Zones", connect: [appStates, fingerprint, zoneMapper, platform, site, licenseService, logStore])
+    : ServiceBase("Bck.Zones", connect: [appsCatalog, fingerprint, zoneMapper, platform, site, licenseService, logStore])
 {
     public SystemInfoSetDto GetSystemInfo()
     {
@@ -27,7 +27,7 @@ public class ZoneBackend(
         {
             SiteId = site.Id,
             ZoneId = site.ZoneId,
-            Apps = appStates.AppsCatalog.Apps(zoneId).Count,
+            Apps = appsCatalog.Apps(zoneId).Count,
             Languages = zoneMapper.CulturesWithState(site).Count,
         };
 
@@ -35,7 +35,7 @@ public class ZoneBackend(
         {
             EavVersion = EavSystemInfo.VersionString,
             Fingerprint = fingerprint.GetFingerprint(),
-            Zones = appStates.AppsCatalog.Zones.Count,
+            Zones = appsCatalog.Zones.Count,
             Platform = platform.Name,
             PlatformVersion = EavSystemInfo.VersionToNiceFormat(platform.Version)
         };

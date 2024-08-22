@@ -28,8 +28,8 @@ namespace ToSic.Eav.ImportExport.Tests
             var test = new SpecsTestExportSerialize();
             var appReader = GetService<IRepositoryLoader>().AppStateReaderRawTA(test.AppId);
             //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
-            var languageMap = GetService<IAppStates>()
-                .AppsCatalog.Zone(test.ZoneId).LanguagesActive
+            var languageMap = GetService<IAppsCatalog>()
+                .Zone(test.ZoneId).LanguagesActive
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, appReader);
             var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
@@ -45,8 +45,8 @@ namespace ToSic.Eav.ImportExport.Tests
             var test = new SpecsTestExportSerialize();
             var appId = test.AppId;
             var appReader = GetService<IRepositoryLoader>().AppStateReaderRawTA(appId);
-            var languageMap = GetService<IAppStates>()
-                .AppsCatalog.Zone(test.ZoneId).LanguagesActive
+            var languageMap = GetService<IAppsCatalog>()
+                .Zone(test.ZoneId).LanguagesActive
                 .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
             var exBuilder = _xmlSerializer.Init(languageMap, appReader);
 

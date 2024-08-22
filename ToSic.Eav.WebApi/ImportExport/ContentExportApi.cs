@@ -27,13 +27,13 @@ namespace ToSic.Eav.WebApi.ImportExport;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentExportApi(
     AppWorkContextService appWorkCtxSvc,
-    IAppStates appStates,
+    IAppsCatalog appsCatalog,
     Generator<JsonSerializer> jsonSerializer,
     IResponseMaker responseMaker,
     Generator<ExportListXml> exportListXmlGenerator,
     LazySvc<IEavFeaturesService> features)
     : ServiceBase("Api.EaCtEx",
-        connect: [appWorkCtxSvc, exportListXmlGenerator, appStates, jsonSerializer, responseMaker, features])
+        connect: [appWorkCtxSvc, exportListXmlGenerator, appsCatalog, jsonSerializer, responseMaker, features])
 {
     public ContentExportApi Init(int appId)
     {
@@ -56,7 +56,7 @@ public class ContentExportApi(
         var l = Log.Fn<(string, string)>($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
         SecurityHelpers.ThrowIfNotContentAdmin(user, l);
 
-        var contextLanguages = appStates.AppsCatalog.Zone(_appCtx.ZoneId).LanguagesActive
+        var contextLanguages = appsCatalog.Zone(_appCtx.ZoneId).LanguagesActive
             .Select(lng => lng.EnvironmentKey)
             .ToArray();
 

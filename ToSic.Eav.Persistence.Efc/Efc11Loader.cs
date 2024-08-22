@@ -14,6 +14,7 @@ public partial class Efc11Loader(
     EavDbContext context,
     LazySvc<IZoneCultureResolver> environmentLazy,
     IAppInitializedChecker initializedChecker,
+    IAppsCatalog appsCatalog,
     IAppStates appStates,
     ILogStore logStore,
     LazySvc<IEavFeaturesService> featuresService,
@@ -24,7 +25,7 @@ public partial class Efc11Loader(
     : ServiceBase("Db.Efc11",
         connect:
         [
-            context, environmentLazy, initializedChecker, appStates, logStore, featuresService, dataBuilder,
+            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, featuresService, dataBuilder,
             dataDeserializer, appFileContentTypesLoader, appStateBuilder
         ]), IRepositoryLoader
 {

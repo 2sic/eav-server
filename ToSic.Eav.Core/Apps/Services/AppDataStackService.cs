@@ -18,6 +18,12 @@ public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stac
         return this;
     }
 
+    public AppDataStackService InitForPrimaryAppOfZone(int zoneId)
+    {
+        AppSpecs = appReaders.GetPrimaryReader(zoneId, Log);
+        return this;
+    }
+
     private IAppSpecsWithStateAndCache AppSpecs { get; set; }
 
     public PropertyStack GetStack(string part, IEntity viewPart = null)

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public sealed class AppFinder(IAppStates appStates, IAppReaders appReaders) : ServiceBase("App.ZoneRt")
+public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaders appReaders) : ServiceBase("App.ZoneRt")
 {
     /// <summary>
     /// Find the app id from the app-name (usually a guid or "Default").
@@ -18,7 +18,7 @@ public sealed class AppFinder(IAppStates appStates, IAppReaders appReaders) : Se
                 return l.Return(Constants.AppIdEmpty, "no name");
 
             var nameLower = appName.ToLowerInvariant();
-            var appId = appStates.AppsCatalog.Apps(zoneId)
+            var appId = appsCatalog.Apps(zoneId)
                 .Where(p => p.Value.EqualsInsensitive(nameLower))
                 .Select(p => p.Key).FirstOrDefault();
 
@@ -44,7 +44,7 @@ public sealed class AppFinder(IAppStates appStates, IAppReaders appReaders) : Se
         var l = Log.Fn<int>($"{nameof(zoneId)}: {zoneId}; {nameof(folderName)}: {folderName}");
         try
         {
-            foreach (var p in appStates.AppsCatalog.Apps(zoneId))
+            foreach (var p in appsCatalog.Apps(zoneId))
             {
                 var appState = appReaders.GetReader(new AppIdentity(zoneId, p.Key));
                 if (appState.Folder.EqualsInsensitive(folderName))
@@ -69,7 +69,7 @@ public sealed class AppFinder(IAppStates appStates, IAppReaders appReaders) : Se
     {
         var nameLower = appName.ToLowerInvariant();
 
-        foreach (var p in appStates.AppsCatalog.Apps(zoneId))
+        foreach (var p in appsCatalog.Apps(zoneId))
         {
             var appState = appReaders.GetReader(new AppIdentity(zoneId, p.Key));
 

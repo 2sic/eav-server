@@ -6,11 +6,9 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Integration;
 
-internal class ImportExportEnvironmentUnknown: EavImportExportEnvironmentBase, IIsUnknown
+internal class ImportExportEnvironmentUnknown(ISite site, IAppsCatalog appsCatalog, WarnUseOfUnknown<ImportExportEnvironmentUnknown> _)
+    : EavImportExportEnvironmentBase(site, appsCatalog, $"{LogScopes.NotImplemented}.IExEnv"), IIsUnknown
 {
-    public ImportExportEnvironmentUnknown(ISite site, IAppStates appStates, WarnUseOfUnknown<ImportExportEnvironmentUnknown> _) 
-        : base(site, appStates, $"{LogScopes.NotImplemented}.IExEnv") { }
-
     public override List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
     {
         // don't do anything
