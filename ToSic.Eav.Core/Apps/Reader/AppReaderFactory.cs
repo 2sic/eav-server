@@ -7,8 +7,8 @@ using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps;
 
-internal class AppReaders(LazySvc<IAppsCatalog> appsCatalog, IAppStateCacheService appStates, Generator<AppReader> readerGenerator)
-    : ServiceBase("Eav.AppRds"), IAppReaders
+internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCacheService appStates, Generator<AppReader> readerGenerator)
+    : ServiceBase("Eav.AppRds"), IAppReaderFactory
 {
     public IAppReader GetOrKeep(IAppIdentity appOrReader)
         => appOrReader as IAppReader ?? Get(appOrReader);

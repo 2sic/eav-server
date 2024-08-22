@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Apps.Internal;
 
@@ -15,4 +16,10 @@ public static class AppReaderInternal
     public static IAppStateCache GetCache(this IAppReader reader) => ((AppReader)reader).AppState;
 
     public static IAppStateCache GetParentCache(this IAppReader reader) => reader.GetCache().ParentApp?.AppState;
+}
+
+public static class AppReaderFactoryInternal
+{
+    public static IAppReader ToReader(this IAppReaderFactory appReaderFactory, IAppStateCache appState)
+        => ((AppReaderFactory)appReaderFactory).ToReader(appState);
 }

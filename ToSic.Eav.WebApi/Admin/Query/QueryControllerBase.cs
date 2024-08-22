@@ -38,7 +38,7 @@ public abstract class QueryControllerBase<TImplementation>(
         Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
         Generator<PassThrough> passThrough,
         LazySvc<QueryManager> queryManager,
-        Generator<IAppReaders> appStates,
+        Generator<IAppReaderFactory> appStates,
         GenWorkBasic<WorkQueryMod> workUnitQueryMod,
         GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
         : MyServicesBase(connect:
@@ -56,7 +56,7 @@ public abstract class QueryControllerBase<TImplementation>(
         /// It's important that it will always generate new objects.
         /// This is to ensure it has the changes previously saved
         /// </summary>
-        public Generator<IAppReaders> AppStates { get; } = appStates;
+        public Generator<IAppReaderFactory> AppStates { get; } = appStates;
 
         public QueryBuilder QueryBuilder { get; } = queryBuilder;
         public LazySvc<ConvertToEavLight> EntToDicLazy { get; } = entToDicLazy;

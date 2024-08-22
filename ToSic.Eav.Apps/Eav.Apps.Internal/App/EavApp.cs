@@ -27,7 +27,7 @@ public abstract partial class EavApp(EavApp.MyServices services, string logName 
     public class MyServices(
         IZoneMapper zoneMapper,
         ISite site,
-        IAppReaders appReaders,
+        IAppReaderFactory appReaders,
         IDataSourcesService dataSourceFactory,
         LazySvc<QueryManager> queryManager,
         IAppDataConfigProvider dataConfigProvider)
@@ -37,7 +37,7 @@ public abstract partial class EavApp(EavApp.MyServices services, string logName 
         public LazySvc<QueryManager> QueryManager { get; } = queryManager;
         internal IZoneMapper ZoneMapper { get; } = zoneMapper;
         internal ISite Site { get; } = site;
-        internal IAppReaders AppReaders { get; } = appReaders;
+        internal IAppReaderFactory AppReaders { get; } = appReaders;
         internal IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
     }
 

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaders appReaders) : ServiceBase("App.ZoneRt")
+public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : ServiceBase("App.ZoneRt")
 {
     /// <summary>
     /// Find the app id from the app-name (usually a guid or "Default").

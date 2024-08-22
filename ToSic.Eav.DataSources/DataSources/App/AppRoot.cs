@@ -17,14 +17,14 @@ namespace ToSic.Eav.DataSources;
 public class AppRoot : DataSourceBase, IAppRoot
 {
     [PrivateApi]
-    public AppRoot(IAppReaders appReaders, MyServices services) : base(services, $"{LogPrefix}.Root")
+    public AppRoot(IAppReaderFactory appReaders, MyServices services) : base(services, $"{LogPrefix}.Root")
     {
         _appReaders = appReaders;
         ProvideOut(() => AppReader.List);
         ProvideOut(() => AppReader.GetListPublished(), StreamPublishedName);
         ProvideOut(() => AppReader.GetListNotHavingDrafts(), StreamDraftsName);
     }
-    private readonly IAppReaders _appReaders;
+    private readonly IAppReaderFactory _appReaders;
 
     public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
         .AddStream(name: StreamPublishedName)

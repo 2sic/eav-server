@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Loaders;
@@ -15,14 +16,13 @@ partial class AppState
     /// <summary>
     /// The builder must be a subclass of AppState, so it can access its private properties.
     /// </summary>
-    internal class AppStateBuilder(IAppReaders appStates) : ServiceBase("App.SttBld"), IAppStateBuilder
+    internal class AppStateBuilder(IAppReaderFactory appReaderFactory) : ServiceBase("App.SttBld"), IAppStateBuilder
     {
         #region Constructor / DI / Init (2 variants)
 
         public IAppStateBuilder Init(IAppStateCache appState)
         {
             _appState = appState;
-            _reader = appStates.ToReader(AppState);
             return this;
         }
 
@@ -30,7 +30,6 @@ partial class AppState
         {
             _appState = new AppState(new(null, false, false), PresetIdentity, PresetName, Log);
             MemoryCacheService.Notify(_appState);
-            _reader = appStates.ToReader(AppState);
             return this;
         }
 
@@ -38,14 +37,13 @@ partial class AppState
         {
             _appState = new AppState(parentApp, identity, nameId, parentLog);
             MemoryCacheService.Notify(_appState);
-            _reader = appStates.ToReader(AppState);
             return this;
         }
 
         public IAppStateCache AppState => _appState ?? throw new("Can't use before calling some init");
         private IAppStateCache _appState;
 
-        public IAppReader Reader => _reader ?? throw new("Can't use before calling some init");
+        public IAppReader Reader => _reader ??= appReaderFactory.ToReader(AppState);
         private IAppReader _reader;
 
         #endregion

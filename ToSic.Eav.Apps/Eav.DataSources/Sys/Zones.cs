@@ -41,23 +41,23 @@ public sealed class Zones: Eav.DataSource.DataSourceBase
     /// Constructs a new Zones DS
     /// </summary>
     [PrivateApi]
-    public Zones(MyServices services, IZoneMapper zoneMapper, IAppsCatalog appStates, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
+    public Zones(MyServices services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
     {
         ConnectLogs([
             _zoneMapper = zoneMapper,
-            _appStates = appStates,
+            _appsCatalog = appsCatalog,
             _dataFactory = dataFactory.New(options: new(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
         ]);
         ProvideOut(GetList);
     }
     private readonly IZoneMapper _zoneMapper;
-    private readonly IAppsCatalog _appStates;
+    private readonly IAppsCatalog _appsCatalog;
 
 
     private IImmutableList<IEntity> GetList() => Log.Func(l =>
     {
         // Get cache, which manages a list of zones
-        var zones = _appStates.Zones;
+        var zones = _appsCatalog.Zones;
         var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
         {
             var site = _zoneMapper.SiteOfZone(zone.ZoneId);

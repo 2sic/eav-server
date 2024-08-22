@@ -59,21 +59,21 @@ public sealed class Apps: CustomDataSource
     /// Constructs a new Apps DS
     /// </summary>
     [PrivateApi]
-    public Apps(MyServices services, IAppsCatalog appStates, IAppReaders appReaders) : base(services, $"{LogPrefix}.Apps")
+    public Apps(MyServices services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : base(services, $"{LogPrefix}.Apps")
     {
-        ConnectLogs([appStates, appReaders]);
+        ConnectLogs([appsCatalog, appReaders]);
         ProvideOutRaw(
-            () => GetDefault(appStates, appReaders),
+            () => GetDefault(appsCatalog, appReaders),
             options: () => new(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
         );
     }
 
     #endregion
 
-    private IEnumerable<IRawEntity> GetDefault(IAppsCatalog appStates, IAppReaders appReaders) => Log.Func(l =>
+    private IEnumerable<IRawEntity> GetDefault(IAppsCatalog appsCatalog, IAppReaderFactory appReaders) => Log.Func(l =>
     {
         // try to load the content-type - if it fails, return empty list
-        var allZones = appStates.Zones;
+        var allZones = appsCatalog.Zones;
         if (!allZones.TryGetValue(OfZoneId, out var zone)) 
             return (EmptyRawList,"fails load content-type");
 

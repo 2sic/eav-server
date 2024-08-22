@@ -17,7 +17,7 @@ public class AppUserLanguageCheck(
     LazySvc<IZoneMapper> zoneMapperLazy,
     IContextOfSite ctx,
     Generator<AppPermissionCheck> checkGenerator,
-    LazySvc<IAppReaders> appReadersLazy,
+    LazySvc<IAppReaderFactory> appReadersLazy,
     LazySvc<IEavFeaturesService> featuresLazy)
     : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, checkGenerator, appReadersLazy, featuresLazy])
 {

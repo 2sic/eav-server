@@ -70,13 +70,13 @@ public sealed class ContentTypes: CustomDataSource
     /// Constructs a new ContentTypes DS
     /// </summary>
     [PrivateApi]
-    public ContentTypes(MyServices services, IAppReaders appReaders): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
+    public ContentTypes(MyServices services, IAppReaderFactory appReaders): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
     {
         ConnectLogs([_appReaders = appReaders]);
         var options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
         ProvideOut(GetList, options: () => new(options, appId: OfAppId));
     }
-    private readonly IAppReaders _appReaders;
+    private readonly IAppReaderFactory _appReaders;
 
     private IEnumerable<IRawEntity> GetList()
     {

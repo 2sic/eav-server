@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class MetadataTargets(IAppReaders appReaders, DataSourceBase.MyServices services)
+public class MetadataTargets(IAppReaderFactory appReaders, DataSourceBase.MyServices services)
     : MetadataDataSourceBase(services, $"{LogPrefix}.MetaTg")
 {
     /// <summary>

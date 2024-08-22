@@ -16,13 +16,13 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 {
     #region MyServices
 
-    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaders appStates)
+    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates)
         : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates])
     {
         public DataBuilder DataBuilder { get; } = dataBuilder;
 
         public ITargetTypes MetadataTargets { get; } = metadataTargets;
-        public IAppReaders AppStates { get; } = appStates;
+        public IAppReaderFactory AppStates { get; } = appStates;
     }
 
     #endregion

@@ -12,14 +12,14 @@ namespace ToSic.Eav.Security.Internal;
 public class AppPermissionCheck: PermissionCheckBase
 {
     #region Constructor & DI
-    public AppPermissionCheck(IAppReaders appReaders, MyServices services) : base(services, $"{AppConstants.LogName}.PrmChk")
+    public AppPermissionCheck(IAppReaderFactory appReaders, MyServices services) : base(services, $"{AppConstants.LogName}.PrmChk")
     {
         ConnectLogs([
             _appReaders = appReaders,
             _environmentPermission = (EnvironmentPermission)services.EnvironmentPermission
         ]);
     }
-    private readonly IAppReaders _appReaders;
+    private readonly IAppReaderFactory _appReaders;
     private readonly EnvironmentPermission _environmentPermission;
 
     public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem) => Log.Func(() =>

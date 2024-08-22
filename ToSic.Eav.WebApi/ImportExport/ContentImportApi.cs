@@ -21,7 +21,7 @@ public class ContentImportApi(
     AppCachePurger appCachePurger,
     GenWorkDb<WorkEntitySave> workEntSave,
     IAppsCatalog appsCatalog,
-    IAppReaders appReaders
+    IAppReaderFactory appReaders
 ) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appsCatalog, appReaders])
 {
     private IAppReader _appReader;

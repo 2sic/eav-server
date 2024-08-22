@@ -22,7 +22,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// </summary>
     public new class MyServices(
         ContextOfSite.MyServices siteServices,
-        IAppReaders appReaders,
+        IAppReaderFactory appReaders,
         LazySvc<IEavFeaturesService> features,
         LazySvc<AppUserLanguageCheck> langChecks,
         Generator<IEnvironmentPermission> environmentPermissions,
@@ -30,7 +30,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         : MyServicesBase<ContextOfSite.MyServices>(siteServices,
             connect: [environmentPermissions, appReaders, features, langChecks, settingsStack])
     {
-        public IAppReaders AppReaders { get; } = appReaders;
+        public IAppReaderFactory AppReaders { get; } = appReaders;
         public LazySvc<IEavFeaturesService> Features { get; } = features;
         public LazySvc<AppUserLanguageCheck> LangChecks { get; } = langChecks;
         public LazySvc<AppDataStackService> SettingsStack { get; } = settingsStack;

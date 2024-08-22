@@ -21,7 +21,7 @@ public class EavSystemLoader(
     FeaturePersistenceService featurePersistenceService,
     LicenseLoader licenseLoader,
     ILogStore logStore,
-    IAppReaders appReaders,
+    IAppReaderFactory appReaders,
     SysFeaturesService sysFeaturesService)
     : LoaderBase(logStore, $"{EavLogs.Eav}SysLdr",
         connect:

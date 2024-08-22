@@ -46,7 +46,7 @@ public sealed class Attributes: DataSourceBase
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaders appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib")
+    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib")
     {
         ConnectLogs([
             _appReaders = appReaders,
@@ -54,7 +54,7 @@ public sealed class Attributes: DataSourceBase
         ]);
         ProvideOut(GetList);
     }
-    private readonly IAppReaders _appReaders;
+    private readonly IAppReaderFactory _appReaders;
     private readonly IDataFactory _dataFactory;
 
     private IImmutableList<IEntity> GetList()

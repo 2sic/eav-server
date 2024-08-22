@@ -36,7 +36,7 @@ public class DataOverrideTest : TestBaseDiEavFullAndDb
 
     private void TestWebResourcesExistsOnceAndMayHaveValue(Guid guid, bool expected)
     {
-        var appStates = GetService<IAppReaders>();
+        var appStates = GetService<IAppReaderFactory>();
         var primaryApp = appStates.GetSystemPreset();
 
         // Verify there is only one with this guid

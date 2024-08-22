@@ -15,7 +15,7 @@ namespace ToSic.Eav.ImportExport.Internal.Zip;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZipExport(
-    IAppReaders appReaders,
+    IAppReaderFactory appReaders,
     IDataSourcesService dataSourceFactory,
     XmlExporter xmlExporter,
     Generator<FileManager> fileManagerGenerator,

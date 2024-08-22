@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Services;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppDataStackService(IAppReaders appReaders) : ServiceBase("App.Stack", connect: [appReaders])
+public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("App.Stack", connect: [appReaders])
 {
     public AppDataStackService Init(IAppReader appReader)
     {

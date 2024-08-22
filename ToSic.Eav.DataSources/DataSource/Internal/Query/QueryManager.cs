@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class QueryManager(
     Generator<Query> queryGenerator,
-    LazySvc<IAppReaders> appReaders,
+    LazySvc<IAppReaderFactory> appReaders,
     LazySvc<QueryDefinitionBuilder> queryDefBuilder)
     : ServiceBase($"{LogPrefix}.QryMan", connect: [queryGenerator, appReaders, queryDefBuilder])
 {

@@ -82,10 +82,10 @@ public partial class App : DataSourceBase
     {
         public IContextResolverUserPermissions UserPermissions { get; }
         public IDataSourcesService DataSourceFactory { get; }
-        public IAppReaders AppReaders { get; }
+        public IAppReaderFactory AppReaders { get; }
 
         public MyServices(Eav.DataSource.DataSourceBase.MyServices parentServices,
-            IAppReaders appReaders,
+            IAppReaderFactory appReaders,
             IDataSourcesService dataSourceFactory,
             IContextResolverUserPermissions userPermissions) : base(parentServices)
         {

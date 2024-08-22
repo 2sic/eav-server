@@ -44,13 +44,13 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new EntityTypeFilter
     /// </summary>
     [PrivateApi]
-    public EntityTypeFilter(IAppReaders appReaders, MyServices services) : base(services, $"{LogPrefix}.TypeF")
+    public EntityTypeFilter(IAppReaderFactory appReaders, MyServices services) : base(services, $"{LogPrefix}.TypeF")
 
     {
         _appReaders = appReaders;
         ProvideOut(GetList);
     }
-    private readonly IAppReaders _appReaders;
+    private readonly IAppReaderFactory _appReaders;
 
 
     private IImmutableList<IEntity> GetList() 

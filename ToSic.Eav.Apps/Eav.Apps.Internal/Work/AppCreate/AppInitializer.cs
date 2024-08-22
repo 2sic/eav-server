@@ -24,7 +24,7 @@ public class AppInitializer(
     GenWorkDb<WorkEntitySave> entitySave,
     GenWorkDb<WorkContentTypesMod> contentTypesMod,
     AppCachePurger cachePurger,
-    IAppReaders appReaders)
+    IAppReaderFactory appReaders)
     : ServiceBase("Eav.AppBld", connect: [contentTypesMod, entitySave, builder, cachePurger, repoLoader, appReaders])
 {
 

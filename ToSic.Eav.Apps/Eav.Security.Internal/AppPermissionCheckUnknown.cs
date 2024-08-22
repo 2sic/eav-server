@@ -4,5 +4,5 @@ using ToSic.Eav.Internal.Unknown;
 namespace ToSic.Eav.Security.Internal;
 
 /// <inheritdoc />
-internal sealed class AppPermissionCheckUnknown(IAppReaders appReaders, PermissionCheckBase.MyServices services, WarnUseOfUnknown<AppPermissionCheckUnknown> _)
+internal sealed class AppPermissionCheckUnknown(IAppReaderFactory appReaders, PermissionCheckBase.MyServices services, WarnUseOfUnknown<AppPermissionCheckUnknown> _)
     : AppPermissionCheck(appReaders, services), IIsUnknown;

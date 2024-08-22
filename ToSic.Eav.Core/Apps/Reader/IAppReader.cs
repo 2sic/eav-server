@@ -20,7 +20,13 @@ public interface IAppReader:
     IAppReadEntities,
     IAppReadContentTypes
 {
+    /// <summary>
+    /// Various App Specs such as IDs, folders and more.
+    /// </summary>
     IAppSpecs Specs { get; }
 
+    /// <summary>
+    /// Metadata Source to get Metadata of anything in the App.
+    /// </summary>
     IMetadataSource Metadata { get; }
 }

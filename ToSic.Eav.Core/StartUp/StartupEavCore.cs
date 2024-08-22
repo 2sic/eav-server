@@ -66,7 +66,7 @@ public static class StartUpEavCore
         services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
         services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
         services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
-        services.TryAddTransient<IAppReaders, AppReaders>(); // new v18
+        services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
         services.TryAddTransient<AppReader>();
         services.TryAddTransient<AppDataStackService>();

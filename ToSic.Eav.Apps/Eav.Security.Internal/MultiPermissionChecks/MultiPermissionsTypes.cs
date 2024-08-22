@@ -10,13 +10,13 @@ public class MultiPermissionsTypes: MultiPermissionsApp
     private const string LogName = "Sec.MPTyps";
     protected IEnumerable<string> ContentTypes;
 
-    public MultiPermissionsTypes(MyServices services, LazySvc<IAppReaders> appStates): base(services, LogName)
+    public MultiPermissionsTypes(MyServices services, LazySvc<IAppReaderFactory> appStates): base(services, LogName)
     {
         ConnectLogs([
             _appStates = appStates
         ]);
     }
-    private readonly LazySvc<IAppReaders> _appStates;
+    private readonly LazySvc<IAppReaderFactory> _appStates;
 
     // Note: AppState must be public, as we have some extension methods that need it
     public IAppReader AppState => _appState ??= _appStates.Value.GetOrKeep(App);

@@ -31,12 +31,12 @@ internal class AppWithParents: DataSourceBase
     //}
 
 
-    private readonly IAppReaders _appReaders;
+    private readonly IAppReaderFactory _appReaders;
     private readonly IDataSourcesService _dataSourceFactory;
     private int _appId;
     private int _zoneId;
 
-    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaders appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
     {
         ConnectLogs([
             _dataSourceFactory = dataSourceFactory,

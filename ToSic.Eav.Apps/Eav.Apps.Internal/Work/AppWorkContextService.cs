@@ -11,14 +11,14 @@ namespace ToSic.Eav.Apps.Internal.Work;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppWorkContextService(
     LazySvc<IDataSourcesService> dataSourceSvc,
-    LazySvc<IAppReaders> appReaders,
+    LazySvc<IAppReaderFactory> appReaders,
     Generator<LazySvc<DbDataController>> dbGen)
     : ServiceBase("App.WrkCtx", connect: [appReaders, dataSourceSvc, dbGen])
 {
     /// <summary>
     /// In rare cases this is helpful outside; for now we surface it, may change later
     /// </summary>
-    public IAppReaders AppReaders => appReaders.Value;
+    public IAppReaderFactory AppReaders => appReaders.Value;
     
     public IAppWorkCtx Context(IAppReader appState) => new AppWorkCtx(appState);
 

@@ -17,12 +17,12 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     #region Constructor / DI
 
     public class MyServices(
-        LazySvc<IAppReaders> appReaders,
+        LazySvc<IAppReaderFactory> appReaders,
         IValueConverter valueConverter,
         IZoneCultureResolver zoneCultureResolver)
         : MyServicesBase(connect: [appReaders, valueConverter, zoneCultureResolver])
     {
-        public LazySvc<IAppReaders> AppReaders { get; } = appReaders;
+        public LazySvc<IAppReaderFactory> AppReaders { get; } = appReaders;
         public IValueConverter ValueConverter { get; } = valueConverter;
         public IZoneCultureResolver ZoneCultureResolver { get; } = zoneCultureResolver;
     }

@@ -38,15 +38,15 @@ public class SystemStack: DataSourceBase
     #region Constructor / DI / Services
 
     private readonly IDataFactory _dataFactory;
-    private readonly IAppReaders _appStates;
+    private readonly IAppReaderFactory _appReadFac;
     private readonly IZoneCultureResolver _zoneCulture;
     private readonly AppDataStackService _dataStackService;
 
-    public SystemStack(MyServices services, AppDataStackService dataStackService, IAppReaders appStates, IZoneCultureResolver zoneCulture, IDataFactory dataFactory)
+    public SystemStack(MyServices services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture, IDataFactory dataFactory)
         : base(services, "Ds.AppStk")
     {
         ConnectLogs([
-            _appStates = appStates,
+            _appReadFac = appReadFac,
             _zoneCulture = zoneCulture,
             _dataStackService = dataStackService,
             _dataFactory = dataFactory
@@ -61,7 +61,7 @@ public class SystemStack: DataSourceBase
     {
         Configuration.Parse();
 
-        var appState = _appStates.Get(this.PureIdentity());
+        var appState = _appReadFac.Get(this.PureIdentity());
 
         var languages = _zoneCulture.SafeLanguagePriorityCodes();
 
