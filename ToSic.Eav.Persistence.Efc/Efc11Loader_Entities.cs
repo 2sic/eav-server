@@ -58,9 +58,15 @@ partial class Efc11Loader
         sqlTime.Start();
         var rawEntities = GetRawEntities(entityIds, appId, filterByEntityIds);
         sqlTime.Stop();
+
+        // Get the EntityIDs to load the relationships / values for these entities
+        // But skip all entities which have JSON, since for these all the data is already loaded
+        // This pre-clean can dramatically reduce the time needed to load the data
         var entityIdsFound = rawEntities
+            .Where(e => e.Json == null)
             .Select(e => e.EntityId)
             .ToList();
+        l.A($"Total entities: {rawEntities.Count}; non-JSON: {entityIdsFound.Count}");
         var entityIdChunks = entityIdsFound.ChunkBy(IdChunkSize);
         l.A($"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
 
