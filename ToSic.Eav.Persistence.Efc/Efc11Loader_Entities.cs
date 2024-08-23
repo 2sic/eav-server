@@ -15,9 +15,10 @@ partial class Efc11Loader
     {
         get {
             if (_primaryLanguage != null) return _primaryLanguage;
+            var l = Log.Fn<string>(timer: true);
             _primaryLanguage = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
             Log.A($"Primary language from environment (for attribute sorting): {_primaryLanguage}");
-            return _primaryLanguage;
+            return l.ReturnAndLog(_primaryLanguage);
         }
         set => _primaryLanguage = value;
     }
@@ -57,16 +58,21 @@ partial class Efc11Loader
         sqlTime.Start();
         var rawEntities = GetRawEntities(entityIds, appId, filterByEntityIds);
         sqlTime.Stop();
-        var entityIdsFound = rawEntities.Select(e => e.EntityId).ToList();
+        var entityIdsFound = rawEntities
+            .Select(e => e.EntityId)
+            .ToList();
         var entityIdChunks = entityIdsFound.ChunkBy(IdChunkSize);
-        l.A(
-            $"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
+        l.A($"Found {entityIdsFound.Count} raw entities in {sqlTime.ElapsedMilliseconds}ms - chunked into {entityIdChunks.Count} chunks");
 
-        sqlTime.Start();
         // Load relationships in batches / chunks
-        var allChunks = entityIdChunks.Select(idList => GetRelationshipChunk(appId, idList))
+        sqlTime.Start();
+        var lRelationshipSql = Log.Fn("Relationship SQL", timer: true);
+        var allChunks = entityIdChunks
+            .Select(idList => GetRelationshipChunk(appId, idList))
             .SelectMany(chunk => chunk)
             .ToList();
+        lRelationshipSql.Done();
+
         // in some strange cases we get duplicate keys - this should try to report what's happening
         var relatedEntities = GroupUniqueRelationships(allChunks);
 
@@ -75,7 +81,9 @@ partial class Efc11Loader
         #region load attributes & values
 
         var chunkedAttributes = entityIdChunks.Select(GetAttributesOfEntityChunk);
-        var attributes = chunkedAttributes.SelectMany(chunk => chunk).ToDictionary(i => i.Key, i => i.Value);
+        var attributes = chunkedAttributes
+            .SelectMany(chunk => chunk)
+            .ToDictionary(i => i.Key, i => i.Value);
         l.A($"Found {attributes.Count} attributes");
 
         #endregion

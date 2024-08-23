@@ -67,27 +67,22 @@ partial class Efc11Loader
 
     private Dictionary<int, IEnumerable<TempAttributeWithValues>> GetAttributesOfEntityChunk(List<int> entityIdsFound)
     {
-        var l = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(
-            $"ids: {entityIdsFound.Count}");
+        var l = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
             
         // just get once, we'll need it in a deep loop
         var primaryLanguage = PrimaryLanguage;
 
-        var attributes = context.ToSicEavValues
-            .Include(v => v.Attribute)
-            .Include(v => v.ToSicEavValuesDimensions)
-            .ThenInclude(d => d.Dimension)
-            .Where(r => entityIdsFound.Contains(r.EntityId))
-            .Where(v => !v.ChangeLogDeleted.HasValue)
-            // ToList is necessary because groupby actually runs on dotnet (not SQL).
-            // Efcore 1 did this implicitly, efcore 3.x need to do it explicitly.
-            .ToList()
+        var attributesRaw = GetSqlAttributesRaw(entityIdsFound);
+
+        var lToDic = Log.Fn("To Dictionary", timer: true);
+
+        // Convert to dictionary
+        // Research 2024-08 PC 2dm shows that this is superfast - less than 1ms for 1700 attributes (Tutorial App)
+        var attributes = attributesRaw
             .GroupBy(e => e.EntityId)
             .ToDictionary(e => e.Key, e => e.GroupBy(v => v.AttributeId)
                 .Select(vg => new TempAttributeWithValues
                 {
-                    // 2020-07-31 2dm - never used
-                    // AttributeId = vg.Key,
                     Name = vg.First().Attribute.StaticName,
                     Values = vg
                         // The order of values is significant because the 2sxc system uses the first value as fallback
@@ -106,7 +101,35 @@ partial class Efc11Loader
                                 .ToImmutableList(),
                         })
                 }));
+
+        lToDic.Done();
+
         return l.ReturnAsOk(attributes);
+    }
+
+    /// <summary>
+    /// Get the attributes of the entities we're loading.
+    /// </summary>
+    /// <param name="entityIdsFound"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// Research 2024-08 PC 2dm shows that this is fairly slow, between 100 and 400ms for 1700 attributes (Tutorial App)
+    /// </remarks>
+    private List<ToSicEavValues> GetSqlAttributesRaw(List<int> entityIdsFound)
+    {
+        var lSql = Log.Fn($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
+
+        var attributesRaw = context.ToSicEavValues
+            .Include(v => v.Attribute)
+            .Include(v => v.ToSicEavValuesDimensions)
+            .ThenInclude(d => d.Dimension)
+            .Where(r => entityIdsFound.Contains(r.EntityId))
+            .Where(v => !v.ChangeLogDeleted.HasValue)
+            // ToList is necessary because groupby actually runs on dotnet (not SQL).
+            .ToList();
+
+        lSql.Done($"found {attributesRaw.Capacity} attributes");
+        return attributesRaw;
     }
 
     /// <summary>
@@ -118,13 +141,15 @@ partial class Efc11Loader
     /// <returns></returns>
     private List<ToSicEavEntityRelationships> GetRelationshipChunk(int appId, ICollection<int> entityIdsFound)
     {
-        var l = Log.Fn<List<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIdsFound.Count}");
+        var l = Log.Fn<List<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIdsFound.Count}", timer: true);
         var relationships = context.ToSicEavEntityRelationships
             .Include(rel => rel.Attribute)
             .Where(rel => rel.ParentEntity.AppId == appId)
-            .Where(r => !r.ChildEntityId.HasValue // child can be a null-reference
-                        || entityIdsFound.Contains(r.ChildEntityId.Value) // check if it's referred to as a child
-                        || entityIdsFound.Contains(r.ParentEntityId)) // check if it's referred to as a parent
+            .Where(r =>
+                    !r.ChildEntityId.HasValue // child can be a null-reference
+                    || entityIdsFound.Contains(r.ChildEntityId.Value) // check if it's referred to as a child
+                    || entityIdsFound.Contains(r.ParentEntityId) // check if it's referred to as a parent
+            )
             .ToList();
         return l.ReturnAsOk(relationships);
     }

@@ -15,14 +15,16 @@ internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCach
 
     public IAppReader Get(IAppIdentity app)
     {
+        var l = Log.Fn<IAppReader>(app.Show());
         var state = appStates.Get(app);
-        return state is null ? null : ToReader(state);
+        return l.ReturnAndLogIfNull(ToReader(state));
     }
 
     public IAppReader Get(int appId)
     {
+        var l = Log.Fn<IAppReader>($"{appId}");
         var state = appStates.Get(appId);
-        return state is null ? null : ToReader(state);
+        return l.ReturnAndLogIfNull(ToReader(state));
     }
 
     public IAppReader GetZonePrimary(int zoneId)
@@ -38,6 +40,8 @@ internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCach
         return Get(PresetIdentity);
     }
 
-    public IAppReader ToReader(IAppStateCache state)
-        => readerGenerator.New().Init(state, parentLog: null);
+    public IAppReader ToReader(IAppStateCache state) =>
+        state == null
+            ? null
+            : readerGenerator.New().Init(state, parentLog: null);
 }
