@@ -9,6 +9,8 @@ using ToSic.Eav.Apps.State;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
 using ToSic.Eav.Data.Shared;
+using ToSic.Eav.Helpers;
+using ToSic.Eav.Identity;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Metadata;
@@ -38,10 +40,11 @@ public abstract class XmlExporter(
     public List<Message> Messages = [];
 
     public IAppReader AppReader { get; private set; }
-
     public int ZoneId { get; private set; }
 
     private string _appStaticName = "";
+    private AppExportSpecs _specs;
+    private List<string> _compressedEntityGuids = [];
     #endregion
 
     #region Constructor & DI
@@ -50,13 +53,14 @@ public abstract class XmlExporter(
     public XmlSerializer Serializer { get; } = xmlSerializer;
     protected readonly IAppsCatalog AppsCatalog = appsCatalog;
 
-    protected void Constructor(int zoneId, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
+    protected void Constructor(AppExportSpecs specs, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
     {
-        ZoneId = zoneId;
+        _specs = specs;
+        ZoneId = specs.ZoneId;
         Log.A("start XML exporter using app-package");
         AppReader = appReader;
         Serializer.Init(
-            AppsCatalog.Zone(zoneId).LanguagesActive
+            AppsCatalog.Zone(specs.ZoneId).LanguagesActive
                 .ToDictionary(
                     l => l.EnvironmentKey.ToLowerInvariant(),
                     l => l.DimensionId
@@ -74,12 +78,12 @@ public abstract class XmlExporter(
     /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
     /// </summary>
     /// <returns></returns>
-    public virtual XmlExporter Init(int zoneId, int appId, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+    public virtual XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
     {
-        ContextResolver.SetApp(new AppIdentity(zoneId, appId));
+        ContextResolver.SetApp(new AppIdentity(specs.ZoneId, specs.AppId));
         var ctxOfApp = ContextResolver.AppRequired();
         PostContextInit(ctxOfApp);
-        Constructor(zoneId, appRuntime, ctxOfApp.AppReader.Specs.NameId, appExport, attrSetIds, entityIds);
+        Constructor(specs, appRuntime, ctxOfApp.AppReader.Specs.NameId, appExport, attrSetIds, entityIds);
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
         InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
@@ -243,6 +247,8 @@ public abstract class XmlExporter(
         // init files (add to queue)
         AddFilesToExportQueue();
 
+        GetEntityGuidsCompressed(entities);
+
         // Create root node "SexyContent" and add ContentTypes, ContentItems and Templates
         doc.Add(new XElement(XmlConstants.RootNode,
             new XAttribute(XmlConstants.FileVersion, Settings.FileVersion),
@@ -254,6 +260,22 @@ public abstract class XmlExporter(
             entities,
             GetFilesXElements(),
             GetFoldersXElements()));
+    }
+
+    private void GetEntityGuidsCompressed(XElement entities)
+    {
+        if (_specs.AssetAdamDeleted)
+        {
+            _compressedEntityGuids = [];
+            return;
+        }
+
+        // get list of compressed EntityGuids from Entities
+        // (for files/folders validation that we are not exporting files that from deleted entities)
+        var entityGuids = entities.Elements(XmlConstants.Entity).Select(e => (e.Attribute("EntityGUID"))?.Value).ToList();
+        foreach (var entityGuid in entityGuids)
+            if (Guid.TryParse(entityGuid, out var guid)) 
+                _compressedEntityGuids.Add(guid.GuidCompress());
     }
 
     private XElement GetParentAppXElement()
@@ -334,7 +356,8 @@ public abstract class XmlExporter(
     {
         var file = ResolveFile(fileId);
 
-        if (file.RelativePath == null) return null;
+        // folder is not in list of entities
+        if (!ValidFolderPath(file?.RelativePath)) return null;
 
         ReferencedFiles.Add(file);
 
@@ -350,15 +373,25 @@ public abstract class XmlExporter(
     {
         var path = ResolveFolderId(folderId);
 
-        if (path != null)
-        {
-            return new(XmlConstants.Folder,
-                new XAttribute(XmlConstants.FolderNodeId, folderId),
-                new XAttribute(XmlConstants.FolderNodePath, path)
-            );
-        }
+        if (!ValidFolderPath(path)) return null;
 
-        return null;
+        return new(XmlConstants.Folder,
+            new XAttribute(XmlConstants.FolderNodeId, folderId),
+            new XAttribute(XmlConstants.FolderNodePath, path)
+        );
+    }
+
+    private bool ValidFolderPath(string relativePath)
+    {
+        if (relativePath == null) return false;
+
+        if (!relativePath.StartsWith("adam")) return true;
+
+        var pathParts = relativePath.ForwardSlash().Split('/');
+        if (pathParts.Length < 3) return true;
+        
+        return _specs.AssetAdamDeleted // export all including deleted
+            || _compressedEntityGuids.Any(f => f == pathParts[2]); // OR ensure that folder is in list of exported entities
     }
     #endregion
 

@@ -239,9 +239,6 @@ public class ZipExport(
         if (!specs.IncludeContentGroups)
             entities = entities.Where(p => p.Type.NameId != SexyContentContentGroupName).ToList();
 
-        //if (assetAdamDeleted)
-        //    entities = entities.Where(e => e.Chn)
-
         // Exclude ParentApp entities
         // TODO: option to include ParentApp entities
         entities = entities.Where(p => !p.HasAncestor()).ToList();
@@ -249,7 +246,7 @@ public class ZipExport(
         var entityIds = entities
             .Select(e => e.EntityId.ToString()).ToArray();
 
-        var xmlExport = xmlExporter.Init(_zoneId, _appId, _appState, true, contentTypeNames, entityIds);
+        var xmlExport = xmlExporter.Init(specs, _appState, true, contentTypeNames, entityIds);
 
         #region reset App Guid if necessary
 

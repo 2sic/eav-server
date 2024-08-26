@@ -25,7 +25,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var appId = 2;
             var appState = GetService<IAppReaderFactory>().GetReader(new AppIdentity(zoneId, appId));
 
-            var fileXml = _xmlExporter.Init(zoneId, appId, appState, false,
+            var fileXml = _xmlExporter.Init(new AppExportSpecs(zoneId, appId), appState, false,
                 /*contentTypeIdsString?.Split(';') ?? */[],
                 /*entityIdsString?.Split(';') ?? */[]
             ).GenerateNiceXml();
