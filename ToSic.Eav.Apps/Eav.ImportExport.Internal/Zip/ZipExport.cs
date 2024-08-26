@@ -63,7 +63,7 @@ public class ZipExport(
     private IAppReader _appState;
     #endregion
 
-    public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool withSiteFiles = false)
+    public void ExportForSourceControl(AppExportSpecs specs)
     {
         var appDataPath = Path.Combine(_physicalAppPath, SourceControlDataFolder);
 
@@ -75,9 +75,9 @@ public class ZipExport(
         Directory.CreateDirectory(appDataPath);
 
         // generate the XML & save
-        var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid, assetAdamDeleted: false); // TODO: stv# find do we need to provide assetAdamDeleted, or is it always false?
+        var xmlExport = GenerateExportXml(specs);
 
-        if (withSiteFiles)
+        if (specs.WithSiteFiles)
         {
             var appDataDirectory = new DirectoryInfo(appDataPath);
 
@@ -114,7 +114,7 @@ public class ZipExport(
                 var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForSiteFiles);
 
                 // Copy SiteFiles for version control
-                CopyPortalFiles(xmlExport, portalFilesDirectory, assetsAdam: true, assetsSite: true);
+                CopyPortalFiles(xmlExport, portalFilesDirectory, specs.AssetsAdam, specs.AssetsSite);
             }
             catch (Exception e)
             {
@@ -123,17 +123,17 @@ public class ZipExport(
         }
         else
             // Verify patron features if they are being used
-            if (resetAppGuid)
+            if (specs.ResetAppGuid)
                 features.ThrowIfNotEnabled("To skip exporting site files, you must enable system features.", [BuiltInFeatures.AppExportAssetsAdvanced.Guid]);
 
         var xml = xmlExport.GenerateNiceXml();
         File.WriteAllText(Path.Combine(appDataPath, SourceControlDataFile), xml);
     }
 
-    public MemoryStream ExportApp(AppExportSpecs specs) // , bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted)
+    public MemoryStream ExportApp(AppExportSpecs specs)
     {
         // generate the XML
-        var xmlExport = GenerateExportXml(/* TODO: @STV - change to just use specs object as one parameter */ specs.IncludeContentGroups, specs.ResetAppGuid, specs.AssetAdamDeleted);
+        var xmlExport = GenerateExportXml(specs);
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
@@ -156,8 +156,6 @@ public class ZipExport(
         var sexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForAppStuff);
         var globalSexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
         var siteFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
-
-
 
         // Copy app folder
         if (Directory.Exists(_physicalAppPath))
@@ -218,7 +216,7 @@ public class ZipExport(
     }
 
 
-    private XmlExporter GenerateExportXml(/* TODO: @STV use specs object */ /* AppExportSpecs specs, */ bool includeContentGroups, bool resetAppGuid, bool assetAdamDeleted)
+    private XmlExporter GenerateExportXml(AppExportSpecs specs)
     {
             // Get Export XML
         var appIdentity = new AppIdentity(_zoneId, _appId);
@@ -238,7 +236,7 @@ public class ZipExport(
             .List
             .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
-        if (!includeContentGroups)
+        if (!specs.IncludeContentGroups)
             entities = entities.Where(p => p.Type.NameId != SexyContentContentGroupName).ToList();
 
         //if (assetAdamDeleted)
@@ -255,7 +253,7 @@ public class ZipExport(
 
         #region reset App Guid if necessary
 
-        if (resetAppGuid)
+        if (specs.ResetAppGuid)
         {
             var root = xmlExport.ExportXDocument; //.Root;
             var appGuid = root.XPathSelectElement("/SexyContent/Header/App").Attribute(XmlConstants.Guid);
