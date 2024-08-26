@@ -4,10 +4,10 @@ using ToSic.Eav.Internal.Unknown;
 
 namespace ToSic.Eav.Apps.Integration;
 
-internal sealed class FileSystemLoaderUnknown(WarnUseOfUnknown<FileSystemLoaderUnknown> _) : ServiceBase(LogConstants.FullNameUnknown), IAppFileSystemLoader, IIsUnknown
+internal sealed class AppInputTypesLoaderUnknown(WarnUseOfUnknown<AppInputTypesLoaderUnknown> _) : ServiceBase(LogConstants.FullNameUnknown), IAppInputTypesLoader, IIsUnknown
 {
     // do nothing
-    public IAppFileSystemLoader Init(IAppReader app) => this;
+    public IAppInputTypesLoader Init(IAppReader app) => this;
 
     public string Path { get; set; }
 

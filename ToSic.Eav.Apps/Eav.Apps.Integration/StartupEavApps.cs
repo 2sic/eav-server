@@ -80,7 +80,7 @@ public static class StartupEavApps
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
         // File System Loaders
-        services.TryAddTransient<IAppFileSystemLoader, AppFileSystemInputTypesLoader>();
+        services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
         services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
 
         // Helpers to build stuff
@@ -133,7 +133,7 @@ public static class StartupEavApps
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
         services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
-        services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
+        services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
         services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 
         // v17

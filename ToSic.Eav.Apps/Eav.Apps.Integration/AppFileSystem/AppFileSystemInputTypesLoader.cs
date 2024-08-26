@@ -9,10 +9,10 @@ namespace ToSic.Eav.Apps.Integration;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
-    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppFileSystemLoader
+    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppInputTypesLoader
 {
-    public new IAppFileSystemLoader Init(IAppReader app)
-        => base.Init(app) as IAppFileSystemLoader;
+    public new IAppInputTypesLoader Init(IAppReader app)
+        => base.Init(app) as IAppInputTypesLoader;
 
     /// <inheritdoc />
     public List<InputTypeInfo> InputTypes()

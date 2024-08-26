@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkInputTypes(
     LazySvc<IAppReaderFactory> appReaders,
-    LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy,
+    LazySvc<IAppInputTypesLoader> appFileSystemLoaderLazy,
     GenWorkPlus<WorkEntities> workEntities)
     : WorkUnitBase<IAppWorkCtxPlus>("ApS.InpGet", connect: [appReaders, workEntities, appFileSystemLoaderLazy])
 {

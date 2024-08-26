@@ -6,6 +6,4 @@ namespace ToSic.Eav.Apps.Integration;
 public interface IAppPathsMicroSvc
 {
     IAppPaths Get(IAppReader appReader, ISite site = default);
-
-    //bool InitDone { get; }
 }
