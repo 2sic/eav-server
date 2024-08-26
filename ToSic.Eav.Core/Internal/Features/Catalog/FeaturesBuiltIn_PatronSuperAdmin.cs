@@ -29,6 +29,7 @@ public partial class BuiltInFeatures
         ForPatronSuperAdminAutoEnabled
     );
 
+    // TODO: NOT PUBLICLY AVAILABLE YET
     public static readonly Feature DataExportImportBundles = new(
         nameof(DataExportImportBundles),
         new("32f4d1e6-764c-4702-9cda-521428aca66c"),
@@ -39,4 +40,17 @@ public partial class BuiltInFeatures
         FeaturesCatalogRules.Security0Neutral,
         ForPatronSuperAdminAutoEnabled
     );
+
+
+    public static readonly Feature AppExportAssetsAdvanced = new(
+        nameof(AppExportAssetsAdvanced),
+        new("653cb9b6-05a5-4a72-a1c6-141d2b4ae3db"),
+        "More control what is exported when exporting Apps.",
+        false,
+        false,
+        "Export Data (Content-Types, Entities) as bundles for repeatable batch export/import.",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronSuperAdminAutoEnabled
+    );
+
 }

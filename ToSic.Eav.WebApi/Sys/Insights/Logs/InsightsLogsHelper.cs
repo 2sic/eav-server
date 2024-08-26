@@ -50,7 +50,6 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         if (entry == null) return null;
 
         var specs = entry.Specs ?? new Dictionary<string, string>();
-        // if (specs == null) return null;
 
         var specList = Table(HeadFields(SpecialField.Left("Aspect ↕"), SpecialField.Left("Value ↕")));
 

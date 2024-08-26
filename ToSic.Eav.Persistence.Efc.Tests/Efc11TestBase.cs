@@ -18,7 +18,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         
         public EavDbContext Db;
-        public Efc11Loader Loader;
+        public EfcAppLoader Loader;
 
         [TestInitialize]
         public void Init()
@@ -28,7 +28,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             Loader = NewLoader();
         }
 
-        public Efc11Loader NewLoader() => GetService<Efc11Loader>().UseExistingDb(Db);
+        public EfcAppLoader NewLoader() => GetService<EfcAppLoader>().UseExistingDb(Db);
 
 
         protected JsonSerializer SerializerOfApp(int appId)

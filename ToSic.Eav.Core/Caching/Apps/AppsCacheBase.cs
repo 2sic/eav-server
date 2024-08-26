@@ -26,10 +26,10 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     public abstract IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools);
 
     [PrivateApi]
-    protected IReadOnlyDictionary<int, Zone> LoadZones(IAppLoaderTools sp)
+    protected IReadOnlyDictionary<int, Zone> LoadZones(IAppLoaderTools tools)
     {
         // Load from DB (this will also ensure that Primary Apps are created)
-        var realZones = sp.RepositoryLoader(null).Zones();
+        var realZones = tools.RepositoryLoader(null).Zones();
 
         // Add the Preset-Zone to the list - important, otherwise everything fails
         var presetZone = new Zone(Constants.PresetZoneId,

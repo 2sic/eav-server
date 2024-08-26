@@ -28,42 +28,6 @@ partial class AppState: IEntitiesSource
 
     IEnumerable<IEntity> IEntitiesSource.List => List;
 
-    internal Dictionary<int, IEntity> Index { get; } = new();
-
-    ///// <summary>
-    ///// Add an entity to the cache. Should only be used by EAV code
-    ///// </summary>
-    //[PrivateApi("Only internal use")]
-    //internal void Add(IEntity newEntity, int? publishedId, bool log)
-    //{
-    //    if (!Loading)
-    //        throw new Exception("trying to add entity, but not in loading state. set that first!");
-
-    //    if (newEntity.RepositoryId == 0)
-    //        throw new Exception("Entities without real ID not supported yet");
-
-    //    RemoveObsoleteDraft(newEntity, log);
-    //    MapDraftToPublished(newEntity as Entity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
-    //    Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-    //    _metadataManager.Register(newEntity, true);
-
-    //    if (FirstLoadCompleted)
-    //        DynamicUpdatesCount++;
-
-    //    if (log) Log.A($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{DynamicUpdatesCount}");
-    //}
+    internal Dictionary<int, IEntity> Index { get; } = [];
     
-
-    ///// <summary>
-    ///// Reset all item storages and indexes
-    ///// </summary>
-    //private void RemoveAllItems()
-    //{
-    //    if (!Loading)
-    //        throw new Exception("trying to init metadata, but not in loading state. set that first!");
-    //    Log.A("remove all items");
-    //    Index.Clear();
-    //    _metadataManager.Reset();
-    //}
-
 }
