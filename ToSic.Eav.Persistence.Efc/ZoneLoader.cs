@@ -1,8 +1,8 @@
 ﻿namespace ToSic.Eav.Persistence.Efc;
 
-internal class ZoneLoader(Efc11Loader parent): HelperBase(parent.Log, "Efc.ZoneLoader")
+internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Efc.ZoneLoader")
 {
-    public IDictionary<int, Zone> Zones(ILogStore logStore)
+    internal IDictionary<int, Zone> LoadZones(ILogStore logStore)
     {
         var log = new Log("DB.EfLoad", null, "Zones()");
         // Add to zone-loading log, as it could
@@ -11,7 +11,7 @@ internal class ZoneLoader(Efc11Loader parent): HelperBase(parent.Log, "Efc.ZoneL
 
         // Build the tree of zones incl. their default(Content) and Primary apps
         var lSql = log.Fn("Zone SQL", timer: true);
-        var zonesSql = parent.Context.ToSicEavZones
+        var zonesSql = appLoader.Context.ToSicEavZones
             .Include(z => z.ToSicEavApps)
             .Include(z => z.ToSicEavDimensions)
             .ThenInclude(d => d.ParentNavigation)

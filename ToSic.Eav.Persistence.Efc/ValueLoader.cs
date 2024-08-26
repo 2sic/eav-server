@@ -2,17 +2,17 @@
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class ValueLoader(Efc11Loader parent, EntityDetailsLoadSpecs specs): HelperBase(parent.Log, "Efc.ValLdr")
+internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs): HelperBase(appLoader.Log, "Efc.ValLdr")
 {
-    internal ValueQueries ValueQueries => _valueQueries ??= new(parent.Context, Log);
+    internal ValueQueries ValueQueries => _valueQueries ??= new(appLoader.Context, Log);
     private ValueQueries _valueQueries;
 
 
-    public Dictionary<int, IEnumerable<TempAttributeWithValues>> Load(Stopwatch sqlTime)
+    public Dictionary<int, IEnumerable<TempAttributeWithValues>> LoadValues()
     {
         var l = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(timer: true);
 
-        sqlTime.Start();
+        var sqlTime = Stopwatch.StartNew();
         var chunkedAttributes = specs.IdsToLoadChunks
             .Select(GetValuesOfEntityChunk);
         sqlTime.Stop();
@@ -20,6 +20,8 @@ internal class ValueLoader(Efc11Loader parent, EntityDetailsLoadSpecs specs): He
         var attributes = chunkedAttributes
             .SelectMany(chunk => chunk)
             .ToDictionary(i => i.Key, i => i.Value);
+
+        appLoader.AddSqlTime(sqlTime.Elapsed);
 
         return l.Return(attributes, $"Found {attributes.Count} attributes");
     }
@@ -30,7 +32,7 @@ internal class ValueLoader(Efc11Loader parent, EntityDetailsLoadSpecs specs): He
 
         var attributesRaw = GetSqlValuesRaw(entityIdsFound);
 
-        var cnv = new ConvertValuesToAttributes(parent.PrimaryLanguage, Log);
+        var cnv = new ConvertValuesToAttributes(appLoader.PrimaryLanguage, Log);
         var attributes = cnv.EavValuesToTempAttributes(attributesRaw);
 
         return l.ReturnAsOk(attributes);

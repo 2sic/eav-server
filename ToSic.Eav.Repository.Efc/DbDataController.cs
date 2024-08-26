@@ -14,7 +14,7 @@ namespace ToSic.Eav.Repository.Efc;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DbDataController(
     EavDbContext dbContext,
-    LazySvc<Efc11Loader> efcLoaderLazy,
+    LazySvc<EfcAppLoader> efcLoaderLazy,
     LazySvc<IUser> userLazy,
     AppsCacheSwitch appsCache,
     Generator<JsonSerializer> jsonSerializerGenerator,

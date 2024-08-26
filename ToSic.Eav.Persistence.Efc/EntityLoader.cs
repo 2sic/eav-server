@@ -5,14 +5,14 @@ using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class EntityLoader(Efc11Loader parent, IEavFeaturesService featuresService, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder) : HelperBase(parent.Log, "Efc.EntLdr")
+internal class EntityLoader(EfcAppLoader appLoader, IEavFeaturesService featuresService, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder) : HelperBase(appLoader.Log, "Efc.EntLdr")
 {
     public const int IdChunkSize = 5000;
     public const int MaxLogDetailsCount = 250;
 
     internal int AddLogCount;
 
-    internal EntityQueries EntityQueries => _entityQueries ??= new(parent.Context, Log);
+    internal EntityQueries EntityQueries => _entityQueries ??= new(appLoader.Context, Log);
     private EntityQueries _entityQueries;
 
 
@@ -37,7 +37,7 @@ internal class EntityLoader(Efc11Loader parent, IEavFeaturesService featuresServ
         // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
         var sqlTime = Stopwatch.StartNew();
         if (filterByEntityIds)
-            entityIds = new PublishingHelper(parent).AddEntityIdOfPartnerEntities(entityIds);
+            entityIds = new PublishingHelper(appLoader).AddEntityIdOfPartnerEntities(entityIds);
         sqlTime.Stop();
 
         #endregion
@@ -50,12 +50,12 @@ internal class EntityLoader(Efc11Loader parent, IEavFeaturesService featuresServ
 
         var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, entityIds, rawEntities, featuresService, Log);
 
-        var relLoader = new RelationshipLoader(parent, detailsLoadSpecs);
-        var relatedEntities = relLoader.Load(sqlTime);
+        var relLoader = new RelationshipLoader(appLoader, detailsLoadSpecs);
+        var relatedEntities = relLoader.LoadRelationships();
         codeRefTrail.AddMessage($"Raw entities: {rawEntities.Count}");
 
         // load attributes & values
-        var attributes = new ValueLoader(parent, detailsLoadSpecs).Load(sqlTime);
+        var attributes = new ValueLoader(appLoader, detailsLoadSpecs).LoadValues();
 
         #endregion
 
@@ -70,7 +70,7 @@ internal class EntityLoader(Efc11Loader parent, IEavFeaturesService featuresServ
             if (AddLogCount++ == MaxLogDetailsCount)
                 l.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-            var newEntity = EntityBuildHelper.BuildNewEntity(dataBuilder, builder.Reader, rawEntity, serializer, relatedEntities, attributes, parent.PrimaryLanguage);
+            var newEntity = EntityBuildHelper.BuildNewEntity(dataBuilder, builder.Reader, rawEntity, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage);
 
             // If entity is a draft, also include references to Published Entity
             builder.Add(newEntity, rawEntity.PublishedEntityId, AddLogCount <= MaxLogDetailsCount);

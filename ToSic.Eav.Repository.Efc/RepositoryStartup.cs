@@ -25,7 +25,7 @@ public static class StartupRepositoryEfc
 #endif
 
         // Inner loader for use of the main RepositoryLoader
-        services.TryAddTransient<Efc11Loader>();
+        services.TryAddTransient<EfcAppLoader>();
         services.TryAddTransient<IRepositoryLoader, EfcRepositoryLoader>();
 
         services.TryAddTransient<DbDataController>();

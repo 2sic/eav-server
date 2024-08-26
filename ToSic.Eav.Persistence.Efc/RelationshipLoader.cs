@@ -2,18 +2,17 @@
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class RelationshipLoader(Efc11Loader parent, EntityDetailsLoadSpecs specs) : HelperBase(parent.Log, "Efc.ValLdr")
+internal class RelationshipLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs) : HelperBase(appLoader.Log, "Efc.ValLdr")
 {
-    internal RelationshipQueries RelationshipQueries => _relationshipQueries ??= new(parent.Context, Log);
+    internal RelationshipQueries RelationshipQueries => _relationshipQueries ??= new(appLoader.Context, Log);
     private RelationshipQueries _relationshipQueries;
 
-    public Dictionary<int, IEnumerable<TempRelationshipList>> Load(Stopwatch sqlTime)
+    public Dictionary<int, IEnumerable<TempRelationshipList>> LoadRelationships()
     {
         var l = Log.Fn<Dictionary<int, IEnumerable<TempRelationshipList>>>(timer: true);
 
         // Load relationships in batches / chunks
-        sqlTime.Start();
-
+        var sqlTime = Stopwatch.StartNew();
         var lRelationshipSql = Log.Fn("Relationship SQL", timer: true);
         var relChunks = specs.IdsToLoadChunks
             .Select(idList => GetRelationshipChunk(specs.AppId, idList))
@@ -24,6 +23,8 @@ internal class RelationshipLoader(Efc11Loader parent, EntityDetailsLoadSpecs spe
 
         // in some strange cases we get duplicate keys - this should try to report what's happening
         var relatedEntities = GroupUniqueRelationships(relChunks);
+
+        appLoader.AddSqlTime(sqlTime.Elapsed);
 
         return l.Return(relatedEntities, $"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
     }

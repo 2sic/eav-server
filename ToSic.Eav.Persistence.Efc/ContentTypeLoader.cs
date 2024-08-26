@@ -5,8 +5,8 @@ using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class ContentTypeLoader(Efc11Loader dbLoader, Generator<IAppContentTypesLoader> appFileContentTypesLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, IAppStateCacheService appStates)
-    : HelperBase(dbLoader.Log, "Efc.CtLdr")
+internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTypesLoader> appFileContentTypesLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, IAppStateCacheService appStates)
+    : HelperBase(appLoader.Log, "Efc.CtLdr")
 {
     internal IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)
     {
@@ -75,7 +75,7 @@ internal class ContentTypeLoader(Efc11Loader dbLoader, Generator<IAppContentType
         var l = Log.Fn<ImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
-        var query = dbLoader.Context.ToSicEavAttributeSets
+        var query = appLoader.Context.ToSicEavAttributeSets
             .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
 
         var serializer = dataDeserializer.New();
@@ -129,7 +129,7 @@ internal class ContentTypeLoader(Efc11Loader dbLoader, Generator<IAppContentType
 
         sqlTime.Start();
 
-        var sharedAttribs = dbLoader.Context.ToSicEavAttributeSets
+        var sharedAttribs = appLoader.Context.ToSicEavAttributeSets
             .Include(s => s.ToSicEavAttributesInSets)
             .ThenInclude(a => a.Attribute)
             .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
@@ -182,7 +182,7 @@ internal class ContentTypeLoader(Efc11Loader dbLoader, Generator<IAppContentType
             );
         });
 
-        dbLoader.AddSqlTime(sqlTime.Elapsed);
+        appLoader.AddSqlTime(sqlTime.Elapsed);
         var final = newTypes.ToImmutableList();
 
         return l.Return(final, $"{final.Count}");

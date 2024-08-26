@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Persistence.Efc;
 
-internal class PublishingHelper(Efc11Loader parent): HelperBase(parent.Log, "Efc.PubHlp")
+internal class PublishingHelper(EfcAppLoader parent): HelperBase(parent.Log, "Efc.PubHlp")
 {
     internal EntityQueries EntityQueries => _entityQueries ??= new(parent.Context, Log);
     private EntityQueries _entityQueries;
