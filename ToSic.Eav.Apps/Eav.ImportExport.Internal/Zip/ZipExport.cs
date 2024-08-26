@@ -72,7 +72,7 @@ public class ZipExport(
         Directory.CreateDirectory(appDataPath);
 
         // generate the XML & save
-        var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
+        var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid, assetAdamDeleted: false); // TODO: stv# find do we need to provide assetAdamDeleted, or is it always false?
 
         if (withSiteFiles)
         {
@@ -123,10 +123,10 @@ public class ZipExport(
         File.WriteAllText(Path.Combine(appDataPath, SourceControlDataFile), xml);
     }
 
-    public MemoryStream ExportApp(bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite)
+    public MemoryStream ExportApp(bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted)
     {
         // generate the XML
-        var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
+        var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid, assetAdamDeleted);
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
@@ -207,7 +207,7 @@ public class ZipExport(
     }
 
 
-    private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
+    private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid, bool assetAdamDeleted)
     {
         // Get Export XML
         var appIdentity = new AppIdentity(_zoneId, _appId);
@@ -229,6 +229,9 @@ public class ZipExport(
 
         if (!includeContentGroups)
             entities = entities.Where(p => p.Type.NameId != SexyContentContentGroupName).ToList();
+
+        //if (assetAdamDeleted)
+        //    entities = entities.Where(e => e.Chn)
 
         // Exclude ParentApp entities
         // TODO: option to include ParentApp entities
