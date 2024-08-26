@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.Apps.Internal.Work;
+﻿using ToSic.Eav.Apps.Internal.Work;
 
 namespace ToSic.Eav.Apps.Integration;
 
@@ -12,9 +11,6 @@ public interface IAppFileSystemLoader: IHasLog
     /// <param name="app"></param>
     /// <returns></returns>
     IAppFileSystemLoader Init(IAppReader app);
-
-    string Path { get; set; }
-    string PathShared { get; set; }
 
     /// <summary>
     /// Load all the input types for this app from the folder

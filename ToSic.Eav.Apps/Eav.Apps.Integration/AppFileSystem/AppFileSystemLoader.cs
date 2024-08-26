@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Source;
@@ -22,10 +21,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
 
     #region Dependencies and Constructor
 
-    public class MyServices(
-        ISite site,
-        Generator<FileSystemLoader> fslGenerator,
-        LazySvc<IAppPathsMicroSvc> appPathsLazy)
+    public class MyServices(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy)
         : MyServicesBase(connect: [site, fslGenerator, appPathsLazy])
     {
         public ISite Site { get; } = site;
@@ -37,7 +33,8 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     /// DI Constructor
     /// </summary>
     /// <param name="services"></param>
-    public AppFileSystemLoader(MyServices services) : this(services, EavLogs.Eav + ".AppFSL") { }
+    public AppFileSystemLoader(MyServices services) : this(services, EavLogs.Eav + ".AppFSL")
+    { }
 
     /// <summary>
     /// Inheritance constructor
@@ -45,15 +42,19 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     /// <param name="services"></param>
     /// <param name="logName"></param>
     protected AppFileSystemLoader(MyServices services, string logName) : base(services, logName)
-    {
-        Site = services.Site;
-    }
+    { }
 
     #endregion
 
     public string Path { get; set; }
     public string PathShared { get; set; }
-    protected ISite Site;
+
+    /// <summary>
+    /// The site to use. This should be used instead of Services.Site,
+    /// since in some cases (e.g. DNN Search) the initial site is not available.
+    /// So in that case it overrides the implementation to get the real site just-in-time.
+    /// </summary>
+    protected virtual ISite Site => Services.Site;
     protected IAppIdentity AppIdentity { get; private set; }
     private IAppPaths _appPaths;
 
@@ -62,7 +63,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     public IAppFileSystemLoader Init(IAppReader appReader)
     {
         var l = Log.Fn<IAppFileSystemLoader>($"{appReader.AppId}, {appReader.Specs.Folder}, ...");
-        AppIdentity = appReader;
+        AppIdentity = appReader.PureIdentity();
         _appPaths = Services.AppPathsLazy.Value.Get(appReader, Site);
         InitPathAfterAppId();
         return l.Return(this);
@@ -72,10 +73,10 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
         => Init(app) as IAppContentTypesLoader;
 
     /// <summary>
-    /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this
+    /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this.
     /// </summary>
     /// <returns></returns>
-    protected virtual bool InitPathAfterAppId()
+    protected bool InitPathAfterAppId()
     {
         var l = Log.Fn<bool>();
         Path = System.IO.Path.Combine(_appPaths.PhysicalPath, Constants.FolderAppExtensions);
@@ -84,8 +85,6 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     }
 
     #endregion
-
-
 
     /// <inheritdoc />
     public List<InputTypeInfo> InputTypes()
@@ -104,7 +103,8 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
         {
             var extPaths = ExtensionPaths();
             l.A($"Found {extPaths.Count} extensions with .data folder");
-            var allTypes = extPaths.SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
+            var allTypes = extPaths
+                .SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
                 .Distinct(new EqualityComparer_ContentType())
                 .ToList();
             return l.Return(allTypes, "ok");
@@ -112,16 +112,15 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
         catch (Exception e)
         {
             l.A("error " + e.Message);
+            return l.Return([], "error");
         }
-
-        return l.Return(new List<IContentType>(), "error");
     }
 
 
     private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
     {
         var l = Log.Fn<IEnumerable<IContentType>>(extensionPath);
-        var fsLoader = base.Services.FslGenerator.New().Init(AppIdentity.AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
+        var fsLoader = Services.FslGenerator.New().Init(AppIdentity.AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
         var types = fsLoader.ContentTypes();
         return l.Return(types);
     }
@@ -146,7 +145,7 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
         var types = withIndexJs.Select(name =>
             {
                 var fullName = name.Substring(FieldFolderPrefix.Length);
-                var niceName = NiceName(name);
+                var niceName = InputTypeNiceName(name);
                 // TODO: use metadata information if available
                 return new InputTypeInfo(fullName, niceName, "Extension Field", "", false,
                     $"{placeholder}/{Constants.FolderAppExtensions}/{name}/{JsFile}", false, "file-system");
@@ -155,10 +154,11 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
         return l.Return(types, $"{types.Count}");
     }
 
-    private static string NiceName(string name)
+    private static string InputTypeNiceName(string name)
     {
         var nameStack = name.Split('-');
-        if (nameStack.Length < 3) return "[Bad Name Format]";
+        if (nameStack.Length < 3)
+            return "[Bad Name Format]";
         // drop "field-" and "string-" or whatever type name is used
         nameStack = nameStack.Skip(2).ToArray();
         var caps = nameStack.Select(n =>
@@ -178,13 +178,17 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
         var dir = new DirectoryInfo(Path);
         if (!dir.Exists) return l.Return([], $"directory do not exist: {dir}");
         var sub = dir.GetDirectories();
-        var subDirs = sub.SelectMany(
-            s => 
-                s.GetDirectories(Constants.AppDataProtectedFolder)
-                    .Where(d => d.Exists)
-                    .SelectMany(a => a.GetDirectories(Constants.FolderSystem)
-                    ).Union(s.GetDirectories(Constants.FolderOldDotData)));
-        var paths = subDirs.Where(d => d.Exists).Select(s => s.FullName).ToList();
+        var subDirs = sub
+            .SelectMany(s => s
+                .GetDirectories(Constants.AppDataProtectedFolder)
+                .Where(d => d.Exists)
+                .SelectMany(a => a.GetDirectories(Constants.FolderSystem))
+                .Union(s.GetDirectories(Constants.FolderOldDotData))
+            );
+        var paths = subDirs
+            .Where(d => d.Exists)
+            .Select(s => s.FullName)
+            .ToList();
         return l.Return(paths, $"OK, paths:{string.Join(";", paths)}");
     }
 

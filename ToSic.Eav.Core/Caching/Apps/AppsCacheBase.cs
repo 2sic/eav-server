@@ -106,11 +106,13 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     #endregion
 
     /// <inheritdoc />
-    public IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools) => GetOrBuild(tools, app);
+    public IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools)
+        => GetOrBuild(tools, app);
 
 
     /// <inheritdoc />
-    public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools) => GetOrBuild(tools, app, primaryLanguage);
+    public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools)
+        => GetOrBuild(tools, app, primaryLanguage);
 
 
     private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string primaryLanguage = null)

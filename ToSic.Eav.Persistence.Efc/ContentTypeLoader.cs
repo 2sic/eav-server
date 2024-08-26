@@ -16,7 +16,7 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
                 return l.Return(dbTypes, "no path");
 
-            var fileTypes = InitFileSystemContentTypes(appReader);
+            var fileTypes = LoadContentTypesFromFileSystem(appReader);
             if (fileTypes == null || fileTypes.Count == 0)
                 return l.Return(dbTypes, "no app file types");
 
@@ -45,7 +45,7 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private IList<IContentType> InitFileSystemContentTypes(IAppReader appReader)
+    private IList<IContentType> LoadContentTypesFromFileSystem(IAppReader appReader)
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         // must create a new loader for each app
@@ -78,9 +78,6 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
         var query = appLoader.Context.ToSicEavAttributeSets
             .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
 
-        var serializer = dataDeserializer.New();
-        serializer.Initialize(appId, [], null);
-
         var contentTypesSql = query
             .Include(set => set.ToSicEavAttributesInSets)
             .ThenInclude(attrs => attrs.Attribute)
@@ -91,6 +88,9 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
 
         sqlTime.Stop();
 
+        var serializer = dataDeserializer.New();
+        serializer.Initialize(appId: appId, types: [], allEntities: null);
+
         var contentTypes = contentTypesSql
             .Select(set => new
             {
@@ -100,19 +100,19 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
                 set.Scope,
                 Attributes = set.ToSicEavAttributesInSets
                     .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
-                    .Select(a => dataBuilder.TypeAttributeBuilder
-                        .Create(appId: appId,
-                            name: a.Attribute.StaticName,
-                            type: ValueTypeHelpers.Get(a.Attribute.Type),
-                            isTitle: a.IsTitle,
-                            id: a.AttributeId,
-                            sortOrder: a.SortOrder,
-                            // #SharedFieldDefinition
-                            // metadata: attrMetadata,
-                            metaSourceFinder: () => source,
-                            guid: a.Attribute.Guid,
-                            sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)
-                        )),
+                    .Select(a => dataBuilder.TypeAttributeBuilder.Create(
+                        appId: appId,
+                        name: a.Attribute.StaticName,
+                        type: ValueTypeHelpers.Get(a.Attribute.Type),
+                        isTitle: a.IsTitle,
+                        id: a.AttributeId,
+                        sortOrder: a.SortOrder,
+                        // #SharedFieldDefinition
+                        // metadata: attrMetadata,
+                        metaSourceFinder: () => source,
+                        guid: a.Attribute.Guid,
+                        sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)
+                    )),
                 IsGhost = set.UsesConfigurationOfAttributeSet,
                 SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
                 AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
@@ -135,19 +135,19 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
             .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
             .ToDictionary(
                 s => s.AttributeSetId,
-                s => s.ToSicEavAttributesInSets.Select(a
-                    => dataBuilder.TypeAttributeBuilder.Create(
-                        appId: appId,
-                        name: a.Attribute.StaticName,
-                        type: ValueTypeHelpers.Get(a.Attribute.Type),
-                        isTitle: a.IsTitle,
-                        id: a.AttributeId,
-                        sortOrder: a.SortOrder,
-                        // Must get own MetaSourceFinder since they come from other apps
-                        metaSourceFinder: () => appStates.Get(s.AppId),
-                        // #SharedFieldDefinition
-                        //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)))
+                s => s.ToSicEavAttributesInSets.Select(a => dataBuilder.TypeAttributeBuilder.Create(
+                    appId: appId,
+                    name: a.Attribute.StaticName,
+                    type: ValueTypeHelpers.Get(a.Attribute.Type),
+                    isTitle: a.IsTitle,
+                    id: a.AttributeId,
+                    sortOrder: a.SortOrder,
+                    // Must get own MetaSourceFinder since they come from other apps
+                    metaSourceFinder: () => appStates.Get(s.AppId),
+                    // #SharedFieldDefinition
+                    //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
+                    sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings))
+                )
             );
         sqlTime.Stop();
 
