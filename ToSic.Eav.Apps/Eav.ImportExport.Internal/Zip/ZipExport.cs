@@ -7,6 +7,7 @@ using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Services;
@@ -19,9 +20,11 @@ public class ZipExport(
     IDataSourcesService dataSourceFactory,
     XmlExporter xmlExporter,
     Generator<FileManager> fileManagerGenerator,
-    IGlobalConfiguration globalConfiguration)
+    IGlobalConfiguration globalConfiguration,
+    IEavFeaturesService features
+    )
     : ServiceBase(EavLogs.Eav + ".ZipExp",
-        connect: [appReaders, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator])
+        connect: [appReaders, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator, features])
 {
     private int _appId;
     private int _zoneId;
@@ -118,15 +121,19 @@ public class ZipExport(
                 Log.Ex(e);
             }
         }
+        else
+            // Verify patron features if they are being used
+            if (resetAppGuid)
+                features.ThrowIfNotEnabled("To skip exporting site files, you must enable system features.", [BuiltInFeatures.AppExportAssetsAdvanced.Guid]);
 
         var xml = xmlExport.GenerateNiceXml();
         File.WriteAllText(Path.Combine(appDataPath, SourceControlDataFile), xml);
     }
 
-    public MemoryStream ExportApp(bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted)
+    public MemoryStream ExportApp(AppExportSpecs specs) // , bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted)
     {
         // generate the XML
-        var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid, assetAdamDeleted);
+        var xmlExport = GenerateExportXml(/* TODO: @STV - change to just use specs object as one parameter */ specs.IncludeContentGroups, specs.ResetAppGuid, specs.AssetAdamDeleted);
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
@@ -163,7 +170,7 @@ public class ZipExport(
                 FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
         // Copy SiteFiles
-        CopyPortalFiles(xmlExport, siteFilesDirectory, assetsAdam, assetsSite);
+        CopyPortalFiles(xmlExport, siteFilesDirectory, specs.AssetsAdam, specs.AssetsSite);
         #endregion
 
         // create tmp App_Data unless exists
@@ -182,8 +189,12 @@ public class ZipExport(
         return stream;
     }
 
-    private static void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory, bool assetsAdam, bool assetsSite)
+    private void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory, bool assetsAdam, bool assetsSite)
     {
+        if (!assetsAdam || !assetsSite)
+            // Verify patron features if they are being used
+            features.ThrowIfNotEnabled("To skip exporting site files, you must enable system features.", [BuiltInFeatures.AppExportAssetsAdvanced.Guid]);
+
         foreach (var file in xmlExport.ReferencedFiles)
         {
             var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(file.RelativePath));
@@ -207,9 +218,9 @@ public class ZipExport(
     }
 
 
-    private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid, bool assetAdamDeleted)
+    private XmlExporter GenerateExportXml(/* TODO: @STV use specs object */ /* AppExportSpecs specs, */ bool includeContentGroups, bool resetAppGuid, bool assetAdamDeleted)
     {
-        // Get Export XML
+            // Get Export XML
         var appIdentity = new AppIdentity(_zoneId, _appId);
         var attributeSets = _appState.ContentTypes.OfScope(includeAttributeTypes: true);
         attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
