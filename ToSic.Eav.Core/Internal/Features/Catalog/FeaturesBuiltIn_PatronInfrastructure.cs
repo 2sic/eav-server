@@ -19,4 +19,15 @@ public partial class BuiltInFeatures
         ForPatronInfrastructureAutoEnabled
     );
 
+    public static readonly Feature SqlLoadPerformance = new(
+        nameof(SqlLoadPerformance),
+        new("f63d8b5f-21aa-4fbd-8e14-5507ff6426a2"),
+        "Improve SQL performance accessing the data base, for example when loading data. Can double the speed of loading data.",
+        false,
+        true,
+        "todo",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronInfrastructureAutoEnabled
+    );
+
 }

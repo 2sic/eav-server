@@ -157,38 +157,34 @@ partial class AppState
         /// </summary>
         /// <param name="newEntity"></param>
         /// <param name="log">To optionally disable logging, in case it would overfill what we're seeing!</param>
-        private void RemoveObsoleteDraft(IEntity newEntity, bool log)
+        private bool RemoveObsoleteDraft(IEntity newEntity, bool log)
         {
             var st = (AppState)AppState;
-            var l = log ? st.Log.Fn() : null;
+            var l = log ? st.Log.Fn<bool>() : null;
             var previous = st.Index.TryGetValue(newEntity.EntityId, out var prev) ? prev : null;
             var draftEnt = st.GetDraft(previous);
 
             // check if we went from draft-branch to published, because in this case, we have to remove the last draft
-            string msg = null;
+            const string noChangePrefix = "remove obsolete draft - no change:";
+
             // if we have previous, then just show a message and exit
-            if (previous == null) msg = "previous is null => new will be added to cache";
+            if (previous == null)
+                return l.ReturnFalse($"{noChangePrefix} previous is null => new will be added to cache");
 
             // if previous wasn't published, so we couldn't have had a branch
-            else if (!previous.IsPublished) msg = "previous not published => new will replace in cache";
+            if (!previous.IsPublished)
+                return l.ReturnFalse($"{noChangePrefix} previous not published => new will replace in cache");
 
             // if new entity isn't published, so we're not switching "back"
-            else if (!newEntity.IsPublished && draftEnt == null) msg = "new copy not published, and no draft exists => new will replace in cache";
-
-            if (msg != null)
-            {
-                l.Done("remove obsolete draft - nothing to change because: " + msg);
-                return;
-            }
+            if (!newEntity.IsPublished && draftEnt == null)
+                return l.ReturnFalse($"{noChangePrefix} new copy not published, and no draft exists => new will replace in cache");
 
             var draftId = draftEnt?.RepositoryId;
-            if (draftId != null)
-            {
-                l.Done($"remove obsolete draft - found draft, will remove {draftId.Value}");
-                st.Index.Remove(draftId.Value);
-            }
-            else
-                l.Done("remove obsolete draft - no draft, won't remove");
+            if (draftId == null)
+                return l.ReturnFalse("remove obsolete draft - no draft, won't remove");
+            
+            st.Index.Remove(draftId.Value);
+            return l.ReturnTrue($"remove obsolete draft - found draft, will remove {draftId.Value}");
         }
 
         /// <summary>
@@ -222,7 +218,6 @@ partial class AppState
         {
             var st = (AppState)AppState;
             var l = Log.Fn($"for a#{st.AppId}");
-            //AppState.RemoveAllItems();
             if (!st.Loading)
                 throw new("trying to init metadata, but not in loading state. set that first!");
             st.Log.A("remove all items");

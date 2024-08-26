@@ -38,9 +38,11 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             AppSyncWithSiteFiles,           // v15
             AppAutoInstallerConfigurable,   // v15
             DataExportImportBundles,        // v15.01
+            AppExportAssetsAdvanced,        // v18
 
             // Patron Infrastructure
             SqlCompressDataTimeline, // v15
+            SqlLoadPerformance,      // v18
 
             // 2sxc 10.24+
             WebFarmCache,

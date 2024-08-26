@@ -1,30 +1,26 @@
-﻿using System.Diagnostics;
-using ToSic.Eav.Apps.Internal;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Data.Build;
+using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-partial class Efc11Loader
+internal class ContentTypeLoader(Efc11Loader dbLoader, Generator<IAppContentTypesLoader> appFileContentTypesLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, IAppStateCacheService appStates)
+    : HelperBase(dbLoader.Log, "Efc.CtLdr")
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Get all ContentTypes for specified AppId. 
-    /// If uses temporary caching, so if called multiple times it loads from a private field.
-    /// </summary>
-    public IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source) 
-        => LoadContentTypesFromDb(appId, source);
-
-
-    private IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)
+    internal IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         try
         {
-            if (string.IsNullOrEmpty(appReader.Specs.Folder)) return l.Return(dbTypes, "no path");
+            if (string.IsNullOrEmpty(appReader.Specs.Folder))
+                return l.Return(dbTypes, "no path");
 
             var fileTypes = InitFileSystemContentTypes(appReader);
-            if (fileTypes == null || fileTypes.Count == 0) return l.Return(dbTypes, "no app file types");
+            if (fileTypes == null || fileTypes.Count == 0)
+                return l.Return(dbTypes, "no app file types");
 
-            Log.A($"Will check {fileTypes.Count} items");
+            l.A($"Will check {fileTypes.Count} items");
 
             // remove previous items with same name, as the "static files" have precedence
             var typeToMerge = dbTypes.ToList();
@@ -33,13 +29,13 @@ partial class Efc11Loader
             typeToMerge.RemoveAll(t => fileTypes.Contains(t, comparer));
             foreach (var fType in fileTypes)
             {
-                Log.A($"Will add {fType.Name}");
+                l.A($"Will add {fType.Name}");
                 typeToMerge.Add(fType);
             }
 
             return l.Return(typeToMerge, $"before {before}, now {typeToMerge.Count} types");
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             return l.Return(dbTypes, "error:" + e.Message);
         }
@@ -51,7 +47,7 @@ partial class Efc11Loader
     /// <returns></returns>
     private IList<IContentType> InitFileSystemContentTypes(IAppReader appReader)
     {
-        var l = Log.Fn<IList<IContentType>>();
+        var l = Log.Fn<IList<IContentType>>(timer: true);
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New().Init(appReader);
         var types = loader.ContentTypes(entitiesSource: appReader.GetCache());
@@ -61,11 +57,11 @@ partial class Efc11Loader
     /// <summary>
     /// Load DB content-types into loader-cache
     /// </summary>
-    private ImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSourceAndExpiring source)
+    internal ImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSourceAndExpiring source)
     {
         // WARNING: 2022-01-18 2dm
         // I believe there is an issue which can pop up from time to time, but I'm not sure if it's only in dev setup
-        // The problem is that content-types and attributes get get metadata from another app
+        // The problem is that content-types and attributes get metadata from another app
         // That app is retrieved once needed - but the object retrieving it is given here (the AppState)
         // There seem to be cases where the following happens much later on:
         // 1. The remote MD comes from an App which hasn't been loaded yet
@@ -79,11 +75,11 @@ partial class Efc11Loader
         var l = Log.Fn<ImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
-        var query = context.ToSicEavAttributeSets
+        var query = dbLoader.Context.ToSicEavAttributeSets
             .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
 
         var serializer = dataDeserializer.New();
-        serializer.Initialize(appId, new List<IContentType>(), null);
+        serializer.Initialize(appId, [], null);
 
         var contentTypesSql = query
             .Include(set => set.ToSicEavAttributesInSets)
@@ -92,6 +88,8 @@ partial class Efc11Loader
             .Include(set => set.UsesConfigurationOfAttributeSetNavigation)
             .ThenInclude(master => master.App)
             .ToList();
+
+        sqlTime.Stop();
 
         var contentTypes = contentTypesSql
             .Select(set => new
@@ -105,7 +103,7 @@ partial class Efc11Loader
                     .Select(a => dataBuilder.TypeAttributeBuilder
                         .Create(appId: appId,
                             name: a.Attribute.StaticName,
-                            type: ValueTypeHelpers.Get(a.Attribute.Type), 
+                            type: ValueTypeHelpers.Get(a.Attribute.Type),
                             isTitle: a.IsTitle,
                             id: a.AttributeId,
                             sortOrder: a.SortOrder,
@@ -124,15 +122,17 @@ partial class Efc11Loader
                     set.AlwaysShareConfiguration,
             })
             .ToList();
-        sqlTime.Stop();
 
-        var shareids = contentTypes.Select(c => c.SharedDefinitionId).ToList();
+        var sharedAttribIds = contentTypes
+            .Select(c => c.SharedDefinitionId)
+            .ToList();
+
         sqlTime.Start();
 
-        var sharedAttribs = context.ToSicEavAttributeSets
+        var sharedAttribs = dbLoader.Context.ToSicEavAttributeSets
             .Include(s => s.ToSicEavAttributesInSets)
             .ThenInclude(a => a.Attribute)
-            .Where(s => shareids.Contains(s.AttributeSetId))
+            .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
             .ToDictionary(
                 s => s.AttributeSetId,
                 s => s.ToSicEavAttributesInSets.Select(a
@@ -164,9 +164,9 @@ partial class Efc11Loader
                 .ToList();
 
             return dataBuilder.ContentType.Create(
-                appId: appId, 
+                appId: appId,
                 name: set.Name,
-                nameId: set.StaticName, 
+                nameId: set.StaticName,
                 id: set.AttributeSetId,
                 scope: set.Scope,
                 parentTypeId: set.IsGhost,
@@ -182,9 +182,10 @@ partial class Efc11Loader
             );
         });
 
-        _sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
+        dbLoader.AddSqlTime(sqlTime.Elapsed);
+        var final = newTypes.ToImmutableList();
 
-        return l.Return(newTypes.ToImmutableList());
+        return l.Return(final, $"{final.Count}");
     }
 
     //private static Func<IHasMetadataSource> GetMetaSourceFinder(IAppStates appStates, IAppIdentity appId)
