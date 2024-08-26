@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Source;
+using ToSic.Eav.Integration;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
@@ -21,27 +22,20 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
 
     #region Dependencies and Constructor
 
-    public class MyServices(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy)
-        : MyServicesBase(connect: [site, fslGenerator, appPathsLazy])
+    public class MyServices(ISite site, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
+        : MyServicesBase(connect: [site, fslGenerator, appPathsLazy, zoneMapper])
     {
         public ISite Site { get; } = site;
         internal Generator<FileSystemLoader> FslGenerator { get; } = fslGenerator;
         internal LazySvc<IAppPathsMicroSvc> AppPathsLazy { get; } = appPathsLazy;
+        public LazySvc<IZoneMapper> ZoneMapper { get; } = zoneMapper;
     }
 
     /// <summary>
     /// DI Constructor
     /// </summary>
     /// <param name="services"></param>
-    public AppFileSystemLoader(MyServices services) : this(services, EavLogs.Eav + ".AppFSL")
-    { }
-
-    /// <summary>
-    /// Inheritance constructor
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="logName"></param>
-    protected AppFileSystemLoader(MyServices services, string logName) : base(services, logName)
+    public AppFileSystemLoader(MyServices services) : base(services, EavLogs.Eav + ".AppFSL")
     { }
 
     #endregion
@@ -54,7 +48,9 @@ public class AppFileSystemLoader: ServiceBase<AppFileSystemLoader.MyServices>, I
     /// since in some cases (e.g. DNN Search) the initial site is not available.
     /// So in that case it overrides the implementation to get the real site just-in-time.
     /// </summary>
-    protected virtual ISite Site => Services.Site;
+    protected virtual ISite Site => _site ??= Services.ZoneMapper.SiteOfAppIfSiteInvalid(Services.Site, AppIdentity.AppId);
+    private ISite _site;
+
     protected IAppIdentity AppIdentity { get; private set; }
     private IAppPaths _appPaths;
 
