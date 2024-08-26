@@ -6,13 +6,9 @@ using ToSic.Eav.Internal.Unknown;
 
 namespace ToSic.Eav.ImportExport.Internal;
 
-internal sealed class XmlExporterUnknown: XmlExporter, IIsUnknown
+internal sealed class XmlExporterUnknown(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, IContextResolver ctxResolver, WarnUseOfUnknown<XmlExporterUnknown> _)
+    : XmlExporter(xmlSerializer, appsCatalog, ctxResolver, LogScopes.NotImplemented), IIsUnknown
 {
-    public XmlExporterUnknown(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, IContextResolver ctxResolver, WarnUseOfUnknown<XmlExporterUnknown> _) 
-        : base(xmlSerializer, appsCatalog, ctxResolver, LogScopes.NotImplemented)
-    {
-    }
-
     protected override void PostContextInit(IContextOfApp appContext)
     {
         /* do nothing */

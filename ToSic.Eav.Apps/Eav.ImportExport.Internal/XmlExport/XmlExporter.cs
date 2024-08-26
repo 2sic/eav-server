@@ -25,8 +25,9 @@ public abstract class XmlExporter(
     XmlSerializer xmlSerializer,
     IAppsCatalog appsCatalog,
     IContextResolver contextResolver,
-    string logPrefix)
-    : ServiceBase(logPrefix + "XmlExp", connect: [appsCatalog, xmlSerializer, contextResolver])
+    string logPrefix,
+    object[] connect = default)
+    : ServiceBase(logPrefix + "XmlExp", connect: [..connect ?? [], appsCatalog, xmlSerializer, contextResolver])
 {
 
     #region simple properties
