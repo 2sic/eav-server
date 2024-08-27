@@ -45,7 +45,7 @@ public abstract class XmlExporter(
 
     private string _appStaticName = "";
     private AppExportSpecs _specs;
-    private List<string> _compressedEntityGuids = [];
+    private List<string> _foldersForEntitiesThatAreNotDeleted = [];
     #endregion
 
     #region Constructor & DI
@@ -248,7 +248,7 @@ public abstract class XmlExporter(
         // init files (add to queue)
         AddFilesToExportQueue();
 
-        GetEntityGuidsCompressed(entities);
+        GetFoldersForEntitiesThatAreNotDeleted(entities);
 
         // Create root node "SexyContent" and add ContentTypes, ContentItems and Templates
         doc.Add(new XElement(XmlConstants.RootNode,
@@ -263,20 +263,31 @@ public abstract class XmlExporter(
             GetFoldersXElements()));
     }
 
-    private void GetEntityGuidsCompressed(XElement entities)
+    /// <summary>
+    /// Prepare list of possible discriminators for folder names in adam/app for assets of entities that are not deleted, to be exported with entity.
+    /// Folders in adam/app that are not in this list are likely related to deleted entity, and probably can be skipped from export
+    /// to keep size of export zips as small as possible and to not export unnecessary files.
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <remarks>
+    /// GetFilesXElements and GetFoldersXElements depends on it.
+    /// </remarks>
+    private void GetFoldersForEntitiesThatAreNotDeleted(XElement entities)
     {
+        // when export includes deleted assets, there is no need to check for deleted entities
+        // so skip preparation of list of possible discriminators for folder names in adam/app
         if (_specs.AssetAdamDeleted)
         {
-            _compressedEntityGuids = [];
+            _foldersForEntitiesThatAreNotDeleted = [];
             return;
         }
 
-        // get list of compressed EntityGuids from Entities
-        // (for files/folders validation that we are not exporting files that from deleted entities)
+        // prepare list of compressed EntityGuids for Entities (that are not deleted)
+        // to be used for validation of folders in adam/app for assets of entities that are not deleted
         var entityGuids = entities.Elements(XmlConstants.Entity).Select(e => (e.Attribute("EntityGUID"))?.Value).ToList();
         foreach (var entityGuid in entityGuids)
             if (Guid.TryParse(entityGuid, out var guid)) 
-                _compressedEntityGuids.Add(guid.GuidCompress());
+                _foldersForEntitiesThatAreNotDeleted.Add(guid.GuidCompress());
     }
 
     private XElement GetParentAppXElement()
@@ -357,8 +368,7 @@ public abstract class XmlExporter(
     {
         var file = ResolveFile(fileId);
 
-        // folder is not in list of entities
-        if (!ValidFolderPath(file?.RelativePath)) return null;
+        if (IsDeletedOrInvalid(file?.RelativePath)) return null;
 
         ReferencedFiles.Add(file);
 
@@ -374,7 +384,7 @@ public abstract class XmlExporter(
     {
         var path = ResolveFolderId(folderId);
 
-        if (!ValidFolderPath(path)) return null;
+        if (IsDeletedOrInvalid(path)) return null;
 
         return new(XmlConstants.Folder,
             new XAttribute(XmlConstants.FolderNodeId, folderId),
@@ -382,17 +392,32 @@ public abstract class XmlExporter(
         );
     }
 
-    private bool ValidFolderPath(string relativePath)
+    /// <summary>
+    /// Checks if the asset path is invalid or belongs to deleted entity
+    /// </summary>
+    /// <param name="relativePath">The relative path of the asset.</param>
+    /// <returns>True if the asset path is invalid or belongs to deleted entity, otherwise false.</returns>
+    private bool IsDeletedOrInvalid(string relativePath)
     {
-        if (relativePath == null) return false;
+        // invalid, can't export assets without path
+        if (relativePath == null) return true;
 
-        if (!relativePath.StartsWith("adam")) return true;
+        // skip check for deleted assets and just leave it for export
+        if (_specs.AssetAdamDeleted) return false;
 
-        var pathParts = relativePath.ForwardSlash().Split('/');
-        if (pathParts.Length < 3) return true;
-        
-        return _specs.AssetAdamDeleted // export all including deleted
-            || _compressedEntityGuids.Any(f => f == pathParts[2]); // OR ensure that folder is in list of exported entities
+        // if not in "adam" folder, we can't know is it deleted or not, so leave it for export
+        // this is expected for site assets
+        if (!relativePath.StartsWith("adam")) return false;
+
+        // break adam path to parts,
+        // this is necessary to check if it's in discriminator list of possible folders for entities that are not deleted
+        var pathParts = relativePath.ForwardSlash().Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+
+        // always export parent folders for entity assets (eg adam/app/)
+        if (pathParts.Length < 3) return false;
+
+        // check if folder is in list of possible entities that are not deleted
+        return _foldersForEntitiesThatAreNotDeleted.All(f => f != pathParts[2]);
     }
     #endregion
 
