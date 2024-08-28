@@ -13,13 +13,10 @@ public interface IAppInternalsController
     /// Consolidates 9 related requests in one request.
     /// </summary>
     /// <param name="appId"></param>
-    /// <param name="targetType"></param>
-    /// <param name="keyType"></param>
-    /// <param name="key"></param>
     /// <returns></returns>
     /// <remarks>
     /// Needs edit-permissions, as the item-list can also be accessed from the toolbar in certain cases.
     /// Will do permission checks internally.
     /// </remarks>
-    AppInternalsDto Get(int appId, int targetType, string keyType, string key);
+    AppInternalsDto Get(int appId);
 }

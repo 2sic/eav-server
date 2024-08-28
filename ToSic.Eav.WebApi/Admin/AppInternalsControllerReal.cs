@@ -20,7 +20,7 @@ public class AppInternalsControllerReal(
     public const string LogSuffix = "AppInternals";
 
     /// <inheritdoc/>
-    public AppInternalsDto Get(int appId, int targetType, string keyType, string key)
+    public AppInternalsDto Get(int appId)
     {
         var systemConfiguration = TypeListInternal(appId, Scopes.SystemConfiguration).ToList();
         var settingsCustomExists = systemConfiguration.Any(ct => ct.Name == "SettingsCustom");
