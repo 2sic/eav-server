@@ -131,7 +131,7 @@ public class EfcAppLoader(
 
         var l = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
         var appIdentity = appsCatalog.AppIdentity(appId);
-        var appGuidName = appsCatalog.AppNameId(appIdentity.ZoneId, appIdentity.AppId);
+        var appGuidName = appsCatalog.AppNameId(appIdentity);
         logStoreEntry.AddSpec("App", $"{appIdentity.Show()}");
         logStoreEntry.AddSpec("App NameId", appGuidName);
         codeRefTrail.WithHere().AddMessage($"App: {appId}, {nameof(appGuidName)}: '{appGuidName}'");
@@ -183,8 +183,8 @@ public class EfcAppLoader(
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
-                var nameAndFolder = PreLoadAppPath(state.AppId);
-                builder.SetNameAndFolder(nameAndFolder.Name, nameAndFolder.Path);
+                var (name, path) = PreLoadAppPath(state.AppId);
+                builder.SetNameAndFolder(name, path);
             }
             else
                 l.A("skipping metadata load");

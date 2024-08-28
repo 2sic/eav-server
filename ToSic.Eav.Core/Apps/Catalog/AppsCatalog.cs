@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-using ToSic.Eav.Caching;
+﻿using ToSic.Eav.Caching;
 
 namespace ToSic.Eav.Apps.Catalog;
 
@@ -13,10 +12,6 @@ internal class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
 {
     internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
 
-    /// <inheritdoc />
-    public IAppStateCache Get(IAppIdentity app)
-        => AppsCacheSwitch.Value.Get(app, AppsCacheSwitch.AppLoaderTools);
-
     public IAppIdentityPure AppIdentity(int appId)
         => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, AppsCacheSwitch.AppLoaderTools), appId);
 
@@ -26,8 +21,8 @@ internal class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
     public IAppIdentityPure DefaultAppIdentity(int zoneId)
         => new AppIdentityPure(zoneId, DefaultAppId(zoneId));
 
-    public string AppNameId(int zoneId, int appId)
-        => Zones[zoneId].Apps[appId];
+    public string AppNameId(IAppIdentity appIdentity)
+        => Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
 
     public int DefaultAppId(int zoneId)
         => Zones[zoneId].DefaultAppId;
