@@ -29,7 +29,8 @@ public class DataTypes
             return ValueTypes.Number;
         if (value is bool)
             return ValueTypes.Boolean;
-        if (value is Guid || value is List<Guid> || value is List<Guid?> || value is List<int> ||
+        // 2024-08-28 2bf disabled Guid because external DataSource may have Guids and 2sxc uses Guid only in lists
+        if (/* value is Guid || */ value is List<Guid> || value is List<Guid?> || value is List<int> ||
             value is List<int?>)
             return ValueTypes.Entity;
         if (value is int[] || value is int?[])
