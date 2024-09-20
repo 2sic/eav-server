@@ -31,6 +31,8 @@ internal class UiData(IEavFeaturesService features, IUser user) : IUiData
             .OrderBy(f => f.NameId)
             .ToList();
 
-    public IList<FeatureDto> FeaturesDto(bool userHasPublishRights)
-        => Features(userHasPublishRights).Select(f => new FeatureDto(f)).ToList();
+    public IList<FeatureDto> FeaturesDto(bool userHasPublishRights, bool forSystemTypes)
+        => Features(userHasPublishRights)
+            .Select(f => new FeatureDto(f, forSystemTypes))
+            .ToList();
 }

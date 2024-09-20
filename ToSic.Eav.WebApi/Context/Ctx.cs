@@ -13,6 +13,7 @@
     System = 1 << 6,
     User = 1 << 7,
     Features = 1 << 8,
+    FeaturesForSystemTypes = 1 << 9,
     All = AppBasic | AppEdit | AppAdvanced | Language | Page | Site | System | User | Features,
     General = AppBasic | AppEdit | AppAdvanced | Language | Page | Site | System | User | Features,
 }

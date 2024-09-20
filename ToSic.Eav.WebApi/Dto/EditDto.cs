@@ -32,11 +32,6 @@ public class EditDto
     public bool DraftShouldBranch = false;
 
     /// <summary>
-    /// List of system features the UI should know about
-    /// </summary>
-    public IList<FeatureState> Features;
-
-    /// <summary>
     /// Experimental additional data for configuration
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

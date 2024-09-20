@@ -137,7 +137,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         }
     }
 
-    public bool Add(string key, object value, CacheItemPolicy policy) => Cache.Add(key, value, policy);
+    //public bool Add(string key, object value, CacheItemPolicy policy) => Cache.Add(key, value, policy);
 
     /// <summary>
     /// Used to create cache item dependency on other cache items

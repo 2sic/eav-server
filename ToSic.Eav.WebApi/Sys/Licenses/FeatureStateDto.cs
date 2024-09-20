@@ -3,11 +3,8 @@ using ToSic.Eav.WebApi.Context;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses;
 
-public class FeatureStateDto(FeatureState state) : FeatureDto(state)
+public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
 {
-    //License = state.License?.Name;
-    //LicenseEnabled = state.AllowedByLicense;
-
     [JsonPropertyName("guid")]
     public Guid Guid => state.Aspect.Guid;
 
@@ -29,16 +26,8 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state)
     [JsonPropertyName("expiration")]
     public DateTime Expiration => state.Expiration;
 
-    //public string License { get; }
-
-    //public bool LicenseEnabled { get; }
-
     [JsonPropertyName("security")]
     public FeatureSecurity Security => state.Security;
-
-    //public bool Public { get; }
-
-    //public bool Ui { get; }
 
     [JsonPropertyName("link")]
     public string Link => state.Aspect.Link;

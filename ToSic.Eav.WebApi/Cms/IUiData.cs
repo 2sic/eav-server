@@ -15,5 +15,5 @@ public interface IUiData
     /// </summary>
     IList<FeatureState> Features(IMultiPermissionCheck permCheck);
 
-    IList<FeatureDto> FeaturesDto(bool userHasPublishRights);
+    IList<FeatureDto> FeaturesDto(bool userHasPublishRights, bool forSystemTypes);
 }

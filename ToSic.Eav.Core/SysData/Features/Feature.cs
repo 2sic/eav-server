@@ -14,8 +14,10 @@ public class Feature(
     bool ui,
     string description,
     FeatureSecurity security,
-    IEnumerable<FeatureLicenseRule> licRules)
-    : Aspect(nameId, guid, name, description)
+    IEnumerable<FeatureLicenseRule> licRules,
+    bool enableForSystemTypes = false,
+    FeatureDisabledBehavior disabledBehavior = FeatureDisabledBehavior.Disable
+): Aspect(nameId, guid, name, description)
 {
     #region Constructors
 
@@ -77,4 +79,8 @@ public class Feature(
     internal IReadOnlyList<FeatureLicenseRule> LicenseRules { get; } = CreateLicenseRules(licRules, nameId, guid); // must run at the end, as properties are needed
 
     public Requirement Requirement { get; } = new(ConditionIsFeature, nameId);
+
+    public bool EnableForSystemTypes { get; } = enableForSystemTypes;
+
+    public FeatureDisabledBehavior DisabledBehavior { get; } = disabledBehavior;
 }

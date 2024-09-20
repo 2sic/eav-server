@@ -16,7 +16,8 @@ public partial class BuiltInFeatures
         true,
         "Allow editors to translate the content using Google Translate. Important: Requires a Google Translate Key and some initial setup.",
         FeaturesCatalogRules.Security0Neutral,
-        ForPatronAdvancedCmsAutoEnabled
+        ForPatronAdvancedCmsAutoEnabled,
+        disabledBehavior: FeatureDisabledBehavior.Nag
     );
         
     public static readonly Feature LanguagesAdvancedFallback = new(
@@ -38,7 +39,9 @@ public partial class BuiltInFeatures
         true,
         "Enable Field Sharing Management directly in the UI.",
         FeaturesCatalogRules.Security0Neutral,
-        ForPatronAdvancedCmsAutoEnabled
+        ForPatronAdvancedCmsAutoEnabled,
+        enableForSystemTypes: true,
+        disabledBehavior: FeatureDisabledBehavior.Warn
     );
 
     public static readonly Feature CopyrightManagement = new(
@@ -50,6 +53,45 @@ public partial class BuiltInFeatures
         "If enabled, Copyright Management will appear in image toolbars and in future do more. ",
         FeaturesCatalogRules.Security0Neutral,
         ForPatronAdvancedCmsAutoEnabled
+    );
+
+    public static readonly Feature PickerUiCheckbox = new(
+        nameof(PickerUiCheckbox),
+        new("620c1a1d-5724-40af-a23a-15f2812acbb6"),
+        "Picker UI with Checkboxes",
+        isPublic: false,
+        ui: true,
+        description: "Enables the UI to use checkboxes for selecting values, instead of just dropdowns.",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronAdvancedCmsAutoEnabled,
+        enableForSystemTypes: true,
+        disabledBehavior: FeatureDisabledBehavior.Warn
+    );
+
+    public static readonly Feature PickerUiRadio = new(
+        nameof(PickerUiRadio),
+        new("2143351b-2997-476e-b9e3-5b792e05c2a4"),
+        "Picker UI with Radio Buttons",
+        isPublic: false,
+        ui: true,
+        description: "Enables the UI to use radio buttons for selecting values, instead of just dropdowns.",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronAdvancedCmsAutoEnabled,
+        enableForSystemTypes: true,
+        disabledBehavior: FeatureDisabledBehavior.Warn
+    );
+
+    public static readonly Feature PickerSourceCsv = new(
+        nameof(PickerSourceCsv),
+        new("2079c3c0-fb11-40e9-b3f2-53a70e8cea10"),
+        "Picker source using CSV table",
+        false,
+        true,
+        "Allows developers to use simple CSV tables as a data-source for pickers.",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronAdvancedCmsAutoEnabled,
+        enableForSystemTypes: true,
+        disabledBehavior: FeatureDisabledBehavior.Warn
     );
 
 }
