@@ -1,11 +1,17 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTypesLoader> appFileContentTypesLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, IAppStateCacheService appStates)
+internal class ContentTypeLoader(
+    EfcAppLoader appLoader,
+    Generator<IAppContentTypesLoader> appFileContentTypesLoader,
+    Generator<IDataDeserializer> dataDeserializer,
+    DataBuilder dataBuilder,
+    IAppStateCacheService appStates)
     : HelperBase(appLoader.Log, "Efc.CtLdr")
 {
     internal IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)
@@ -123,16 +129,23 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
             })
             .ToList();
 
-        var sharedAttribIds = contentTypes
-            .Where(c => c.SharedDefinitionId.HasValue)
-            .Select(c => c.SharedDefinitionId.Value)
-            .ToList();
+        var optimize = appLoader.Features.IsEnabled(BuiltInFeatures.SqlLoadPerformance);
+
+        // Filter out Nulls, as they are not relevant and cause problems with Entity Framework 8.0.8
+        var sharedAttribIds = optimize
+            ? contentTypes
+                .Where(c => c.SharedDefinitionId.HasValue)
+                .Select(c => c.SharedDefinitionId.Value)
+                .ToList()
+            : contentTypes
+                .Select(c => c.SharedDefinitionId ?? -1)
+                .ToList();
 
         sqlTime.Start();
 
-        Dictionary<int, IEnumerable<ContentTypeAttribute>> sharedAttribs;
-        if (sharedAttribIds.Any())
-            sharedAttribs = appLoader.Context.ToSicEavAttributeSets
+        var sharedAttribs = optimize && !sharedAttribIds.Any()
+            ? new()
+            : appLoader.Context.ToSicEavAttributeSets
                 .Include(s => s.ToSicEavAttributesInSets)
                 .ThenInclude(a => a.Attribute)
                 .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
@@ -152,8 +165,6 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
                         sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings))
                     )
                 );
-        else
-            sharedAttribs = new Dictionary<int, IEnumerable<ContentTypeAttribute>>();
 
         sqlTime.Stop();
 
@@ -194,6 +205,4 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
         return l.Return(final, $"{final.Count}");
     }
 
-    //private static Func<IHasMetadataSource> GetMetaSourceFinder(IAppStates appStates, IAppIdentity appId)
-    //    => () => appStates.Get(appId);
 }

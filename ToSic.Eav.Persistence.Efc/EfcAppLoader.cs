@@ -21,7 +21,7 @@ public class EfcAppLoader(
     IAppsCatalog appsCatalog,
     IAppStateCacheService appStates,
     ILogStore logStore,
-    IEavFeaturesService featuresService,
+    IEavFeaturesService features,
     DataBuilder dataBuilder,
     Generator<IDataDeserializer> dataDeserializer,
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
@@ -29,7 +29,7 @@ public class EfcAppLoader(
     : ServiceBase("Db.Efc11",
         connect:
         [
-            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, featuresService, dataBuilder,
+            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, features, dataBuilder,
             dataDeserializer, appFileContentTypesLoader, appStateBuilder
         ]), IRepositoryLoader
 {
@@ -80,6 +80,8 @@ public class EfcAppLoader(
             .LoadContentTypesFromDb(appId, source);
 
     #endregion
+
+    internal IEavFeaturesService Features = features;
 
     #region AppPackage Loader
 
@@ -144,7 +146,7 @@ public class EfcAppLoader(
         if (ancestorAppId != 0)
         {
             // Check if feature is enabled #SharedAppFeatureEnabled
-            if (!featuresService.IsEnabled(BuiltInFeatures.SharedApps))
+            if (!Features.IsEnabled(BuiltInFeatures.SharedApps))
                 throw new FeaturesDisabledException(BuiltInFeatures.SharedApps.NameId,
                     $"This is required to load shared app states. " +
                     $"The App {appIdentity.Show()} has an ancestor {ancestorAppId}. " +
@@ -255,7 +257,7 @@ public class EfcAppLoader(
         try
         {
             // Get all Entities in the 2SexyContent-App scope
-            var entityLoader = new EntityLoader(this, featuresService, dataDeserializer, dataBuilder);
+            var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder);
             var dbEntity = entityLoader.LoadRaw(appId, [], AppLoadConstants.TypeAppConfig);
             if (dbEntity.Count == 0)
                 return l.Return(nullTuple, "not in db");
@@ -294,7 +296,7 @@ public class EfcAppLoader(
 
     internal void LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds = null)
     {
-        var entityLoader = new EntityLoader(this, featuresService, dataDeserializer, dataBuilder);
+        var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder);
         var entitySqlTime = entityLoader.LoadEntities(builder, codeRefTrail, entityIds);
         AddSqlTime(entitySqlTime);
     }
