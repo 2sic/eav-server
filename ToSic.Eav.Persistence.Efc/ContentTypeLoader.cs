@@ -124,31 +124,37 @@ internal class ContentTypeLoader(EfcAppLoader appLoader, Generator<IAppContentTy
             .ToList();
 
         var sharedAttribIds = contentTypes
-            .Select(c => c.SharedDefinitionId)
+            .Where(c => c.SharedDefinitionId.HasValue)
+            .Select(c => c.SharedDefinitionId.Value)
             .ToList();
 
         sqlTime.Start();
 
-        var sharedAttribs = appLoader.Context.ToSicEavAttributeSets
-            .Include(s => s.ToSicEavAttributesInSets)
-            .ThenInclude(a => a.Attribute)
-            .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
-            .ToDictionary(
-                s => s.AttributeSetId,
-                s => s.ToSicEavAttributesInSets.Select(a => dataBuilder.TypeAttributeBuilder.Create(
-                    appId: appId,
-                    name: a.Attribute.StaticName,
-                    type: ValueTypeHelpers.Get(a.Attribute.Type),
-                    isTitle: a.IsTitle,
-                    id: a.AttributeId,
-                    sortOrder: a.SortOrder,
-                    // Must get own MetaSourceFinder since they come from other apps
-                    metaSourceFinder: () => appStates.Get(s.AppId),
-                    // #SharedFieldDefinition
-                    //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                    sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings))
-                )
-            );
+        Dictionary<int, IEnumerable<ContentTypeAttribute>> sharedAttribs;
+        if (sharedAttribIds.Any())
+            sharedAttribs = appLoader.Context.ToSicEavAttributeSets
+                .Include(s => s.ToSicEavAttributesInSets)
+                .ThenInclude(a => a.Attribute)
+                .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
+                .ToDictionary(
+                    s => s.AttributeSetId,
+                    s => s.ToSicEavAttributesInSets.Select(a => dataBuilder.TypeAttributeBuilder.Create(
+                        appId: appId,
+                        name: a.Attribute.StaticName,
+                        type: ValueTypeHelpers.Get(a.Attribute.Type),
+                        isTitle: a.IsTitle,
+                        id: a.AttributeId,
+                        sortOrder: a.SortOrder,
+                        // Must get own MetaSourceFinder since they come from other apps
+                        metaSourceFinder: () => appStates.Get(s.AppId),
+                        // #SharedFieldDefinition
+                        //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
+                        sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings))
+                    )
+                );
+        else
+            sharedAttribs = new Dictionary<int, IEnumerable<ContentTypeAttribute>>();
+
         sqlTime.Stop();
 
         // Convert to ContentType-Model
