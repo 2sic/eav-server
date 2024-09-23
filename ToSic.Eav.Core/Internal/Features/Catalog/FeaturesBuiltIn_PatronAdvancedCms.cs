@@ -87,7 +87,7 @@ public partial class BuiltInFeatures
         "Picker source using CSV table",
         false,
         true,
-        "Allows developers to use simple CSV tables as a data-source for pickers.",
+        "Allows developers to use simple CSV tables as a data-source for pickers. This is especially useful to add more info, links, tooltips etc.",
         FeaturesCatalogRules.Security0Neutral,
         ForPatronAdvancedCmsAutoEnabled,
         enableForSystemTypes: true,
@@ -117,7 +117,7 @@ public partial class BuiltInFeatures
         FeaturesCatalogRules.Security0Neutral,
         ForPatronAdvancedCmsAutoEnabled,
         enableForSystemTypes: true,
-        disabledBehavior: FeatureDisabledBehavior.Warn
+        disabledBehavior: FeatureDisabledBehavior.Downgrade
     );
 
 }
