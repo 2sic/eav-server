@@ -107,4 +107,17 @@ public partial class BuiltInFeatures
         disabledBehavior: FeatureDisabledBehavior.Warn
     );
 
+    public static readonly Feature PickerUiMoreInfo = new(
+        nameof(PickerUiMoreInfo),
+        new("e5014b5a-2b61-47a4-b36a-77cb4f043c5a"),
+        "Picker UI More Info",
+        false,
+        true,
+        "Enable the use of tooltips, links and more with picker fields.",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronAdvancedCmsAutoEnabled,
+        enableForSystemTypes: true,
+        disabledBehavior: FeatureDisabledBehavior.Warn
+    );
+
 }
