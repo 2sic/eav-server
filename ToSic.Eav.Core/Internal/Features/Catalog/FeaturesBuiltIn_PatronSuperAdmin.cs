@@ -45,10 +45,10 @@ public partial class BuiltInFeatures
     public static readonly Feature AppExportAssetsAdvanced = new(
         nameof(AppExportAssetsAdvanced),
         new("653cb9b6-05a5-4a72-a1c6-141d2b4ae3db"),
-        "More control what is exported when exporting Apps.",
+        "Full control what asses are exported with an App.",
         false,
         false,
-        "Export Data (Content-Types, Entities) as bundles for repeatable batch export/import.",
+        "Choose what assets are exported together with an App - so you can exclude certain assets or even skip assets of deleted entities.",
         FeaturesCatalogRules.Security0Neutral,
         ForPatronSuperAdminAutoEnabled
     );
