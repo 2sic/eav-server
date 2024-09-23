@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
 {
@@ -28,7 +29,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         {
             // call init to get loader etc. ready
             base.Init();
-            _zones = Loader.Zones();
+            _zones = (Loader as IRepositoryLoader).Zones();
             _defaultAppId = _zones.First().Value.DefaultAppId;
             _appsInHomeZone = _zones[ZoneHome].Apps;
         }
@@ -36,7 +37,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
 
         private IDictionary<int, Zone> _zones;
         private int _defaultAppId;
-        private Dictionary<int, string> _appsInHomeZone;
+        private IReadOnlyDictionary<int, string> _appsInHomeZone;
 
         [TestMethod]
         public void ZonesWithAndWithoutLanguages()

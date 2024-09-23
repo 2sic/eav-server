@@ -32,7 +32,7 @@ public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamp
     /// <param name="items">A direct list of items to use as metadata - instead of lazy-loading from a source. If specified, auto-sync will be disabled.</param>
     /// <param name="appSource"></param>
     /// <param name="deferredSource"></param>
-    public MetadataOf(int targetType, T key, string title, IReadOnlyCollection<IEntity> items = default, IHasMetadataSource appSource = default, Func<IHasMetadataSource> deferredSource = default)
+    public MetadataOf(int targetType, T key, string title, IReadOnlyCollection<IEntity> items = default, IHasMetadataSourceAndExpiring appSource = default, Func<IHasMetadataSourceAndExpiring> deferredSource = default)
     {
         _targetType = targetType;
         Key = key;
@@ -40,7 +40,7 @@ public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamp
         Source = new(items == null ? null : new ImmutableEntitiesSource(items.ToImmutableList()), appSource, deferredSource);
     }
 
-    protected VariableSource<IHasMetadataSource> Source { get; }
+    protected VariableSource<IHasMetadataSourceAndExpiring> Source { get; }
 
     #endregion
 
@@ -91,7 +91,7 @@ public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamp
     #region Context for data to be created
 
     public IAppIdentity Context(string type) => GetMetadataSource();
-    public (int TargetType, List<IEntity> list, IHasMetadataSource appSource, Func<IHasMetadataSource> deferredSource) GetCloneSpecs() 
+    public (int TargetType, List<IEntity> list, IHasMetadataSourceAndExpiring appSource, Func<IHasMetadataSourceAndExpiring> deferredSource) GetCloneSpecs() 
         => (_targetType, Source.SourceDirect?.List?.ToList(), Source.SourceApp, Source.SourceDeferred);
 
     #endregion

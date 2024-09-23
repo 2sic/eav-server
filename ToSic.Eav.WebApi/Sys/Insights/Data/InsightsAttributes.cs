@@ -3,7 +3,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAttributes(LazySvc<IAppStates> appStates) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
+internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
 {
     public static string Link = "Attributes";
 
@@ -15,7 +15,7 @@ internal class InsightsAttributes(LazySvc<IAppStates> appStates) : InsightsProvi
             return message;
 
         Log.A($"debug app attributes for {AppId} and {Type}");
-        var typ = appStates.Value.GetReader(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
 
         var msg = "" + H1($"Attributes for {typ.Name} ({typ.NameId}) in {AppId}\n");
         try

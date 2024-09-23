@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
+using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
@@ -59,38 +59,36 @@ public sealed class Apps: CustomDataSource
     /// Constructs a new Apps DS
     /// </summary>
     [PrivateApi]
-    public Apps(MyServices services, IAppStates appStates) : base(services, $"{LogPrefix}.Apps")
+    public Apps(MyServices services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : base(services, $"{LogPrefix}.Apps")
     {
-        ConnectLogs([appStates]);
+        ConnectLogs([appsCatalog, appReaders]);
         ProvideOutRaw(
-            () => GetDefault(appStates),
+            () => GetDefault(appsCatalog, appReaders),
             options: () => new(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
         );
     }
 
     #endregion
 
-    private IEnumerable<IRawEntity> GetDefault(IAppStates appStates) => Log.Func(l =>
+    private IEnumerable<IRawEntity> GetDefault(IAppsCatalog appsCatalog, IAppReaderFactory appReaders) => Log.Func(l =>
     {
         // try to load the content-type - if it fails, return empty list
-        var allZones = appStates.Zones;
-        if (!allZones.ContainsKey(OfZoneId)) 
+        var allZones = appsCatalog.Zones;
+        if (!allZones.TryGetValue(OfZoneId, out var zone)) 
             return (EmptyRawList,"fails load content-type");
-            
-        var zone = allZones[OfZoneId];
 
         var list = zone.Apps
             .OrderBy(a => a.Key)
             .Select(app =>
             {
-                IAppState appState = null;
+                IAppSpecs appSpecs = null;
                 Guid? guid = null;
                 string error = null;
                 try
                 {
-                    appState = appStates.GetReader(new AppIdentityPure(zone.ZoneId, app.Key));
+                    appSpecs = appReaders.Get(new AppIdentityPure(zone.ZoneId, app.Key)).Specs;
                     // this will get the guid, if the identity is not "default"
-                    if (Guid.TryParse(appState.NameId, out var g)) guid = g;
+                    if (Guid.TryParse(appSpecs.NameId, out var g)) guid = g;
                 }
                 catch (Exception ex)
                 {
@@ -101,9 +99,9 @@ public sealed class Apps: CustomDataSource
                 var appEnt = new Dictionary<string, object>
                 {
                     { AppType.Id.ToString(), app.Key },
-                    { AppType.Name.ToString(), appState?.Name ?? "error - can't lookup name" },
-                    { AppType.Folder.ToString(), appState?.Folder ?? "" },
-                    { AppType.IsHidden.ToString(), appState?.Configuration.IsHidden ?? false },
+                    { AppType.Name.ToString(), appSpecs?.Name ?? "error - can't lookup name" },
+                    { AppType.Folder.ToString(), appSpecs?.Folder ?? "" },
+                    { AppType.IsHidden.ToString(), appSpecs?.Configuration.IsHidden ?? false },
                     { AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId },
                     { AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId },
                 };

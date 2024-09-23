@@ -20,7 +20,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         ContentTypeAttributeSysSettings sysSettings = default, // #SharedFieldDefinition
         IMetadataOf metadata = default,
         List<IEntity> metadataItems = default,
-        Func<IHasMetadataSource> metaSourceFinder = null)
+        Func<IHasMetadataSourceAndExpiring> metaSourceFinder = null)
     {
         metadata ??= new ContentTypeAttributeMetadata(key: id, name: name, type: type,
             sysSettings: sysSettings, items: metadataItems, deferredSource: metaSourceFinder);
@@ -40,7 +40,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         int? sortOrder = default,
         IMetadataOf metadata = default,
         List<IEntity> metadataItems = default,
-        Func<IHasMetadataSource> metaSourceFinder = null
+        Func<IHasMetadataSourceAndExpiring> metaSourceFinder = null
     )
     {
         // Prepare parts which we also need for new Metadata Creation

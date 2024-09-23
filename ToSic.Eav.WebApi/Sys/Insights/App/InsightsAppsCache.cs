@@ -1,10 +1,12 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAppsCache(LazySvc<IAppStates> appStates): InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
+internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IAppStateCacheService> appStates, LazySvc<IAppReaderFactory> appReaders)
+    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appsCatalog, appStates, appReaders])
 {
     public static string Link = "AppsCache";
 
@@ -12,7 +14,7 @@ internal class InsightsAppsCache(LazySvc<IAppStates> appStates): InsightsProvide
     {
         var msg = H1("Apps In Cache").ToString();
 
-        var zones = appStates.Value.Zones.OrderBy(z => z.Key);
+        var zones = appsCatalog.Value.Zones.OrderBy(z => z.Key);
 
         msg += "<table id='table'>"
                + InsightsHtmlTable.HeadFields("Zone ↕", "App ↕", Eav.Data.Attributes.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")
@@ -25,21 +27,22 @@ internal class InsightsAppsCache(LazySvc<IAppStates> appStates): InsightsProvide
                 {
                     var appIdentity = new AppIdentity(zone.Value.ZoneId, a.Key);
                     var inCache = appStates.Value.IsCached(appIdentity);
-                    var appState = inCache ? appStates.Value.GetReader(appIdentity) : null;
+                    var appReader = inCache ? appReaders.Value.Get(appIdentity) : null;
+                    var appState = inCache ? appStates.Value.Get(appIdentity) : null;
                     return new
                     {
                         Id = a.Key,
                         Guid = a.Value,
                         InCache = inCache,
                         Name = inCache
-                            ? appState?.Name ?? "unknown, app-infos not json"
+                            ? appReader?.Specs.Name ?? "unknown, app-infos not json"
                             : "not-loaded",
                         Folder = inCache
-                            ? appState?.Folder ?? "unknown, app-infos not json"
+                            ? appReader?.Specs.Folder ?? "unknown, app-infos not json"
                             : "not-loaded",
-                        Hash = appState?.StateCache?.GetHashCode(),
-                        TS = appState?.StateCache?.CacheTimestamp,
-                        ListTs = appState?.ListCache?.CacheTimestamp,
+                        Hash = appState?.GetHashCode(),
+                        TS = appState?.CacheTimestamp,
+                        ListTs = appState?.CacheTimestamp,
                     };
                 })
                 .OrderBy(a => a.Id);

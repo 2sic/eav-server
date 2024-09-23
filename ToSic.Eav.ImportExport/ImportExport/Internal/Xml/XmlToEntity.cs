@@ -10,23 +10,15 @@ namespace ToSic.Eav.ImportExport.Internal.Xml;
 /// Import EAV Data from XML Format
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class XmlToEntity: ServiceBase
+public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
+    : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, appReaders])
 {
     private class TargetLanguageToSourceLanguage: DimensionDefinition
     {
         public List<DimensionDefinition> PrioritizedDimensions = [];
     }
 
-    public XmlToEntity(IAppStates appStates, DataBuilder dataBuilder) : base("Imp.XmlEnt")
-    {
-        ConnectLogs([
-            _dataBuilder = dataBuilder
-        ]);
-        _presetApp = appStates.GetPresetReader();
-    }
-
-    private readonly DataBuilder _dataBuilder;
-    private readonly IAppState _presetApp;
+    private readonly IAppReader _presetApp = appReaders.GetSystemPreset();
 
     public XmlToEntity Init(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
     {
@@ -164,7 +156,7 @@ public class XmlToEntity: ServiceBase
 
             // construct value elements
             var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-                    => _dataBuilder.Value.Build(
+                    => dataBuilder.Value.Build(
                         ValueTypeHelpers.Get(
                             tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ??
                             throw new NullReferenceException("can't build attribute with unknown value-type")
@@ -175,7 +167,7 @@ public class XmlToEntity: ServiceBase
                 .ToList();
 
             // construct the attribute with these value elements
-            var newAttr = _dataBuilder.Attribute.Create(
+            var newAttr = dataBuilder.Attribute.Create(
                 sourceAttrib.StaticName,
                 ValueTypeHelpers.Get(tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value),
                 currentAttributesImportValues);
@@ -205,13 +197,13 @@ public class XmlToEntity: ServiceBase
             var newTypeRepoType = xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True"
                 ? RepositoryTypes.Folder
                 : RepositoryTypes.Sql;
-            typeForEntity = _dataBuilder.ContentType.Create(appId: AppId,
+            typeForEntity = dataBuilder.ContentType.Create(appId: AppId,
                 id: 0, name: typeName, nameId: null, scope: null, repositoryType: newTypeRepoType);
         }
         var targetEntity = // globalType != null
             // ? _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
             // If not yet a known type, create a temporary pointer ContentType
-            /*:*/ _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity, isPublished: isPublished != "False",
+            /*:*/ dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity, isPublished: isPublished != "False",
                 attributes: finalAttributes.ToImmutableInvariant(),
                 metadataFor: metadataForFor);
         //if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);

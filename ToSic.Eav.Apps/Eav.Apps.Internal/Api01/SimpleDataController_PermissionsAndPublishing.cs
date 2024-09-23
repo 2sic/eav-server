@@ -50,7 +50,7 @@ partial class SimpleDataEditService
         // this write publish/draft permission checks should happen only for REST API
 
         // 1. Find if user may write PUBLISHED:
-        var appStateReader = _ctxWithDb.AppState;
+        var appStateReader = _ctxWithDb.AppReader;
 
         // 1.1. app permissions 
         if (appPermissionCheckGenerator.New().ForAppInInstance(ctx, appStateReader)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json.V1;
@@ -84,7 +85,7 @@ partial class JsonSerializer
 
 
         l.A("build entity");
-        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: AppStateOrNull?.StateCache, metadata: mdItems);
+        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: AppReaderOrNull?.GetCache(), metadata: mdItems);
         var newEntity = Services.DataBuilder.Entity.Create(
             appId: AppId,
             guid: jEnt.Guid,

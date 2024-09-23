@@ -18,7 +18,7 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
         : base("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import])
     {
         AppCachePurger = appCachePurger;
-        _jsonSerializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppState));
+        _jsonSerializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppReader));
         _import = import.SetInit(i => i.Init(AppWorkCtx.ZoneId, AppWorkCtx.AppId, false, false));
     }
 

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Json;
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Repository.Efc;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class DbDataController(
     EavDbContext dbContext,
-    LazySvc<Efc11Loader> efcLoaderLazy,
+    LazySvc<EfcAppLoader> efcLoaderLazy,
     LazySvc<IUser> userLazy,
     AppsCacheSwitch appsCache,
     Generator<JsonSerializer> jsonSerializerGenerator,
@@ -137,8 +138,8 @@ public class DbDataController(
     /// </summary>
     /// <param name="appState"></param>
     /// <returns></returns>
-    public DbDataController Init(IAppStateInternal appState)
-        => Init(appState.ZoneId, appState.AppId, appState.ParentAppState?.AppId);
+    public DbDataController Init(IAppReader appState)
+        => Init(appState.ZoneId, appState.AppId, appState.GetParentCache()?.AppId);
 
     /// <summary>
     /// Set ZoneId and AppId on current context.

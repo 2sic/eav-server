@@ -26,16 +26,20 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     public abstract IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools);
 
     [PrivateApi]
-    protected IReadOnlyDictionary<int, Zone> LoadZones(IAppLoaderTools sp)
+    protected IReadOnlyDictionary<int, Zone> LoadZones(IAppLoaderTools tools)
     {
         // Load from DB (this will also ensure that Primary Apps are created)
-        var realZones = sp.RepositoryLoader(null).Zones();
+        var realZones = tools.RepositoryLoader(null).Zones();
 
         // Add the Preset-Zone to the list - important, otherwise everything fails
         var presetZone = new Zone(Constants.PresetZoneId,
             Constants.PresetAppId,
             Constants.PresetAppId,
-            new() { { Constants.PresetAppId, Constants.PresetName } },
+            new ReadOnlyDictionary<int, string>(
+                new Dictionary<int, string>
+                {
+                    { Constants.PresetAppId, Constants.PresetName }
+                }),
             [
                 new()
                 {
@@ -102,11 +106,13 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     #endregion
 
     /// <inheritdoc />
-    public IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools) => GetOrBuild(tools, app);
+    public IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools)
+        => GetOrBuild(tools, app);
 
 
     /// <inheritdoc />
-    public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools) => GetOrBuild(tools, app, primaryLanguage);
+    public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools)
+        => GetOrBuild(tools, app, primaryLanguage);
 
 
     private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string primaryLanguage = null)

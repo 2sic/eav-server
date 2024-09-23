@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
+using ToSic.Eav.Generics;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Internal.Configuration;
 
@@ -14,12 +15,12 @@ namespace ToSic.Eav.Apps.Internal;
 /// </summary>
 /// <param name="globalConfiguration"></param>
 /// <param name="site"></param>
-/// <param name="appStates"></param>
-/// <param name="appPaths"></param>
+/// <param name="appReaders"></param>
+/// <param name="appPathsFactory"></param>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, ISite site, IAppStates appStates, IAppPathsMicroSvc appPaths, MemoryCacheService memoryCacheService, Lazy<IJsonServiceInternal> json)
-    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appStates, appPaths, memoryCacheService, json]), IAppJsonService
+public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, ISite site, IAppReaderFactory appReaders, IAppPathsMicroSvc appPathsFactory, MemoryCacheService memoryCacheService, Lazy<IJsonServiceInternal> json)
+    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appReaders, appPathsFactory, memoryCacheService, json]), IAppJsonService
 {
 
     /// <summary>
@@ -91,9 +92,10 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
 
     private string GetAppFullPath(int appId, bool useShared)
     {
-        if (!appPaths.InitDone) appPaths.Init(site, appStates.ToReader(appStates.GetCacheState(appId)));
+        var appPaths = _appPathsCache.GetOrCreate(appId, () => appPathsFactory.Get(appReaders.Get(appId), site));
         return useShared ? appPaths.PhysicalPathShared : appPaths.PhysicalPath;
     }
+    private readonly Dictionary<int, IAppPaths> _appPathsCache = [];
 
     private AppJson GetAppJsonInternal(string pathToAppJson)
     {

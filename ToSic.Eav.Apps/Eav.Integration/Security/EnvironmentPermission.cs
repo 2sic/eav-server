@@ -5,8 +5,8 @@ using ToSic.Eav.Security;
 namespace ToSic.Eav.Integration.Security;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class EnvironmentPermission(string logPrefix)
-    : ServiceBase($"{logPrefix}.EnvPrm"), IEnvironmentPermission
+public abstract class EnvironmentPermission(string logPrefix, object[] connect = default)
+    : ServiceBase($"{logPrefix}.EnvPrm", connect: connect), IEnvironmentPermission
 {
     // Constant keys for security, historic from Dnn
     protected const string SalPrefix = "SecurityAccessLevel";

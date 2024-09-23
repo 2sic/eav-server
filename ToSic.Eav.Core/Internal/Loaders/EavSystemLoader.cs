@@ -13,46 +13,31 @@ using ToSic.Eav.SysData;
 namespace ToSic.Eav.Internal.Loaders;
 
 [PrivateApi]
-public class EavSystemLoader : LoaderBase
+public class EavSystemLoader(
+    SystemFingerprint fingerprint,
+    IAppLoader appLoader,
+    AppsCacheSwitch appsCache,
+    IEavFeaturesService features,
+    FeaturePersistenceService featurePersistenceService,
+    LicenseLoader licenseLoader,
+    ILogStore logStore,
+    IAppReaderFactory appReaders,
+    SysFeaturesService sysFeaturesService)
+    : LoaderBase(logStore, $"{EavLogs.Eav}SysLdr",
+        connect:
+        [
+            fingerprint, appsCache, logStore, appReaders, appLoader, features, featurePersistenceService, licenseLoader,
+            sysFeaturesService
+        ])
 {
-    private readonly SysFeaturesService _sysFeaturesService;
-    private readonly IAppLoader _appStateLoader;
-    private readonly AppsCacheSwitch _appsCache;
-    public readonly IEavFeaturesService Features;
-    private readonly FeaturePersistenceService _featurePersistenceService;
-    private readonly ILogStore _logStore;
-    private readonly IAppStates _appStates;
-    private readonly LicenseLoader _licenseLoader;
-    private readonly SystemFingerprint _fingerprint; // note: must be of type SystemFingerprint, not IFingerprint
+    public readonly IEavFeaturesService Features = features;
+    private readonly ILogStore _logStore = logStore;
+
+    // note: must be of type SystemFingerprint, not IFingerprint
 
     #region Constructor / DI
 
-    public EavSystemLoader(
-        SystemFingerprint fingerprint,  // note: must be of type SystemFingerprint, not IFingerprint
-        IAppLoader appLoader,
-        AppsCacheSwitch appsCache, 
-        IEavFeaturesService features, 
-        FeaturePersistenceService featurePersistenceService, 
-        LicenseLoader licenseLoader,
-        ILogStore logStore,
-        IAppStates appStates,
-        SysFeaturesService sysFeaturesService
-    ) : base(logStore, $"{EavLogs.Eav}SysLdr")
-    {
-        var l = Log.Fn("System Load");
-        ConnectLogs([
-            _fingerprint = fingerprint,
-            _appsCache = appsCache,
-            _logStore = logStore,
-            _appStates = appStates,
-            _appStateLoader = appLoader,
-            Features = features,
-            _featurePersistenceService = featurePersistenceService,
-            _licenseLoader = licenseLoader,
-            _sysFeaturesService = sysFeaturesService
-        ]);
-        l.Done();
-    }
+    // note: must be of type SystemFingerprint, not IFingerprint
 
     #endregion
 
@@ -75,8 +60,8 @@ public class EavSystemLoader : LoaderBase
 
         // Build the cache of all system-types. Must happen before everything else
         l.A("Try to load global app-state");
-        var presetApp = _appStateLoader.LoadFullAppState();
-        _appsCache.Value.Add(presetApp.AppState);
+        var presetApp = appLoader.LoadFullAppState();
+        appsCache.Value.Add(presetApp.AppState);
 
         LoadLicenseAndFeatures();
         bl.Done();
@@ -91,7 +76,7 @@ public class EavSystemLoader : LoaderBase
         var l = Log.Fn();
         try
         {
-            var presetApp = _appStates.GetPresetReader();
+            var presetApp = appReaders.GetSystemPreset();
             l.A($"presetApp:{presetApp != null}");
 
             var licEntities = presetApp?.List
@@ -112,7 +97,7 @@ public class EavSystemLoader : LoaderBase
                 .ToList();
             l.A($"entLic:{enterpriseLicenses?.Count}");
 
-            _licenseLoader.Init(enterpriseLicenses).LoadLicenses();
+            licenseLoader.Init(enterpriseLicenses).LoadLicenses();
         }
         catch (Exception e)
         {
@@ -135,7 +120,7 @@ public class EavSystemLoader : LoaderBase
 
 
     private bool SetFeaturesStored(FeatureStatesPersisted stored = null) 
-        => Features.UpdateFeatureList(stored ?? new FeatureStatesPersisted(), _sysFeaturesService.States);
+        => Features.UpdateFeatureList(stored ?? new FeatureStatesPersisted(), sysFeaturesService.States);
 
 
     /// <summary>
@@ -148,12 +133,12 @@ public class EavSystemLoader : LoaderBase
         var l = Log.Fn<FeatureStatesPersisted>();
         try
         {
-            var (filePath, fileContent) = _featurePersistenceService.LoadFeaturesFile();
+            var (filePath, fileContent) = featurePersistenceService.LoadFeaturesFile();
             if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
                 return l.ReturnNull("ok, but 'features.json' is missing");
 
             // handle old 'features.json' format
-            var stored = _featurePersistenceService.ConvertOldFeaturesFile(filePath, fileContent);
+            var stored = featurePersistenceService.ConvertOldFeaturesFile(filePath, fileContent);
             if (stored != null) 
                 return l.ReturnAndLog(stored, "converted to new features.json");
 
@@ -175,7 +160,7 @@ public class EavSystemLoader : LoaderBase
     public bool UpdateFeatures(List<FeatureManagementChange> changes)
     {
         var l = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
-        var saved = _featurePersistenceService.SaveFeaturesUpdate(changes);
+        var saved = featurePersistenceService.SaveFeaturesUpdate(changes);
         SetFeaturesStored(FeatureListStoredBuilder(changes));
         return l.ReturnAndLog(saved, "ok, updated");
     }
@@ -195,7 +180,7 @@ public class EavSystemLoader : LoaderBase
         return new()
         {
             Features = storedFeaturesButNotUpdated.Union(updatedFeatures).ToList(),
-            Fingerprint = _fingerprint.GetFingerprint()
+            Fingerprint = fingerprint.GetFingerprint()
         };
     }
 }

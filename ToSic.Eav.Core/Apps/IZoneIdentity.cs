@@ -3,7 +3,7 @@
 /// <summary>
 /// Marks things which belongs to a Zone
 /// </summary>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice] // was public till v18, but certainly never used.
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface IZoneIdentity
 {

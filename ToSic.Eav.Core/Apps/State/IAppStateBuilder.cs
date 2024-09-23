@@ -4,12 +4,11 @@ namespace ToSic.Eav.Apps.State;
 
 public interface IAppStateBuilder: IHasLog
 {
-    
     IAppStateBuilder Init(IAppStateCache appState);
     IAppStateBuilder InitForPreset();
     IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog);
     IAppStateCache AppState { get; }
-    IAppStateInternal Reader { get; }
+    IAppReader Reader { get; }
 
     void Load(string message, Action<IAppStateCache> loader);
 

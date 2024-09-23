@@ -46,15 +46,15 @@ public sealed class Attributes: DataSourceBase
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppStates appStates, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib")
+    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib")
     {
         ConnectLogs([
-            _appStates = appStates,
+            _appReaders = appReaders,
             _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)))
         ]);
         ProvideOut(GetList);
     }
-    private readonly IAppStates _appStates;
+    private readonly IAppReaderFactory _appReaders;
     private readonly IDataFactory _dataFactory;
 
     private IImmutableList<IEntity> GetList()
@@ -74,7 +74,7 @@ public sealed class Attributes: DataSourceBase
             ? In[StreamDefaultName]?.List.ToImmutableList()
             : null;
 
-        var appReader = _appStates.GetReader(this);
+        var appReader = _appReaders.Get(this);
         var firstEntityInStream = useStream ? optionalList?.FirstOrDefault() : null;
         var types = useStream 
             ? (firstEntityInStream?.Type).ToListOfOne()

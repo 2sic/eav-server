@@ -1,4 +1,6 @@
 ﻿using System.Xml.Linq;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.ImportExport.Internal.Options;
 using ToSic.Eav.ImportExport.Internal.Xml;
@@ -16,8 +18,8 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
 
     protected ExportImportValueConversion ValueConverter { get; } = valueConverter;
 
-    public ExportListXml Init(IAppStateInternal appState, string typeName) => Init(appState, appState.GetContentType(typeName));
-    public ExportListXml Init(IAppStateInternal app, IContentType contentType)
+    public ExportListXml Init(IAppReader appState, string typeName) => Init(appState, appState.GetContentType(typeName));
+    public ExportListXml Init(IAppReader app, IContentType contentType)
     {
         AppState = app;
         ContentType = contentType;
@@ -25,7 +27,7 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
     }
 
     private readonly XmlBuilder _xBuilder = new();
-    private IAppStateInternal AppState { get; set; }
+    private IAppReader AppState { get; set; }
     public IContentType ContentType { get; set; }
 
     #endregion
@@ -93,8 +95,8 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
         var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
         // Query all entities, or just the ones with specified IDs
-        var entities = AppState.ListPublished.List.Where(e => e.Type == ContentType);
-        if (selectedIds != null && selectedIds.Length > 0)
+        var entities = AppState.GetListPublished().OfType(ContentType);
+        if (selectedIds is { Length: > 0 })
             entities = entities.Where(e => selectedIds.Contains(e.EntityId));
         var entList = entities.ToList();
 

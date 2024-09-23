@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
 
 namespace ToSic.Eav.Context;
 
@@ -9,7 +8,7 @@ public interface IContextOfApp: IContextOfSite
     /// <summary>
     /// The App State which the current context has
     /// </summary>
-    IAppStateInternal AppState { get; }
+    IAppReader AppReader { get; }
 
     /// <summary>
     /// Reset call to change what AppState is in the context.

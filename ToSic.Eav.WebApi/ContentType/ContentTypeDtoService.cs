@@ -39,7 +39,7 @@ public class ContentTypeDtoService(
         var appEntities = workEntities.New(appCtxPlus);
 
         // get all types
-        var allTypes = appCtxPlus.AppState.ContentTypes
+        var allTypes = appCtxPlus.AppReader.ContentTypes
             .OfScope(scope, true)
             .ToList();
 
@@ -60,7 +60,7 @@ public class ContentTypeDtoService(
     {
         var l = Log.Fn<ContentTypeDto>($"a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
         var appCtxPlus = workEntities.CtxSvc.ContextPlus(appId);
-        var ct = appCtxPlus.AppState.GetContentType(contentTypeStaticName);
+        var ct = appCtxPlus.AppReader.GetContentType(contentTypeStaticName);
         return l.Return(convTypeDto.Convert(ct));
     }
 

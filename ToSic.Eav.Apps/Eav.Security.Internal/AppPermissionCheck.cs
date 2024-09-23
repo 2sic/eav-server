@@ -12,14 +12,14 @@ namespace ToSic.Eav.Security.Internal;
 public class AppPermissionCheck: PermissionCheckBase
 {
     #region Constructor & DI
-    public AppPermissionCheck(IAppStates appStates, MyServices services) : base(services, $"{AppConstants.LogName}.PrmChk")
+    public AppPermissionCheck(IAppReaderFactory appReaders, MyServices services) : base(services, $"{AppConstants.LogName}.PrmChk")
     {
         ConnectLogs([
-            _appStates = appStates,
+            _appReaders = appReaders,
             _environmentPermission = (EnvironmentPermission)services.EnvironmentPermission
         ]);
     }
-    private readonly IAppStates _appStates;
+    private readonly IAppReaderFactory _appReaders;
     private readonly EnvironmentPermission _environmentPermission;
 
     public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem) => Log.Func(() =>
@@ -68,7 +68,7 @@ public class AppPermissionCheck: PermissionCheckBase
             : (appIdentity as IApp)?.Metadata.Permissions.ToList()
               //?? (appIdentity as AppState)?.Metadata.Permissions.ToList()
               //?? (appIdentity as IAppState)?.Metadata.Permissions?.ToList()
-              ??  _appStates.KeepOrGetReader(appIdentity).Metadata.Permissions.ToList();
+              ??  _appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();
         return permissions;
     }
 
@@ -92,18 +92,12 @@ public class AppPermissionCheck: PermissionCheckBase
     {
         Init(targetType ?? targetItem?.Type, targetItem, permissions);
         _environmentPermission.Init(ctx, appIdentity);
-        Log.Do($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ", () =>
-        {
-            Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
-            AppIdentity = appIdentity;
-        });
+        Log.A($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
+        Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
+
     }
 
     protected IContextOfSite Context { get; private set; }
-
-
-    protected IAppIdentity AppIdentity;
-
 
     #endregion
 

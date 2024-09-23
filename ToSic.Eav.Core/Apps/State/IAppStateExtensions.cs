@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Data;
 using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Apps.State;
@@ -6,14 +7,12 @@ namespace ToSic.Eav.Apps.State;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class AppStateExtensions
 {
-    public static IAppStateInternal Internal(this IAppState appState) => appState as IAppStateInternal;
+    public static bool IsInherited(this IAppReader reader)
+        => reader.GetCache().ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
 
-    public static bool IsInherited(this IAppState reader)
-        => reader.Internal().StateCache.ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
-
-    public static bool HasCustomParentApp(this IAppState reader)
+    public static bool HasCustomParentApp(this IAppReader reader)
     {
-        var parentAppGuid = reader?.Internal().ParentAppState?.NameId;
+        var parentAppGuid = reader?.GetParentCache()?.NameId;
         return !string.IsNullOrEmpty(parentAppGuid) && !AppGuidIsAPreset(parentAppGuid);
     }
 
@@ -21,23 +20,16 @@ public static class AppStateExtensions
         => parentAppGuid.HasValue() 
            && (parentAppGuid == Constants.PresetName || parentAppGuid == Constants.GlobalPresetName);
 
-    // TODO: @STV - try to use this where possible
-    public static bool IsContentApp(this IAppState appState)
-        => appState.NameId == Constants.DefaultAppGuid;
-
 
     // TODO: @STV - try to use this where possible
-    public static bool IsGlobalSettingsApp(this IAppState appState)
-        => appState.AppId == Constants.MetaDataAppId;
+    public static bool IsGlobalSettingsApp(this IAppIdentity hasAppSpecs)
+        => hasAppSpecs.AppId == Constants.MetaDataAppId;
 
-    // TODO: @STV - try to use this where possible
-    public static bool IsSiteSettingsApp(this IAppState appState)
-        => appState.NameId == Constants.PrimaryAppGuid;
 
-    public static IEntity GetDraftOrKeep(this IAppState appState, IEntity entity)
+    public static IEntity GetDraftOrKeep(this IAppReader appState, IEntity entity)
         => appState.GetDraft(entity) ?? entity;
 
-    public static IEntity GetDraftOrPublished(this IAppState appState, Guid guid)
+    public static IEntity GetDraftOrPublished(this IAppReader appState, Guid guid)
         => appState.GetDraftOrKeep(appState.List.One(guid));
 
 }

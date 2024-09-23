@@ -20,7 +20,7 @@ internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities) : Insigh
         Log.A($"debug app attributes for {AppId} and {Type}");
         var appEntities = workEntities.New(AppId ?? 0);
 
-        var typ = appEntities.AppWorkCtx.AppState.GetContentType(Type);
+        var typ = appEntities.AppWorkCtx.AppReader.GetContentType(Type);
 
         var msg = "" + H1($"Entities of {Type} ({HtmlEncode(typ?.Name)}/{typ?.NameId}) in {AppId}\n");
         try

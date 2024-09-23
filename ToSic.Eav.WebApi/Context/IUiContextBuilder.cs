@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Context;
+﻿using ToSic.Eav.Apps.State;
+
+namespace ToSic.Eav.WebApi.Context;
 
 public interface IUiContextBuilder: IHasLog
 {
@@ -6,7 +8,7 @@ public interface IUiContextBuilder: IHasLog
     /// Initialize the context builder
     /// </summary>
     /// <returns></returns>
-    IUiContextBuilder InitApp(IAppState appState);
+    IUiContextBuilder InitApp(IAppReader appState);
 
     /// <summary>
     /// Get the context based on the situation

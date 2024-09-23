@@ -7,7 +7,5 @@
 /// Technically many things could just identify the app they belong to, and let the system look up the zone.
 /// But this would be inefficient, so for optimization, many items identify themselves with both the app and zone Ids
 /// </remarks>
-[PublicApi]
-public interface IAppIdentity: IZoneIdentity, IAppIdentityLight
-{
-}
+[InternalApi_DoNotUse_MayChangeWithoutNotice] // not: was public till v18, but certainly never used.
+public interface IAppIdentity: IZoneIdentity, IAppIdentityLight;

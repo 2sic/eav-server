@@ -14,7 +14,7 @@ public interface IAppContentTypesLoader
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
-    IAppContentTypesLoader Init(IAppState app);
+    IAppContentTypesLoader Init(IAppReader app);
 
     /// <summary>
     /// Get all ContentTypes for specified AppId.

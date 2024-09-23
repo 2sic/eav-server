@@ -10,22 +10,22 @@ public class MultiPermissionsTypes: MultiPermissionsApp
     private const string LogName = "Sec.MPTyps";
     protected IEnumerable<string> ContentTypes;
 
-    public MultiPermissionsTypes(MyServices services, LazySvc<IAppStates> appStates): base(services, LogName)
+    public MultiPermissionsTypes(MyServices services, LazySvc<IAppReaderFactory> appStates): base(services, LogName)
     {
         ConnectLogs([
             _appStates = appStates
         ]);
     }
-    private readonly LazySvc<IAppStates> _appStates;
+    private readonly LazySvc<IAppReaderFactory> _appStates;
 
     // Note: AppState must be public, as we have some extension methods that need it
-    public IAppDataService AppState => _appState ??= _appStates.Value.KeepOrGetReader(App);
-    private IAppDataService _appState;
+    public IAppReader AppState => _appState ??= _appStates.Value.GetOrKeep(App);
+    private IAppReader _appState;
 
     public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
     {
         Init(context, app);
-        return InitTypesAfterInit(new[] {contentType});
+        return InitTypesAfterInit([contentType]);
     }
 
     /// <summary>

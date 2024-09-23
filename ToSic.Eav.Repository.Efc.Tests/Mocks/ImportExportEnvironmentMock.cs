@@ -8,8 +8,8 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks
 {
-    internal class ImportExportEnvironmentMock(IAppStates appStates)
-        : ServiceBase("Mck.ImpExp", connect: [appStates]), IImportExportEnvironment
+    internal class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
+        : ServiceBase("Mck.ImpExp", connect: [appsCatalog]), IImportExportEnvironment
     {
         public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests\";
 
@@ -42,6 +42,6 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         {
         }
        
-        public SaveOptions SaveOptions(int zoneId) => new(DefaultLanguage, appStates.Languages(zoneId, true)/* new ZoneRuntime().Init(zoneId, Log).Languages(true)*/);
+        public SaveOptions SaveOptions(int zoneId) => new(DefaultLanguage, appsCatalog.Zone(zoneId).Languages);
     }
 }

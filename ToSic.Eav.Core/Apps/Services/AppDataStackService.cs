@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Services;
@@ -8,15 +9,21 @@ namespace ToSic.Eav.Apps.Services;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppDataStackService(IAppStates appStates) : ServiceBase("App.Stack")
+public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("App.Stack", connect: [appReaders])
 {
-    public AppDataStackService Init(IAppState state)
+    public AppDataStackService Init(IAppReader appReader)
     {
-        Reader = (IAppStateInternal)state;
+        AppSpecs = appReader;
         return this;
     }
 
-    private IAppStateInternal Reader { get; set; }
+    public AppDataStackService InitForPrimaryAppOfZone(int zoneId)
+    {
+        AppSpecs = appReaders.GetZonePrimary(zoneId);
+        return this;
+    }
+
+    private IAppReader AppSpecs { get; set; }
 
     public PropertyStack GetStack(string part, IEntity viewPart = null)
     {
@@ -24,7 +31,6 @@ public class AppDataStackService(IAppStates appStates) : ServiceBase("App.Stack"
         var sources = GetStack(partId, viewPart);
         return new PropertyStack().Init(part, sources);
     }
-
 
     public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity viewPart = default)
     {
@@ -37,36 +43,50 @@ public class AppDataStackService(IAppStates appStates) : ServiceBase("App.Stack"
         };
 
         // All in the App and below
-        sources.AddRange(GetOrGenerate(target).FullStack(Log));
+
+        sources.AddRange(GetOrGenerate(target));
         return l.Return(sources, $"Has {sources.Count}");
     }
 
     public const string PiggyBackId = "app-stack-";
 
-    private AppStateStack GetOrGenerate(AppThingsIdentifiers target)
+    private List<KeyValuePair<string, IPropertyLookup>> GetOrGenerate(AppThingsIdentifiers target)
     {
-        var l = Log.Fn<AppStateStack>(target.Target.ToString());
-        return l.ReturnAndLog(Reader.PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target)));
+        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
+        var sourcesBuilder = AppSpecs.GetCache().PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target).FullStack(Log));
+        return l.ReturnAndLog(sourcesBuilder);
     }
 
-    private AppStateStack Get(AppThingsIdentifiers target)
+    private AppStateStackSourcesBuilder Get(AppThingsIdentifiers target)
     {
-        var l = Log.Fn<AppStateStack>(target.Target.ToString());
+        var l = Log.Fn<AppStateStackSourcesBuilder>(target.Target.ToString());
         // Site should be skipped on the global zone
-        l.A($"Owner: {Reader.Show()}");
-        var site = Reader.ZoneId == Constants.DefaultZoneId ? null : appStates.GetPrimaryReader(Reader.ZoneId, Log);
-        l.A($"Site: {site?.Show()}");
-        var global = appStates.GetReader(Constants.GlobalIdentity);
+        l.A($"Owner: {AppSpecs.Show()}");
+        var siteAppReader = AppSpecs.ZoneId == Constants.DefaultZoneId
+            ? null
+            : appReaders.GetZonePrimary(AppSpecs.ZoneId);
+        l.A($"Site: {siteAppReader?.Show()}");
+        var global = appReaders.Get(Constants.GlobalIdentity);
         l.A($"Global: {global?.Show()}");
-        var preset = appStates.GetPresetReader();
+        var preset = appReaders.GetSystemPreset();
         l.A($"Preset: {preset?.Show()}");
 
-        // Find the ancestor, but only use it if it's not the preset
-        var appAncestor = Reader.ParentAppState;
-        var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId ? null : appAncestor;
+        // Find the ancestor, but only use it if it's _not_ the Preset
+        var appState = AppSpecs.GetCache();
+        var appAncestor = appState.ParentApp?.AppState;
+        var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId
+            ? null
+            : appAncestor;
         l.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
 
-        var stackCache = new AppStateStack(Reader.StateCache, ancestorIfNotPreset, site?.StateCache, global?.StateCache, preset?.StateCache, target);
+        var stackCache = new AppStateStackSourcesBuilder(
+            target,
+            appState,
+            ancestorIfNotPreset,
+            siteAppReader?.GetCache(),
+            global?.GetCache(),
+            preset?.GetCache()
+        );
 
         return l.ReturnAndLog(stackCache, "created");
     }

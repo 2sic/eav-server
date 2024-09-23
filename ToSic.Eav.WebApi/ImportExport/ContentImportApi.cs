@@ -20,15 +20,16 @@ public class ContentImportApi(
     LazySvc<JsonSerializer> jsonSerializerLazy,
     AppCachePurger appCachePurger,
     GenWorkDb<WorkEntitySave> workEntSave,
-    IAppStates appStates)
-    : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appStates])
+    IAppsCatalog appsCatalog,
+    IAppReaderFactory appReaders
+) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appsCatalog, appReaders])
 {
-    private IAppStateInternal _appState;
+    private IAppReader _appReader;
 
     public ContentImportApi Init(int appId)
     {
         var l = Log.Fn<ContentImportApi>($"app: {appId}");
-        _appState = appStates.GetReader(appId);
+        _appReader = appReaders.Get(appId);
         return l.Return(this);
     }
 
@@ -73,10 +74,12 @@ public class ContentImportApi(
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
     {
         var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
-        var contextLanguages = appStates.Languages(_appState.ZoneId).Select(lng => lng.EnvironmentKey).ToArray();
+        var contextLanguages = appsCatalog.Zone(_appReader.ZoneId).LanguagesActive
+            .Select(lng => lng.EnvironmentKey)
+            .ToArray();
 
         using var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64));
-        var importer = importListXml.Value.Init(_appState, args.ContentType, contentSteam,
+        var importer = importListXml.Value.Init(_appReader, args.ContentType, contentSteam,
             contextLanguages, args.DefaultLanguage,
             args.ClearEntities, args.ImportResourcesReferences);
         return l.Return(importer);
@@ -88,13 +91,13 @@ public class ContentImportApi(
         var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
         try
         {
-            var deserializer = jsonSerializerLazy.Value.SetApp(_appState);
+            var deserializer = jsonSerializerLazy.Value.SetApp(_appReader);
             // Since we're importing directly into this app, we prefer local content-types
             deserializer.PreferLocalAppTypes = true;
 
             var listToImport = new List<IEntity> { deserializer.Deserialize(args.GetContentString()) };
 
-            workEntSave.New(_appState).Import(listToImport);
+            workEntSave.New(_appReader).Import(listToImport);
 
             return l.ReturnTrue();
         }

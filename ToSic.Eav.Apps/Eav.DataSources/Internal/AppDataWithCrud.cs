@@ -48,7 +48,7 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
         var id = ids.FirstOrDefault();
         FlushDataSnapshot();
         // try to find it again (AppState.List contains also draft items)
-        var created = AppState.List.One(id);
+        var created = AppReader.List.One(id);
         return l.Return(created, $"{created?.EntityId}/{created?.EntityGuid}");
     }
 
@@ -111,14 +111,14 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
 
     /// <inheritdoc />
     public IEnumerable<IEntity> GetMetadata<TKey>(int targetType, TKey key, string contentTypeName = null) 
-        => AppState.GetMetadata(targetType, key, contentTypeName);
+        => AppReader.Metadata.GetMetadata(targetType, key, contentTypeName);
 
     /// <inheritdoc />
     public IEnumerable<IEntity> GetMetadata<TKey>(TargetTypes targetType, TKey key, string contentTypeName = null) 
-        => AppState.GetMetadata(targetType, key, contentTypeName);
+        => AppReader.Metadata.GetMetadata(targetType, key, contentTypeName);
 
     /// <inheritdoc />
     public IEnumerable<IEntity> GetCustomMetadata<TKey>(TKey key, string contentTypeName = null)
-        => AppState.GetMetadata(TargetTypes.Custom, key, contentTypeName);
+        => AppReader.Metadata.GetMetadata(TargetTypes.Custom, key, contentTypeName);
 
 }

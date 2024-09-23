@@ -26,7 +26,7 @@ public class WorkEntitySave(
 
     public void Import(List<IEntity> newEntities)
     {
-        var appStateList = AppWorkCtx.AppState.List;
+        var appStateList = AppWorkCtx.AppReader.List;
         foreach (var e in newEntities.Where(e => appStateList.One(e.EntityGuid) != null))
             throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
@@ -50,10 +50,10 @@ public class WorkEntitySave(
         // because sometimes the save may be executed twice before the state knows that the entity exists
         // in which case it would add it twice
 
-        var appReader = AppWorkCtx.AppState;
+        var appReader = AppWorkCtx.AppReader;
         saveOptions ??= environmentLazy.Value.SaveOptions(appReader.ZoneId);
         List<int> ids = null;
-        appReader.StateCache.DoInLock(Log, () => ids = InnerSaveInLock());
+        appReader.GetCache().DoInLock(Log, () => ids = InnerSaveInLock());
         return l.Return(ids, $"ids:{ids.Count}");
 
         // Inner call which will be executed with the Lock of the AppState
@@ -79,7 +79,7 @@ public class WorkEntitySave(
                 .ToList();
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
-            entities = AttachRelationshipResolver(entities, appReader.StateCache);
+            entities = AttachRelationshipResolver(entities, appReader.GetCache());
 
             List<int> intIds = null;
             var dc = AppWorkCtx.DataController;

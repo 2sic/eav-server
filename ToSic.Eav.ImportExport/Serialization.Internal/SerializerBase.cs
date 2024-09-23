@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Services;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
@@ -6,45 +8,37 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Serialization.Internal;
 
+/// <summary>
+/// Constructor for inheriting classes
+/// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, IDataSerializer
+public abstract class SerializerBase(SerializerBase.MyServices services, string logName) : ServiceBase<SerializerBase.MyServices>(services, logName), IDataSerializer
 {
+    #region MyServices
+
+    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates)
+        : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates])
+    {
+        public DataBuilder DataBuilder { get; } = dataBuilder;
+
+        public ITargetTypes MetadataTargets { get; } = metadataTargets;
+        public IAppReaderFactory AppStates { get; } = appStates;
+    }
+
+    #endregion
+
     #region Constructor / DI
 
-    public class MyServices: MyServicesBase
+    //private readonly IAppReadContentTypes _globalAppOrNull = services.AppStates.GetPresetReaderIfAlreadyLoaded();
+    private readonly IAppReadContentTypes _globalAppOrNull = services.AppStates.GetSystemPreset(nullIfNotLoaded: true);
+
+    public ITargetTypes MetadataTargets { get; } = services.MetadataTargets;
+
+
+    public void Initialize(IAppReader appReader)
     {
-        public DataBuilder DataBuilder { get; }
-
-        public MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppStates appStates)
-        {
-            ConnectLogs([
-                MetadataTargets = metadataTargets,
-                DataBuilder = dataBuilder,
-                AppStates = appStates
-            ]);
-        }
-
-        public ITargetTypes MetadataTargets { get; }
-        public IAppStates AppStates { get; }
-    }
-
-    /// <summary>
-    /// Constructor for inheriting classes
-    /// </summary>
-    protected SerializerBase(MyServices services, string logName): base(services, logName)
-    {
-        MetadataTargets = services.MetadataTargets;
-        _globalApp = services.AppStates.GetPresetReaderIfAlreadyLoaded(); // important that it uses GlobalOrNull - because it may not be loaded yet
-    }
-    private readonly IAppState _globalApp;
-
-    public ITargetTypes MetadataTargets { get; }
-
-
-    public void Initialize(IAppState appState)
-    {
-        AppStateOrNull = appState.Internal();
-        AppId = appState.AppId;
+        AppReaderOrNull = appReader;
+        AppId = appReader.AppId;
     }
 
     protected int AppId;
@@ -58,14 +52,14 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
     #endregion
 
-    public IAppStateInternal AppStateOrError => AppStateOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
-    protected IAppStateInternal AppStateOrNull { get; private set; }
+    public IAppReader AppReaderOrError => AppReaderOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+    protected IAppReader AppReaderOrNull { get; private set; }
 
     public bool PreferLocalAppTypes = false;
 
-    protected IContentType GetContentType(string staticName
-    ) => Log.Func($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", () =>
+    protected IContentType GetContentType(string staticName)
     {
+        var l = Log.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}");
         // There is a complex lookup we must protocol, to better detect issues, which is why we assemble a message
         var msg = "";
 
@@ -74,14 +68,16 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
         // ReSharper disable once InvertIf
         if (PreferLocalAppTypes)
         {
-            var type = AppStateOrError.GetContentType(staticName);
-            if (type != null) return (type, $"app: found");
+            var type = AppReaderOrError.GetContentType(staticName);
+            if (type != null)
+                return l.Return(type, $"app: found");
             msg += "app: not found, ";
         }
 
-        var globalType = _globalApp?.GetContentType(staticName);
+        var globalType = _globalAppOrNull?.GetContentType(staticName);
 
-        if (globalType != null) return (globalType, $"{msg}global: found");
+        if (globalType != null)
+            return l.Return(globalType, $"{msg}global: found");
         msg += "global: not found, ";
 
         if (_types != null)
@@ -92,11 +88,11 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
         else
         {
             msg += "app: ";
-            globalType = AppStateOrError.GetContentType(staticName);
+            globalType = AppReaderOrError.GetContentType(staticName);
         }
 
-        return (globalType, $"{msg}{(globalType == null ? "not " : "")}found");
-    });
+        return l.Return(globalType, $"{msg}{(globalType == null ? "not " : "")}found");
+    }
 
     protected IContentType GetTransientContentType(string name, string nameId)
     {
@@ -111,7 +107,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
     /// </summary>
     internal JsonDeSerializationSettings DeserializationSettings { get; set; } = null;
 
-    protected IEntity Lookup(int entityId) => AppStateOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
+    protected IEntity Lookup(int entityId) => AppReaderOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 
     public abstract string Serialize(IEntity entity);
 
@@ -121,7 +117,7 @@ public abstract class SerializerBase: ServiceBase<SerializerBase.MyServices>, ID
 
     public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 
-    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppStateOrError.StateCache;
+    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppReaderOrError.GetCache();
     private IEntitiesSource _relList;
 
 }

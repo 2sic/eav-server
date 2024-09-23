@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data;
 /// Initializes a new instance of the RelationshipManager class.
 /// </remarks>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class RelationshipManager(IEntityLight entity, IAppStateCache app, IEnumerable<EntityRelationship> fallbackRels = null)
+internal class RelationshipManager(IEntityLight entity, IRelationshipSource app, IEnumerable<EntityRelationship> fallbackRels = null)
     : IRelationshipManager
 {
     // special note: ATM everything is an IEntity, so EntityLight is currently not supported
@@ -21,16 +21,16 @@ internal class RelationshipManager(IEntityLight entity, IAppStateCache app, IEnu
     /// <summary>
     /// This should be reworked, it often contains all relationships of the entire app
     /// </summary>
-    private IEnumerable<EntityRelationship> AllRelationships { get; } = app?.Relationships ?? fallbackRels ?? new List<EntityRelationship>();
+    private IEnumerable<EntityRelationship> AllRelationships { get; } = app?.Relationships ?? fallbackRels ?? [];
 
-    private readonly IAppStateCache _appStateCache = app;
+    private readonly IRelationshipSource _source = app;
     private readonly IEnumerable<EntityRelationship> _fallbackRels = fallbackRels;
 
     /// <summary>
     /// Special constructor for cloning, where we attach the manager of the original
     /// </summary>
     internal static RelationshipManager ForClone(IEntityLight entity, RelationshipManager original)
-        => new(entity, original?._appStateCache, original?._fallbackRels);
+        => new(entity, original?._source, original?._fallbackRels);
 
     /// <inheritdoc />
     public IEnumerable<IEntity> AllChildren => ChildRelationships().Select(r => r.Child);
@@ -44,11 +44,11 @@ internal class RelationshipManager(IEntityLight entity, IAppStateCache app, IEnu
 
         // If we don't have an AppStateCache, it's probably a temporary entity/relationship
         // rust return the result without caching
-        if (_appStateCache == null)
+        if (_source == null)
             return GetChildrenUncached();
 
         // Standard scenario, just not cached yet - cache and return
-        _childRelationships = new(_appStateCache, GetChildrenUncached);
+        _childRelationships = new(_source, GetChildrenUncached);
         return _childRelationships.List;
 
     }
@@ -79,11 +79,11 @@ internal class RelationshipManager(IEntityLight entity, IAppStateCache app, IEnu
 
         // If we don't have an AppStateCache, it's probably a temporary entity/relationship
         // rust return the result without caching
-        if (_appStateCache == null)
+        if (_source == null)
             return GetParentsUncached();
         
         // Standard scenario, just not cached yet - cache and return
-        _parentRelationships = new(_appStateCache, GetParentsUncached);
+        _parentRelationships = new(_source, GetParentsUncached);
         return _parentRelationships.List;
 
     }

@@ -70,13 +70,13 @@ public sealed class ContentTypes: CustomDataSource
     /// Constructs a new ContentTypes DS
     /// </summary>
     [PrivateApi]
-    public ContentTypes(MyServices services, IAppStates appStates): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
+    public ContentTypes(MyServices services, IAppReaderFactory appReaders): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
     {
-        ConnectLogs([_appStates = appStates]);
+        ConnectLogs([_appReaders = appReaders]);
         var options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
         ProvideOut(GetList, options: () => new(options, appId: OfAppId));
     }
-    private readonly IAppStates _appStates;
+    private readonly IAppReaderFactory _appReaders;
 
     private IEnumerable<IRawEntity> GetList()
     {
@@ -86,7 +86,7 @@ public sealed class ContentTypes: CustomDataSource
         var appId = OfAppId;
         var scp = Scope.UseFallbackIfNoValue(Data.Scopes.Default);
 
-        var types = _appStates.GetReader(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
+        var types = _appReaders.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
 
         // Deduplicate, in case we have identical types on current app and inherited
         var deDuplicate = types

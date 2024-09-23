@@ -13,7 +13,7 @@ partial class JsonSerializer: SerializerBase, IDataDeserializer
 
     public new class MyServices: SerializerBase.MyServices
     {
-        public MyServices(ITargetTypes metadataTargets, IAppStates appStates, DataBuilder dataBuilder, LazySvc<IValueConverter> valueConverter)
+        public MyServices(ITargetTypes metadataTargets, IAppReaderFactory appStates, DataBuilder dataBuilder, LazySvc<IValueConverter> valueConverter)
             : base(metadataTargets, dataBuilder, appStates)
         {
             ConnectLogs([

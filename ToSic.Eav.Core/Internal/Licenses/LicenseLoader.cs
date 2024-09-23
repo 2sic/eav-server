@@ -143,8 +143,6 @@ public sealed class LicenseLoader : LoaderBase
 
         var validVersion = licensesPersisted.Versions?
                                .CsvToArrayWithoutEmpty()
-                               //.Split(',')
-                               //.Select(v => v.Trim())
                                .Any(v => int.TryParse(v, out var licVersion) && EavSystemInfo.Version.Major == licVersion)
                            ?? false;
 

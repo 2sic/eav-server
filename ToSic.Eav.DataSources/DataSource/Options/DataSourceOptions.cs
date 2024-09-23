@@ -27,7 +27,7 @@ public partial class DataSourceOptions: IDataSourceOptions
         bool? immutable = default)
     {
         ShowDrafts = showDrafts ?? original?.ShowDrafts;
-        AppIdentity = appIdentity ?? original?.AppIdentity;
+        AppIdentityOrReader = appIdentity ?? original?.AppIdentityOrReader;
         _values = values ?? original?.Values;
         LookUp = lookUp ?? original?.LookUp;
         Immutable = immutable ?? original?.Immutable ?? false;
@@ -35,7 +35,7 @@ public partial class DataSourceOptions: IDataSourceOptions
 
     IImmutableDictionary<string, string> IDataSourceOptions.Values => _values;
     private readonly IImmutableDictionary<string, string> _values;
-    public IAppIdentity AppIdentity { get; }
+    public IAppIdentity AppIdentityOrReader { get; }
     public ILookUpEngine LookUp { get; }
     public bool? ShowDrafts { get; }
     public bool Immutable { get; }

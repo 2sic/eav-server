@@ -27,17 +27,17 @@ public abstract partial class EavApp(EavApp.MyServices services, string logName 
     public class MyServices(
         IZoneMapper zoneMapper,
         ISite site,
-        IAppStates appStates,
+        IAppReaderFactory appReaders,
         IDataSourcesService dataSourceFactory,
         LazySvc<QueryManager> queryManager,
         IAppDataConfigProvider dataConfigProvider)
-        : MyServicesBase(connect: [zoneMapper, site, appStates, dataSourceFactory, queryManager, dataConfigProvider])
+        : MyServicesBase(connect: [zoneMapper, site, appReaders, dataSourceFactory, queryManager, dataConfigProvider])
     {
         public IAppDataConfigProvider DataConfigProvider { get; } = dataConfigProvider;
         public LazySvc<QueryManager> QueryManager { get; } = queryManager;
         internal IZoneMapper ZoneMapper { get; } = zoneMapper;
         internal ISite Site { get; } = site;
-        internal IAppStates AppStates { get; } = appStates;
+        internal IAppReaderFactory AppReaders { get; } = appReaders;
         internal IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
     }
 
@@ -47,10 +47,6 @@ public abstract partial class EavApp(EavApp.MyServices services, string logName 
     public string Name { get; private set; }
     /// <inheritdoc />
     public string Folder { get; private set; }
-
-    // 2024-01-11 2dm - #RemoveIApp.Hidden for v17 - kill code ca. 2024-07 (Q3)
-    ///// <inheritdoc />
-    //public bool Hidden { get; private set; }
 
     /// <inheritdoc />
     public string NameId { get; private set; }
@@ -71,21 +67,17 @@ public abstract partial class EavApp(EavApp.MyServices services, string logName 
         if (Site == null) throw new("no site/portal received");
             
         // in case the DI gave a bad tenant, try to look up
-        if (Site.Id == Constants.NullId && appIdentity.AppId != Constants.NullId &&
-            appIdentity.AppId != AppConstants.AppIdNotFound)
+        if (Site.Id == Constants.NullId
+            && appIdentity.AppId != Constants.NullId
+            && appIdentity.AppId != AppConstants.AppIdNotFound)
             Site = Services.ZoneMapper.SiteOfApp(appIdentity.AppId);
 
-        // 2023-12-12 2dm removed autolookup Zone - must happen before this #RemoveAutoLookupZone
-        // leave in till 2024-Q2 and remove if all works
-        //// if zone is missing, try to find it - but always assume current context
-        //if (appIdentity.ZoneId == AppConstants.AutoLookupZone)
-        //    appIdentity = new AppIdentityPure(Site.ZoneId, appIdentity.AppId);
-            
         InitAppBaseIds(appIdentity);
         l.A($"prep App #{appIdentity.Show()}, has{nameof(dataSpecs)}:{dataSpecs != null}");
 
         // Look up name in cache
-        NameId = Services.AppStates.GetReader(this).NameId;
+        AppReaderInt = services.AppReaders.Get(this);
+        NameId = AppReaderInt.Specs.NameId;
 
         InitializeResourcesSettingsAndMetadata();
 

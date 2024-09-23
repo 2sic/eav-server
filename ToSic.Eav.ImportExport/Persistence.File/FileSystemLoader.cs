@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
@@ -47,7 +48,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
 
             // #SharedFieldDefinition
             // Also provide AppState if possible, for new #SharedFieldDefinition
-            if (EntitiesSource is IHasMetadataSource withAppState)
+            if (EntitiesSource is IHasMetadataSourceAndExpiring withAppState)
                 _ser.DeserializationSettings = new()
                 {
                     CtAttributeMetadataAppState = withAppState
@@ -59,9 +60,9 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
     }
     private JsonSerializer _ser;
 
-    internal void ResetSerializer(IAppState appState)
+    internal void ResetSerializer(IAppReader appReader)
     {
-        var serializer = jsonSerializerGenerator.New().SetApp(appState);
+        var serializer = jsonSerializerGenerator.New().SetApp(appReader);
         _ser = serializer;
     }
     internal void ResetSerializer(List<IContentType> types)
@@ -142,7 +143,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
     /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
     /// <param name="source">this is not used ATM - just for interface compatibility</param>
     /// <returns></returns>
-    public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
+    public IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
     {
         var l = Log.Fn<IList<IContentType>>($"ContentTypes in {appId}");
             

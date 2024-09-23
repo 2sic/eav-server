@@ -14,7 +14,7 @@ partial class EavApp
     #region Paths
 
     [PrivateApi]
-    public string PhysicalPath => AppStateInt.GetPiggyBack(nameof(PhysicalPath), () => Path.Combine(Site.AppsRootPhysicalFull, Folder));
+    public string PhysicalPath => AppReaderInt.GetCache().GetPiggyBack(nameof(PhysicalPath), () => Path.Combine(Site.AppsRootPhysicalFull, Folder));
 
     #endregion
 

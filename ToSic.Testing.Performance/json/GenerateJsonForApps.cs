@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Tests;
 using ToSic.Eav.Serialization.Internal;
@@ -34,16 +35,16 @@ namespace ToSic.Testing.Performance.json
 
         public void LoadApp()
         {
-            AppStateCacheRaw = Loader.AppStateReaderRawTA(TestAppId);   
+            AppReaderRaw = Loader.AppStateReaderRawTA(TestAppId);   
         }
 
-        internal IAppState AppStateCacheRaw;
+        internal IAppReader AppReaderRaw;
         internal List<string> EntitiesAsJson;
 
         public int SerializeAll(int repeat)
         {
             var count = 0;
-            var ser = GetService<JsonSerializer>().SetApp(AppStateCacheRaw);
+            var ser = GetService<JsonSerializer>().SetApp(AppReaderRaw);
             for (var i = 0; i < repeat; i++)
             {
                 var ents = ser.Deserialize(EntitiesAsJson);

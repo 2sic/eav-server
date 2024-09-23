@@ -1,8 +1,9 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Insights;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-internal class InsightsAppLoadLog(LazySvc<IAppStates> appStates, LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates, logStore])
+internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates, LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates, logStore])
 {
     private InsightsLogsHelper LogHtml => _logHtml ??= new(logStore.Value);
     private InsightsLogsHelper _logHtml;
@@ -17,8 +18,11 @@ internal class InsightsAppLoadLog(LazySvc<IAppStates> appStates, LazySvc<ILogSto
             return message;
 
         Log.A($"debug app-load {AppId}");
-        return InsightsHtmlParts.PageStyles() + LogHtml.DumpTree($"2sxc load log for app {AppId}",
-            appStates.Value.GetCacheState(AppId.Value).Log);
+        return InsightsHtmlParts.PageStyles()
+               + LogHtml.DumpTree(
+                   $"2sxc load log for app {AppId}",
+                   appStates.Value.Get(AppId.Value).Log
+               );
     }
 
 }

@@ -12,7 +12,7 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
         var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
 
         var newEnt = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
-            contentType: AppWorkCtx.AppState.GetContentType(typeName),
+            contentType: AppWorkCtx.AppReader.GetContentType(typeName),
             attributes: builder.Attribute.Create(values),
             metadataFor: metadataFor);
 
@@ -44,7 +44,7 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
         }
 
         var newE = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
-            contentType: AppWorkCtx.AppState.GetContentType(typeName),
+            contentType: AppWorkCtx.AppReader.GetContentType(typeName),
             attributes: builder.Attribute.Create(values));
         return workEntSave.New(AppWorkCtx).Save(newE);
     }

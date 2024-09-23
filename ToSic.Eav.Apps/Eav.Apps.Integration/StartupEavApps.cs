@@ -77,12 +77,11 @@ public static class StartupEavApps
         services.TryAddTransient<IContextOfApp, ContextOfApp>();
         services.TryAddTransient<ContextOfApp.MyServices>();
         services.TryAddTransient<ContextOfSite.MyServices>();
-        services.TryAddTransient<IAppPathsMicroSvc, AppPaths>(); // WIP trying to remove direct access to AppPaths
+        services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
-        // File System Loaders (note: Dnn will introduce it's own to work around a DI issue)
-        services.TryAddTransient<IAppFileSystemLoader, AppFileSystemLoader>();
-        services.TryAddTransient<IAppContentTypesLoader, AppFileSystemLoader>();
-        services.TryAddTransient<AppFileSystemLoader.MyServices>();
+        // File System Loaders
+        services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
+        services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
 
         // Helpers to build stuff
         services.TryAddTransient<AppCreator>();
@@ -134,7 +133,7 @@ public static class StartupEavApps
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
         services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
-        services.TryAddTransient<IAppFileSystemLoader, FileSystemLoaderUnknown>();
+        services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
         services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 
         // v17

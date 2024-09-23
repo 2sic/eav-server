@@ -6,10 +6,10 @@ namespace ToSic.Eav.Apps.Internal.Work;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class WorkInputTypes(
-    LazySvc<IAppStates> appStates,
-    LazySvc<IAppFileSystemLoader> appFileSystemLoaderLazy,
+    LazySvc<IAppReaderFactory> appReaders,
+    LazySvc<IAppInputTypesLoader> appFileSystemLoaderLazy,
     GenWorkPlus<WorkEntities> workEntities)
-    : WorkUnitBase<IAppWorkCtxPlus>("ApS.InpGet", connect: [appStates, workEntities, appFileSystemLoaderLazy])
+    : WorkUnitBase<IAppWorkCtxPlus>("ApS.InpGet", connect: [appReaders, workEntities, appFileSystemLoaderLazy])
 {
     /// <summary>
     /// Retrieve a list of all input types known to the current system
@@ -132,7 +132,7 @@ public class WorkInputTypes(
         var l = Log.Fn<List<InputTypeInfo>>();
         try
         {
-            var appLoader = appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppState);
+            var appLoader = appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppReader);
             var inputTypes = appLoader.InputTypes();
             return l.Return(inputTypes, $"{inputTypes.Count}");
         }
@@ -154,7 +154,7 @@ public class WorkInputTypes(
         var l = Log.Fn<List<InputTypeInfo>>(timer: true);
         if (_presetInpTypeCache != null) return l.Return(_presetInpTypeCache, $"cached {_presetInpTypeCache.Count}");
 
-        var presetApp = appStates.Value.GetPresetReader();
+        var presetApp = appReaders.Value.GetSystemPreset();
 
         var types = presetApp.ContentTypes
             .Where(p => p.NameId.StartsWith(FieldTypePrefix)

@@ -30,49 +30,40 @@ public abstract class QueryControllerBase<TImplementation>(
 
     #region Constructor / DI / Services
 
-    public class MyServices : MyServicesBase
+    public class MyServices(
+        QueryBuilder queryBuilder,
+        LazySvc<ConvertToEavLight> entToDicLazy,
+        LazySvc<InspectQuery> queryInfoLazy,
+        LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
+        Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
+        Generator<PassThrough> passThrough,
+        LazySvc<QueryManager> queryManager,
+        Generator<IAppReaderFactory> appStates,
+        GenWorkBasic<WorkQueryMod> workUnitQueryMod,
+        GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
+        : MyServicesBase(connect:
+        [
+            queryBuilder, entToDicLazy, queryInfoLazy, dataSourceCatalogLazy, jsonSerializer, passThrough, queryManager,
+            appStates, workUnitQueryMod, workUnitQueryCopy
+        ])
     {
-        public GenWorkBasic<WorkQueryMod> WorkUnitQueryMod { get; }
-        public GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy { get; }
-        public LazySvc<QueryManager> QueryManager { get; }
+        public GenWorkBasic<WorkQueryMod> WorkUnitQueryMod { get; } = workUnitQueryMod;
+        public GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy { get; } = workUnitQueryCopy;
+        public LazySvc<QueryManager> QueryManager { get; } = queryManager;
+
         /// <summary>
         /// The AppStates Generator should only be used in the Definition.
         /// It's important that it will always generate new objects.
         /// This is to ensure it has the changes previously saved
         /// </summary>
-        public Generator<IAppStates> AppStates { get; }
-        public QueryBuilder QueryBuilder { get; }
-        public LazySvc<ConvertToEavLight> EntToDicLazy { get; }
-        public LazySvc<InspectQuery> QueryInfoLazy { get; }
-        public LazySvc<DataSourceCatalog> DataSourceCatalogLazy { get; }
-        public Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> JsonSerializer { get; }
-        public Generator<PassThrough> PassThrough { get; }
+        public Generator<IAppReaderFactory> AppStates { get; } = appStates;
 
-        public MyServices(
-            QueryBuilder queryBuilder,
-            LazySvc<ConvertToEavLight> entToDicLazy,
-            LazySvc<InspectQuery> queryInfoLazy,
-            LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
-            Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
-            Generator<PassThrough> passThrough,
-            LazySvc<QueryManager> queryManager,
-            Generator<IAppStates> appStates,
-            GenWorkBasic<WorkQueryMod> workUnitQueryMod,
-            GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
-        {
-            ConnectLogs([
-                QueryBuilder = queryBuilder,
-                EntToDicLazy = entToDicLazy,
-                QueryInfoLazy = queryInfoLazy,
-                DataSourceCatalogLazy = dataSourceCatalogLazy,
-                JsonSerializer = jsonSerializer,
-                PassThrough = passThrough,
-                QueryManager = queryManager,
-                WorkUnitQueryMod = workUnitQueryMod,
-                WorkUnitQueryCopy = workUnitQueryCopy,
-                AppStates = appStates
-            ]);
-        }
+        public QueryBuilder QueryBuilder { get; } = queryBuilder;
+        public LazySvc<ConvertToEavLight> EntToDicLazy { get; } = entToDicLazy;
+        public LazySvc<InspectQuery> QueryInfoLazy { get; } = queryInfoLazy;
+        public LazySvc<DataSourceCatalog> DataSourceCatalogLazy { get; } = dataSourceCatalogLazy;
+        public Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> JsonSerializer { get; } = jsonSerializer;
+        public Generator<PassThrough> PassThrough { get; } = passThrough;
     }
 
 
@@ -90,7 +81,7 @@ public abstract class QueryControllerBase<TImplementation>(
 
         if (!id.HasValue) return l.Return(query, "no id, empty");
 
-        var appState = Services.AppStates.New().GetReader(appId);
+        var appState = Services.AppStates.New().Get(appId);
         var qDef = Services.QueryManager.Value.Get(appState, id.Value);
 
         #region Deserialize some Entity-Values
@@ -106,7 +97,7 @@ public abstract class QueryControllerBase<TImplementation>(
         foreach (var part in qDef.Parts)
         {
             var partDto = part.AsDictionary();
-            var metadata = appState.GetMetadata(TargetTypes.Entity, part.Guid);
+            var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
             partDto.Add("Metadata", converter.Convert(metadata));
             query.DataSources.Add(partDto);
         }
@@ -251,7 +242,7 @@ public abstract class QueryControllerBase<TImplementation>(
         try
         {
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
-            var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppState);
+            var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppReader);
             var ents = deser.Deserialize(args.GetContentString());
             var qdef = QueryBuilder.Create(ents, args.AppId);
             workUnit.SaveCopy(qdef);

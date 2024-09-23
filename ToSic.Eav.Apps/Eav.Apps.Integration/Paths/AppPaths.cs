@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 using ToSic.Eav.Helpers;
@@ -24,27 +25,13 @@ namespace ToSic.Eav.Apps.Integration;
 /// * Future: We should find a way to scope some DI to a module, so it doesn't bleed to others
 ///   But that is a bit difficult, because there are also some services like the IPage which should be shared across modules
 /// </remarks>
-internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config)
-    : ServiceBase($"{EavLogs.Eav}.AppPth", connect: [serverPaths, config]), IAppPathsMicroSvc
+internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config, LazySvc<ISite> siteLazy, ISite siteOrNull, IAppReader appReader)
+    : ServiceBase($"{EavLogs.Eav}.AppPth", connect: [serverPaths, config]), IAppPaths
 {
     private const bool Debug = true;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="site">The site - in some cases the site of the App can be different from the context-site, so it must be passed in</param>
-    /// <param name="appState"></param>
-    /// <returns></returns>
-    public IAppPaths Init(ISite site, IAppState appState)
-    {
-        _site = site;
-        _appState = appState;
-        InitDone = true;
-        return this;
-    }
-    private ISite _site;
-    private IAppState _appState;
-    public bool InitDone { get; private set; }
+    private ISite Site => _finalSite ??= siteOrNull ?? siteLazy.Value;
+    private ISite _finalSite;
+    private readonly IAppSpecs _appSpecs = appReader.Specs;
 
     /// <summary>
     /// We are having some difficulties that the App is caching the wrong path, so temporarily we'll log
@@ -52,8 +39,8 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     /// </summary>
     private void LogAppPathDetails(string property, string result) => Log.Do(l =>
     {
-        l.A($"App State: {_appState.Show()}");
-        l.A($"Site: {_site.Id}; Zone: {_site.ZoneId};");
+        l.A($"App State: {appReader.Show()}");
+        l.A($"Site: {Site.Id}; Zone: {Site.ZoneId};");
         l.A($"{property}: {result}");
     });
 
@@ -62,8 +49,8 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
         // 2022-02-07 2dm try to drop special case with site-id again, as we shouldn't need this any more
         // 2024-02-01 2dm WIP trouble with App listing apps in other sites
         // it seems that the paths
-        var key = $"AppPath-{name}" + _site.Id; // + _site.Id;
-        var final = _appState.Internal().GetPiggyBack(key,
+        var key = $"AppPath-{name}" + Site.Id; // + _site.Id;
+        var final = appReader.GetCache().GetPiggyBack(key,
             () =>
             {
                 var result = callIfNotFound();
@@ -75,23 +62,23 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     }
 
     public string Path => GetInternal(nameof(Path), 
-        () => _site.AppAssetsLinkTemplate.Replace(AppLoadConstants.AppFolderPlaceholder, _appState.Folder)
+        () => Site.AppAssetsLinkTemplate.Replace(AppLoadConstants.AppFolderPlaceholder, _appSpecs.Folder)
             .ToAbsolutePathForwardSlash());
 
     public string PathShared => GetInternal(nameof(PathShared), 
-        () => Combine(config.Value.SharedAppsFolder, _appState.Folder)
+        () => Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)
             .ToAbsolutePathForwardSlash());
 
     public string PhysicalPath => GetInternal(nameof(PhysicalPath), 
-        () => Combine(_site.AppsRootPhysicalFull, _appState.Folder));
+        () => Combine(Site.AppsRootPhysicalFull, _appSpecs.Folder));
 
     public string PhysicalPathShared => GetInternal(nameof(PhysicalPathShared), 
-        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder, _appState.Folder)));
+        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)));
 
     public string RelativePath => GetInternal(nameof(RelativePath), 
-        () => Combine(_site.AppsRootPhysical, _appState.Folder).Backslash());
+        () => Combine(Site.AppsRootPhysical, _appSpecs.Folder).Backslash());
         
     public string RelativePathShared => GetInternal(nameof(RelativePathShared), 
-        () => Combine(config.Value.SharedAppsFolder, _appState.Folder)
+        () => Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)
             .ToAbsolutePathForwardSlash());
 }

@@ -3,8 +3,7 @@
 namespace ToSic.Eav.Apps.Integration;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public interface IAppPathsMicroSvc: IAppPaths
+public interface IAppPathsMicroSvc
 {
-    IAppPaths Init(ISite site, IAppState appState);
-    bool InitDone { get; }
+    IAppPaths Get(IAppReader appReader, ISite site = default);
 }

@@ -42,7 +42,7 @@ public class ContentTypeBuilder
         // Metadata (2)
         ContentTypeMetadata metadata = default,                 // for clone
         List<IEntity> metadataItems = default,
-        Func<IHasMetadataSource> metaSourceFinder = default,    // for find-it-yourself
+        Func<IHasMetadataSourceAndExpiring> metaSourceFinder = default,    // for find-it-yourself
 
         // Save Specs (2) Older stuff, should be removed some day
         bool? onSaveSortAttributes = default,

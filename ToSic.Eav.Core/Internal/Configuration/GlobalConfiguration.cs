@@ -84,6 +84,13 @@ public class GlobalConfiguration : IGlobalConfiguration
         set => _newAppsTemplateFolder = CorrectFolderOrErrorIfInvalid(value, nameof(NewAppsTemplateFolder));
     }
 
+    /// <inheritdoc />
+    public string TempAssemblyFolder
+    {
+        get => _tempAssemblyFolder ?? throw new (ErrorMessage(nameof(TempAssemblyFolder)));
+        set => _tempAssemblyFolder = value;
+    }
+
     private static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) 
         => value?.Backslash().TrimLastSlash() ?? throw new(ErrorMessage(fieldName));
 
@@ -101,4 +108,5 @@ public class GlobalConfiguration : IGlobalConfiguration
     private static string _instructionsFolder;
     private static string _appDataTemplateFolder;
     private static string _newAppsTemplateFolder;
+    private static string _tempAssemblyFolder;
 }

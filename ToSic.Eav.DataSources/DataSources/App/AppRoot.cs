@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Internal.Caching;
@@ -16,14 +17,14 @@ namespace ToSic.Eav.DataSources;
 public class AppRoot : DataSourceBase, IAppRoot
 {
     [PrivateApi]
-    public AppRoot(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.Root")
+    public AppRoot(IAppReaderFactory appReaders, MyServices services) : base(services, $"{LogPrefix}.Root")
     {
-        _appStates = appStates;
+        _appReaders = appReaders;
         ProvideOut(() => AppReader.List);
-        ProvideOut(() => AppReader.ListPublished.List, StreamPublishedName);
-        ProvideOut(() => AppReader.ListNotHavingDrafts.List, StreamDraftsName);
+        ProvideOut(() => AppReader.GetListPublished(), StreamPublishedName);
+        ProvideOut(() => AppReader.GetListNotHavingDrafts(), StreamDraftsName);
     }
-    private readonly IAppStates _appStates;
+    private readonly IAppReaderFactory _appReaders;
 
     public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
         .AddStream(name: StreamPublishedName)
@@ -42,16 +43,16 @@ public class AppRoot : DataSourceBase, IAppRoot
     /// <summary>
     /// Get the <see cref="AppReader"/> of this app from the cache.
     /// </summary>
-    private IAppStateInternal AppReader => _appReader ??= _appStates.GetReader(this);
-    private IAppStateInternal _appReader;
+    private IAppReader AppReader => _appReader ??= _appReaders.Get(this);
+    private IAppReader _appReader;
 
     #region Cache-Chain
 
     /// <inheritdoc />
-    public override long CacheTimestamp => AppReader.CacheTimestamp;
+    public override long CacheTimestamp => AppReader.GetCache().CacheTimestamp;
 
     /// <inheritdoc />
-    public override bool CacheChanged(long dependentTimeStamp) => AppReader.CacheChanged(dependentTimeStamp);
+    public override bool CacheChanged(long dependentTimeStamp) => AppReader.GetCache().CacheChanged(dependentTimeStamp);
 
     /// <summary>
     /// Combination of the current key and all keys of upstream cached items, to create a long unique key for this context.

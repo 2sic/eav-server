@@ -15,10 +15,10 @@ namespace ToSic.Eav.WebApi.Admin.Metadata;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class MetadataControllerReal(
     IConvertToEavLight converter,
-    IAppStates appStates,
+    IAppReaderFactory appReaders,
     ITargetTypes metadataTargets,
     LazySvc<MdRecommendations> mdRead)
-    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appStates, metadataTargets, mdRead]),
+    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appReaders, metadataTargets, mdRead]),
         IMetadataController
 {
     public const string LogSuffix = "MetaDt";
@@ -29,9 +29,9 @@ public class MetadataControllerReal(
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
     {
         var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
-        var appState = appStates.GetReader(appId);
+        var appReader = appReaders.Get(appId);
 
-        var (entityList, mdFor) = GetExistingEntitiesAndMd(targetType, keyType, key, contentType, appState);
+        var (entityList, mdFor) = GetExistingEntitiesAndMd(targetType, keyType, key, contentType, appReader.Metadata);
 
         if (entityList == null)
         {
@@ -39,7 +39,7 @@ public class MetadataControllerReal(
             throw l.Done(new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel"));
         }
 
-        mdRead.Value.Setup(appState, appId);
+        mdRead.Value.Setup(appReader, appId);
 
         // When retrieving all items, make sure that permissions are _not_ included
         if (IsNullOrEmpty(contentType))
@@ -61,7 +61,7 @@ public class MetadataControllerReal(
 
         try
         {
-            mdFor.Title = appState.FindTargetTitle(targetType, key);
+            mdFor.Title = appReader.FindTargetTitle(targetType, key);
             l.A($"title: '{mdFor.Title}'");
         }
         catch { /* experimental / ignore */ }
@@ -95,7 +95,7 @@ public class MetadataControllerReal(
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    private (List<IEntity> entityList, JsonMetadataFor mdFor) GetExistingEntitiesAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource appState)
+    private (List<IEntity> entityList, JsonMetadataFor mdFor) GetExistingEntitiesAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource mdSource)
     {
         var l = Log.Fn<(List<IEntity> entityList, JsonMetadataFor mdFor)>($"targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
         var mdFor = new JsonMetadataFor
@@ -112,17 +112,17 @@ public class MetadataControllerReal(
                 if (!Guid.TryParse(key, out var guidKey))
                     return l.Return((null, mdFor), $"error: invalid guid:{key}");
                 mdFor.Guid = guidKey;
-                var md = appState.GetMetadata(targetType, guidKey, contentType).ToList();
+                var md = mdSource.GetMetadata(targetType, guidKey, contentType).ToList();
                 return l.Return((md, mdFor), $"guid:{guidKey}; count:{md.Count}");
             case "string":
                 mdFor.String = key;
-                md = appState.GetMetadata(targetType, key, contentType).ToList();
+                md = mdSource.GetMetadata(targetType, key, contentType).ToList();
                 return l.Return((md, mdFor), $"string:{key}; count:{md.Count}");
             case "number":
                 if (!int.TryParse(key, out var keyInt))
                     return l.Return((null, mdFor), $"error: invalid number:{key}");
                 mdFor.Number = keyInt;
-                md = appState.GetMetadata(targetType, keyInt, contentType).ToList();
+                md = mdSource.GetMetadata(targetType, keyInt, contentType).ToList();
                 return l.Return((md, mdFor), $"number:{keyInt}; count:{md.Count}");
             default:
                 throw l.Done(new Exception("key type unknown:" + keyType));

@@ -7,18 +7,15 @@ namespace ToSic.Eav.Apps;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class AppBase<TServices>: ServiceBase<TServices>, IAppIdentity where TServices: MyServicesBase
+public abstract class AppBase<TServices>(TServices services, string logName, object[] connect)
+    : ServiceBase<TServices>(services, logName ?? "App.Base", connect: connect), IAppIdentity
+    where TServices : MyServicesBase
 {
     /// <inheritdoc />
     public int ZoneId { get; private set; }
 
     /// <inheritdoc />
     public int AppId { get; private set; }
-
-    /// <summary>
-    /// DI Constructor - always run Init afterward
-    /// </summary>
-    protected AppBase(TServices services, string logName, object[] connect): base(services, logName ?? "App.Base", connect: connect) { }
 
     /// <summary>
     /// App identity containing zone/app combination

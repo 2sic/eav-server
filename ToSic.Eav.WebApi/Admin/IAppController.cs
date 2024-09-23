@@ -18,7 +18,7 @@ public interface IAppController<out THttpResponse>
 
     bool FlushCache(int zoneId, int appId);
 
-    THttpResponse Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid);
+    THttpResponse Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted);
 
     bool SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool withPortalFiles);
 

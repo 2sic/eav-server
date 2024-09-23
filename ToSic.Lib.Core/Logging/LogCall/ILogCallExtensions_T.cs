@@ -53,6 +53,8 @@ partial class ILogCallExtensions
     /// <returns></returns>
     public static T ReturnAndLog<T>(this ILogCall<T> logCall, T result) =>
         logCall.Return(result, (result as ICanDump)?.Dump() ?? $"{result}");
+    public static T ReturnAndLogIfNull<T>(this ILogCall<T> logCall, T result) =>
+        logCall.Return(result, (result as ICanDump)?.Dump() ?? $"is null: {result == null}");
 
     /// <summary>
     /// Return a value and log the result as well + add a message.

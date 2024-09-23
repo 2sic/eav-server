@@ -35,7 +35,7 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
 
         l.A($"will save {entitiesToImport.Count} items");
         // #ExtractEntitySave - verified
-        var saver = workEntSave.New(appCtx.AppState);
+        var saver = workEntSave.New(appCtx.AppReader);
         saver.Save(entitiesToImport);
         l.Done();
     }
@@ -52,7 +52,7 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
             {
                 var foundEntity = workEntities.Get(e.Header.Guid);
                 var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
-                var draft = foundEntity  == null ? null : workEntities.AppWorkCtx.AppState.GetDraft(foundEntity);
+                var draft = foundEntity  == null ? null : workEntities.AppWorkCtx.AppReader.GetDraft(foundEntity);
                 l.A($"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
                 return draft ?? foundEntity; // return the draft (that would be the latest), or the found, or null if not found
             })

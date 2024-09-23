@@ -22,14 +22,14 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         IImportExportEnvironment environment,
         Generator<XmlImportWithFiles> xmlImpExpFiles,
         AppCachePurger appCachePurger,
-        IAppStates appStates)
-        : MyServicesBase(connect: [fileManagerGenerator, environment, xmlImpExpFiles, appCachePurger, appStates])
+        IAppsCatalog appsCatalog)
+        : MyServicesBase(connect: [fileManagerGenerator, environment, xmlImpExpFiles, appCachePurger, appsCatalog])
     {
         public Generator<FileManager> FileManagerGenerator { get; } = fileManagerGenerator;
         public IImportExportEnvironment Environment { get; } = environment;
         public Generator<XmlImportWithFiles> XmlImpExpFiles { get; } = xmlImpExpFiles;
         public AppCachePurger AppCachePurger { get; } = appCachePurger;
-        public IAppStates AppStates { get; } = appStates;
+        public IAppsCatalog AppsCatalog { get; } = appsCatalog;
     }
 
 
@@ -238,7 +238,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         else
         {
             l.A("will do content import");
-            appId = _initialAppId ?? Services.AppStates.DefaultAppId(_zoneId);
+            appId = _initialAppId ?? Services.AppsCatalog.DefaultAppIdentity(_zoneId).AppId;
 
             if (importer.IsCompatible(imp.XmlDoc))
                 HandlePortalFilesFolder(appDirectory, pendingApp);

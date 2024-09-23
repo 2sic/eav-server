@@ -4,10 +4,13 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
 using ToSic.Eav.Data.Shared;
+using ToSic.Eav.Helpers;
+using ToSic.Eav.Identity;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Metadata;
@@ -20,10 +23,11 @@ namespace ToSic.Eav.ImportExport.Internal;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class XmlExporter(
     XmlSerializer xmlSerializer,
-    IAppStates appStates,
+    IAppsCatalog appsCatalog,
     IContextResolver contextResolver,
-    string logPrefix)
-    : ServiceBase(logPrefix + "XmlExp", connect: [appStates, xmlSerializer, contextResolver])
+    string logPrefix,
+    object[] connect = default)
+    : ServiceBase(logPrefix + "XmlExp", connect: [..connect ?? [], appsCatalog, xmlSerializer, contextResolver])
 {
 
     #region simple properties
@@ -36,26 +40,33 @@ public abstract class XmlExporter(
     public string[] EntityIDs;
     public List<Message> Messages = [];
 
-    public IAppStateInternal AppState { get; private set; }
-
+    public IAppReader AppReader { get; private set; }
     public int ZoneId { get; private set; }
 
     private string _appStaticName = "";
+    private AppExportSpecs _specs;
+    private List<string> _foldersForEntitiesThatAreNotDeleted = [];
     #endregion
 
     #region Constructor & DI
 
     protected IContextResolver ContextResolver { get; } = contextResolver;
     public XmlSerializer Serializer { get; } = xmlSerializer;
-    protected readonly IAppStates AppStates = appStates;
+    protected readonly IAppsCatalog AppsCatalog = appsCatalog;
 
-    protected void Constructor(int zoneId, IAppStateInternal appState, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
+    protected void Constructor(AppExportSpecs specs, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
     {
-        ZoneId = zoneId;
+        _specs = specs;
+        ZoneId = specs.ZoneId;
         Log.A("start XML exporter using app-package");
-        AppState = appState;
-        Serializer.Init(AppStates.Languages(zoneId).ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId),
-            AppState);
+        AppReader = appReader;
+        Serializer.Init(
+            AppsCatalog.Zone(specs.ZoneId).LanguagesActive
+                .ToDictionary(
+                    l => l.EnvironmentKey.ToLowerInvariant(),
+                    l => l.DimensionId
+                ),
+            AppReader);
 
         _appStaticName = appStaticName;
         _isAppExport = appExport;
@@ -68,12 +79,12 @@ public abstract class XmlExporter(
     /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
     /// </summary>
     /// <returns></returns>
-    public virtual XmlExporter Init(int zoneId, int appId, IAppStateInternal appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+    public virtual XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
     {
-        ContextResolver.SetApp(new AppIdentity(zoneId, appId));
+        ContextResolver.SetApp(new AppIdentity(specs.ZoneId, specs.AppId));
         var ctxOfApp = ContextResolver.AppRequired();
         PostContextInit(ctxOfApp);
-        Constructor(zoneId, appRuntime, ctxOfApp.AppState.NameId, appExport, attrSetIds, entityIds);
+        Constructor(specs, appRuntime, ctxOfApp.AppReader.Specs.NameId, appExport, attrSetIds, entityIds);
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
         InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
@@ -141,7 +152,7 @@ public abstract class XmlExporter(
 
         #region Header
 
-        var dimensions = AppStates.Languages(ZoneId);
+        var dimensions = AppsCatalog.Zone(ZoneId).LanguagesActive;
 
         var header = new XElement(XmlConstants.Header,
             _isAppExport && _appStaticName != XmlConstants.AppContentGuid
@@ -170,8 +181,8 @@ public abstract class XmlExporter(
         foreach (var attributeSetId in AttributeSetNamesOrIds)
         {
             var set = int.TryParse(attributeSetId, out var id)
-                ? AppState.GetContentType(id)
-                : AppState.GetContentType(attributeSetId);  // in case it's the name, not the number
+                ? AppReader.GetContentType(id)
+                : AppReader.GetContentType(attributeSetId);  // in case it's the name, not the number
 
             // skip system/code-types
             if (set.HasPresetAncestor()) continue;
@@ -179,6 +190,7 @@ public abstract class XmlExporter(
             var attributes = new XElement(XmlConstants.Attributes);
 
             // Add all Attributes to AttributeSet including meta information
+            var appMetadata = AppReader.Metadata;
             foreach (var a in set.Attributes.OrderBy(a => a.SortOrder))
             {
                 var xmlAttribute = new XElement(XmlConstants.Attribute,
@@ -186,7 +198,7 @@ public abstract class XmlExporter(
                     new XAttribute(XmlConstants.Type, a.Type.ToString()),
                     new XAttribute(XmlConstants.IsTitle, a.IsTitle),
                     // Add Attribute MetaData
-                    AppState.GetMetadata(TargetTypes.Attribute, a.AttributeId)
+                    appMetadata.GetMetadata(TargetTypes.Attribute, a.AttributeId)
                         .Select(c => GetEntityXElement(c.EntityId, c.Type.NameId))
                 );
 
@@ -227,7 +239,7 @@ public abstract class XmlExporter(
             var id = int.Parse(entityId);
 
             // Get the entity and ContentType from ContentContext add Add it to ContentItems
-            var entity = AppState.List.FindRepoId(id);
+            var entity = AppReader.List.FindRepoId(id);
             entities.Add(GetEntityXElement(entity.EntityId, entity.Type.NameId));
         }
 
@@ -235,6 +247,8 @@ public abstract class XmlExporter(
 
         // init files (add to queue)
         AddFilesToExportQueue();
+
+        GetFoldersForEntitiesThatAreNotDeleted(entities);
 
         // Create root node "SexyContent" and add ContentTypes, ContentItems and Templates
         doc.Add(new XElement(XmlConstants.RootNode,
@@ -249,14 +263,43 @@ public abstract class XmlExporter(
             GetFoldersXElements()));
     }
 
+    /// <summary>
+    /// Prepare list of possible discriminators for folder names in adam/app for assets of entities that are not deleted, to be exported with entity.
+    /// Folders in adam/app that are not in this list are likely related to deleted entity, and probably can be skipped from export
+    /// to keep size of export zips as small as possible and to not export unnecessary files.
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <remarks>
+    /// GetFilesXElements and GetFoldersXElements depends on it.
+    /// </remarks>
+    private void GetFoldersForEntitiesThatAreNotDeleted(XElement entities)
+    {
+        // when export includes deleted assets, there is no need to check for deleted entities
+        // so skip preparation of list of possible discriminators for folder names in adam/app
+        if (_specs.AssetAdamDeleted)
+        {
+            _foldersForEntitiesThatAreNotDeleted = [];
+            return;
+        }
+
+        // prepare list of compressed EntityGuids for Entities (that are not deleted)
+        // to be used for validation of folders in adam/app for assets of entities that are not deleted
+        var entityGuids = entities.Elements(XmlConstants.Entity).Select(e => (e.Attribute("EntityGUID"))?.Value).ToList();
+        foreach (var entityGuid in entityGuids)
+            if (Guid.TryParse(entityGuid, out var guid)) 
+                _foldersForEntitiesThatAreNotDeleted.Add(guid.GuidCompress());
+    }
+
     private XElement GetParentAppXElement()
     {
-        if (_isAppExport && _appStaticName != XmlConstants.AppContentGuid && AppState.HasCustomParentApp())
-            return new(XmlConstants.ParentApp,
-                new XAttribute(XmlConstants.Guid, AppState.ParentAppState.NameId),
-                new XAttribute(XmlConstants.AppId, AppState.ParentAppState.AppId)
-            );
-        return null;
+        if (!_isAppExport || _appStaticName == XmlConstants.AppContentGuid || !AppReader.HasCustomParentApp())
+            return null;
+
+        var parentAppState = AppReader.GetParentCache();
+        return new(XmlConstants.ParentApp,
+            new XAttribute(XmlConstants.Guid, parentAppState.NameId),
+            new XAttribute(XmlConstants.AppId, parentAppState.AppId)
+        );
     }
 
     public abstract void AddFilesToExportQueue();
@@ -325,7 +368,7 @@ public abstract class XmlExporter(
     {
         var file = ResolveFile(fileId);
 
-        if (file.RelativePath == null) return null;
+        if (IsDeletedOrInvalid(file?.RelativePath)) return null;
 
         ReferencedFiles.Add(file);
 
@@ -341,15 +384,40 @@ public abstract class XmlExporter(
     {
         var path = ResolveFolderId(folderId);
 
-        if (path != null)
-        {
-            return new(XmlConstants.Folder,
-                new XAttribute(XmlConstants.FolderNodeId, folderId),
-                new XAttribute(XmlConstants.FolderNodePath, path)
-            );
-        }
+        if (IsDeletedOrInvalid(path)) return null;
 
-        return null;
+        return new(XmlConstants.Folder,
+            new XAttribute(XmlConstants.FolderNodeId, folderId),
+            new XAttribute(XmlConstants.FolderNodePath, path)
+        );
+    }
+
+    /// <summary>
+    /// Checks if the asset path is invalid or belongs to deleted entity
+    /// </summary>
+    /// <param name="relativePath">The relative path of the asset.</param>
+    /// <returns>True if the asset path is invalid or belongs to deleted entity, otherwise false.</returns>
+    private bool IsDeletedOrInvalid(string relativePath)
+    {
+        // invalid, can't export assets without path
+        if (relativePath == null) return true;
+
+        // skip check for deleted assets and just leave it for export
+        if (_specs.AssetAdamDeleted) return false;
+
+        // if not in "adam" folder, we can't know is it deleted or not, so leave it for export
+        // this is expected for site assets
+        if (!relativePath.StartsWith("adam")) return false;
+
+        // break adam path to parts,
+        // this is necessary to check if it's in discriminator list of possible folders for entities that are not deleted
+        var pathParts = relativePath.ForwardSlash().Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+
+        // always export parent folders for entity assets (eg adam/app/)
+        if (pathParts.Length < 3) return false;
+
+        // check if folder is in list of possible entities that are not deleted
+        return _foldersForEntitiesThatAreNotDeleted.All(f => f != pathParts[2]);
     }
     #endregion
 

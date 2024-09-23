@@ -9,7 +9,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
     {
         var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{AppWorkCtx.Show()}, type:{staticName}");
 
-        if (AppWorkCtx.AppState.GetContentType(staticName) is not { } type)
+        if (AppWorkCtx.AppReader.GetContentType(staticName) is not { } type)
             return l.Return([],
                 $"error, type:{staticName} is null, it is missing or it is not a ContentType - something broke");
 
@@ -21,7 +21,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
     public List<PairTypeWithAttribute> GetSharedFields(int attributeId)
     {
         var l = Log.Fn<List<PairTypeWithAttribute>>($"get shared fields {AppWorkCtx.Show()}");
-        var appState = AppWorkCtx.AppState;
+        var appState = AppWorkCtx.AppReader;
         var localTypes = appState.ContentTypes
             .Where(ct => !ct.HasAncestor())
             .ToList();

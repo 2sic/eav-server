@@ -7,21 +7,12 @@ using ToSic.Eav.Persistence.Logging;
 namespace ToSic.Eav.Apps.Integration;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract class EavImportExportEnvironmentBase: ServiceBase, IImportExportEnvironment
+public abstract class EavImportExportEnvironmentBase(ISite site, IAppsCatalog appsCatalog, string logName)
+    : ServiceBase(logName), IImportExportEnvironment
 {
     #region constructor / DI
 
-    /// <summary>
-    /// DI Constructor
-    /// </summary>
-    protected EavImportExportEnvironmentBase(ISite site, IAppStates appStates, string logName) : base(logName)
-    {
-        Site = site;
-        _appStates = appStates;
-    }
-
-    protected readonly ISite Site;
-    private readonly IAppStates _appStates;
+    protected readonly ISite Site = site;
 
     #endregion
 
@@ -51,7 +42,7 @@ public abstract class EavImportExportEnvironmentBase: ServiceBase, IImportExport
 
     public SaveOptions SaveOptions(int zoneId) => Log.Func($"{nameof(zoneId)}:{zoneId}", () =>
     {
-        var langs = _appStates.Languages(zoneId, true);
+        var langs = appsCatalog.Zone(zoneId).Languages;
         var opts = new SaveOptions(DefaultLanguage, langs);
         return (opts, $"langs: {langs.Count}");
     });

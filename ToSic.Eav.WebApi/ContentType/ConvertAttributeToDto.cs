@@ -8,7 +8,7 @@ using static ToSic.Eav.Data.AttributeMetadata;
 
 namespace ToSic.Eav.WebApi;
 
-public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes, IAppStates appStates, LazySvc<MdRecommendations> mdRead)
+public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes, IAppReaderFactory appReaders, LazySvc<MdRecommendations> mdRead)
     : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight, mdRead]),
         IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
 {
@@ -233,8 +233,8 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     {
         if (_mdRecs != null) return _mdRecs;
         _mdRecs = mdRead.Value;
-        var appState = appStates.GetReader(_appId);
-        _mdRecs.Setup(appState, _appId);
+        var appReader = appReaders.Get(_appId);
+        _mdRecs.Setup(appReader, _appId);
         return _mdRecs;
     }
     private MdRecommendations _mdRecs;

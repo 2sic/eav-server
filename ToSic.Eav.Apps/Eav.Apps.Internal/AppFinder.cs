@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
+public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : ServiceBase("App.ZoneRt")
 {
     /// <summary>
     /// Find the app id from the app-name (usually a guid or "Default").
@@ -18,7 +18,7 @@ public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
                 return l.Return(Constants.AppIdEmpty, "no name");
 
             var nameLower = appName.ToLowerInvariant();
-            var appId = appStates.Apps(zoneId)
+            var appId = appsCatalog.Apps(zoneId)
                 .Where(p => p.Value.EqualsInsensitive(nameLower))
                 .Select(p => p.Key).FirstOrDefault();
 
@@ -44,10 +44,10 @@ public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
         var l = Log.Fn<int>($"{nameof(zoneId)}: {zoneId}; {nameof(folderName)}: {folderName}");
         try
         {
-            foreach (var p in appStates.Apps(zoneId))
+            foreach (var p in appsCatalog.Apps(zoneId))
             {
-                var appState = appStates.GetReader(new AppIdentity(zoneId, p.Key));
-                if (appState.Folder.EqualsInsensitive(folderName))
+                var appSpecs = appReaders.Get(new AppIdentity(zoneId, p.Key)).Specs;
+                if (appSpecs.Folder.EqualsInsensitive(folderName))
                     return l.Return(p.Key, "folder matched");
             }
 
@@ -69,11 +69,11 @@ public sealed class AppFinder(IAppStates appStates) : ServiceBase("App.ZoneRt")
     {
         var nameLower = appName.ToLowerInvariant();
 
-        foreach (var p in appStates.Apps(zoneId))
+        foreach (var p in appsCatalog.Apps(zoneId))
         {
-            var appState = appStates.GetReader(new AppIdentity(zoneId, p.Key));
+            var specs = appReaders.Get(new AppIdentity(zoneId, p.Key)).Specs;
 
-            if (!string.IsNullOrEmpty(appState.Name) && appState.Name.ToLowerInvariant() == nameLower)
+            if (!string.IsNullOrEmpty(specs.Name) && specs.Name.ToLowerInvariant() == nameLower)
                 return (p.Key, "name matched");
         }
 

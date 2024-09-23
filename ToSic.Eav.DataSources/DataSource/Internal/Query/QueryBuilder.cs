@@ -15,11 +15,11 @@ public class QueryBuilder(
     IDataSourcesService dataSourceFactory,
     IZoneCultureResolver cultureResolver,
     Generator<PassThrough> passThrough,
-    IAppStates appStates,
+    IAppsCatalog appsCatalog,
     IContextResolverUserPermissions userPermissions,
     QueryDefinitionBuilder queryDefinitionBuilder)
     : ServiceBase("DS.PipeFt",
-        connect: [cultureResolver, appStates, dataSourceFactory, passThrough, userPermissions, queryDefinitionBuilder])
+        connect: [cultureResolver, appsCatalog, dataSourceFactory, passThrough, userPermissions, queryDefinitionBuilder])
 {
 
     public QueryDefinition Create(IEntity entity, int appId) => queryDefinitionBuilder.Create(entity, appId);
@@ -32,7 +32,7 @@ public class QueryBuilder(
     {
         try
         {
-            var app = appStates.IdentityOfApp(appId);
+            var app = appsCatalog.AppIdentity(appId);
             var source = dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: app));
             var appEntities = source.List;
 
@@ -77,7 +77,7 @@ public class QueryBuilder(
 
         #region Load Parameters needed for all parts
 
-        var appIdentity = appStates.IdentityOfApp(queryDef.AppId);
+        var appIdentity = appsCatalog.AppIdentity(queryDef.AppId);
         var dimensions = cultureResolver.SafeLanguagePriorityCodes();
 
         #endregion

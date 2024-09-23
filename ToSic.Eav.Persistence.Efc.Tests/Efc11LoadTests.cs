@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
+using ToSic.Eav.Repositories;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Persistence.Efc.Tests
@@ -22,7 +23,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
         [TestMethod]
         public void TestLoadXAppBlog()
         {
-            var results = TestLoadApp(2);
+            var results = Loader.AppStateReaderRawTA(2);
 
             Assert.IsTrue(results.List.Count > 1097 && results.List.Count < 1200, "tried counting entities on the blog-app");
         }
@@ -35,7 +36,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             for (var i = 0; i < loadCount; i++)
             {
                 Loader = NewLoader();
-                TestLoadApp(2);
+                Loader.AppStateReaderRawTA(2);
             }
         }
 
@@ -71,8 +72,6 @@ namespace ToSic.Eav.Persistence.Efc.Tests
             Assert.AreEqual(ExpectedContentTypesOnApp2, results.Count, "dummy test: ");
         }
 
-        private IAppState TestLoadApp(int appId) => Loader.AppStateReaderRawTA(appId);
-
-        private IList<IContentType> TestLoadCts(int appId) => Loader.ContentTypes(appId, null);
+        private IList<IContentType> TestLoadCts(int appId) => (Loader as IRepositoryLoader).ContentTypes(appId, null);
     }
 }

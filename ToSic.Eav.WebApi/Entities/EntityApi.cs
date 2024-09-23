@@ -43,7 +43,7 @@ public class EntityApi(
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
-    public IEnumerable<IDictionary<string, object>> GetEntities(IAppStateInternal appState, string contentType, bool showDrafts, string oDataSelect)
+    public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appState, string contentType, bool showDrafts, string oDataSelect)
     {
         var list = workEntities.New(appState, showDrafts).Get(contentType);
         var converter= entitiesToDicLazy.New();
@@ -101,7 +101,7 @@ public class EntityApi(
 
     private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
     {
-        var appState = _appWorkCtxPlus.AppState;
+        var appState = _appWorkCtxPlus.AppReader;
         var found = appState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
         // if there is a draft, use that for editing - not the original
         found = appState.GetDraft(found) ?? found;
@@ -125,7 +125,7 @@ public class EntityApi(
     /// <exception cref="ArgumentNullException">Entity does not exist</exception>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
     public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null)
-        => entDelete.New(_appWorkCtxPlus.AppState).Delete(id, contentType, force, false, parentId, parentField);
+        => entDelete.New(_appWorkCtxPlus.AppReader).Delete(id, contentType, force, false, parentId, parentField);
 
     /// <summary>
     /// Delete the entity specified by GUID.
@@ -138,7 +138,7 @@ public class EntityApi(
     /// <exception cref="ArgumentNullException">Entity does not exist</exception>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
     public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string parentField = null) 
-        => Delete(contentType, workEntities.New(_appWorkCtxPlus.AppState).Get(entityGuid).EntityId, force, parentId, parentField);
+        => Delete(contentType, workEntities.New(_appWorkCtxPlus.AppReader).Get(entityGuid).EntityId, force, parentId, parentField);
 
 
     /// <summary>
@@ -149,7 +149,7 @@ public class EntityApi(
     {
         foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
         {
-            var ct = _appWorkCtxPlus.AppState.GetContentType(itm.ContentTypeName);
+            var ct = _appWorkCtxPlus.AppReader.GetContentType(itm.ContentTypeName);
             if (ct == null)
             {
                 if (!itm.ContentTypeName.StartsWith("@"))

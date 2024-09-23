@@ -10,7 +10,7 @@ namespace ToSic.Eav.Caching;
 /// <typeparam name="T">The type which is enumerated, usually an <see cref="IEntity"/></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class SynchronizedList<T>: SynchronizedObject<IImmutableList<T>>, IEnumerable<T>, ICacheDependent, ICacheExpiring
+public class SynchronizedList<T>: SynchronizedObject<IImmutableList<T>>, IEnumerable<T>
 {
     /// <summary>
     /// Initialized a new list which depends on another source

@@ -43,7 +43,7 @@ partial class DataSourceBase
     {
         var l = Log.Fn();
         var mainUpstream = attach?.Link?.DataSource;
-        (this as IAppIdentitySync).UpdateAppIdentity(options?.AppIdentity ?? mainUpstream);
+        (this as IAppIdentitySync).UpdateAppIdentity(options?.AppIdentityOrReader ?? mainUpstream);
             
         // Attach in-bound, and make it immutable afterwards
         if (attach?.Link == null)

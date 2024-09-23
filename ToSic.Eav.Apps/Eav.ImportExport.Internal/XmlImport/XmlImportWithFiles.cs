@@ -18,13 +18,13 @@ public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles
         IImportExportEnvironment importExportEnvironment,
         ITargetTypes metaTargetTypes,
         AppCachePurger appCachePurger,
-        IAppStates appStates,
+        IAppsCatalog appsCatalog,
         LazySvc<XmlToEntity> xmlToEntity,
         LazySvc<DataBuilder> multiBuilder)
         : MyServicesBase(connect:
         [
             importerLazy, dbDataForNewApp, dbDataForAppImport, importExportEnvironment,
-            metaTargetTypes, appStates, xmlToEntity, appCachePurger, multiBuilder
+            metaTargetTypes, appsCatalog, xmlToEntity, appCachePurger, multiBuilder
         ])
     {
         public readonly LazySvc<DataBuilder> MultiBuilder = multiBuilder;
@@ -33,7 +33,7 @@ public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles
         internal readonly LazySvc<DbDataController> DbDataForAppImport = dbDataForAppImport;
         internal readonly IImportExportEnvironment Environment = importExportEnvironment;
         internal readonly ITargetTypes MetaTargetTypes = metaTargetTypes;
-        internal readonly IAppStates AppStates = appStates;
+        internal readonly IAppsCatalog AppsCatalog = appsCatalog;
         internal readonly LazySvc<XmlToEntity> XmlToEntity = xmlToEntity;
         internal readonly AppCachePurger AppCachePurger = appCachePurger;
     }

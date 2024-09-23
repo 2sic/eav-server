@@ -17,8 +17,8 @@ public class ContentTypeAttributeMetadata(
     ValueTypes type,
     ContentTypeAttributeSysSettings sysSettings = default,
     IReadOnlyCollection<IEntity> items = default,
-    IHasMetadataSource appSource = default,
-    Func<IHasMetadataSource> deferredSource = default)
+    IHasMetadataSourceAndExpiring appSource = default,
+    Func<IHasMetadataSourceAndExpiring> deferredSource = default)
     : MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", items: items,
         appSource: appSource, deferredSource: deferredSource)
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Lib.Logging;
@@ -24,11 +23,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var Log = new Log("TstExp");
             var zoneId = 2;
             var appId = 2;
-            var appState = GetService<IAppStates>().GetReader(new AppIdentity(zoneId, appId));
+            var appState = GetService<IAppReaderFactory>().GetReader(new AppIdentity(zoneId, appId));
 
-            var fileXml = _xmlExporter.Init(zoneId, appId, appState, false,
-                /*contentTypeIdsString?.Split(';') ?? */Array.Empty<string>(),
-                /*entityIdsString?.Split(';') ?? */Array.Empty<string>()
+            var fileXml = _xmlExporter.Init(new AppExportSpecs(zoneId, appId), appState, false,
+                /*contentTypeIdsString?.Split(';') ?? */[],
+                /*entityIdsString?.Split(';') ?? */[]
             ).GenerateNiceXml();
 
         }

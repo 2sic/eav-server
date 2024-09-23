@@ -2,7 +2,4 @@
 
 namespace ToSic.Eav.Context;
 
-public interface IUser<out T>: IUser, IWrapper<T>
-{
-
-}
+public interface IUser<out T>: IUser, IWrapper<T>;

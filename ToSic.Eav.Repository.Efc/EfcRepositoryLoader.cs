@@ -11,7 +11,7 @@ internal class EfcRepositoryLoader(DbDataController dataController) : IRepositor
 
     public ILog Log => _dataController.Loader.Log;
 
-    public IList<IContentType> ContentTypes(int appId, IHasMetadataSource source)
+    public IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
         => _dataController.Loader.ContentTypes(appId, source);
 
     public IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)

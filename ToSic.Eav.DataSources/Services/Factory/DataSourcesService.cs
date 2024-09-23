@@ -48,7 +48,7 @@ internal class DataSourcesService(
     public TDataSource Create<TDataSource>(IDataSourceLinkable attach = default, IDataSourceOptions options = default) where TDataSource : IDataSource => Log.Func(() =>
     {
         var primarySource = attach?.Link?.DataSource;
-        if (primarySource == null && options?.AppIdentity == null)
+        if (primarySource == null && options?.AppIdentityOrReader == null)
             throw new($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");
         if (primarySource == null && options?.LookUp == null)
             options = OptionsWithLookUp(options);
@@ -66,10 +66,11 @@ internal class DataSourcesService(
     /// <inheritdoc />
     public IDataSource CreateDefault(IDataSourceOptions options)
     {
-        if (options == null) throw new ArgumentNullException(nameof(options));
-        var appIdentity = options.AppIdentity
-                          ?? throw new ArgumentNullException(nameof(IDataSourceOptions.AppIdentity));
-        var l = Log.Fn<IDataSource>($"#{appIdentity.Show()}, draft:{options.ShowDrafts}, lookUp:{options.LookUp != null}");
+        if (options == null)
+            throw new ArgumentNullException(nameof(options));
+        if (options.AppIdentityOrReader == null)
+            throw new ArgumentNullException(nameof(IDataSourceOptions.AppIdentityOrReader));
+        var l = Log.Fn<IDataSource>($"#{options.AppIdentityOrReader.Show()}, draft:{options.ShowDrafts}, lookUp:{options.LookUp != null}");
 
         options = OptionsWithLookUp(options);
         var appRoot = Create<IAppRoot>(options: options);

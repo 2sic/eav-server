@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
@@ -69,8 +71,8 @@ partial class App: IDataSourceReset
 
         // now provide all data streams for all data types; only need the cache for the content-types list, don't use it as the source...
         // because the "real" source already applies filters like published
-        var appState = AppState;
-        var listOfTypes = appState.ContentTypes;
+        var appReader = AppReader;
+        var listOfTypes = appReader.ContentTypes;
         var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().IsContentAdmin;
         var typeList = "";
         foreach (var contentType in listOfTypes)
@@ -82,7 +84,7 @@ partial class App: IDataSourceReset
 
             var deferredStream = new DataStreamWithCustomCaching(
                 Services.CacheService,
-                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), ((IAppStateInternal)appState).StateCache,
+                () => new CacheInfoAppAndMore("AppTypeStream" + AppRootCacheKey.AppCacheKey(this), appReader.GetCache(),
                     $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                 this,
                 typeName,

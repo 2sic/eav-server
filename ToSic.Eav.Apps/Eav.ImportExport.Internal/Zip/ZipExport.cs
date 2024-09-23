@@ -1,11 +1,13 @@
 ﻿using System.IO;
 using System.Xml.XPath;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Services;
@@ -14,13 +16,15 @@ namespace ToSic.Eav.ImportExport.Internal.Zip;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ZipExport(
-    IAppStates appStates,
+    IAppReaderFactory appReaders,
     IDataSourcesService dataSourceFactory,
     XmlExporter xmlExporter,
     Generator<FileManager> fileManagerGenerator,
-    IGlobalConfiguration globalConfiguration)
+    IGlobalConfiguration globalConfiguration,
+    IEavFeaturesService features
+    )
     : ServiceBase(EavLogs.Eav + ".ZipExp",
-        connect: [appStates, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator])
+        connect: [appReaders, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator, features])
 {
     private int _appId;
     private int _zoneId;
@@ -52,14 +56,14 @@ public class ZipExport(
             FileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
         ]);
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appState = appStates.GetReader(appIdentity);
+        _appState = appReaders.Get(appIdentity);
         return this;
     }
 
-    private IAppStateInternal _appState;
+    private IAppReader _appState;
     #endregion
 
-    public void ExportForSourceControl(bool includeContentGroups = false, bool resetAppGuid = false, bool withSiteFiles = false)
+    public void ExportForSourceControl(AppExportSpecs specs)
     {
         var appDataPath = Path.Combine(_physicalAppPath, SourceControlDataFolder);
 
@@ -71,9 +75,9 @@ public class ZipExport(
         Directory.CreateDirectory(appDataPath);
 
         // generate the XML & save
-        var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
+        var xmlExport = GenerateExportXml(specs);
 
-        if (withSiteFiles)
+        if (specs.WithSiteFiles)
         {
             var appDataDirectory = new DirectoryInfo(appDataPath);
 
@@ -110,22 +114,26 @@ public class ZipExport(
                 var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForSiteFiles);
 
                 // Copy SiteFiles for version control
-                CopyPortalFiles(xmlExport, portalFilesDirectory);
+                CopyPortalFiles(xmlExport, portalFilesDirectory, specs.AssetsAdam, specs.AssetsSite);
             }
             catch (Exception e)
             {
                 Log.Ex(e);
             }
         }
+        else
+            // Verify patron features if they are being used
+            if (specs.ResetAppGuid)
+                features.ThrowIfNotEnabled("To skip exporting site files, you must enable system features.", [BuiltInFeatures.AppExportAssetsAdvanced.Guid]);
 
         var xml = xmlExport.GenerateNiceXml();
         File.WriteAllText(Path.Combine(appDataPath, SourceControlDataFile), xml);
     }
 
-    public MemoryStream ExportApp(bool includeContentGroups = false, bool resetAppGuid = false)
+    public MemoryStream ExportApp(AppExportSpecs specs)
     {
         // generate the XML
-        var xmlExport = GenerateExportXml(includeContentGroups, resetAppGuid);
+        var xmlExport = GenerateExportXml(specs);
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
@@ -149,20 +157,18 @@ public class ZipExport(
         var globalSexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
         var siteFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
 
-
-
         // Copy app folder
         if (Directory.Exists(_physicalAppPath))
             FileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
 
         // Copy global app folder only for ParentApp
-        var parentAppGuid = xmlExport.AppState.ParentAppState?.NameId;
+        var parentAppGuid = xmlExport.AppReader.GetParentCache()?.NameId;
         if (parentAppGuid == null || AppStateExtensions.AppGuidIsAPreset(parentAppGuid))
             if (Directory.Exists(_physicalPathGlobal))
                 FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
         // Copy SiteFiles
-        CopyPortalFiles(xmlExport, siteFilesDirectory);
+        CopyPortalFiles(xmlExport, siteFilesDirectory, specs.AssetsAdam, specs.AssetsSite);
         #endregion
 
         // create tmp App_Data unless exists
@@ -181,8 +187,12 @@ public class ZipExport(
         return stream;
     }
 
-    private static void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory)
+    private void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory, bool assetsAdam, bool assetsSite)
     {
+        if (!assetsAdam || !assetsSite)
+            // Verify patron features if they are being used
+            features.ThrowIfNotEnabled("To skip exporting site files, you must enable system features.", [BuiltInFeatures.AppExportAssetsAdvanced.Guid]);
+
         foreach (var file in xmlExport.ReferencedFiles)
         {
             var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(file.RelativePath));
@@ -194,7 +204,9 @@ public class ZipExport(
             var fullPath = Path.Combine(siteFilesDirectory.FullName, file.RelativePath);
             try
             {
-                File.Copy(file.Path, fullPath, overwrite: true);
+                if (assetsAdam && file.RelativePath.StartsWith("adam") // Adam assets
+                    || assetsSite && !file.RelativePath.StartsWith("adam")) // Site assets
+                    File.Copy(file.Path, fullPath, overwrite: true);
             }
             catch (Exception e)
             {
@@ -204,9 +216,9 @@ public class ZipExport(
     }
 
 
-    private XmlExporter GenerateExportXml(bool includeContentGroups, bool resetAppGuid)
+    private XmlExporter GenerateExportXml(AppExportSpecs specs)
     {
-        // Get Export XML
+            // Get Export XML
         var appIdentity = new AppIdentity(_zoneId, _appId);
         var attributeSets = _appState.ContentTypes.OfScope(includeAttributeTypes: true);
         attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
@@ -224,7 +236,7 @@ public class ZipExport(
             .List
             .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 
-        if (!includeContentGroups)
+        if (!specs.IncludeContentGroups)
             entities = entities.Where(p => p.Type.NameId != SexyContentContentGroupName).ToList();
 
         // Exclude ParentApp entities
@@ -234,11 +246,11 @@ public class ZipExport(
         var entityIds = entities
             .Select(e => e.EntityId.ToString()).ToArray();
 
-        var xmlExport = xmlExporter.Init(_zoneId, _appId, _appState, true, contentTypeNames, entityIds);
+        var xmlExport = xmlExporter.Init(specs, _appState, true, contentTypeNames, entityIds);
 
         #region reset App Guid if necessary
 
-        if (resetAppGuid)
+        if (specs.ResetAppGuid)
         {
             var root = xmlExport.ExportXDocument; //.Root;
             var appGuid = root.XPathSelectElement("/SexyContent/Header/App").Attribute(XmlConstants.Guid);

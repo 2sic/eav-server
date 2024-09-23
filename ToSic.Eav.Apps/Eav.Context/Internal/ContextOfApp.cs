@@ -22,15 +22,15 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// </summary>
     public new class MyServices(
         ContextOfSite.MyServices siteServices,
-        IAppStates appStates,
+        IAppReaderFactory appReaders,
         LazySvc<IEavFeaturesService> features,
         LazySvc<AppUserLanguageCheck> langChecks,
         Generator<IEnvironmentPermission> environmentPermissions,
         LazySvc<AppDataStackService> settingsStack)
         : MyServicesBase<ContextOfSite.MyServices>(siteServices,
-            connect: [environmentPermissions, appStates, features, langChecks, settingsStack])
+            connect: [environmentPermissions, appReaders, features, langChecks, settingsStack])
     {
-        public IAppStates AppStates { get; } = appStates;
+        public IAppReaderFactory AppReaders { get; } = appReaders;
         public LazySvc<IEavFeaturesService> Features { get; } = features;
         public LazySvc<AppUserLanguageCheck> LangChecks { get; } = langChecks;
         public LazySvc<AppDataStackService> SettingsStack { get; } = settingsStack;
@@ -87,7 +87,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
             return (true, "super");
 
         // Case 2: No App-State
-        if (AppState == null)
+        if (AppReader == null)
         {
             if (UserMayAdmin)
                 return (true, "no app, use UserMayAdmin checks");
@@ -102,12 +102,12 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
         // Case 3: From App
         var fromApp = Services.AppPermissionCheck.New()
-            .ForAppInInstance(this, AppState)
+            .ForAppInInstance(this, AppReader)
             .UserMay(GrantSets.WriteSomething);
 
         // Check if language permissions may alter / remove edit permissions
         if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppState) ?? true;
+            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReader) ?? true;
 
         return (fromApp, $"{fromApp}");
     }));
@@ -116,12 +116,12 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     #endregion
 
 
-    public IAppStateInternal AppState => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppStates.GetReader(AppIdentity));
-    private readonly GetOnce<IAppStateInternal> _appStateInternal = new();
+    public IAppReader AppReader => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppReaders.Get(AppIdentity));
+    private readonly GetOnce<IAppReader> _appStateInternal = new();
 
     #region Settings and Resources
 
-    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppState));
+    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppReader));
     private readonly GetOnce<AppDataStackService> _appSettingsStack = new();
 
     public PropertyStack AppSettings => _settings.Get(() => AppDataStackService.GetStack(RootNameSettings));

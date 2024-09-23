@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSources;
@@ -30,16 +31,16 @@ internal class AppWithParents: DataSourceBase
     //}
 
 
-    private readonly IAppStates _appStates;
+    private readonly IAppReaderFactory _appReaders;
     private readonly IDataSourcesService _dataSourceFactory;
     private int _appId;
     private int _zoneId;
 
-    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppStates appStates, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
     {
         ConnectLogs([
             _dataSourceFactory = dataSourceFactory,
-            _appStates = appStates,
+            _appReaders = appReaders,
             _mergeGenerator = mergeGenerator
         ]);
         ProvideOut(GetList);
@@ -47,13 +48,13 @@ internal class AppWithParents: DataSourceBase
 
     private IImmutableList<IEntity> GetList() => Log.Func(() =>
     {
-        var appState = _appStates.GetReader(this);
+        var appReader = _appReaders.Get(this);
             
-        var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appState));
+        var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appReader));
         var initialLink = initialSource.Link;
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-        var parentAppState = appState.ParentAppState;
+        var parentAppState = appReader.GetParentCache();
         var countRecursions = 0;
         while (parentAppState != null && countRecursions++ < 5)
         {

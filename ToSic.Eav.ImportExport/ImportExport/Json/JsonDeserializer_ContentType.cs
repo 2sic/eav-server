@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json.V1;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -32,10 +33,9 @@ partial class JsonSerializer
         var lMain = Log.Fn<IContentType>();
         var contentType = DirectEntitiesSource.Using(relationships =>
         {
-            var relationshipsSource = AppStateOrNull?.StateCache as IEntitiesSource ?? relationships.Source;
+            var relationshipsSource = AppReaderOrNull?.GetCache() as IEntitiesSource ?? relationships.Source;
 
-            IEntity ConvertPart(JsonEntity e) =>
-                Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
+            IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
 
             var l = Log.Fn<IContentType>();
             try

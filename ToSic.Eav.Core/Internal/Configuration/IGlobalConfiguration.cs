@@ -68,4 +68,9 @@ public interface IGlobalConfiguration: ILogShouldNeverConnect
     /// Used when new app is created.
     /// </summary>
     string NewAppsTemplateFolder { get; set; }
+
+    /// <summary>
+    /// The absolute folder where the 2sxc app temp assemblies for AppCode, assembly dependencies... are stored.
+    /// </summary>
+    string TempAssemblyFolder { get; set; }
 }

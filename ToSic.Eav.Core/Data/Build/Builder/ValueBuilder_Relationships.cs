@@ -48,15 +48,19 @@ partial class ValueBuilder
         if (value is string stringValue && stringValue.HasValue())
             entityIdEnum = stringValue.CsvToArrayWithoutEmpty();
         // this is the case when we get a CSV-string with GUIDs
-        var entityGuids = entityIdEnum?.Cast<object>().Select(x =>
-        {
-            var v = x?.ToString().Trim();
-            // this is the case when an export contains a list with nulls as a special code
-            if (v == null || v == Constants.EmptyRelationship)
-                return new();
-            var guid = Guid.Parse(v);
-            return guid == Guid.Empty ? new Guid?() : guid;
-        }).ToList() ?? [];
+        var entityGuids = entityIdEnum?
+                              .Cast<object>()
+                              .Select(x =>
+                              {
+                                  var v = x?.ToString().Trim();
+                                  // this is the case when an export contains a list with nulls as a special code
+                                  if (v is null or Constants.EmptyRelationship)
+                                      return new();
+                                  var guid = Guid.Parse(v);
+                                  return guid == Guid.Empty ? new Guid?() : guid;
+                              })
+                              .ToList()
+                          ?? [];
         return entityGuids;
     }
 

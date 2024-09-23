@@ -2,7 +2,6 @@
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSources.Sys.Internal;
 using static ToSic.Eav.Apps.AppStackConstants;
@@ -20,7 +19,8 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "f9aca0f0-1b1b-4414-b42e-b337de124124"
     // HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes"
 )]
-public class SystemStack: Eav.DataSource.DataSourceBase
+// ReSharper disable once UnusedMember.Global
+public class SystemStack: DataSourceBase
 {
     #region Configuration
 
@@ -38,19 +38,15 @@ public class SystemStack: Eav.DataSource.DataSourceBase
     #region Constructor / DI / Services
 
     private readonly IDataFactory _dataFactory;
-    private readonly IAppStates _appStates;
+    private readonly IAppReaderFactory _appReadFac;
     private readonly IZoneCultureResolver _zoneCulture;
     private readonly AppDataStackService _dataStackService;
 
-    public SystemStack(MyServices services,
-        AppDataStackService dataStackService,
-        IAppStates appStates,
-        IZoneCultureResolver zoneCulture,
-        IDataFactory dataFactory
-    ) : base(services, "Ds.AppStk")
+    public SystemStack(MyServices services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture, IDataFactory dataFactory)
+        : base(services, "Ds.AppStk")
     {
         ConnectLogs([
-            _appStates = appStates,
+            _appReadFac = appReadFac,
             _zoneCulture = zoneCulture,
             _dataStackService = dataStackService,
             _dataFactory = dataFactory
@@ -65,7 +61,7 @@ public class SystemStack: Eav.DataSource.DataSourceBase
     {
         Configuration.Parse();
 
-        var appState = _appStates.GetReader(this);
+        var appState = _appReadFac.Get(this.PureIdentity());
 
         var languages = _zoneCulture.SafeLanguagePriorityCodes();
 

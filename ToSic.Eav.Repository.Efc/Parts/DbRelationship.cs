@@ -142,9 +142,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                             try
                             {
                                 childEntityIds.Add(childGuid.HasValue
-                                    ? dbTargetIds.ContainsKey(childGuid.Value)
-                                        ? dbTargetIds[childGuid.Value]
-                                        : new int?()
+                                    ? dbTargetIds.TryGetValue(childGuid.Value, out var id) ? id : new int?()
                                     : new());
                             }
                             catch (InvalidOperationException)
@@ -164,9 +162,9 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
     private class RelationshipUpdatePackage(ToSicEavEntities entity, int attributeId, List<int?> relationships)
     {
-        public int AttributeId = attributeId;
-        public List<int?> Targets = relationships;
-        public ToSicEavEntities Entity = entity;
+        public readonly int AttributeId = attributeId;
+        public readonly List<int?> Targets = relationships;
+        public readonly ToSicEavEntities Entity = entity;
     }
 
     internal void FlushChildrenRelationships(List<int> parentIds
@@ -174,7 +172,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
     {
         // Delete all existing relationships - but not the target, just the relationship
         // note: can't use .Clear(), as that will try to actually delete the children
-        if (parentIds == null || parentIds.Count <= 0)
+        if (parentIds is not { Count: > 0 })
             return;
 
         foreach (var id in parentIds)
@@ -239,14 +237,14 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                         break;
                 }
 
-                if (valContents is List<Guid> || valContents is List<Guid?>)
+                if (valContents is List<Guid> or List<Guid?>)
                 {
                     var guidList = (valContents as List<Guid>)?.Select(p => (Guid?)p) ??
                                    ((List<Guid?>)valContents).Select(p => p);
                     AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId,
                         !so.PreserveUntouchedAttributes);
                 }
-                else if (valContents is List<int> || valContents is List<int?>)
+                else if (valContents is List<int> or List<int?>)
                 {
                     var entityIds = valContents as List<int?> ?? ((List<int>)valContents).Select(v => (int?)v).ToList();
                     AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId,

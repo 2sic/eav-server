@@ -21,7 +21,7 @@ public class WorkQueryMod(
     {
         var l = Log.Fn<bool>($"delete a#{AppWorkCtx.AppId}, id:{id}");
 
-        var entDelete = delete.New(AppWorkCtx.AppState);
+        var entDelete = delete.New(AppWorkCtx.AppReader);
 
         var canDeleteResult = entDelete.CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(id);
         if (!canDeleteResult.HasMessages)
@@ -29,7 +29,7 @@ public class WorkQueryMod(
 
 
         // Get the Entity describing the Query and Query Parts (DataSources)
-        var queryEntity = queryManager.Value.GetQueryEntity(id, AppWorkCtx.AppState);
+        var queryEntity = queryManager.Value.GetQueryEntity(id, AppWorkCtx.AppReader);
         var qDef = queryDefBuilder.Value.Create(queryEntity, AppWorkCtx.AppId);
 
         var parts = qDef.Parts;
@@ -51,7 +51,7 @@ public class WorkQueryMod(
     }
 
     private QueryDefinition Get(int queryId)
-        => queryManager.Value.Get(AppWorkCtx.AppState, queryId);
+        => queryManager.Value.Get(AppWorkCtx.AppReader, queryId);
 
     /// <summary>
     /// Update an existing query in this app
@@ -107,11 +107,11 @@ public class WorkQueryMod(
                 dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
 
             if (entityId != null)
-                entUpdate.New(AppWorkCtx.AppState).UpdateParts(Convert.ToInt32(entityId), dataSource);
+                entUpdate.New(AppWorkCtx.AppReader).UpdateParts(Convert.ToInt32(entityId), dataSource);
             // Add new DataSource
             else
             {
-                var newSpecs = entCreate.New(AppWorkCtx.AppState).Create(QueryConstants.QueryPartTypeName, dataSource,
+                var newSpecs = entCreate.New(AppWorkCtx.AppReader).Create(QueryConstants.QueryPartTypeName, dataSource,
                     new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                 newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
             }
@@ -142,7 +142,7 @@ public class WorkQueryMod(
         // Get EntityGuids from the UI (except Out and unsaved)
         newEntityGuids.AddRange(newDataSources);
 
-        var entDelete = delete.New(AppWorkCtx.AppState);
+        var entDelete = delete.New(AppWorkCtx.AppReader);
         foreach (var entToDel in existingEntityGuids.Where(guid => !newEntityGuids.Contains(guid)))
             // force: true - force-delete the data-source part even if it still has metadata and stuff referencing it
             entDelete.Delete(entToDel, force: true);
@@ -171,7 +171,7 @@ public class WorkQueryMod(
         // add to new object...then send to save/update
         values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
         // #ExtractEntitySave
-        entUpdate.New(AppWorkCtx.AppState).UpdateParts(id, values);
+        entUpdate.New(AppWorkCtx.AppReader).UpdateParts(id, values);
         l.Done();
     }
 

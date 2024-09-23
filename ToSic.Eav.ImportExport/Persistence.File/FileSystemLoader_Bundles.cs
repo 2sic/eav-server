@@ -1,7 +1,5 @@
 ﻿using System.IO;
 using ToSic.Eav.Data.Source;
-using ToSic.Eav.ImportExport;
-using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Internal.Loaders;
@@ -19,14 +17,14 @@ partial class FileSystemLoader
     {
         // #1. check that folder exists
         if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
-            return (new(), "path doesn't exist");
+            return ([], "path doesn't exist");
 
         const string infoIfError = "couldn't read bundle-file";
         try
         {
             // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
             var jsonBundles = new Dictionary<string, JsonFormat>();
-            Directory.GetFiles(BundlesPath, "*" + Extension(ImpExpConstants.Files.json)).OrderBy(f => f).ToList()
+            Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
                 .ForEach(p =>
                 {
                     l.A("Loading json bundle" + p);
@@ -37,12 +35,12 @@ partial class FileSystemLoader
         catch (IOException e)
         {
             l.Ex("Failed loading type - couldn't import bundle-file, IO exception", e);
-            return (new(), "IOException");
+            return ([], "IOException");
         }
         catch (Exception e)
         {
             l.Ex($"Failed loading bundle - {infoIfError}", e);
-            return (new(), "error");
+            return ([], "error");
         }
     });
     private readonly GetOnce<Dictionary<string, JsonFormat>> _jsonBundles = new();
@@ -55,7 +53,7 @@ partial class FileSystemLoader
     {
         var l = Log.Fn<List<IContentType>>($"ContentTypes in bundles");
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes.SafeAny()) != true))
-            return [];
+            return l.Return([]);
 
         var contentTypes = JsonBundleBundles
             .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value))

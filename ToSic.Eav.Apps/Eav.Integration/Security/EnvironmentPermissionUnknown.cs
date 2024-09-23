@@ -3,11 +3,8 @@ using ToSic.Eav.Security;
 
 namespace ToSic.Eav.Integration.Security;
 
-internal class EnvironmentPermissionUnknown : EnvironmentPermission
+internal class EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> _) : EnvironmentPermission(LogScopes.NotImplemented)
 {
-    public EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> _) : base(LogScopes.NotImplemented)
-    { }
-
     public override bool EnvironmentAllows(List<Grants> grants) => UserIsSystemAdmin();
 
     public override bool VerifyConditionOfEnvironment(string condition) 

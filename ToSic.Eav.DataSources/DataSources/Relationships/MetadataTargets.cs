@@ -24,7 +24,8 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class MetadataTargets: MetadataDataSourceBase
+public class MetadataTargets(IAppReaderFactory appReaders, DataSourceBase.MyServices services)
+    : MetadataDataSourceBase(services, $"{LogPrefix}.MetaTg")
 {
     /// <summary>
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
@@ -40,12 +41,6 @@ public class MetadataTargets: MetadataDataSourceBase
     /// </remarks>
     [Configuration(Fallback = true)]
     public bool FilterDuplicates => Configuration.GetThis(true);
-
-    public MetadataTargets(IAppStates appStates, MyServices services) : base(services, $"{LogPrefix}.MetaTg")
-    {
-        _appStates = appStates;
-    }
-    private readonly IAppStates _appStates;
 
     protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
     {
@@ -68,18 +63,21 @@ public class MetadataTargets: MetadataDataSourceBase
     [PrivateApi]
     private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator()
     {
-        var appState = _appStates.GetReader(this);
+        var appState = appReaders.Get(this);
         return o =>
         {
             var mdFor = o.MetadataFor;
 
             // The next block could maybe be re-used elsewhere...
-            if (!mdFor.IsMetadata || mdFor.TargetType != (int)TargetTypes.Entity) return Enumerable.Empty<IEntity>();
+            if (!mdFor.IsMetadata || mdFor.TargetType != (int)TargetTypes.Entity)
+                return [];
                 
-            if (mdFor.KeyGuid != null) return new[] { appState.List.One(mdFor.KeyGuid.Value) };
-            if (mdFor.KeyNumber != null) return new[] { appState.List.One(mdFor.KeyNumber.Value) };
+            if (mdFor.KeyGuid != null)
+                return [appState.List.One(mdFor.KeyGuid.Value)];
+            if (mdFor.KeyNumber != null)
+                return [appState.List.One(mdFor.KeyNumber.Value)];
 
-            return Enumerable.Empty<IEntity>();
+            return [];
         };
     }
 }

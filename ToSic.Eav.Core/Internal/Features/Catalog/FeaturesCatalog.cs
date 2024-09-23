@@ -34,13 +34,22 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             CopyrightManagement,        // v16.08 / v17
             FieldShareConfigManagement, // v16.08
 
+            // Patron Advanced CMS - Picker - v18.01+
+            PickerUiCheckbox,
+            PickerUiRadio,
+            PickerSourceCsv,
+            PickerFormulas,
+            PickerUiMoreInfo,
+
             // Patron SuperAdmin
             AppSyncWithSiteFiles,           // v15
             AppAutoInstallerConfigurable,   // v15
             DataExportImportBundles,        // v15.01
+            AppExportAssetsAdvanced,        // v18
 
             // Patron Infrastructure
             SqlCompressDataTimeline, // v15
+            SqlLoadPerformance,      // v18
 
             // 2sxc 10.24+
             WebFarmCache,

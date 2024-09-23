@@ -122,7 +122,7 @@ partial class DbContentType
     private void SaveAttributeMetadata(int attributeId, IMetadataOf metadata, SaveOptions saveOptions)
     {
         // Verify AttributeId before we continue
-        if (attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
+        if (attributeId is 0 or < 0) // < 0 is ef-core temp id
             throw new($"trying to add metadata to attribute {attributeId} but attribute isn't saved yet");
             
         var entities = new List<IEntity>();

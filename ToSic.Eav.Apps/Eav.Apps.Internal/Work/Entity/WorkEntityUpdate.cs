@@ -20,7 +20,7 @@ public class WorkEntityUpdate(
     /// <param name="values"></param>
     /// <param name="publishing">Optionally specify that it should be a draft change</param>
     public void UpdateParts(int id, UpdateList values, EntitySavePublishing publishing = null) =>
-        Log.Do($"id:{id}", () => UpdatePartsFromValues(AppWorkCtx.AppState.List.FindRepoId(id), values, publishing));
+        Log.Do($"id:{id}", () => UpdatePartsFromValues(AppWorkCtx.AppReader.List.FindRepoId(id), values, publishing));
 
     /// <summary>
     /// Update an entity
@@ -29,7 +29,7 @@ public class WorkEntityUpdate(
     /// <param name="partialEntity"></param>
     /// <param name="publishing">specify that it should be a draft change</param>
     public void UpdateParts(int id, IEntity partialEntity, EntitySavePublishing publishing = null) =>
-        Log.Do($"id:{id}", () => UpdatePartFromEntity(AppWorkCtx.AppState.List.FindRepoId(id), partialEntity, publishing));
+        Log.Do($"id:{id}", () => UpdatePartFromEntity(AppWorkCtx.AppReader.List.FindRepoId(id), partialEntity, publishing));
 
 
     /// <summary>
