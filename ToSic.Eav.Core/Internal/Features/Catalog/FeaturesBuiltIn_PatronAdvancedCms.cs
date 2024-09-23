@@ -94,4 +94,17 @@ public partial class BuiltInFeatures
         disabledBehavior: FeatureDisabledBehavior.Warn
     );
 
+    public static readonly Feature PickerFormulas = new(
+        nameof(PickerFormulas),
+        new("44da3226-63bc-4da4-a341-c9542e9b4013"),
+        "Picker Formulas",
+        false,
+        true,
+        "Enable the use of formulas with picker fields.",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronAdvancedCmsAutoEnabled,
+        enableForSystemTypes: true,
+        disabledBehavior: FeatureDisabledBehavior.Warn
+    );
+
 }

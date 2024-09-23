@@ -38,6 +38,7 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             PickerUiCheckbox,
             PickerUiRadio,
             PickerSourceCsv,
+            PickerFormulas,
 
             // Patron SuperAdmin
             AppSyncWithSiteFiles,           // v15
