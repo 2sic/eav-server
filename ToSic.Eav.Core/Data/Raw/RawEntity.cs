@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Generics;
+using ToSic.Eav.Metadata;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Raw;
@@ -35,4 +36,10 @@ public class RawEntity: RawEntityBase
 
     /// <inheritdoc />
     public override IDictionary<string, object> Attributes(RawConvertOptions options) => _values;
+
+
+    /// <summary>
+    /// WIP experimental v18.02 - trying to get content-type metadata into the raw entity
+    /// </summary>
+    public IMetadataOf Metadata { get; set; }
 }

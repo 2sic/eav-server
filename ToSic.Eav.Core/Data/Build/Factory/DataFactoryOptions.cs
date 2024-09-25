@@ -38,6 +38,8 @@ public class DataFactoryOptions
 
     public bool AllowUnknownValueTypes { get; init; }
 
+    public bool WithMetadata { get; init; }
+
     /// <summary>
     /// Main Constructor to create such options.
     /// </summary>
@@ -56,7 +58,8 @@ public class DataFactoryOptions
         string typeName = default,
         string titleField = default,
         bool? autoId = default,
-        int? idSeed = default
+        int? idSeed = default,
+        bool? withMetadata = default
     )
     {
         AppId = appId ?? original?.AppId ?? 0;
@@ -65,5 +68,6 @@ public class DataFactoryOptions
         AutoId = autoId ?? original?.AutoId ?? true;
         IdSeed = idSeed ?? original?.IdSeed ?? 1;
         AllowUnknownValueTypes = original?.AllowUnknownValueTypes ?? false;
+        WithMetadata = withMetadata ?? original?.WithMetadata ?? false;
     }
 }

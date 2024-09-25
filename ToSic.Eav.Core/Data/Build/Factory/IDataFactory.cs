@@ -63,7 +63,9 @@ public interface IDataFactory
         int id = default,
         Guid guid = default,
         DateTime created = default,
-        DateTime modified = default);
+        DateTime modified = default,
+        // experimental v18.02
+        EntityPartsBuilder partsBuilder = default);
 
     /// <summary>
     /// Create an entity from a single <see cref="IRawEntity"/>
