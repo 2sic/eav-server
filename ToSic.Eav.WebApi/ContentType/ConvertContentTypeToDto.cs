@@ -66,6 +66,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
             Name = cType.Name,
             Label = nameOverride,
             StaticName = cType.NameId,
+            NameId = cType.NameId,
             Scope = cType.Scope,
             Description = details?.Description,
             EditInfo = new(cType),

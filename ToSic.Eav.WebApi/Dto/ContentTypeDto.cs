@@ -6,7 +6,10 @@ namespace ToSic.Eav.WebApi.Dto;
 public class ContentTypeDto: IdNameDto
 {
     public string Label { get; set; }
+    // TODO: @2dm - remove this as soon as it's not used in the UI anymore 2024-09-26
     public string StaticName { get; set; }
+    // TODO: @2dm - use this in the UI instead of StaticName 2024-09-26
+    public string NameId{ get; set; }
     public string Scope { get; set; }
     public string Description { get; set; }
     public bool UsesSharedDef { get; set; }
