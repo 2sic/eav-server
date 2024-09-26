@@ -24,7 +24,7 @@ public class ContentTypeDtoService(
         // ...where the data can be loaded into memory and NOT have initialized already. 
         // https://github.com/2sic/2sxc/issues/3203
         // If no problems arise till 2024-Q1, remove this entire block 
-        //// 2020-01-15 2sxc 10.27.00 Special side-effect, pre-generate the resources, settings etc. if they didn't exist yet
+        //// 2020-01-15 2sxc 10.27.00 Special side effect, pre-generate the resources, settings etc. if they didn't exist yet
         //// this is important on "Content" apps, because these don't auto-initialize when loading from the DB
         //// so for these, we must pre-ensure that the app is initialized as needed, if they 
         //// are editing the resources etc. 
@@ -50,7 +50,7 @@ public class ContentTypeDtoService(
 
         var filteredType = ofScopeAndOrdered
             .Select(t => convTypeDto.Convert(t, appEntities.Get(t.Name).Count()))
-            .ToList(); // must convert to list, otherwise it happens late when DI isn't available any more
+            .ToList(); // must convert to list, otherwise it happens late when DI isn't available anymore
 
         return l.ReturnAsOk(filteredType);
     }
