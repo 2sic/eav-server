@@ -33,12 +33,17 @@ public class JsonContentType: IJsonWithAssets
     [JsonPropertyOrder(-40)]
     [JsonIgnore(Condition = WhenWritingNull)]
     public List<JsonAsset> Assets { get; set; }
+}
 
-    // TODO: Don't just remove, it's possible that we're using it in the admin-UI...
-    // Review w/2dm before removing this code
-    // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
-    /// <remarks>V 1.0</remarks>
+public class JsonContentTypeWithTitleWip: JsonContentType
+{
+    /// <summary>
+    /// The title of the content type.
+    /// Temporary, as it's used in the UI.
+    /// This implementation is probably not final at all
+    /// and should never become part of the official export/import format.
+    /// </summary>
+    [JsonPropertyOrder(-10)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    [JsonPropertyOrder(99)]
-    public string Description;
+    public string Title;
 }

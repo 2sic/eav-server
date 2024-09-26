@@ -63,5 +63,5 @@ public class EditSettingsDto
     /// <summary>
     /// New v17 ContentTypes which are used for Pickers to determine names etc.
     /// </summary>
-    public List<JsonContentType> ContentTypes { get; set; }
+    public List<JsonContentTypeWithTitleWip> ContentTypes { get; set; }
 }
