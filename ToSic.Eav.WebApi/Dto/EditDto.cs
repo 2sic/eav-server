@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.SysData;
 using ToSic.Eav.WebApi.Formats;
 
 namespace ToSic.Eav.WebApi.Dto;
@@ -43,16 +42,23 @@ public class EditDto
     public ContextDto Context;
 
     /// <summary>
-    /// WIP - should contain pre-fetched data to reduce callbacks just to look up data which obviously will be needed
+    /// Contain pre-fetched data to reduce callbacks just to look up data which obviously will be needed
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public EditPrefetchDto Prefetch { get; set; }
 
     /// <summary>
-    /// WIP v15 - should contain additional settings such as default GPS coordinates
+    /// Contains additional settings such as default GPS coordinates, content-types needed by pickers etc.
     /// </summary>
+    /// <remarks>Added ca. v15</remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public EditSettingsDto Settings { get; set; }
+
+    /// <summary>
+    /// WIP tell the UI what features are required v18.02...
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Dictionary<string, string[]> RequiredFeatures { get; set; }
 }
 
 public class EditSettingsDto
@@ -61,7 +67,10 @@ public class EditSettingsDto
     public List<JsonEntity> Entities { get; set; }
 
     /// <summary>
-    /// New v17 ContentTypes which are used for Pickers to determine names etc.
+    /// ContentTypes which are used for Pickers to determine names etc.
     /// </summary>
+    /// <remarks>
+    /// Added v17, optimized with Title in v18.02
+    /// </remarks>
     public List<JsonContentTypeWithTitleWip> ContentTypes { get; set; }
 }

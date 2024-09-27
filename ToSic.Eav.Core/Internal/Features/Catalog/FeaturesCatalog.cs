@@ -32,7 +32,7 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             EditUiTranslateWithGoogle,  // v15
             LanguagesAdvancedFallback,  // v16.04
             CopyrightManagement,        // v16.08 / v17
-            FieldShareConfigManagement, // v16.08
+            ContentTypeFieldsReuseDefinitions, // v16.08
 
             // Patron Advanced CMS - Picker - v18.01+
             PickerUiCheckbox,
