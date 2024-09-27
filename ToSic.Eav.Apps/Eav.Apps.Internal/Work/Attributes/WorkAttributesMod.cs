@@ -120,7 +120,7 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
 
-        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+        if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
             throw exp;
 
         // get field attributeId
@@ -149,7 +149,7 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
 
-        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+        if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
             throw exp;
 
         // get field attributeId
@@ -175,7 +175,7 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>();
 
-        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
+        if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
             throw exp;
 
         // 1. First check that sources are correct
