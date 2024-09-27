@@ -5,13 +5,13 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    internal static List<FeatureLicenseRule> ForPatronDataAutoEnabled = BuildRule(BuiltInLicenses.PatronLanguages, true);
+    internal static List<FeatureLicenseRule> ForPatronDataAutoEnabled = BuildRule(BuiltInLicenses.PatronData, true);
 
 
     public static readonly Feature ContentTypeFieldsReuseDefinitions = new(
         nameof(ContentTypeFieldsReuseDefinitions),
         new("e0398b1f-32ca-4734-b49a-83ff894e352e"),
-        "Field Sharing - Enable Configure in Admin UI",
+        "Content Type - Fields - Share Definitions (for Type-Inheritance)",
         false,
         true,
         "Enable Field Sharing Management directly in the UI.",

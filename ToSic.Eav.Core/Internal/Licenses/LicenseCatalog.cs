@@ -32,6 +32,7 @@ public class LicenseCatalog: GlobalCatalogBase<FeatureSet>
             PatronBasic,
             PatronLanguages,
             PatronData,
+            PatronAdvancedCms,
             PatronPerfectionist,
             PatronSentinel,
             PatronSuperAdmin,

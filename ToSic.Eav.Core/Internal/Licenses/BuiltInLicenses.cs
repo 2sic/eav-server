@@ -97,7 +97,7 @@ public class BuiltInLicenses
     public static readonly FeatureSet PatronLanguages = new(LicensePrefix + nameof(PatronLanguages),102,
         "Patron Advanced CMS",
         new("e23ef849-f50c-47a5-81dd-33fb17727305"),
-        "Patrons with advanced needs in advanced CMS features."
+        "Patrons with advanced needs in managing languages."
     );
 
     public static readonly FeatureSet PatronData = new(LicensePrefix + nameof(PatronData),102,
