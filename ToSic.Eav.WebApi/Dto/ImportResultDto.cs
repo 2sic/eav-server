@@ -6,7 +6,7 @@ public class ImportResultDto
 {
     public bool Success;
 
-    public List<Message> Messages = new();
+    public List<Message> Messages = [];
 
     public ImportResultDto(bool success = false, string msg = null, Message.MessageTypes type = Message.MessageTypes.Information)
     {

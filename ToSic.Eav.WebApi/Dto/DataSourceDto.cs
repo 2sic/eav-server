@@ -32,7 +32,7 @@ public class DataSourceDto
 
     public string Errors { get; }
 
-    private static readonly string[] StreamNamesIfError = { DataSourceConstants.StreamDefaultName };
+    private static readonly string[] StreamNamesIfError = [DataSourceConstants.StreamDefaultName];
 
     public DataSourceDto(DataSourceInfo dsInfo, ICollection<string> outNameList)
     {
@@ -45,7 +45,7 @@ public class DataSourceDto
         PrimaryType = dsAttribute.Type.ToString();
         Icon = dsAttribute.Icon; // ?.Replace("_", "-"); // wip: rename "xxx_yyy" icons to "xxx-yyy" - must switch to base64 soon
         HelpLink = dsAttribute.HelpLink;
-        In = noError ? dsAttribute.In ?? Array.Empty<string>() : StreamNamesIfError;
+        In = noError ? dsAttribute.In ?? [] : StreamNamesIfError;
         DynamicOut = dsAttribute.DynamicOut;
         DynamicIn = dsAttribute.DynamicIn;
         EnableConfig = dsAttribute.EnableConfig;
