@@ -50,8 +50,13 @@ partial class JsonSerializer
                     .Where(e => e != null) // filter out possible null items
                     .ToList();
 
-            l.A($"Sub items: {mdParts.Count}");
-            package.Entities = mdParts
+            // In some cases we may have references to the same entity, in which case we only need one
+            var mdDeduplicated = mdParts
+                .DistinctBy(e => e.EntityId)
+                .ToList();
+
+            l.A($"Sub items: {mdParts.Count}; Deduplicated: {mdDeduplicated.Count}");
+            package.Entities = mdDeduplicated
                 .Select(e => ToJson(e,  metadataDepth: 0))
                 .ToArray();
         }
