@@ -183,6 +183,7 @@ public class ContentExportApi(
         };
         var appState = _appCtx.AppReader;
 
+        // Content-Types contains the Content-Type as well entities referenced in CT-Attribute Metadata such as Formulas
         bundleList.ContentTypes = export.ContentTypes.Count <= 0
             ? null
             : export.ContentTypes
@@ -204,6 +205,29 @@ public class ContentExportApi(
                 .Select(appState.List.One)
                 .Select(e => serializer.ToJson(e, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0))
                 .ToList();
+
+        // Find duplicate related entities
+        // as there are various ways they can appear, but we really only need them once
+        var dupEntities = (bundleList.ContentTypes ?? [])
+            .SelectMany(ct => ct.Entities.Select(e => new { Entity = e, Type = ct, List = ct.Entities }))
+            .Concat((bundleList.Entities ?? []).Select(e => new { Entity = e, Type = null as JsonContentTypeSet, List = bundleList.Entities }))
+            .GroupBy(e => e.Entity.Id)
+            .Where(g => g.Count() > 1)
+            .ToList();
+
+        l.A($"Found {dupEntities.Count} duplicate entities in export.");
+
+        var removes = dupEntities
+            .Select(dupEntity =>
+            {
+                var keep = dupEntity.FirstOrDefault(e => e.Type != null) ?? dupEntity.First();
+                return dupEntity.Where(e => e != keep).ToList();
+            })
+            .SelectMany(g => g)
+            .ToList();
+
+        foreach (var remove in removes)
+            remove.List.Remove(remove.Entity);
 
         return l.ReturnAsOk(bundleList);
     }

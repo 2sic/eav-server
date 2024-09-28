@@ -58,7 +58,7 @@ partial class JsonSerializer
             l.A($"Sub items: {mdParts.Count}; Deduplicated: {mdDeduplicated.Count}");
             package.Entities = mdDeduplicated
                 .Select(e => ToJson(e,  metadataDepth: 0))
-                .ToArray();
+                .ToList();
         }
         catch (Exception ex)
         {

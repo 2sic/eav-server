@@ -24,6 +24,6 @@ public class JsonContentTypeSet
     /// </summary>
     [JsonPropertyOrder(20)]
     [JsonIgnore(Condition = WhenWritingDefault)]
-    public IEnumerable<JsonEntity> Entities;
+    public List<JsonEntity> Entities;
 
 }
