@@ -142,7 +142,7 @@ public class ContentExportApi(
         var fileContent = serializer.SerializeJsonBundle(bundle, indentation);
 
         // give it to the browser with the name specified in the Export Configuration
-        l.A($"OK, export fileName:{export.FileName}, size:{fileContent.Count()}");
+        l.A($"OK, export fileName:{export.FileName}, size:{fileContent.Length}");
         return l.ReturnAsOk(responseMaker.File(fileContent, export.FileName, MimeHelper.Json));
     }
     
@@ -174,7 +174,7 @@ public class ContentExportApi(
         var l = Log.Fn<JsonBundle>($"build bundle for ExportConfiguration:{export.Guid}");
         var bundleList = new JsonBundle();
 
-        // loop through content types and add them to the bundlelist
+        // loop through content types and add them to the bundle-list
         l.A($"count export content types:{export.ContentTypes.Count}");
         var serSettings = new JsonSerializationSettings
         {
@@ -182,28 +182,28 @@ public class ContentExportApi(
             CtAttributeIncludeInheritedMetadata = false
         };
         var appState = _appCtx.AppReader;
-        foreach (var contentTypeName in export.ContentTypes)
-        {
-            if (bundleList.ContentTypes == null) bundleList.ContentTypes = new();
 
-            var contentType = appState.GetContentType(contentTypeName);
-            var jsonType = serializer.ToPackage(contentType, serSettings);
-            bundleList.ContentTypes.Add(new()
-            {
-                ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType),
-                Entities = jsonType.Entities
-            });
-        }
+        bundleList.ContentTypes = export.ContentTypes.Count <= 0
+            ? null
+            : export.ContentTypes
+                .Select(appState.GetContentType)
+                .Select(ct => serializer.ToPackage(ct, serSettings))
+                .Select(jsonType => new JsonContentTypeSet
+                {
+                    ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType),
+                    Entities = jsonType.Entities
+                })
+                .ToList();
 
         // loop through entities and add them to the bundle list
         l.A($"count export entities:{export.Entities.Count}");
-        foreach (var entityGuid in export.Entities)
-        {
-            if (bundleList.Entities == null) bundleList.Entities = new();
 
-            var entity = appState.List.One(entityGuid);
-            bundleList.Entities.Add(serializer.ToJson(entity, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0));
-        }
+        bundleList.Entities = export.Entities.Count <= 0
+            ? null
+            : export.Entities
+                .Select(appState.List.One)
+                .Select(e => serializer.ToJson(e, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0))
+                .ToList();
 
         return l.ReturnAsOk(bundleList);
     }
