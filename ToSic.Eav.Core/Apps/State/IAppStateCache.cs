@@ -13,7 +13,9 @@ public interface IAppStateCache: ICacheExpiring,
     IAppIdentity,
     IHasMetadataSourceAndExpiring,
     IHasIdentityNameId, 
-    IEntitiesSource, ICanBeCacheDependency, IHasLog,
+    IEntitiesSource,
+    ICanBeCacheDependency,
+    IHasLog,
     // IHas<IAppSpecs>,
     IRelationshipSource
 {

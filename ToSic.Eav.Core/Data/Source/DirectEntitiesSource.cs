@@ -11,10 +11,10 @@ public class DirectEntitiesSource : IEntitiesSource
     public static TResult Using<TResult>(Func<(DirectEntitiesSource Source, List<IEntity> List), TResult> action)
     {
         var list = new List<IEntity>();
-        var created = new DirectEntitiesSource(list);
-        var result = action((created, list));
-        created.List = list.ToImmutableList();
-        created.CacheTimestamp = DateTime.Now.Ticks + 1; // just in case it's so fast that we would still get the same tick
+        var directEntitiesSource = new DirectEntitiesSource(list);
+        var result = action((directEntitiesSource, list));
+        directEntitiesSource.List = list.ToImmutableList();
+        directEntitiesSource.CacheTimestamp = DateTime.Now.Ticks + 1; // just in case it's so fast that we would still get the same tick
         return result;
     }
 

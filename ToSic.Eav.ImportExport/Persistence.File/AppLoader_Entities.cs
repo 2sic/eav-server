@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Loaders;
 
 namespace ToSic.Eav.Persistence.File;
@@ -17,7 +16,6 @@ partial class AppLoader
         // In the end it must contain all entities - but not deleted ones...
         var final = DirectEntitiesSource.Using(relationships =>
         {
-            // var listOfEntitiesForRelationshipMapping = relationships.List;// new List<IEntity>();
             var entitySets = FsDataConstants.EntityItemFolders
                 .Select(folder => new EntitySetsToLoad
                 {
@@ -53,7 +51,7 @@ partial class AppLoader
             // Reset list of entities which will be used to find related entities
             relationships.List.Clear();
             relationships.List.AddRange(entitiesDeduplicated);
-            return (entitiesDeduplicated);
+            return entitiesDeduplicated;
         });
 
         return l.ReturnAsOk(final);
