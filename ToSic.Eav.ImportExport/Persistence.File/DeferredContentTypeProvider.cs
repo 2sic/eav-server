@@ -46,7 +46,8 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         _lookup.Reset();
     }
 
-    public List<IContentType> ProcessSubEntitiesOnTypes() => SetTypesOfContentTypeParts(Source);
+    public List<IContentType> ProcessSubEntitiesOnTypes(List<IEntity> entities)
+        => SetTypesOfContentTypeParts(Source, entities);
 
 
     private List<IContentType> EliminateDuplicateTypes(List<IContentType> types)
@@ -73,10 +74,20 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         return l.ReturnAsOk(final);
     }
 
-    private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> typesDistinct)
+    private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> typesDistinct, List<IEntity> entities)
     {
         var l = Log.Fn<List<IContentType>>(timer: true);
         var changeCount = 0;
+        try
+        {
+            changeCount += UpdateTypes("ContentType Metadata", entities);
+        }
+        catch (Exception ex)
+        {
+            l.A("Error adding types");
+            l.Ex(ex);
+        }
+
         try
         {
             var entitiesToRetype = typesDistinct
@@ -84,8 +95,15 @@ internal class DeferredContentTypeProvider(ILog parentLog)
                 .ToList();
             l.A($"Metadata found to retype: {entitiesToRetype.Count}");
             changeCount += UpdateTypes("ContentType Metadata", entitiesToRetype);
-
-            entitiesToRetype = typesDistinct
+        }
+        catch (Exception ex)
+        {
+            l.A("Error adding types");
+            l.Ex(ex);
+        }
+        try
+        {
+            var entitiesToRetype = typesDistinct
                 .SelectMany(t => t.Attributes.SelectMany(a => a.Metadata))
                 .ToList();
             changeCount += UpdateTypes("Attribute Metadata", entitiesToRetype);
@@ -106,7 +124,7 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         var sameChanged = entitiesToRetype
             .Select(entity =>
             {
-                if (entity.Type is ContentTypeWrapper wrapper && wrapper.IsDeferred)
+                if (entity.Type is ContentTypeWrapper { IsDeferred: true } wrapper)
                 {
                     l.A($"TypeReset: {entity.Type.NameId}");
                     wrapper.Freeze();

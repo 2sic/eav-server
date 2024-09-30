@@ -16,7 +16,7 @@ partial class JsonSerializer
         try
         {
             var jsonPackage = UnpackAndTestGenericJsonV1(serialized);
-            var type = ConvertContentType(jsonPackage);
+            var type = ConvertContentType(jsonPackage).ContentType;
 
             // new in 1.2 2sxc v12 - build relation relationships manager
             return l.Return(type, $"deserialized {type.Name}");
@@ -28,16 +28,21 @@ partial class JsonSerializer
         }
     }
 
-    public IContentType ConvertContentType(JsonContentTypeSet json)
+    public ContentTypeWithEntities ConvertContentType(JsonContentTypeSet json)
     {
-        var lMain = Log.Fn<IContentType>();
-        var contentType = DirectEntitiesSource.Using(relationships =>
+        var lMain = Log.Fn<ContentTypeWithEntities>();
+        var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
-            var relationshipsSource = AppReaderOrNull?.GetCache() as IEntitiesSource ?? relationships.Source;
+            var preferredSource = AppReaderOrNull?.GetCache() as IEntitiesSource;
+            var sharedEntSource = DeserializationSettings?.SharedEntitiesSource;
+            var relationshipsSource = preferredSource ?? sharedEntSource ?? relationships.Source;
+            // 2024-09-30 2dm warning: ATM the code always seemed to use the relationships source, even if a shared source was available.
+            var preferredSourceMsg = preferredSource != null ? "AppReader" : sharedEntSource != null ? "Shared Entities" : "Standalone List";
+            lMain.A($"Will use relationship source {preferredSourceMsg}; current size: {relationshipsSource.List?.Count()}");
 
             IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
 
-            var l = Log.Fn<IContentType>();
+            var l = Log.Fn<ContentTypeWithEntities>();
             try
             {
                 var directEntities = json.Entities?.Select(ConvertPart).ToList() ?? [];
@@ -106,7 +111,7 @@ partial class JsonSerializer
                 );
 
                 // new in 1.2 2sxc v12 - build relation relationships manager
-                return l.Return(type, $"converted {type.Name} with {attribs.Count} attributes");
+                return l.Return(new ContentTypeWithEntities { ContentType = type, Entities= relationships.List ?? []}, $"converted {type.Name} with {attribs.Count} attributes and {relationships.List?.Count} Relationships");
             }
             catch (Exception e)
             {
@@ -114,7 +119,7 @@ partial class JsonSerializer
                 throw;
             }
         });
-        return lMain.ReturnAsOk(contentType);
+        return lMain.ReturnAsOk(contentTypeSet);
     }
 
     public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized) => DeserializeAttributeSysSettings(serialized, Log);

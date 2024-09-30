@@ -18,9 +18,9 @@ public partial class JsonSerializer
             WriteIndented = indentation != 0
         });
 
-    public List<IContentType> GetContentTypesFromBundles(JsonFormat package)
+    public List<ContentTypeWithEntities> GetContentTypesFromBundles(JsonFormat package)
     {
-        var l = Log.Fn<List<IContentType>>();
+        var l = Log.Fn<List<ContentTypeWithEntities>>();
         if (package.Bundles.SafeNone()) return l.Return([], "none found");
 
         // Prepare step-by-step for better logs

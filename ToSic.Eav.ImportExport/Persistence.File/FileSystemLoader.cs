@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
@@ -36,7 +35,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
 
     private RepositoryTypes RepoType { get; set; }
 
-    protected IEntitiesSource EntitiesSource;
+    protected IEntitiesSource EntitiesSource { get; set; }
 
     #region json serializer
     public JsonSerializer Serializer
@@ -46,6 +45,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
             if (_ser != null) return _ser;
             _ser = jsonSerializerGenerator.New();
 
+            var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {EntitiesSource != null}; is desired type: {EntitiesSource is IHasMetadataSourceAndExpiring}");
             // #SharedFieldDefinition
             // Also provide AppState if possible, for new #SharedFieldDefinition
             if (EntitiesSource is IHasMetadataSourceAndExpiring withAppState)
@@ -55,7 +55,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
                 };
             _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource);
             _ser.AssumeUnknownTypesAreDynamic = true;
-            return _ser;
+            return l.Return(_ser);
         }
     }
     private JsonSerializer _ser;
@@ -147,6 +147,40 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
     {
         var l = Log.Fn<IList<IContentType>>($"ContentTypes in {appId}");
             
+        //// #1. check that folder exists
+        //var pathCt = ContentTypePath;
+        //var contentTypes = new List<IContentType>();
+        //if (CheckPathExists(Path) && CheckPathExists(pathCt))
+        //{
+        //    // #2 find all content-type files in folder
+        //    var jsonFiles = Directory.GetFiles(pathCt, "*" + Extension(Files.json)).OrderBy(f => f);
+
+        //    // #3 load content-types from folder
+        //    contentTypes = jsonFiles
+        //        .Select(json => LoadAndBuildCt(Serializer, json))
+        //        .Where(ct => ct != null)
+        //        .ToList();
+        //}
+        //else
+        //    l.A("path doesn't exist");
+
+        //var entityCtCount = contentTypes.Count;
+
+        //// #4 load content-types from files in bundles folder
+        //var bundleCts = ContentTypesInBundles();
+        //var bundleCtsWithoutDuplicates = bundleCts
+        //    .Where(bundleCt => !contentTypes.Any(ct => ct.Is(bundleCt.NameId)))
+        //    .ToList();
+        //contentTypes.AddRange(bundleCtsWithoutDuplicates);
+        //l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; after remove duplicates {bundleCtsWithoutDuplicates.Count}; total {contentTypes.Count}");
+        var contentTypes = ContentTypesWithEntities().ContentTypes;
+        return l.Return(contentTypes, $"{contentTypes.Count}");
+    }
+
+    public (IList<IContentType> ContentTypes, List<IEntity> Entities) ContentTypesWithEntities()
+    {
+        var l = Log.Fn<(IList<IContentType> ContentTypes, List<IEntity> Entities)>($"ContentTypes in {AppId}");
+            
         // #1. check that folder exists
         var pathCt = ContentTypePath;
         var contentTypes = new List<IContentType>();
@@ -167,13 +201,22 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
         var entityCtCount = contentTypes.Count;
 
         // #4 load content-types from files in bundles folder
-        var bundleCts = ContentTypesInBundles();
+        var bundlesCtAndEntities = ContentTypesInBundles();
+        var bundleCts = bundlesCtAndEntities.Select(set => set.ContentType).ToList();
         var bundleCtsWithoutDuplicates = bundleCts
             .Where(bundleCt => !contentTypes.Any(ct => ct.Is(bundleCt.NameId)))
             .ToList();
         contentTypes.AddRange(bundleCtsWithoutDuplicates);
+
+        var entities = bundlesCtAndEntities
+            .SelectMany(set => set.Entities)
+            .Where(e => e != null)
+            .GroupBy(e => e.EntityGuid)
+            .Select(g => g.First())
+            .ToList();
+
         l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; after remove duplicates {bundleCtsWithoutDuplicates.Count}; total {contentTypes.Count}");
-        return l.Return(contentTypes, $"{contentTypes.Count}");
+        return l.Return((contentTypes, entities), $"Content Types: {contentTypes.Count}; Entities: {entities.Count}");
     }
 
     private string ContentTypePath => System.IO.Path.Combine(Path, FsDataConstants.TypesFolder);

@@ -55,7 +55,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             IList<IContentType> cts;
             try
             {
-                cts = loader.ContentTypesInBundles();
+                cts = loader.ContentTypesInBundles().Select(set => set.ContentType).ToList();
             }
             finally
             {
