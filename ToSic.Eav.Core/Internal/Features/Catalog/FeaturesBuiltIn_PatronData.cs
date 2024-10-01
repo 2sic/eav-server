@@ -60,6 +60,19 @@ public partial class BuiltInFeatures
         disabledBehavior: FeatureDisabledBehavior.Warn
     );
 
+    public static readonly Feature PickerSourceAppAssets = new(
+        nameof(PickerSourceAppAssets),
+        new("4cb850ef-224f-4eb3-b00c-b14c605e5b29"),
+        "Picker source App Files and Folders",
+        false,
+        true,
+        "Picker DataSource to select files and folders in an App. This is great for selecting SVG icons or similar things.",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronDataAutoEnabled,
+        enableForSystemTypes: true,
+        disabledBehavior: FeatureDisabledBehavior.Warn
+    );
+
     public static readonly Feature PickerFormulas = new(
         nameof(PickerFormulas),
         new("44da3226-63bc-4da4-a341-c9542e9b4013"),
