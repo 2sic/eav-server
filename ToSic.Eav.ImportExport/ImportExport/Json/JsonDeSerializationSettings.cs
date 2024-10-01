@@ -10,9 +10,9 @@ namespace ToSic.Eav.ImportExport.Json;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class JsonDeSerializationSettings
 {
-    public IHasMetadataSourceAndExpiring CtAttributeMetadataAppState { get; set; }
+    public IHasMetadataSourceAndExpiring MetadataSource { get; set; }
 
-    public IDeferredContentTypeProvider EntityContentTypeProvider { get; set; }
+    public IDeferredContentTypeProvider ContentTypeProvider { get; set; }
 
     /// <summary>
     /// Experimental WIP 2024-09-30 2dm
@@ -21,5 +21,5 @@ public class JsonDeSerializationSettings
     /// ATM the infrastructure doesn't seem to want to give the appState to the deserializer,
     /// and since we're not sure if we would break something, we're trying to share it like this...
     /// </summary>
-    public IEntitiesSource SharedEntitiesSource { get; set; }
+    public IEntitiesSource RelationshipsSource { get; set; }
 }

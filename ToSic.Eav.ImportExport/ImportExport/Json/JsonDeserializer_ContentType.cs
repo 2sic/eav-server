@@ -12,7 +12,7 @@ partial class JsonSerializer
 
     public IContentType DeserializeContentType(string serialized)
     {
-        var l = Log.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
+        var l = Log.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...", timer: true);
         try
         {
             var jsonPackage = UnpackAndTestGenericJsonV1(serialized);
@@ -30,11 +30,11 @@ partial class JsonSerializer
 
     public ContentTypeWithEntities ConvertContentType(JsonContentTypeSet json)
     {
-        var lMain = Log.Fn<ContentTypeWithEntities>();
+        var lMain = Log.Fn<ContentTypeWithEntities>(timer: true);
         var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
             var preferredSource = AppReaderOrNull?.GetCache() as IEntitiesSource;
-            var sharedEntSource = DeserializationSettings?.SharedEntitiesSource;
+            var sharedEntSource = DeserializationSettings?.RelationshipsSource;
             var relationshipsSource = preferredSource ?? sharedEntSource ?? relationships.Source;
             // 2024-09-30 2dm warning: ATM the code always seemed to use the relationships source, even if a shared source was available.
             var preferredSourceMsg = preferredSource != null ? "AppReader" : sharedEntSource != null ? "Shared Entities" : "Standalone List";
@@ -65,7 +65,7 @@ partial class JsonSerializer
                             ? null
                             : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? [];
 
-                        var appSourceForMd = DeserializationSettings?.CtAttributeMetadataAppState;
+                        var appSourceForMd = DeserializationSettings?.MetadataSource;
 
                         var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
                             name: jsonAttr.Name, sysSettings: attrSysSettings, items: mdEntities, appSource: appSourceForMd);

@@ -5,10 +5,10 @@ using static System.StringComparer;
 namespace ToSic.Eav.Persistence.File;
 
 /// <summary>
-/// Special helper class for delayed construction of ContentTypes so they can be immutable.
+/// Special helper class for delayed construction of ContentTypes, so they can be immutable.
 ///
 /// Basically the idea is that all generated Entities only have a wrapper ContentType,
-/// which will retrieve it's data from this source once they are completely generated. 
+/// which will retrieve its data from this source once they are completely generated. 
 /// </summary>
 internal class DeferredContentTypeProvider(ILog parentLog)
     : HelperBase(parentLog, "Eav.LdrCTP"), IDeferredContentTypeProvider
@@ -18,18 +18,13 @@ internal class DeferredContentTypeProvider(ILog parentLog)
     /// </summary>
     public List<IContentType> Source { get; } = [];
 
-    protected IDictionary<string, IContentType> Lookup =>
-        _lookup.Get(() => Source.ToDictionary(t => t.NameId, t => t, InvariantCultureIgnoreCase));
-    private readonly GetOnce<IDictionary<string, IContentType>> _lookup = new();
+    protected IDictionary<string, IContentType> Lookup => _lookup
+        ??= Source.ToDictionary(t => t.NameId, t => t, InvariantCultureIgnoreCase);
+    private IDictionary<string, IContentType> _lookup;
 
     /// <summary>
     /// This will be called by the serializer to generate a delayed/lazy IContentType.
     /// </summary>
-    /// <param name="appId"></param>
-    /// <param name="name"></param>
-    /// <param name="nameId"></param>
-    /// <param name="fallback"></param>
-    /// <returns></returns>
     IContentType IDeferredContentTypeProvider.LazyTypeGenerator(int appId, string name, string nameId, IContentType fallback)
     {
         var delayedType = new ContentTypeWrapper(() => Lookup.TryGetValue(nameId, out var type)
@@ -43,12 +38,8 @@ internal class DeferredContentTypeProvider(ILog parentLog)
     {
         list = EliminateDuplicateTypes(list);
         Source.AddRange(list);
-        _lookup.Reset();
+        _lookup = null;
     }
-
-    public List<IContentType> ProcessSubEntitiesOnTypes(List<IEntity> entities)
-        => SetTypesOfContentTypeParts(Source, entities);
-
 
     private List<IContentType> EliminateDuplicateTypes(List<IContentType> types)
     {
@@ -59,7 +50,9 @@ internal class DeferredContentTypeProvider(ILog parentLog)
             .GroupBy(t => t.NameId.ToLowerInvariant())
             .ToList();
 
-        var badGroups = typesGrouped.Where(g => g.Count() > 1);
+        var badGroups = typesGrouped
+            .Where(g => g.Count() > 1);
+
         foreach (var badGroup in badGroups)
         {
             l.A("Warning: This type exists more than once - possibly defined in more plugins: " +
@@ -74,7 +67,41 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         return l.ReturnAsOk(final);
     }
 
-    private List<IContentType> SetTypesOfContentTypeParts(List<IContentType> typesDistinct, List<IEntity> entities)
+    public List<IContentType> SetTypesOfContentTypeParts()
+    {
+        var l = Log.Fn<List<IContentType>>(timer: true);
+        var changeCount = 0;
+
+        try
+        {
+            var entitiesToRetype = Source
+                .SelectMany(t => t.Metadata)
+                .ToList();
+            l.A($"Metadata found to retype: {entitiesToRetype.Count}");
+            changeCount += UpdateTypes("ContentType Metadata", entitiesToRetype);
+        }
+        catch (Exception ex)
+        {
+            l.A("Error adding types");
+            l.Ex(ex);
+        }
+        try
+        {
+            var entitiesToRetype = Source
+                .SelectMany(t => t.Attributes.SelectMany(a => a.Metadata))
+                .ToList();
+            changeCount += UpdateTypes("Attribute Metadata", entitiesToRetype);
+        }
+        catch (Exception ex)
+        {
+            l.A("Error adding types");
+            l.Ex(ex);
+        }
+
+        return l.Return(Source, $"{changeCount}");
+    }
+
+    public void SetTypesOfOtherEntities(List<IEntity> entities)
     {
         var l = Log.Fn<List<IContentType>>(timer: true);
         var changeCount = 0;
@@ -88,53 +115,24 @@ internal class DeferredContentTypeProvider(ILog parentLog)
             l.Ex(ex);
         }
 
-        try
-        {
-            var entitiesToRetype = typesDistinct
-                .SelectMany(t => t.Metadata)
-                .ToList();
-            l.A($"Metadata found to retype: {entitiesToRetype.Count}");
-            changeCount += UpdateTypes("ContentType Metadata", entitiesToRetype);
-        }
-        catch (Exception ex)
-        {
-            l.A("Error adding types");
-            l.Ex(ex);
-        }
-        try
-        {
-            var entitiesToRetype = typesDistinct
-                .SelectMany(t => t.Attributes.SelectMany(a => a.Metadata))
-                .ToList();
-            changeCount += UpdateTypes("Attribute Metadata", entitiesToRetype);
-        }
-        catch (Exception ex)
-        {
-            l.A("Error adding types");
-            l.Ex(ex);
-        }
-
-        return l.Return(typesDistinct, $"{changeCount}");
+        l.Done($"{changeCount} changed");
     }
 
     private int UpdateTypes(string name, List<IEntity> entitiesToRetype)
     {
         var l = Log.Fn<int>($"For {name}", timer: true);
         var changeCount = 0;
-        var sameChanged = entitiesToRetype
-            .Select(entity =>
+        entitiesToRetype.ForEach(entity =>
+        {
+            if (entity.Type is ContentTypeWrapper { IsDeferred: true } wrapper)
             {
-                if (entity.Type is ContentTypeWrapper { IsDeferred: true } wrapper)
-                {
-                    l.A($"TypeReset: {entity.Type.NameId}");
-                    wrapper.Freeze();
-                    changeCount++;
-                    return entity;
-                }
-                l.A("TypeUnchanged:" + entity.Type.NameId);
-                return entity;
-            })
-            .ToList();
+                l.A($"TypeReset: {entity.Type.NameId}");
+                wrapper.Freeze();
+                changeCount++;
+            }
+
+            l.A("TypeUnchanged:" + entity.Type.NameId);
+        });
 
         return l.ReturnAsOk(changeCount);
     }

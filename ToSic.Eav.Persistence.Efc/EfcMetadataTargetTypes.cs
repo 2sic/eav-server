@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Persistence.Efc;
 
-public class EfcMetadataTargetTypes(LazySvc<EavDbContext> dbLazy) : ITargetTypes
+public class EfcMetadataTargetTypes(LazySvc<EavDbContext> dbLazy) : ServiceBase("Eav.MdTTyp"), ITargetTypes
 {
     private const string ReservedType = "Reserved";
 
@@ -17,8 +17,7 @@ public class EfcMetadataTargetTypes(LazySvc<EavDbContext> dbLazy) : ITargetTypes
     public string GetName(int typeId)
     {
         if (!TargetTypes.TryGetValue(typeId, out var result))
-            throw new ArgumentException(
-                $"Tried to get TargetType name of '{typeId}' but couldn't find it in the list.", nameof(typeId));
+            throw new ArgumentException($"Tried to get TargetType name of '{typeId}' but couldn't find it in the list.", nameof(typeId));
 
         // if it's a reserved key, then future lookups would fail completely (as it exists many times), so in that case 
         // better safely just return the ID
@@ -35,8 +34,15 @@ public class EfcMetadataTargetTypes(LazySvc<EavDbContext> dbLazy) : ITargetTypes
     /// <returns></returns>
     protected virtual ImmutableDictionary<int, string> GetTargetTypes()
     {
-        return dbLazy.Value.ToSicEavAssignmentObjectTypes
+        // Must debug why this simple code seems to take 1 second
+        var l = Log.Fn<ImmutableDictionary<int, string>>(timer: true);
+        var db = dbLazy.Value;
+        l.A($"got db connection");
+        var targetTypes = db.ToSicEavAssignmentObjectTypes.ToList();
+        l.A($"got {targetTypes.Count} assignment object types");
+        var dic = targetTypes
             .ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
+        return l.Return(dic);
     }
 
 

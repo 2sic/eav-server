@@ -7,7 +7,7 @@ partial class AppLoader
 {
     private List<IEntity> LoadGlobalEntities(IAppReader appReader)
     {
-        var l = Log.Fn<List<IEntity>>($"appId:{appReader.AppId}");
+        var l = Log.Fn<List<IEntity>>($"appId:{appReader.AppId}", timer: true);
         // Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;
         Loaders.ForEach(ldr => ldr.EntityIdSeed = FsDataConstants.GlobalEntityIdMin + FsDataConstants.GlobalEntitySourceSkip * loaderIndex++);
@@ -27,7 +27,9 @@ partial class AppLoader
             l.A($"Found {entitySets.Count} sets");
 
             // Deduplicate entities 
-            var entities = entitySets.SelectMany(es => es.Entities).ToList();
+            var entities = entitySets
+                .SelectMany(es => es.Entities)
+                .ToList();
             var entitiesGroupedByGuid = entities
                 .GroupBy(x => x.EntityGuid)
                 .ToList();
@@ -59,7 +61,7 @@ partial class AppLoader
 
     private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
     {
-        var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}");
+        var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}", timer: true);
         if (!FsDataConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
             throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
                 "atm we can only load items of type " + string.Join("/", FsDataConstants.EntityItemFolders));

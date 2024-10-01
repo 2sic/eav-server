@@ -105,6 +105,8 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                 // That's because it's loaded from the JSON, where the metadata is part of the json-file.
                 // This should probably not cause any problems, but it's important to know
                 // We may optimize / change this some day
+                // Update 2024-09-01 2dm: made some changes, ATM _some_ of it already uses a shared source for relationships, but
+                // only on content-type-sub-entities, and a separate source for the others...?
                 l.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
                 var appTypes = builder.Reader.ContentTypes.ToList();
                 Loaders.ForEach(ldr => ldr.ResetSerializer(appTypes));

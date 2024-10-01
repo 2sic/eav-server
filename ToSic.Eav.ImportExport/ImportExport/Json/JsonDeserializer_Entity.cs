@@ -46,14 +46,12 @@ partial class JsonSerializer
         bool skipUnknownType,
         IEntitiesSource dynRelationshipsSource = default)
     {
-        var l = Log.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}");
+        var l = Log.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", timer: true);
         // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
         var contentType = GetContentType(jEnt.Type.Id)
                           ?? (allowDynamic || skipUnknownType
-                              ? GetTransientContentType(jEnt.Type.Name, jEnt.Type.Id) 
-                              : throw new FormatException(
-                                  "type not found for deserialization and dynamic not allowed " +
-                                  $"- cannot continue with {jEnt.Type.Id}")
+                              ? GetTransientContentType(jEnt.Type.Name, jEnt.Type.Id)
+                              : throw new FormatException($"type not found for deserialization and dynamic not allowed - cannot continue with {jEnt.Type.Id}")
                           );
 
         // Metadata Target
@@ -67,7 +65,7 @@ partial class JsonSerializer
             .ToList();
 
         // build attributes - based on type definition
-        IImmutableDictionary<string, IAttribute> attributes = Services.DataBuilder.Attribute.Empty();
+        var attributes = Services.DataBuilder.Attribute.Empty();
         if (contentType.IsDynamic)
         {
             if (allowDynamic)
@@ -109,8 +107,9 @@ partial class JsonSerializer
 
     private Target DeserializeEntityTarget(JsonEntity jEnt)
     {
-        var l = Log.Fn<Target>();
-        if (jEnt.For == null) return l.Return(new(), "no for found");
+        var l = Log.Fn<Target>(timer: true);
+        if (jEnt.For == null)
+            return l.Return(new(), "no for found");
 
         var mdFor = jEnt.For;
         var target = new Target(
@@ -128,18 +127,18 @@ partial class JsonSerializer
 
     private IImmutableDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
     {
-        var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
+        var l = Log.Fn<IImmutableDictionary<string, IAttribute>>(timer: true);
         var bld = Services.DataBuilder.Value;
-        var attribs = new Dictionary<string, IAttribute>[]
+        var attribs = new[]
         {
-            BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, (v, l) => bld.DateTime(v, l)),
-            BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, (v, l) => bld.Bool(v, l)),
-            BuildAttrib(jAtts.Custom, ValueTypes.Custom, (v, l) => bld.String(v, l)),
-            BuildAttrib(jAtts.Json, ValueTypes.Json, (v, l) => bld.String(v, l)),
-            BuildAttrib(jAtts.Entity, ValueTypes.Entity, (v, l) => bld.Relationship(v, relationshipsSource)),
-            BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, (v, l) => bld.String(v, l)),
-            BuildAttrib(jAtts.Number, ValueTypes.Number, (v, l) => bld.Number(v, l)),
-            BuildAttrib(jAtts.String, ValueTypes.String, (v, l) => bld.String(v, l))
+            BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, bld.DateTime),
+            BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, bld.Bool),
+            BuildAttrib(jAtts.Custom, ValueTypes.Custom, bld.String),
+            BuildAttrib(jAtts.Json, ValueTypes.Json, bld.String),
+            BuildAttrib(jAtts.Entity, ValueTypes.Entity, (v, _) => bld.Relationship(v, relationshipsSource)),
+            BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, bld.String),
+            BuildAttrib(jAtts.Number, ValueTypes.Number, bld.Number),
+            BuildAttrib(jAtts.String, ValueTypes.String, bld.String)
         };
         var final = attribs
             .Where(dic => dic != null)

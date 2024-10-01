@@ -59,7 +59,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     protected IContentType GetContentType(string staticName)
     {
-        var l = Log.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}");
+        var l = Log.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", timer: true);
         // There is a complex lookup we must protocol, to better detect issues, which is why we assemble a message
         var msg = "";
 
@@ -96,9 +96,9 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     protected IContentType GetTransientContentType(string name, string nameId)
     {
-        var defaultTransient = Services.DataBuilder.ContentType.Transient(AppId, name, nameId);
-        return DeserializationSettings?.EntityContentTypeProvider?.LazyTypeGenerator(AppId, name, nameId, defaultTransient)
-               ?? defaultTransient;
+        var transientContentType = Services.DataBuilder.ContentType.Transient(AppId, name, nameId);
+        return DeserializationSettings?.ContentTypeProvider?.LazyTypeGenerator(AppId, name, nameId, transientContentType)
+               ?? transientContentType;
     }
 
     /// <summary>
