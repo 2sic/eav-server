@@ -1,11 +1,14 @@
-﻿namespace ToSic.Eav.WebApi.Admin;
+﻿using ToSic.Eav.Internal.Features;
+
+namespace ToSic.Eav.WebApi.Admin;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FieldControllerReal(
     LazySvc<ContentTypeDtoService> ctApiLazy,
     GenWorkPlus<WorkInputTypes> inputTypes,
-    GenWorkDb<WorkAttributesMod> attributesMod)
-    : ServiceBase("Api.FieldRl", connect: [inputTypes, attributesMod, ctApiLazy]), IFieldController
+    GenWorkDb<WorkAttributesMod> attributesMod,
+    LazySvc<IEavFeaturesService> featuresSvc)
+    : ServiceBase("Api.FieldRl", connect: [inputTypes, attributesMod, ctApiLazy, featuresSvc]), IFieldController
 {
     public const string LogSuffix = "Field";
 
@@ -13,8 +16,7 @@ public class FieldControllerReal(
     #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
     public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName)
-        => ctApiLazy.Value/*.Init(appId)*/.GetFields(appId, staticName);
-
+        => ctApiLazy.Value.GetFields(appId, staticName);
 
     public string[] DataTypes(int appId)
         => attributesMod.New(appId).DataTypes();
@@ -45,7 +47,17 @@ public class FieldControllerReal(
     #region Shared Fields
 
     public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default) 
-        => ctApiLazy.Value/*.Init(appId)*/.GetSharedFields(appId, attributeId);
+        => ctApiLazy.Value.GetSharedFields(appId, attributeId);
+
+    public IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId)
+        => featuresSvc.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions)
+            ? ctApiLazy.Value.GetAncestors(appId, attributeId)
+            : [];
+
+    public IEnumerable<ContentTypeFieldDto> GetDescendants(int appId, int attributeId)
+        => featuresSvc.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions)
+            ? ctApiLazy.Value.GetDescendants(appId, attributeId)
+            : [];
 
     public bool Share(int appId, int attributeId, bool share, bool hide = false)
         => attributesMod.New(appId).FieldShare(attributeId, share, hide);

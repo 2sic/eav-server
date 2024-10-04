@@ -14,7 +14,7 @@ public partial class BuiltInFeatures
         "Content Type - Fields - Share Definitions (for Type-Inheritance)",
         false,
         true,
-        "Enable Field Sharing Management directly in the UI.",
+        "Use Field Configuration/Metadata Sharing.",
         FeaturesCatalogRules.Security0Neutral,
         ForPatronDataAutoEnabled,
         enableForSystemTypes: true,

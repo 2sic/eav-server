@@ -73,16 +73,27 @@ public class ContentTypeDtoService(
     /// </summary>
     public IEnumerable<ContentTypeFieldDto> GetFields(int appId, string staticName)
     {
-        var fields = attributes.New(appId).GetFields(staticName);
-        return convAttrDto.New().Init(appId, false).Convert(fields);
+        return Convert(appId, attributes.New(appId).GetFields(staticName), false);
+        //var fields = attributes.New(appId).GetFields(staticName);
+        //return convAttrDto.New().Init(appId, false).Convert(fields);
     }
 
 
     public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId)
     {
-        var fields = attributes.New(appId).GetSharedFields(attributeId);
-        return convAttrDto.New().Init(appId, true).Convert(fields);
+        return Convert(appId, attributes.New(appId).GetSharedFields(attributeId), true);
+        //var fields = attributes.New(appId).GetSharedFields(attributeId);
+        //return convAttrDto.New().Init(appId, true).Convert(fields);
     }
+
+    public IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId)
+        => Convert(appId, attributes.New(appId).GetAncestors(attributeId), true);
+
+    public IEnumerable<ContentTypeFieldDto> GetDescendants(int appId, int attributeId)
+        => Convert(appId, attributes.New(appId).GetDescendants(attributeId), true);
+
+    private IEnumerable<ContentTypeFieldDto> Convert(int appId, List<PairTypeWithAttribute> fields, bool withType)
+        => convAttrDto.New().Init(appId, withType).Convert(fields);
 
     #endregion
 
