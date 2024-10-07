@@ -41,8 +41,9 @@ public class ContentTypeAttribute(
 
     /// <summary>
     /// SysSettings for this attribute - can be null!
+    /// #SharedFieldDefinition
     /// </summary>
-    [PrivateApi] // #SharedFieldDefinition
+    [PrivateApi]
     public ContentTypeAttributeSysSettings SysSettings { get; } = sysSettings;
 
 

@@ -25,9 +25,23 @@ public interface IContentTypeAttribute: IAttributeBase, IHasPermissions, IAppIde
     /// </summary>
     bool IsTitle { get; }
 
-    [PrivateApi] // #SharedFieldDefinition
+    /// <summary>
+    /// Attribute GUID to uniquely identify this attribute if it is being shared with other attributes.
+    /// #SharedFieldDefinition
+    /// </summary>
+    /// <remarks>
+    /// Created ca. v16, releasing ca. v18.02
+    /// </remarks>
+    [PrivateApi]
     Guid? Guid { get; }
 
-    [PrivateApi] // #SharedFieldDefinition
+    /// <summary>
+    /// System Settings for this attribute, mainly for field-definition sharing and inheriting.
+    /// #SharedFieldDefinition
+    /// </summary>
+    /// <remarks>
+    /// Created ca. v16, releasing ca. v18.02
+    /// </remarks>
+    [PrivateApi]
     ContentTypeAttributeSysSettings SysSettings { get; }
 }
