@@ -142,7 +142,17 @@ public sealed class Attributes: DataSourceBase
             if (!list.Any(dic =>
                     dic.TryGetValue(nameof(IAttributeType.Name), out var name) &&
                     name as string == sysField.Key))
-                list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true, "all"));
+            {
+                list.Insert(0, AsDic(
+                    sysField.Key,
+                    ValueTypeHelpers.Get(sysField.Value),
+                    false,
+                    0,
+                    true,
+                    "all",
+                    description: Data.Attributes.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc) ? desc : default
+                ));
+            }
 
         // if it didn't work yet, maybe try from stream items
         var data = list.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList();
