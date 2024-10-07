@@ -46,12 +46,11 @@ public sealed class Attributes: DataSourceBase
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib")
+    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib", connect: [appReaders, dataFactory])
     {
-        ConnectLogs([
-            _appReaders = appReaders,
-            _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)))
-        ]);
+        _appReaders = appReaders;
+        _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)));
+
         ProvideOut(GetList);
     }
     private readonly IAppReaderFactory _appReaders;
@@ -108,7 +107,9 @@ public sealed class Attributes: DataSourceBase
                     isTitle: at.Attribute.IsTitle,
                     sortOrder: at.Attribute.SortOrder,
                     builtIn: false,
-                    contentTypeName: at.Type.Name
+                    contentTypeName: at.Type.Name,
+                    // TODO: FILTER html
+                    description: at.Attribute.Metadata.GetBestValue<string>("Notes")
                 )
             )
             .ToList();
@@ -126,7 +127,8 @@ public sealed class Attributes: DataSourceBase
                             isTitle: false,
                             sortOrder: 0,
                             builtIn: false,
-                            contentTypeName: "dynamic"
+                            contentTypeName: "dynamic",
+                            description: "dynamic"
                         )
                     )
                     .ToList()
@@ -153,8 +155,9 @@ public sealed class Attributes: DataSourceBase
         bool isTitle,
         int sortOrder,
         bool builtIn,
-        string contentTypeName)
-        => new()
+        string contentTypeName,
+        string description = default
+    ) => new()
         {
             [nameof(IAttributeType.Name)] = name,
             [nameof(IAttributeType.Type)] = type.ToString(),
@@ -163,5 +166,6 @@ public sealed class Attributes: DataSourceBase
             [nameof(IAttributeType.IsBuiltIn)] = builtIn,
             [nameof(IAttributeType.Title)] = $"{name} ({type}{(builtIn ? ", built-in" : "")})",
             [nameof(IAttributeType.ContentType)] = contentTypeName,
+            [nameof(IAttributeType.Description)] = description,
         };
 }

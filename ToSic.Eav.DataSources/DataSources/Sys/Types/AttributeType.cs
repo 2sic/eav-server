@@ -9,4 +9,6 @@ internal interface IAttributeType
     bool IsBuiltIn { get; }
     int SortOrder { get; }
     IContentType ContentType { get; }
+
+    string Description { get; }
 }
