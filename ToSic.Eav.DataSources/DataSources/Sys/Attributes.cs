@@ -1,7 +1,9 @@
-﻿using ToSic.Eav.Apps;
+﻿using System.Text.RegularExpressions;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
+using static System.Net.Mime.MediaTypeNames;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -176,6 +178,31 @@ public sealed class Attributes: DataSourceBase
             [nameof(IAttributeType.IsBuiltIn)] = builtIn,
             [nameof(IAttributeType.Title)] = $"{name} ({type}{(builtIn ? ", built-in" : "")})",
             [nameof(IAttributeType.ContentType)] = contentTypeName,
-            [nameof(IAttributeType.Description)] = description,
+            [nameof(IAttributeType.Description)] = CleanDescription(description),
         };
+
+    /// <summary>
+    /// Note: this could be done better with RazorBlade, but ATM we don't want to add dependencies just for this.
+    /// If we ever do add RazorBlade, then we should also correct &nbsp; etc.
+    /// </summary>
+    /// <param name="html"></param>
+    /// <returns></returns>
+    private static string CleanDescription(string html)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+            return html;
+
+        html = html.Replace("<br>", "\n");
+        var clean = StripHtml(html);
+        var enter = clean.IndexOf("\n", StringComparison.Ordinal);
+        var firstLine = enter > 0
+            ? clean.Substring(0, enter -1)
+            : clean;
+
+        return firstLine.Length > 100
+            ? firstLine.Substring(0, 100) + "..."
+            : firstLine;
+    }
+
+    private static string StripHtml(string html) => string.IsNullOrWhiteSpace(html) ? html : Regex.Replace(html, "<.*?>", string.Empty);
 }
