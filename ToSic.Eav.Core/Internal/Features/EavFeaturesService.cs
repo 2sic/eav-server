@@ -132,7 +132,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
                     var specialExpiry = licenseState?.Expiration;
                     enabled = enabledRule.EnableFeatureByDefault;
                     licenseEnabled = true; // The license is active, so it's allowed to enable this
-                    msgShort = enabledRule.FeatureSet.Name;
+                    msgShort = "license ok";
                     message = $" by default with license {enabledRule.FeatureSet.Name}";
                     expiry = specialExpiry ?? BuiltInLicenses.UnlimitedExpiry;
                 }

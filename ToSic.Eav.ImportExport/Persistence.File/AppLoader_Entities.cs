@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Loaders;
 
 namespace ToSic.Eav.Persistence.File;
@@ -8,7 +7,7 @@ partial class AppLoader
 {
     private List<IEntity> LoadGlobalEntities(IAppReader appReader)
     {
-        var l = Log.Fn<List<IEntity>>($"appId:{appReader.AppId}");
+        var l = Log.Fn<List<IEntity>>($"appId:{appReader.AppId}", timer: true);
         // Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;
         Loaders.ForEach(ldr => ldr.EntityIdSeed = FsDataConstants.GlobalEntityIdMin + FsDataConstants.GlobalEntitySourceSkip * loaderIndex++);
@@ -17,7 +16,6 @@ partial class AppLoader
         // In the end it must contain all entities - but not deleted ones...
         var final = DirectEntitiesSource.Using(relationships =>
         {
-            // var listOfEntitiesForRelationshipMapping = relationships.List;// new List<IEntity>();
             var entitySets = FsDataConstants.EntityItemFolders
                 .Select(folder => new EntitySetsToLoad
                 {
@@ -29,7 +27,9 @@ partial class AppLoader
             l.A($"Found {entitySets.Count} sets");
 
             // Deduplicate entities 
-            var entities = entitySets.SelectMany(es => es.Entities).ToList();
+            var entities = entitySets
+                .SelectMany(es => es.Entities)
+                .ToList();
             var entitiesGroupedByGuid = entities
                 .GroupBy(x => x.EntityGuid)
                 .ToList();
@@ -53,7 +53,7 @@ partial class AppLoader
             // Reset list of entities which will be used to find related entities
             relationships.List.Clear();
             relationships.List.AddRange(entitiesDeduplicated);
-            return (entitiesDeduplicated);
+            return entitiesDeduplicated;
         });
 
         return l.ReturnAsOk(final);
@@ -61,7 +61,7 @@ partial class AppLoader
 
     private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
     {
-        var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}");
+        var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}", timer: true);
         if (!FsDataConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
             throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
                 "atm we can only load items of type " + string.Join("/", FsDataConstants.EntityItemFolders));

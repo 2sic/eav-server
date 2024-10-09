@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 using static ToSic.Eav.Internal.Features.BuiltInFeatures;
 
@@ -120,8 +119,8 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
 
-        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
-            throw exp;
+        if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
+            l.W("Setting up field share but feature is not enabled / licensed.");
 
         // get field attributeId
         var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId)
@@ -149,8 +148,8 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
 
-        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
-            throw exp;
+        if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
+            l.W("Setting up field share but feature is not enabled / licensed.");
 
         // get field attributeId
         var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId);
@@ -175,8 +174,8 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>();
 
-        if (!features.Value.IsEnabled(FieldShareConfigManagement.Guid.ToListOfOne(), "can't save in ADAM", out var exp))
-            throw exp;
+        if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
+            l.W("Setting up field share but feature is not enabled / licensed.");
 
         // 1. First check that sources are correct
 

@@ -8,12 +8,9 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Testing.Shared;
 
-public abstract class TestBaseEavDataSource: TestBaseEavCore
+public abstract class TestBaseEavDataSource(TestConfiguration testConfiguration = default)
+    : TestBaseEavCore(testConfiguration)
 {
-    protected TestBaseEavDataSource(TestConfiguration testConfiguration = default) : base(testConfiguration)
-    {
-    }
-
     protected override void SetupServices(IServiceCollection services)
     {
         base.SetupServices(services);

@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
@@ -36,29 +35,33 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
 
     private RepositoryTypes RepoType { get; set; }
 
-    protected IEntitiesSource EntitiesSource;
+    protected IEntitiesSource EntitiesSource { get; set; }
 
     #region json serializer
-    public JsonSerializer Serializer
-    {
-        get
-        {
-            if (_ser != null) return _ser;
-            _ser = jsonSerializerGenerator.New();
-
-            // #SharedFieldDefinition
-            // Also provide AppState if possible, for new #SharedFieldDefinition
-            if (EntitiesSource is IHasMetadataSourceAndExpiring withAppState)
-                _ser.DeserializationSettings = new()
-                {
-                    CtAttributeMetadataAppState = withAppState
-                };
-            _ser.Initialize(AppId, new List<IContentType>(), EntitiesSource);
-            _ser.AssumeUnknownTypesAreDynamic = true;
-            return _ser;
-        }
-    }
+    public JsonSerializer Serializer => _ser ??= GenerateSerializer();
     private JsonSerializer _ser;
+
+    private JsonSerializer GenerateSerializer()
+    {
+        var ser = jsonSerializerGenerator.New();
+
+        var entitySource = EntitiesSource;
+        var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
+        // #SharedFieldDefinition
+        // Also provide AppState if possible, for new #SharedFieldDefinition
+        if (entitySource is IHasMetadataSourceAndExpiring withAppState)
+            ser.DeserializationSettings = new()
+            {
+                MetadataSource = withAppState,
+                // Just a note: this will only apply to attribute-metadata with related entities
+                // but won't cover Content-Type metadata with related entities
+                // ATM this doesn't matter, because we don't have any related entities in Content-Types
+                // if we ever need it, check out how it's done on the AppLoader
+            };
+        ser.Initialize(AppId, new List<IContentType>(), entitySource);
+        ser.AssumeUnknownTypesAreDynamic = true;
+        return l.Return(ser);
+    }
 
     internal void ResetSerializer(IAppReader appReader)
     {
@@ -78,7 +81,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
 
     public IList<IEntity> Entities(string folder, int idSeed, DirectEntitiesSource relationships)
     {
-        var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{idSeed}");
+        var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{idSeed}", timer: true);
             
         // #1. check that folder exists
         var subPath = System.IO.Path.Combine(Path, folder);
@@ -146,6 +149,13 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
     public IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
     {
         var l = Log.Fn<IList<IContentType>>($"ContentTypes in {appId}");
+        var contentTypes = ContentTypesWithEntities().ContentTypes;
+        return l.Return(contentTypes, $"{contentTypes.Count}");
+    }
+
+    public (IList<IContentType> ContentTypes, List<IEntity> Entities) ContentTypesWithEntities()
+    {
+        var l = Log.Fn<(IList<IContentType> ContentTypes, List<IEntity> Entities)>($"ContentTypes in {AppId}", timer: true);
             
         // #1. check that folder exists
         var pathCt = ContentTypePath;
@@ -167,13 +177,22 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
         var entityCtCount = contentTypes.Count;
 
         // #4 load content-types from files in bundles folder
-        var bundleCts = ContentTypesInBundles();
+        var bundlesCtAndEntities = ContentTypesInBundles();
+        var bundleCts = bundlesCtAndEntities.Select(set => set.ContentType).ToList();
         var bundleCtsWithoutDuplicates = bundleCts
             .Where(bundleCt => !contentTypes.Any(ct => ct.Is(bundleCt.NameId)))
             .ToList();
         contentTypes.AddRange(bundleCtsWithoutDuplicates);
+
+        var entities = bundlesCtAndEntities
+            .SelectMany(set => set.Entities)
+            .Where(e => e != null)
+            .GroupBy(e => e.EntityGuid)
+            .Select(g => g.First())
+            .ToList();
+
         l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; after remove duplicates {bundleCtsWithoutDuplicates.Count}; total {contentTypes.Count}");
-        return l.Return(contentTypes, $"{contentTypes.Count}");
+        return l.Return((contentTypes, entities), $"Content Types: {contentTypes.Count}; Entities: {entities.Count}");
     }
 
     private string ContentTypePath => System.IO.Path.Combine(Path, FsDataConstants.TypesFolder);
@@ -184,7 +203,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
     /// <returns></returns>
     private IContentType LoadAndBuildCt(JsonSerializer ser, string path)
     {
-        var l = Log.Fn<IContentType>($"Path: {path}");
+        var l = Log.Fn<IContentType>($"Path: {path}", timer: true);
         var infoIfError = "couldn't read type-file";
         try
         {
@@ -195,7 +214,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
 
             infoIfError = "couldn't set source/parent";
             ct = dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
-            return l.ReturnAsOk(ct);
+            return l.Return(ct, $"file size was: {json.Length}");
         }
         catch (IOException e)
         {

@@ -39,7 +39,11 @@ public class ContentTypeAttribute(
     [PrivateApi] // #SharedFieldDefinition
     public Guid? Guid { get; } = guid;
 
-    [PrivateApi] // #SharedFieldDefinition
+    /// <summary>
+    /// SysSettings for this attribute - can be null!
+    /// #SharedFieldDefinition
+    /// </summary>
+    [PrivateApi]
     public ContentTypeAttributeSysSettings SysSettings { get; } = sysSettings;
 
 

@@ -30,6 +30,8 @@ public class LicenseCatalog: GlobalCatalogBase<FeatureSet>
             CorePlus,
             CoreBeta,
             PatronBasic,
+            PatronLanguages,
+            PatronData,
             PatronAdvancedCms,
             PatronPerfectionist,
             PatronSentinel,

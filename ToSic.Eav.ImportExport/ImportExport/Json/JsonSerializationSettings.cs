@@ -7,8 +7,6 @@ namespace ToSic.Eav.ImportExport.Json;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class JsonSerializationSettings
 {
-    public JsonSerializationSettings() { }
-
     /// <summary>
     /// Include definitions of ContentTypes which are just inherited / virtual,
     /// as they are based on a parent ContentType

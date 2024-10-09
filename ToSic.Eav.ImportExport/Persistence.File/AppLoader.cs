@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps.State;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.StartUp;
@@ -47,7 +48,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                 try
                 {
                     l.A($"adding {typ.FullName}");
-                    var instance = (FolderBasedRepository) ActivatorUtilities.CreateInstance(_serviceProvider, typ, Array.Empty<object>());
+                    var instance = (FolderBasedRepository) ActivatorUtilities.CreateInstance(_serviceProvider, typ, []);
                     var paths = instance.RootPaths;
                     if (paths != null) _paths.AddRange(paths);
                 }
@@ -63,10 +64,12 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     private List<string> _paths;
 
 
-    internal List<FileSystemLoader> Loaders => _loader ??= Paths
-        .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, null))
-        .ToList();
+    internal List<FileSystemLoader> Loaders => _loader ??= BuildLoaders(null);
     private List<FileSystemLoader> _loader;
+
+    private List<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource) => Paths
+        .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, entitiesSource))
+        .ToList();
 
 
     public IAppStateBuilder LoadFullAppState()
@@ -75,8 +78,6 @@ internal partial class AppLoader : ServiceBase, IAppLoader
         var outerLog = Log.Fn<IAppStateBuilder>(timer: true);
 
         var builder = _stateBuilder.New().InitForPreset();
-        //var appState = builder.AppState;// new AppState(new ParentAppState(null, false, false), Constants.PresetIdentity, Constants.PresetName, Log);
-        // var msg = $"get app data package for a#{appState.AppId}";
 
         builder.Load("get app data package", appState =>
         {
@@ -89,7 +90,9 @@ internal partial class AppLoader : ServiceBase, IAppLoader
             {
                 var types = LoadGlobalContentTypes(appState);
                 // Just attach all global content-types to this app, as they belong here
-                builder.InitContentTypes(types);
+                builder.InitContentTypes(types.ContentTypes);
+                foreach (var entity in types.Entities)
+                    builder.Add(entity as Entity, null, true);
                 return "types loaded";
             });
 
@@ -102,6 +105,8 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                 // That's because it's loaded from the JSON, where the metadata is part of the json-file.
                 // This should probably not cause any problems, but it's important to know
                 // We may optimize / change this some day
+                // Update 2024-09-01 2dm: made some changes, ATM _some_ of it already uses a shared source for relationships, but
+                // only on content-type-sub-entities, and a separate source for the others...?
                 l.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
                 var appTypes = builder.Reader.ContentTypes.ToList();
                 Loaders.ForEach(ldr => ldr.ResetSerializer(appTypes));
@@ -118,6 +123,8 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                 l.A("Error: Failed adding Entities");
                 l.Ex(ex);
             }
+
+            l.Done();
         });
 
         bl.Done();

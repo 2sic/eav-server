@@ -190,7 +190,7 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
         var l = Log.Fn<string>($"{nameof(path)}:'{path}'");
 
         // extract bottom folder from path
-        var edition = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)[0];
+        var edition = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries)[0];
 
         return IsRootEdition(path, edition)
             ? l.Return(string.Empty, "edition: <root>")

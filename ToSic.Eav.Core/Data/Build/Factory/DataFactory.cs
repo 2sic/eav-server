@@ -162,7 +162,9 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
         int id = 0,
         Guid guid = default,
         DateTime created = default,
-        DateTime modified = default)
+        DateTime modified = default,
+        // experimental
+        EntityPartsBuilder partsBuilder = default)
     {
         // pre-process RawRelationships
         values ??= new Dictionary<string, object>();
@@ -176,7 +178,8 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
             titleField: Options.TitleField,
             guid: guid,
             created: created == default ? Created : created,
-            modified: modified == default ? Modified : modified
+            modified: modified == default ? Modified : modified,
+            partsBuilder: partsBuilder
         );
         return ent;
     }
@@ -187,13 +190,20 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
     /// </summary>
     /// <param name="rawEntity"></param>
     /// <returns></returns>
-    public IEntity Create(IRawEntity rawEntity) => Create(
-        rawEntity.Attributes(RawConvertOptions),
-        id: rawEntity.Id,
-        guid: rawEntity.Guid,
-        created: rawEntity.Created,
-        modified: rawEntity.Modified
-    );
+    public IEntity Create(IRawEntity rawEntity)
+    {
+        var partsBuilder = (Options.WithMetadata)
+            ? new EntityPartsBuilder(null, (guid, s) => (rawEntity as RawEntity)?.Metadata)
+            : null;
+        return Create(
+            rawEntity.Attributes(RawConvertOptions),
+            id: rawEntity.Id,
+            guid: rawEntity.Guid,
+            created: rawEntity.Created,
+            modified: rawEntity.Modified,
+            partsBuilder: partsBuilder
+        );
+    }
 
     #endregion
 

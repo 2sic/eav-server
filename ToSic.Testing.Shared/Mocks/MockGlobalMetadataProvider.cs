@@ -6,7 +6,7 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Testing.Shared.Mocks;
 
-public class MockGlobalMetadataProvider : EfcMetadataTargetTypes
+public class MockGlobalMetadataProvider(LazySvc<EavDbContext> dbLazy) : EfcMetadataTargetTypes(dbLazy)
 {        
     protected override ImmutableDictionary<int, string> GetTargetTypes()
     {
@@ -23,9 +23,5 @@ public class MockGlobalMetadataProvider : EfcMetadataTargetTypes
             {9, "Reserved" },
             {10, "CmsObject" },
         }).ToImmutableDictionary();
-    }
-
-    public MockGlobalMetadataProvider(LazySvc<EavDbContext> dbLazy) : base(dbLazy)
-    {
     }
 }

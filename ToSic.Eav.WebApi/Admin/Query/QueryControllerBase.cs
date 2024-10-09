@@ -145,7 +145,7 @@ public abstract class QueryControllerBase<TImplementation>(
         var wiringString = data.Pipeline[QueryConstants.QueryStreamWiringAttributeName]?.ToString() ?? "";
         var wirings =
             SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
-            ?? new List<Connection>();
+            ?? [];
 
         Services.WorkUnitQueryMod.New(appId: appId).Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 

@@ -34,7 +34,6 @@ namespace ToSic.Eav.Persistence.File.Tests
             try
             {
                 cts = DirectEntitiesSource.Using(set => loader.Entities(FsDataConstants.QueriesFolder, 0, set.Source));
-                //cts = new DirectEntitiesSource() loader.Entities(FsDataConstants.QueriesFolder, 0, new List<IEntity>());
             }
             finally
             {

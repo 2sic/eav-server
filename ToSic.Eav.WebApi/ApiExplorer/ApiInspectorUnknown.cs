@@ -11,7 +11,7 @@ internal class ApiInspectorUnknown: ServiceBase, IApiInspector
 
     public bool IsBody(ParameterInfo paramInfo) => false;
 
-    public List<string> GetHttpVerbs(MethodInfo methodInfo) => new();
+    public List<string> GetHttpVerbs(MethodInfo methodInfo) => [];
 
     public ApiSecurityDto GetSecurity(MemberInfo member) => new();
 }

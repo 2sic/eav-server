@@ -22,17 +22,13 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsMetadata")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-public class Metadata : MetadataDataSourceBase
+public class Metadata(DataSourceBase.MyServices services) : MetadataDataSourceBase(services, $"{LogPrefix}.MetaDt")
 {
     /// <summary>
     /// Optional Type Name restriction to only get **Metadata** of this Content Type.
     /// </summary>
     [Configuration]
     public override string ContentTypeName => Configuration.GetThis();
-
-    public Metadata(MyServices services) : base(services, $"{LogPrefix}.MetaDt")
-    {
-    }
 
     protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
     {
@@ -47,11 +43,8 @@ public class Metadata : MetadataDataSourceBase
     /// <param name="typeName"></param>
     /// <returns></returns>
     [PrivateApi]
-    private Func<IEntity, IEnumerable<IEntity>> GetMetadataFunctionGenerator(string typeName)
-    {
-        if (string.IsNullOrEmpty(typeName)) return o => o.Metadata;
-
-        return o => o.Metadata.OfType(typeName);
-    }
-
+    private static Func<IEntity, IEnumerable<IEntity>> GetMetadataFunctionGenerator(string typeName)
+        => string.IsNullOrEmpty(typeName)
+            ? o => o.Metadata
+            : o => o.Metadata.OfType(typeName);
 }

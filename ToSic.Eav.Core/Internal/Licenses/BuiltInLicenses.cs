@@ -91,8 +91,19 @@ public class BuiltInLicenses
 
     public static readonly FeatureSet PatronAdvancedCms = new(LicensePrefix + nameof(PatronAdvancedCms),102,
         "Patron Advanced CMS",
-        new("e23ef849-f50c-47a5-81dd-33fb17727305"),
+        new("4df6895d-2ec4-4fcd-ae2a-7f49defb584b"),
         "Patrons with advanced needs in advanced CMS features."
+    );
+    public static readonly FeatureSet PatronLanguages = new(LicensePrefix + nameof(PatronLanguages),102,
+        "Patron Advanced CMS",
+        new("e23ef849-f50c-47a5-81dd-33fb17727305"),
+        "Patrons with advanced needs in managing languages."
+    );
+
+    public static readonly FeatureSet PatronData = new(LicensePrefix + nameof(PatronData),102,
+        "Patron Data",
+        new("5a50b61e-65ff-443f-a984-a9656e51eb20"),
+        "Awesome data features such as content-type inheritance and advanced pickers."
     );
 
     public static readonly FeatureSet PatronSuperAdmin = new(LicensePrefix + nameof(PatronSuperAdmin),501,

@@ -49,15 +49,16 @@ partial class FileSystemLoader
 
 
 
-    public List<IContentType> ContentTypesInBundles()
+    public List<ContentTypeWithEntities> ContentTypesInBundles()
     {
-        var l = Log.Fn<List<IContentType>>($"ContentTypes in bundles");
+        var l = Log.Fn<List<ContentTypeWithEntities>>();
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes.SafeAny()) != true))
             return l.Return([]);
 
         var contentTypes = JsonBundleBundles
             .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value))
-            .Where(ct => ct != null).ToList();
+            //.Where(ct => ct != null)
+            .ToList();
 
         l.A("ContentTypes in bundles: " + contentTypes.Count);
 
@@ -69,27 +70,31 @@ partial class FileSystemLoader
     /// Build contentTypes from bundle json
     /// </summary>
     /// <returns></returns>
-    private List<IContentType> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
+    private List<ContentTypeWithEntities> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
     {
-        var l = Log.Fn<List<IContentType>>($"path: {path}");
+        var l = Log.Fn<List<ContentTypeWithEntities>>($"path: {path}");
         try
         {
             var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
 
             var newContentTypes = contentTypes
-                .Select(ct => dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed,
-                    repoType: RepoType, repoAddress: path,
-                    parentTypeId: Constants.PresetContentTypeFakeParent,
-                    configZoneId: Constants.PresetZoneId,
-                    configAppId: Constants.PresetAppId)
-                )
+                .Select(ct =>
+                {
+                    var typeWithOrigin = dataBuilder.ContentType.CreateFrom(ct.ContentType, id: ++TypeIdSeed,
+                        repoType: RepoType,
+                        repoAddress: path,
+                        parentTypeId: Constants.PresetContentTypeFakeParent,
+                        configZoneId: Constants.PresetZoneId,
+                        configAppId: Constants.PresetAppId);
+                    return new ContentTypeWithEntities { ContentType = typeWithOrigin, Entities = ct.Entities };
+                })
                 .ToList();
 
             return l.ReturnAsOk(newContentTypes);
         }
         catch (Exception e)
         {
-            l.Ex($"Failed building content types from bundle json", e);
+            l.Ex("Failed building content types from bundle json", e);
             return l.Return([], "error");
         }
     }

@@ -42,6 +42,14 @@ public class Attributes
         { ModifiedNiceName, nameof(DateTime) },
         { TitleNiceName, nameof(String) },
     };
+    public static Dictionary<string, string> SystemFieldDescriptions = new()
+    {
+        { IdNiceName, "ID (int) of this Entity" },
+        { GuidNiceName, "GUID (guid) of this Entity" },
+        { CreatedNiceName, "When this Entity was created" },
+        { ModifiedNiceName, "When this Entity was modified" },
+        { TitleNiceName, "Nice title, typically used in dropdowns" },
+    };
 
     public const string TargetNiceName = "Target";
     public const string NumberNiceName = "Number";

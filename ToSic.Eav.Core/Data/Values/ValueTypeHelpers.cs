@@ -14,7 +14,9 @@ public class ValueTypeHelpers
     public static ValueTypes Get(string typeName) 
         => Enum.TryParse<ValueTypes>(typeName ?? "", true, out var code) ? code : ValueTypes.Undefined;
 
-    public static Dictionary<ValueTypes, Type> TypeMap = new()
+    //public static Type GetType(ValueTypes type) => TypeMap[type];
+
+    private static readonly Dictionary<ValueTypes, Type> TypeMap = new()
     {
         {ValueTypes.Boolean, typeof(bool)},
         {ValueTypes.DateTime, typeof(DateTime)},
@@ -27,5 +29,4 @@ public class ValueTypeHelpers
         {ValueTypes.Json, typeof(string)}
     };
 
-    public static Type GetType(ValueTypes type) => TypeMap[type];
 }

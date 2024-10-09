@@ -1,46 +1,52 @@
-﻿using ToSic.Eav.ImportExport.Json;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Loaders;
 
 namespace ToSic.Eav.Persistence.File;
 
 partial class AppLoader
 {
-    public List<IContentType> LoadGlobalContentTypes(IHasMetadataSourceAndExpiring appState)
+    public (List<IContentType> ContentTypes, List<IEntity> Entities) LoadGlobalContentTypes(IAppStateCache appState)
     {
-        var l = Log.Fn<List<IContentType>>();
+        var l = Log.Fn<(List<IContentType> ContentTypes, List<IEntity> Entities)>(timer: true);
 
-        // Set TypeID seed for loader so each loaded type has a unique ID
+        // 1. Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;
-        Loaders.ForEach(ldr =>
-        {
-            ldr.TypeIdSeed = FsDataConstants.GlobalContentTypeMin +
-                             FsDataConstants.GlobalContentTypeSourceSkip * loaderIndex++;
-        });
-            
+        Loaders.ForEach(ldr => ldr.TypeIdSeed = FsDataConstants.GlobalContentTypeMin + FsDataConstants.GlobalContentTypeSourceSkip * loaderIndex++);
 
-        // 3 - return content types
+        // 2. Create a delayed content type provider, which will
+        //    later on give the generated sub-entities their content type (which may not exist during deserialization)
         var delayedContentTypeProvider = new DeferredContentTypeProvider(Log);
 
-        // #SharedFieldDefinition
+        // 3. Prepare settings to ensure CT-definitions and entities inside the content-types and their attributes
+        //    can look up their correct content type, metadata and relationships
+        //    This is necessary because the serializer will not yet know what App it's for,
+        //    since the App state is not fully loaded
         var deSerializeSettings = new JsonDeSerializationSettings
         {
-            EntityContentTypeProvider = delayedContentTypeProvider,
-            CtAttributeMetadataAppState = appState,
+            ContentTypeProvider = delayedContentTypeProvider,
+            MetadataSource = appState,
+            RelationshipsSource = appState,
         };
 
-        var newTypes = Loaders.SelectMany(ldr =>
-        {
-            ldr.Serializer.DeserializationSettings = deSerializeSettings;
-            var result = ldr.ContentTypes();
-            ldr.Serializer.DeserializationSettings = null;
-            return result;
-        }).ToList();
+        // 4. Load all content types from all loaders, incl. any additional entities they may have
+        var newSets = Loaders.Select(ldr =>
+            {
+                ldr.Serializer.DeserializationSettings = deSerializeSettings;
+                var ctWithEntities = ldr.ContentTypesWithEntities();
+                ldr.Serializer.DeserializationSettings = null;
+                return ctWithEntities;
+            })
+            .ToList();
 
+        // 5. Finalize all created entities to ensure they reference the newly created content-types
+        var newTypes = newSets.SelectMany(set => set.ContentTypes).ToList();
+        var newEntities = newSets.SelectMany(set => set.Entities).ToList();
         delayedContentTypeProvider.AddTypes(newTypes);
+        var types = delayedContentTypeProvider.SetTypesOfContentTypeParts();
+        delayedContentTypeProvider.SetTypesOfOtherEntities(newEntities);
 
-        var types = delayedContentTypeProvider.ProcessSubEntitiesOnTypes();
-
-        return l.Return(types, $"found {types.Count} types");
+        return l.Return((types, newEntities), $"found {types.Count} types; {newEntities.Count} entities");
     }
 
 }

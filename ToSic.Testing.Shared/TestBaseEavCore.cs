@@ -3,12 +3,8 @@ using ToSic.Eav.StartUp;
 
 namespace ToSic.Testing.Shared;
 
-public abstract class TestBaseEavCore: TestBaseLib
+public abstract class TestBaseEavCore(TestConfiguration testConfiguration = default) : TestBaseLib(testConfiguration)
 {
-    protected TestBaseEavCore(TestConfiguration testConfiguration = default) : base(testConfiguration)
-    {
-    }
-
     protected override void SetupServices(IServiceCollection services)
     {
         base.SetupServices(services);

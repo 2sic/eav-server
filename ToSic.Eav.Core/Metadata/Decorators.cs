@@ -18,6 +18,8 @@ public class Decorators
     // Is-Recommended Decorator
     public static string RecommendedDecoratorId = "c740085a-d548-41f3-8d06-0a48b8692345";
 
+    // Is-Picker DataSource Decorator (new v18.02)
+    public static string IsPickerDataSourceDecoratorId = "bcce96be-a439-4f22-9d1e-a10487544fa5";
 
 
     // This marks entities which should allow saving empty

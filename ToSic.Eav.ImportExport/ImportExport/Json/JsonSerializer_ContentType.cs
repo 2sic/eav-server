@@ -8,7 +8,7 @@ partial class JsonSerializer
 {
     public string Serialize(IContentType contentType, JsonSerializationSettings settings = default)
     {
-        var package = ToPackage(contentType, /*false,*/ settings ?? new JsonSerializationSettings
+        var package = ToPackage(contentType, settings ?? new JsonSerializationSettings
         {
             CtIncludeInherited = false,
             CtAttributeIncludeInheritedMetadata = true
@@ -34,20 +34,31 @@ partial class JsonSerializer
         try
         {
             // check all metadata of these attributes - get possible sub-entities attached
-            var attribMdItems = contentType.Attributes.SelectMany(a => a.Metadata).ToArray();
-            var attribMdEntityAttribs = attribMdItems.SelectMany(m => m.Attributes
-                    .Where(a => a.Value.Type == ValueTypes.Entity))
+            var attribMds = contentType.Attributes
+                .SelectMany(a => GetMetadataOrSkip(a, settings) ?? Array.Empty<IEntity>() as IEnumerable<IEntity>)
                 .ToArray();
+
+            var attribMdsOfEntity = attribMds
+                .SelectMany(m => m.Attributes.Where(a => a.Value.Type == ValueTypes.Entity))
+                .ToArray();
+
             var mdParts =
                 // On Dynamically Typed Entities, the Children()-Call won't work, because the Relationship-Manager doesn't know the children.
                 // So we must go the hard way and look at each ObjectContents
-                attribMdEntityAttribs
+                attribMdsOfEntity
                     .SelectMany(a => a.Value.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>)
                     .Where(e => e != null) // filter out possible null items
                     .ToList();
 
-            l.A($"Sub items: {mdParts.Count}");
-            package.Entities = mdParts.Select(e => ToJson(e, 0)).ToArray();
+            // In some cases we may have references to the same entity, in which case we only need one
+            var mdDeduplicated = mdParts
+                .DistinctBy(e => e.EntityId)
+                .ToList();
+
+            l.A($"Sub items: {mdParts.Count}; Deduplicated: {mdDeduplicated.Count}");
+            package.Entities = mdDeduplicated
+                .Select(e => ToJson(e,  metadataDepth: 0))
+                .ToList();
         }
         catch (Exception ex)
         {
@@ -57,9 +68,28 @@ partial class JsonSerializer
         return l.ReturnAsOk(package);
     }
 
+    /// <summary>
+    /// Get an Attributes Metadata - if it's directly owned, or if include-shared is active.
+    ///
+    /// TODO: Advanced cases where just a part of the metadata is inherited is not yet supported.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="settings"></param>
+    /// <returns></returns>
+    private static IMetadataOf GetMetadataOrSkip(IContentTypeAttribute a, JsonSerializationSettings settings)
+    {
+        var inheritsMetadata = a.SysSettings?.InheritMetadata == true;
+        var skipMetadata = inheritsMetadata && !settings.CtAttributeIncludeInheritedMetadata;
+        return skipMetadata ? null : a.Metadata;
+    }
+
     // Note: only seems to be used in a test...
     public JsonContentType ToJson(IContentType contentType)
-        => ToJson(contentType, /*false,*/ new() { CtIncludeInherited = false, CtAttributeIncludeInheritedMetadata = true });
+        => ToJson(contentType, new()
+        {
+            CtIncludeInherited = false,
+            CtAttributeIncludeInheritedMetadata = true
+        });
 
     private JsonContentType ToJson(IContentType contentType, JsonSerializationSettings settings)
     {
@@ -70,10 +100,9 @@ partial class JsonSerializer
             .Select(a =>
             {
                 // #SharedFieldDefinition
-                var inheritsMetadata = a.SysSettings?.InheritMetadata == true;
-                var metadata = inheritsMetadata && !settings.CtAttributeIncludeInheritedMetadata
-                    ? null 
-                    : a.Metadata?.Select(md => ToJson(md)).ToList(); /* important: must call with params, otherwise default param metadata = 1 instead of 0*/
+                var metadata = GetMetadataOrSkip(a, settings)?
+                    .Select(md => ToJson(md, metadataDepth: 0)) /* important: must call with params, otherwise default param metadata = 1 instead of 0*/
+                    .ToList();
                 return new JsonAttributeDefinition
                 {
                     Name = a.Name,
@@ -95,17 +124,17 @@ partial class JsonSerializer
             .ToList()
             .ForEach(e => e.For = null);
 
-        var sharableCt = contentType as IContentTypeShared;
-
         var ancestorDecorator = contentType.GetDecorator<IAncestor>();
-        var isSharedNew = ancestorDecorator != null &&
-                          ancestorDecorator.Id != Constants.PresetContentTypeFakeParent;
+        var isSharedNew = ancestorDecorator is { Id: not Constants.PresetContentTypeFakeParent };
 
         // Note 2021-11-22 2dm - AFAIK this is skipped when creating a JSON for edit-UI
         if (isSharedNew && !settings.CtIncludeInherited)
         {
             // if it's a shared type, flush definition as we won't include it
-            if (ancestorDecorator.Id != 0) attribs = null;
+            if (ancestorDecorator.Id != 0)
+                attribs = null;
+
+            var sharableCt = (IContentTypeShared)contentType;
 
             jctShare = new()
             {
@@ -137,7 +166,7 @@ partial class JsonSerializer
         {
             var json = JsonAttributeSysSettings.FromSysSettings(sysSettings);
             var simple = System.Text.Json.JsonSerializer.Serialize(json, JsonOptions.UnsafeJsonWithoutEncodingHtml);
-            return l.Return(simple, $"serialized sysSettings");
+            return l.Return(simple, "serialized sysSettings");
         }
         catch (Exception e)
         {

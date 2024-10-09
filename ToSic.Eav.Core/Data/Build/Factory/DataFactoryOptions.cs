@@ -14,7 +14,7 @@ public class DataFactoryOptions
 {
     /// <summary>
     /// The App-ID which will be assigned to the generated entities.
-    /// By default it will be `0`
+    /// By default, it will be `0`
     /// </summary>
     public int AppId { get; }
 
@@ -38,6 +38,8 @@ public class DataFactoryOptions
 
     public bool AllowUnknownValueTypes { get; init; }
 
+    public bool WithMetadata { get; init; }
+
     /// <summary>
     /// Main Constructor to create such options.
     /// </summary>
@@ -46,9 +48,9 @@ public class DataFactoryOptions
     /// <param name="appId">Optional AppId to set on each generated Entity</param>
     /// <param name="typeName">Optional ContentTypeName to use instead of the default</param>
     /// <param name="titleField">Optional Title field to use instead of the default `Title`</param>
-    /// <param name="autoId">Determines if items with Id 0 should get an automatic ID</param>
+    /// <param name="autoId">Determines if items with ID 0 should get an automatic ID</param>
     /// <param name="idSeed">A root ID seed for numbering the items</param>
-    /// <param name="allowUnknownValueTypes">Define whether entities can have unknown ValueTypes (like values containing a custom object)</param>
+    /// <param name="withMetadata"></param>
     public DataFactoryOptions(
         DataFactoryOptions original = default,
         NoParamOrder noParamOrder = default,
@@ -56,7 +58,8 @@ public class DataFactoryOptions
         string typeName = default,
         string titleField = default,
         bool? autoId = default,
-        int? idSeed = default
+        int? idSeed = default,
+        bool? withMetadata = default
     )
     {
         AppId = appId ?? original?.AppId ?? 0;
@@ -65,5 +68,6 @@ public class DataFactoryOptions
         AutoId = autoId ?? original?.AutoId ?? true;
         IdSeed = idSeed ?? original?.IdSeed ?? 1;
         AllowUnknownValueTypes = original?.AllowUnknownValueTypes ?? false;
+        WithMetadata = withMetadata ?? original?.WithMetadata ?? false;
     }
 }

@@ -1,7 +1,9 @@
-﻿using ToSic.Eav.Apps;
+﻿using System.Text.RegularExpressions;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
+using static System.Net.Mime.MediaTypeNames;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -46,12 +48,11 @@ public sealed class Attributes: DataSourceBase
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib")
+    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib", connect: [appReaders, dataFactory])
     {
-        ConnectLogs([
-            _appReaders = appReaders,
-            _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)))
-        ]);
+        _appReaders = appReaders;
+        _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)));
+
         ProvideOut(GetList);
     }
     private readonly IAppReaderFactory _appReaders;
@@ -108,7 +109,9 @@ public sealed class Attributes: DataSourceBase
                     isTitle: at.Attribute.IsTitle,
                     sortOrder: at.Attribute.SortOrder,
                     builtIn: false,
-                    contentTypeName: at.Type.Name
+                    contentTypeName: at.Type.Name,
+                    // TODO: FILTER html
+                    description: at.Attribute.Metadata.GetBestValue<string>("Notes")
                 )
             )
             .ToList();
@@ -126,7 +129,8 @@ public sealed class Attributes: DataSourceBase
                             isTitle: false,
                             sortOrder: 0,
                             builtIn: false,
-                            contentTypeName: "dynamic"
+                            contentTypeName: "dynamic",
+                            description: "dynamic"
                         )
                     )
                     .ToList()
@@ -140,7 +144,17 @@ public sealed class Attributes: DataSourceBase
             if (!list.Any(dic =>
                     dic.TryGetValue(nameof(IAttributeType.Name), out var name) &&
                     name as string == sysField.Key))
-                list.Insert(0, AsDic(sysField.Key, ValueTypeHelpers.Get(sysField.Value), false, 0, true, "all"));
+            {
+                list.Insert(0, AsDic(
+                    sysField.Key,
+                    ValueTypeHelpers.Get(sysField.Value),
+                    false,
+                    0,
+                    true,
+                    "all",
+                    description: Data.Attributes.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc) ? desc : default
+                ));
+            }
 
         // if it didn't work yet, maybe try from stream items
         var data = list.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList();
@@ -153,8 +167,9 @@ public sealed class Attributes: DataSourceBase
         bool isTitle,
         int sortOrder,
         bool builtIn,
-        string contentTypeName)
-        => new()
+        string contentTypeName,
+        string description = default
+    ) => new()
         {
             [nameof(IAttributeType.Name)] = name,
             [nameof(IAttributeType.Type)] = type.ToString(),
@@ -163,5 +178,31 @@ public sealed class Attributes: DataSourceBase
             [nameof(IAttributeType.IsBuiltIn)] = builtIn,
             [nameof(IAttributeType.Title)] = $"{name} ({type}{(builtIn ? ", built-in" : "")})",
             [nameof(IAttributeType.ContentType)] = contentTypeName,
+            [nameof(IAttributeType.Description)] = CleanDescription(description),
         };
+
+    /// <summary>
+    /// Note: this could be done better with RazorBlade, but ATM we don't want to add dependencies just for this.
+    /// If we ever do add RazorBlade, then we should also correct &nbsp; etc.
+    /// </summary>
+    /// <param name="html"></param>
+    /// <returns></returns>
+    private static string CleanDescription(string html)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+            return html;
+
+        html = html.Replace("<br>", "\n");
+        var clean = StripHtml(html);
+        var enter = clean.IndexOf("\n", StringComparison.Ordinal);
+        var firstLine = enter > 0
+            ? clean.Substring(0, enter -1)
+            : clean;
+
+        return firstLine.Length > 100
+            ? firstLine.Substring(0, 100) + "..."
+            : firstLine;
+    }
+
+    private static string StripHtml(string html) => string.IsNullOrWhiteSpace(html) ? html : Regex.Replace(html, "<.*?>", string.Empty);
 }

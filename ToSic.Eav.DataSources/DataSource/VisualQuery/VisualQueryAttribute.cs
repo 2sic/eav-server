@@ -89,7 +89,8 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
 
     /// <summary>
     /// Nice name shown in the UI <br/>
-    /// If not specified, the UI will use the normal name instead. 
+    /// If not specified, the UI will use the normal name instead.
+    /// May contain spaces, slashes etc.
     /// </summary>
     public string NiceName { get; set; }
 

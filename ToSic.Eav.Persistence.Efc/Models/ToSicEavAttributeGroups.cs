@@ -3,11 +3,6 @@
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class ToSicEavAttributeGroups
 {
-    public ToSicEavAttributeGroups()
-    {
-        ToSicEavAttributesInSets = new HashSet<ToSicEavAttributesInSets>();
-    }
-
     public int AttributeGroupId { get; set; }
     public string Name { get; set; }
         
@@ -15,6 +10,6 @@ public partial class ToSicEavAttributeGroups
     //public int SortOrder { get; set; }
     public int AttributeSetId { get; set; }
 
-    public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
+    public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; } = new HashSet<ToSicEavAttributesInSets>();
     public virtual ToSicEavAttributeSets AttributeSet { get; set; }
 }

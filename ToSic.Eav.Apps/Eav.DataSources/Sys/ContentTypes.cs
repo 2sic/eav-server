@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps;
+﻿using System.Security.Cryptography.X509Certificates;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
@@ -74,7 +75,7 @@ public sealed class ContentTypes: CustomDataSource
     {
         ConnectLogs([_appReaders = appReaders]);
         var options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
-        ProvideOut(GetList, options: () => new(options, appId: OfAppId));
+        ProvideOut(GetList, options: () => new(options, appId: OfAppId, withMetadata: true));
     }
     private readonly IAppReaderFactory _appReaders;
 
@@ -112,7 +113,8 @@ public sealed class ContentTypes: CustomDataSource
             .Select(t => new RawEntity(ContentTypeUtil.BuildDictionary(t))
             {
                 Id = t.Id,
-                Guid = SafeConvertGuid(t) ?? Guid.Empty
+                Guid = SafeConvertGuid(t) ?? Guid.Empty,
+                Metadata = t.Metadata,
             })
             .ToList();
 
