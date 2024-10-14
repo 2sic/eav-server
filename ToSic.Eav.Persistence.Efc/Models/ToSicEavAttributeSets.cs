@@ -5,7 +5,7 @@ public partial class ToSicEavAttributeSets
 {
     public ToSicEavAttributeSets()
     {
-        ToSicEavAttributeGroups = new HashSet<ToSicEavAttributeGroups>();
+        //ToSicEavAttributeGroups = new HashSet<ToSicEavAttributeGroups>();
         ToSicEavAttributesInSets = new HashSet<ToSicEavAttributesInSets>();
         //ToSicEavAttributesInSharedSets = new HashSet<ToSicEavAttributesInSets>();
         ToSicEavEntities = new HashSet<ToSicEavEntities>();
@@ -23,7 +23,7 @@ public partial class ToSicEavAttributeSets
     public bool AlwaysShareConfiguration { get; set; }
     public string SysSettings { get; set; }
 
-    public virtual ICollection<ToSicEavAttributeGroups> ToSicEavAttributeGroups { get; set; }
+    //public virtual ICollection<ToSicEavAttributeGroups> ToSicEavAttributeGroups { get; set; }
     public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
 
     // 2dm added

@@ -122,7 +122,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
             Attribute = newAttribute,
             AttributeSet = attributeSet,
             SortOrder = sortOrder,
-            AttributeGroupId = 1,
+            // AttributeGroupId = 1,
             IsTitle = isTitle
         };
         DbContext.SqlDb.Add(newAttribute);
