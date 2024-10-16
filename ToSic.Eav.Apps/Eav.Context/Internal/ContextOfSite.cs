@@ -53,13 +53,14 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
 
     private bool IsContentAdmin => User?.IsContentAdmin ?? false;
     private bool IsContentEditor => User?.IsContentEditor ?? false;
+    private bool ShowDraft => User?.IsEditMode ?? false;
 
     EffectivePermissions IContextOfUserPermissions.Permissions => _permissions
         ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(
             isSiteAdmin: mayAdmin,
             isContentAdmin: mayAdmin || IsContentAdmin,
             isContentEditor: mayAdmin || IsContentEditor,
-            showDrafts: mayAdmin || IsContentAdmin || IsContentEditor));
+            showDrafts: ShowDraft));
     private EffectivePermissions _permissions;
 
     /// <inheritdoc />

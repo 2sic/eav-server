@@ -76,4 +76,6 @@ public interface IUser: ILogShouldNeverConnect
     /// </summary>
     bool IsAnonymous { get; }
 
+    bool IsEditMode { get; }
+
 }

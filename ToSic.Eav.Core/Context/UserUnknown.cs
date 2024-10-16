@@ -28,5 +28,7 @@ internal sealed class UserUnknown(WarnUseOfUnknown<UserUnknown> _) : IUser, IIsU
 
     public string Email => "unknown@unknown.org";
 
-    public bool IsAnonymous => !false;
+    public bool IsAnonymous => true;
+
+    public bool IsEditMode => false;
 }
