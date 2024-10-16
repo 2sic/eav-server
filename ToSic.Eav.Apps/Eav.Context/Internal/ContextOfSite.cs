@@ -51,8 +51,15 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
         return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
     });
 
+    private bool IsContentAdmin => User?.IsContentAdmin ?? false;
+    private bool IsContentEditor => User?.IsContentEditor ?? false;
+
     EffectivePermissions IContextOfUserPermissions.Permissions => _permissions
-        ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(isSiteAdmin: mayAdmin, isContentAdmin: mayAdmin || (User?.IsContentAdmin ?? false)));
+        ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(
+            isSiteAdmin: mayAdmin,
+            isContentAdmin: mayAdmin || IsContentAdmin,
+            isContentEditor: mayAdmin || IsContentEditor,
+            showDrafts: mayAdmin || IsContentAdmin || IsContentEditor));
     private EffectivePermissions _permissions;
 
     /// <inheritdoc />

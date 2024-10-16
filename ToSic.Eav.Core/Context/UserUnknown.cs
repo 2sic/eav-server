@@ -16,6 +16,8 @@ internal sealed class UserUnknown(WarnUseOfUnknown<UserUnknown> _) : IUser, IIsU
 
     public bool IsContentAdmin => false;
 
+    public bool IsContentEditor => false;
+
     public bool IsSiteDeveloper => false;
 
     public int Id => 0;
