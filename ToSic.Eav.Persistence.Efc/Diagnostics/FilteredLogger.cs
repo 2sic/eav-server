@@ -1,4 +1,6 @@
 ﻿#if NETFRAMEWORK
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace ToSic.Eav.Persistence.Efc.Diagnostics;
@@ -9,9 +11,9 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics;
 public class EfCoreFilteredLoggerProvider : ILoggerProvider
 {
     private static string[] _categories =
-    {
-        typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName,
-    };
+    [
+        DbLoggerCategory.Database.Command.Name,
+    ];
 
     public ILogger CreateLogger(string categoryName)
     {

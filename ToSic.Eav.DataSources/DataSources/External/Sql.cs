@@ -1,8 +1,4 @@
-﻿#if NETFRAMEWORK
-using System.Data.SqlClient;
-#else
-using Microsoft.Data.SqlClient;
-#endif
+﻿using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Data.Build;

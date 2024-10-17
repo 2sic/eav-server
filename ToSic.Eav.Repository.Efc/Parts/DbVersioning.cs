@@ -27,11 +27,7 @@ internal  partial class DbVersioning: DbPartBase
         var con = DbContext.SqlDb.Database.GetDbConnection();
         if (con.State != ConnectionState.Open)
             con.Open(); // make sure same connection is used later
-#if NETFRAMEWORK
-            _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog
-                .FromSql("ToSIC_EAV_ChangeLogAdd @p0", userName)
-                .Single().ChangeId;
-#else
+
         // In ef31 FromSqlInterpolated requires SELECT statement in sql string or we get error
         // 'FromSqlRaw or FromSqlInterpolated was called with non-composable SQL and with a query composing over it. Consider calling `AsEnumerable` after the FromSqlRaw or FromSqlInterpolated method to perform the composition on the client side.'.
         // https://github.com/dotnet/efcore/issues/22558#issuecomment-693363140
@@ -43,7 +39,6 @@ internal  partial class DbVersioning: DbPartBase
 	            EXEC ToSIC_EAV_ChangeLogSet @ChangeID
             	SELECT * FROM [dbo].[ToSIC_EAV_ChangeLog] WHERE [ChangeID] = @ChangeID";
         _mainChangeLogId = DbContext.SqlDb.ToSicEavChangeLog.FromSqlInterpolated(sql).AsEnumerable().Single().ChangeId;
-#endif
         return _mainChangeLogId;
     }
 
