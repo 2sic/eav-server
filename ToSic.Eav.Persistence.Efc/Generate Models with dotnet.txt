@@ -56,6 +56,12 @@ The column 'dbo.ToSIC_EAV_Entities.IsPublished' would normally be mapped to a no
 
 ---
 
-Command 'optimize' is not working with efcore 3.1.32 because it is added in version 6.0.0
+Command 'optimize' is not working with efcore 3.1.32 because it is introduced in version 6.0.0.
 
-dotnet ef dbcontext optimize --output-dir ModelsCompiled --context EavDbContextCompiled --namespace ToSic.Eav.Persistence.Efc.Models
+dotnet ef dbcontext optimize --output-dir ModelsCompiled --context EavDbContext --namespace ToSic.Eav.Persistence.Efc.Models --framework net8.0
+
+Build started...
+Build succeeded.
+Successfully generated a compiled model, to use it call 'options.UseModel(ToSic.Eav.Persistence.Efc.Models.EavDbContextModel.Instance)'. Run this command again when the model is modified.
+
+---

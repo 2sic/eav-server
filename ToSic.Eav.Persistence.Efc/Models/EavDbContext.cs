@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Options;
 using ToSic.Eav.Internal.Configuration;
 #if NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -45,6 +46,9 @@ public partial class EavDbContext : DbContext
         optionsBuilder
             .UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
             .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
+
+        // use generated a compiled model
+        optionsBuilder.UseModel(EavDbContextModel.Instance);
 #endif
     }
 
