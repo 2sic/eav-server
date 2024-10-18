@@ -1,0 +1,61 @@
+﻿Auto-generate data model with 'dotnet ef dbcontext scaffold'
+
+---
+Tested with 2 versions:
+
+### --framework net472
+
+dotnet tool uninstall --global dotnet-ef
+dotnet tool install --global dotnet-ef --version 3.1.32
+
+### --framework net8.0
+
+dotnet tool uninstall --global dotnet-ef
+dotnet tool install --global dotnet-ef --version 8.0.5
+
+---
+file EavDbContextFactory.cs was added to test didderent commands of: dotnet ef dbcontext
+
+`
+
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Options;
+using ToSic.Eav.Internal.Configuration;
+
+namespace ToSic.Eav.Persistence.Efc.Models
+{
+    public class EavDbContextFactory : IDesignTimeDbContextFactory<EavDbContext>
+    {
+        public EavDbContext CreateDbContext(string[] args)
+        {
+            var dbConfiguration = new DbConfiguration();
+
+            var optionsBuilder = new DbContextOptionsBuilder<EavDbContext>();
+            optionsBuilder.UseSqlServer(dbConfiguration.ConnectionString);
+            //options.UseModel(EavDbContextModel.Instance);
+
+            return new EavDbContext(optionsBuilder.Options, new DbConfiguration());
+        }
+    }
+
+    class DbConfiguration : IDbConfiguration
+    {
+        public string ConnectionString { get; set; } = "Data Source=(local);Initial Catalog=2sxc-dnn9134-t05;Integrated Security=True;TrustServerCertificate=true;";
+    }
+}
+`
+
+---
+
+dotnet ef dbcontext scaffold "Data Source=(local);Initial Catalog=2sxc-dnn9134-t05;Integrated Security=True;TrustServerCertificate=true;" Microsoft.EntityFrameworkCore.SqlServer --output-dir Models2 --context EavDbContext --namespace ToSic.Eav.Persistence.Efc.Models --table dbo.ToSIC_EAV_Apps --table dbo.ToSIC_EAV_AssignmentObjectTypes --table dbo.ToSIC_EAV_Attributes --table dbo.ToSIC_EAV_AttributeSets --table dbo.ToSIC_EAV_AttributesInSets --table dbo.ToSIC_EAV_AttributeTypes --table dbo.ToSIC_EAV_ChangeLog --table dbo.ToSIC_EAV_DataTimeline --table dbo.ToSIC_EAV_Dimensions --table dbo.ToSIC_EAV_Entities --table dbo.ToSIC_EAV_EntityRelationships --table dbo.ToSIC_EAV_Values --table dbo.ToSIC_EAV_ValuesDimensions --table dbo.ToSIC_EAV_Zones
+
+Build started...
+Build succeeded.
+The column 'dbo.ToSIC_EAV_Dimensions.Active' would normally be mapped to a non-nullable bool property, but it has a default constraint. Such a column is mapped to a nullable bool property to allow a difference between setting the property to false and invoking the default constraint. See https://go.microsoft.com/fwlink/?linkid=851278 for details.
+The column 'dbo.ToSIC_EAV_Entities.IsPublished' would normally be mapped to a non-nullable bool property, but it has a default constraint. Such a column is mapped to a nullable bool property to allow a difference between setting the property to false and invoking the default constraint. See https://go.microsoft.com/fwlink/?linkid=851278 for details.
+
+---
+
+Command 'optimize' is not working with efcore 3.1.32 because it is added in version 6.0.0
+
+dotnet ef dbcontext optimize --output-dir ModelsCompiled --context EavDbContextCompiled --namespace ToSic.Eav.Persistence.Efc.Models
