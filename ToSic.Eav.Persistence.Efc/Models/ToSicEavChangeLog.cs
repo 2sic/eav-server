@@ -5,10 +5,10 @@ public partial class ToSicEavChangeLog
 {
     public ToSicEavChangeLog()
     {
-        ToSicEavAttributesChangeLogCreatedNavigation = new HashSet<ToSicEavAttributes>();
-        ToSicEavAttributesChangeLogDeletedNavigation = new HashSet<ToSicEavAttributes>();
         ToSicEavAttributeSetsChangeLogCreatedNavigation = new HashSet<ToSicEavAttributeSets>();
         ToSicEavAttributeSetsChangeLogDeletedNavigation = new HashSet<ToSicEavAttributeSets>();
+        ToSicEavAttributesChangeLogCreatedNavigation = new HashSet<ToSicEavAttributes>();
+        ToSicEavAttributesChangeLogDeletedNavigation = new HashSet<ToSicEavAttributes>();
         ToSicEavEntitiesChangeLogCreatedNavigation = new HashSet<ToSicEavEntities>();
         ToSicEavEntitiesChangeLogDeletedNavigation = new HashSet<ToSicEavEntities>();
         ToSicEavEntitiesChangeLogModifiedNavigation = new HashSet<ToSicEavEntities>();
@@ -21,10 +21,10 @@ public partial class ToSicEavChangeLog
     public DateTime Timestamp { get; set; }
     public string User { get; set; }
 
-    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributesChangeLogCreatedNavigation { get; set; }
-    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributesChangeLogDeletedNavigation { get; set; }
     public virtual ICollection<ToSicEavAttributeSets> ToSicEavAttributeSetsChangeLogCreatedNavigation { get; set; }
     public virtual ICollection<ToSicEavAttributeSets> ToSicEavAttributeSetsChangeLogDeletedNavigation { get; set; }
+    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributesChangeLogCreatedNavigation { get; set; }
+    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributesChangeLogDeletedNavigation { get; set; }
     public virtual ICollection<ToSicEavEntities> ToSicEavEntitiesChangeLogCreatedNavigation { get; set; }
     public virtual ICollection<ToSicEavEntities> ToSicEavEntitiesChangeLogDeletedNavigation { get; set; }
     public virtual ICollection<ToSicEavEntities> ToSicEavEntitiesChangeLogModifiedNavigation { get; set; }

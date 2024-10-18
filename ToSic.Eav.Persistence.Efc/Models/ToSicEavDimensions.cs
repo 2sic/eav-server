@@ -5,6 +5,7 @@ public partial class ToSicEavDimensions : Data.DimensionDefinition
 {
     public ToSicEavDimensions()
     {
+        InverseParentNavigation = new HashSet<ToSicEavDimensions>();
         ToSicEavValuesDimensions = new HashSet<ToSicEavValuesDimensions>();
         Active = true;
     }
@@ -17,8 +18,9 @@ public partial class ToSicEavDimensions : Data.DimensionDefinition
     //public bool Active { get; set; }
     public int ZoneId { get; set; }
 
-    public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
+
     public virtual ToSicEavDimensions ParentNavigation { get; set; }
-    public virtual ICollection<ToSicEavDimensions> InverseParentNavigation { get; set; }
     public virtual ToSicEavZones Zone { get; set; }
+    public virtual ICollection<ToSicEavDimensions> InverseParentNavigation { get; set; }
+    public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
 }

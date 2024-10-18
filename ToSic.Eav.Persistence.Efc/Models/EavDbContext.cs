@@ -8,29 +8,13 @@ namespace ToSic.Eav.Persistence.Efc.Models;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class EavDbContext : DbContext
 {
-    private readonly IDbConfiguration _dbConfig;
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var connectionString = _dbConfig.ConnectionString;
-        if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
-            connectionString += ";MultipleActiveResultSets=True";
-#if NETFRAMEWORK
-        optionsBuilder.UseSqlServer(connectionString);
-#else
-        // https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries
-        optionsBuilder
-            .UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
-            .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
-#endif
-    }
-
     //public bool DebugMode = false;
 
     public EavDbContext(DbContextOptions<EavDbContext> options, IDbConfiguration dbConfig) : base(options)
     {
         _dbConfig = dbConfig;
     }
+    private readonly IDbConfiguration _dbConfig;
 
     public virtual DbSet<ToSicEavApps> ToSicEavApps { get; set; }
     public virtual DbSet<ToSicEavAssignmentObjectTypes> ToSicEavAssignmentObjectTypes { get; set; }
@@ -49,7 +33,20 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
     public virtual DbSet<ToSicEavZones> ToSicEavZones { get; set; }
 
-
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var connectionString = _dbConfig.ConnectionString;
+        if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
+            connectionString += ";MultipleActiveResultSets=True";
+#if NETFRAMEWORK
+        optionsBuilder.UseSqlServer(connectionString);
+#else
+        // https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries
+        optionsBuilder
+            .UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
+            .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
+#endif
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -167,9 +164,9 @@ public partial class EavDbContext : DbContext
                 .HasForeignKey(d => d.UsesConfigurationOfAttributeSet)
                 .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets");
 
-            entity.Property(e => e.SysSettings)
-                .HasColumnName("SysSettings")
-                .HasColumnType("nvarchar(MAX)");
+            //entity.Property(e => e.SysSettings)
+            //    .HasColumnName("SysSettings")
+            //    .HasColumnType("nvarchar(MAX)");
         });
 
         modelBuilder.Entity<ToSicEavAttributeTypes>(entity =>
@@ -282,7 +279,8 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.Operation)
                 .IsRequired()
-                .HasColumnType("nchar(1)")
+                .HasMaxLength(1)
+                .IsFixedLength()
                 .HasDefaultValueSql("N'I'");
 
             entity.Property(e => e.SourceId).HasColumnName("SourceID");
@@ -349,6 +347,8 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
 
+            entity.Property(e => e.ContentType).HasMaxLength(250);
+
             entity.Property(e => e.EntityGuid)
                 .HasColumnName("EntityGUID")
                 .HasDefaultValueSql("newid()");
@@ -359,8 +359,6 @@ public partial class EavDbContext : DbContext
             entity.Property(e => e.KeyString).HasMaxLength(100);
 
             entity.Property(e => e.Owner).HasMaxLength(250);
-
-            entity.Property(e => e.ContentType).HasMaxLength(250);
 
             // 2017-10-10 2dm new with entity > app mapping
             entity.HasOne(d => d.App)
@@ -462,7 +460,9 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.EntityId).HasColumnName("EntityID");
 
-            entity.Property(e => e.Value).IsRequired();
+            entity.Property(e => e.Value)
+                .IsRequired()
+                .HasColumnType("nvarchar(max)");
 
             entity.HasOne(d => d.Attribute)
                 .WithMany(p => p.ToSicEavValues)
@@ -532,5 +532,9 @@ public partial class EavDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(255);
         });
+
+        OnModelCreatingPartial(modelBuilder);
     }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
