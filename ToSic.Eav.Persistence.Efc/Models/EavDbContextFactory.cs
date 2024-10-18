@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Options;
 using ToSic.Eav.Internal.Configuration;
 
 namespace ToSic.Eav.Persistence.Efc.Models
@@ -11,6 +12,7 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
             var optionsBuilder = new DbContextOptionsBuilder<EavDbContext>();
             optionsBuilder.UseSqlServer(dbConfiguration.ConnectionString);
+            //options.UseModel(EavDbContextModel.Instance);
 
             return new EavDbContext(optionsBuilder.Options, new DbConfiguration());
         }
@@ -18,6 +20,6 @@ namespace ToSic.Eav.Persistence.Efc.Models
 
     class DbConfiguration : IDbConfiguration
     {
-        public string ConnectionString { get; set; } = "Data Source=.;Initial Catalog=2sxc-dnn;User ID=test;Password=test";
+        public string ConnectionString { get; set; } = "Data Source=(local);Initial Catalog=2sxc-dnn9134-t05;Integrated Security=True;TrustServerCertificate=true;";
     }
 }
