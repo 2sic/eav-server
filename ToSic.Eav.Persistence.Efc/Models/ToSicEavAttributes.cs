@@ -18,10 +18,10 @@ public partial class ToSicEavAttributes
     public Guid? Guid { get; set; }
     public string SysSettings { get; set; }
 
-    public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
-    public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
-    public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; }
     public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }
     public virtual ToSicEavChangeLog ChangeLogDeletedNavigation { get; set; }
     public virtual ToSicEavAttributeTypes TypeNavigation { get; set; }
+    public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
+    public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
+    public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; }
 }

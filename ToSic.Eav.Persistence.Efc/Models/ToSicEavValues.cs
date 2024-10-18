@@ -16,10 +16,10 @@ public partial class ToSicEavValues//: RepoValue
     public int? ChangeLogDeleted { get; set; }
     public int? ChangeLogModified { get; set; }
 
-    public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
     public virtual ToSicEavAttributes Attribute { get; set; }
     public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }
     public virtual ToSicEavChangeLog ChangeLogDeletedNavigation { get; set; }
     public virtual ToSicEavChangeLog ChangeLogModifiedNavigation { get; set; }
     public virtual ToSicEavEntities Entity { get; set; }
+    public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
 }
