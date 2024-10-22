@@ -50,7 +50,7 @@ public class SampleData(DataBuilder builder)
             {"Age", 37},
             {"AnyDate", DateTime.Parse("2019-11-06T01:00:05Z") }
         };
-        var entDaniel = builder.Entity.TestCreate(appId: AppId, entityId: 1, contentType: CtTestType, values: valDaniel, titleField: "FirstName");
+        var entDaniel = builder.TestCreate(appId: AppId, entityId: 1, contentType: CtTestType, values: valDaniel, titleField: "FirstName");
         return entDaniel;
     }
 
@@ -64,7 +64,7 @@ public class SampleData(DataBuilder builder)
             {"Age", 6}
         };
 
-        var entLeonie = builder.Entity.TestCreate(appId: AppId, entityId: 2, contentType: CtTestType, values: valLeonie, titleField: "FirstName");
+        var entLeonie = builder.TestCreate(appId: AppId, entityId: 2, contentType: CtTestType, values: valLeonie, titleField: "FirstName");
         return entLeonie;
     }
     public IEntity TestEntityPet(int petNumber)
@@ -77,7 +77,7 @@ public class SampleData(DataBuilder builder)
             {"Age", petNumber}
         };
 
-        var entPet = builder.Entity.TestCreate(appId: AppId, entityId: 1000 + petNumber, contentType: CtPet, values: valsPet, titleField: "FirstName");
+        var entPet = builder.TestCreate(appId: AppId, entityId: 1000 + petNumber, contentType: CtPet, values: valsPet, titleField: "FirstName");
         return entPet;
     }
         

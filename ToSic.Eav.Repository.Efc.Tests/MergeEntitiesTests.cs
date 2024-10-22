@@ -59,7 +59,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         readonly Entity _origENull = null;
 
-        private Entity GirlSingle => Builder.Entity.TestCreate(appId: AppId, entityId: 999, contentType: _ctPerson, values: new()
+        private Entity GirlSingle => Builder.TestCreate(appId: AppId, entityId: 999, contentType: _ctPerson, values: new()
         {
             {"FullName", "Sandra Unmarried"},
             {"FirstName", "Sandra"},
@@ -67,7 +67,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"Birthday", new DateTime(1981, 5, 14) }
         });
 
-        private Entity GirlMarried => Builder.Entity.TestCreate(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new()
+        private Entity GirlMarried => Builder.TestCreate(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new()
         {
             {"FullName", "Sandra Unmarried-Married"},
             {"FirstName", "Sandra"},
@@ -77,7 +77,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {"WeddingDate", DateTime.Today }
         });
 
-        private Entity GirlMarriedUpdate => Builder.Entity.TestCreate(appId: AppId, contentType: _ctPerson, values: new()
+        private Entity GirlMarriedUpdate => Builder.TestCreate(appId: AppId, contentType: _ctPerson, values: new()
         {
             {"FullName", "Sandra Unmarried-Married"},
             //{"FirstName", "Sandra"},
@@ -143,7 +143,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
         );
 
         private readonly Entity _prodNull = null;
-        private Entity ProdNoLang => Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new()
+        private Entity ProdNoLang => Builder.TestCreate(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new()
         {
             { Attributes.TitleNiceName, "Original Product No Lang" },
             { "Teaser", "Original Teaser no lang" },
@@ -167,7 +167,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
             });
 
-            return Builder.Entity.TestCreate(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new()
+            return Builder.TestCreate(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new()
             {
                 {title.Name, title},
                 {teaser.Name, teaser},
@@ -209,7 +209,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
             });
 
-            return Builder.Entity.TestCreate(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new()
+            return Builder.TestCreate(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new()
             {
                 {title.Name, title},
                 {teaser.Name, teaser},

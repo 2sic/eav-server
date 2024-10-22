@@ -27,7 +27,7 @@ public class LookUpTestData(DataBuilder builder)
 
     public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
     {
-        var ent = builder.Entity.TestCreate(appId: appId, contentType: builder.ContentType.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
+        var ent = builder.TestCreate(appId: appId, contentType: builder.ContentType.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
         return new(name, ent, null);
     }
 

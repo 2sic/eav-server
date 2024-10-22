@@ -13,8 +13,6 @@ namespace ToSic.Eav.Data.Build;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntityBuilder(AttributeBuilder attributeBuilder)
 {
-    public AttributeBuilder Attribute { get; } = attributeBuilder;
-
     public Entity Create(
         int appId,
         IContentType contentType,
@@ -67,7 +65,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             entityId: entityId,
             guid: entityGuid,
             contentType: type,
-            attributes: Attribute.Create(type, null),
+            attributes: attributeBuilder.Create(type, null),
             created: DateTime.MinValue,
             modified: DateTime.Now, 
             owner: "");
