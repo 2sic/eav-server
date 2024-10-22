@@ -84,58 +84,59 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         }
     }
 
-    public void Set(string key, object value,
-        NoParamOrder protector = default,
-        DateTimeOffset? absoluteExpiration = null,
-        TimeSpan? slidingExpiration = null,
-        IList<string> filePaths = null,
-        IDictionary<string, bool> folderPaths = null,
-        IEnumerable<string> cacheKeys = null,
-        CacheEntryUpdateCallback updateCallback = null)
-    {
-        var l = Log.Fn($"key: '{key}'");
-        try
-        {
-            CacheItemPolicy policy = absoluteExpiration.HasValue
-                ? new() { AbsoluteExpiration = absoluteExpiration.Value }
-                : new() { SlidingExpiration = slidingExpiration ?? DefaultSlidingExpiration };
+    // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
+    //public void Set(string key, object value,
+    //    NoParamOrder protector = default,
+    //    DateTimeOffset? absoluteExpiration = null,
+    //    TimeSpan? slidingExpiration = null,
+    //    IList<string> filePaths = null,
+    //    IDictionary<string, bool> folderPaths = null,
+    //    IEnumerable<string> cacheKeys = null,
+    //    CacheEntryUpdateCallback updateCallback = null)
+    //{
+    //    var l = Log.Fn($"key: '{key}'");
+    //    try
+    //    {
+    //        CacheItemPolicy policy = absoluteExpiration.HasValue
+    //            ? new() { AbsoluteExpiration = absoluteExpiration.Value }
+    //            : new() { SlidingExpiration = slidingExpiration ?? DefaultSlidingExpiration };
 
-            if (filePaths is { Count: > 0 })
-            {
-                l.A($"Add {filePaths.Count} {nameof(HostFileChangeMonitor)}s");
-                policy.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths));
-            }
+    //        if (filePaths is { Count: > 0 })
+    //        {
+    //            l.A($"Add {filePaths.Count} {nameof(HostFileChangeMonitor)}s");
+    //            policy.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths));
+    //        }
 
-            if (folderPaths is { Count: > 0 })
-            {
-                l.A($"Add {folderPaths.Count} {nameof(FolderChangeMonitor)}s");
-                policy.ChangeMonitors.Add(new FolderChangeMonitor(folderPaths));
-            }
+    //        if (folderPaths is { Count: > 0 })
+    //        {
+    //            l.A($"Add {folderPaths.Count} {nameof(FolderChangeMonitor)}s");
+    //            policy.ChangeMonitors.Add(new FolderChangeMonitor(folderPaths));
+    //        }
 
-            if (cacheKeys != null)
-            {
-                var keysClone = new List<string>(cacheKeys);
-                if (keysClone.Count > 0)
-                {
-                    l.A($"Add {keysClone.Count} Cache-Entry Change Monitors");
-                    policy.ChangeMonitors.Add(CreateCacheEntryChangeMonitor(keysClone));
-                }
-            }
+    //        if (cacheKeys != null)
+    //        {
+    //            var keysClone = new List<string>(cacheKeys);
+    //            if (keysClone.Count > 0)
+    //            {
+    //                l.A($"Add {keysClone.Count} Cache-Entry Change Monitors");
+    //                policy.ChangeMonitors.Add(CreateCacheEntryChangeMonitor(keysClone));
+    //            }
+    //        }
 
-            if (updateCallback != null)
-            {
-                l.A("Add UpdateCallback");
-                policy.UpdateCallback = updateCallback;
-            }
+    //        if (updateCallback != null)
+    //        {
+    //            l.A("Add UpdateCallback");
+    //            policy.UpdateCallback = updateCallback;
+    //        }
 
-            Cache.Set(new(key, value), policy);
-            l.Done();
-        }
-        catch (Exception ex)
-        {
-            l.Done(ex);
-        }
-    }
+    //        Cache.Set(new(key, value), policy);
+    //        l.Done();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        l.Done(ex);
+    //    }
+    //}
 
     //public bool Add(string key, object value, CacheItemPolicy policy) => Cache.Add(key, value, policy);
 

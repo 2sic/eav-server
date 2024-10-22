@@ -18,10 +18,15 @@ partial class DataSourceCatalog
         var (data, slidingExpiration, folderPaths, cacheKeys)
             = appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
 
-        memoryCacheService.Set(AppCacheKey(appId), data, 
-            slidingExpiration: slidingExpiration,
-            folderPaths: folderPaths?.ToDictionary(p => p, p => true),
-            cacheKeys: cacheKeys);
+        memoryCacheService.SetNew(AppCacheKey(appId), data, p => p
+            .SetSlidingExpiration(slidingExpiration)
+            .WatchFolders(folderPaths?.ToDictionary(p => p, p => true))
+            .WatchCacheKeys(cacheKeys));
+        // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
+        //memoryCacheService.Set(AppCacheKey(appId), data, 
+        //    slidingExpiration: slidingExpiration,
+        //    folderPaths: folderPaths?.ToDictionary(p => p, p => true),
+        //    cacheKeys: cacheKeys);
 
         return data;
     }

@@ -42,6 +42,9 @@ public class CacheItemPolicyMaker(ILog parentLog, IEnumerable<(string, Action<Ca
             p => p.SlidingExpiration = slidingExpiration
         );
 
+    public IPolicyMaker SetSlidingExpiration(int seconds)
+        => SetSlidingExpiration(new TimeSpan(0, 0, seconds));
+
     public IPolicyMaker WatchFiles(IList<string> filePaths) =>
         filePaths is not { Count: > 0 }
             ? this
