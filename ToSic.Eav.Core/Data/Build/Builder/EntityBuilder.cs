@@ -35,7 +35,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         EntitySavePublishing publishing = default
     )
     {
-        // If repositoryId isn't known set it it to EntityId
+        // If repositoryId isn't known set it to EntityId
         repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
         version = version == default ? 1 : version;
 
@@ -45,7 +45,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         return new(appId, entityId, repositoryId: repositoryId,
             partsBuilder: partsBuilder, 
             contentType: contentType,
-            values: attributes ?? Attribute.Empty(),
+            values: attributes ?? AttributeBuilder.EmptyList,
             guid: guid,
             titleFieldName: titleField,
             created: created,
@@ -54,7 +54,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             version: version,
             isPublished: publishing?.ShouldPublish ?? isPublished,
             metadataFor: metadataFor,
-            placeDraftInBranch: publishing?.ShouldBranchDrafts ?? default,// placeDraftInBranch,
+            placeDraftInBranch: publishing?.ShouldBranchDrafts ?? default,
             publishedId: publishedId);
     }
 

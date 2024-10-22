@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Coding;
 
@@ -35,7 +34,7 @@ public static class DataTestExtensions
                 ? entityBuilder.Attribute.Create(typedValues)
                 : values != null
                     ? entityBuilder.Attribute.Create(values)
-                    : null, // typedValues?.ToImmutableInvariant(),
+                    : null,
             entityId: entityId,
             repositoryId: repositoryId,
             guid:guid,
