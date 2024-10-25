@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
+internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFactoryLazy) : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
 {
     private readonly DataBuilder _builder = builder;
 
@@ -25,14 +25,14 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
     private readonly DataFactoryOptions _options;
 
 
-    public DateTime Created { get; } = DateTime.Now;
-    public DateTime Modified { get; } = DateTime.Now;
+    private DateTime Created { get; } = DateTime.Now;
+    private DateTime Modified { get; } = DateTime.Now;
 
     private RawConvertOptions RawConvertOptions { get; } = new();
 
     public ILookup<object, IEntity> Relationships => _nonLazyRelationships ?? _lazyRelationships;
-    private ILookup<object, IEntity> _nonLazyRelationships;
-    private LazyLookup<object, IEntity> _lazyRelationships = new();
+    private readonly ILookup<object, IEntity> _nonLazyRelationships;
+    private readonly LazyLookup<object, IEntity> _lazyRelationships = new();
 
     private RawRelationshipsConverter RelsConverter => _relsConverter.Get(() => new(_builder, Log));
     private readonly GetOnce<RawRelationshipsConverter> _relsConverter = new();
@@ -49,6 +49,7 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
     )
     {
         var clone = new DataFactory(builder.New(options?.AllowUnknownValueTypes ?? false),
+            ctFactoryLazy,
             options: options,
             relationships: relationships,
             rawConvertOptions: rawConvertOptions
@@ -62,17 +63,20 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
     /// </summary>
     private DataFactory(
         DataBuilder builder,
+        Lazy<ContentTypeFactory> ctFactoryLazy,
         NoParamOrder noParamOrder = default,
         DataFactoryOptions options = default,
         ILookup<object, IEntity> relationships = default,
         RawConvertOptions rawConvertOptions = default
-    ) :this (builder)
+    ) :this (builder, ctFactoryLazy)
     {
         // Store settings
         _options = options ?? new DataFactoryOptions();
 
         IdCounter = Options.IdSeed;
-        ContentType = _builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
+        ContentType = Options.Type != null
+            ? ctFactoryLazy.Value.Create(Options.Type)
+            : _builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
 
         if (rawConvertOptions != null) RawConvertOptions = rawConvertOptions;
 
@@ -98,15 +102,17 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
         => WrapUp(Prepare(list));
 
     /// <inheritdoc />
-    public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList) => Log.Func(l =>
+    public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList)
     {
+        var l = this.Log.Fn<IImmutableList<IEntity>>();
+
         // Pre-process relationship keys, so they are added to the lookup
         var list = rawList.ToList();
         RelsConverter.AddRelationshipsToLookup(list, _lazyRelationships, RawConvertOptions);
 
         // Return entities as Immutable list
-        return list.Select(set => set.Entity).ToImmutableList();
-    });
+        return l.Return(list.Select(set => set.Entity).ToImmutableList());
+    }
 
     #endregion
 
@@ -192,7 +198,7 @@ internal class DataFactory(DataBuilder builder) : ServiceBase("Ds.DatBld", conne
     /// <returns></returns>
     public IEntity Create(IRawEntity rawEntity)
     {
-        var partsBuilder = (Options.WithMetadata)
+        var partsBuilder = Options.WithMetadata
             ? new EntityPartsBuilder(null, (guid, s) => (rawEntity as RawEntity)?.Metadata)
             : null;
         return Create(

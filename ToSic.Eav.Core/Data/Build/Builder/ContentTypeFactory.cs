@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using ToSic.Eav.Data.ContentTypes.CodeAttributes;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -8,6 +9,7 @@ namespace ToSic.Eav.Data.Build;
 /// Special factory to convert POCOs into content types.
 /// </summary>
 public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttributeBuilder ctAttributeBuilder, EntityBuilder entityBuilder, AttributeBuilder attributeBuilder)
+    : ServiceBase("Eav.CtFact")
 {
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
@@ -25,6 +27,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
 
     private IContentType Create(Type type, string name = default, string nameId = default, string scope = default, int appId = NoAppId)
     {
+        var l = Log.Fn<IContentType>(timer: true);
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
         var ctName = name ?? ctSpecs?.Name ?? type.Name;
         var ctNameId = nameId ?? ctSpecs?.Guid.NullOrGetWith(g => Guid.TryParse(g, out var guid) ? guid.ToString() : null) ?? Guid.Empty.ToString();
@@ -45,7 +48,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             isDynamic: true,
             attributes: attributes
         );
-        return contentType;
+        return l.ReturnAndLog(contentType);
     }
 
     /// <summary>
@@ -55,8 +58,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     /// </summary>
     private IEntity ContentTypeDetails(string description)
     {
+        var l = Log.Fn<IEntity>();
         if (description == null)
-            return null;
+            return l.ReturnNull("no description");
 
         // All props
         var dic = new Dictionary<string, object> { { nameof(Data.ContentTypeDetails.Description), description } };
@@ -64,16 +68,17 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
 
         // Create a Description entity
         var entity = entityBuilder.Create(NoAppId, ctBuilder.Transient(NoAppId, Data.ContentTypeDetails.ContentTypeTypeName, Data.ContentTypeDetails.ContentTypeTypeName), attributes: attributes);
-        return entity;
+        return l.Return(entity, "created");
     }
 
     private List<IContentTypeAttribute> GenerateAttributes(Type type)
     {
+        var l = Log.Fn<List<IContentTypeAttribute>>(timer: true);
         // Get all properties of the type
         var properties = type.GetProperties();
 
         if (properties.Length == 0)
-            return [];
+            return l.Return([], "no properties");
 
         var propsFiltered = properties
             .Where(p =>
@@ -82,7 +87,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             .ToList();
 
         if (propsFiltered.Count == 0)
-            return [];
+            return l.Return([], "no properties after filtering");
 
         // Generate list of attributes
         var attributes = propsFiltered.Select(p =>
@@ -107,7 +112,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             })
             .ToList();
 
-        return attributes;
+        return l.Return(attributes, $"{attributes.Count}");
     }
 
     /// <summary>
@@ -117,8 +122,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     /// </summary>
     private IEntity ContentTypeAttributeDetails(string description)
     {
+        var l = Log.Fn<IEntity>();
         if (description == null)
-            return null;
+            return l.ReturnNull("no description");
 
         // All props
         var dic = new Dictionary<string, object> { { AttributeMetadata.DescriptionField, description } };
@@ -126,7 +132,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
 
         // Create a Description entity
         var entity = entityBuilder.Create(NoAppId, ctBuilder.Transient(NoAppId, AttributeMetadata.TypeGeneral, AttributeMetadata.TypeGeneral), attributes: attributes);
-        return entity;
+        return l.Return(entity, "created");
     }
 
 }
