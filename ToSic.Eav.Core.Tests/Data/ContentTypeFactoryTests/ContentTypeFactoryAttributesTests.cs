@@ -52,4 +52,10 @@ public class ContentTypeFactoryAttributesTests : ContentTypeFactoryTestsBase
     public void Attributes_WithSpec_SkipIgnores(string name)
         => Assert.IsFalse(Factory().Create(typeof(TestTypeWithSpecs)).Attributes.Any(a => a.Name == name));
 
+    [TestMethod]
+    public void Attributes_InternalFields()
+    {
+        var x = Factory().Create(typeof(TestTypeInternalFields));
+        Assert.AreEqual(1, x.Attributes.Count());
+    }
 }

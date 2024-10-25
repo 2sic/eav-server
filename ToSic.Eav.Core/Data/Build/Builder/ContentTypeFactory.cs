@@ -75,7 +75,10 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         if (properties.Length == 0)
             return [];
 
-        var propsFiltered = properties.Where(p => p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() == null)
+        var propsFiltered = properties
+            .Where(p =>
+                p.Name is not (Attributes.IdNiceName or Attributes.GuidNiceName or Attributes.CreatedNiceName or Attributes.ModifiedNiceName)
+                && p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() == null)
             .ToList();
 
         if (propsFiltered.Count == 0)
@@ -94,7 +97,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                 // Must be null if no metadata
                 var attrMetadata = ContentTypeAttributeDetails(attrSpecs?.Description)?.ToListOfOne();
 
-                return (IContentTypeAttribute)ctAttributeBuilder.Create(
+                return ctAttributeBuilder.Create(
                     NoAppId,
                     name: attrName,
                     type: attrType,

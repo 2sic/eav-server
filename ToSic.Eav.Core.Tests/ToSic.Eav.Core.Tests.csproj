@@ -99,6 +99,7 @@
     <Compile Include="Configuration\FingerprintTest.cs" />
     <Compile Include="Data\ContentTypeFactoryTests\ContentTypeFactoryTestsBase.cs" />
     <Compile Include="Data\ContentTypeFactoryTests\ContentTypeFactoryAttributesTests.cs" />
+    <Compile Include="Data\ContentTypeFactoryTests\TestTypeInternalFields.cs" />
     <Compile Include="Data\ContentTypeFactoryTests\TestTypeNoSpecs.cs" />
     <Compile Include="Data\ContentTypeFactoryTests\TestTypeNoSpecsEmpty.cs" />
     <Compile Include="Data\ContentTypeFactoryTests\TestTypeWithSpecs.cs" />
