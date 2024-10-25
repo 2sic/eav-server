@@ -9,11 +9,6 @@ namespace ToSic.Eav.Data.Build;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentTypeBuilder
 {
-    /// <summary>
-    /// WIP - constructor shouldn't ever be called because of DI
-    /// </summary>
-    public ContentTypeBuilder() { }
-
     public const int DynTypeId = 1;
 
     public IContentType Create(

@@ -97,11 +97,14 @@
     <Compile Include="Configuration\DataOverrideTest.cs" />
     <Compile Include="Configuration\LicenseCheckTest.cs" />
     <Compile Include="Configuration\FingerprintTest.cs" />
+    <Compile Include="Data\ContentTypeFactoryTests\TestTypeBasic.cs" />
+    <Compile Include="Data\ContentTypeFactoryTests\TestTypeWithSpecs.cs" />
     <Compile Include="Data\ContentType_Test.cs" />
     <Compile Include="Data\SampleData.cs" />
     <Compile Include="Data\Entity_Test.cs" />
     <Compile Include="Data\EqualityComparerPerformance.cs" />
     <Compile Include="Data\PropReqSpecsTests.cs" />
+    <Compile Include="Data\ContentTypeFactoryTests\ContentTypeFactoryClassTests.cs" />
     <Compile Include="EavDataTestAccessors.cs" />
     <Compile Include="IdentityTests\MapperTest.cs" />
     <Compile Include="LookUp\LookUpTestData.cs" />

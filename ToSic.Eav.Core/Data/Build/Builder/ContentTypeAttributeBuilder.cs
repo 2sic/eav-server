@@ -9,6 +9,23 @@ namespace ToSic.Eav.Data.Build;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
 {
+    /// <summary>
+    /// Create a ContentType Attribute.
+    /// This contains the definition of a single attribute of a content type.
+    /// Specifically its name, what value type it accepts etc.
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <param name="name"></param>
+    /// <param name="type"></param>
+    /// <param name="isTitle"></param>
+    /// <param name="id"></param>
+    /// <param name="sortOrder"></param>
+    /// <param name="guid"></param>
+    /// <param name="sysSettings"></param>
+    /// <param name="metadata"></param>
+    /// <param name="metadataItems"></param>
+    /// <param name="metaSourceFinder"></param>
+    /// <returns></returns>
     public ContentTypeAttribute Create(
         int appId,
         string name,
