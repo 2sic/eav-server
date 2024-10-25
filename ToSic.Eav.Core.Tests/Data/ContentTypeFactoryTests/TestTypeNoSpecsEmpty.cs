@@ -3,7 +3,6 @@
 /// <summary>
 /// Very basic test type, without additional decoration.
 /// </summary>
-internal class TestTypeBasic
+internal class TestTypeNoSpecsEmpty
 {
-    public string Name { get; set; }
 }

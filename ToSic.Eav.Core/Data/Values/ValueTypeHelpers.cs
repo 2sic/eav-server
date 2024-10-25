@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data;
+﻿using ToSic.Eav.Plumbing;
+
+namespace ToSic.Eav.Data;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -15,6 +17,15 @@ public class ValueTypeHelpers
         => Enum.TryParse<ValueTypes>(typeName ?? "", true, out var code) ? code : ValueTypes.Undefined;
 
     //public static Type GetType(ValueTypes type) => TypeMap[type];
+
+    public static ValueTypes Get(Type type) =>
+        // String occurs multiple times, so we can't just get first...
+        type == typeof(string)
+            ? ValueTypes.String
+            // Numbers are also special, as there are multiple types that are numeric
+            : type.IsNumeric()
+                ? ValueTypes.Number
+                : TypeMap.FirstOrDefault(x => x.Value == type).Key;
 
     private static readonly Dictionary<ValueTypes, Type> TypeMap = new()
     {

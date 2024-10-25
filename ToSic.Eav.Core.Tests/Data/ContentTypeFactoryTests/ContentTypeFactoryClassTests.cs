@@ -2,39 +2,42 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Core.Tests.Data.ContentTypeFactoryTests;
 
 [TestClass]
-public class ContentTypeFactoryClassTests: TestBaseEavCore
+public class ContentTypeFactoryClassTests: ContentTypeFactoryTestsBase
 {
-    private ContentTypeFactory Factory() => GetService<ContentTypeFactory>();
+    private static string GetDescription(IContentType type)
+        => type.Metadata.Description?.Get<string>(nameof(ContentTypeDetails.Description));
 
     [TestMethod]
     public void Basic() => Assert.IsNotNull(Factory());
 
-    [TestMethod]
-    public void Create_NoSpecs()
-    {
-        var x = Factory().Create(typeof(TestTypeBasic));
-        Assert.AreEqual(nameof(TestTypeBasic), x.Name);
-        Assert.AreEqual(Scopes.Default, x.Scope);
-        Assert.AreEqual(Guid.Empty.ToString(), x.NameId);
-        Assert.AreEqual(ContentTypeFactory.NoAppId, x.AppId);
-        Assert.AreEqual(null, GetDescription(x));
-    }
 
-    [TestMethod]
-    public void Create_WithSpecs()
-    {
-        var x = Factory().Create(typeof(TestTypeWithSpecs));
-        Assert.AreEqual(TestTypeWithSpecs.SpecName, x.Name);
-        Assert.AreEqual(TestTypeWithSpecs.SpecScope, x.Scope);
-        Assert.AreEqual(TestTypeWithSpecs.SpecGuid, x.NameId);
-        Assert.AreEqual(ContentTypeFactory.NoAppId, x.AppId);
-        Assert.AreEqual(TestTypeWithSpecs.SpecDescription, GetDescription(x));
-    }
+    private T GetPropNoSpecsEmpty<T>(Func<IContentType, T> getFunc) => getFunc(Factory().Create(typeof(TestTypeNoSpecsEmpty)));
 
-    private static string GetDescription(IContentType type) => type.Metadata.Description?.Get<string>(nameof(ContentTypeDetails.Description));
+    [TestMethod] public void Create_NoSpecs_Name() => Assert.AreEqual(nameof(TestTypeNoSpecsEmpty), GetPropNoSpecsEmpty(x => x.Name));
+
+    [TestMethod] public void Create_NoSpecs_Scope() => Assert.AreEqual(Scopes.Default, GetPropNoSpecsEmpty(x => x.Scope));
+
+    [TestMethod] public void Create_NoSpecs_NameId() => Assert.AreEqual(Guid.Empty.ToString(), GetPropNoSpecsEmpty(x => x.NameId));
+
+    [TestMethod] public void Create_NoSpecs_AppId() => Assert.AreEqual(ContentTypeFactory.NoAppId, GetPropNoSpecsEmpty(x => x.AppId));
+
+    [TestMethod] public void Create_NoSpecs_Description() => Assert.AreEqual(null, GetDescription(Factory().Create(typeof(TestTypeNoSpecsEmpty))));
+
+
+    private T GetPropWithSpecsEmpty<T>(Func<IContentType, T> getFunc) => getFunc(Factory().Create(typeof(TestTypeWithSpecsEmpty)));
+
+    [TestMethod] public void Create_WithSpecs_Name() => Assert.AreEqual(TestTypeWithSpecsEmpty.SpecName, GetPropWithSpecsEmpty(x => x.Name));
+
+    [TestMethod] public void Create_WithSpecs_Scope() => Assert.AreEqual(TestTypeWithSpecsEmpty.SpecScope, GetPropWithSpecsEmpty(x => x.Scope));
+
+    [TestMethod] public void Create_WithSpecs_NameId() => Assert.AreEqual(TestTypeWithSpecsEmpty.SpecGuid, GetPropWithSpecsEmpty(x => x.NameId));
+
+    [TestMethod] public void Create_WithSpecs_AppId() => Assert.AreEqual(ContentTypeFactory.NoAppId, GetPropWithSpecsEmpty(x => x.AppId));
+
+    [TestMethod] public void Create_WithSpecs_Description() => Assert.AreEqual(TestTypeWithSpecsEmpty.SpecDescription, GetDescription(Factory().Create(typeof(TestTypeWithSpecsEmpty))));
+
 }

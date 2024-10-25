@@ -1,14 +1,24 @@
-﻿using ToSic.Eav.Data.ContentTypes.CodeAttributes;
+﻿using System;
+using ToSic.Eav.Data;
+using ToSic.Eav.Data.ContentTypes.CodeAttributes;
 
 namespace ToSic.Eav.Core.Tests.Data.ContentTypeFactoryTests;
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
-internal class TestTypeWithSpecs
+internal class TestTypeWithSpecs: TestTypeWithSpecsEmpty
 {
-    internal const string SpecName = "TestTypeWithSpecsModified";
-    internal const string SpecGuid = "501ee043-1070-4cbc-a07b-8274f24bf5ea";
-    internal const string SpecScope = "DemoScope";
-    internal const string SpecDescription = "This is a test type with specs";
-
+    [ContentTypeAttributeSpecs(Name = "NameMod", IsTitle = true)]
     public string Name { get; set; }
+
+    [ContentTypeAttributeSpecs(Type = ValueTypes.Hyperlink)]
+    public string Url { get; set; }
+
+    public int Age { get; set; }
+
+    public DateTime BirthDate { get; set; }
+
+    internal const string IsAliveDescription = "This is to ensure the user is alive";
+    [ContentTypeAttributeSpecs(Description = IsAliveDescription)]
+    public bool IsAlive { get; set; }
+
 }

@@ -111,7 +111,7 @@ public sealed class Attributes: DataSourceBase
                     builtIn: false,
                     contentTypeName: at.Type.Name,
                     // TODO: FILTER html
-                    description: at.Attribute.Metadata.GetBestValue<string>("Notes")
+                    description: at.Attribute.Metadata.GetBestValue<string>(AttributeMetadata.DescriptionField)
                 )
             )
             .ToList();

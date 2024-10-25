@@ -16,4 +16,9 @@ public class AttributeMetadata
 
     public static string MetadataFieldAllIsEphemeral = "IsEphemeral";
     public static string MetadataFieldAllFormulas = "Formulas";
+
+    /// <summary>
+    /// For historical reasons this is called "Notes"
+    /// </summary>
+    public static string DescriptionField = "Notes";
 }
