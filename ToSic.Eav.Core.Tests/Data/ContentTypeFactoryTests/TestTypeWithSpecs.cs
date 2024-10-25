@@ -21,4 +21,11 @@ internal class TestTypeWithSpecs: TestTypeWithSpecsEmpty
     [ContentTypeAttributeSpecs(Description = IsAliveDescription)]
     public bool IsAlive { get; set; }
 
+
+    [ContentTypeAttributeIgnore]
+    public string IgnoreThis { get; set; }
+
+    private string PrivateProperty { get; set; }
+
+    internal string InternalProperty { get; set; }
 }

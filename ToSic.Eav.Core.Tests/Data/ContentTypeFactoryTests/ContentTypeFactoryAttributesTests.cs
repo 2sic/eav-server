@@ -19,11 +19,7 @@ public class ContentTypeFactoryAttributesTests : ContentTypeFactoryTestsBase
     }
 
     [TestMethod]
-    public void Attributes_NoSpec_Count()
-    {
-        var x = Factory().Create(typeof(TestTypeNoSpecs));
-        Assert.AreEqual(4, x.Attributes.Count());
-    }
+    public void Attributes_NoSpec_Count() => Assert.AreEqual(4, Factory().Create(typeof(TestTypeNoSpecs)).Attributes.Count());
 
     [TestMethod]
     [DataRow(nameof(TestTypeNoSpecs.Name), ValueTypes.String)]
@@ -34,6 +30,9 @@ public class ContentTypeFactoryAttributesTests : ContentTypeFactoryTestsBase
         => AssertAttribute(Factory().Create(typeof(TestTypeNoSpecs)), name, type);
 
     [TestMethod]
+    public void Attributes_WithSpec_Count() => Assert.AreEqual(5, Factory().Create(typeof(TestTypeWithSpecs)).Attributes.Count());
+
+    [TestMethod]
     [DataRow(nameof(TestTypeWithSpecs.Name) + "Mod", ValueTypes.String, true)]
     [DataRow(nameof(TestTypeWithSpecs.Url), ValueTypes.Hyperlink)]
     [DataRow(nameof(TestTypeWithSpecs.Age), ValueTypes.Number)]
@@ -41,5 +40,16 @@ public class ContentTypeFactoryAttributesTests : ContentTypeFactoryTestsBase
     [DataRow(nameof(TestTypeWithSpecs.IsAlive), ValueTypes.Boolean, false, TestTypeWithSpecs.IsAliveDescription)]
     public void AssertAttributeWithSpec(string name, ValueTypes type, bool isTitle = false, string description = default)
         => AssertAttribute(Factory().Create(typeof(TestTypeWithSpecs)), name, type, isTitle, description);
+
+    /// <summary>
+    /// Don't use properties which are private, internal or have the Ignore attribute
+    /// </summary>
+    /// <param name="name"></param>
+    [TestMethod]
+    [DataRow(nameof(TestTypeWithSpecs.IgnoreThis))]
+    [DataRow(nameof(TestTypeWithSpecs.InternalProperty))]
+    [DataRow("PrivateProperty")]
+    public void Attributes_WithSpec_SkipIgnores(string name)
+        => Assert.IsFalse(Factory().Create(typeof(TestTypeWithSpecs)).Attributes.Any(a => a.Name == name));
 
 }

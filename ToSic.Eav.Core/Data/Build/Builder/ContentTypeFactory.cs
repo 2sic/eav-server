@@ -75,8 +75,14 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         if (properties.Length == 0)
             return [];
 
+        var propsFiltered = properties.Where(p => p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() == null)
+            .ToList();
+
+        if (propsFiltered.Count == 0)
+            return [];
+
         // Generate list of attributes
-        var attributes = properties.Select(p =>
+        var attributes = propsFiltered.Select(p =>
             {
                 var attrSpecs = p.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault();
                 var attrName = attrSpecs?.Name ?? p.Name;
