@@ -46,9 +46,9 @@ public class WorkAttributesMod(
 
     /// <summary>
     /// Append a new Attribute to an AttributeSet
-    /// Simple overload returning int so it can be used from outside
+    /// Simple overload returning int, so it can be used from outside
     /// </summary>
-    private int AddField(int attributeSetId, ContentTypeAttribute attDef, string inputType)
+    private int AddField(int attributeSetId, IContentTypeAttribute attDef, string inputType)
     {
         var l = Log.Fn<int>($"type:{attributeSetId}, input:{inputType}");
         var newAttribute = AppWorkCtx.DataController.Attributes.AddAttributeAndSave(attributeSetId, attDef);

@@ -11,10 +11,10 @@ public class SampleData(DataBuilder builder)
     public const int AppId = -1;
 
 
-    public static ContentTypeAttribute ContentTypeAttribute(DataBuilder builder, int appId, string name, string dataType, bool isTitle = false, int attId = 0, int index = 0)
+    public static IContentTypeAttribute ContentTypeAttribute(DataBuilder builder, int appId, string name, string dataType, bool isTitle = false, int attId = 0, int index = 0)
         => builder.TypeAttributeBuilder.Create(appId: appId, name: name, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
 
-    private ContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
+    private IContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
     {
         return builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
     }

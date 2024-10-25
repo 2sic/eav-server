@@ -26,7 +26,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
     /// <param name="metadataItems"></param>
     /// <param name="metaSourceFinder"></param>
     /// <returns></returns>
-    public ContentTypeAttribute Create(
+    public IContentTypeAttribute Create(
         int appId,
         string name,
         ValueTypes type,
@@ -42,7 +42,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         metadata ??= new ContentTypeAttributeMetadata(key: id, name: name, type: type,
             sysSettings: sysSettings, items: metadataItems, deferredSource: metaSourceFinder);
 
-        return new(appId: appId, name: name, type: type, isTitle: isTitle,
+        return new ContentTypeAttribute(appId: appId, name: name, type: type, isTitle: isTitle,
             attributeId: id, sortOrder: sortOrder, guid: guid, sysSettings: sysSettings, metadata: metadata);
     }
 
