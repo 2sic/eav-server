@@ -36,7 +36,12 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         // Must be null if no metadata
         var ctMetadata = ContentTypeDetails(ctSpecs?.Description)?.ToListOfOne();
 
-        var attributes = GenerateAttributes(type);
+        var (attributes, vAttributes) = GenerateAttributes(type);
+
+        var vAttributeDecorator = vAttributes == null || vAttributes.Count == 0
+            ? null
+            : new ContentTypeVirtualAttributes(vAttributes.ToDictionary(va => va.Name, va => va))
+                as IDecorator<IContentType>;
 
         var contentType = ctBuilder.Create(
             appId,
@@ -46,7 +51,8 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             id: 0,
             metadataItems: ctMetadata,
             isDynamic: true,
-            attributes: attributes
+            attributes: attributes,
+            decorators: vAttributeDecorator?.ToListOfOne()
         );
         return l.ReturnAndLog(contentType);
     }
@@ -71,36 +77,66 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         return l.Return(entity, "created");
     }
 
-    private List<IContentTypeAttribute> GenerateAttributes(Type type)
+    private (List<IContentTypeAttribute> attributes, List<IContentTypeAttribute> vAttributes) GenerateAttributes(Type type)
     {
-        var l = Log.Fn<List<IContentTypeAttribute>>(timer: true);
+        var l = Log.Fn<(List<IContentTypeAttribute> attributes, List<IContentTypeAttribute> vAttributes)>(timer: true);
         // Get all properties of the type
         var properties = type.GetProperties();
 
         if (properties.Length == 0)
-            return l.Return([], "no properties");
+            return l.Return(([], null), "no properties");
 
-        var propsFiltered = properties
-            .Where(p =>
-                p.Name is not (Attributes.IdNiceName or Attributes.GuidNiceName or Attributes.CreatedNiceName or Attributes.ModifiedNiceName)
-                && p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() == null)
+        var propsGrouped = properties
+            .GroupBy(p =>
+                p.Name is (Attributes.IdNiceName or Attributes.GuidNiceName or Attributes.CreatedNiceName or Attributes.ModifiedNiceName)
+                    ? "system"
+                    : p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() == null
+                        ? "default"
+                        : "ignore"
+            )
             .ToList();
 
-        if (propsFiltered.Count == 0)
-            return l.Return([], "no properties after filtering");
+        var gDefault = propsGrouped.FirstOrDefault(g => g.Key == "default")?.ToList();
 
         // Generate list of attributes
-        var attributes = propsFiltered.Select(p =>
+        var attributes = gDefault == null || !gDefault.Any()
+            ? []
+            : PropertiesToAttributes(gDefault, false);
+
+        // Generate list of virtual attributes
+        var gSystem = propsGrouped.FirstOrDefault(g => g.Key == "system")?.ToList();
+        var vAttributes = gSystem == null || !gSystem.Any()
+            ? null
+            : PropertiesToAttributes(gSystem, true);
+
+
+        return l.Return((attributes, vAttributes), $"real: {attributes.Count}, virtual: {vAttributes?.Count}");
+    }
+
+    private List<IContentTypeAttribute> PropertiesToAttributes(List<PropertyInfo> propsFiltered, bool skipNoMetadata)
+    {
+        var pairs = propsFiltered
+            .Select(p =>
+                new
+                {
+                    Property = p,
+                    Specs = p.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault(),
+                })
+            .Where(pair => !skipNoMetadata || pair.Specs != null)
+            .ToList();
+
+        var attributes = pairs.Select(pair =>
             {
-                var attrSpecs = p.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault();
-                var attrName = attrSpecs?.Name ?? p.Name;
-                var attrType = attrSpecs == null || attrSpecs.Type == ValueTypes.Undefined
-                    ? ValueTypeHelpers.Get(p.PropertyType)
-                    : attrSpecs.Type;
-                var attrIsTitle = attrSpecs?.IsTitle ?? false;
+                var specs = pair.Specs; //.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault();
+                var props = pair.Property;
+                var attrName = specs?.Name ?? props.Name;
+                var attrType = specs == null || specs.Type == ValueTypes.Undefined
+                    ? ValueTypeHelpers.Get(props.PropertyType)
+                    : specs.Type;
+                var attrIsTitle = specs?.IsTitle ?? false;
 
                 // Must be null if no metadata
-                var attrMetadata = ContentTypeAttributeDetails(attrSpecs?.Description)?.ToListOfOne();
+                var attrMetadata = ContentTypeAttributeDetails(specs?.Description)?.ToListOfOne();
 
                 return ctAttributeBuilder.Create(
                     NoAppId,
@@ -111,8 +147,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                 );
             })
             .ToList();
-
-        return l.Return(attributes, $"{attributes.Count}");
+        return attributes;
     }
 
     /// <summary>

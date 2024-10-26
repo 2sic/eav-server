@@ -41,11 +41,12 @@ public class ContentTypeBuilder
 
         // Save Specs (2) Older stuff, should be removed some day
         bool? onSaveSortAttributes = default,
-        string onSaveUseParentStaticName = default
+        string onSaveUseParentStaticName = default,
+        List<IDecorator<IContentType>> decorators = default
     )
     {
-        // Prepare decorators - if it's inheriting, add that information
-        var decorators = new List<IDecorator<IContentType>>();
+        // Prepare decorators (copy/new) - if it's inheriting, add that information
+        decorators = decorators == null ? [] : [..decorators];
         if (parentTypeId != null)
             decorators.Add(new Ancestor<IContentType>(new AppIdentity(configZoneId, configAppId),
                 parentTypeId.Value));

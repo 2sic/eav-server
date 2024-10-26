@@ -27,7 +27,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
         RootContentsForEqualityCheck = Entity;
         if (Entity is not IEntityWrapper wrapper) return;
         RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? Entity;
-        Decorators.AddRange(wrapper.Decorators);
+        Decorators = [..wrapper.Decorators];
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     /// <param name="decorator">Additional wrapper to add</param>
     public EntityWrapper(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
     {
-        if (decorator != null) Decorators.Add(decorator);
+        if (decorator != null) Decorators = [..Decorators, decorator];
     }
 
 
@@ -164,5 +164,5 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
         => Entity._Dump(specs, path);
 
-    public List<IDecorator<IEntity>> Decorators { get; } = [];
+    public IEnumerable<IDecorator<IEntity>> Decorators { get; } = [];
 }

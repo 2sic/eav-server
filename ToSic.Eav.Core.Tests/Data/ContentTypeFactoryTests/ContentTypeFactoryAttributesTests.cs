@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 
@@ -18,8 +19,13 @@ public class ContentTypeFactoryAttributesTests : ContentTypeFactoryTestsBase
             Assert.AreEqual(description, attribute.Metadata.GetBestValue<string>(AttributeMetadata.DescriptionField), $"{name} Description check");
     }
 
+    private ContentTypeVirtualAttributes GetVAttribDecorator(Type t) => Factory().Create(t).GetDecorator<ContentTypeVirtualAttributes>();
+
     [TestMethod]
     public void Attributes_NoSpec_Count() => Assert.AreEqual(4, Factory().Create(typeof(TestTypeNoSpecs)).Attributes.Count());
+
+    [TestMethod]
+    public void Attributes_NoSpec_NoVDecorator() => Assert.IsNull(GetVAttribDecorator(typeof(TestTypeNoSpecs)));
 
     [TestMethod]
     [DataRow(nameof(TestTypeNoSpecs.Name), ValueTypes.String)]
@@ -51,6 +57,12 @@ public class ContentTypeFactoryAttributesTests : ContentTypeFactoryTestsBase
     [DataRow("PrivateProperty")]
     public void Attributes_WithSpec_SkipIgnores(string name)
         => Assert.IsFalse(Factory().Create(typeof(TestTypeWithSpecs)).Attributes.Any(a => a.Name == name));
+
+    [TestMethod]
+    public void Attributes_WithSpec_VDecoratorHas() => Assert.IsNotNull(GetVAttribDecorator(typeof(TestTypeWithSpecs)));
+
+    [TestMethod]
+    public void Attributes_WithSpec_VDecoratorExactly2() => Assert.AreEqual(2, GetVAttribDecorator(typeof(TestTypeWithSpecs))?.VirtualAttributes.Count);
 
     [TestMethod]
     public void Attributes_InternalFields()

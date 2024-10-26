@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data;
 // Otherwise docs won't generate cross-links as needed
 [PrivateApi("2021-09-30 hidden now, was internal_don't use Always use the interface, not this class")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ContentType : IContentType, IContentTypeShared
+public partial class ContentType : IContentType, IContentTypeShared, IHasDecorators<IContentType>
 {
     #region Constructor - internal only, should only ever be called by the ContentTypeBuilder
 
@@ -138,7 +138,7 @@ public partial class ContentType : IContentType, IContentTypeShared
     IMetadataOf IHasMetadata.Metadata => Metadata;
 
     // Decorators - note that ATM we don't seem to use them
-    public IImmutableList<IDecorator<IContentType>> Decorators { get; }
+    public IEnumerable<IDecorator<IContentType>> Decorators { get; }
 
 
     #endregion

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Metadata;
+﻿using System.Collections.Immutable;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Data;
 using ToSic.Lib.Helpers;
@@ -30,14 +31,14 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
     public new void Reset() => base.Reset();
 
 
-    public List<IDecorator<IContentType>> Decorators => _decorators.Get(() =>
+    public IEnumerable<IDecorator<IContentType>> Decorators => _decorators.Get(() =>
     {
         var list = new List<IDecorator<IContentType>>();
         if (_wrapperDecorator != null) list.Add(_wrapperDecorator);
         if (GetContents() is IHasDecorators<IContentType> hasDecors) list.AddRange(hasDecors.Decorators);
-        return list;
+        return list.ToImmutableList();
     });
-    private readonly GetOnce<List<IDecorator<IContentType>>> _decorators = new();
+    private readonly GetOnce<IImmutableList<IDecorator<IContentType>>> _decorators = new();
     private readonly IDecorator<IContentType> _wrapperDecorator;
 
 

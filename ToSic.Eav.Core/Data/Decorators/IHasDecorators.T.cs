@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data;
+﻿using System.Collections.Immutable;
+
+namespace ToSic.Eav.Data;
 
 /// <summary>
 /// This marks objects which carry additional decorator information
@@ -7,5 +9,5 @@
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Marks objects which have decorator information")]
 public interface IHasDecorators<T>
 {
-    List<IDecorator<T>> Decorators { get; }
+    IEnumerable<IDecorator<T>> Decorators { get; }
 }
