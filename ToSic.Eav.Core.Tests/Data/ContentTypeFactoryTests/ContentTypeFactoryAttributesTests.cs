@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Internal;
 
 namespace ToSic.Eav.Core.Tests.Data.ContentTypeFactoryTests;
 

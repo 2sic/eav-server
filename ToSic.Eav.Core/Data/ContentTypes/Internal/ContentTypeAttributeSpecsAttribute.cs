@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.ContentTypes.CodeAttributes;
+﻿namespace ToSic.Eav.Data.Internal;
 
 [PrivateApi("WIP")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

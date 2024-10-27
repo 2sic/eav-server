@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.CodeAttributes;
+﻿using ToSic.Eav.Data.Internal;
 
 namespace ToSic.Eav.Core.Tests.Data.ContentTypeFactoryTests;
 

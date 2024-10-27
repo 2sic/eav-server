@@ -1,6 +1,6 @@
 ﻿using System;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.ContentTypes.CodeAttributes;
+using ToSic.Eav.Data.Internal;
 
 namespace ToSic.Eav.Core.Tests.Data.ContentTypeFactoryTests;
 

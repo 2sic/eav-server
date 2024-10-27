@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using ToSic.Eav.Data.ContentTypes.CodeAttributes;
+using ToSic.Eav.Data.Internal;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Services;
 
