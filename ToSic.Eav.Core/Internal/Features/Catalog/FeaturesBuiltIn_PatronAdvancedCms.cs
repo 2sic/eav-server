@@ -18,4 +18,15 @@ public partial class BuiltInFeatures
         ForPatronAdvancedCmsAutoEnabled
     );
 
+    public static readonly Feature SharedAppCode = new(
+        nameof(SharedAppCode),
+        new("30efe5c2-b4db-4228-93de-bcf7ec8e16bd"),
+        "Share AppCode from a shared app in multiple sites.",
+        false,
+        true,
+        "If enabled, you can use AppCode in a shared location for similar Apps in multiple sites.",
+        FeaturesCatalogRules.Security0Neutral,
+        ForPatronAdvancedCmsAutoEnabled
+    );
+
 }
