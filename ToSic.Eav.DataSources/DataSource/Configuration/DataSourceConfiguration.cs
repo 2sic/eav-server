@@ -110,7 +110,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
             throw new($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
 
         // construct a property access for in, use it in the config provider
-        return LookUpEngine.LookUp(values, OverrideLookUps);
+        return LookUpEngine.LookUp(values, overrides: OverrideLookUps);
     }
 
     private string Parse(string name)

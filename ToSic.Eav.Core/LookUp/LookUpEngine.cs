@@ -78,7 +78,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
 
     public void Link(ILookUpEngine downstream) => Downstream = downstream;
         
-    public DicString LookUp(DicString values, int depth = 4)
+    internal DicString LookUpInternal(DicString values, int depth = 4, TweakLookUp tweaker = default)
     {
         var l = Log.Fn<DicString>($"values: {values.Count}, depth: {depth}");
         // start by creating a copy of the dictionary
@@ -97,7 +97,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
                 continue;
             }
 
-            var result = _reusableTokenReplace.ReplaceTokens(o.Value, depth); // with 2 further recurrences
+            var result = _reusableTokenReplace.ReplaceTokens(o.Value, depth, tweaker); // with 2 further recurrences
             l.A(LogDetailed, $"token '{o.Key}={o.Value}' is now '{result}'");
             values[o.Key] = result;
         }
@@ -105,23 +105,33 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         return l.ReturnAsOk(values);
     }
 
-    public DicString LookUp(DicString values, IEnumerable<ILookUp> overrides, int depth = 4)
+    public DicString LookUp(
+        DicString values,
+        NoParamOrder noParamOrder = default,
+        IEnumerable<ILookUp> overrides = default,
+        int depth = 4,
+        Func<ITweakLookUp, ITweakLookUp> tweak = default)
     {
         var overridesList = overrides?.ToList() ?? [];
-        var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overridesList.Count}, depth: {depth}");
-        // start by creating a copy of the dictionary
-        values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
+        var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overridesList.Count}, depth: {depth}, hasTweak: {tweak != null}");
 
+        // If nothing to do, exit early
         if (values.Count == 0)
             return l.Return(values, "no values");
+
+        // Create tweaker if needed
+        var tweaker = tweak?.Invoke(new TweakLookUp()) as TweakLookUp;
+
+        // Create a copy of the dictionary, so we don't change the original and we're case-insensitive
+        values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
 
         // if there are instance-specific additional Property-Access objects, add them to the sources-list
         // note: it's important to create a one-time use list of sources if instance-specific sources are needed, to never modify the "global" list.
         if (!overridesList.Any())
-            return l.ReturnAsOk(LookUp(values, depth));
+            return l.ReturnAsOk(LookUpInternal(values, depth, tweaker));
 
         var innerLookup = new LookUpEngine(this, Log, sources: [.. overridesList]);
-        return l.ReturnAsOk(innerLookup.LookUp(values, depth));
+        return l.ReturnAsOk(innerLookup.LookUpInternal(values, depth, tweaker));
     }
 
     // 2024-05-06 2dm

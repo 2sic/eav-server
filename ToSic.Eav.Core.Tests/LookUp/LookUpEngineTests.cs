@@ -53,24 +53,30 @@ public class LookUpEngineTests: TestBaseEavCore
         var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
         var settings = mainEngine.LookUp(TestTokens());
         foreach (var setting in settings)
-            Assert.AreEqual(setting.Key, setting.Value,
-                $"expected '{setting.Key}', got '{setting.Value}'");
+            Assert.AreEqual(setting.Key, setting.Value, $"expected '{setting.Key}', got '{setting.Value}'");
+    }
+
+    [TestMethod]
+    public void BasicLookupsWithTweaks()
+    {
+        var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
+        var settings = mainEngine.LookUp(TestTokens("-tweaked"), tweak: t => t.PostProcess(v => v + "-tweaked"));
+        foreach (var setting in settings)
+            Assert.AreEqual(setting.Key, setting.Value, $"expected '{setting.Key}', got '{setting.Value}'");
     }
 
     [TestMethod]
     public void OverrideLookUps()
     {
         var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
-        //var overrideSources = new DictionaryInvariant<ILookUp>();
         const string overridenTitle = "overriden Title";
         var overrideDic = new Dictionary<string, string>
         {
             {Attributes.TitleNiceName, overridenTitle}
         };
         var appSettingsSource = new LookUpInDictionary(LookUpTestData.KeyAppSettings, overrideDic);
-        //overrideSources.Add(appSettingsSource.Name, appSettingsSource);
         // test before override
-        var result = mainEngine.LookUp(TestTokens(), new List<ILookUp> { appSettingsSource });
+        var result = mainEngine.LookUp(TestTokens(), overrides: new List<ILookUp> { appSettingsSource });
         Assert.AreEqual(overridenTitle, result["App Settings"], "should override");
     }
 
@@ -86,7 +92,7 @@ public class LookUpEngineTests: TestBaseEavCore
 
 
 
-    public IDictionary<string, string> Settings() =>
+    private IDictionary<string, string> Settings() =>
         new Dictionary<string, string>
         {
             {Attributes.TitleNiceName, "Settings"},
@@ -95,28 +101,27 @@ public class LookUpEngineTests: TestBaseEavCore
             {"PicsPerRow", "3"}
         };
 
-    public IDictionary<string, string> TestTokens() =>
-        new Dictionary<string, string>
+    /// <summary>
+    /// Get some test tokens with the values that should result
+    /// </summary>
+    /// <param name="tweakSuffix">For tweak testing, suffix added to value...</param>
+    /// <returns></returns>
+    private IDictionary<string, string> TestTokens(string tweakSuffix = default)
+        // The dictionary - keys are the expected result, value are the tokens to use...
+        => new Dictionary<string, string>
         {
-            {"App Settings", "[AppSettings:Title]"},
-            {DefaultCategory, "[AppSettings:DefaultCategoryName]"},
-            {$"!{DefaultCategory}!", "![AppSettings:DefaultCategoryName]!"},
-            {$"xyz{DefaultCategory}123", "xyz[AppSettings:DefaultCategoryName]123"},
-            {$" {DefaultCategory} ", " [AppSettings:DefaultCategoryName] "},
-            {MaxPictures, "[AppSettings:MaxPictures]"},
-            {"3", "[AppSettings:PicsPerRow]"},
+            {"App Settings" + tweakSuffix, "[AppSettings:Title]"},
+            {DefaultCategory + tweakSuffix, "[AppSettings:DefaultCategoryName]"},
+            {$"!{DefaultCategory}{tweakSuffix}!", "![AppSettings:DefaultCategoryName]!"},
+            {$"xyz{DefaultCategory}{tweakSuffix}123", "xyz[AppSettings:DefaultCategoryName]123"},
+            {$" {DefaultCategory}{tweakSuffix} ", " [AppSettings:DefaultCategoryName] "},
+            {MaxPictures + tweakSuffix, "[AppSettings:MaxPictures]"},
+            {"3" + tweakSuffix, "[AppSettings:PicsPerRow]"},
+            {"Resources" + tweakSuffix, "[AppResources:Title]" },
 
             // incomplete token, don't change
             {"[AppResources:Title", "[AppResources:Title" },
-            {"Resources", "[AppResources:Title]" },
             {"", "[AppResources:unknown]" },
 
         };
-
-    //public IDictionary<string, string> ResolvedSettings()
-    //{
-    //    var settings = Settings();
-    //    LookUpTestData.AppSetAndRes().LookUp(settings);
-    //    return settings;
-    //}
 }

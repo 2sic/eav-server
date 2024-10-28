@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -13,15 +14,18 @@ public class LookUpTestData(DataBuilder builder)
 
     private const int AppIdX = -1;
 
-    public static LookUpEngine EmptyLookupEngine(List<ILookUp> sources = default) => new(null, sources: sources);
+    public static LookUpEngine EmptyLookupEngine(List<ILookUp> sources = default)
+        => new(null, sources: sources);
 
     public LookUpEngine AppSetAndRes(int appId = AppIdX, List<ILookUp> sources = default)
     {
         sources ??= [];
-        var vc = EmptyLookupEngine(sources: sources.Concat(new List<ILookUp> {
-            AppSettings(appId),
-            AppResources(appId)
-        }).ToList());
+        var vc = EmptyLookupEngine(sources: sources.Concat(new List<ILookUp>
+            {
+                AppSettings(appId),
+                AppResources(appId)
+            }).ToList()
+        );
         return vc;
     }
 
