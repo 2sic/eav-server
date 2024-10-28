@@ -19,7 +19,7 @@ public interface IHasRelationshipKeys
     ///
     /// Example
     /// 
-    /// 1. if another <see cref="IRawEntity"/> has a property (eg. `Folders`)
+    /// 1. if another <see cref="IRawEntity"/> has a property (like `Folders`)
     /// 1. of type <see cref="IRawRelationship"/>/<see cref="RawRelationship"/>
     /// 1. which lists the key `/abcd/efg`
     ///

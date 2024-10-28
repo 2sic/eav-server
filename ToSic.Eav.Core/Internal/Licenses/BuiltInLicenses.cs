@@ -37,7 +37,7 @@ public class BuiltInLicenses
     public static readonly FeatureSet System = new(FeatureSetSystem, 10000,
         "System",
         new("fae8a2ac-cdeb-45f8-b690-cc4eee8a5690"),
-        "System features which are provided by the platform you are running on or installed as a system-feature (eg. Compiler). All the features should begin with \"System-\""
+        "System features which are provided by the platform you are running on or installed as a system-feature (like Compiler). All the features should begin with \"System-\""
     )
     {
         AutoEnable = true

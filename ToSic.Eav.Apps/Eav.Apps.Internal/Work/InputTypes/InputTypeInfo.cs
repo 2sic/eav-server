@@ -144,7 +144,7 @@ public class InputTypeInfo(string type, string label, string description, string
 
         // Standard setup - this has been the default behavior since ca. v6
         // @All, @MainType, @current-Type
-        // eg. [@All, @String, @string-url-path]
+        // like [@All, @String, @string-url-path]
         try
         {
             var mainType = Type.Split('-')[0];

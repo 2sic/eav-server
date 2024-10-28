@@ -19,7 +19,7 @@ public class WorkAttributesMod(
     #region Getters which don't modify, but need the DB
 
     /// <summary>
-    /// Get all known data types, eg "String", "Number" etc. from DB.
+    /// Get all known data types, like "String", "Number" etc. from DB.
     /// It should actually not be in the ...Mod because it doesn't modify anything, but it's here because it needs the DB.
     /// </summary>
     /// <returns></returns>

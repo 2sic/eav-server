@@ -413,7 +413,7 @@ public abstract class XmlExporter(
         // this is necessary to check if it's in discriminator list of possible folders for entities that are not deleted
         var pathParts = relativePath.ForwardSlash().Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
-        // always export parent folders for entity assets (eg adam/app/)
+        // always export parent folders for entity assets (like adam/app/)
         if (pathParts.Length < 3) return false;
 
         // check if folder is in list of possible entities that are not deleted

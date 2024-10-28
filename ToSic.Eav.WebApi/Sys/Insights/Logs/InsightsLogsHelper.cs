@@ -273,7 +273,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
 
     /// <summary>
     /// If it has more than one segment, shorten it to last
-    /// eg. Eav.Xyz[A7]Dyn.DnnCdr[62]Sxc.RzrHlp[93] => Sxc.RzrHlp[93]
+    /// like Eav.Xyz[A7]Dyn.DnnCdr[62]Sxc.RzrHlp[93] => Sxc.RzrHlp[93]
     /// </summary>
     /// <param name="label"></param>
     /// <returns></returns>

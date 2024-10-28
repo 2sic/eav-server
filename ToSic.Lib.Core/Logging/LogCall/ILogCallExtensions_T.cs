@@ -69,14 +69,14 @@ partial class ILogCallExtensions
 
 
     /// <summary>
-    /// Return a null or the default value (eg. a zero for int) without further messages.
+    /// Return a null or the default value (like a zero for int) without further messages.
     /// </summary>
     /// <param name="logCall">The log call or null</param>
     /// <returns></returns>
     public static T ReturnNull<T>(this ILogCall<T> logCall) => logCall.Return(default, "null");
 
     /// <summary>
-    /// Return a null or the default value (eg. a zero for int) with specified message.
+    /// Return a null or the default value (like a zero for int) with specified message.
     /// </summary>
     /// <param name="logCall">The log call or null</param>
     /// <param name="message">Message to add to the log</param>

@@ -155,7 +155,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     #region Experimental - communicate through cachekey
 
     // Idea is that any large objects which should communicate expiry would leave a key in the cache with a permanent expiry
-    // This way if something changes - eg. the features service, it can notify the cache, and everything dependant will be invalidated
+    // This way if something changes - like the features service, it can notify the cache, and everything dependant will be invalidated
 
     // Temporarily this is static, because the features service is singleton, but this should be changed to a service
 
