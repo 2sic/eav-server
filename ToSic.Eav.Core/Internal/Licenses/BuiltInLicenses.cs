@@ -94,8 +94,14 @@ public class BuiltInLicenses
         new("4df6895d-2ec4-4fcd-ae2a-7f49defb584b"),
         "Patrons with advanced needs in advanced CMS features."
     );
+
+    /// <summary>
+    /// Languages.
+    /// Note that previously the GUID was used for Patrons Advanced, but as we modified this in 18.02
+    /// we decided that the features previously in PatronAdvanced are usually licensed for languages, not for the other features (Copyright).
+    /// </summary>
     public static readonly FeatureSet PatronLanguages = new(LicensePrefix + nameof(PatronLanguages),102,
-        "Patron Advanced CMS",
+        "Patron Languages",
         new("e23ef849-f50c-47a5-81dd-33fb17727305"),
         "Patrons with advanced needs in managing languages."
     );
