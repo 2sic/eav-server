@@ -201,7 +201,32 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
         AddDateInformation(entity: entity, entityValues: entityValues, rules: rules);
 
-        if (Type.Serialize) entityValues.Add(InternalTypeField, new JsonType(entity, Type.WithDescription));
+        var tSer = rules.SerializeType;
+        if (Type.Serialize)
+            entityValues[InternalTypeField] = new JsonType(entity, Type.WithDescription);
+
+        // TODO
+        else if (!string.IsNullOrWhiteSpace(tSer?.SerializeAs))
+        {
+            var propName = tSer.PropertyNames ?? "Type";
+            switch (tSer.SerializeAs.ToLower())
+            {
+                case "object":
+                    entityValues[propName] = new JsonType(entity, tSer.SerializeDescription == true);
+                    break;
+                case "flat":
+                    if (tSer.SerializeId == true)
+                        entityValues[$"{propName}Id"] = entity.Type.NameId;
+                    if (tSer.SerializeName == true)
+                        entityValues[$"{propName}Name"] = entity.Type.Name;
+                    break;
+                default:
+                    Log.W($"Unknown serialization type: {Type.SerializeAs}");
+                    break;
+            }
+
+        }
+        
 
         return entityValues;
     }

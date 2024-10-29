@@ -208,6 +208,27 @@ public partial class Serialization : DataSourceBase
     public string IncludeRelationshipTitle => Configuration.GetThis();
     #endregion
 
+    #region ContentType Information
+
+    /// <summary>
+    /// Values probably
+    /// - empty (default) - don't include
+    /// - "object" make an object
+    /// - "flat"
+    /// </summary>
+    [Configuration]
+    public string IncludeTypeAs => Configuration.GetThis();
+
+    [Configuration(Fallback = "Type")]
+    public string TypePropertyNames => Configuration.GetThis();
+
+    [Configuration]
+    public string IncludeTypeId => Configuration.GetThis();
+
+    [Configuration]
+    public string IncludeTypeName => Configuration.GetThis();
+
+    #endregion
 
     #endregion
 
@@ -225,13 +246,14 @@ public partial class Serialization : DataSourceBase
     /// Get the list of all items with reduced attributes-list
     /// </summary>
     /// <returns></returns>
-    private IImmutableList<IEntity> GetList(string inStreamName = DataSourceConstants.StreamDefaultName) => Log.Func(() =>
+    private IImmutableList<IEntity> GetList(string inStreamName = DataSourceConstants.StreamDefaultName)
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
         var original = In[inStreamName].List.ToImmutableList();
         var enhanced = AddSerializationRules(original);
-        return (enhanced, $"{enhanced.Count}");
-    });
+        return l.Return(enhanced, $"{enhanced.Count}");
+    }
 
     private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before) => Log.Func(() =>
     {
@@ -294,6 +316,15 @@ public partial class Serialization : DataSourceBase
             SerializeTitle = TryParseIncludeRule(IncludeRelationshipTitle)
         };
 
+        var typeSer = new TypeSerialization
+        {
+            SerializeAs = IncludeTypeAs,
+            SerializeId = TryParseIncludeRule(IncludeTypeId),
+            SerializeName = TryParseIncludeRule(IncludeTypeName),
+            SerializeDescription = null,
+            PropertyNames = TypePropertyNames
+        };
+
         var decorator = new EntitySerializationDecorator
         {
             RemoveNullValues = dropNullValues,
@@ -305,6 +336,7 @@ public partial class Serialization : DataSourceBase
             SerializeMetadataFor = mdForSer,
             SerializeMetadata = mdSer,
             SerializeRelationships = relSer,
+            SerializeType = typeSer,
 
             // id, title, guid
             SerializeId = id,

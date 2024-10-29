@@ -36,7 +36,8 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
             filterFieldsEnabled: priority.FilterFieldsEnabled,
             serializeMetadataFor: priority.SerializeMetadataFor,
             serializeMetadata: priority.SerializeMetadata,
-            serializeRelationships: priority.SerializeRelationships) { }
+            serializeRelationships: priority.SerializeRelationships,
+            serializeType: priority.SerializeType) { }
 
     public EntitySerializationDecorator(
         EntitySerializationDecorator original,
@@ -57,7 +58,8 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         bool? filterFieldsEnabled = null,
         MetadataForSerialization serializeMetadataFor = null,
         ISubEntitySerialization serializeMetadata = null,
-        ISubEntitySerialization serializeRelationships = null): this()
+        ISubEntitySerialization serializeRelationships = null,
+        TypeSerialization serializeType = default): this()
     {
         SerializeId = serializeId ?? original?.SerializeId;
         SerializeAppId = serializeAppId ?? original?.SerializeAppId;
@@ -77,6 +79,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         SerializeMetadataFor = serializeMetadataFor ?? original?.SerializeMetadataFor;
         SerializeMetadata = serializeMetadata ?? original?.SerializeMetadata;
         SerializeRelationships = serializeRelationships ?? original?.SerializeRelationships;
+        SerializeType = serializeType ?? original?.SerializeType;
     }
 
     /// <summary>
@@ -177,6 +180,9 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ISubEntitySerialization SerializeRelationships { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public TypeSerialization SerializeType { get; init; }
 
     #endregion
 
