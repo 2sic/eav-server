@@ -42,13 +42,10 @@ public sealed class ContentTypes: CustomDataSource
 {
     #region Configuration-properties (no config)
 
-    private const string AppIdKey = "AppId";
-    private const string ContentTypeTypeName = "ContentType";
-
     /// <summary>
     /// The app id
     /// </summary>
-    [Configuration(Field = AppIdKey)]
+    [Configuration(Field = "AppId")]    // Legacy field name
     public int OfAppId => Configuration.GetThis(AppId);
 
     /// <summary>
@@ -60,10 +57,6 @@ public sealed class ContentTypes: CustomDataSource
     [Configuration(Fallback = "Default")]
     public string Scope => Configuration.GetThis();
 
-    [PrivateApi]
-    [Obsolete("Do not use anymore, use Scope instead - only left in for compatibility. Probably remove v17 or something")]
-    public string OfScope => Scope;
-
     #endregion
 
     /// <inheritdoc />
@@ -74,15 +67,13 @@ public sealed class ContentTypes: CustomDataSource
     public ContentTypes(MyServices services, IAppReaderFactory appReaders): base(services, $"{DataSourceConstants.LogPrefix}.CTypes")
     {
         ConnectLogs([_appReaders = appReaders]);
-        var options = new DataFactoryOptions(typeName: ContentTypeTypeName, titleField: ContentTypeType.Name.ToString());
-        ProvideOut(GetList, options: () => new(options, appId: OfAppId, withMetadata: true));
+        ProvideOut(GetList, options: () => new(ContentTypeUtil.Options, appId: OfAppId, withMetadata: true));
     }
     private readonly IAppReaderFactory _appReaders;
 
     private IEnumerable<IRawEntity> GetList()
     {
         var l = Log.Fn<IEnumerable<IRawEntity>>();
-        Configuration.Parse();
 
         var appId = OfAppId;
         var scp = Scope.UseFallbackIfNoValue(Data.Scopes.Default);
@@ -110,30 +101,10 @@ public sealed class ContentTypes: CustomDataSource
 
         var list = deDuplicate
             .OrderBy(t => t.Name)
-            .Select(t => new RawEntity(ContentTypeUtil.BuildDictionary(t))
-            {
-                Id = t.Id,
-                Guid = SafeConvertGuid(t) ?? Guid.Empty,
-                Metadata = t.Metadata,
-            })
+            .Select(ContentTypeUtil.ToRaw)
             .ToList();
 
 
         return l.Return(list, $"{list.Count}");
-    }
-
-    private static Guid? SafeConvertGuid(IContentType t)
-    {
-        Guid? guid = null;
-        try
-        {
-            if (Guid.TryParse(t.NameId, out var g)) guid = g;
-        }
-        catch
-        {
-            /* ignore */
-        }
-
-        return guid;
     }
 }

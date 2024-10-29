@@ -3,7 +3,7 @@
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code
 /// </summary>
-public abstract class MetadataDataSourceBase : Eav.DataSource.DataSourceBase
+public abstract class MetadataDataSourceBase : DataSourceBase
 {
     /// <remarks>
     /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
@@ -14,7 +14,7 @@ public abstract class MetadataDataSourceBase : Eav.DataSource.DataSourceBase
     /// <summary>
     /// Constructor
     /// </summary>
-    protected MetadataDataSourceBase(MyServices services, string logName): base(services, logName)
+    protected MetadataDataSourceBase(MyServices services, string logName, object[] connect = default) : base(services, logName, connect)
     {
         ProvideOut(GetMetadata);
     }
