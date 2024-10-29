@@ -188,7 +188,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
 
     /// <summary>
     /// Create a list of all expected types.
-    /// Eg. for "@String-dropdown-query"
+    /// Like for "@String-dropdown-query"
     /// - "@string"
     /// - "@string-dropdown"
     /// - "@string-dropdown-query"

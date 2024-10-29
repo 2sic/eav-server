@@ -19,7 +19,7 @@ public class EntityPartsBuilder
 
     /// <summary>
     /// Will generate a Parts-Builder for entities which belong to an App.
-    /// Eg. entities being loaded into the App-State
+    /// Like entities being loaded into the App-State
     /// or entities which are JSON loaded and will be placed in an App state.
     /// </summary>
     /// <param name="source"></param>
