@@ -80,6 +80,4 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
         };
         return l.ReturnAsOk(jsonReady);
     }
-
-    private static ContentType lastProcessed;
 }

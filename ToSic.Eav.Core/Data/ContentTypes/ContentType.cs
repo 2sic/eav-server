@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using ToSic.Eav.Data.Internal;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Repositories;
@@ -15,6 +16,12 @@ namespace ToSic.Eav.Data;
 // Otherwise docs won't generate cross-links as needed
 [PrivateApi("2021-09-30 hidden now, was internal_don't use Always use the interface, not this class")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ContentTypeSpecs(
+    Guid = "e405beb3-9097-4790-b7b0-0e6d37502bef",
+    Name = "ContentType",
+    Scope = "System",
+    Description = "A ContentType (Schema) describing Entities."
+)]
 public partial class ContentType : IContentType, IContentTypeShared, IHasDecorators<IContentType>
 {
     #region Constructor - internal only, should only ever be called by the ContentTypeBuilder
@@ -71,10 +78,12 @@ public partial class ContentType : IContentType, IContentTypeShared, IHasDecorat
     public int AppId { get; }
 
     /// <inheritdoc />
+    [ContentTypeAttributeSpecs(IsTitle = true)]
     public string Name { get; }
 
     /// <inheritdoc />
     [Obsolete("Deprecated in v13, please use NameId instead")]
+    [ContentTypeAttributeIgnore]
     public string StaticName => NameId;
 
     /// <inheritdoc />
@@ -88,13 +97,16 @@ public partial class ContentType : IContentType, IContentTypeShared, IHasDecorat
 
     /// <inheritdoc />
     [Obsolete("Deprecated in V13, please use Id instead.")]
+    [ContentTypeAttributeIgnore]
     public int ContentTypeId => Id;
 
     /// <inheritdoc />
+    [ContentTypeAttributeIgnore]
     public IEnumerable<IContentTypeAttribute> Attributes => _attributes;
     private readonly IImmutableList<IContentTypeAttribute> _attributes;
 
     /// <inheritdoc />
+    [ContentTypeAttributeSpecs(Type = ValueTypes.String)]
     public RepositoryTypes RepositoryType { get; }
 
     /// <inheritdoc />
@@ -106,18 +118,23 @@ public partial class ContentType : IContentType, IContentTypeShared, IHasDecorat
     #endregion
 
     /// <inheritdoc />
-    public bool Is(string name) => Name.EqualsInsensitive(name) || NameId.EqualsInsensitive(name);
+    public bool Is(string name)
+        => Name.EqualsInsensitive(name) || NameId.EqualsInsensitive(name);
 
     [JsonIgnore]
     [PrivateApi("new 15.04")]
-    public string TitleFieldName => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
+    [ContentTypeAttributeIgnore]
+    public string TitleFieldName
+        => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
 
     [PrivateApi] // #SharedFieldDefinition
+    [ContentTypeAttributeIgnore]
     public ContentTypeSysSettings SysSettings { get; }
     private readonly GetOnce<string> _titleFieldName = new();
 
     /// <inheritdoc />
-    public IContentTypeAttribute this[string fieldName] => Attributes.FirstOrDefault(a => a.Name.EqualsInsensitive(fieldName));
+    public IContentTypeAttribute this[string fieldName]
+        => Attributes.FirstOrDefault(a => a.Name.EqualsInsensitive(fieldName));
 
 
     #region New DynamicChildren Navigation - new in 12.03 - #immutable
