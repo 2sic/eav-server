@@ -47,7 +47,8 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     protected bool UserMayAdmin => Log.Getter(() =>
     {
         var u = User;
-        if (u == null) return false; // note: not sure if user could ever be null since it's injected
+        // Note: I'm not sure if the user could ever be null, but maybe in search scenarios?
+        if (u == null) return false;
         return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
     });
 
