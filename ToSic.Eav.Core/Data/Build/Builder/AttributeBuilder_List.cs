@@ -15,7 +15,7 @@ partial class AttributeBuilder
     }
 
     public IImmutableDictionary<string, IAttribute> Empty() => EmptyList;
-    private static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableInvariant();
+    public static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableInvariant();
     
     public IImmutableDictionary<string, IAttribute> Create(IContentType contentType, ILookup<string, IValue> preparedValues)
     {

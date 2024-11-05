@@ -19,7 +19,7 @@ public class WorkAttributesMod(
     #region Getters which don't modify, but need the DB
 
     /// <summary>
-    /// Get all known data types, eg "String", "Number" etc. from DB.
+    /// Get all known data types, like "String", "Number" etc. from DB.
     /// It should actually not be in the ...Mod because it doesn't modify anything, but it's here because it needs the DB.
     /// </summary>
     /// <returns></returns>
@@ -46,9 +46,9 @@ public class WorkAttributesMod(
 
     /// <summary>
     /// Append a new Attribute to an AttributeSet
-    /// Simple overload returning int so it can be used from outside
+    /// Simple overload returning int, so it can be used from outside
     /// </summary>
-    private int AddField(int attributeSetId, ContentTypeAttribute attDef, string inputType)
+    private int AddField(int attributeSetId, IContentTypeAttribute attDef, string inputType)
     {
         var l = Log.Fn<int>($"type:{attributeSetId}, input:{inputType}");
         var newAttribute = AppWorkCtx.DataController.Attributes.AddAttributeAndSave(attributeSetId, attDef);

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Metadata;
 
 
@@ -17,8 +18,8 @@ public abstract class EntityBasedType : IEntityBasedType
     public IEntity Entity { get; protected set; }
 
     [PrivateApi] public IEntity RootContentsForEqualityCheck => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
-    public List<IDecorator<IEntity>> Decorators => _decorators ??= (Entity as IEntityWrapper)?.Decorators ?? [];
-    private List<IDecorator<IEntity>> _decorators;
+    public IEnumerable<IDecorator<IEntity>> Decorators => _decorators ??= (Entity as IEntityWrapper)?.Decorators ?? [];
+    private IEnumerable<IDecorator<IEntity>> _decorators;
 
     /// <summary>
     /// Create a EntityBasedType and wrap the entity provided

@@ -13,11 +13,14 @@ namespace ToSic.Eav.Data.Build;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : ServiceBase("Eav.ValBld")
 {
+    /// <summary>
+    /// Temporary solution to allow unknown value types.
+    /// ATM only used for special cases such as the SharePoint DataSource,
+    /// to pass through values that are not known to the EAV.
+    /// ATM not really used, but the thought is that we would enforce this if we see problems appearing.
+    /// </summary>
+    // ReSharper disable once NotAccessedField.Local
     private bool _allowUnknownValueTypes;
-
-    #region Constructor
-
-    #endregion
 
     public ValueBuilder Setup(bool allowUnknownValueTypes = false)
     {
@@ -76,11 +79,6 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
 
     #endregion
 
-    #region Relationships
-
-
-    #endregion
-
     public IValue<T> Create<T>(T value, IImmutableList<ILanguage> languages = null)
     {
         var type = typeof(T).UnboxIfNullable();
@@ -95,7 +93,7 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
     /// Creates a Typed Value Model
     /// </summary>
     /// <returns>
-    /// An IValue, which is actually an IValue<string>, IValue<decimal>, IValue<IEnumerable<IEntity>> etc.
+    /// An IValue, which is actually an IValue{string}, IValue{decimal}, IValue{IEnumerable{IEntity}} etc.
     /// </returns>
     public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage> languages = null)
     {
@@ -111,23 +109,12 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
                 ValueTypes.Entity => RelationshipWip(value, null),
                 ValueTypes.Object => new Value<object>(value, languages),
                 // ReSharper disable RedundantCaseLabel
-                ValueTypes.String => // most common case
-                    String(stringValue, langs) // new Value<string>(stringValue, langs);
-                ,
-                ValueTypes.Empty => // empty - should actually not contain anything!
-                    String(stringValue, langs) // new Value<string>(stringValue, langs);
-                ,
-                ValueTypes.Custom => // custom value, currently just parsed as string for manual processing as needed
-                    String(stringValue, langs) // new Value<string>(stringValue, langs);
-                ,
-                ValueTypes.Json => String(stringValue, langs) // new Value<string>(stringValue, langs);
-                ,
-                ValueTypes.Hyperlink => // special case, handled as string
-                    String(stringValue, langs) // new Value<string>(stringValue, langs);
-                ,
-                ValueTypes.Undefined => // backup case, where it's not known...
-                    String(stringValue, langs) // new Value<string>(stringValue, langs);
-                ,
+                ValueTypes.String => String(stringValue, langs),    // most common case
+                ValueTypes.Empty => String(stringValue, langs),     // empty - should actually not contain anything!
+                ValueTypes.Custom => String(stringValue, langs),    // custom value, currently just parsed as string for manual processing as needed
+                ValueTypes.Json => String(stringValue, langs),
+                ValueTypes.Hyperlink => String(stringValue, langs), // special case, handled as string
+                ValueTypes.Undefined => String(stringValue, langs), // backup case, where it's not known...
                 _ => String(stringValue, langs)
             };
         }

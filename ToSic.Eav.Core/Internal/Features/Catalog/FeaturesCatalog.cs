@@ -33,6 +33,7 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             LanguagesAdvancedFallback,  // v16.04
             CopyrightManagement,        // v16.08 / v17
             ContentTypeFieldsReuseDefinitions, // v16.08
+            SharedAppCode, // v18.03
 
             // Patron Advanced CMS - Picker - v18.01+
             PickerUiCheckbox,

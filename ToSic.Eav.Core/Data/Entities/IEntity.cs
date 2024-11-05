@@ -176,7 +176,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// </summary>
     /// <param name="name">the field/attribute name</param>
     /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="language">optional language eg `en-us`</param>
+    /// <param name="language">optional language like `en-us`</param>
     /// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
     /// <returns></returns>
     /// <remarks>
@@ -206,7 +206,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// <param name="name">the field/attribute name</param>
     /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="fallback">value to be returned if finding or conversion it didn't succeed</param>
-    /// <param name="language">optional language eg `en-us`</param>
+    /// <param name="language">optional language like `en-us`</param>
     /// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
     /// <returns></returns>
     /// <remarks>

@@ -75,10 +75,8 @@ public class TokenReplace(ILookUpEngine lookupEngine)
     /// <summary>
     /// Replace all tokens in a string. 
     /// </summary>
-    /// <param name="sourceText"></param>
-    /// <param name="repeat"></param>
     /// <returns></returns>
-    public virtual string ReplaceTokens(string sourceText, int repeat = 0)
+    internal virtual string ReplaceTokens(string sourceText, int repeat = 0, TweakLookUp tweaker = default)
     {
         if (string.IsNullOrEmpty(sourceText))
             return string.Empty;
@@ -98,22 +96,31 @@ public class TokenReplace(ILookUpEngine lookupEngine)
             charProgress = curMatch.Index + curMatch.Length;
 
             // get the infos we need to retrieve the value, get it. 
-            var strObjectName = curMatch.Result("${object}");
-            if (string.IsNullOrEmpty(strObjectName)) continue;
+            var sourceName = curMatch.Result("${object}");
+            if (string.IsNullOrEmpty(sourceName))
+                continue;
 
-            var strPropertyName = curMatch.Result("${property}");
-            var strFormat = curMatch.Result("${format}");
-            var strIfEmptyReplacement = curMatch.Result("${ifEmpty}");
-            var strConversion = RetrieveTokenValue(strObjectName, strPropertyName, strFormat);
+            var specs = new LookUpSpecs(
+                sourceName,
+                curMatch.Result("${property}"),
+                curMatch.Result("${format}"),
+                curMatch.Result("${ifEmpty}")
+            );
+            var oneResult = RetrieveTokenValue(specs);
 
-            var useFallback = string.IsNullOrEmpty(strConversion);
+            var useFallback = string.IsNullOrEmpty(oneResult);
             if (useFallback)
-                strConversion = strIfEmptyReplacement; 
+                oneResult = specs.IfEmpty;
                         
             if (repeat > 0 || useFallback) // note: when using fallback, always re-run tokens, even if no repeat left
-                strConversion = ReplaceTokens(strConversion, repeat - 1);
+                oneResult = ReplaceTokens(oneResult, repeat - 1, tweaker);
 
-            result.Append(strConversion);
+            // Apply tweaker, but only if we got a reasonable result
+            // Later we would probably want to improve this, and ask the source if it found a value (instead of empty-check)
+            if (tweaker != null && !string.IsNullOrEmpty(oneResult))
+                oneResult = tweaker.PostProcess(oneResult, specs: specs);
+
+            result.Append(oneResult);
         }
 
         // attach the rest of the text (after the last match)
@@ -128,10 +135,9 @@ public class TokenReplace(ILookUpEngine lookupEngine)
     /// <summary>
     /// Get a token value by checking all attached libraries of values and getting the right one
     /// </summary>
-    /// <param name="sourceName"></param>
-    /// <param name="key"></param>
-    /// <param name="format"></param>
-    /// <returns></returns>
-    protected string RetrieveTokenValue(string sourceName, string key, string format) 
-        => LookupEngine.FindSource(sourceName)?.Get(key, format) ?? string.Empty;
+    /// <returns>
+    /// The resulting string, formatted if necessary, or .
+    /// </returns>
+    private string RetrieveTokenValue(LookUpSpecs lookUpSpecs) 
+        => LookupEngine.FindSource(lookUpSpecs.SourceName)?.Get(lookUpSpecs.Name, lookUpSpecs.Format) ?? string.Empty;
 }

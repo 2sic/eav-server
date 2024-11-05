@@ -79,7 +79,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     /// <summary>
     /// Append a new Attribute to an AttributeSet
     /// </summary>
-    private int AppendToEndAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute)
+    private int AppendToEndAndSave(int attributeSetId, IContentTypeAttribute contentTypeAttribute)
     {
         var maxIndex = DbContext.SqlDb.ToSicEavAttributesInSets
             .Where(a => a.AttributeSetId == attributeSetId)
@@ -92,7 +92,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     /// <summary>
     /// Append a new Attribute to an AttributeSet
     /// </summary>
-    public int AddAttributeAndSave(int attributeSetId, ContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
+    public int AddAttributeAndSave(int attributeSetId, IContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
     {
         var staticName = contentTypeAttribute.Name;
         var type = contentTypeAttribute.Type.ToString();
@@ -107,7 +107,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
 
         // Prevent Duplicate Name
         if (AttributeExistsInSet(attributeSet.AttributeSetId, staticName))
-            throw new ArgumentException("An Attribute with static name " + staticName + " already exists", nameof(staticName));
+            throw new ArgumentException($@"An Attribute with the static name {staticName} already exists", nameof(staticName));
 
         var newAttribute = new ToSicEavAttributes
         {
@@ -122,7 +122,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
             Attribute = newAttribute,
             AttributeSet = attributeSet,
             SortOrder = sortOrder,
-            AttributeGroupId = 1,
+            // AttributeGroupId = 1,
             IsTitle = isTitle
         };
         DbContext.SqlDb.Add(newAttribute);

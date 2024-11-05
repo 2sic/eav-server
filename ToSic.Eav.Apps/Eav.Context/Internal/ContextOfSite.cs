@@ -47,12 +47,20 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     protected bool UserMayAdmin => Log.Getter(() =>
     {
         var u = User;
-        if (u == null) return false; // note: not sure if user could ever be null since it's injected
+        // Note: I'm not sure if the user could ever be null, but maybe in search scenarios?
+        if (u == null) return false;
         return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
     });
 
+    private bool IsContentAdmin => User?.IsContentAdmin ?? false;
+    private bool IsContentEditor => User?.IsContentEditor ?? false;
+
     EffectivePermissions IContextOfUserPermissions.Permissions => _permissions
-        ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(isSiteAdmin: mayAdmin, isContentAdmin: mayAdmin || (User?.IsContentAdmin ?? false)));
+        ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(
+            isSiteAdmin: mayAdmin,
+            isContentAdmin: mayAdmin || IsContentAdmin,
+            isContentEditor: mayAdmin || IsContentEditor,
+            showDrafts: mayAdmin || IsContentAdmin || IsContentEditor));
     private EffectivePermissions _permissions;
 
     /// <inheritdoc />

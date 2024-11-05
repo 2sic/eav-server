@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Coding;
 
@@ -11,7 +10,7 @@ namespace ToSic.Eav.Core.Tests;
 public static class DataTestExtensions
 {
     public static Entity TestCreate(
-        this EntityBuilder entityBuilder,
+        this DataBuilder dataBuilder,
         int appId,
         IContentType contentType,
         NoParamOrder noParamOrder = default,
@@ -29,17 +28,17 @@ public static class DataTestExtensions
         EntityPartsBuilder partsBuilder = default
     )
     {
-        return entityBuilder.Create(appId: appId,
+        return dataBuilder.Entity.Create(appId: appId,
             contentType: contentType,
-            attributes: typedValues != null 
-                ? entityBuilder.Attribute.Create(typedValues)
+            attributes: typedValues != null
+                ? dataBuilder.Attribute.Create(typedValues)
                 : values != null
-                    ? entityBuilder.Attribute.Create(values)
-                    : null, // typedValues?.ToImmutableInvariant(),
+                    ? dataBuilder.Attribute.Create(values)
+                    : null,
             entityId: entityId,
             repositoryId: repositoryId,
-            guid:guid,
-            titleField:titleField,
+            guid: guid,
+            titleField: titleField,
             created: created, modified: modified,
             owner: owner,
             version: version,

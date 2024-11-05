@@ -188,7 +188,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
 
     /// <summary>
     /// Create a list of all expected types.
-    /// Eg. for "@String-dropdown-query"
+    /// Like for "@String-dropdown-query"
     /// - "@string"
     /// - "@string-dropdown"
     /// - "@string-dropdown-query"
@@ -204,8 +204,8 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         if (inputType == null)
             return l.Return(InputTypeInfo.NewDefaultConfigTypesDic(), "error - can't find type");
 
-        // Get all types, eg @All, @Entity, @entity-default
-        // or if configured eg. @All, @string-picker
+        // Get all types, like @All, @Entity, @entity-default
+        // or if configured like @All, @string-picker
         var dicFromInfo = inputType.ConfigTypesDic();
 
         // Filer the ones that really exist for safety

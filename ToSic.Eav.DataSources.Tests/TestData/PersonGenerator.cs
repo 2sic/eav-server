@@ -73,7 +73,7 @@ namespace ToSic.Eav.DataSourceTests.TestData
                 {FieldHeight, MaybeMakeMlNonString(multiLanguage, FieldHeight, ValueTypes.Number, person.Height)},
                 {FieldBioForMlSortTest, MaybeMakeMlBio(multiLanguage, person.IsMale)}
             };
-            return DataBuilder.Entity.TestCreate(appId: 0, entityId: person.Id, contentType: DataBuilder.ContentType.Transient(PersonTypeName), values: dic,
+            return DataBuilder.TestCreate(appId: 0, entityId: person.Id, contentType: DataBuilder.ContentType.Transient(PersonTypeName), values: dic,
                 titleField: FieldFullName, modified: person.Modified);
         }
 

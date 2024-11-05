@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Context;
+﻿using System.IO;
+using ToSic.Eav.Apps.Integration;
+using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Persistence.File;
@@ -9,9 +11,12 @@ using ToSic.Eav.WebApi.Infrastructure;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Options;
 using ToSic.Eav.ImportExport.Internal.XmlList;
+using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Security.Files;
 using ToSic.Eav.Serialization.Internal;
 #if NETFRAMEWORK
 using System.Web.Http;
+using System.Web.UI.WebControls;
 #else
 using Microsoft.AspNetCore.Mvc;
 #endif
@@ -26,6 +31,8 @@ namespace ToSic.Eav.WebApi.ImportExport;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ContentExportApi(
+    ISite site,
+    IAppPathsMicroSvc appPathSvc,
     AppWorkContextService appWorkCtxSvc,
     IAppsCatalog appsCatalog,
     Generator<JsonSerializer> jsonSerializer,
@@ -33,7 +40,7 @@ public class ContentExportApi(
     Generator<ExportListXml> exportListXmlGenerator,
     LazySvc<IEavFeaturesService> features)
     : ServiceBase("Api.EaCtEx",
-        connect: [appWorkCtxSvc, exportListXmlGenerator, appsCatalog, jsonSerializer, responseMaker, features])
+        connect: [site, appPathSvc, appWorkCtxSvc, exportListXmlGenerator, appsCatalog, jsonSerializer, responseMaker, features])
 {
     public ContentExportApi Init(int appId)
     {
@@ -129,6 +136,53 @@ public class ContentExportApi(
 
         features.Value.ThrowIfNotEnabled("This feature is required", BuiltInFeatures.DataExportImportBundles.Guid);
 
+        var (export, fileContent) = CreateBundleExport(exportConfiguration, indentation);
+
+        return l.ReturnAsOk(responseMaker.File(fileContent, export.FileName, MimeHelper.Json));
+    }
+
+    public bool BundleSave(IUser user, Guid exportConfiguration, int indentation)
+    {
+        var l = Log.Fn<bool>($"for ExportConfiguration:{exportConfiguration}");
+
+        SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
+
+        features.Value.ThrowIfNotEnabled("This feature is required", BuiltInFeatures.DataExportImportBundles.Guid);
+
+        var (export, fileContent) = CreateBundleExport(exportConfiguration, indentation);
+
+        var appPaths = appPathSvc.Get(_appCtx.AppReader, site);
+
+        var appDataPath = Path.Combine(appPaths.PhysicalPath, Constants.AppDataProtectedFolder, FsDataConstants.BundlesFolder);
+        l.A($"appDataPath:'{appDataPath}'");
+
+        try
+        {
+            // create App_Data\bundles unless exists
+            Directory.CreateDirectory(appDataPath);
+
+            var fileNameSafe = FileNames.SanitizeFileName(export.FileName);
+            if (export.FileName != fileNameSafe) l.A($"File name sanitized:'{export.FileName}' => '{fileNameSafe}'");
+
+            var filePath = Path.Combine(appDataPath, fileNameSafe);
+
+            // save bundle file to App_Data\bundles
+            File.WriteAllText(filePath, fileContent);
+            l.A($"bundle saved, filePath:'{filePath}',size:{fileContent.Length}");
+
+            return l.ReturnTrue();
+        }
+        catch (Exception ex)
+        {
+            l.Ex(ex);
+            return l.ReturnFalse();
+        }
+    }
+
+    private (ExportConfiguration export, string fileContent) CreateBundleExport(Guid exportConfiguration, int indentation)
+    {
+        var l = Log.Fn<(ExportConfiguration export, string fileContent)>($"create bundle export for ExportConfiguration:{exportConfiguration}");
+
         var export = ExportConfigurationBuildOrThrow(exportConfiguration);
 
         // find all decorator metadata of type SystemExportDecorator
@@ -143,10 +197,11 @@ public class ContentExportApi(
 
         // give it to the browser with the name specified in the Export Configuration
         l.A($"OK, export fileName:{export.FileName}, size:{fileContent.Length}");
-        return l.ReturnAsOk(responseMaker.File(fileContent, export.FileName, MimeHelper.Json));
+
+        return l.ReturnAsOk((export, fileContent));
     }
-    
-    public ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfiguration)
+
+    private ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfiguration)
     {
         var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfiguration}");
         var systemExportConfiguration = _appCtx.AppReader.List.One(exportConfiguration);

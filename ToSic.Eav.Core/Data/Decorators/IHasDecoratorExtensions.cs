@@ -11,14 +11,12 @@ public static class IHasDecoratorExtensions
 
     public static TDecorator GetDecorator<TDecorator>(this IEntity parent) where TDecorator : class, IDecorator
     {
-        if (parent is not IHasDecorators<IEntity> parentWithDecorator) return null;
-        return parentWithDecorator.GetDecorator<TDecorator, IEntity>();
+        return parent is not IHasDecorators<IEntity> parentWithDecorator ? null : parentWithDecorator.GetDecorator<TDecorator, IEntity>();
     }
 
     public static TDecorator GetDecorator<TDecorator>(this IContentType parent) where TDecorator : class, IDecorator
     {
-        if (parent is not IHasDecorators<IContentType> parentWithDecorator) return null;
-        return parentWithDecorator.GetDecorator<TDecorator, IContentType>();
+        return parent is not IHasDecorators<IContentType> parentWithDecorator ? null : parentWithDecorator.GetDecorator<TDecorator, IContentType>();
     }
 
 }

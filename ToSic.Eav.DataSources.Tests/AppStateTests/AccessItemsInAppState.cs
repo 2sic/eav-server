@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSourceTests.AppStateTests
             Trace.Write($"Time used: {timer.ElapsedMilliseconds}");
         }
 
-        private IAppReader GetAppState() => GetService<IAppReaderFactory>().GetReader(TestConfig.BigDataTestsApp);
+        private IAppReader GetAppState() => GetService<IAppReaderFactory>().Get(TestConfig.BigDataTestsApp);
 
         [TestMethod]
         public void AccessOne1000TimesSame() => AccessOne1000Times(0);

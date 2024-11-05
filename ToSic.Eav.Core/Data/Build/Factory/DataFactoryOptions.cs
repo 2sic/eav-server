@@ -40,6 +40,8 @@ public class DataFactoryOptions
 
     public bool WithMetadata { get; init; }
 
+    public Type Type { get; init; }
+
     /// <summary>
     /// Main Constructor to create such options.
     /// </summary>
@@ -51,6 +53,7 @@ public class DataFactoryOptions
     /// <param name="autoId">Determines if items with ID 0 should get an automatic ID</param>
     /// <param name="idSeed">A root ID seed for numbering the items</param>
     /// <param name="withMetadata"></param>
+    /// 
     public DataFactoryOptions(
         DataFactoryOptions original = default,
         NoParamOrder noParamOrder = default,
@@ -59,7 +62,8 @@ public class DataFactoryOptions
         string titleField = default,
         bool? autoId = default,
         int? idSeed = default,
-        bool? withMetadata = default
+        bool? withMetadata = default,
+        Type type = default
     )
     {
         AppId = appId ?? original?.AppId ?? 0;
@@ -69,5 +73,7 @@ public class DataFactoryOptions
         IdSeed = idSeed ?? original?.IdSeed ?? 1;
         AllowUnknownValueTypes = original?.AllowUnknownValueTypes ?? false;
         WithMetadata = withMetadata ?? original?.WithMetadata ?? false;
+
+        Type = type;
     }
 }

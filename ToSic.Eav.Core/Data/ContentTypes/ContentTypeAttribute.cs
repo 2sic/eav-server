@@ -53,7 +53,7 @@ public class ContentTypeAttribute(
     public IMetadataOf Metadata { get; } = metadata;
 
     /// <inheritdoc />
-    [PrivateApi("because permissions will probably become an entity-based type")]
+    [PrivateApi("Not public yet, as it's not quite clear what the permissions affect and how to communicate this. Reason is that some affect file access, others have different purposes")]
     public IEnumerable<Permission> Permissions => Metadata.Permissions;
 
     #endregion

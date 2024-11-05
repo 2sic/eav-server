@@ -1,7 +1,10 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Internal;
+using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Helpers;
 using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
@@ -24,8 +27,8 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class MetadataTargets(IAppReaderFactory appReaders, DataSourceBase.MyServices services)
-    : MetadataDataSourceBase(services, $"{LogPrefix}.MetaTg")
+public class MetadataTargets(DataSourceBase.MyServices services, IAppReaderFactory appReaders, IDataFactory dataFactory)
+    : MetadataDataSourceBase(services, $"{LogPrefix}.MetaTg", connect: [appReaders, dataFactory])
 {
     /// <summary>
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
@@ -34,11 +37,8 @@ public class MetadataTargets(IAppReaderFactory appReaders, DataSourceBase.MyServ
     public override string ContentTypeName => Configuration.GetThis();
 
     /// <summary>
-    /// 
+    /// If it should filter duplicates. Default is true.
     /// </summary>
-    /// <remarks>
-    /// Defaults to true
-    /// </remarks>
     [Configuration(Fallback = true)]
     public bool FilterDuplicates => Configuration.GetThis(true);
 
@@ -56,6 +56,14 @@ public class MetadataTargets(IAppReaderFactory appReaders, DataSourceBase.MyServ
         return relationships;
     }
 
+    private IDataFactory ContentTypeFactory => ctFactory.Get(() =>
+    {
+        var opts = new DataFactoryOptions(ContentTypeUtil.Options, appId: AppId, withMetadata: true);
+        var x = dataFactory.New(options: opts);
+        return x;
+    });
+    private GetOnce<IDataFactory> ctFactory = new();
+
     /// <summary>
     /// Construct function for the get of the related items
     /// </summary>
@@ -68,14 +76,29 @@ public class MetadataTargets(IAppReaderFactory appReaders, DataSourceBase.MyServ
         {
             var mdFor = o.MetadataFor;
 
-            // The next block could maybe be re-used elsewhere...
-            if (!mdFor.IsMetadata || mdFor.TargetType != (int)TargetTypes.Entity)
+            // If not Metadata, exit early
+            if (!mdFor.IsMetadata)
                 return [];
-                
-            if (mdFor.KeyGuid != null)
-                return [appState.List.One(mdFor.KeyGuid.Value)];
-            if (mdFor.KeyNumber != null)
-                return [appState.List.One(mdFor.KeyNumber.Value)];
+            
+            // If for entities, retrieve them
+            // We seem to have a historic setup where we sometimes use IDs and sometimes GUIDs?
+            if (mdFor.TargetType == (int)TargetTypes.Entity)
+            {
+                if (mdFor.KeyGuid != null)
+                    return [appState.List.One(mdFor.KeyGuid.Value)];
+                if (mdFor.KeyNumber != null)
+                    return [appState.List.One(mdFor.KeyNumber.Value)];
+            }
+
+            if (mdFor.TargetType == (int)TargetTypes.ContentType)
+            {
+                var key = mdFor.KeyString ?? mdFor.KeyGuid?.ToString();
+                if (key == null) return [];
+                var ct = appState.GetContentType(key);
+                if (ct == null) return [];
+                var ctEntity = ContentTypeFactory.Create(ContentTypeUtil.ToRaw(ct));
+                return [ctEntity];
+            }
 
             return [];
         };

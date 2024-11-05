@@ -18,7 +18,7 @@ public class AssemblyHandling
     }
 
     /// <summary>
-    /// Check if specific type exists (eg. assembly is loaded from bin)
+    /// Check if specific type exists (like assembly is loaded from bin)
     /// </summary>
     /// <param name="typeFullName"></param>
     /// <param name="log"></param>

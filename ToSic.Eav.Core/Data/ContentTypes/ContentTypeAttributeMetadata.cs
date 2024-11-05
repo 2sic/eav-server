@@ -39,7 +39,7 @@ public class ContentTypeAttributeMetadata(
 
     /// <summary>
     /// Override data loading.
-    /// In some cases, the source Attribute has directly attached metadata (eg. loaded from JSON)
+    /// In some cases, the source Attribute has directly attached metadata (like loaded from JSON)
     /// so this handles that case.
     /// </summary>
     protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)

@@ -43,7 +43,7 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
         // Ensure case insensitive
         values = values.ToInvariant();
 
-        if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
+        if (!string.IsNullOrEmpty(userName)) ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (like 'dnn:user=N')
         var ids = DataController.Value.Create(contentTypeName, new List<Dictionary<string, object>> { values }, target);
         var id = ids.FirstOrDefault();
         FlushDataSnapshot();
@@ -54,7 +54,7 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
 
     private static void ProvideOwnerInValues(IDictionary<string, object> values, string userIdentityToken)
     {
-        // userIdentityToken is not simple 'userName' string, but 2sxc user IdentityToken structure (eg 'dnn:user=N')
+        // userIdentityToken is not simple 'userName' string, but 2sxc user IdentityToken structure (like 'dnn:user=N')
         if (values.ContainsKey(Attributes.EntityFieldOwner)) return;
         values.Add(Attributes.EntityFieldOwner, userIdentityToken);
     }
@@ -68,7 +68,7 @@ public class AppDataWithCrud: Eav.DataSources.App, IAppData
 
         if (!string.IsNullOrEmpty(userName))
             foreach (var values in multiValues)
-                ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (eg 'dnn:user=N')
+                ProvideOwnerInValues(values, userName); // userName should be in 2sxc user IdentityToken format (like 'dnn:user=N')
 
         var ids = DataController.Value.Create(contentTypeName, multiValues);
         FlushDataSnapshot();

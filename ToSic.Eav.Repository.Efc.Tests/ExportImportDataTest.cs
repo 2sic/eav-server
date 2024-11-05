@@ -23,7 +23,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var Log = new Log("TstExp");
             var zoneId = 2;
             var appId = 2;
-            var appState = GetService<IAppReaderFactory>().GetReader(new AppIdentity(zoneId, appId));
+            var appState = GetService<IAppReaderFactory>().Get(new AppIdentity(zoneId, appId));
 
             var fileXml = _xmlExporter.Init(new AppExportSpecs(zoneId, appId), appState, false,
                 /*contentTypeIdsString?.Split(';') ?? */[],

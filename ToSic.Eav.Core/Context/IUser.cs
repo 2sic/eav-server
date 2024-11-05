@@ -58,6 +58,12 @@ public interface IUser: ILogShouldNeverConnect
     bool IsContentAdmin { get; }
 
     /// <summary>
+    /// Determines if the user is a content editor. 
+    /// </summary>
+    /// <remarks>New in v18.02</remarks>
+    bool IsContentEditor { get; }
+
+    /// <summary>
     /// Returns true if a user is in the SexyContent Designers group. Such a person can actually do a lot more, like access the advanced toolbars. 
     /// </summary>
     /// <remarks>

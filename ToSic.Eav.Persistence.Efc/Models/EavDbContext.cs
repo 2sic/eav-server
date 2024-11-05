@@ -8,7 +8,29 @@ namespace ToSic.Eav.Persistence.Efc.Models;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class EavDbContext : DbContext
 {
+    //public bool DebugMode = false;
+
+    public EavDbContext(DbContextOptions<EavDbContext> options, IDbConfiguration dbConfig) : base(options)
+    {
+        _dbConfig = dbConfig;
+    }
     private readonly IDbConfiguration _dbConfig;
+
+    public virtual DbSet<ToSicEavApps> ToSicEavApps { get; set; }
+    public virtual DbSet<ToSicEavAssignmentObjectTypes> ToSicEavAssignmentObjectTypes { get; set; }
+    public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
+    public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
+    public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
+
+    public virtual DbSet<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
+    public virtual DbSet<ToSicEavChangeLog> ToSicEavChangeLog { get; set; }
+    public virtual DbSet<ToSicEavDataTimeline> ToSicEavDataTimeline { get; set; }
+    public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
+    public virtual DbSet<ToSicEavEntities> ToSicEavEntities { get; set; }
+    public virtual DbSet<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
+    public virtual DbSet<ToSicEavValues> ToSicEavValues { get; set; }
+    public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
+    public virtual DbSet<ToSicEavZones> ToSicEavZones { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -24,32 +46,6 @@ public partial class EavDbContext : DbContext
             .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
 #endif
     }
-
-    //public bool DebugMode = false;
-
-    public EavDbContext(DbContextOptions<EavDbContext> options, IDbConfiguration dbConfig) : base(options)
-    {
-        _dbConfig = dbConfig;
-    }
-
-    public virtual DbSet<ToSicEavApps> ToSicEavApps { get; set; }
-    public virtual DbSet<ToSicEavAssignmentObjectTypes> ToSicEavAssignmentObjectTypes { get; set; }
-    // 2020-07-31 2dm - never used
-    //public virtual DbSet<ToSicEavAttributeGroups> ToSicEavAttributeGroups { get; set; }
-    public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
-    public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
-    public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
-    public virtual DbSet<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
-    public virtual DbSet<ToSicEavChangeLog> ToSicEavChangeLog { get; set; }
-    public virtual DbSet<ToSicEavDataTimeline> ToSicEavDataTimeline { get; set; }
-    public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
-    public virtual DbSet<ToSicEavEntities> ToSicEavEntities { get; set; }
-    public virtual DbSet<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
-    public virtual DbSet<ToSicEavValues> ToSicEavValues { get; set; }
-    public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
-    public virtual DbSet<ToSicEavZones> ToSicEavZones { get; set; }
-
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,26 +98,47 @@ public partial class EavDbContext : DbContext
                 .HasMaxLength(50);
         });
 
-        modelBuilder.Entity<ToSicEavAttributeGroups>(entity =>
+        modelBuilder.Entity<ToSicEavAttributes>(entity =>
         {
-            entity.HasKey(e => e.AttributeGroupId)
-                .HasName("PK_ToSIC_EAV_AttributeGroups");
+            entity.HasKey(e => e.AttributeId)
+                .HasName("PK_ToSIC_EAV_Attributes");
 
-            entity.ToTable("ToSIC_EAV_AttributeGroups");
+            entity.ToTable("ToSIC_EAV_Attributes");
 
-            entity.Property(e => e.AttributeGroupId).HasColumnName("AttributeGroupID");
+            entity.Property(e => e.AttributeId).HasColumnName("AttributeID");
 
-            entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
-
-            entity.Property(e => e.Name)
+            entity.Property(e => e.StaticName)
                 .IsRequired()
                 .HasMaxLength(50);
 
-            entity.HasOne(d => d.AttributeSet)
-                .WithMany(p => p.ToSicEavAttributeGroups)
-                .HasForeignKey(d => d.AttributeSetId)
+            entity.Property(e => e.Type)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.HasOne(d => d.ChangeLogCreatedNavigation)
+                .WithMany(p => p.ToSicEavAttributesChangeLogCreatedNavigation)
+                .HasForeignKey(d => d.ChangeLogCreated)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_AttributeGroups_ToSIC_EAV_AttributeSets");
+                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated");
+
+            entity.HasOne(d => d.ChangeLogDeletedNavigation)
+                .WithMany(p => p.ToSicEavAttributesChangeLogDeletedNavigation)
+                .HasForeignKey(d => d.ChangeLogDeleted)
+                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted");
+
+            entity.HasOne(d => d.TypeNavigation)
+                .WithMany(p => p.ToSicEavAttributes)
+                .HasForeignKey(d => d.Type)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types");
+
+            entity.Property(e => e.Guid)
+                .HasColumnName("Guid")
+                .HasColumnType("uniqueidentifier");
+
+            entity.Property(e => e.SysSettings)
+                .HasColumnName("SysSettings")
+                .HasColumnType("nvarchar(MAX)");
         });
 
         modelBuilder.Entity<ToSicEavAttributeSets>(entity =>
@@ -167,9 +184,9 @@ public partial class EavDbContext : DbContext
                 .HasForeignKey(d => d.UsesConfigurationOfAttributeSet)
                 .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets");
 
-            entity.Property(e => e.SysSettings)
-                .HasColumnName("SysSettings")
-                .HasColumnType("nvarchar(MAX)");
+            //entity.Property(e => e.SysSettings)
+            //    .HasColumnName("SysSettings")
+            //    .HasColumnType("nvarchar(MAX)");
         });
 
         modelBuilder.Entity<ToSicEavAttributeTypes>(entity =>
@@ -180,49 +197,6 @@ public partial class EavDbContext : DbContext
             entity.ToTable("ToSIC_EAV_AttributeTypes");
 
             entity.Property(e => e.Type).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<ToSicEavAttributes>(entity =>
-        {
-            entity.HasKey(e => e.AttributeId)
-                .HasName("PK_ToSIC_EAV_Attributes");
-
-            entity.ToTable("ToSIC_EAV_Attributes");
-
-            entity.Property(e => e.AttributeId).HasColumnName("AttributeID");
-
-            entity.Property(e => e.StaticName)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.Property(e => e.Type)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.HasOne(d => d.ChangeLogCreatedNavigation)
-                .WithMany(p => p.ToSicEavAttributesChangeLogCreatedNavigation)
-                .HasForeignKey(d => d.ChangeLogCreated)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated");
-
-            entity.HasOne(d => d.ChangeLogDeletedNavigation)
-                .WithMany(p => p.ToSicEavAttributesChangeLogDeletedNavigation)
-                .HasForeignKey(d => d.ChangeLogDeleted)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted");
-
-            entity.HasOne(d => d.TypeNavigation)
-                .WithMany(p => p.ToSicEavAttributes)
-                .HasForeignKey(d => d.Type)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types");
-
-            entity.Property(e => e.Guid)
-                .HasColumnName("Guid")
-                .HasColumnType("uniqueidentifier");
-
-            entity.Property(e => e.SysSettings)
-                .HasColumnName("SysSettings")
-                .HasColumnType("nvarchar(MAX)");
         });
 
         modelBuilder.Entity<ToSicEavAttributesInSets>(entity =>
@@ -236,15 +210,7 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
 
-            entity.Property(e => e.AttributeGroupId).HasColumnName("AttributeGroupID");
-
             entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
-
-            entity.HasOne(d => d.AttributeGroup)
-                .WithMany(p => p.ToSicEavAttributesInSets)
-                .HasForeignKey(d => d.AttributeGroupId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeGroups");
 
             entity.HasOne(d => d.Attribute)
                 .WithMany(p => p.ToSicEavAttributesInSets)
@@ -282,7 +248,8 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.Operation)
                 .IsRequired()
-                .HasColumnType("nchar(1)")
+                .HasMaxLength(1)
+                .IsFixedLength()
                 .HasDefaultValueSql("N'I'");
 
             entity.Property(e => e.SourceId).HasColumnName("SourceID");
@@ -349,6 +316,8 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
 
+            entity.Property(e => e.ContentType).HasMaxLength(250);
+
             entity.Property(e => e.EntityGuid)
                 .HasColumnName("EntityGUID")
                 .HasDefaultValueSql("newid()");
@@ -359,8 +328,6 @@ public partial class EavDbContext : DbContext
             entity.Property(e => e.KeyString).HasMaxLength(100);
 
             entity.Property(e => e.Owner).HasMaxLength(250);
-
-            entity.Property(e => e.ContentType).HasMaxLength(250);
 
             // 2017-10-10 2dm new with entity > app mapping
             entity.HasOne(d => d.App)
@@ -462,7 +429,9 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.EntityId).HasColumnName("EntityID");
 
-            entity.Property(e => e.Value).IsRequired();
+            entity.Property(e => e.Value)
+                .IsRequired()
+                .HasColumnType("nvarchar(max)");
 
             entity.HasOne(d => d.Attribute)
                 .WithMany(p => p.ToSicEavValues)
@@ -532,5 +501,9 @@ public partial class EavDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(255);
         });
+
+        OnModelCreatingPartial(modelBuilder);
     }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

@@ -37,7 +37,7 @@ public class BuiltInLicenses
     public static readonly FeatureSet System = new(FeatureSetSystem, 10000,
         "System",
         new("fae8a2ac-cdeb-45f8-b690-cc4eee8a5690"),
-        "System features which are provided by the platform you are running on or installed as a system-feature (eg. Compiler). All the features should begin with \"System-\""
+        "System features which are provided by the platform you are running on or installed as a system-feature (like Compiler). All the features should begin with \"System-\""
     )
     {
         AutoEnable = true
@@ -94,8 +94,14 @@ public class BuiltInLicenses
         new("4df6895d-2ec4-4fcd-ae2a-7f49defb584b"),
         "Patrons with advanced needs in advanced CMS features."
     );
+
+    /// <summary>
+    /// Languages.
+    /// Note that previously the GUID was used for Patrons Advanced, but as we modified this in 18.02
+    /// we decided that the features previously in PatronAdvanced are usually licensed for languages, not for the other features (Copyright).
+    /// </summary>
     public static readonly FeatureSet PatronLanguages = new(LicensePrefix + nameof(PatronLanguages),102,
-        "Patron Advanced CMS",
+        "Patron Languages",
         new("e23ef849-f50c-47a5-81dd-33fb17727305"),
         "Patrons with advanced needs in managing languages."
     );

@@ -11,15 +11,8 @@ namespace ToSic.Eav.Data.Build;
 /// Entity object lean and clean
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EntityBuilder
+public class EntityBuilder(AttributeBuilder attributeBuilder)
 {
-
-    /// <summary>
-    /// Constructor - should never be called as it should be used with DI
-    /// </summary>
-    public EntityBuilder(AttributeBuilder attributeBuilder) => Attribute = attributeBuilder;
-    public AttributeBuilder Attribute { get; }
-
     public Entity Create(
         int appId,
         IContentType contentType,
@@ -29,19 +22,18 @@ public class EntityBuilder
         int repositoryId = Constants.NullId,
         Guid guid = default,
         string titleField = default,
-        DateTime? created = default, DateTime? modified = default,
+        DateTime? created = default,
+        DateTime? modified = default,
         string owner = default,
         int version = default,
         bool isPublished = true,
         ITarget metadataFor = default,
         EntityPartsBuilder partsBuilder = default,
-        // Publishing instructions
-        // bool placeDraftInBranch = default,
         int publishedId = default,
         EntitySavePublishing publishing = default
     )
     {
-        // If repositoryId isn't known set it it to EntityId
+        // If repositoryId isn't known set it to EntityId
         repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
         version = version == default ? 1 : version;
 
@@ -51,7 +43,7 @@ public class EntityBuilder
         return new(appId, entityId, repositoryId: repositoryId,
             partsBuilder: partsBuilder, 
             contentType: contentType,
-            values: attributes ?? Attribute.Empty(),
+            values: attributes ?? AttributeBuilder.EmptyList,
             guid: guid,
             titleFieldName: titleField,
             created: created,
@@ -60,7 +52,7 @@ public class EntityBuilder
             version: version,
             isPublished: publishing?.ShouldPublish ?? isPublished,
             metadataFor: metadataFor,
-            placeDraftInBranch: publishing?.ShouldBranchDrafts ?? default,// placeDraftInBranch,
+            placeDraftInBranch: publishing?.ShouldBranchDrafts ?? default,
             publishedId: publishedId);
     }
 
@@ -73,7 +65,7 @@ public class EntityBuilder
             entityId: entityId,
             guid: entityGuid,
             contentType: type,
-            attributes: Attribute.Create(type, null),
+            attributes: attributeBuilder.Create(type, null),
             created: DateTime.MinValue,
             modified: DateTime.Now, 
             owner: "");
@@ -103,10 +95,10 @@ public class EntityBuilder
         int? publishedId = default
     )
     {
-        var originalEntity = original as Entity;
+        var asRealEntity = original as Entity;
 
         var entityPartsBuilder = new EntityPartsBuilder(
-            ent => RelationshipManager.ForClone(ent, originalEntity?.Relationships as RelationshipManager),
+            ent => RelationshipManager.ForClone(ent, asRealEntity?.Relationships as RelationshipManager),
             getMetadataOf: id == default && guid == default
                 // If identifiers don't change, it will provide the identical metadata
                 ? EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
@@ -114,7 +106,7 @@ public class EntityBuilder
                 : EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
         );
 
-        attributes ??= originalEntity.Attributes;
+        attributes ??= asRealEntity?.Attributes;
 
         var e = Create(
             appId: appId ?? original.AppId,
@@ -123,17 +115,16 @@ public class EntityBuilder
             repositoryId: repositoryId ?? original.RepositoryId,
             guid: guid ?? original.EntityGuid,
             contentType: type ?? original.Type,
-            titleField: originalEntity.TitleFieldName, 
+            titleField: asRealEntity?.TitleFieldName, 
             created: created ?? original.Created,
             modified: modified ?? original.Modified,
             owner: owner ?? original.Owner,
             version: version ?? original.Version,
             metadataFor: target ?? new Target(original.MetadataFor),
 
-            publishing: new(isPublished ?? original.IsPublished, placeDraftInBranch ?? originalEntity?.PlaceDraftInBranch ?? default),
-            // isPublished: isPublished ?? original.IsPublished,
-            // placeDraftInBranch: placeDraftInBranch ?? originalEntity?.PlaceDraftInBranch ?? default,
-            publishedId: publishedId ?? originalEntity?.PublishedEntityId ?? default,
+            publishing: new(isPublished ?? original.IsPublished, placeDraftInBranch ?? asRealEntity?.PlaceDraftInBranch ?? default),
+
+            publishedId: publishedId ?? asRealEntity?.PublishedEntityId ?? default,
                 
             partsBuilder: entityPartsBuilder
         );
