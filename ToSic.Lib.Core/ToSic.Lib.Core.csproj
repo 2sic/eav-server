@@ -29,11 +29,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" /><!-- from Oqtane.Shared.csproj -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" /><!-- from Oqtane.Shared.csproj -->
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.4" /><!-- from Oqtane.Shared.csproj -->
+    <PackageReference Include="System.Text.Json" Version="8.0.5" /><!-- from Oqtane.Shared.csproj -->
   </ItemGroup>
 
 
