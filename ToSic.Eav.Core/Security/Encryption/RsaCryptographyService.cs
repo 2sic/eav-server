@@ -1,44 +1,62 @@
 ﻿using System.IO;
 using System.Security.Cryptography;
 using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Security.Encryption
 {
     public class RsaCryptographyService(IGlobalConfiguration globalConfiguration)
     {
         // Set key size to 2048 bits
-        const int DwKeySize = 2048;
+        private const int DwKeySize = 2048;
 
         // Generate PEM format for public key
-        const bool Pem = false;
+        private const bool Pem = false;
 
         public byte[] Decrypt(string encryptedData)
         {
             //using var rsa = RSA.Create(DwKeySize);
             using var rsa = new RSACng(DwKeySize);
 
-            rsa.FromXmlString(GetOrCreatePrivateKey());
+            rsa.FromXmlString(PrivateKey);
 
             // Decrypt
             var dataToDecrypt = Convert.FromBase64String(encryptedData);
             return rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA256);
         }
 
-        public string PrivateKey => GetOrCreatePrivateKey();
+        public string PublicKey 
+            => _genKeysInLock.Call(
+                conditionToGenerate: () => _publicKey == null,
+                generator: () => GetOrCreateKeys().publicKey,
+                cacheOrFallback: () => _publicKey
+            ).Result;
 
-        private string GetOrCreatePrivateKey()
+        private string PrivateKey
+            => _genKeysInLock.Call(
+                conditionToGenerate: () => _privateKey == null,
+                generator: () => GetOrCreateKeys().privateKey,
+                cacheOrFallback: () => _privateKey
+            ).Result;
+
+        private (string publicKey, string privateKey) GetOrCreateKeys()
         {
-            if (_privateKey != null) return _privateKey;
+            if (_publicKey != null && _privateKey != null)
+                return (_publicKey, _privateKey);
 
             // Generate keys if they don't exist
-            if (!File.Exists(PrivateKeyPath)) GenKeys();
+            if (!File.Exists(PublicKeyPath) || !File.Exists(PrivateKeyPath))
+                GenKeys();
 
-            // Load the RSA private key
+            // Load the RSA public and private key
+            _publicKey = File.ReadAllText(PublicKeyPath);
             _privateKey = File.ReadAllText(PrivateKeyPath);
 
-            return _privateKey;
+            return (_publicKey, _privateKey);
         }
+        private string _publicKey;
         private string _privateKey;
+        private readonly TryLockTryDo _genKeysInLock = new();
 
         private void GenKeys()
         {
@@ -77,7 +95,7 @@ namespace ToSic.Eav.Security.Encryption
             }
             else
             {
-                outputStream.WriteLine(base64);
+                outputStream.Write(base64);
             }
         }
 
