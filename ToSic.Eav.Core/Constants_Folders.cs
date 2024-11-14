@@ -93,4 +93,9 @@ partial class Constants
     /// Temp folder where the 2sxc app temp assemblies for AppCode, assembly dependencies... are stored.
     /// </summary>
     public const string TempAssemblyFolder = "2sxc.bin";
+
+    /// <summary>
+    /// Secure folder where RSA keys are stored
+    /// </summary>
+    public const string CryptoFolder = "2sxc.crypto";
 }
