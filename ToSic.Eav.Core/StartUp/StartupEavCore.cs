@@ -106,6 +106,10 @@ public static class StartUpEavCore
         // v17
         services.TryAddTransient<MemoryCacheService>();
 
+        // v18
+        services.TryAddTransient<RsaCryptographyService>();
+        services.TryAddTransient<AesHybridCryptographyService>();
+
         return services;
     }
 

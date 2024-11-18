@@ -73,4 +73,9 @@ public interface IGlobalConfiguration: ILogShouldNeverConnect
     /// The absolute folder where the 2sxc app temp assemblies for AppCode, assembly dependencies... are stored.
     /// </summary>
     string TempAssemblyFolder { get; set; }
+
+    /// <summary>
+    /// The absolute secure folder where generated RSA keys are stored.
+    /// </summary>
+    string CryptoFolder { get; set; }
 }
