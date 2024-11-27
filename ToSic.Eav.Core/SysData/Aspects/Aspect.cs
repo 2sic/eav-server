@@ -8,47 +8,44 @@ namespace ToSic.Eav.SysData;
 /// </summary>
 [PrivateApi("no good reason to publish this")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Aspect: IHasIdentityNameId
+public record Aspect: IHasIdentityNameId
 {
     public const string PatronsUrl = "https://patrons.2sxc.org";
 
-    protected Aspect(string nameId, Guid guid, string name, string description = default)
+    public Aspect() { }
+
+    protected Aspect(string NameId, Guid Guid, string Name, string Description = default)
     {
-        NameId = nameId;
-        Guid = guid;
-        Name = name;
-        Description = description;
+        this.NameId = NameId;
+        this.Guid = Guid;
+        this.Name = Name;
+        this.Description = Description;
     }
 
-    public static Aspect Custom(string nameId, Guid guid, string name = default, string description = default) =>
-        new(nameId, guid, name, description);
+    public static Aspect Custom(string NameId, Guid Guid, string Name = default, string Description = default) =>
+        new() { NameId = NameId, Guid = Guid, Name = Name, Description = Description };
 
-    public static Aspect None = new("None", Guid.Empty, "None");
+    public static Aspect None = new() { NameId = "None", Guid = Guid.Empty, Name = "None" };
 
     /// <summary>
     /// GUID Identifier for this Aspect.
     /// </summary>
-    public Guid Guid { get; }
+    public required Guid Guid { get; init; }
 
     /// <summary>
     /// String Identifier for this Aspect.
     /// </summary>
-    public string NameId { get; }
+    public virtual required string NameId { get; init; }
 
     /// <summary>
     /// A nice name / title for showing in UIs
     /// </summary>
-    public string Name { get; }
+    public required string Name { get; init; }
 
     /// <summary>
     /// A nice description
     /// </summary>
-    public string Description { get; }
-
-    public virtual Aspect Clone(NoParamOrder noParamOrder = default, string nameId = default,
-        Guid? guid = default, string name = default, string description = default) => new(nameId ?? NameId,
-        guid ?? Guid, name ?? Name, description ?? Description);
-
+    public string Description { get; init; }
 
     public override string ToString() => $"Aspect: {Name} ({NameId} / {Guid})";
 }

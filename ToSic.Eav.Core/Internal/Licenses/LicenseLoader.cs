@@ -152,10 +152,17 @@ public sealed class LicenseLoader(
                 // For this we must add a virtual license for this feature only
                 if (licDef == null)
                 {
-                    licDef = new(BuiltInLicenses.LicenseCustom, BuiltInLicenses.FeatureLicensesBaseId + index, storedDetails.Comments ?? "Feature (unknown)",
-                        Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
-                        $"Feature: {storedDetails.Comments} ({storedDetails.Id})", featureLicense: true);
-                    l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");
+                    licDef = new()
+                    {
+                        NameId = BuiltInLicenses.LicenseCustom,
+                        Priority = BuiltInLicenses.FeatureLicensesBaseId + index,
+                        Name = storedDetails.Comments ?? "Feature (unknown)",
+                        Guid = Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
+                        Description = $"Feature: {storedDetails.Comments} ({storedDetails.Id})",
+                        FeatureLicense = true
+                    };
+                    l.A(
+                        $"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");
                     licenseCatalog.Register(licDef);
                 }
 
