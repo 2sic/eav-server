@@ -42,7 +42,10 @@ public partial class EavDbContext : DbContext
 #else
         // https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries
         optionsBuilder
-            .UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
+            .UseSqlServer(connectionString, options => 
+                options.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)
+                    .CommandTimeout(180) // Timeout in seconds
+            )
             .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
 #endif
     }
