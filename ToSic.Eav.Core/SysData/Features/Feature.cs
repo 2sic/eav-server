@@ -6,26 +6,22 @@ namespace ToSic.Eav.SysData;
 
 [PrivateApi("no good reason to publish this")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Feature(
-    string nameId,
-    Guid guid,
-    string name,
-    bool isPublic,
-    bool ui,
-    string description,
-    FeatureSecurity security,
-    IEnumerable<FeatureLicenseRule> licRules,
-    bool enableForSystemTypes = false,
-    FeatureDisabledBehavior disabledBehavior = FeatureDisabledBehavior.Disable
-): Aspect(nameId, guid, name, description)
+public record Feature: Aspect
 {
     #region Constructors
-
+    
     private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules, string nameId, Guid guid)
     {
         var newRules = licRules?.ToList() ?? [];
         // Create virtual license rule, so it can be enabled by its own GUID
-        var ownLicenseDefinition = new FeatureSet(BuiltInLicenses.LicenseCustom, 0, $"Feature: {nameId}", guid, $"Feature {nameId} ({guid})");
+        var ownLicenseDefinition = new FeatureSet()
+        {
+            NameId = BuiltInLicenses.LicenseCustom,
+            Priority = 0,
+            Name = $"Feature = {nameId}",
+            Guid = guid,
+            Description = $"Feature {nameId} ({guid})"
+        };
         var ownRule = new FeatureLicenseRule(ownLicenseDefinition, true);
         newRules.Add(ownRule);
         return newRules.AsReadOnly();
@@ -36,9 +32,18 @@ public class Feature(
     /// Constructor for unknown feature - which only has a GUID to identify it
     /// </summary>
     /// <param name="unknownFeatureGuid"></param>
-    internal Feature(Guid unknownFeatureGuid): this(unknownFeatureGuid.ToString(), unknownFeatureGuid, "Unknown Feature", false, false, "Unknown feature", FeatureSecurity.Unknown, null)
-    {
-    }
+    internal static Feature UnknownFeature(Guid unknownFeatureGuid) =>
+        new()
+        {
+            NameId = unknownFeatureGuid.ToString(),
+            Guid = unknownFeatureGuid,
+            Name = "Unknown Feature",
+            IsPublic = false,
+            Ui = false,
+            Description = "Unknown feature",
+            Security = FeatureSecurity.Unknown,
+            LicenseRules = null
+        };
 
     #endregion
 
@@ -49,7 +54,7 @@ public class Feature(
     /// <remarks>
     /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
     /// </remarks>
-    public bool Ui { get; } = ui;
+    public bool Ui { get; init; } = false;
 
     /// <summary>
     /// If true, this feature will be provided to the Ui
@@ -58,14 +63,14 @@ public class Feature(
     /// <remarks>
     /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
     /// </remarks>
-    public bool Public { get; } = isPublic;
+    public bool IsPublic { get; init; } = false;
 
 
     /// <summary>
     /// If true, this feature has security implications
     /// If null or false, it's either unknown or doesn't have security implications
     /// </summary>
-    public FeatureSecurity Security { get; } = security;
+    public FeatureSecurity Security { get; init; } = FeatureSecurity.Unknown;
 
 
     public virtual bool IsConfigurable => true;
@@ -74,13 +79,28 @@ public class Feature(
     /// The link which will be used to show more details online.
     /// eg: https://patrons.2sxc.org/rf?ContentSecurityPolicy
     /// </summary>
-    public virtual string Link => $"{PatronsUrl}/rf?{NameId}";
+    public virtual string Link
+    {
+        get => _link ??= $"{PatronsUrl}/rf?{NameId}";
+        init => _link = value;
+    }
 
-    internal IReadOnlyList<FeatureLicenseRule> LicenseRules { get; } = CreateLicenseRules(licRules, nameId, guid); // must run at the end, as properties are needed
+    private string _link;
 
-    public Requirement Requirement { get; } = new(ConditionIsFeature, nameId);
+    public required IEnumerable<FeatureLicenseRule> LicenseRules { get; init; }
 
-    public bool EnableForSystemTypes { get; } = enableForSystemTypes;
+    internal IReadOnlyList<FeatureLicenseRule> LicenseRulesList => _licRuleList ??= CreateLicenseRules(LicenseRules, NameId, Guid);
+    private IReadOnlyList<FeatureLicenseRule> _licRuleList;
 
-    public FeatureDisabledBehavior DisabledBehavior { get; } = disabledBehavior;
+    public Requirement Requirement => _requirement ??= new(ConditionIsFeature, NameId);
+    private Requirement _requirement;
+
+    public bool EnableForSystemTypes { get; init; }
+
+    public FeatureDisabledBehavior DisabledBehavior { get; init; } = FeatureDisabledBehavior.Disable;
+
+    /// <summary>
+    /// New v18.05... WIP
+    /// </summary>
+    public bool ScopedToModule { get; init; }
 }

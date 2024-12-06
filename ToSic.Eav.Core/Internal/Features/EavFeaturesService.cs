@@ -125,7 +125,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
                 var expiry = DateTime.MinValue;
 
                 // Check if the required license is active
-                var enabledRule = f.LicenseRules.FirstOrDefault(lr => licService.IsEnabled(lr.FeatureSet));
+                var enabledRule = f.LicenseRulesList.FirstOrDefault(lr => licService.IsEnabled(lr.FeatureSet));
                 if (enabledRule != null)
                 {
                     licService.Enabled.TryGetValue(enabledRule.FeatureSet.Guid, out var licenseState);
@@ -158,7 +158,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         var missingFeatures = config?.Features
             .Where(f => featuresCat.All(fd => fd.Guid != f.Id))
             .Select(f => new FeatureState(
-                    new(f.Id),
+                    Feature.UnknownFeature(f.Id),
                     f.Expires,
                     f.Enabled,
                     "configuration",

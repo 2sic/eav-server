@@ -21,24 +21,33 @@ namespace ToSic.Eav.SysData;
 /// Defines a license - name, guid etc.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class FeatureSet(
-    string nameId,
-    int priority,
-    string name,
-    Guid guid,
-    string description,
-    bool featureLicense = false)
-    : Aspect(nameId ?? guid.ToString(), guid, name, description ?? "")
+public record FeatureSet :  Aspect
 {
+    public FeatureSet() { }
+
+    public FeatureSet(
+        string NameId,
+        int Priority,
+        string Name,
+        Guid Guid,
+        string Description,
+        bool FeatureLicense = false)
+        : base(NameId ?? Guid.ToString(), Guid, Name, Description ?? "")
+    {
+        this.Priority = Priority;
+        this.FeatureLicense = FeatureLicense;
+    }
+
     public const string ConditionIsLicense = "license";
 
-    public int Priority { get; } = priority;
+    public int Priority { get; init; }
 
-    public bool AutoEnable { get; set; } = false;
+    public bool AutoEnable { get; init; } = false;
 
-    public FeatureSet[] AlsoInheritEnabledFrom { get; set; }= [];
+    public FeatureSet[] AlsoInheritEnabledFrom { get; init; }= [];
 
-    public bool FeatureLicense { get; } = featureLicense;
+    public bool FeatureLicense { get; init; }
 
-    public Requirement Requirement { get; } = new(ConditionIsLicense, guid.ToString());
+    public Requirement Requirement => _requirement ??= new(ConditionIsLicense, Guid.ToString());
+    private Requirement _requirement;
 }

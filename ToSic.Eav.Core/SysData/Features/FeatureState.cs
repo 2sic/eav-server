@@ -30,7 +30,7 @@ public class FeatureState(
 
     public string NameId => Aspect.NameId;
 
-    public FeatureSet License => _license.Get(() => Aspect.LicenseRules?.FirstOrDefault()?.FeatureSet);
+    public FeatureSet License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
     private readonly GetOnce<FeatureSet> _license = new();
 
     /// <summary>
@@ -65,7 +65,7 @@ public class FeatureState(
     /// <summary>
     /// Determines if non-admins should still know about this feature in the UI
     /// </summary>
-    public bool IsPublic => Aspect.Public;
+    public bool IsPublic => Aspect.IsPublic;
 
     public FeatureSecurity Security => Aspect.Security;
 

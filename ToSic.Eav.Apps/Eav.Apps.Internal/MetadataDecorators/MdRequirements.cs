@@ -81,7 +81,7 @@ public class MdRequirements(
     }
 
     internal class ReqStatusPrivate(RequirementDecorator decorator, string nameId, bool approved, Aspect aspect = default)
-        : RequirementStatus(approved, aspect ?? SysData.Aspect.None.Clone(nameId: nameId))
+        : RequirementStatus(approved, aspect ?? SysData.Aspect.None with { NameId = nameId })
     {
         public RequirementDecorator Decorator = decorator;
     }
