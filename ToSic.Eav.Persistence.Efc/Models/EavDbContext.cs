@@ -390,7 +390,7 @@ public partial class EavDbContext : DbContext
             entity.HasOne(d => d.Attribute)
                 .WithMany(p => p.ToSicEavEntityRelationships)
                 .HasForeignKey(d => d.AttributeId)
-                .OnDelete(DeleteBehavior.Restrict)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes");
 
             entity.HasOne(d => d.ChildEntity)
