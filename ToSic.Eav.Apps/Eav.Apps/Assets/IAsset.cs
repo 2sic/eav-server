@@ -42,13 +42,17 @@ public interface IAsset
     /// The _relative_ physical path of the item in the file system of the environment.
     /// This is usually relative to the site root.
     /// </summary>
-    /// <returns>The full path of this item</returns>
+    /// <returns>
+    /// The path of this item
+    /// </returns>
     string Path { get; }
 
     /// <summary>
     /// The _full_ physical path to folder or file to access them on the local server.
     /// </summary>
-    /// <returns>The full physical path to this asset</returns>
+    /// <returns>
+    /// The full physical path to this asset, such as `c:\inetpub\wwwroot\www.2sic.com\Portals\0\2sxc\content\assets\docs\terms\file.pdf`
+    /// </returns>
     string PhysicalPath { get; }
 
 }
