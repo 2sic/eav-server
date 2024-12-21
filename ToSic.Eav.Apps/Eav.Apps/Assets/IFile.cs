@@ -25,7 +25,7 @@ public interface IFile: IAsset
     /// </summary>
     /// <returns>
     /// The folder name.
-    /// `/assets/docs/terms/` for `C:\Inetpub\wwwroot\www.2sic.com\Portals\0\2sxc\content\assets\docs\terms\file.pdf`
+    /// `assets/docs/terms/` for `C:\Inetpub\wwwroot\www.2sic.com\Portals\0\2sxc\content\assets\docs\terms\file.pdf`
     /// </returns>
     string Folder { get; }
 
