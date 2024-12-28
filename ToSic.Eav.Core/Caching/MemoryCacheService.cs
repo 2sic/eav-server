@@ -44,7 +44,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="func"></param>
-    public void SetNew(string key, object value, Func<IPolicyMaker, IPolicyMaker> func = default)
+    public void Set(string key, object value, Func<IPolicyMaker, IPolicyMaker> func = default)
     {
         var l = Log.Fn($"key: '{key}'");
         try
@@ -67,7 +67,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="policyMaker"></param>
-    public void SetNew(string key, object value, IPolicyMaker policyMaker)
+    public void Set(string key, object value, IPolicyMaker policyMaker)
     {
         var l = Log.Fn($"key: '{key}'");
         try
@@ -110,7 +110,8 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         return Cache.CreateCacheEntryChangeMonitor(prefixed);
     }
 
-    private static string ExpandDependencyId(ICanBeCacheDependency obj) => $"{(obj.CacheIsNotifyOnly ? NotifyCachePrefix : "")}{obj.CacheDependencyId}";
+    private static string ExpandDependencyId(ICanBeCacheDependency obj) =>
+        $"{(obj.CacheIsNotifyOnly ? NotifyCachePrefix : "")}{obj.CacheDependencyId}";
 
     #endregion
 

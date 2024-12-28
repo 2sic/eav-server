@@ -15,7 +15,7 @@ partial class DataSourceCatalog
         var (data, slidingExpiration, folderPaths, cacheKeys)
             = appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
 
-        memoryCacheService.SetNew(AppCacheKey(appId), data, p => p
+        memoryCacheService.Set(AppCacheKey(appId), data, p => p
             .SetSlidingExpiration(slidingExpiration)
             .WatchFolders(folderPaths?.ToDictionary(p => p, p => true))
             .WatchCacheKeys(cacheKeys));

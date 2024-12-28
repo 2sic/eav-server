@@ -109,7 +109,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     {
         var l = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
         var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
-        memoryCacheService.SetNew(key, value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh), p => slidingExpiration
+        memoryCacheService.Set(key, value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh), p => slidingExpiration
             ? p.SetSlidingExpiration(duration)
             : p.SetAbsoluteExpiration(DateTime.Now.AddSeconds(duration)));
         l.Done();

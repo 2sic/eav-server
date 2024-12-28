@@ -57,9 +57,9 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
 
         appJson = GetAppJsonInternal(pathToAppJson);
         if (appJson != null)
-            memoryCacheService.SetNew(cacheKey, appJson, p => p.WatchFiles([pathToAppJson])); // cache appJson
+            memoryCacheService.Set(cacheKey, appJson, p => p.WatchFiles([pathToAppJson])); // cache appJson
         else
-            memoryCacheService.SetNew(cacheKey, new AppJson(), p => p.WatchFolders(GetExistingParent(pathToAppJson).ToDictionary(p => p, _ => true))); // cache null
+            memoryCacheService.Set(cacheKey, new AppJson(), p => p.WatchFolders(GetExistingParent(pathToAppJson).ToDictionary(p => p, _ => true))); // cache null
 
         return l.ReturnAsOk(appJson);
     }
