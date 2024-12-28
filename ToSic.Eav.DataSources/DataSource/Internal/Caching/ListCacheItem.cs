@@ -24,10 +24,6 @@ public class ListCacheItem: ICacheExpiring
 
     public bool RefreshOnSourceRefresh { get; }
 
-    // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
-    // don't think it's in use any where
-    //public CacheItemPolicy Policy { get; }
-
     /// <summary>
     /// Initialize the object - ready to cache
     /// </summary>
@@ -36,13 +32,9 @@ public class ListCacheItem: ICacheExpiring
     /// <param name="refreshOnSourceRefresh"></param>
     ///// <param name="cacheKey">The cache key as it is stored in the cache</param>
     public ListCacheItem(IImmutableList<IEntity> list, long cacheTimestamp, bool refreshOnSourceRefresh)
-    // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
-    //public ListCacheItem(IImmutableList<IEntity> list, long cacheTimestamp, bool refreshOnSourceRefresh, CacheItemPolicy policy)
     {
         List = list;
         CacheTimestamp = cacheTimestamp;
         RefreshOnSourceRefresh = refreshOnSourceRefresh;
-        // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
-        //Policy = policy;
     }
 }

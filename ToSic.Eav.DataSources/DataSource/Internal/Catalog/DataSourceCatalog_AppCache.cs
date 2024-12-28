@@ -4,9 +4,6 @@ namespace ToSic.Eav.DataSource.Internal.Catalog;
 
 partial class DataSourceCatalog
 {
-    /// <summary>
-    /// A cache of all DataSource Types - initialized upon first access ever, then static cache.
-    /// </summary>
 
     private static string AppCacheKey(int appId) => $"DataSourceCatalog:AppDataSource:{appId}";
 
@@ -22,11 +19,6 @@ partial class DataSourceCatalog
             .SetSlidingExpiration(slidingExpiration)
             .WatchFolders(folderPaths?.ToDictionary(p => p, p => true))
             .WatchCacheKeys(cacheKeys));
-        // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
-        //memoryCacheService.Set(AppCacheKey(appId), data, 
-        //    slidingExpiration: slidingExpiration,
-        //    folderPaths: folderPaths?.ToDictionary(p => p, p => true),
-        //    cacheKeys: cacheKeys);
 
         return data;
     }

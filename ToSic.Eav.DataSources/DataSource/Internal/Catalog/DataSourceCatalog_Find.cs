@@ -29,7 +29,7 @@ partial class DataSourceCatalog
         var typeInfo = FindInCache(name, appId);
         if (typeInfo?.NameId != null) return l.Return(typeInfo, $"found in cache {typeInfo.NameId}");
 
-        // Old mechanism which checks real types etc but probably is never needed any more
+        // Old mechanism which checks real types etc. but probably is never needed any more
         var typeFromCatalog = FindDataSourceInfo(name, appId);
         return l.Return(typeFromCatalog, typeFromCatalog?.NameId);
     }

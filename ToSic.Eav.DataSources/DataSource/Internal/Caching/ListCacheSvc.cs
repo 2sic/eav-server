@@ -109,23 +109,9 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     {
         var l = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
         var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
-        //var expiration = new TimeSpan(0, 0, duration);
-        //var absoluteExpiration = DateTime.Now.AddSeconds(duration);
-        // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
-        //var policy = slidingExpiration
-        //    ? new CacheItemPolicy { SlidingExpiration = expiration }
-        //    : new CacheItemPolicy { AbsoluteExpiration = absoluteExpiration };
-
-        // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
         memoryCacheService.SetNew(key, value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh), p => slidingExpiration
             ? p.SetSlidingExpiration(duration)
             : p.SetAbsoluteExpiration(DateTime.Now.AddSeconds(duration)));
-        // Ported 2024-10-22 - remove old code ca. 2024-12 #MemoryCacheApiCleanUp
-        // TODO: THIS LOOKS FISHY! Why is the policy added in a way 2x?
-        //memoryCacheService.Set(key, 
-        //    value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh, policy),
-        //    absoluteExpiration: slidingExpiration ? null : absoluteExpiration, 
-        //    slidingExpiration: slidingExpiration ? expiration : null);
         l.Done();
     }
         
