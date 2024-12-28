@@ -24,7 +24,7 @@ public abstract record FunFactActionsBase<T> : RecordHelperBase
     [JsonIgnore]        // Prevent System.Text.Json from serializing this property
     [IgnoreDataMember]  // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
     [PrivateApi]
-    public List<(string Info, Action<T> Action)> Actions { get => field ??= []; init; }
+    public List<(string Info, Action<T> Action)> Actions { get => field ??= []; init => field = value; }
 
     protected List<(string, Action<T>)> CloneActions((string, Action<T>) addition)
         => [..Actions, addition];
