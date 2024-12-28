@@ -36,7 +36,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 
     public object Remove(string key) => Cache.Remove(key);
 
-    public IPolicyMaker NewPolicyMaker() => new CacheItemPolicyMaker(Log);
+    public IPolicyMaker NewPolicyMaker() => new CacheItemPolicyMaker { Log = new Log(CacheItemPolicyMaker.LogName, Log) };
 
     /// <summary>
     /// WIP experimental - possible replacement with liquid API, to better see which methods are exactly being called.
@@ -49,7 +49,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         var l = Log.Fn($"key: '{key}'");
         try
         {
-            var specs = new CacheItemPolicyMaker(Log);
+            var specs = NewPolicyMaker();
             var parsedSpecs = func?.Invoke(specs) ?? specs;
             var policy = parsedSpecs.CreateResult();
             Cache.Set(key, value, policy);
