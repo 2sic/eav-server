@@ -62,7 +62,7 @@ public partial record EntityLight : IEntityLight
 
 
     /// <inheritdoc />
-    public ITarget MetadataFor { get => field ??= new Target(); init; }
+    public required ITarget MetadataFor { get => field ??= new Target(); init; }
 
     /// <inheritdoc />
     public required string Owner { get; init; }
