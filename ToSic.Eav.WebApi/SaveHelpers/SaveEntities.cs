@@ -11,13 +11,6 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
     public void UpdateGuidAndPublishedAndSaveMany(IAppWorkCtx appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
     {
         var l = Log.Fn();
-        //foreach (var bundle in itemsToImport)
-        //{
-        //    var curEntity = (Entity)bundle.Entity;
-        //    curEntity.SetGuid(bundle.Header.Guid);
-        //    if (enforceDraft)
-        //        EnforceDraft(curEntity);
-        //}
 
         var entitiesToImport = itemsToImport
             // TODO: NOTE: here a clone should work
@@ -26,15 +19,9 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
                 isPublished: enforceDraft ? (bool?)false : null,
                 placeDraftInBranch: enforceDraft ? (bool?)true : null) as IEntity
             )
-            //.Select(bundle => _entityBuilder.ResetIdentifiers(bundle.Entity,
-            //    newGuid: bundle.Header.Guid,
-            //    isPublished: enforceDraft ? (bool?)false : null,
-            //    placeDraftInBranch: enforceDraft ? (bool?)true : null)
-            //)
             .ToList();
 
         l.A($"will save {entitiesToImport.Count} items");
-        // #ExtractEntitySave - verified
         var saver = workEntSave.New(appCtx.AppReader);
         saver.Save(entitiesToImport);
         l.Done();

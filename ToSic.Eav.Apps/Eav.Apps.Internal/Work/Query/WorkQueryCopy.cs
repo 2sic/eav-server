@@ -73,7 +73,6 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         var saveList = newParts.Select(p => p.Value).Concat(newMetadata).ToList();
         saveList.Add(newQuery);
 
-        // #ExtractEntitySave - verified
         _entSave.New(AppWorkCtx.AppReader).Save(saveList);
         l.Done();
     }

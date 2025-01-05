@@ -91,7 +91,8 @@ public partial class SimpleDataEditService(
     public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null) 
     {
         var l = Log.Fn<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
-        if (multiValues == null) return l.Return(null, "attributes were null");
+        if (multiValues == null)
+            return l.Return(null, "attributes were null");
 
         // ensure the type really exists
         var type = _ctxWithDb.AppReader.GetContentType(contentTypeName);
@@ -100,9 +101,10 @@ public partial class SimpleDataEditService(
 
         l.A($"Type {contentTypeName} found. Will build entities to save...");
 
-        var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
+        var importEntity = multiValues
+            .Select(values => BuildNewEntity(type, values, target, null).Entity)
+            .ToList();
 
-        // #ExtractEntitySave - verified
         var ids = entSave.New(_ctxWithDb.AppReader).Save(importEntity);
 
         return l.Return(ids, "ok");
@@ -171,8 +173,8 @@ public partial class SimpleDataEditService(
         var l = Log.Fn($"update i:{entityId}");
         var original = _ctxWithDb.AppReader.List.FindRepoId(entityId);
         var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
-        // #ExtractEntitySave - verified
-        entUpdate.New(_ctxWithDb.AppReader).UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
+        entUpdate.New(_ctxWithDb.AppReader)
+            .UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
         l.Done();
     }
 

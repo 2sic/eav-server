@@ -129,13 +129,12 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         return e;
     }
 
-    private static EntityPartsBuilder EntityPartsBuilder(IEntity original, int? id, Guid? guid)
+    private static EntityPartsBuilder EntityPartsBuilder(IEntity original, int? newId, Guid? newGuid)
     {
-        var realEntity = original as Entity;
-        var oldRelManager = realEntity?.Relationships as EntityRelationships;
+        var oldRelManager = (original as Entity)?.Relationships as EntityRelationships;
         var entityPartsBuilder = new EntityPartsBuilder(
             ent => EntityRelationships.ForClone(ent, oldRelManager),
-            getMetadataOf: id == default && guid == default
+            getMetadataOf: newId == default && newGuid == default
                 // If identifiers don't change, it will provide the identical metadata
                 ? Build.EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
                 // If they do change, we need to create a derived clone

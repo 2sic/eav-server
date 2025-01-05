@@ -118,10 +118,13 @@ public class DataSourceErrorHelper(DataBuilder builder)
 
         // Don't use the default data builder here, as it needs DI and this object
         // will often be created late when DI is already destroyed
-        var errorEntity = builder.Entity.Create(appId: DataConstants.ErrorAppId, entityId: DataConstants.ErrorEntityId,
+        var errorEntity = builder.Entity.Create(
+            appId: DataConstants.ErrorAppId,
+            entityId: DataConstants.ErrorEntityId,
             contentType: builder.ContentType.Transient(DataConstants.ErrorTypeName),
             attributes: builder.Attribute.Create(values),
-            titleField: DataConstants.ErrorFieldTitle);
+            titleField: DataConstants.ErrorFieldTitle
+        );
         return errorEntity;
     }
 

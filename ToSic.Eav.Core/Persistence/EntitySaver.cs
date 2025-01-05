@@ -113,16 +113,17 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         if (original != null)
             foreach (var newAttrib in newAttribs)
                 mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages &&
-                                               mergedAttribs.ContainsKey(newAttrib.Key)
-                    ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
+                                               mergedAttribs.TryGetValue(newAttrib.Key, out var oldAttribute)
+                    ? MergeAttribute(oldAttribute, newAttrib.Value, saveOptions)
                     : newAttrib.Value;
 
         var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs, logDetails);
-        var clone = dataBuilder.Entity.CreateFrom(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
+        var clone = dataBuilder.Entity.CreateFrom(idProvidingEntity,
+            id: newId,
+            guid: preCleaned.NewGuid,
             type: newType,
             attributes: dataBuilder.Attribute.Create(preCleaned.Attributes),
             isPublished: preCleaned.NewIsPublished);
-        //var result = CorrectPublishedAndGuidImports(clone, clone.Attributes, logDetails); // as Entity;
         return l.ReturnAsOk(clone);
     }
 
