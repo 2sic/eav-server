@@ -60,9 +60,11 @@ public class WorkEntityUpdate(
         if (partialEntity == null)
             return l.ReturnFalse("nothing to import");
 
-        var saveOptions = environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
-        saveOptions.PreserveUntouchedAttributes = true;
-        saveOptions.PreserveUnknownLanguages = true;
+        var saveOptions = environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId) with
+        {
+            PreserveUntouchedAttributes = true,
+            PreserveUnknownLanguages = true,
+        };
 
         var saveEnt = entitySaverLazy.Value.CreateMergedForSaving(orig, partialEntity, saveOptions);
 

@@ -29,7 +29,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     {
         var l = (logDetails ? Log : null).Fn<IEntity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
         if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
-        l.A(l.Try(() => "opts " + saveOptions.LogInfo));
+        l.A(l.Try(() => "opts " + saveOptions));
 
         #region Step 0: initial error checks / content-type
 

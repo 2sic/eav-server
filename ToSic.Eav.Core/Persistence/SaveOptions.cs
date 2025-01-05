@@ -4,43 +4,36 @@ namespace ToSic.Eav.Persistence;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class SaveOptions
+public record SaveOptions(string PrimaryLanguage, List<DimensionDefinition> Languages)
 {
+    public bool PreserveUntouchedAttributes { get; init; } = false;
+    public bool PreserveUnknownAttributes { get; init; }= false;
 
-    public SaveOptions(string primaryLanguage, List<DimensionDefinition> languages)
-    {
-        PrimaryLanguage = primaryLanguage;
-        Languages = languages;
-    }
-
-    public bool PreserveUntouchedAttributes = false;
-    public bool PreserveUnknownAttributes = false;
-
-    public bool SkipExistingAttributes = false;
+    public bool SkipExistingAttributes { get; init; } = false;
 
     public string PrimaryLanguage
     {
-        get => _priLang;
-        set => _priLang = value.ToLowerInvariant();
-    }
+        get;
+        set => field = value.ToLowerInvariant();
+    } = PrimaryLanguage;
 
-    private string _priLang;
-    public List<DimensionDefinition> Languages = null;
-    public bool PreserveExistingLanguages = false;
-    public bool PreserveUnknownLanguages = false;
+    public List<DimensionDefinition> Languages { get; set; } = Languages;
+    public bool PreserveExistingLanguages { get; init; } = false;
+    public bool PreserveUnknownLanguages { get; init; } = false;
 
-    public bool DraftShouldBranch = true;
+    public bool DraftShouldBranch { get; init; } = true;
 
     /// <summary>
     /// 
     /// </summary>
-    public bool DiscardAttributesNotInType = false;
+    public bool DiscardAttributesNotInType { get; init; } = false;
 
-    public string LogInfo => $"save opts PUntouchedAt:{PreserveUntouchedAttributes}, " +
-                             $"PUnknownAt:{PreserveUnknownAttributes}, " +
-                             $"SkipExistingAt:{SkipExistingAttributes}" +
-                             $"ExistLangs:{PreserveExistingLanguages}, " +
-                             $"UnknownLangs:{PreserveUnknownLanguages}, " +
-                             $"draft-branch:{DraftShouldBranch}, Lang1:{_priLang}, langs⋮{Languages?.Count}, " +
-                             $"DiscardAttrsNotInType:{DiscardAttributesNotInType}";
+    public override string ToString() =>
+        $"save opts PUntouchedAt:{PreserveUntouchedAttributes}, " +
+        $"PUnknownAt:{PreserveUnknownAttributes}, " +
+        $"SkipExistingAt:{SkipExistingAttributes}" +
+        $"ExistLangs:{PreserveExistingLanguages}, " +
+        $"UnknownLangs:{PreserveUnknownLanguages}, " +
+        $"draft-branch:{DraftShouldBranch}, Lang1:{PrimaryLanguage}, langs⋮{Languages?.Count}, " +
+        $"DiscardAttrsNotInType:{DiscardAttributesNotInType}";
 }
