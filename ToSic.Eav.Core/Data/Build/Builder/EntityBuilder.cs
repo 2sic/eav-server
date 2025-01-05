@@ -107,7 +107,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         var asRealEntity = original as Entity;
         var e = Create(
             appId: appId ?? original.AppId,
-            attributes: asRealEntity?.Attributes, 
+            attributes: attributes ?? asRealEntity?.Attributes, 
             entityId: id ?? original.EntityId,
             repositoryId: repositoryId ?? original.RepositoryId,
             guid: guid ?? original.EntityGuid,
