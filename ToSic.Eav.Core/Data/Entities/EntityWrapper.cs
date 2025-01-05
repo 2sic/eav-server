@@ -76,7 +76,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public IAttribute this[string attributeName] => Entity[attributeName];
 
     /// <inheritdoc />
-    public IRelationshipManager Relationships => Entity.Relationships;
+    public IEntityRelationships Relationships => Entity.Relationships;
 
     /// <inheritdoc />
     public bool IsPublished => Entity.IsPublished;

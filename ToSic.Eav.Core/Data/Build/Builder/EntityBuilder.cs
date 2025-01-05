@@ -33,10 +33,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         EntitySavePublishing publishing = default
     )
     {
-        // Prepare the Parts-builder in case it wasn't provided
-        partsBuilder ??= new();
-
-        return new(partsBuilder: partsBuilder)
+        return new()
         {
             AppId = appId,
             EntityId = entityId,
@@ -49,6 +46,8 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             Modified = modified ?? default,
             Owner = owner,
             MetadataFor = metadataFor,
+            // Prepare the Parts-builder in case it wasn't provided
+            PartsBuilder = partsBuilder ?? new(),
 
             // Light Attributes would only be for Entity-Light, but ATM required by design
             AttributesLight = null,
@@ -102,24 +101,13 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         int? publishedId = default
     )
     {
+        // Fresh parts builder for relationships & metadata
+        var entityPartsBuilder = EntityPartsBuilder(original, id, guid);
+
         var asRealEntity = original as Entity;
-
-        //var relManager = asRealEntity?.Relationships as RelationshipManager;
-        var entityPartsBuilder = new EntityPartsBuilder(
-            ent => RelationshipManager.ForClone(ent, asRealEntity?.Relationships as RelationshipManager),
-            //ent => relManager != null ? relManager with { Entity = ent } : new(ent, null),
-            getMetadataOf: id == default && guid == default
-                // If identifiers don't change, it will provide the identical metadata
-                ? EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
-                // If they do change, we need to create a derived clone
-                : EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
-        );
-
-        attributes ??= asRealEntity?.Attributes;
-
         var e = Create(
             appId: appId ?? original.AppId,
-            attributes: attributes, 
+            attributes: asRealEntity?.Attributes, 
             entityId: id ?? original.EntityId,
             repositoryId: repositoryId ?? original.RepositoryId,
             guid: guid ?? original.EntityGuid,
@@ -141,4 +129,18 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         return e;
     }
 
+    private static EntityPartsBuilder EntityPartsBuilder(IEntity original, int? id, Guid? guid)
+    {
+        var realEntity = original as Entity;
+        var oldRelManager = realEntity?.Relationships as EntityRelationships;
+        var entityPartsBuilder = new EntityPartsBuilder(
+            ent => EntityRelationships.ForClone(ent, oldRelManager),
+            getMetadataOf: id == default && guid == default
+                // If identifiers don't change, it will provide the identical metadata
+                ? Build.EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
+                // If they do change, we need to create a derived clone
+                : Build.EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
+        );
+        return entityPartsBuilder;
+    }
 }

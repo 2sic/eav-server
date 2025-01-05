@@ -68,8 +68,8 @@ public partial interface IEntityLight: IAppIdentityLight
     /// <summary>
     /// Relationship-helper object, important to navigate to children and parents
     /// </summary>
-    /// <returns>The <see cref="IRelationshipManager"/> in charge of relationships for this Entity.</returns>
-    IRelationshipManager Relationships { get; }
+    /// <returns>The <see cref="IEntityRelationships"/> in charge of relationships for this Entity.</returns>
+    IEntityRelationships Relationships { get; }
 
     /// <summary>
     /// Best way to get the current entities title.

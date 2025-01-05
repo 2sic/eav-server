@@ -16,19 +16,6 @@ namespace ToSic.Eav.Data;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial record EntityLight : IEntityLight
 {
-    #region constructors
-
-    /// <summary>
-    /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
-    /// </summary>
-    [PrivateApi]
-    internal EntityLight(EntityPartsBuilder partsBuilder)
-    {
-        Relationships = partsBuilder.RelationshipManager(this);
-    }
-
-    #endregion
-
     #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
 
     /// <inheritdoc />
@@ -67,9 +54,12 @@ public partial record EntityLight : IEntityLight
     /// <inheritdoc />
     public required DateTime Modified { get; init; }
 
+    public required EntityPartsBuilder PartsBuilder { get; init; }
+
     /// <inheritdoc />
     [JsonIgnore]
-    public IRelationshipManager Relationships { get; }
+    public IEntityRelationships Relationships => field ??= PartsBuilder.GetRelationshipDelegate(this);
+
 
     /// <inheritdoc />
     public ITarget MetadataFor { get => field ??= new Target(); init; }

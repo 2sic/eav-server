@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// A basic unit / item of data. Has many <see cref="IAttribute{T}"/>s which then contains <see cref="IValue{T}"/>s which are multi-language. 
@@ -9,12 +7,6 @@ namespace ToSic.Eav.Data;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial record Entity: EntityLight, IEntity
 {
-    [PrivateApi]
-    internal Entity(EntityPartsBuilder partsBuilder) : base(partsBuilder)
-    {
-        _getMetadataOf = partsBuilder.GetMetadataOfDelegate;
-    }
-
     #region CanBeEntity
 
     IEntity ICanBeEntity.Entity => this;
