@@ -133,7 +133,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
     /// <param name="sourceFolder"></param>
     /// <param name="appId"></param>
     /// <param name="useShared"></param>
-    /// <returns>List&lt;string&gt;</returns>
+    /// <returns>List&lt;string&gt; - never null</returns>
     public List<string> ExcludeSearchPatterns(string sourceFolder, int appId, bool useShared = false)
     {
         var l = Log.Fn<List<string>>($"{nameof(sourceFolder)}:'{sourceFolder}', {nameof(appId)}:{appId}, {nameof(useShared)}:{useShared}");
@@ -149,7 +149,7 @@ public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, I
                 .Where(e => !string.IsNullOrEmpty(e) && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
                 .Select(e => e.StartsWith(@"\") ? Path.Combine(sourceFolder, e.Substring(1)) : e) // handle case with starting slash
                 .Select(e => e.ToLowerInvariant())
-                .ToList() ?? [], "ok");
+                .ToList(), "ok");
         }
         catch (Exception e)
         {

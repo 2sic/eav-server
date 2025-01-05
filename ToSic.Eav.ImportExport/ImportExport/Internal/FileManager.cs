@@ -3,16 +3,17 @@ using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.DI;
-using ToSic.Lib.Helpers;
-using static System.IO.Path;
 
 namespace ToSic.Eav.ImportExport.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(EavLogs.Eav + ".FileMn")
 {
+    /// <summary>
+    /// Separator for file search patterns.
+    /// NOTE: not in use as of 2025-01, so it could still be changed if necessary
+    /// </summary>
     private const char Separator = ';';
-
 
     public FileManager SetFolder(int appId, string sourceFolder, string subFolder = null)
     {
@@ -25,7 +26,7 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
                 ? string.Empty
                 : string.IsNullOrEmpty(subFolder)
                     ? sourceFolder
-                    : Combine(sourceFolder, subFolder);
+                    : Path.Combine(sourceFolder, subFolder);
         return this;
     }
 
@@ -47,16 +48,16 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         foreach (var file in filteredFiles)
         {
             var relativeFilePath = file.Replace(_root, "").TrimPrefixSlash();
-            var destinationFilePath = $"{destinationFolder}{DirectorySeparatorChar}{relativeFilePath}";
+            var destinationFilePath = $"{destinationFolder}{Path.DirectorySeparatorChar}{relativeFilePath}";
             l.A($"relFilePath:{relativeFilePath},destFilePath:{destinationFilePath}");
 
-            Directory.CreateDirectory(GetDirectoryName(destinationFilePath) ?? string.Empty);
+            Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath) ?? string.Empty);
 
             if (!File.Exists(destinationFilePath))
                 File.Copy(file, destinationFilePath, overwriteFiles);
             else
             {
-                var alreadyExistsMsg = "File '" + GetFileName(destinationFilePath) +
+                var alreadyExistsMsg = "File '" + Path.GetFileName(destinationFilePath) +
                                        "' not copied because it already exists";
                 Log.A($"warning: {alreadyExistsMsg}");
                 messages.Add(new(alreadyExistsMsg, Message.MessageTypes.Warning));
@@ -65,15 +66,7 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
 
         l.Done();
     }
-
-    /// <summary>
-    /// Get exclude search patterns from app.json
-    /// </summary>
-    /// <returns></returns>
-    private List<string> ExcludeSearchPatterns => _excludeSearchPatterns.Get(() => appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId));
-    private readonly GetOnce<List<string>> _excludeSearchPatterns = new();
-
-
+    
     /// <summary>
     /// Gets all files from a folder and subfolder, which fit the import/export filter criteria
     /// </summary>
@@ -84,18 +77,24 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         var hardcodedExcludedFolders = GetHardcodedExcludedFolders();
         l.A($"Hardcoded excluded folders count: {hardcodedExcludedFolders.Count}");
 
-        var usingAppJson = appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId).Any();
+        var specs = new FileSearchSpecs
+        {
+            // Get exclude search patterns from app.json
+            ExcludeSearchPatterns = appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId),
+            FileSearchPatterns = searchPattern.Split(Separator).ToList()
+        };
+
+        var usingAppJson = specs.ExcludeSearchPatterns.Any();
         var files = usingAppJson 
-            ? ExcludeFilesBasedOnExcludeInDotAppJson(_root, searchPattern) // based on app.json
-            : AllFiles(searchPattern); // old way
+            ? ExcludeFilesBasedOnExcludeInDotAppJson(_root, specs) // based on app.json
+            : AllFiles(specs); // old way
         l.A($"Exclude files {(usingAppJson ? $"based on {Constants.AppJson}" : "using old way")}");
 
-        l.A($"Process excluding files based on hardcoded exclusions");
+        l.A("Process excluding files based on hardcoded exclusions");
         var filteredFiles = files
             .Where(file => !IsFileInExcludedFolder(file, hardcodedExcludedFolders))
             .ToList();
 
-        l.A($"Returning filtered files based on exclusion criteria");
         return l.Return(filteredFiles, "Done filtering files based on exclusion criteria");
     }
 
@@ -104,11 +103,11 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         var l = Log.Fn<List<string>>();
         // add folder slashes to ensure the term is part of a folder, not within a file-name
         var exclAnyFolder = Settings.ExcludeFolders
-            .Select(f => $"{DirectorySeparatorChar}{f}{DirectorySeparatorChar}")
+            .Select(f => $"{Path.DirectorySeparatorChar}{f}{Path.DirectorySeparatorChar}")
             .ToList();
 
         var exclRootFolders = Settings.ExcludeRootFolders
-            .Select(f => $"{Combine(_root, f)}{DirectorySeparatorChar}")
+            .Select(f => $"{Path.Combine(_root, f)}{Path.DirectorySeparatorChar}")
             .ToList();
 
         var result = exclAnyFolder.Union(exclRootFolders).ToList();
@@ -119,28 +118,31 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         => excludedFolders.Any(ex => filePath.ToLowerInvariant().Contains(ex.ToLowerInvariant()));
 
 
+    public IEnumerable<string> GetAllTransferableFolders()
+        => GetAllTransferableFolders(new());
+
     /// <summary>
     /// Gets all folders from a folder and subfolder, which fit the import/export filter criteria
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<string> GetAllTransferableFolders(string searchPattern = "*.*")
+    private IEnumerable<string> GetAllTransferableFolders(FileSearchSpecs specs, string searchPattern = "*.*")
     {
         var l = Log.Fn<IEnumerable<string>>();
         if (appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId).Any()) // exclude files based on app.json from v14.08
-            return l.Return(ExcludeFoldersBasedOnExcludeInDotAppJson(_root, searchPattern).ToList(), $"ok, exclude folders based on {Constants.AppJson}");
+            return l.Return(ExcludeFoldersBasedOnExcludeInDotAppJson(_root, specs).ToList(), $"ok, exclude folders based on {Constants.AppJson}");
 
         // old hardcoded way of excluding files
         l.A($"can't find ExcludeSearchPatterns in {Constants.AppJson}, exclude folders on old way");
         // add folder slashes to ensure the term is part of a folder, not within a file-name
         var exclAnyFolder = Settings.ExcludeFolders
-            .Select(f => $"{DirectorySeparatorChar}{f}{DirectorySeparatorChar}")
+            .Select(f => $"{Path.DirectorySeparatorChar}{f}{Path.DirectorySeparatorChar}")
             .ToList();
         var exclRootFolders = Settings.ExcludeRootFolders
-            .Select(f => $"{Combine(_root, f)}{DirectorySeparatorChar}").ToList();
+            .Select(f => $"{Path.Combine(_root, f)}{Path.DirectorySeparatorChar}").ToList();
         var excFolders = exclAnyFolder.Union(exclRootFolders).ToList();
-        Log.A($"hardcoded, excFolders:{excFolders.Count()}");
+        Log.A($"hardcoded, excFolders:{excFolders.Count}");
 
-        return l.Return(AllFolders(searchPattern)
+        return l.Return(AllFolders(specs)
             .Where(f => !excFolders.Any(ex => f.ToLowerInvariant().Contains(ex.ToLowerInvariant())))
             .ToList(), "ok, exclude folders on old way");
     }
@@ -150,29 +152,34 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
     /// Get all files from a folder, not caring if it will be exported or not
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<string> AllFiles(string searchPattern = "*.*") =>
-        Directory.Exists(_root)
-            ? searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateFiles(_root, s, SearchOption.AllDirectories)).ToList()
-            : [];
+    public IEnumerable<string> AllFiles(FileSearchSpecs specs = default) =>
+        !Directory.Exists(_root)
+            ? []
+            : ((specs ?? new())
+                .FileSearchPatterns
+                .SelectMany(s => Directory.EnumerateFiles(_root, s, SearchOption.AllDirectories))
+                .ToList());
 
 
     /// <summary>
     /// Get all folders from a folder, not caring if it will be exported or not
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<string> AllFolders(string searchPattern = "*.*") =>
-        Directory.Exists(_root)
-            ? searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateDirectories(_root, s, SearchOption.AllDirectories)).ToList()
-            : [];
+    private IEnumerable<string> AllFolders(FileSearchSpecs specs) =>
+        !Directory.Exists(_root)
+            ? []
+            : specs.FolderSearchPatterns
+                .SelectMany(s => Directory.EnumerateDirectories(_root, s, SearchOption.AllDirectories))
+                .ToList();
 
 
     /// <summary>
     /// Exclude files based on 2sxc special exclude array in app.json
     /// </summary>
     /// <param name="root"></param>
-    /// <param name="searchPattern"></param>
+    /// <param name="specs"></param>
     /// <returns></returns>
-    private IEnumerable<string> ExcludeFilesBasedOnExcludeInDotAppJson(string root, string searchPattern = "*.*")
+    private IEnumerable<string> ExcludeFilesBasedOnExcludeInDotAppJson(string root, FileSearchSpecs specs)
     {
         var l = Log.Fn<IEnumerable<string>>($"folderPath:{root}");
         // validate folderPath
@@ -180,18 +187,19 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
             return l.Return([], $"warning, can't find root folder path '{root}'");
 
         // validate exclude search patterns
-        if (!ExcludeSearchPatterns.Any())
+        if (!specs.ExcludeSearchPatterns.Any())
         {
-            var allFiles = searchPattern.Split(Separator)
-                .SelectMany(s => Directory.EnumerateFiles(root, s, SearchOption.AllDirectories)).ToList();
+            var allFiles = specs.FileSearchPatterns
+                .SelectMany(s => Directory.EnumerateFiles(root, s, SearchOption.AllDirectories))
+                .ToList();
             return l.Return(allFiles, $"warning, can't find 2sxc exclude in '{Constants.AppJson}'");
         }
 
         // prepare list of files to exclude using simple wildcard patterns
-        l.A($"excludeSearchPatterns:{ExcludeSearchPatterns.Count}");
+        l.A($"excludeSearchPatterns:{specs.ExcludeSearchPatterns.Count}");
 
         // *** EXCLUDE FOLDERS & FILES
-        var files = GetFilesRecursion(root, ExcludeSearchPatterns, null, searchPattern);
+        var files = AddFilesRecursive([], root, specs);
 
         return l.Return(files,"ok");
     }
@@ -200,9 +208,9 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
     /// Exclude folders based on 2sxc special exclude array in app.json
     /// </summary>
     /// <param name="root"></param>
-    /// <param name="searchPattern"></param>
+    /// <param name="specs"></param>
     /// <returns></returns>
-    private IEnumerable<string> ExcludeFoldersBasedOnExcludeInDotAppJson(string root, string searchPattern = "*.*")
+    private IEnumerable<string> ExcludeFoldersBasedOnExcludeInDotAppJson(string root, FileSearchSpecs specs)
     {
         var l = Log.Fn<IEnumerable<string>>($"folderPath:{root}");
         // validate folderPath
@@ -210,65 +218,76 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
             return l.Return([], $"warning, can't find folder path '{_sourceFolder}'");
 
         // validate exclude search patterns
-        if (!ExcludeSearchPatterns.Any())
+        if (!specs.ExcludeSearchPatterns.Any())
         {
-            var allFolders = searchPattern.Split(Separator)
-                .SelectMany(s => Directory.EnumerateDirectories(_root, s, SearchOption.AllDirectories)).ToList();
+            var allFolders = specs.FileSearchPatterns
+                .SelectMany(s => Directory.EnumerateDirectories(_root, s, SearchOption.AllDirectories))
+                .ToList();
             return l.Return(allFolders, $"warning, can't find 2sxc exclude in '{Constants.AppJson}'");
         }
 
         // prepare list of files to exclude using simple wildcard patterns
-        Log.A($"excludeSearchPatterns:{ExcludeSearchPatterns.Count}");
+        Log.A($"excludeSearchPatterns:{specs.ExcludeSearchPatterns.Count}");
 
         // *** EXCLUDE FOLDERS & FILES
-        var folders = GetFoldersRecursion(root, ExcludeSearchPatterns, null, searchPattern);
+        var folders = AddFoldersRecursive([], root, specs);
 
         return l.Return(folders,"ok");
     }
 
-    private List<string> GetFilesRecursion(string folderPath, List<string> excludeSearchPatterns, List<string> allFiles = null, string searchPattern = "*.*")
+    private static List<string> AddFilesRecursive(List<string> allFiles, string folderPath, FileSearchSpecs specs)
     {
-        allFiles ??= ExcludeFiles(folderPath, excludeSearchPatterns, searchPattern).ToList();
-
-        foreach (var folder in ExcludeFolders(folderPath, excludeSearchPatterns).ToList())
+        allFiles ??= GetFiles(folderPath, specs).ToList();
+        var folders = GetFolders(folderPath, specs).ToList();
+        
+        foreach (var folder in folders)
         {
-            allFiles.AddRange(ExcludeFiles(folder, excludeSearchPatterns, searchPattern).ToList());
-            GetFilesRecursion(folder, excludeSearchPatterns, allFiles);
+            allFiles.AddRange(GetFiles(folder, specs).ToList());
+            AddFilesRecursive(allFiles, folder, specs);
         }
 
         return allFiles;
     }
 
-    private List<string> GetFoldersRecursion(string folderPath, List<string> excludeSearchPatterns, List<string> allFolders = null, string searchPattern = "*.*")
+    private static List<string> AddFoldersRecursive(List<string> allFolders, string folderPath, FileSearchSpecs specs)
     {
-        allFolders ??= [];
-
-        foreach (var folder in ExcludeFolders(folderPath, excludeSearchPatterns).ToList())
+        foreach (var folder in GetFolders(folderPath, specs).ToList())
         {
             allFolders.Add(folder);
-            GetFoldersRecursion(folder, excludeSearchPatterns, allFolders);
+            AddFoldersRecursive(allFolders, folder, specs);
         }
 
         return allFolders;
     }
 
-    private static IEnumerable<string> ExcludeFolders(string folderPath, List<string> excludeSearchPatterns, string searchPattern = "*.*")
+    private static IEnumerable<string> GetFolders(string folderPath, FileSearchSpecs specs)
     {
-        var folders = Directory.EnumerateDirectories(folderPath, searchPattern, SearchOption.TopDirectoryOnly);
-        foreach (var excludeSearchPattern in excludeSearchPatterns)
+        var folders = Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly);
+        foreach (var excludeSearchPattern in specs.ExcludeSearchPatterns)
         {
             folders = folders.Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern)).ToList();
         }
         return folders;
     }
 
-    private static IEnumerable<string> ExcludeFiles(string folderPath, List<string> excludeSearchPatterns, string searchPattern = "*.*")
+    private static IEnumerable<string> GetFiles(string folderPath, FileSearchSpecs specs)
     {
-        var files = searchPattern.Split(Separator).SelectMany(s => Directory.EnumerateFiles(folderPath, s, SearchOption.TopDirectoryOnly)).ToList();
-        foreach (var excludeSearchPattern in excludeSearchPatterns)
+        var files = specs.FileSearchPatterns
+            .SelectMany(s => Directory.EnumerateFiles(folderPath, s, SearchOption.TopDirectoryOnly))
+            .ToList();
+        foreach (var excludeSearchPattern in specs.ExcludeSearchPatterns)
         {
             files = files.Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern)).ToList();
         }
         return files;
+    }
+
+    public record FileSearchSpecs
+    {
+        public List<string> ExcludeSearchPatterns { get; init; } = [];
+
+        public List<string> FileSearchPatterns { get; init; } = ["*.*"];
+
+        public List<string> FolderSearchPatterns { get; init; } = ["*.*"];
     }
 }
