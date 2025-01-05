@@ -6,10 +6,7 @@ namespace ToSic.Eav.Persistence;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public record SaveOptions(string PrimaryLanguage, List<DimensionDefinition> Languages)
 {
-    public bool PreserveUntouchedAttributes { get; init; } = false;
-    public bool PreserveUnknownAttributes { get; init; }= false;
-
-    public bool SkipExistingAttributes { get; init; } = false;
+    public List<DimensionDefinition> Languages { get; init; } = Languages;
 
     public string PrimaryLanguage
     {
@@ -17,8 +14,14 @@ public record SaveOptions(string PrimaryLanguage, List<DimensionDefinition> Lang
         set => field = value.ToLowerInvariant();
     } = PrimaryLanguage;
 
-    public List<DimensionDefinition> Languages { get; set; } = Languages;
+    public bool PreserveUntouchedAttributes { get; init; } = false;
+
+    public bool PreserveUnknownAttributes { get; init; }= false;
+
+    public bool SkipExistingAttributes { get; init; } = false;
+
     public bool PreserveExistingLanguages { get; init; } = false;
+
     public bool PreserveUnknownLanguages { get; init; } = false;
 
     public bool DraftShouldBranch { get; init; } = true;

@@ -111,12 +111,15 @@ public partial class SimpleDataEditService(
     }
 
     private (IEntity Entity, EntitySavePublishing Publishing) BuildNewEntity(
-        IContentType type, Dictionary<string, object> values, ITarget targetOrNull, bool? existingIsPublished) 
+        IContentType type,
+        Dictionary<string, object> values,
+        ITarget targetOrNull,
+        bool? existingIsPublished) 
     {
         var l = Log.Fn<(IEntity Entity, EntitySavePublishing Publishing)>
             ($"{type.Name}, {values?.Count}, target: {targetOrNull != null}; {existingIsPublished}");
         // We're going to make changes to the dictionary, so we MUST copy it first, so we don't affect upstream code
-        // also ensure it's case insensitive...
+        // also ensure its case-insensitive...
         values = values.ToInvariantCopy();
 
         if (!values.ContainsKey(Attributes.EntityFieldGuid))
@@ -146,12 +149,17 @@ public partial class SimpleDataEditService(
         var preparedIAttributes = builder.Attribute.Create(preparedValues);
         var attributes = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode);
 
-        var newEntity = builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
+        var newEntity = builder.Entity.Create(
+            appId: _appId,
+            guid: eGuid,
+            contentType: type,
             attributes: builder.Attribute.Create(attributes),
             owner: owner,
             metadataFor: targetOrNull,
-            publishing: publishing);
-        if (targetOrNull != null) l.A("FYI: Set metadata target which was provided.");
+            publishing: publishing
+        );
+        if (targetOrNull != null)
+            l.A("FYI: Set metadata target which was provided.");
 
         return l.Return((newEntity, publishing));
     }

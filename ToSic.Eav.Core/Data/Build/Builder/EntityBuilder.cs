@@ -119,7 +119,11 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             version: version ?? original.Version,
             metadataFor: target ?? new Target(original.MetadataFor),
 
-            publishing: new(isPublished ?? original.IsPublished, placeDraftInBranch ?? asRealEntity?.PlaceDraftInBranch ?? default),
+            publishing: new()
+            {
+                ShouldPublish = isPublished ?? original.IsPublished,
+                ShouldBranchDrafts = placeDraftInBranch ?? asRealEntity?.PlaceDraftInBranch ?? default
+            },
 
             publishedId: publishedId ?? asRealEntity?.PublishedEntityId ?? default,
                 

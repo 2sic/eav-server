@@ -28,7 +28,7 @@ public class WorkEntityUpdate(
     /// <param name="id"></param>
     /// <param name="partialEntity"></param>
     /// <param name="publishing">specify that it should be a draft change</param>
-    public void UpdateParts(int id, IEntity partialEntity, EntitySavePublishing publishing = null) =>
+    public void UpdateParts(int id, IEntity partialEntity, EntitySavePublishing publishing) =>
         Log.Do($"id:{id}", () => UpdatePartFromEntity(AppWorkCtx.AppReader.List.FindRepoId(id), partialEntity, publishing));
 
 

@@ -22,16 +22,16 @@ partial class SimpleDataEditService
             case string emptyString when string.IsNullOrEmpty(emptyString):
             case string nullWritten when nullWritten.EqualsInsensitive(PublishModeNull):
                 var published = existingIsPublished != false && writePublishAllowed;
-                return l.ReturnAndLog(new(published, shouldBranchDrafts), "null/empty");
+                return l.ReturnAndLog(new() { ShouldPublish = published, ShouldBranchDrafts = shouldBranchDrafts}, "null/empty");
 
             // Case "draft"
             case string draftString when draftString.EqualsInsensitive(PublishModeDraft):
-                return l.ReturnAndLog(new(false, existingIsPublished ?? false), "draft");
+                return l.ReturnAndLog(new() { ShouldPublish = false, ShouldBranchDrafts = existingIsPublished ?? false }, "draft");
 
             // case boolean or truthy string
             default:
                 var isPublished = publishedState.ConvertOrDefault<bool>(numeric: false, truthy: true);
-                return l.ReturnAndLog(new(isPublished && writePublishAllowed, shouldBranchDrafts), "default");
+                return l.ReturnAndLog(new() { ShouldPublish = isPublished && writePublishAllowed, ShouldBranchDrafts = shouldBranchDrafts}, "default");
         }
     }
     
