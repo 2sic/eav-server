@@ -316,9 +316,22 @@ public class DbDataController(
     /// <returns></returns>
     public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
     {
+        var pairs = entities
+            .Select(IEntityPair<SaveOptions> (e) => new EntityPair<SaveOptions>(e, saveOptions))
+            .ToList();
+        return Save(pairs);
+    }
+
+    /// <summary>
+    /// Save a list of entities together in a transaction.
+    /// </summary>
+    /// <param name="entityOptionPairs"></param>
+    /// <returns></returns>
+    public List<int> Save(List<IEntityPair<SaveOptions>> entityOptionPairs)
+    {
         var callLog = Log.Fn<List<int>>(timer: true);
         logStore.Add("save-data", Log);
-        return callLog.ReturnAsOk(Entities.SaveEntity(entities, saveOptions));
+        return callLog.ReturnAsOk(Entities.SaveEntity(entityOptionPairs));
     }
 
     public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)

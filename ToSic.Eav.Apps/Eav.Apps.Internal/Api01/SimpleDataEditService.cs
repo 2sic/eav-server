@@ -5,6 +5,7 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Internal;
 using static System.StringComparer;
@@ -106,7 +107,11 @@ public partial class SimpleDataEditService(
             .ToList();
 
         var entSaver = entSave.New(_ctxWithDb.AppReader);
-        var ids = entSaver.Save(importEntity, entSaver.SaveOptions());
+        var saveOptions = entSaver.SaveOptions();
+        var saveList = importEntity
+            .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
+            .ToList();
+        var ids = entSaver.Save(saveList);
 
         return l.Return(ids, "ok");
     }

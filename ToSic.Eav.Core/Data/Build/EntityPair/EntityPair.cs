@@ -14,16 +14,16 @@ namespace ToSic.Eav.Data.Build;
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EntityPair<TPartner>(IEntity entity, TPartner partner) : IEntityPair<TPartner>
+public record EntityPair<TPartner>(IEntity Entity, TPartner Partner) : IEntityPair<TPartner>
 {
     /// <summary>
     /// The partner object.
     /// For example an <see cref="IRawEntity"/> which was used to create this entity.
     /// </summary>
-    public TPartner Partner { get; } = partner;
+    public TPartner Partner { get; init; } = Partner;
 
     /// <summary>
     /// The entity.
     /// </summary>
-    public IEntity Entity { get; } = entity;
+    public IEntity Entity { get; init; } = Entity;
 }

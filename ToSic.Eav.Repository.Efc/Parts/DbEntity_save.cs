@@ -8,8 +8,10 @@ partial class DbEntity
     private List<DimensionDefinition> _zoneLangs;
 
 
-    private int SaveEntity(IEntity newEnt, SaveOptions so, bool logDetails)
+    private int SaveEntity(IEntityPair<SaveOptions> entityOptionPair, bool logDetails)
     {
+        var newEnt = entityOptionPair.Entity;
+        var so = entityOptionPair.Partner;
         var l = Log.Fn<int>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}");
 
         #region Step 1: Do some initial error checking and preparations

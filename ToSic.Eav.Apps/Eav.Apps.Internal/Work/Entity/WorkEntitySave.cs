@@ -30,21 +30,24 @@ public class WorkEntitySave(
         foreach (var e in newEntities.Where(e => appStateList.One(e.EntityGuid) != null))
             throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
-        newEntities = newEntities
+        var saveOptions = SaveOptions();
+        var savePairs = newEntities
             .Select(e => Builder.Entity.CreateFrom(e, id: 0, repositoryId: 0))
+            .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
             .ToList();
-        Save(newEntities, SaveOptions());
+
+        Save(savePairs);
     }
 
     public SaveOptions SaveOptions() => environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
 
     public int Save(IEntity entity, SaveOptions saveOptions)
-        => Save([entity], saveOptions).FirstOrDefault();
+        => Save([new EntityPair<SaveOptions>(entity, saveOptions)]).FirstOrDefault();
 
 
-    public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
+    public List<int> Save(List<EntityPair<SaveOptions>> entities)
     {
-        var l = Log.Fn<List<int>>($"save count:{entities.Count}, with Options:{saveOptions}");
+        var l = Log.Fn<List<int>>($"save count:{entities.Count}");
 
         // Run the change in a lock/transaction
         // This is to avoid parallel creation of new entities
@@ -61,37 +64,40 @@ public class WorkEntitySave(
         {
             // Try to reset the content-type if not specified
             entities = entities
-                .Select(entity =>
+                .Select(pair =>
                 {
                     // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
-                    if (entity is not Entity e2 || e2.Type.IsDynamic || e2.Type.Attributes != null)
-                        return entity;
+                    if (pair.Entity is not Entity e2 || e2.Type.IsDynamic || e2.Type.Attributes != null)
+                        return pair;
 
                     // Check if the attached type exists, if not, leave, otherwise ensure the type is attached
-                    var newType = appReader.GetContentType(entity.Type.Name);
+                    var newType = appReader.GetContentType(e2.Type.Name);
                     return newType == null
-                        ? entity
-                        : Builder.Entity.CreateFrom(entity, type: newType);
+                        ? pair
+                        : pair with { Entity = Builder.Entity.CreateFrom(pair.Entity, type: newType) };
                 })
                 .ToList();
 
             // Clear Ephemeral attributes which shouldn't be saved (new in v12)
             entities = entities
-                .Select(entity =>
+                .Select(pair =>
                 {
-                    var attributes = AttributesWithEmptyEphemerals(entity);
+                    var attributes = AttributesWithEmptyEphemerals(pair.Entity);
                     return attributes == null
-                        ? entity
-                        : Builder.Entity.CreateFrom(entity, attributes: attributes);
+                        ? pair
+                        : pair with { Entity = Builder.Entity.CreateFrom(pair.Entity, attributes: attributes) };
                 })
                 .ToList();
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
-            entities = AttachRelationshipResolver(entities, appReader.GetCache());
+            var pairsToSave = entities
+                .Select(IEntityPair<SaveOptions> (p) => p with { Entity = AttachRelationshipResolver(p.Entity, appReader.GetCache()) })
+                .ToList();
+            //entities = AttachRelationshipResolver(entities, appReader.GetCache());
 
             List<int> intIds = null;
             var dc = AppWorkCtx.DataController;
-            dc.DoButSkipAppCachePurge(() => intIds = dc.Save(entities, saveOptions));
+            dc.DoButSkipAppCachePurge(() => intIds = dc.Save(pairsToSave));
 
             // Tell the cache to do a partial update
             appsCache.Update(appReader.PureIdentity(), intIds);
@@ -100,42 +106,49 @@ public class WorkEntitySave(
     }
 
 
+    //[PrivateApi]
+    //public List<IEntity> AttachRelationshipResolver(List<IEntity> entities, IEntitiesSource appState)
+    //{
+    //    var updated = entities
+    //        .Select(e => AttachRelationshipResolver(e, appState))
+    //        .ToList();
+    //    return updated;
+    //}
+
     [PrivateApi]
-    public List<IEntity> AttachRelationshipResolver(List<IEntity> entities, IEntitiesSource appState)
+    private IEntity AttachRelationshipResolver(IEntity entity, IEntitiesSource appState)
     {
-        var updated = entities.Select(e =>
-        {
-            // Check if we have any relationships to update
-            var relationshipAttributes = e.Attributes
-                .Select(a => a.Value)
-                .Where(a => a is IAttribute<IEnumerable<IEntity>>)
-                .Cast<IAttribute<IEnumerable<IEntity>>>()
-                .Select(a => new
-                {
-                    Attribute = a,
-                    TypedContents = a.TypedContents as IRelatedEntitiesValue,
-                })
-                .Where(set => set.TypedContents?.Identifiers?.Count > 0)
-                .ToList();
-            if (!relationshipAttributes.Any())
-                return e;
+        // Check if we have any relationships to update
+        var relationshipAttributes = entity.Attributes
+            .Select(a => a.Value)
+            .Where(a => a is IAttribute<IEnumerable<IEntity>>)
+            .Cast<IAttribute<IEnumerable<IEntity>>>()
+            .Select(a => new
+            {
+                Attribute = a,
+                TypedContents = a.TypedContents as IRelatedEntitiesValue,
+            })
+            .Where(set => set.TypedContents?.Identifiers?.Count > 0)
+            .ToList();
 
-            // Create new attributes with updated relationship
-            var relationshipsUpdated = relationshipAttributes
-                .Select(a =>
-                {
-                    var newLazyEntities = Builder.Value.Relationships(a.TypedContents, appState);
-                    return Builder.Attribute.CreateFrom(a.Attribute, newLazyEntities);
-                })
-                .ToList();
+        // If none, exit early
+        if (!relationshipAttributes.Any())
+            return entity;
 
-            // Assemble the attributes (replace the relationships)
-            var attributes = Builder.Attribute.Replace(e.Attributes, relationshipsUpdated);
+        // Create new attributes with updated relationship
+        var relationshipsUpdated = relationshipAttributes
+            .Select(a =>
+            {
+                var newLazyEntities = Builder.Value.Relationships(a.TypedContents, appState);
+                return Builder.Attribute.CreateFrom(a.Attribute, newLazyEntities);
+            })
+            .ToList();
 
-            // return cloned entity
-            return Builder.Entity.CreateFrom(e, attributes: Builder.Attribute.Create(attributes));
-        }).ToList();
-        return updated;
+        // Assemble the attributes (replace the relationships)
+        var attributes = Builder.Attribute.Replace(entity.Attributes, relationshipsUpdated);
+
+        // return cloned entity
+        return Builder.Entity.CreateFrom(entity, attributes: Builder.Attribute.Create(attributes));
     }
 
 

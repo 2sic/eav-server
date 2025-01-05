@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -22,7 +23,11 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
 
         l.A($"will save {entitiesToImport.Count} items");
         var saver = workEntSave.New(appCtx.AppReader);
-        saver.Save(entitiesToImport, saver.SaveOptions());
+        var saveOptions = saver.SaveOptions();
+        var saveList = entitiesToImport
+            .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
+            .ToList();
+        saver.Save(saveList);
         l.Done();
     }
 
