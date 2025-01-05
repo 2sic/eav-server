@@ -42,8 +42,19 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         metadata ??= new ContentTypeAttributeMetadata(key: id, name: name, type: type,
             sysSettings: sysSettings, items: metadataItems, deferredSource: metaSourceFinder);
 
-        return new ContentTypeAttribute(appId: appId, name: name, type: type, isTitle: isTitle,
-            attributeId: id, sortOrder: sortOrder, guid: guid, sysSettings: sysSettings, metadata: metadata);
+        return new ContentTypeAttribute
+        {
+            AppId = appId,
+            AttributeId = id,
+            SortOrder = sortOrder,
+            IsTitle = isTitle,
+            Guid = guid,
+            SysSettings = sysSettings,
+            Metadata = metadata,
+
+            Name = name,
+            Type = type,
+        };
     }
 
 

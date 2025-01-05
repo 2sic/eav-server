@@ -172,7 +172,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                     // only keep this value, if it is either the first (so contains primary or null-language)
                     // ...or that it still has a remaining language assignment
                     if (values.Any() && !(newLangs?.Any() ?? false)) continue;
-                    values.Add(value.Clone(newLangs));
+                    values.Add(value.With(newLangs));
                 }
 
                 //field.Value.Values = values;
@@ -199,7 +199,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                         (l.Key == saveOptions.PrimaryLanguage ? 0 : 1) // first sort-order: primary language yes/no
                         + (l.ReadOnly ? 20 : 10)) // then - place read-only at the end of the list
                     .ToImmutableList();
-                return value.Clone(sortedLangs);
+                return value.With(sortedLangs);
             })
             .ToList();
         return valsWithLanguagesSorted;

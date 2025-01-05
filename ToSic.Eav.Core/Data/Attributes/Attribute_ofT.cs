@@ -8,25 +8,25 @@ namespace ToSic.Eav.Data;
 /// <remarks>
 /// * completely #immutable since v15.04
 /// * We recommend you read about the [](xref:Basics.Data.Index)
+/// * Changed to be a record in v19.01
 /// </remarks>
 /// <typeparam name="T">Type of the Value</typeparam>
 [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue> values = null)
-    : AttributeBase(name, type), IAttribute<T>
+internal record Attribute<T> : AttributeBase, IAttribute<T>
 {
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public IAttribute CloneWithNewValues(IImmutableList<IValue> values)
-        => new Attribute<T>(Name, Type, values);
+    public IAttribute With(IImmutableList<IValue> newValues)
+        => this with { ValuesImmutable = newValues };
 
     /// <inheritdoc/>
-    public IEnumerable<IValue> Values => MyValues;
+    public IEnumerable<IValue> Values => ValuesImmutable;
 
     /// <summary>
     /// Private immutable values - never null - for direct access & better performance.
     /// </summary>
-    private IImmutableList<IValue> MyValues { get; } = values ?? EmptyValues;
+    internal required IImmutableList<IValue> ValuesImmutable { get; init; }
 
 
     /// <inheritdoc/>
@@ -51,7 +51,7 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
         try
         {
             // in some cases Values can be null
-            return MyValues.FirstOrDefault() as IValue<T>;
+            return ValuesImmutable.FirstOrDefault() as IValue<T>;
         }
         catch
         {
@@ -61,14 +61,7 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
 
     /// <inheritdoc/>
     public IEnumerable<IValue<T>> Typed
-        => MyValues.Cast<IValue<T>>().ToList();
-
-    // 2024-06-04 2dm disabled completely, cannot imagine anybody using this on the Typed-Interface - clean-up 2024-Q3
-    ///// <inheritdoc/>
-    //[PrivateApi]
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    //T IAttribute<T>.this[int languageId]
-    //    => GetInternal([languageId], IsDefault, FindHavingDimensions);
+        => ValuesImmutable.Cast<IValue<T>>().ToList();
 
     #region IAttribute Implementations
     [PrivateApi]
@@ -96,62 +89,16 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
         var valT = GetInternalValue(keys, isDefault, lookupCallback, fallbackToAny);
         return valT == null ? default : valT.TypedContents;
     }
-
-    // 2024-06-04 2dm changing to use IsDefault methods instead of generic checks (faster)
-    //private T GetInternal<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
-    //{
-    //    var valT = GetInternalValue(keys, lookupCallback);
-    //    return valT == null ? default : valT.TypedContents;
-    //}
-
-
-    //private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey[], IValue> lookupCallback)
-    //{
-    //    // no values, exit early, return default
-    //    if (MyValues.Count == 0) return default;
-
-    //    // If no keys, return first value
-    //    if (keys is not { Length: > 0 }) return GetTypedValue();
-
-    //    // Value with Dimensions specified
-    //    // try match all specified Dimensions
-    //    // note that as of now, the dimensions are always just 1 language, not more
-    //    // so the dimensions are _not_ a list of languages, but would contain other dimensions
-    //    // that is why we match ALL - but in truth it's a "feature" that's never been used
-    //    foreach (var key in keys)
-    //    {
-    //        IValue valueHavingSpecifiedLanguages;
-    //        // if it's null or 0, try to just get anything
-    //        if (EqualityComparer<TKey>.Default.Equals(key, default))
-    //            valueHavingSpecifiedLanguages = MyValues.FirstOrDefault();
-    //        else if (key != null)
-    //            valueHavingSpecifiedLanguages = lookupCallback([key]);
-    //        else
-    //            continue;
-
-                
-    //        if (valueHavingSpecifiedLanguages == null) continue;
-
-    //        // stop at first non-null match
-    //        try
-    //        {
-    //            return (IValue<T>)valueHavingSpecifiedLanguages;
-    //        }
-    //        catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
-    //        break;
-    //    }
-
-    //    // Fallback to use Default
-    //    return GetTypedValue();
-    //}
-
+    
     private IValue<T> GetInternalValue<TKey>(TKey[] keys, Func<TKey, bool> isDefault, Func<TKey[], IValue> lookupCallback, bool fallbackToAny)
     {
         // no values, exit early, return default
-        if (MyValues.Count == 0) return default;
+        if (ValuesImmutable.Count == 0)
+            return default;
 
         // If no keys, return first value
-        if (keys is not { Length: > 0 }) return fallbackToAny ? GetTypedValue() : default;
+        if (keys is not { Length: > 0 })
+            return fallbackToAny ? GetTypedValue() : default;
 
         // Value with Dimensions specified
         // try match all specified Dimensions
@@ -169,8 +116,8 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
             else
                 continue;
 
-
-            if (valueHavingSpecifiedLanguages == null) continue;
+            if (valueHavingSpecifiedLanguages == null)
+                continue;
 
             // stop at first non-null match
             //try
@@ -191,20 +138,11 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
 
     private IValue FindHavingDimensions(int[] keys)
     {
-        var valuesHavingDimensions = MyValues
+        var valuesHavingDimensions = ValuesImmutable
             .FirstOrDefault(va => keys.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
         return valuesHavingDimensions;
     }
-
-    //private IValue FindHavingDimensions(string[] keys)
-    //{
-    //    // ensure language Keys in lookup-list are lowered
-    //    var langsLower = keys.Select(l => l.ToLowerInvariant()).ToArray();
-    //    var valuesHavingDimensions = MyValues
-    //        .FirstOrDefault(va => langsLower.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
-    //    return valuesHavingDimensions;
-    //}
-
+    
     /// <summary>
     /// Find the values. For performance, it requires the keys to already be lower cased. 
     /// </summary>
@@ -213,14 +151,14 @@ internal class Attribute<T>(string name, ValueTypes type, IImmutableList<IValue>
     private IValue FindHavingDimensionsLowerCase(string[] keys)
     {
         // ensure language Keys in lookup-list are lowered
-        var valuesHavingDimensions = MyValues
+        var valuesHavingDimensions = ValuesImmutable
             .FirstOrDefault(va => keys.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
         return valuesHavingDimensions;
     }
 
-    #region ToString to improve debugging experience
-
-    public override string ToString() => $"[{GetType()}:{MyValues.Count}x] - first={GetTypedValue()?.Serialized}";
-
-    #endregion
+    /// <summary>
+    /// ToString to improve debugging experience
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString() => $"[{GetType()}:{ValuesImmutable.Count}x] - first={GetTypedValue()?.Serialized}";
 }

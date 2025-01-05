@@ -22,64 +22,16 @@ namespace ToSic.Eav.Data;
     Scope = "System",
     Description = "A ContentType (Schema) describing Entities."
 )]
-public partial class ContentType : IContentType, IContentTypeShared, IHasDecorators<IContentType>
+public partial record ContentType : IContentType, IContentTypeShared, IHasDecorators<IContentType>
 {
-    #region Constructor - internal only, should only ever be called by the ContentTypeBuilder
-
-    /// <summary>
-    /// Basic initializer of ContentType class
-    /// </summary>
-    /// <remarks>
-    /// Overload for in-memory entities
-    /// </remarks>
-    [PrivateApi]
-    internal ContentType(
-        int appId,
-        int id,
-        string name,
-        string nameId,
-        string scope,
-        IImmutableList<IContentTypeAttribute> attributes,
-        bool isAlwaysShared,
-        bool? onSaveSortAttributes,
-        string onSaveUseParentStaticName,
-        RepositoryTypes repositoryType,
-        string repositoryAddress,
-        bool isDynamic,
-        ContentTypeMetadata ctMetadata,
-        IImmutableList<IDecorator<IContentType>> decorators
-    )
-    {
-        AppId = appId;
-        Id = id;
-        Name = name;
-        NameId = nameId ?? name;
-        RepositoryType = repositoryType;
-        RepositoryAddress = repositoryAddress ?? "";
-        AlwaysShareConfiguration = isAlwaysShared;
-        IsDynamic = isDynamic;
-        Decorators = decorators;
-        Metadata = ctMetadata;
-        Scope = scope;
-        _attributes = attributes;
-
-        // Temporary properties which are only to specify saving rules
-        // Should be moved elsewhere...
-        OnSaveSortAttributes = onSaveSortAttributes ?? false;
-        OnSaveUseParentStaticName = onSaveUseParentStaticName;
-    }
-
-    #endregion
-
-
     #region simple properties - all are #immutable
 
     /// <inheritdoc />
-    public int AppId { get; }
+    public required int AppId { get; init; }
 
     /// <inheritdoc />
     [ContentTypeAttributeSpecs(IsTitle = true)]
-    public string Name { get; }
+    public required string Name { get; init; }
 
     /// <inheritdoc />
     [Obsolete("Deprecated in v13, please use NameId instead")]
@@ -87,13 +39,13 @@ public partial class ContentType : IContentType, IContentTypeShared, IHasDecorat
     public string StaticName => NameId;
 
     /// <inheritdoc />
-    public string NameId { get; }
+    public required string NameId { get; init; }
 
     /// <inheritdoc />
-    public string Scope { get; }
+    public required string Scope { get; init; }
 
     /// <inheritdoc />
-    public int Id { get; }
+    public required int Id { get; init; }
 
     /// <inheritdoc />
     [Obsolete("Deprecated in V13, please use Id instead.")]
@@ -102,18 +54,18 @@ public partial class ContentType : IContentType, IContentTypeShared, IHasDecorat
 
     /// <inheritdoc />
     [ContentTypeAttributeIgnore]
-    public IEnumerable<IContentTypeAttribute> Attributes => _attributes;
-    private readonly IImmutableList<IContentTypeAttribute> _attributes;
+    public IEnumerable<IContentTypeAttribute> Attributes => AttributesImmutable;
+    public required IImmutableList<IContentTypeAttribute> AttributesImmutable { get; init; }
 
     /// <inheritdoc />
     [ContentTypeAttributeSpecs(Type = ValueTypes.String)]
-    public RepositoryTypes RepositoryType { get; }
+    public required RepositoryTypes RepositoryType { get; init; }
 
     /// <inheritdoc />
-    public string RepositoryAddress { get; }
+    public required string RepositoryAddress { get; init; }
 
     /// <inheritdoc />
-    public bool IsDynamic { get; }
+    public required bool IsDynamic { get; init; }
 
     #endregion
 
@@ -126,11 +78,14 @@ public partial class ContentType : IContentType, IContentTypeShared, IHasDecorat
     [ContentTypeAttributeIgnore]
     public string TitleFieldName
         => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
-
-    [PrivateApi] // #SharedFieldDefinition
-    [ContentTypeAttributeIgnore]
-    public ContentTypeSysSettings SysSettings { get; }
     private readonly GetOnce<string> _titleFieldName = new();
+
+    /// <summary>
+    /// For future use, like if this type is SQL based etc.
+    /// </summary>
+    [PrivateApi]
+    [ContentTypeAttributeIgnore]
+    public ContentTypeSysSettings SysSettings => null;
 
     /// <inheritdoc />
     public IContentTypeAttribute this[string fieldName]
@@ -150,19 +105,19 @@ public partial class ContentType : IContentType, IContentTypeShared, IHasDecorat
     #region Advanced Properties: Metadata, Decorators - all #immutable
 
     /// <inheritdoc />
-    public ContentTypeMetadata Metadata { get; }
+    public required ContentTypeMetadata Metadata { get; init; }
 
     IMetadataOf IHasMetadata.Metadata => Metadata;
 
     // Decorators - note that ATM we don't seem to use them
-    public IEnumerable<IDecorator<IContentType>> Decorators { get; }
+    public required IEnumerable<IDecorator<IContentType>> Decorators { get; init; }
 
 
     #endregion
 
     #region Sharing Content Types - all #immutable
 
-    public bool AlwaysShareConfiguration { get; }
+    public required bool AlwaysShareConfiguration { get; init; }
 
     #endregion
 
