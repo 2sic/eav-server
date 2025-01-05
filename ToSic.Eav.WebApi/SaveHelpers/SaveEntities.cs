@@ -11,23 +11,23 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
 {
     public void UpdateGuidAndPublishedAndSaveMany(IAppWorkCtx appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
     {
-        var l = Log.Fn();
+        var l = Log.Fn($"will save {itemsToImport.Count} items");
+
+        var saver = workEntSave.New(appCtx.AppReader);
+        var saveOptions = saver.SaveOptions();
 
         var entitiesToImport = itemsToImport
             .Select(bundle => entityBuilder.CreateFrom(bundle.Entity,
                 guid: bundle.Header.Guid,
-                isPublished: enforceDraft ? false : null,
-                placeDraftInBranch: enforceDraft ? true : null)
+                isPublished: enforceDraft ? false : null
+                // #WipDraftShouldBranch
+                //placeDraftInBranch: enforceDraft ? true : null
+                )
             )
+            .Select(e => new EntityPair<SaveOptions>(e, saveOptions with { DraftShouldBranch = enforceDraft }))
             .ToList();
 
-        l.A($"will save {entitiesToImport.Count} items");
-        var saver = workEntSave.New(appCtx.AppReader);
-        var saveOptions = saver.SaveOptions();
-        var saveList = entitiesToImport
-            .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
-            .ToList();
-        saver.Save(saveList);
+        saver.Save(entitiesToImport);
         l.Done();
     }
 

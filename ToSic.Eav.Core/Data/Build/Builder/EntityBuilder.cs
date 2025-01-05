@@ -29,8 +29,9 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         bool isPublished = true,
         ITarget metadataFor = default,
         EntityPartsBuilder partsBuilder = default,
-        int publishedId = default,
-        EntitySavePublishing publishing = default
+        int publishedId = default
+        // #WipDraftShouldBranch
+        //EntitySavePublishing publishing = default
     )
     {
         return new()
@@ -57,8 +58,10 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             RepositoryId = repositoryId == Constants.NullId ? entityId : repositoryId,
             // Version should always default to 1, if not provided
             Version = version == default ? 1 : version,
-            IsPublished = publishing?.ShouldPublish ?? isPublished,
-            PlaceDraftInBranch = publishing?.ShouldBranchDrafts ?? default,
+            // #WipDraftShouldBranch
+            IsPublished = /*publishing?.ShouldPublish ??*/ isPublished,
+            // #WipDraftShouldBranch
+            //PlaceDraftInBranch = publishing?.ShouldBranchDrafts ?? default,
             PublishedEntityId = publishedId == 0 ? null : (int?)publishedId, // fix: #3070 convert 0 to null 
         };
     }
@@ -97,7 +100,8 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         ITarget target = default,
 
         // publishing Instructions - should go elsewhere
-        bool? placeDraftInBranch = default,
+        // #WipDraftShouldBranch
+        //bool? placeDraftInBranch = default,
         int? publishedId = default
     )
     {
@@ -119,11 +123,15 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             version: version ?? original.Version,
             metadataFor: target ?? new Target(original.MetadataFor),
 
-            publishing: new()
-            {
-                ShouldPublish = isPublished ?? original.IsPublished,
-                ShouldBranchDrafts = placeDraftInBranch ?? asRealEntity?.PlaceDraftInBranch ?? default
-            },
+            isPublished: original.IsPublished,
+
+            // #WipDraftShouldBranch
+            //publishing: new()
+            //{
+            //    ShouldPublish = isPublished ?? original.IsPublished,
+            //    // #WipDraftShouldBranch
+            //    //ShouldBranchDrafts = /*placeDraftInBranch ??*/ asRealEntity?.PlaceDraftInBranch ?? default
+            //},
 
             publishedId: publishedId ?? asRealEntity?.PublishedEntityId ?? default,
                 

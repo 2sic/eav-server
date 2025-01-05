@@ -250,7 +250,9 @@ partial class DbEntity
         if (logDetails)
             l.A($"draft check: id:{newEnt.EntityId} {nameof(existingDraftId)}:{existingDraftId}, {nameof(hasDraft)}:{hasDraft}");
 
-        var placeDraftInBranch = ((Entity)newEnt).PlaceDraftInBranch;
+        // #WipDraftShouldBranch
+        //var placeDraftInBranch = ((Entity)newEnt).PlaceDraftInBranch;
+        var placeDraftInBranch = so.DraftShouldBranch;
 
         // if it's being saved as published, or the draft will be without an old original, then exit 
         if (newEnt.IsPublished || !placeDraftInBranch)

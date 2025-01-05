@@ -20,7 +20,7 @@ public class WorkMetadata(
         var existingEntity = AppWorkCtx.AppReader.List
             .FirstOrDefault(e => e.MetadataFor?.TargetType == target.TargetType && e.MetadataFor?.KeyNumber == target.KeyNumber);
         if (existingEntity != null)
-            entityUpdate.New(AppWorkCtx).UpdateParts(existingEntity.EntityId, values);
+            entityUpdate.New(AppWorkCtx).UpdateParts(existingEntity.EntityId, values, new());
         else
         {
             var appState = AppWorkCtx.AppReader;

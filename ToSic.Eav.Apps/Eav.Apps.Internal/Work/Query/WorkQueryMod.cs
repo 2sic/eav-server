@@ -107,7 +107,7 @@ public class WorkQueryMod(
                 dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
 
             if (entityId != null)
-                entUpdate.New(AppWorkCtx.AppReader).UpdateParts(Convert.ToInt32(entityId), dataSource);
+                entUpdate.New(AppWorkCtx.AppReader).UpdateParts(Convert.ToInt32(entityId), dataSource, new());
             // Add new DataSource
             else
             {
@@ -170,7 +170,7 @@ public class WorkQueryMod(
 
         // add to new object...then send to save/update
         values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
-        entUpdate.New(AppWorkCtx.AppReader).UpdateParts(id, values);
+        entUpdate.New(AppWorkCtx.AppReader).UpdateParts(id, values, new());
         l.Done();
     }
 

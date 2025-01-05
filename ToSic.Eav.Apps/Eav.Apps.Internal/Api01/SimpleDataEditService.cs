@@ -102,16 +102,20 @@ public partial class SimpleDataEditService(
 
         l.A($"Type {contentTypeName} found. Will build entities to save...");
 
-        var importEntity = multiValues
-            .Select(values => BuildNewEntity(type, values, target, null).Entity)
-            .ToList();
-
         var entSaver = entSave.New(_ctxWithDb.AppReader);
         var saveOptions = entSaver.SaveOptions();
-        var saveList = importEntity
-            .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
+
+        var importEntity = multiValues
+            .Select(values =>
+            {
+                var (entity, publishing) = BuildNewEntity(type, values, target, null);
+                var mySaveOptions = saveOptions with { DraftShouldBranch = publishing.ShouldBranchDrafts };
+                var pair = new EntityPair<SaveOptions>(entity, mySaveOptions);
+                return pair;
+            })
             .ToList();
-        var ids = entSaver.Save(saveList);
+
+        var ids = entSaver.Save(importEntity);
 
         return l.Return(ids, "ok");
     }
@@ -148,7 +152,7 @@ public partial class SimpleDataEditService(
         var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
 
         // Figure out publishing before converting to IAttribute
-        var publishing = FigureOutPublishingOrNull(type, values, existingIsPublished);
+        var publishing = DetectPublishingOrError(type, values, existingIsPublished);
 
         // Prepare attributes to add
         var preparedValues = ConvertRelationsToNullArray(type, values);
@@ -162,7 +166,10 @@ public partial class SimpleDataEditService(
             attributes: builder.Attribute.Create(attributes),
             owner: owner,
             metadataFor: targetOrNull,
-            publishing: publishing
+            // #WipDraftShouldBranch
+            isPublished: publishing.ShouldPublish
+            // #WipDraftShouldBranch
+            //publishing: publishing
         );
         if (targetOrNull != null)
             l.A("FYI: Set metadata target which was provided.");
@@ -186,9 +193,9 @@ public partial class SimpleDataEditService(
     {
         var l = Log.Fn($"update i:{entityId}");
         var original = _ctxWithDb.AppReader.List.FindRepoId(entityId);
-        var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
+        var (entity, publishing) = BuildNewEntity(original.Type, values, null, original.IsPublished);
         entUpdate.New(_ctxWithDb.AppReader)
-            .UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
+            .UpdateParts(id: entityId, partialEntity: entity, publishing: publishing);
         l.Done();
     }
 

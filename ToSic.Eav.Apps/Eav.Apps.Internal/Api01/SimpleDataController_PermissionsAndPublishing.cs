@@ -7,33 +7,35 @@ namespace ToSic.Eav.Apps.Internal.Api01;
 partial class SimpleDataEditService
 {
 
-    private EntitySavePublishing FigureOutPublishingOrNull(IContentType contentType, IDictionary<string, object> values, bool? existingIsPublished)
+    private EntitySavePublishing DetectPublishingOrError(IContentType contentType, IDictionary<string, object> values, bool? existingIsPublished)
     {
         var l = Log.Fn<EntitySavePublishing?>($"..., ..., attributes: {values?.Count}");
-        // (bool ShouldPublish, bool DraftShouldBranch, EntitySavePublishing Publishing)? publishAndBranch = null;
-        if (values.SafeNone())
-            return l.Return(null, "no attributes to process");
 
-        // On update, by default preserve IsPublished state
-        var isPublished = existingIsPublished ?? true;
-
-        // Ensure WritePublished or WriteDraft user permissions. 
+        // First, ensure WritePublished or WriteDraft user permissions. 
         var allowed = GetWriteAndPublishAllowed(contentType);
         if (!allowed.WriteAllowed)
             throw l.Ex(new Exception("User is not allowed to do anything. Both published and draft are not allowed."));
 
+        // On update, by default preserve IsPublished state
+        var shouldPublish = existingIsPublished ?? true;
+
         // IsPublished becomes false when write published is not allowed.
-        if (isPublished && !allowed.PublishAllowed) isPublished = false;
+        if (shouldPublish && !allowed.PublishAllowed)
+            shouldPublish = false;
+
+        // If we don't have any values, there is nothing else to detect, so exit early
+        if (values.SafeNone())
+            return l.Return(new() { ShouldPublish = shouldPublish }, "no attributes to process");
 
         // Find publishing instructions
         // Handle special "PublishState" attribute
-        var publishKvp = values.FirstOrDefault(pair => pair.Key.EqualsInsensitive(SaveApiAttributes.SavePublishingState));
+        var publishKvp = values!.FirstOrDefault(pair => pair.Key.EqualsInsensitive(SaveApiAttributes.SavePublishingState));
 
-        // did it exist? must check _key_, because kvps don't have a null-default
+        // did it exist? must check _key_, because key-value-pairs don't have a null-default
         if (publishKvp.Key == default)
-            return l.Return(null, $"done, param {SaveApiAttributes.SavePublishingState} not provided");
+            return l.Return(new() { ShouldPublish = shouldPublish }, $"done, param {SaveApiAttributes.SavePublishingState} not provided");
 
-        var publishAndBranch = GetPublishSpecs(publishedState: publishKvp.Value, existingIsPublished: isPublished, allowed.PublishAllowed, Log);
+        var publishAndBranch = GetPublishSpecs(publishedState: publishKvp.Value, defaultPublished: shouldPublish, allowed.PublishAllowed, Log);
 
         return l.Return(publishAndBranch, "done");
     }
@@ -44,10 +46,12 @@ partial class SimpleDataEditService
     private (bool PublishAllowed, bool WriteAllowed) GetWriteAndPublishAllowed(IContentType targetType)
     {
         var l = Log.Fn<(bool PublishAllowed, bool WriteAllowed)>();
-        // skip write publish/draft permission checks for c# API
-        if (!_checkWritePermissions) return l.ReturnAndLog((true, true), "skip write perm check - all ok");
+        // skip write publish/draft permission checks when used in C# API
+        // because in that case, the developer should have already checked permissions
+        if (!_checkWritePermissions)
+            return l.ReturnAndLog((true, true), "skip write perm check - all ok");
 
-        // this write publish/draft permission checks should happen only for REST API
+        // The remaining write publish/draft permission checks should happen only for REST API
 
         // 1. Find if user may write PUBLISHED:
         var appStateReader = _ctxWithDb.AppReader;
