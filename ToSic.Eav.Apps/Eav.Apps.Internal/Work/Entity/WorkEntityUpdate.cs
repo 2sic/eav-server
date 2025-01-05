@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence;
 using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 
@@ -9,9 +8,8 @@ namespace ToSic.Eav.Apps.Internal.Work;
 public class WorkEntityUpdate(
     DataBuilder builder,
     LazySvc<EntitySaver> entitySaverLazy,
-    LazySvc<IImportExportEnvironment> environmentLazy,
     GenWorkDb<WorkEntitySave> workEntSave)
-    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntUpd", connect: [builder, entitySaverLazy, workEntSave, environmentLazy])
+    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntUpd", connect: [builder, entitySaverLazy, workEntSave])
 {
     /// <summary>
     /// Update an entity
@@ -60,7 +58,8 @@ public class WorkEntityUpdate(
         if (partialEntity == null)
             return l.ReturnFalse("nothing to import");
 
-        var saveOptions = environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId) with
+        var entSaver = workEntSave.New(AppWorkCtx);
+        var saveOptions = entSaver.SaveOptions() with
         {
             PreserveUntouchedAttributes = true,
             PreserveUnknownLanguages = true,
@@ -75,7 +74,7 @@ public class WorkEntityUpdate(
             withPublishing.PlaceDraftInBranch = publishing.ShouldBranchDrafts;
         }
 
-        workEntSave.New(AppWorkCtx).Save(saveEnt, saveOptions);
+        entSaver.Save(saveEnt, saveOptions);
         return l.ReturnTrue("ok");
     }
 

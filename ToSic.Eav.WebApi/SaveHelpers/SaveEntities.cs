@@ -13,17 +13,16 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
         var l = Log.Fn();
 
         var entitiesToImport = itemsToImport
-            // TODO: NOTE: here a clone should work
             .Select(bundle => entityBuilder.CreateFrom(bundle.Entity,
                 guid: bundle.Header.Guid,
-                isPublished: enforceDraft ? (bool?)false : null,
-                placeDraftInBranch: enforceDraft ? (bool?)true : null) as IEntity
+                isPublished: enforceDraft ? false : null,
+                placeDraftInBranch: enforceDraft ? true : null)
             )
             .ToList();
 
         l.A($"will save {entitiesToImport.Count} items");
         var saver = workEntSave.New(appCtx.AppReader);
-        saver.Save(entitiesToImport);
+        saver.Save(entitiesToImport, saver.SaveOptions());
         l.Done();
     }
 

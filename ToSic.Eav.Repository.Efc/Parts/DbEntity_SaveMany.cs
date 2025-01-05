@@ -11,31 +11,37 @@ partial class DbEntity
     internal List<int> SaveEntity(List<IEntity> entities, SaveOptions saveOptions)
     {
         var l = Log.Fn<List<int>>($"count:{entities?.Count}");
-        var ids = new List<int>();
 
         if (entities == null || entities.Count == 0)
-            Log.A("Entities to save are null, skip");
-        else
-        {
-            var idx = 0;
-            FlushTypeAttributesCache(); // for safety, in case previously new types were imported
-            EntityDraftMapCache = DbContext.Publishing.GetDraftBranchMap(entities.Select(e => e.EntityId).ToList());
-            DbContext.DoInTransaction(
-                () => DbContext.Versioning.DoAndSaveHistoryQueue(
-                    () => DbContext.Relationships.DoWhileQueueingRelationships(
-                        () => DoWhileQueueingAttributes(
-                            () =>
+            return l.Return([], "Entities to save are null, skip");
+
+        var ids = new List<int>();
+        var idx = 0;
+        FlushTypeAttributesCache(); // for safety, in case previously new types were imported
+        _entityDraftMapCache = DbContext.Publishing
+            .GetDraftBranchMap(entities.Select(e => e.EntityId).ToList());
+        DbContext.DoInTransaction(
+            () => DbContext.Versioning.DoAndSaveHistoryQueue(
+                () => DbContext.Relationships.DoWhileQueueingRelationships(
+                    () => DoWhileQueueingAttributes(
+                        () =>
+                        {
+                            foreach (var e in entities)
                             {
-                                foreach (var e in entities)
-                                {
-                                    idx++;
-                                    var logDetails = idx < MaxToLogDetails;
-                                    if (idx == MaxToLogDetails) Log.A($"Hit #{idx}, will stop logging details");
-                                    DbContext.DoAndSaveWithoutChangeDetection(() => ids.Add(SaveEntity(e, saveOptions, logDetails)),
-                                        "SaveMany");
-                                }
-                            }))));
-        }
+                                idx++;
+                                var logDetails = idx < MaxToLogDetails;
+                                if (idx == MaxToLogDetails)
+                                    l.A($"Hit #{idx}, will stop logging details");
+                                DbContext.DoAndSaveWithoutChangeDetection(
+                                    () => ids.Add(SaveEntity(e, saveOptions, logDetails)),
+                                    "SaveMany"
+                                );
+                            }
+                        }
+                    )
+                )
+            )
+        );
         return l.Return(ids, $"id count:{ids.Count}");
     }
 

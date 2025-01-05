@@ -33,17 +33,18 @@ public class WorkEntitySave(
         newEntities = newEntities
             .Select(e => Builder.Entity.CreateFrom(e, id: 0, repositoryId: 0))
             .ToList();
-        Save(newEntities);
+        Save(newEntities, SaveOptions());
     }
 
+    public SaveOptions SaveOptions() => environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
 
-    public int Save(IEntity entity, SaveOptions saveOptions = null)
+    public int Save(IEntity entity, SaveOptions saveOptions)
         => Save([entity], saveOptions).FirstOrDefault();
 
 
-    public List<int> Save(List<IEntity> entities, SaveOptions saveOptions = null)
+    public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
     {
-        var l = Log.Fn<List<int>>("save count:" + entities.Count + ", with Options:" + (saveOptions != null));
+        var l = Log.Fn<List<int>>($"save count:{entities.Count}, with Options:{saveOptions}");
 
         // Run the change in a lock/transaction
         // This is to avoid parallel creation of new entities
@@ -51,7 +52,6 @@ public class WorkEntitySave(
         // in which case it would add it twice
 
         var appReader = AppWorkCtx.AppReader;
-        saveOptions ??= environmentLazy.Value.SaveOptions(appReader.ZoneId);
         List<int> ids = null;
         appReader.GetCache().DoInLock(Log, () => ids = InnerSaveInLock());
         return l.Return(ids, $"ids:{ids.Count}");
@@ -60,21 +60,29 @@ public class WorkEntitySave(
         List<int> InnerSaveInLock()
         {
             // Try to reset the content-type if not specified
-            entities = entities.Select(entity =>
+            entities = entities
+                .Select(entity =>
                 {
                     // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
                     if (entity is not Entity e2 || e2.Type.IsDynamic || e2.Type.Attributes != null)
                         return entity;
+
+                    // Check if the attached type exists, if not, leave, otherwise ensure the type is attached
                     var newType = appReader.GetContentType(entity.Type.Name);
-                    return newType == null ? entity : Builder.Entity.CreateFrom(entity, type: newType);
+                    return newType == null
+                        ? entity
+                        : Builder.Entity.CreateFrom(entity, type: newType);
                 })
                 .ToList();
 
             // Clear Ephemeral attributes which shouldn't be saved (new in v12)
-            entities = entities.Select(entity =>
+            entities = entities
+                .Select(entity =>
                 {
                     var attributes = AttributesWithEmptyEphemerals(entity);
-                    return attributes == null ? entity : Builder.Entity.CreateFrom(entity, attributes: attributes);
+                    return attributes == null
+                        ? entity
+                        : Builder.Entity.CreateFrom(entity, attributes: attributes);
                 })
                 .ToList();
 

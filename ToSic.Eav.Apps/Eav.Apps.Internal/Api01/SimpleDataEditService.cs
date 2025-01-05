@@ -105,7 +105,8 @@ public partial class SimpleDataEditService(
             .Select(values => BuildNewEntity(type, values, target, null).Entity)
             .ToList();
 
-        var ids = entSave.New(_ctxWithDb.AppReader).Save(importEntity);
+        var entSaver = entSave.New(_ctxWithDb.AppReader);
+        var ids = entSaver.Save(importEntity, entSaver.SaveOptions());
 
         return l.Return(ids, "ok");
     }

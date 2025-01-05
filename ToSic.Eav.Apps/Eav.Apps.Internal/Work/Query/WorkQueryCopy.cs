@@ -73,7 +73,8 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         var saveList = newParts.Select(p => p.Value).Concat(newMetadata).ToList();
         saveList.Add(newQuery);
 
-        _entSave.New(AppWorkCtx.AppReader).Save(saveList);
+        var entSaver = _entSave.New(AppWorkCtx.AppReader);
+        entSaver.Save(saveList, entSaver.SaveOptions());
         l.Done();
     }
 

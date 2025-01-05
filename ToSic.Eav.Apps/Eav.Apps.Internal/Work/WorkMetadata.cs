@@ -28,7 +28,9 @@ public class WorkMetadata(
                 contentType: appState.GetContentType(typeName),
                 attributes: builder.Attribute.Create(values),
                 metadataFor: target);
-            workEntSave.New(AppWorkCtx).Save(saveEnt);
+
+            var entSaver = workEntSave.New(AppWorkCtx);
+            entSaver.Save(saveEnt, entSaver.SaveOptions());
         }
 
         l.Done();
