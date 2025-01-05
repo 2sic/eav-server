@@ -11,8 +11,6 @@ namespace ToSic.Eav.Data.Build;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFactoryLazy) : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
 {
-    private readonly DataBuilder _builder = builder;
-
     #region Properties to configure Builder / Defaults
 
     /// <inheritdoc />
@@ -21,8 +19,7 @@ internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFacto
     /// <inheritdoc />
     public IContentType ContentType { get; }
 
-    public DataFactoryOptions Options => _options ?? throw new Exception($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
-    private readonly DataFactoryOptions _options;
+    public DataFactoryOptions Options => field ?? throw new($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
 
 
     private DateTime Created { get; } = DateTime.Now;
@@ -30,11 +27,10 @@ internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFacto
 
     private RawConvertOptions RawConvertOptions { get; } = new();
 
-    public ILookup<object, IEntity> Relationships => _nonLazyRelationships ?? _lazyRelationships;
-    private readonly ILookup<object, IEntity> _nonLazyRelationships;
+    public ILookup<object, IEntity> Relationships => field ?? _lazyRelationships;
     private readonly LazyLookup<object, IEntity> _lazyRelationships = new();
 
-    private RawRelationshipsConverter RelsConverter => _relsConverter.Get(() => new(_builder, Log));
+    private RawRelationshipsConverter RelsConverter => _relsConverter.Get(() => new(builder, Log));
     private readonly GetOnce<RawRelationshipsConverter> _relsConverter = new();
     #endregion
 
@@ -71,12 +67,12 @@ internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFacto
     ) :this (builder, ctFactoryLazy)
     {
         // Store settings
-        _options = options ?? new();
+        Options = options ?? new();
 
         IdCounter = Options.IdSeed;
         ContentType = Options.Type != null
             ? ctFactoryLazy.Value.Create(Options.Type)
-            : _builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
+            : builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
 
         if (rawConvertOptions != null) RawConvertOptions = rawConvertOptions;
 
@@ -87,7 +83,7 @@ internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFacto
         if (relationships is LazyLookup<object, IEntity> relationshipsAsLazy)
             _lazyRelationships = relationshipsAsLazy;
         else
-            _nonLazyRelationships = relationships;  // will be null or a real value
+            Relationships = relationships;  // will be null or a real value
     }
     #endregion
 
@@ -176,11 +172,15 @@ internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFacto
         values ??= new Dictionary<string, object>();
         var valuesWithRelationships = RelsConverter.RelationshipsToAttributes(values, Relationships);
 
-        var ent = _builder.Entity.Create(
+        var entityId = id == 0 && Options.AutoId
+            ? (IdCounter < 0 ? IdCounter-- : IdCounter++) // negative means we're counting down
+            : id;
+
+        var ent = builder.Entity.Create(
             appId: Options.AppId,
-            entityId: id == 0 && Options.AutoId ? IdCounter++ : id,
+            entityId: entityId,
             contentType: ContentType,
-            attributes: _builder.Attribute.Create(valuesWithRelationships),
+            attributes: builder.Attribute.Create(valuesWithRelationships),
             titleField: Options.TitleField,
             guid: guid,
             created: created == default ? Created : created,

@@ -44,6 +44,8 @@ public record DataFactoryOptions()
 
     /// <summary>
     /// ID seed for all items which must be auto-numbered. Default is `1`.
+    /// If the seed is `-1` or less, then it will automatically decrement the count.
+    /// This is to clearly indicate virtual IDs which will not be the same in the next run.
     /// </summary>
     public int IdSeed { get; init; } = 1;
 
