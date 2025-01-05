@@ -58,7 +58,7 @@ public class MetadataTargets(DataSourceBase.MyServices services, IAppReaderFacto
 
     private IDataFactory ContentTypeFactory => ctFactory.Get(() =>
     {
-        var opts = new DataFactoryOptions(ContentTypeUtil.Options, appId: AppId, withMetadata: true);
+        var opts = ContentTypeUtil.Options with { AppId = AppId, WithMetadata = true };
         var x = dataFactory.New(options: opts);
         return x;
     });

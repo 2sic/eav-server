@@ -65,7 +65,11 @@ public sealed class QueryInfo : DataSourceBase
             QueryBuilder = queryBuilder,
             _queryManager = queryManager,
             _attributesGenerator = attributesGenerator,
-            _dataFactory = dataFactory.New(options: new(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
+            _dataFactory = dataFactory.New(options: new()
+            {
+                TitleField = StreamsType.Name.ToString(),
+                TypeName = QueryStreamsContentType
+            })
         ]);
         ProvideOut(GetStreamsOfQuery);
         ProvideOut(GetAttributes, "Attributes");

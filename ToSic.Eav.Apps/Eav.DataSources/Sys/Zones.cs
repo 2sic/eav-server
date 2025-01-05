@@ -46,7 +46,12 @@ public sealed class Zones: Eav.DataSource.DataSourceBase
         ConnectLogs([
             _zoneMapper = zoneMapper,
             _appsCatalog = appsCatalog,
-            _dataFactory = dataFactory.New(options: new(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
+            _dataFactory = dataFactory.New(options: new()
+            {
+                AppId = 0,
+                TitleField = ZoneType.Name.ToString(),
+                TypeName = "Zone",
+            })
         ]);
         ProvideOut(GetList);
     }

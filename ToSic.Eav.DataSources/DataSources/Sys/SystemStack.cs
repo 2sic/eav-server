@@ -83,7 +83,7 @@ public class SystemStack: DataSourceBase
         var asRaw = res2.Select(r => new AppStackDataRaw(r)).ToList();
         // Note: must use configure here, because AppId and AddValues are properties that's not set in the constructor
         var options = new RawConvertOptions(addKeys: AddValues ? new[] { "Value" } : null);
-        var stackFactory = _dataFactory.New(options: new(AppStackDataRaw.Options, appId: AppId), rawConvertOptions: options);
+        var stackFactory = _dataFactory.New(options: AppStackDataRaw.Options with { AppId = AppId }, rawConvertOptions: options);
         var converted = stackFactory.Create(asRaw);
 
         return converted;

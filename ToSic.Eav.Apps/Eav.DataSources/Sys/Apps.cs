@@ -64,7 +64,11 @@ public sealed class Apps: CustomDataSource
         ConnectLogs([appsCatalog, appReaders]);
         ProvideOutRaw(
             () => GetDefault(appsCatalog, appReaders),
-            options: () => new(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+            options: () => new()
+            {
+                TitleField = AppType.Name.ToString(),
+                TypeName = AppsContentTypeName
+            }
         );
     }
 

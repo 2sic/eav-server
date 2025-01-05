@@ -129,7 +129,12 @@ public class DataTable : CustomDataSourceAdvanced
         if (!source.Columns.Contains(titleField))
             throw new($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-        var tblFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
+        var tblFactory = _dataFactory.New(options: new()
+        {
+            AppId = Constants.TransientAppId,
+            TitleField = titleField,
+            TypeName = contentType,
+        });
             
         // Populate a new Dictionary with EntityModels
         var result = new List<IEntity>();

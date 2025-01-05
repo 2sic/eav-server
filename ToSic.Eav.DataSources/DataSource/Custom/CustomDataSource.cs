@@ -51,7 +51,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     private DataFactoryOptions Options
     {
             
-        get => _options ??= new(typeName: "Custom");
+        get => _options ??= new() { TypeName = "Custom" };
         set => _options = value;
     }
     private DataFactoryOptions _options;

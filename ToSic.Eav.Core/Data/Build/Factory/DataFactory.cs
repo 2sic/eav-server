@@ -71,7 +71,7 @@ internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFacto
     ) :this (builder, ctFactoryLazy)
     {
         // Store settings
-        _options = options ?? new DataFactoryOptions();
+        _options = options ?? new();
 
         IdCounter = Options.IdSeed;
         ContentType = Options.Type != null

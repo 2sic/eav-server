@@ -33,7 +33,12 @@ public sealed class Scopes : CustomDataSource
     public Scopes(MyServices services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
     {
         ConnectLogs([_appReadFac = appReadFac]);
-        ProvideOutRaw(GetList, options: () => new(typeName: "Scope", titleField: "Name", autoId: false));
+        ProvideOutRaw(GetList, options: () => new()
+        {
+            AutoId = false,
+            TitleField = "Name",
+            TypeName = "Scope",
+        });
     }
     private readonly IAppReaderFactory _appReadFac;
 

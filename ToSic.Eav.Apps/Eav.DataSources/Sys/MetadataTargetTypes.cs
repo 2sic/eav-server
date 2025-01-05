@@ -30,7 +30,12 @@ public class MetadataTargetTypes : Eav.DataSource.DataSourceBase
     public MetadataTargetTypes(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
     {
         ConnectLogs([
-            _dataFactory = dataFactory.New(options: new(appId: 0, typeName: "MetadataTargetTypes", titleField: Data.Attributes.TitleNiceName))
+            _dataFactory = dataFactory.New(options: new()
+            {
+                AppId = 0,
+                TitleField = Data.Attributes.TitleNiceName,
+                TypeName = "MetadataTargetTypes",
+            })
         ]);
         ProvideOut(GetList);
     }

@@ -31,6 +31,6 @@ public sealed class Features : CustomDataSource
     public Features(MyServices services, IEavFeaturesService featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Feats")
     {
         ConnectLogs([featuresService]);
-        ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new(typeName: "Feature"));
+        ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new() { TypeName = "Feature" });
     }
 }

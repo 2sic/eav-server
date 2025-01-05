@@ -51,7 +51,11 @@ public sealed class Attributes: DataSourceBase
     public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib", connect: [appReaders, dataFactory])
     {
         _appReaders = appReaders;
-        _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)));
+        _dataFactory = dataFactory.New(options: new()
+        {
+            TitleField = nameof(IAttributeType.Title),
+            TypeName = AttribContentTypeName,
+        });
 
         ProvideOut(GetList);
     }
