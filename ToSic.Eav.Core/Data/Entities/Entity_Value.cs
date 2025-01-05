@@ -3,7 +3,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Data;
-partial class Entity
+partial record Entity
 {
     /// <inheritdoc />
     public object Value(string field)

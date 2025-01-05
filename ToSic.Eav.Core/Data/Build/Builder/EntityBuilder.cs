@@ -33,27 +33,35 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         EntitySavePublishing publishing = default
     )
     {
-        // If repositoryId isn't known set it to EntityId
-        repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
-        version = version == default ? 1 : version;
-
         // Prepare the Parts-builder in case it wasn't provided
         partsBuilder ??= new();
 
-        return new(appId, entityId, repositoryId: repositoryId,
-            partsBuilder: partsBuilder, 
-            contentType: contentType,
-            values: attributes ?? AttributeBuilder.EmptyList,
-            guid: guid,
-            titleFieldName: titleField,
-            created: created,
-            modified: modified,
-            owner: owner,
-            version: version,
-            isPublished: publishing?.ShouldPublish ?? isPublished,
-            metadataFor: metadataFor,
-            placeDraftInBranch: publishing?.ShouldBranchDrafts ?? default,
-            publishedId: publishedId);
+        return new(partsBuilder: partsBuilder)
+        {
+            AppId = appId,
+            EntityId = entityId,
+            EntityGuid = guid,
+            Type = contentType,
+            TitleFieldName = titleField,
+            Attributes = attributes ?? AttributeBuilder.EmptyList,
+
+            Created = created ?? default,
+            Modified = modified ?? default,
+            Owner = owner,
+            MetadataFor = metadataFor,
+
+            // Light Attributes would only be for Entity-Light, but ATM required by design
+            AttributesLight = null,
+
+            // *** Entity stuff ***
+            // RepositoryId should default to EntityId, if not provided
+            RepositoryId = repositoryId == Constants.NullId ? entityId : repositoryId,
+            // Version should always default to 1, if not provided
+            Version = version == default ? 1 : version,
+            IsPublished = publishing?.ShouldPublish ?? isPublished,
+            PlaceDraftInBranch = publishing?.ShouldBranchDrafts ?? default,
+            PublishedEntityId = publishedId == 0 ? null : (int?)publishedId, // fix: #3070 convert 0 to null 
+        };
     }
 
     /// <summary>
@@ -71,8 +79,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             owner: "");
 
     /// <summary>
-    /// Create a new Entity based on an Entity and Attributes
-    /// Used in the Attribute-Filter, which generates a new entity with less properties
+    /// Create a new Entity based on an Entity and replacing some of its properties
     /// </summary>
     public IEntity CreateFrom(
         IEntity original,
@@ -97,8 +104,10 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
     {
         var asRealEntity = original as Entity;
 
+        //var relManager = asRealEntity?.Relationships as RelationshipManager;
         var entityPartsBuilder = new EntityPartsBuilder(
             ent => RelationshipManager.ForClone(ent, asRealEntity?.Relationships as RelationshipManager),
+            //ent => relManager != null ? relManager with { Entity = ent } : new(ent, null),
             getMetadataOf: id == default && guid == default
                 // If identifiers don't change, it will provide the identical metadata
                 ? EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)

@@ -3,7 +3,7 @@ using ToSic.Eav.Data.PropertyLookup;
 
 namespace ToSic.Eav.Data;
 
-partial class Entity
+partial record Entity
 {
         
     [PrivateApi]

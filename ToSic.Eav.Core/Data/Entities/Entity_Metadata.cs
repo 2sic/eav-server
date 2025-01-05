@@ -4,7 +4,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data;
 
-partial class Entity
+partial record Entity
 {
     /// <inheritdoc />
     public IMetadataOf Metadata => _metadataOf.Get(() => _getMetadataOf(EntityGuid, GetBestTitle() ?? "entity with unknown title"));

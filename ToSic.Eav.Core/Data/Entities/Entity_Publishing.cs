@@ -1,18 +1,18 @@
 ﻿namespace ToSic.Eav.Data;
 
-partial class Entity
+partial record Entity
 {
     /// <inheritdoc />
     [PrivateApi]
-    public int RepositoryId { get; }
+    public required int RepositoryId { get; init; }
 
     #region Save/Update settings - needed when passing this object to the save-layer
 
     /// <inheritdoc />
     // TODO: should move the set-info to a save-options object
-    public bool IsPublished { get; set; } = true;
+    public required bool IsPublished { get; set; } = true;
 
-    internal int? PublishedEntityId { get; }
+    internal int? PublishedEntityId { get; init; }
 
     // TODO: should move the set-info to a save-options object
     [PrivateApi]
@@ -22,6 +22,6 @@ partial class Entity
 
 
     /// <inheritdoc />
-    public int Version { get; }
+    public required int Version { get; init; }
 
 }

@@ -33,7 +33,8 @@ public class EntityPartsBuilder
                 : CreateMetadataOfAppSources(source)
         );
 
-    private static IMetadataOf EmptyGetMetadataOf(Guid guid, string title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
+    private static IMetadataOf EmptyGetMetadataOf(Guid guid, string title)
+        => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
 
     private static Func<Guid, string, IMetadataOf> CreateMetadataOfAppSources(IHasMetadataSourceAndExpiring appSource)
         => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title,
@@ -58,5 +59,6 @@ public class EntityPartsBuilder
             deferredSource: deferredSource ?? specs.deferredSource);
     }
 
-    internal IRelationshipManager RelationshipManager(IEntityLight entity) => _getRm(entity);
+    internal IRelationshipManager RelationshipManager(IEntityLight entity)
+        => _getRm(entity);
 }
