@@ -10,13 +10,16 @@ public record SaveOptions(string PrimaryLanguage, List<DimensionDefinition> Lang
 
     public string PrimaryLanguage
     {
-        get;
-        set => field = value.ToLowerInvariant();
-    } = PrimaryLanguage;
+        get => _primaryLanguageField;
+        set => _primaryLanguageField = value.ToLowerInvariant();
+    }
+
+    // ReSharper disable once ReplaceWithFieldKeyword
+    private string _primaryLanguageField = PrimaryLanguage;
 
     public bool PreserveUntouchedAttributes { get; init; } = false;
 
-    public bool PreserveUnknownAttributes { get; init; }= false;
+    public bool PreserveUnknownAttributes { get; init; } = false;
 
     public bool SkipExistingAttributes { get; init; } = false;
 

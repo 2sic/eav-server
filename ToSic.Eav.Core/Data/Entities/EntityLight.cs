@@ -35,7 +35,7 @@ public partial record EntityLight : IEntityLight
     internal /*required*/ string TitleFieldName
     {
         get => field ?? Type.TitleFieldName;
-        init;
+        init => field = value;
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public partial record EntityLight : IEntityLight
 
 
     /// <inheritdoc />
-    public required ITarget MetadataFor { get => field ??= new Target(); init; }
+    public required ITarget MetadataFor { get => field ??= new Target(); init => field = value; }
 
     /// <inheritdoc />
     public required string Owner { get; init; }
