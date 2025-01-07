@@ -15,10 +15,12 @@ public partial class DataSourceOptions
         public IDataSourceOptions Create(IDataSourceOptions original, object other)
         {
             // other is null
-            if (other is null) return original ?? new DataSourceOptions();
+            if (other is null)
+                return original ?? new DataSourceOptions();
 
             var secondDs = Convert(other, throwIfNull: false, throwIfNoMatch: false);
-            if (original is null) return secondDs ?? new DataSourceOptions();
+            if (original is null)
+                return secondDs ?? new DataSourceOptions();
 
             // Most complex case, both are now "real" - must merge
             return new DataSourceOptions(original,
@@ -50,7 +52,8 @@ public partial class DataSourceOptions
 
         }
 
-        public IDataSourceOptions ConvertLookUpEngine(ILookUpEngine lookUp) => new DataSourceOptions(lookUp: lookUp);
+        public IDataSourceOptions ConvertLookUpEngine(ILookUpEngine lookUp)
+            => new DataSourceOptions(lookUp: lookUp);
 
         public IImmutableDictionary<string, string> Values(object original, bool throwIfNull = false, bool throwIfNoMatch = true)
         {

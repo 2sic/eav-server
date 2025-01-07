@@ -14,5 +14,5 @@ public interface IHasIdentityNameId
     /// Primary identifier of an object which has this property.
     /// It will be unique and used as an ID where needed.
     /// </summary>
-    string NameId { get; }
+    public string NameId { get; }
 }
