@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Lib.Coding;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource.Internal;
 

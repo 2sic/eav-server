@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -30,7 +30,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public ItemFilterDuplicates(MyServices services): base(services, $"{LogPrefix}.Duplic")
+    public ItemFilterDuplicates(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Duplic")
     {
         ProvideOut(GetUnique);
         ProvideOut(GetDuplicates, DuplicatesStreamName);

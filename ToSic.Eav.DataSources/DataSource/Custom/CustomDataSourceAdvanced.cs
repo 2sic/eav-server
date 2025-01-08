@@ -52,12 +52,12 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     /// but renew when it is updates
     /// </remarks>
     protected CustomDataSourceAdvanced(MyServices services, string logName = null, object[] connect = null)
-        : base(services, logName ?? $"{DataSourceConstants.LogPrefix}.Extern", connect: connect)
+        : base(services, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: connect)
     {
         DataFactory = services.DataFactory;
     }
     protected CustomDataSourceAdvanced(MyServicesBase<MyServices> services, string logName = null)
-        : base(services.ParentServices, logName ?? $"{DataSourceConstants.LogPrefix}.Extern", connect: [services])
+        : base(services.ParentServices, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: [services])
     {
         DataFactory = services.ParentServices.DataFactory;
     }

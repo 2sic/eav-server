@@ -46,7 +46,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// Constructs a new QueryRun
     /// </summary>
     [PrivateApi]
-    public QueryRun(MyServices services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.QryRun")
+    public QueryRun(MyServices services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun")
     {
         ConnectLogs([
             _queryGenerator = queryGenerator

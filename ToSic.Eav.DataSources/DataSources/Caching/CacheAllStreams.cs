@@ -80,7 +80,7 @@ public class CacheAllStreams : DataSourceBase
     /// Constructs a new App DataSource
     /// </summary>
     [PrivateApi]
-    public CacheAllStreams(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.CachAl")
+    public CacheAllStreams(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.CachAl")
     {
         // this one is unusual, so don't pre-attach a default data stream
     }

@@ -117,7 +117,7 @@ public class Csv : CustomDataSourceAdvanced
 
 
     [PrivateApi]
-    public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstants.LogPrefix}.Csv", connect: [user, serverPaths, dataFactory])
+    public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths, dataFactory])
     {
         _user = user;
         _serverPaths = serverPaths;

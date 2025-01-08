@@ -36,7 +36,7 @@ internal class AppWithParents: DataSourceBase
     private int _appId;
     private int _zoneId;
 
-    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
     {
         ConnectLogs([
             _dataSourceFactory = dataSourceFactory,

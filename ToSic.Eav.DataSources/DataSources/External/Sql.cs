@@ -133,7 +133,7 @@ public class Sql : CustomDataSourceAdvanced
     /// Initializes a new instance of the SqlDataSource class
     /// </summary>
     [PrivateApi]
-    public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
+    public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql")
     {
         ConnectLogs([
             _dataFactory = dataFactory

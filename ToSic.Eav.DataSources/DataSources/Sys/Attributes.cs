@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Internal;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -48,7 +48,7 @@ public sealed class Attributes: DataSourceBase
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib", connect: [appReaders, dataFactory])
+    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders, dataFactory])
     {
         _appReaders = appReaders;
         _dataFactory = dataFactory.New(options: new()

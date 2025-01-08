@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -44,7 +44,7 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new EntityTypeFilter
     /// </summary>
     [PrivateApi]
-    public EntityTypeFilter(IAppReaderFactory appReaders, MyServices services) : base(services, $"{LogPrefix}.TypeF")
+    public EntityTypeFilter(IAppReaderFactory appReaders, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.TypeF")
 
     {
         _appReaders = appReaders;

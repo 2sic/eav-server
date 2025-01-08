@@ -4,7 +4,7 @@ using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Services;
 using ToSic.Lib.Helpers;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -59,7 +59,7 @@ public sealed class QueryInfo : DataSourceBase
     /// </summary>
     public QueryInfo(MyServices services,
         LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataFactory dataFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
-        services, $"{LogPrefix}.EavQIn")
+        services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn")
     {
         ConnectLogs([
             QueryBuilder = queryBuilder,

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Services;
 internal class DataSourcesService(
     IServiceProvider serviceProvider,
     LazySvc<ILookUpEngineResolver> lookupResolveLazy)
-    : ServiceBase($"{DataSourceConstants.LogPrefix}.Factry", connect: [/* never! serviceProvider,*/ lookupResolveLazy]),
+    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.Factry", connect: [/* never! serviceProvider,*/ lookupResolveLazy]),
         IDataSourcesService
 {
 

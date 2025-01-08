@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [method: PrivateApi]
 internal class DataSourceConfiguration(DataSourceConfiguration.MyServices services)
-    : ServiceBase<DataSourceConfiguration.MyServices>(services, $"{DataSourceConstants.LogPrefix}.Config"),
+    : ServiceBase<DataSourceConfiguration.MyServices>(services, $"{DataSourceConstantsInternal.LogPrefix}.Config"),
         IDataSourceConfiguration
 {
     #region Dependencies - Must be in DI

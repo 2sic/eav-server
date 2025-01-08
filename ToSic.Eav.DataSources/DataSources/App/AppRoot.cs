@@ -4,7 +4,7 @@ using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Lib.Helpers;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
@@ -17,18 +17,18 @@ namespace ToSic.Eav.DataSources;
 public class AppRoot : DataSourceBase, IAppRoot
 {
     [PrivateApi]
-    public AppRoot(IAppReaderFactory appReaders, MyServices services) : base(services, $"{LogPrefix}.Root")
+    public AppRoot(IAppReaderFactory appReaders, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Root")
     {
         _appReaders = appReaders;
         ProvideOut(() => AppReader.List);
-        ProvideOut(() => AppReader.GetListPublished(), StreamPublishedName);
-        ProvideOut(() => AppReader.GetListNotHavingDrafts(), StreamDraftsName);
+        ProvideOut(() => AppReader.GetListPublished(), DataSourceConstantsInternal.StreamPublishedName);
+        ProvideOut(() => AppReader.GetListNotHavingDrafts(), DataSourceConstantsInternal.StreamDraftsName);
     }
     private readonly IAppReaderFactory _appReaders;
 
     public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
-        .AddStream(name: StreamPublishedName)
-        .AddStream(name: StreamDraftsName));
+        .AddStream(name: DataSourceConstantsInternal.StreamPublishedName)
+        .AddStream(name: DataSourceConstantsInternal.StreamDraftsName));
 
     private readonly GetOnce<IDataSourceLink> _link = new();
 

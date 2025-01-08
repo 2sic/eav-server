@@ -30,7 +30,7 @@ public sealed class Scopes : CustomDataSource
     /// Constructs a new Scopes DS
     /// </summary>
     [PrivateApi]
-    public Scopes(MyServices services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstants.LogPrefix}.Scopes")
+    public Scopes(MyServices services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes")
     {
         ConnectLogs([_appReadFac = appReadFac]);
         ProvideOutRaw(GetList, options: () => new()

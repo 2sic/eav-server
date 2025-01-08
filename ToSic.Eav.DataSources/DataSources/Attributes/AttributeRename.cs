@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -63,7 +63,7 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{LogPrefix}.AtrRen")
+    public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen")
     {
         ConnectLogs([
             _dataBuilder = dataBuilder

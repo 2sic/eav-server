@@ -46,7 +46,7 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     [TestMethod]
     public void ReviewGlobalZonesQuery()
     {
-        var queryName = $"{DataSourceConstants.SystemQueryPrefix}Zones";
+        var queryName = $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones";
         var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, queryName);
         Assert.AreEqual(queryName, queryEnt.TacGet<string>("Name"), "should find zones");
 
@@ -57,7 +57,7 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     [TestMethod]
     public void UseGlobalZonesQuery()
     {
-        var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, $"{DataSourceConstants.SystemQueryPrefixPreV15}Zones");
+        var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones");
 
         var qDef = _queryDefinitionBuilder.Create(queryEnt, TestConfig.AppForQueryTests);
 

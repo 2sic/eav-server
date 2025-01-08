@@ -3,7 +3,7 @@ using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
@@ -17,7 +17,7 @@ public class QueryManager(
     Generator<Query> queryGenerator,
     LazySvc<IAppReaderFactory> appReaders,
     LazySvc<QueryDefinitionBuilder> queryDefBuilder)
-    : ServiceBase($"{LogPrefix}.QryMan", connect: [queryGenerator, appReaders, queryDefBuilder])
+    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.QryMan", connect: [queryGenerator, appReaders, queryDefBuilder])
 {
     /// <summary>
     /// Get a query definition from the current app
@@ -110,8 +110,8 @@ public class QueryManager(
         var all = AllQueryItems(appIdentity, recurseParents);
         var result = FindByNameOrGuid(all, nameOrGuid);
         // If nothing found and we have an old name, try the new name
-        if (result == null && nameOrGuid.StartsWith(SystemQueryPrefixPreV15))
-            result = FindByNameOrGuid(all, nameOrGuid.Replace(SystemQueryPrefixPreV15, SystemQueryPrefix));
+        if (result == null && nameOrGuid.StartsWith(DataSourceConstantsInternal.SystemQueryPrefixPreV15))
+            result = FindByNameOrGuid(all, nameOrGuid.Replace(DataSourceConstantsInternal.SystemQueryPrefixPreV15, DataSourceConstantsInternal.SystemQueryPrefix));
         return l.Return(result, result == null ? "null" : "ok");
     }
 

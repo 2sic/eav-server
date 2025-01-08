@@ -5,7 +5,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -59,7 +59,7 @@ public sealed class Apps: CustomDataSource
     /// Constructs a new Apps DS
     /// </summary>
     [PrivateApi]
-    public Apps(MyServices services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : base(services, $"{LogPrefix}.Apps")
+    public Apps(MyServices services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Apps")
     {
         ConnectLogs([appsCatalog, appReaders]);
         ProvideOutRaw(

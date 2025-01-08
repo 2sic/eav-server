@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.DataSource.Internal.Errors;
 using ToSic.Eav.DataSource.Streams.Internal;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -139,7 +139,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new RelationshipFilter
     /// </summary>
     [PrivateApi]
-    public RelationshipFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{LogPrefix}.Relfil", connect: [userPermissions])
+    public RelationshipFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [userPermissions])
     {
         _userPermissions = userPermissions;
         ProvideOut(GetRelationshipsOrFallback);

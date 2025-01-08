@@ -102,7 +102,7 @@ public partial class App : DataSourceBase
     /// Constructs a new App DataSource
     /// </summary>
     [PrivateApi]
-    public App(MyServices services): base(services, $"{DataSourceConstants.LogPrefix}.EavApp")
+    public App(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.EavApp")
     {
         _services = services;
         // this one is unusual, so don't pre-attach a default data stream to out

@@ -4,7 +4,7 @@ using ToSic.Eav.Apps.State;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 

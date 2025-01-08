@@ -8,7 +8,7 @@ using ToSic.Eav.Security.Internal;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace

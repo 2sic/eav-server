@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.DataSources.Internal;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsChildren")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-public class Children(DataSourceBase.MyServices services, IContextResolverUserPermissions userPermissions) : RelationshipDataSourceBase(services, userPermissions, $"{LogPrefix}.Child")
+public class Children(DataSourceBase.MyServices services, IContextResolverUserPermissions userPermissions) : RelationshipDataSourceBase(services, userPermissions, $"{DataSourceConstantsInternal.LogPrefix}.Child")
 {
     /// <summary>
     /// Name of the field pointing to the children.
