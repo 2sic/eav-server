@@ -104,7 +104,11 @@ partial class App: IDataSourceReset
     {
         var l = Log.Fn<EntityTypeFilter>($"..., ..., {typeName}");
         var ds = _services.DataSourceFactory.Create<EntityTypeFilter>(attach: upstreamDataSource,
-            options: new DataSourceOptions(appIdentity: this, lookUp: Configuration.LookUpEngine));
+            options: new DataSourceOptions
+            {
+                AppIdentityOrReader = this,
+                LookUp = Configuration.LookUpEngine,
+            });
         ds.TypeName = typeName;
         ds.AddDebugInfo(Guid, null); // tell the inner source that it has the same ID as this one, as we're pretending it's the same source
         return l.Return(ds);

@@ -16,9 +16,13 @@ public class ChildParentTestBase<T> : TestBaseDiEavFullAndDb where T: Relationsh
 
     protected T PrepareDsWithOptions(string appType = null, IEnumerable<int> ids = null, ILookUpEngine lookUpEngine = null, object optionsForLastDs = null)
     {
-        if (lookUpEngine == null) lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
+        lookUpEngine ??= new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: AppIdentity, lookUp: lookUpEngine));
+        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions
+        {
+            AppIdentityOrReader = AppIdentity,
+            LookUp = lookUpEngine,
+        });
         var appDs = CreateDataSource<App>(baseDs);
         var inStream = appDs.GetStream(appType);
         inStream = FilterStreamByIds(ids, inStream);
@@ -32,7 +36,11 @@ public class ChildParentTestBase<T> : TestBaseDiEavFullAndDb where T: Relationsh
     {
         if (lookUpEngine == null) lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: AppIdentity, lookUp: lookUpEngine));
+        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions
+        {
+            AppIdentityOrReader = AppIdentity,
+            LookUp = lookUpEngine,
+        });
         var appDs = CreateDataSource<App>(baseDs);
         var inStream = appDs.GetStream(appType);
         inStream = FilterStreamByIds(ids, inStream);

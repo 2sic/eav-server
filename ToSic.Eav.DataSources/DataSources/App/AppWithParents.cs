@@ -50,7 +50,10 @@ internal class AppWithParents: DataSourceBase
     {
         var appReader = _appReaders.Get(this);
             
-        var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appReader));
+        var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions
+        {
+            AppIdentityOrReader = appReader,
+        });
         var initialLink = initialSource.Link;
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
@@ -58,7 +61,10 @@ internal class AppWithParents: DataSourceBase
         var countRecursions = 0;
         while (parentAppState != null && countRecursions++ < 5)
         {
-            var next = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: parentAppState));
+            var next = _dataSourceFactory.CreateDefault(new DataSourceOptions
+            {
+                AppIdentityOrReader = parentAppState,
+            });
             initialLink = initialLink.Add(next.Link.Rename(inName: $"App{parentAppState.NameId}"));
             parentAppState = parentAppState.ParentApp?.AppState;
         }

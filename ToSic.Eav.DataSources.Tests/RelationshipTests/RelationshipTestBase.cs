@@ -91,7 +91,12 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
 
     protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
     {
-        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: RelationshipTestSpecs.AppIdentity, lookUp: config));
+        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions
+            {
+                AppIdentityOrReader = RelationshipTestSpecs.AppIdentity,
+                LookUp = config
+            }
+        );
         var appDs = CreateDataSource<App>(baseDs);
 
         // micro tests to ensure we have the right app etc.

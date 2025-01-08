@@ -46,7 +46,7 @@ public class MetadataTargetsTests : TestBaseDiEavFullAndDb
     {
         var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: AppIdentity, lookUp: lookUpEngine));
+        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine });
         var appDs = CreateDataSource<App>(baseDs);
 
         var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));

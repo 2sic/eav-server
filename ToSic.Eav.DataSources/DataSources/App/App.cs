@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps;
+﻿using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Services;
 using ToSic.Lib.Helpers;
@@ -135,12 +136,20 @@ public partial class App : DataSourceBase
         {
             Log.A("Will use Ancestors accessor with all ancestors");
             // Important: only pass the identity in, never pass this source in, or you'll get infinite recursions
-            var appStack = _services.DataSourceFactory.Create<AppWithParents>(options: new DataSourceOptions(appIdentity: new AppIdentity(this), lookUp: Configuration.LookUpEngine));
+            var appStack = _services.DataSourceFactory.Create<AppWithParents>(options: new DataSourceOptions
+            {
+                AppIdentityOrReader = this.PureIdentity(),
+                LookUp = Configuration.LookUpEngine,
+            });
             ((IAppIdentitySync)appStack).UpdateAppIdentity(this);
             appDs = appStack;
         }
         else
-            appDs = _services.DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: this, lookUp: Configuration.LookUpEngine));
+            appDs = _services.DataSourceFactory.CreateDefault(new DataSourceOptions
+            {
+                AppIdentityOrReader = this,
+                LookUp = Configuration.LookUpEngine,
+            });
 
         Attach(DataSourceConstants.StreamDefaultName, appDs);
         _attachOtherDataSourceRunning = false;

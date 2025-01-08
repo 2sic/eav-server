@@ -39,25 +39,31 @@ internal class DataSourcesService(
         if (stream.Source == null)
             throw new("Unexpected source - stream without a real source. can't process; wip");
         var sourceDs = stream.Source;
-        var ds = Create<TDataSource>(options: new DataSourceOptionConverter().Create(new DataSourceOptions(appIdentity: sourceDs, lookUp: sourceDs.Configuration.LookUpEngine), options));
+        var ds = Create<TDataSource>(options: new DataSourceOptionConverter().Create(new DataSourceOptions
+        {
+            AppIdentityOrReader = sourceDs,
+            LookUp = sourceDs.Configuration.LookUpEngine,
+        }, options));
         ds.Attach(DataSourceConstants.StreamDefaultName, stream);
         return ds;
     }
 
     /// <inheritdoc />
-    public TDataSource Create<TDataSource>(IDataSourceLinkable attach = default, IDataSourceOptions options = default) where TDataSource : IDataSource => Log.Func(() =>
+    public TDataSource Create<TDataSource>(IDataSourceLinkable attach = default, IDataSourceOptions options = default) where TDataSource : IDataSource
     {
+        var l = Log.Fn<TDataSource>($"{typeof(TDataSource).Name}, attach:{attach?.Link?.DataSource?.Show()}");
+
         var primarySource = attach?.Link?.DataSource;
+        
         if (primarySource == null && options?.AppIdentityOrReader == null)
             throw new($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");
         if (primarySource == null && options?.LookUp == null)
             options = OptionsWithLookUp(options);
-        // throw new Exception($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.LookUp no not be null.");
 
         var newDs = serviceProvider.Build<TDataSource>(Log);
         newDs.Setup(options, attach);
-        return newDs;
-    });
+        return l.Return(newDs);
+    }
 
     #endregion
 
@@ -82,12 +88,12 @@ internal class DataSourcesService(
         return l.Return(publishingFilter, "ok");
     }
 
-    private IDataSourceOptions OptionsWithLookUp(IDataSourceOptions optionsOrNull)
-    {
-        return optionsOrNull?.LookUp != null 
-            ? optionsOrNull 
-            : new DataSourceOptions(optionsOrNull, lookUp: lookupResolveLazy.Value.GetLookUpEngine(0));
-    }
+    private DataSourceOptions OptionsWithLookUp(IDataSourceOptions optionsOrNull) =>
+        optionsOrNull is not DataSourceOptions typed
+            ? new() { LookUp = lookupResolveLazy.Value.GetLookUpEngine(0) }
+            : typed.LookUp == null
+                ? typed with { LookUp = lookupResolveLazy.Value.GetLookUpEngine(0) }
+                : typed;
 
     #endregion
 }

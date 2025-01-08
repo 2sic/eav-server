@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Generics;
+﻿using System.Linq;
+using ToSic.Eav.Generics;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using static System.StringComparer;
@@ -10,38 +11,46 @@ namespace ToSic.Eav.DataSource;
 /// </summary>
 public class DataSourceOptionConverter
 {
-    public IDataSourceOptions Create(IDataSourceOptions original, object other)
+    public DataSourceOptions Create(IDataSourceOptions original, object other)
     {
         // other is null
         if (other is null)
-            return original ?? new DataSourceOptions();
+            return original as DataSourceOptions ?? new DataSourceOptions();
 
         var secondDs = Convert(other, throwIfNull: false, throwIfNoMatch: false);
-        if (original is null)
+        if (original is not DataSourceOptions typed)
             return secondDs ?? new DataSourceOptions();
 
         // Most complex case, both are now "real" - must merge
-        return new DataSourceOptions(original,
-            appIdentity: secondDs.AppIdentityOrReader,
-            values: secondDs.Values,
-            lookUp: secondDs.LookUp,
-            showDrafts: secondDs.ShowDrafts);
+        return typed with
+        {
+            AppIdentityOrReader = secondDs.AppIdentityOrReader ?? typed.AppIdentityOrReader,
+            Values = secondDs.Values ?? typed.Values,
+            LookUp = secondDs.LookUp ?? typed.LookUp,
+            ShowDrafts = secondDs.ShowDrafts ?? typed.ShowDrafts
+        };
+        //new DataSourceOptions(original,
+        //    appIdentity: secondDs.AppIdentityOrReader,
+        //    values: secondDs.Values,
+        //    lookUp: secondDs.LookUp,
+        //    showDrafts: secondDs.ShowDrafts);}
     }
 
-    public IDataSourceOptions Convert(object original, bool throwIfNull, bool throwIfNoMatch)
+    public DataSourceOptions Convert(object original, bool throwIfNull, bool throwIfNoMatch)
     {
         switch (original)
         {
             case null when throwIfNull: throw new ArgumentNullException(nameof(original));
             case null: return null;
-            case IDataSourceOptions ds: return ds;
-            case ILookUpEngine lu: return ConvertLookUpEngine(lu);
+            case DataSourceOptions dss: return dss;
+            //case IDataSourceOptions ds: return ds;
+            case ILookUpEngine lu: return new DataSourceOptions { LookUp = lu };
         }
 
         // Check if it's a possible value
         var values = Values(original, throwIfNull: false, throwIfNoMatch: false);
         if (values != null)
-            return new DataSourceOptions(values: values);
+            return new DataSourceOptions { Values = values };
 
         if (!throwIfNoMatch) return null;
         throw new ArgumentException(
@@ -50,8 +59,8 @@ public class DataSourceOptionConverter
 
     }
 
-    public IDataSourceOptions ConvertLookUpEngine(ILookUpEngine lookUp)
-        => new DataSourceOptions(lookUp: lookUp);
+    //public IDataSourceOptions ConvertLookUpEngine(ILookUpEngine lookUp)
+    //    => new DataSourceOptions { LookUp = lookUp };
 
     public IImmutableDictionary<string, string> Values(object original, bool throwIfNull = false, bool throwIfNoMatch = true)
     {
