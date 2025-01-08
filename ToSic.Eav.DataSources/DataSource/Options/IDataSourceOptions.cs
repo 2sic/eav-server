@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Work;
 
 namespace ToSic.Eav.DataSource;
 
@@ -19,4 +20,9 @@ public interface IDataSourceOptions
     bool? ShowDrafts { get; }
 
     bool Immutable { get; }
+
+    /// <summary>
+    /// WIP experimental v19.01 2dm
+    /// </summary>
+    IWorkSpecs Specs { get; }
 }

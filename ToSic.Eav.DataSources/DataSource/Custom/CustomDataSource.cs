@@ -20,7 +20,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// Note that it is the same as the base MyServices,
     /// but it's still important to have an own class.
     /// This is in case some day it will need more dependencies.
-    /// Otherwise compiled code would break when we need additional dependencies just for the CustomDataSource.
+    /// Otherwise, compiled code would break when we need additional dependencies just for the CustomDataSource.
     /// </summary>
     [PrivateApi]
     [method: PrivateApi]

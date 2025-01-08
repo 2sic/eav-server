@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Work;
 using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.DataSource;
@@ -10,7 +11,7 @@ namespace ToSic.Eav.DataSource;
 /// This is internal functionality
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class DataSourceOptions: IDataSourceOptions
+public record DataSourceOptions: IDataSourceOptions
 {
     /// <summary>
     /// Empty constructor to create new config without anything.
@@ -40,12 +41,5 @@ public partial class DataSourceOptions: IDataSourceOptions
     public bool? ShowDrafts { get; }
     public bool Immutable { get; }
 
-
-    #region Value Setters
-
-    public DataSourceOptions Values(IImmutableDictionary<string, string> values) => new(this, values: values);
-        
-        
-    #endregion
-
+    public IWorkSpecs Specs { get; init; }
 }

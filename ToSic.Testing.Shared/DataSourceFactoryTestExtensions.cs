@@ -23,7 +23,7 @@ public static class DataSourceFactoryTestExtensions
         IDataSource upstream = default,
         IAppIdentity appIdentity = default,
         object options = default) where TDataSource : IDataSource
-        => dsf.Create<TDataSource>(attach: upstream, options: new DataSourceOptions.Converter()
+        => dsf.Create<TDataSource>(attach: upstream, options: new DataSourceOptionConverter()
             .Create(new DataSourceOptions(appIdentity: appIdentity, lookUp: new LookUpEngine(null)), options));
 
 }

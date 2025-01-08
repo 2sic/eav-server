@@ -39,7 +39,7 @@ internal class DataSourcesService(
         if (stream.Source == null)
             throw new("Unexpected source - stream without a real source. can't process; wip");
         var sourceDs = stream.Source;
-        var ds = Create<TDataSource>(options: new DataSourceOptions.Converter().Create(new DataSourceOptions(appIdentity: sourceDs, lookUp: sourceDs.Configuration.LookUpEngine), options));
+        var ds = Create<TDataSource>(options: new DataSourceOptionConverter().Create(new DataSourceOptions(appIdentity: sourceDs, lookUp: sourceDs.Configuration.LookUpEngine), options));
         ds.Attach(DataSourceConstants.StreamDefaultName, stream);
         return ds;
     }
