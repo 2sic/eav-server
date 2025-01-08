@@ -52,7 +52,7 @@ public class OwnerFilter : Eav.DataSource.DataSourceBase
         Configuration.Parse();
 
         if (string.IsNullOrWhiteSpace(Identity))
-            return l.ReturnAsError(EmptyList, "no identity");
+            return l.ReturnAsError([], "no identity");
 
         var source = TryGetIn();
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());

@@ -91,7 +91,7 @@ public sealed class QueryInfo : DataSourceBase
                                  { StreamsType.Name.ToString(), stream.Key }
                              }))
                          .ToImmutableList()
-                     ?? EmptyList;
+                     ?? [];
         return l.Return(result, $"{result.Count}");
     }
         
@@ -106,17 +106,17 @@ public sealed class QueryInfo : DataSourceBase
         // no query can happen if the name was blank
         var query = Query;
         if (query == null)
-            return l.Return(EmptyList, "null");
+            return l.Return([], "null");
 
         // check that _query has the stream name
         if (StreamName.IsEmptyOrWs())
-            return l.Return(EmptyList, "Stream Name empty");
+            return l.Return([], "Stream Name empty");
 
         var streamNames = StreamName.CsvToArrayWithoutEmpty();
         var realStreams = streamNames.Where(query.Out.ContainsKey).ToList();
 
         if (!realStreams.Any())
-            return l.Return(EmptyList, "can't find stream name in query");
+            return l.Return([], "can't find stream name in query");
 
         var results = realStreams
             .SelectMany(sName =>

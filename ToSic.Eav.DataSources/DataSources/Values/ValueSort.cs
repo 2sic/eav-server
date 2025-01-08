@@ -141,7 +141,7 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
         IImmutableList<IEntity> final;
         try
         {
-            final = ordered?.ToImmutableList() ?? EmptyList;
+            final = ordered?.ToImmutableList() ?? [];
         }
         catch (Exception e)
         {

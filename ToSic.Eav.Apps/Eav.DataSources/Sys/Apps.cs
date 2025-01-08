@@ -79,7 +79,7 @@ public sealed class Apps: CustomDataSource
         // try to load the content-type - if it fails, return empty list
         var allZones = appsCatalog.Zones;
         if (!allZones.TryGetValue(OfZoneId, out var zone)) 
-            return (EmptyRawList,"fails load content-type");
+            return ([],"fails load content-type");
 
         var list = zone.Apps
             .OrderBy(a => a.Key)

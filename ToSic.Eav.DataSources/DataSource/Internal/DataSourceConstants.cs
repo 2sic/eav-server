@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Raw;
-
-namespace ToSic.Eav.DataSource.Internal;
+﻿namespace ToSic.Eav.DataSource.Internal;
 
 /// <summary>
 /// Various constants typically used in/for DataSources.
@@ -70,19 +68,18 @@ public class DataSourceConstants
 
     #region Empty Lists
 
-    /// <summary>
-    /// Constant empty list of entities - for common scenarios where we just need to return empty results.
-    /// </summary>
-    public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
-
-    public static IImmutableList<IRawEntity> EmptyRawList = ImmutableList<IRawEntity>.Empty;
+    ///// <summary>
+    ///// Constant empty list of entities - for common scenarios where we just need to return empty results.
+    ///// </summary>
+    //public static IImmutableList<IEntity> EmptyList = ImmutableList<IEntity>.Empty;
+    //public static IImmutableList<IRawEntity> EmptyRawList = ImmutableList<IRawEntity>.Empty;
 
     #endregion
 
     #region Query / Visual Query
 
     /// <summary>
-    /// Use this in the `In` stream names array of the of the <see cref="VisualQueryAttribute"/>
+    /// Use this in the `In` stream names array of the <see cref="VisualQueryAttribute"/>
     /// to mark an in-stream as being required.
     /// </summary>
     [PublicApi]

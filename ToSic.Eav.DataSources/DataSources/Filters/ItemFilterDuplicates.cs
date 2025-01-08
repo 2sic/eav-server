@@ -44,7 +44,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         if (!In.HasStreamWithItems(StreamDefaultName)) 
-            return l.Return(EmptyList, "no in stream with name");
+            return l.Return([], "no in stream with name");
 
         var source = TryGetIn();
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
@@ -65,7 +65,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         if (!In.HasStreamWithItems(StreamDefaultName)) 
-            return l.ReturnAsError(EmptyList, "no in-stream with name");
+            return l.ReturnAsError([], "no in-stream with name");
 
         var source = TryGetIn();
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());

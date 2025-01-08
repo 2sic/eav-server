@@ -115,7 +115,8 @@ public class CustomDataSource: CustomDataSourceAdvanced
                                              "Error details can be found in Insights.", exception: ex);
             return l.ReturnAsError(runErr);
         }
-        if (funcResult is null) l.Return(EmptyList, "null, no data returned");
+        if (funcResult is null)
+            l.Return([], "null, no data returned");
 
         // Make a list out of the result
         List<object> data;
@@ -134,7 +135,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         }
 
         // Handle empty list
-        if (data.SafeNone()) l.Return(EmptyList, "no items returned");
+        if (data.SafeNone()) l.Return([], "no items returned");
 
         // Handle all is already converted to IEntity
         if (data.All(i => i is IEntity))
@@ -184,7 +185,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
         // If we didn't get anything, return empty
         if (raw.SafeNone())
-            return l.Return(EmptyList, "no items returned");
+            return l.Return([], "no items returned");
 
         // Transform result to IEntity
         var result = DataFactory.New(options: GetBest(options)).Create(raw);
@@ -201,7 +202,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
         // If we didn't get anything, return empty
         if (raw.SafeNone())
-            return l.Return(EmptyList, "no items returned");
+            return l.Return([], "no items returned");
 
         // Transform result to IEntity
         var result = DataFactory.New(options: GetBest(options)).Create(raw);

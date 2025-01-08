@@ -42,7 +42,7 @@ public sealed class StreamFallback : DataSourceBase
     private IImmutableList<IEntity> GetStreamFallback()
     {
         var foundStream = FindIdealFallbackStream();
-        return foundStream?.List.ToImmutableList() ?? EmptyList;
+        return foundStream?.List.ToImmutableList() ?? [];
     }
 
     private IDataStream FindIdealFallbackStream() => Log.Func(() =>

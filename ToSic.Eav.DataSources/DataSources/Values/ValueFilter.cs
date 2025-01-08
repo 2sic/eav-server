@@ -125,7 +125,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // Case 1/2: Handle basic "none" and "all" operators
         if (op == CompareOperators.OpNone)
-            return l.Return(EmptyList, CompareOperators.OpNone);
+            return l.Return([], CompareOperators.OpNone);
         if (op == CompareOperators.OpAll)
             return l.Return(ApplyTake(source).ToImmutableList(), CompareOperators.OpAll);
 
@@ -140,7 +140,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // if I can't find any, return empty list
         if (firstEntity == null)
-            return l.Return(EmptyList, "empty");
+            return l.Return([], "empty");
 
         // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
         // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
