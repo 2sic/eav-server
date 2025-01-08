@@ -5,9 +5,9 @@
 /// </summary>
 /// <remarks>
 /// History
-/// * Created ca. v12
+/// * Created ca. v10
 /// * Accidentally marked private in 16.09
-/// * re-published in 19.01
+/// * Re-published in 19.01
 /// </remarks>
 [PublicApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
