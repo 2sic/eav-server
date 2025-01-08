@@ -29,12 +29,11 @@ public class ChildParentTestBase<T> : TestBaseDiEavFullAndDb where T: Relationsh
 
         var childDs = CreateDataSource<T>(attach: inStream, options: optionsForLastDs);
 
-        //if (fieldName != null) childDs.FieldName = fieldName;
         return childDs;
     }
     protected T PrepareDs(string appType = null, IEnumerable<int> ids = null, string fieldName = null, ILookUpEngine lookUpEngine = null)
     {
-        if (lookUpEngine == null) lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
+        lookUpEngine ??= new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
         var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions
         {
@@ -47,7 +46,6 @@ public class ChildParentTestBase<T> : TestBaseDiEavFullAndDb where T: Relationsh
 
         var childDs = CreateDataSource<T>(inStream, options: fieldName == null ? null : new { FieldName = fieldName });
 
-        //if (fieldName != null) childDs.FieldName = fieldName;
         return childDs;
     }
 }

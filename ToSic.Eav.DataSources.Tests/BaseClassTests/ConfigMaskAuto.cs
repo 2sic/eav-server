@@ -24,7 +24,7 @@ public class ConfigMaskAuto: TestBaseEavDataSource
         // should be false at first
         IsFalse(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));
         var findConfigs = GetService<ConfigurationDataLoader>();
-        var masks = findConfigs.GetTokens(typeof(Shuffle));
+        var masks = findConfigs.GetTokensTac(typeof(Shuffle));
         IsTrue(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));
     }
 
@@ -32,7 +32,7 @@ public class ConfigMaskAuto: TestBaseEavDataSource
     public void GetMasksForShuffle()
     {
         var findConfigs = GetService<ConfigurationDataLoader>();
-        var masks = findConfigs.GetTokens(typeof(Shuffle));
+        var masks = findConfigs.GetTokensTac(typeof(Shuffle));
         AreEqual(1, masks.Count);
         AreEqual($"[{DataSourceConstants.MyConfigurationSourceName}:Take||0]", masks.First().Token);
     }
@@ -41,7 +41,7 @@ public class ConfigMaskAuto: TestBaseEavDataSource
     public void GetMasksForInheritedDataSource()
     {
         var findConfigs = GetService<ConfigurationDataLoader>();
-        var masks = findConfigs.GetTokens(typeof(Children));
+        var masks = findConfigs.GetTokensTac(typeof(Children));
         AreEqual(3, masks.Count);
         AreEqual($"[{DataSourceConstants.MyConfigurationSourceName}:{nameof(Children.FieldName)}]", masks.Skip(1).First().Token);
     }
@@ -50,7 +50,7 @@ public class ConfigMaskAuto: TestBaseEavDataSource
     public void GetMasksWithOtherFieldName()
     {
         var findConfigs = GetService<ConfigurationDataLoader>();
-        var masks = findConfigs.GetTokens(typeof(RelationshipFilter));
+        var masks = findConfigs.GetTokensTac(typeof(RelationshipFilter));
         AreEqual(6, masks.Count);
         AreEqual($"[{DataSourceConstants.MyConfigurationSourceName}:Direction||{RelationshipFilter.DefaultDirection}]", masks.First(m => m.Key == nameof(RelationshipFilter.ChildOrParent)).Token);
     }
@@ -59,7 +59,7 @@ public class ConfigMaskAuto: TestBaseEavDataSource
     public void GetMasksWithEnumDefault()
     {
         var findConfigs = GetService<ConfigurationDataLoader>();
-        var masks = findConfigs.GetTokens(typeof(RelationshipFilter));
+        var masks = findConfigs.GetTokensTac(typeof(RelationshipFilter));
         AreEqual(6, masks.Count);
         AreEqual($"[{DataSourceConstants.MyConfigurationSourceName}:Comparison||contains]", masks.First(m => m.Key == nameof(RelationshipFilter.CompareMode)).Token);
     }
