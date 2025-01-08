@@ -7,49 +7,48 @@ using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 using ToSic.Testing.Shared.Data;
 
-namespace ToSic.Eav.DataSourceTests
+namespace ToSic.Eav.DataSourceTests;
+
+internal class AttributeRenameTester: TestServiceBase
 {
-    internal class AttributeRenameTester: TestServiceBase
+    public AttributeRename Original;
+    public AttributeRename Changed;
+    public IEntity CItem;
+    public List<IEntity> CList;
+    public IEntity OItem;
+
+    public AttributeRenameTester(TestBaseEavDataSource parent): base(parent) {}
+
+    public AttributeRenameTester Init(string map, bool preserve = true)
     {
-        public AttributeRename Original;
-        public AttributeRename Changed;
-        public IEntity CItem;
-        public List<IEntity> CList;
-        public IEntity OItem;
+        Original = CreateRenamer(10);
+        Changed = CreateRenamer(10);
+        if (map != null)
+            Changed.AttributeMap = map;
+        Changed.KeepOtherAttributes = preserve;
 
-        public AttributeRenameTester(TestBaseEavDataSource parent): base(parent) {}
+        CList = Changed.ListForTests().ToList();
+        CItem = CList.First();
+        OItem = Original.ListForTests().First();
+        return this;
+    }
 
-        public AttributeRenameTester Init(string map, bool preserve = true)
-        {
-            Original = CreateRenamer(10);
-            Changed = CreateRenamer(10);
-            if (map != null)
-                Changed.AttributeMap = map;
-            Changed.KeepOtherAttributes = preserve;
+    internal void AssertValues(string fieldOriginal, string fieldNew = null)
+    {
+        var original = OItem;
+        var modified = CItem;
+        Assert.AreNotEqual(original, modified, "This test should never receive the same items!");
+        fieldNew = fieldNew ?? fieldOriginal;
+        Assert.AreEqual(
+            original.TacGet<string>(fieldOriginal),
+            modified.TacGet<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
 
-            CList = Changed.ListForTests().ToList();
-            CItem = CList.First();
-            OItem = Original.ListForTests().First();
-            return this;
-        }
+    }
 
-        internal void AssertValues(string fieldOriginal, string fieldNew = null)
-        {
-            var original = OItem;
-            var modified = CItem;
-            Assert.AreNotEqual(original, modified, "This test should never receive the same items!");
-            fieldNew = fieldNew ?? fieldOriginal;
-            Assert.AreEqual(
-                original.TacGet<string>(fieldOriginal),
-                modified.TacGet<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
-
-        }
-
-        public AttributeRename CreateRenamer(int testItemsInRootSource)
-        {
-            var ds = new DataTablePerson(Parent).Generate(testItemsInRootSource, 1001);
-            var filtered = Parent.CreateDataSource<AttributeRename>(ds);
-            return filtered;
-        }
+    public AttributeRename CreateRenamer(int testItemsInRootSource)
+    {
+        var ds = new DataTablePerson(Parent).Generate(testItemsInRootSource, 1001);
+        var filtered = Parent.CreateDataSource<AttributeRename>(ds);
+        return filtered;
     }
 }

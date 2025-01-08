@@ -1,17 +1,17 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_
+namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_;
+
+[TestClass]
+public class XmlExport_Test
 {
-    [TestClass]
-    public class XmlExport_Test
-    {
-        #region TestValues
+    #region TestValues
 
-        //private int ZoneId = 1;
-        //private int AppId = 1;
-        #endregion
+    //private int ZoneId = 1;
+    //private int AppId = 1;
+    #endregion
 
-        #region Expected Blank Template Values
+    #region Expected Blank Template Values
 //        private string ExpectedBlankTemplateSimpleContent = @"<SexyContentData>
 //  <Entity Type=""BasicContentwithPreviewandImagebuiltin"">
 //    <Guid></Guid>
@@ -48,7 +48,7 @@ namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_
 //  </Entity>
 //</SexyContentData>";
 
-        #endregion
+    #endregion
 
 //        #region Expected LongExport Values
 
@@ -248,30 +248,29 @@ namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_
 //        #endregion
 
 
-        //[TestMethod]
-        //[Ignore]
-        //public void XmlExport_TryToExport20ContentItems()
-        //{
-        //    throw new Exception("This test can't pass yet - disabled on purpose but still here... 2dm");
-        //    var dataSerializer = new XmlExport();
+    //[TestMethod]
+    //[Ignore]
+    //public void XmlExport_TryToExport20ContentItems()
+    //{
+    //    throw new Exception("This test can't pass yet - disabled on purpose but still here... 2dm");
+    //    var dataSerializer = new XmlExport();
 
-        //    var serializedBasic = dataSerializer.CreateXml(ZoneId, AppId, 13, "", "", new List<string>(), LanguageReferenceExport.Link, ResourceReferenceExport.Link);
-        //    Assert.AreEqual(XmlImport_Test.FullExportOfSimpleContentAll, serializedBasic);
-        //}
+    //    var serializedBasic = dataSerializer.CreateXml(ZoneId, AppId, 13, "", "", new List<string>(), LanguageReferenceExport.Link, ResourceReferenceExport.Link);
+    //    Assert.AreEqual(XmlImport_Test.FullExportOfSimpleContentAll, serializedBasic);
+    //}
 
-        //[TestMethod]
-        //[Ignore]
+    //[TestMethod]
+    //[Ignore]
         
-        //public void XmlExport_ExportSimpleReImportTemplate()
-        //{
-        //    throw new Exception("This test can't pass yet - disabled on purpose but still here... 2dm");
-        //    var dataSerializer = new XmlExport();
-        //    var serializedRetinaType = dataSerializer.CreateBlankXml(ZoneId, AppId, 17, "BlankExportHelp");
+    //public void XmlExport_ExportSimpleReImportTemplate()
+    //{
+    //    throw new Exception("This test can't pass yet - disabled on purpose but still here... 2dm");
+    //    var dataSerializer = new XmlExport();
+    //    var serializedRetinaType = dataSerializer.CreateBlankXml(ZoneId, AppId, 17, "BlankExportHelp");
 
-        //    Assert.AreEqual(ExpectedBlankTemplateRetinaEffects, serializedRetinaType);
+    //    Assert.AreEqual(ExpectedBlankTemplateRetinaEffects, serializedRetinaType);
 
-        //    var serializedBasic = dataSerializer.CreateBlankXml(ZoneId, AppId, 13, "BlankExportHelp");
-        //    Assert.AreEqual(ExpectedBlankTemplateSimpleContent, serializedBasic);
-        //}
-    }
+    //    var serializedBasic = dataSerializer.CreateBlankXml(ZoneId, AppId, 13, "BlankExportHelp");
+    //    Assert.AreEqual(ExpectedBlankTemplateSimpleContent, serializedBasic);
+    //}
 }

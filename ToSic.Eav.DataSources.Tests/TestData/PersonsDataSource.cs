@@ -2,34 +2,33 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 
-namespace ToSic.Eav.DataSourceTests.TestData
+namespace ToSic.Eav.DataSourceTests.TestData;
+
+public class PersonsDataSource: Eav.DataSource.DataSourceBase
 {
-    public class PersonsDataSource: Eav.DataSource.DataSourceBase
+    public PersonsDataSource(MyServices services, DataBuilder dataBuilder): base(services, "TST.Person")
     {
-        public PersonsDataSource(MyServices services, DataBuilder dataBuilder): base(services, "TST.Person")
-        {
-            _dataBuilder = dataBuilder;
-            ProvideOut(GetPersons);
-        }
+        _dataBuilder = dataBuilder;
+        ProvideOut(GetPersons);
+    }
 
-        private readonly DataBuilder _dataBuilder;
+    private readonly DataBuilder _dataBuilder;
 
-        public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
-        {
-            _itemsToGenerate = itemsToGenerate;
-            _firstId = firstId;
-            _multiLanguage = multiLanguage;
-            return this;
-        }
-        private int _itemsToGenerate;
-        private int _firstId;
-        private bool _multiLanguage;
+    public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
+    {
+        _itemsToGenerate = itemsToGenerate;
+        _firstId = firstId;
+        _multiLanguage = multiLanguage;
+        return this;
+    }
+    private int _itemsToGenerate;
+    private int _firstId;
+    private bool _multiLanguage;
 
-        private IImmutableList<IEntity> GetPersons()
-        {
-            var persons = new PersonGenerator(_dataBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
-            var list = new PersonGenerator(_dataBuilder).Person2Entity(persons, _multiLanguage);
-            return list.ToImmutableList();
-        }
+    private IImmutableList<IEntity> GetPersons()
+    {
+        var persons = new PersonGenerator(_dataBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
+        var list = new PersonGenerator(_dataBuilder).Person2Entity(persons, _multiLanguage);
+        return list.ToImmutableList();
     }
 }

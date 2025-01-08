@@ -1,24 +1,24 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_
+namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_;
+
+[TestClass]
+public class XmlImport_Test
 {
-    [TestClass]
-    public class XmlImport_Test
-    {
-        #region Settings
+    #region Settings
 
-        //private readonly int ZoneId = 1;
-        //private readonly int AppId = 1;
-        //private readonly int ContentTypeSimpleContent = 13;
-        //private Guid SingleItemGuid = new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c");
-        //private string UserNameOfTestingScript = "TestUser";
-        #endregion
+    //private readonly int ZoneId = 1;
+    //private readonly int AppId = 1;
+    //private readonly int ContentTypeSimpleContent = 13;
+    //private Guid SingleItemGuid = new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c");
+    //private string UserNameOfTestingScript = "TestUser";
+    #endregion
 
-        #region Test-Data
-        #region Expected LongExport Values
+    #region Test-Data
+    #region Expected LongExport Values
 
-        public static string FullExportOfSimpleContentOne = @"<SexyContentData>
+    public static string FullExportOfSimpleContentOne = @"<SexyContentData>
   <Entity Type=""BasicContentwithPreviewandImagebuiltin"">
     <Guid>31d93b03-cfb3-483b-8134-e08bbee9cd2c</Guid>
     <Language></Language>
@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_
   </Entity>
 </SexyContentData>";
 
-        public static string FullExportOfSimpleContentAll = @"<SexyContentData>
+    public static string FullExportOfSimpleContentAll = @"<SexyContentData>
   <Entity Type=""BasicContentwithPreviewandImagebuiltin"">
     <Guid>5cba4fab-34d9-408f-a6ef-50ebfdc9dc8e</Guid>
     <Language></Language>
@@ -223,87 +223,86 @@ On all your devices.</PreviewContent>
     <Image>/Portals/0/Content/Apple/overview_ipad_in_education.png</Image>
   </Entity>
 </SexyContentData>";
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        [ClassInitialize]
-        public static void InitUnity(TestContext tc)
-        {
+    [ClassInitialize]
+    public static void InitUnity(TestContext tc)
+    {
             
-        }
+    }
 
 
-        //[TestMethod]
-        //[Ignore]
-        //public void XmlImport_ImportOneCorrectly()
-        //{
+    //[TestMethod]
+    //[Ignore]
+    //public void XmlImport_ImportOneCorrectly()
+    //{
             
-        //    throw new Exception("This test can't pass yet - had to turn off import because it generated too much data - ask 2dm");
-        //    // todo steps
-        //    // 1. Get original
-        //    // 2. Import one
-        //    // 3. Ensure the import was correct
-        //    // 4. Re-export and compare with import file
+    //    throw new Exception("This test can't pass yet - had to turn off import because it generated too much data - ask 2dm");
+    //    // todo steps
+    //    // 1. Get original
+    //    // 2. Import one
+    //    // 3. Ensure the import was correct
+    //    // 4. Re-export and compare with import file
 
-        //    var db = EavDataController.Instance(ZoneId, AppId);
-        //    var dbEntity = db.Entities.GetEntitiesByGuid(SingleItemGuid).First();
+    //    var db = EavDataController.Instance(ZoneId, AppId);
+    //    var dbEntity = db.Entities.GetEntitiesByGuid(SingleItemGuid).First();
 
-        //    // Assert.AreEqual(5, dbEntity.Values.Count);
+    //    // Assert.AreEqual(5, dbEntity.Values.Count);
 
-        //    var importer = new XmlImport(ZoneId, AppId, ContentTypeSimpleContent,
-        //        GenerateStreamFromString(FullExportOfSimpleContentOne), new List<string>(), "", EntityClearImport.None,
-        //        ResourceReferenceImport.Keep);
+    //    var importer = new XmlImport(ZoneId, AppId, ContentTypeSimpleContent,
+    //        GenerateStreamFromString(FullExportOfSimpleContentOne), new List<string>(), "", EntityClearImport.None,
+    //        ResourceReferenceImport.Keep);
 
-        //    var entity31d9 = importer.Entities.First(e => e.EntityGuid == SingleItemGuid);
-        //    var previewContent = entity31d9.Values["PreviewContent"][0];
+    //    var entity31d9 = importer.Entities.First(e => e.EntityGuid == SingleItemGuid);
+    //    var previewContent = entity31d9.Values["PreviewContent"][0];
 
-        //    Assert.AreEqual(5, entity31d9.Values.Count);
+    //    Assert.AreEqual(5, entity31d9.Values.Count);
 
-        //    Assert.AreEqual("Easy and immediate separation of concerns.", previewContent.StringValueForTesting);
+    //    Assert.AreEqual("Easy and immediate separation of concerns.", previewContent.StringValueForTesting);
 
             
-        //    // importer.PersistImportToRepository(UserNameOfTestingScript);
-        //}
+    //    // importer.PersistImportToRepository(UserNameOfTestingScript);
+    //}
 
-        [TestMethod]
-        public void XmlImport_Import5XmlWith20ContentItems()
-        {
-            //for (var x = 0; x < 5; x++)
-            //     Do1ImportWith20ContentItems();
+    [TestMethod]
+    public void XmlImport_Import5XmlWith20ContentItems()
+    {
+        //for (var x = 0; x < 5; x++)
+        //     Do1ImportWith20ContentItems();
 
-            // Notes: run 5x 2015-06-21 before optimizations: 
-            // Run 1: 9.14 seconds
-            // Run 2: 9.37 seconds
-            // Run 3: 9.73 seconds
-            // Run 4: 9.51 seconds
-            // Run 5: 9.76 seconds
-        }
+        // Notes: run 5x 2015-06-21 before optimizations: 
+        // Run 1: 9.14 seconds
+        // Run 2: 9.37 seconds
+        // Run 3: 9.73 seconds
+        // Run 4: 9.51 seconds
+        // Run 5: 9.76 seconds
+    }
 
-        //private void Do1ImportWith20ContentItems()
-        //{
-        //    var fileImport = new DbXmlImportVTable(ZoneId, AppId, ContentTypeSimpleContent,
-        //        GenerateStreamFromString(FullExportOfSimpleContentAll), new List<string>(), "", ImportDeleteUnmentionedItems.None,
-        //        ImportResourceReferenceMode.Keep);
+    //private void Do1ImportWith20ContentItems()
+    //{
+    //    var fileImport = new DbXmlImportVTable(ZoneId, AppId, ContentTypeSimpleContent,
+    //        GenerateStreamFromString(FullExportOfSimpleContentAll), new List<string>(), "", ImportDeleteUnmentionedItems.None,
+    //        ImportResourceReferenceMode.Keep);
 
-        //    var entity31d9 = fileImport.ImportEntities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
-        //    var previewContent = entity31d9.Attributes["PreviewContent"][0];
-        //    Assert.AreEqual("Easy and immediate separation of concerns.", (previewContent as Interfaces.IValue).ToString());
+    //    var entity31d9 = fileImport.ImportEntities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
+    //    var previewContent = entity31d9.Attributes["PreviewContent"][0];
+    //    Assert.AreEqual("Easy and immediate separation of concerns.", (previewContent as Interfaces.IValue).ToString());
 
-        //    throw new Exception("Cant finish testing import yet - there is still a large bug creating much too much data!");
-        //    //var fileImported = fileImport.PersistImportToRepository(UserNameOfTestingScript);
-        //}
+    //    throw new Exception("Cant finish testing import yet - there is still a large bug creating much too much data!");
+    //    //var fileImported = fileImport.PersistImportToRepository(UserNameOfTestingScript);
+    //}
 
 
 
-        public Stream GenerateStreamFromString(string s)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(s);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
+    public Stream GenerateStreamFromString(string s)
+    {
+        var stream = new MemoryStream();
+        var writer = new StreamWriter(stream);
+        writer.Write(s);
+        writer.Flush();
+        stream.Position = 0;
+        return stream;
     }
 }

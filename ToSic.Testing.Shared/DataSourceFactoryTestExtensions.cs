@@ -1,5 +1,4 @@
-﻿using ToSic.Eav;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
@@ -15,7 +14,11 @@ public static class DataSourceFactoryTestExtensions
         IDataSource upstream = default,
         IAppIdentity appIdentity = default,
         ILookUpEngine configLookUp = default) where TDataSource : IDataSource
-        => dsf.Create<TDataSource>(attach: upstream, options: new DataSourceOptions(appIdentity: appIdentity, lookUp: configLookUp));
+        => dsf.Create<TDataSource>(attach: upstream, options: new DataSourceOptions
+        {
+            AppIdentityOrReader = appIdentity,
+            LookUp = configLookUp,
+        });
 
     public static TDataSource TestCreateNew<TDataSource>(
         this IDataSourcesService dsf,
@@ -24,6 +27,10 @@ public static class DataSourceFactoryTestExtensions
         IAppIdentity appIdentity = default,
         object options = default) where TDataSource : IDataSource
         => dsf.Create<TDataSource>(attach: upstream, options: new DataSourceOptionConverter()
-            .Create(new DataSourceOptions(appIdentity: appIdentity, lookUp: new LookUpEngine(null)), options));
+            .Create(new DataSourceOptions
+            {
+                AppIdentityOrReader = appIdentity,
+                LookUp = new LookUpEngine(null),
+            }, options));
 
 }

@@ -29,17 +29,17 @@ public record DataSourceOptions: IDataSourceOptions
     {
         ShowDrafts = showDrafts ?? original?.ShowDrafts;
         AppIdentityOrReader = appIdentity ?? original?.AppIdentityOrReader;
-        _values = values ?? original?.Values;
+        Values = values ?? original?.Values;
         LookUp = lookUp ?? original?.LookUp;
         Immutable = immutable ?? original?.Immutable ?? false;
     }
 
-    IImmutableDictionary<string, string> IDataSourceOptions.Values => _values;
-    private readonly IImmutableDictionary<string, string> _values;
-    public IAppIdentity AppIdentityOrReader { get; }
-    public ILookUpEngine LookUp { get; }
-    public bool? ShowDrafts { get; }
-    public bool Immutable { get; }
+    public IImmutableDictionary<string, string> Values { get; init; }
+
+    public IAppIdentity AppIdentityOrReader { get; init; }
+    public ILookUpEngine LookUp { get; init; }
+    public bool? ShowDrafts { get; init; }
+    public bool Immutable { get; init; }
 
     public IWorkSpecs Specs { get; init; }
 }
