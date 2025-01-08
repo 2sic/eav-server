@@ -29,6 +29,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     {
         AutoLoadAllConfigMasks(GetType());
     }
+
     [PrivateApi]
     protected DataSourceBase(MyServicesBase<MyServices> extendedServices, string logName) : base(extendedServices, logName)
     {
@@ -38,8 +39,15 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     /// <summary>
     /// Load all [Configuration] attributes and ensure we have the config masks.
     /// </summary>
-    internal void AutoLoadAllConfigMasks(Type type)
+    internal void AutoLoadAllConfigMasks(Type dataSourceType)
     {
+        // Figure out the type which provides the configuration
+        var redefined = Attribute
+            .GetCustomAttributes(dataSourceType, typeof(ConfigurationSpecsWipAttribute), true)
+            .FirstOrDefault() as ConfigurationSpecsWipAttribute;
+
+        var type = redefined?.SpecsType ?? dataSourceType;
+
         // Load all config masks which are defined on attributes
         var configMasks = Services.ConfigDataLoader.GetTokens(type);
         configMasks.ForEach(cm => ConfigMask(cm.Key, cm.Token, cm.CacheRelevant));
