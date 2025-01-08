@@ -45,7 +45,7 @@ partial class DataSourceBase
         var mainUpstream = attach?.Link?.DataSource;
         (this as IAppIdentitySync).UpdateAppIdentity(options?.AppIdentityOrReader ?? mainUpstream);
             
-        // Attach in-bound, and make it immutable afterwards
+        // Attach in-bound, and make it immutable afterward
         if (attach?.Link == null)
             l.A("Nothing to attach");
         else

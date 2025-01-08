@@ -12,22 +12,6 @@ namespace ToSic.Eav.DataSource;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public sealed record DataSourceOptions: IDataSourceOptions
 {
-    //public DataSourceOptions(
-    //    IDataSourceOptions original = default,
-    //    NoParamOrder noParamOrder = default,
-    //    IAppIdentity appIdentity = default,
-    //    IImmutableDictionary<string, string> values = default,
-    //    ILookUpEngine lookUp = default,
-    //    bool? showDrafts = default,
-    //    bool? immutable = default)
-    //{
-    //    ShowDrafts = showDrafts ?? original?.ShowDrafts;
-    //    AppIdentityOrReader = appIdentity ?? original?.AppIdentityOrReader;
-    //    Values = values ?? original?.Values;
-    //    LookUp = lookUp ?? original?.LookUp;
-    //    Immutable = immutable ?? original?.Immutable ?? false;
-    //}
-
     public IImmutableDictionary<string, string> Values { get; init; }
 
     // todo: improve to probably be IAppIdentity or IAppReader

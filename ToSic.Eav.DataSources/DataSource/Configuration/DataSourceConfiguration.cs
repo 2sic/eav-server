@@ -3,7 +3,6 @@ using ToSic.Eav.Context;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
-using ToSic.Lib.Helpers;
 using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
@@ -27,14 +26,14 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
 
     #region Constructor
 
-    internal DataSourceConfiguration Attach(DataSourceBase ds)
+    internal DataSourceConfiguration Attach(DataSourceBase inDataSource)
     {
-        DataSourceForIn = ds;
+        DataSourceForIn = inDataSource;
         return this;
     }
 
 
-    [PrivateApi] internal DataSourceBase DataSourceForIn;
+    internal DataSourceBase DataSourceForIn;
 
     #endregion
 
@@ -42,8 +41,10 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
 
     public string GetThis([CallerMemberName] string name = default)
     {
-        if (name == null || name.IsEmptyOrWs()) return null;
-        if (_getThisCache.TryGetValue(name, out var result)) return result;
+        if (name == null || name.IsEmptyOrWs())
+            return null;
+        if (_getThisCache.TryGetValue(name, out var result))
+            return result;
 
         // on first call, get and log
         var l = Log.Fn<string>($"{DataSourceForIn.GetType().Name}:{name}");
@@ -107,7 +108,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     {
         // Ensure that we have a configuration-provider (not always the case, but required)
         if (LookUpEngine == null)
-            throw new($"No ConfigurationProvider configured on this data-source. Cannot run {nameof(Parse)}");
+            throw new($"No LookUpEngine configured on this data-source. Cannot run {nameof(Parse)}");
 
         // construct a property access for in, use it in the config provider
         return LookUpEngine.LookUp(values, overrides: OverrideLookUps);
@@ -131,11 +132,10 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     /// An internally created lookup to give access to the In-streams if there are any
     /// </summary>
     [PrivateApi]
-    private IEnumerable<ILookUp> OverrideLookUps => _overrideLookUps ??=
+    private IEnumerable<ILookUp> OverrideLookUps => field ??=
     [
         new LookUpInDataSource(DataSourceForIn, Services.ZoneCultureResolverLazy.Value)
     ];
-    private IEnumerable<ILookUp> _overrideLookUps;
 
 
     public string Get(string name) => Parse(name);
