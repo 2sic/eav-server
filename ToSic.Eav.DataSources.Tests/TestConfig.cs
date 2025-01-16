@@ -1,17 +1,16 @@
 ﻿using ToSic.Eav.Apps;
 
-namespace ToSic.Eav.DataSourceTests
+namespace ToSic.Eav.DataSourceTests;
+
+internal class TestConfig
 {
-    internal class TestConfig
-    {
-        //public static int Zone = 2;
+    //public static int Zone = 2;
 
-        public static int AppForQueryTests = 4;
+    public static int AppForQueryTests = 4;
 
-        public static IAppIdentity BigDataTestsApp = new AppIdentity(2, 9);
+    public static IAppIdentity BigDataTestsApp = new AppIdentity(2, 9);
 
-        public const string GlobalQueriesData = "..\\..\\..\\2sxc\\Src\\Data\\App_Data\\system\\queries\\";
-        public const string TestingPath = "testdata";
+    public const string GlobalQueriesData = "..\\..\\..\\2sxc\\Src\\Data\\App_Data\\system\\queries\\";
+    public const string TestingPath = "testdata";
 
-    }
 }

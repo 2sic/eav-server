@@ -73,7 +73,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// Initializes a new instance of the DataTableDataSource class
     /// </summary>
     [PrivateApi]
-    public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtTbl")
+    public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl")
     {
         ConnectLogs([
             _dataFactory = dataFactory
@@ -129,7 +129,12 @@ public class DataTable : CustomDataSourceAdvanced
         if (!source.Columns.Contains(titleField))
             throw new($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-        var tblFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: contentType, titleField: titleField));
+        var tblFactory = _dataFactory.New(options: new()
+        {
+            AppId = Constants.TransientAppId,
+            TitleField = titleField,
+            TypeName = contentType,
+        });
             
         // Populate a new Dictionary with EntityModels
         var result = new List<IEntity>();

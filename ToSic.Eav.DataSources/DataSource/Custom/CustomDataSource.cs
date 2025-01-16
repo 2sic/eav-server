@@ -5,7 +5,7 @@ using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Internal.Configuration;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource;
 
@@ -20,7 +20,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// Note that it is the same as the base MyServices,
     /// but it's still important to have an own class.
     /// This is in case some day it will need more dependencies.
-    /// Otherwise compiled code would break when we need additional dependencies just for the CustomDataSource.
+    /// Otherwise, compiled code would break when we need additional dependencies just for the CustomDataSource.
     /// </summary>
     [PrivateApi]
     [method: PrivateApi]
@@ -51,7 +51,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     private DataFactoryOptions Options
     {
             
-        get => _options ??= new(typeName: "Custom");
+        get => _options ??= new() { TypeName = "Custom" };
         set => _options = value;
     }
     private DataFactoryOptions _options;
@@ -115,7 +115,8 @@ public class CustomDataSource: CustomDataSourceAdvanced
                                              "Error details can be found in Insights.", exception: ex);
             return l.ReturnAsError(runErr);
         }
-        if (funcResult is null) l.Return(EmptyList, "null, no data returned");
+        if (funcResult is null)
+            l.Return([], "null, no data returned");
 
         // Make a list out of the result
         List<object> data;
@@ -134,7 +135,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         }
 
         // Handle empty list
-        if (data.SafeNone()) l.Return(EmptyList, "no items returned");
+        if (data.SafeNone()) l.Return([], "no items returned");
 
         // Handle all is already converted to IEntity
         if (data.All(i => i is IEntity))
@@ -184,7 +185,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
         // If we didn't get anything, return empty
         if (raw.SafeNone())
-            return l.Return(EmptyList, "no items returned");
+            return l.Return([], "no items returned");
 
         // Transform result to IEntity
         var result = DataFactory.New(options: GetBest(options)).Create(raw);
@@ -201,7 +202,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
         // If we didn't get anything, return empty
         if (raw.SafeNone())
-            return l.Return(EmptyList, "no items returned");
+            return l.Return([], "no items returned");
 
         // Transform result to IEntity
         var result = DataFactory.New(options: GetBest(options)).Create(raw);

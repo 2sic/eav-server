@@ -4,6 +4,9 @@ using ToSic.Eav.DataSource.VisualQuery.Internal;
 
 namespace ToSic.Eav.DataSource.Internal.Catalog;
 
+/// <summary>
+/// A cache of all DataSource Types - initialized upon first access ever, then static cache.
+/// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class DataSourceCatalog(

@@ -36,7 +36,7 @@ internal class AppWithParents: DataSourceBase
     private int _appId;
     private int _zoneId;
 
-    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstants.LogPrefix}.ApWPar")
+    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
     {
         ConnectLogs([
             _dataSourceFactory = dataSourceFactory,
@@ -50,7 +50,10 @@ internal class AppWithParents: DataSourceBase
     {
         var appReader = _appReaders.Get(this);
             
-        var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: appReader));
+        var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions
+        {
+            AppIdentityOrReader = appReader,
+        });
         var initialLink = initialSource.Link;
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
@@ -58,7 +61,10 @@ internal class AppWithParents: DataSourceBase
         var countRecursions = 0;
         while (parentAppState != null && countRecursions++ < 5)
         {
-            var next = _dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: parentAppState));
+            var next = _dataSourceFactory.CreateDefault(new DataSourceOptions
+            {
+                AppIdentityOrReader = parentAppState,
+            });
             initialLink = initialLink.Add(next.Link.Rename(inName: $"App{parentAppState.NameId}"));
             parentAppState = parentAppState.ParentApp?.AppState;
         }

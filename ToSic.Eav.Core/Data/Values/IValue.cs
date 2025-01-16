@@ -40,5 +40,5 @@ public interface IValue
 
     [PrivateApi("WIP - not sure if it should be here - should ensure that we have a pure/functional object")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    IValue Clone(IImmutableList<ILanguage> newLanguages);
+    IValue With(IImmutableList<ILanguage> newLanguages);
 }

@@ -1,4 +1,4 @@
-﻿using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+﻿using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -45,7 +45,7 @@ public sealed class Shuffle: Eav.DataSource.DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public Shuffle(MyServices services) : base(services, $"{LogPrefix}.Shuffl")
+    public Shuffle(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Shuffl")
     {
         ProvideOut(GetShuffle);
     }

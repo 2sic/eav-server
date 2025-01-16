@@ -25,9 +25,9 @@ public abstract class TestBaseEavDataSource(TestConfiguration testConfiguration 
     public T CreateDataSource<T>(IDataSource upstream) where T: IDataSource => DataSourceFactory.TestCreate<T>(upstream: upstream);
 
     public T CreateDataSource<T>(IDataStream upstream, object options = default) where T : IDataSource 
-        => ((DataSourcesService)DataSourceFactory).Create<T>(stream: upstream, new DataSourceOptions.Converter().Convert(options, false, false));
+        => ((DataSourcesService)DataSourceFactory).Create<T>(stream: upstream, new DataSourceOptionConverter().Convert(options, false, false));
     public T CreateDataSource<T>(IDataSourceLinkable attach, object options = default) where T : IDataSource 
-        => ((DataSourcesService)DataSourceFactory).Create<T>(attach: attach, new DataSourceOptions.Converter().Convert(options, false, false));
+        => ((DataSourcesService)DataSourceFactory).Create<T>(attach: attach, new DataSourceOptionConverter().Convert(options, false, false));
 
     public T CreateDataSource<T>(ILookUpEngine lookUpEngine = default) where T : IDataSource
     {

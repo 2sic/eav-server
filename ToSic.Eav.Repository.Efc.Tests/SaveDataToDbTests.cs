@@ -71,9 +71,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
         public void LoadOneChangeABitAndSave()
         {
             var test = new SpecsDataEditing();
-            var so = _environment.SaveOptions(test.ZoneId);
-            so.PreserveUntouchedAttributes = true;
-            so.PreserveUnknownLanguages = true;
+            var so = _environment.SaveOptions(test.ZoneId) with
+            {
+                PreserveUntouchedAttributes = true,
+                PreserveUnknownLanguages = true,
+            };
 
             var dbi = _dbData.Init(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
@@ -88,7 +90,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
             {
                 {test.TitleField, "changed title on " + DateTime.Now}
             });
-            var saveEntity = _entitySaver.TestCreateMergedForSaving(itm1, itmNewTitle, so);
+            var saveEntity = _entitySaver.TestCreateMergedForSavingTac(itm1, itmNewTitle, so);
 
             // save it
             dbi.Save([saveEntity], so);
@@ -112,9 +114,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
             var test = new SpecsDataEditing();
             var ctName = test.ContentTypeName;
             var ctTitle = "wonderful new title " + DateTime.Now;
-            var so = _environment.SaveOptions(test.ZoneId);
-            so.PreserveUntouchedAttributes = true;
-            so.PreserveUnknownLanguages = true;
+            var so = _environment.SaveOptions(test.ZoneId) with
+            {
+                PreserveUntouchedAttributes = true,
+                PreserveUnknownLanguages = true,
+            };
 
             var dbi = _dbData.Init(test.ZoneId, test.AppId);
             var trans = dbi.SqlDb.Database.BeginTransaction();
@@ -129,7 +133,7 @@ namespace ToSic.Eav.Repository.Efc.Tests
                 { test.TitleField, ctTitle }
             });
 
-            var saveEntity = _entitySaver.TestCreateMergedForSaving(null, newE, so);
+            var saveEntity = _entitySaver.TestCreateMergedForSavingTac(null, newE, so);
 
             // save it
             var newId = dbi.Save([saveEntity], so);

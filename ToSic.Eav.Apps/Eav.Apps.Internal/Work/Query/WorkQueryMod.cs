@@ -66,9 +66,9 @@ public class WorkQueryMod(
         // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
         var qdef = Get(queryId);
 
-        const string AllowEdit = "AllowEdit";
-        if (!qdef.Entity.Get<bool>(AllowEdit))
-            throw new InvalidOperationException($"Query has {AllowEdit} set to false");
+        const string allowEdit = "AllowEdit";
+        if (!qdef.Entity.Get<bool>(allowEdit))
+            throw new InvalidOperationException($"Query has {allowEdit} set to false");
 
         var addedSources = SavePartsAndGenerateRenameMap(partDefs, qdef.Entity.EntityGuid);
 
@@ -107,7 +107,7 @@ public class WorkQueryMod(
                 dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
 
             if (entityId != null)
-                entUpdate.New(AppWorkCtx.AppReader).UpdateParts(Convert.ToInt32(entityId), dataSource);
+                entUpdate.New(AppWorkCtx.AppReader).UpdateParts(Convert.ToInt32(entityId), dataSource, new());
             // Add new DataSource
             else
             {
@@ -170,8 +170,7 @@ public class WorkQueryMod(
 
         // add to new object...then send to save/update
         values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
-        // #ExtractEntitySave
-        entUpdate.New(AppWorkCtx.AppReader).UpdateParts(id, values);
+        entUpdate.New(AppWorkCtx.AppReader).UpdateParts(id, values, new());
         l.Done();
     }
 

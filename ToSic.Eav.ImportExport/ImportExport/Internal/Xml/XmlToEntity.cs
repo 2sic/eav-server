@@ -155,15 +155,15 @@ public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
             }
 
             // construct value elements
-            var currentAttributesImportValues = tempTargetValues.Select(tempImportValue
-                    => dataBuilder.Value.Build(
-                        ValueTypeHelpers.Get(
-                            tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ??
-                            throw new NullReferenceException("can't build attribute with unknown value-type")
-                        ),
-                        tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
-                        throw new NullReferenceException("can't build attribute without value"),
-                        tempImportValue.Dimensions.ToImmutableList()))
+            var currentAttributesImportValues = tempTargetValues
+                .Select(tempImportValue => dataBuilder.Value.Build(
+                    ValueTypeHelpers.Get(
+                        tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ??
+                        throw new NullReferenceException("can't build attribute with unknown value-type")
+                    ),
+                    tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
+                    throw new NullReferenceException("can't build attribute without value"),
+                    tempImportValue.Dimensions.ToImmutableList()))
                 .ToList();
 
             // construct the attribute with these value elements
@@ -200,19 +200,15 @@ public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
             typeForEntity = dataBuilder.ContentType.Create(appId: AppId,
                 id: 0, name: typeName, nameId: null, scope: null, repositoryType: newTypeRepoType);
         }
-        var targetEntity = // globalType != null
-            // ? _dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: globalType, typedValues: finalAttributes)
-            // If not yet a known type, create a temporary pointer ContentType
-            /*:*/ dataBuilder.Entity.Create(appId: AppId, guid: guid, contentType: typeForEntity, isPublished: isPublished != "False",
-                attributes: finalAttributes.ToImmutableInvariant(),
-                metadataFor: metadataForFor);
-        //if (metadataForFor != null) targetEntity.SetMetadata(metadataForFor);
 
-        //// if it's not a global type but still marked as IsJson
-        //// then it's a local extension type with Content-Type definitions in the app/system folder
-        //// in this case, the storage system must know that it should json-save it
-        //if (globalType == null && xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True")
-        //    (targetEntity.Type as ContentType).SetSource(RepositoryTypes.Folder);
+        var targetEntity = dataBuilder.Entity.Create(
+            appId: AppId,
+            guid: guid,
+            contentType: typeForEntity,
+            isPublished: isPublished != "False",
+            attributes: finalAttributes.ToImmutableInvariant(),
+            metadataFor: metadataForFor
+        );
 
         return wrap.Return(targetEntity, $"returning {guid} of type {globalType?.Name ?? typeName} with attribs:{finalAttributes.Count} and metadata:{metadataForFor != null}");
     }

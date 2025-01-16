@@ -5,7 +5,7 @@ using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Helpers;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
@@ -28,7 +28,7 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 public class MetadataTargets(DataSourceBase.MyServices services, IAppReaderFactory appReaders, IDataFactory dataFactory)
-    : MetadataDataSourceBase(services, $"{LogPrefix}.MetaTg", connect: [appReaders, dataFactory])
+    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders, dataFactory])
 {
     /// <summary>
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
@@ -58,7 +58,7 @@ public class MetadataTargets(DataSourceBase.MyServices services, IAppReaderFacto
 
     private IDataFactory ContentTypeFactory => ctFactory.Get(() =>
     {
-        var opts = new DataFactoryOptions(ContentTypeUtil.Options, appId: AppId, withMetadata: true);
+        var opts = ContentTypeUtil.Options with { AppId = AppId, WithMetadata = true };
         var x = dataFactory.New(options: opts);
         return x;
     });

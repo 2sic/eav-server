@@ -68,7 +68,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
     /// <inheritdoc />
     [PrivateApi]
-    public Query(MyServices services, LazySvc<QueryBuilder> queryBuilder) : base(services, $"{DataSourceConstants.LogPrefix}.Query")
+    public Query(MyServices services, LazySvc<QueryBuilder> queryBuilder) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Query")
     {
         ConnectLogs([
             _queryBuilderLazy = queryBuilder

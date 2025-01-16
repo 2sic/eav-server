@@ -40,9 +40,11 @@ public class ImportService(
         AppId = appId;
         ZoneId = dbController.ZoneId;
 
-        SaveOptions = importExportEnvironment.SaveOptions(ZoneId);
-        SaveOptions.SkipExistingAttributes = skipExistingAttributes;
-        SaveOptions.PreserveUntouchedAttributes = preserveUntouchedAttributes;
+        SaveOptions = importExportEnvironment.SaveOptions(ZoneId) with
+        {
+            SkipExistingAttributes = skipExistingAttributes,
+            PreserveUntouchedAttributes = preserveUntouchedAttributes,
+        };
 
         return this;
     }
@@ -170,8 +172,10 @@ public class ImportService(
         var l = Log.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appReader, type));
-        var so = importExportEnvironment.SaveOptions(ZoneId);
-        so.DiscardAttributesNotInType = true;
+        var so = importExportEnvironment.SaveOptions(ZoneId) with
+        {
+            DiscardAttributesNotInType = true,
+        };
         Storage.Save(toUpdate.ToList(), so);
         l.Done();
     }

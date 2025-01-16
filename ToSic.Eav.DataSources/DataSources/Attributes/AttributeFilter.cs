@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
 using static System.StringComparer;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -60,7 +60,7 @@ public class AttributeFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{LogPrefix}.AtribF")
+    public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtribF")
     {
         _entityBuilder = entityBuilder;
         ProvideOut(GetList);

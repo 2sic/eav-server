@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -65,10 +65,10 @@ public sealed class Paging: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{LogPrefix}.Paging")
+    public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging")
     {
         ConnectLogs([
-            _pagingFactory = dataFactory.New(options: new(typeName: "Paging"))
+            _pagingFactory = dataFactory.New(options: new() { TypeName = "Paging" })
         ]);
         ProvideOut(GetList);
         ProvideOut(GetPaging, "Paging");

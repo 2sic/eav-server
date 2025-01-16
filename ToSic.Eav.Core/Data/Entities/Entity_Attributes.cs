@@ -2,11 +2,10 @@
 
 namespace ToSic.Eav.Data;
 
-partial class Entity
+partial record Entity
 {
     /// <inheritdoc />
-    public IImmutableDictionary<string, IAttribute> Attributes => _attributes;
-    private readonly IImmutableDictionary<string, IAttribute> _attributes;
+    public required IImmutableDictionary<string, IAttribute> Attributes { get; init; }
 
     /// <inheritdoc />
     public new IAttribute this[string attributeName] => Attributes.TryGetValue(attributeName, out var result) ? result : null; 

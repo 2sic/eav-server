@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -30,7 +30,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public ItemFilterDuplicates(MyServices services): base(services, $"{LogPrefix}.Duplic")
+    public ItemFilterDuplicates(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Duplic")
     {
         ProvideOut(GetUnique);
         ProvideOut(GetDuplicates, DuplicatesStreamName);
@@ -44,7 +44,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         if (!In.HasStreamWithItems(StreamDefaultName)) 
-            return l.Return(EmptyList, "no in stream with name");
+            return l.Return([], "no in stream with name");
 
         var source = TryGetIn();
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
@@ -65,7 +65,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         if (!In.HasStreamWithItems(StreamDefaultName)) 
-            return l.ReturnAsError(EmptyList, "no in-stream with name");
+            return l.ReturnAsError([], "no in-stream with name");
 
         var source = TryGetIn();
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());

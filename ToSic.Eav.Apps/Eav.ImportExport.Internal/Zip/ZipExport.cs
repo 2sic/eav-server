@@ -232,7 +232,11 @@ public class ZipExport(
         // 2022-01-04 2dm - new code, simplified
         // Get all entities except Attribute/Field Metadata, which is exported in a different way
         var entities = DataSourceFactory
-            .CreateDefault(new DataSourceOptions(appIdentity: appIdentity, showDrafts: true))
+            .CreateDefault(new DataSourceOptions
+            {
+                AppIdentityOrReader = appIdentity,
+                ShowDrafts = true,
+            })
             .List
             .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
 

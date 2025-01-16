@@ -39,7 +39,7 @@ internal class DataRepair
             var newLanguages = firstWithoutLanguage.Languages
                 .ToImmutableList()
                 .Add(new Language(primaryLanguage, false));
-            newValues.Add(firstWithoutLanguage.Clone(newLanguages));
+            newValues.Add(firstWithoutLanguage.With(newLanguages));
         }
 
         var remainingWithoutBadLanguages = values

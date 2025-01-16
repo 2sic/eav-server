@@ -8,8 +8,10 @@ partial class DbEntity
     private List<DimensionDefinition> _zoneLangs;
 
 
-    private int SaveEntity(IEntity newEnt, SaveOptions so, bool logDetails)
+    private int SaveEntity(IEntityPair<SaveOptions> entityOptionPair, bool logDetails)
     {
+        var newEnt = entityOptionPair.Entity;
+        var so = entityOptionPair.Partner;
         var l = Log.Fn<int>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}");
 
         #region Step 1: Do some initial error checking and preparations
@@ -56,10 +58,8 @@ partial class DbEntity
         // If we think we'll update an existing entity...
         // ...we have to check if we'll actually update the draft of the entity
         // ...or create a new draft (branch)
-        var draftInfo = GetDraftAndCorrectIdAndBranching(newEnt, logDetails);
-        var existingDraftId = draftInfo.ExistingDraftId;
-        var hasAdditionalDraft = draftInfo.HasDraft;
-        newEnt = draftInfo.Entity; // may have been replaced with an updated IEntity during corrections
+        var (existingDraftId, hasAdditionalDraft, entity) = GetDraftAndCorrectIdAndBranching(newEnt, so, logDetails);
+        newEnt = entity; // may have been replaced with an updated IEntity during corrections
 
         var isNew = newEnt.EntityId <= 0; // remember how we want to work...
         if (logDetails) l.A($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
@@ -218,76 +218,78 @@ partial class DbEntity
     }
 
 
-
-
-
-
     /// <summary>
     /// Get the draft-id and branching info, 
     /// then correct branching-infos on the entity depending on the scenario
     /// </summary>
     /// <param name="newEnt">the entity to be saved, with IDs and Guids</param>
+    /// <param name="so"></param>
     /// <param name="logDetails"></param>
     /// <returns></returns>
-    private (int? ExistingDraftId, bool HasDraft, IEntity Entity) GetDraftAndCorrectIdAndBranching(IEntity newEnt, bool logDetails
-    ) => Log.Func<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true, func: l =>
+    private (int? ExistingDraftId, bool HasDraft, IEntity Entity) GetDraftAndCorrectIdAndBranching(IEntity newEnt,
+        SaveOptions so, bool logDetails) 
     {
-        // only do this, if we were given an EntityId, otherwise we assume new entity
-        if (newEnt.EntityId <= 0)
-            return ((null, false, newEnt), "entity id <= 0 means new, so skip draft lookup");
+        var l = Log.Fn<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true);
 
-        if (logDetails) l.A("entity id > 0 - will check draft/branching");
+        // If ID == 0, it's new, so only continue, if we were given an EntityId
+        if (newEnt.EntityId <= 0)
+            return l.Return((null, false, newEnt), "entity id <= 0 means new, so skip draft lookup");
+
+        if (logDetails)
+            l.A("entity id > 0 - will check draft/branching");
 
         // find a draft of this - note that it won't find anything, if the item itself is the draft
-        // new 2020-10-08 2dm - use cache
-        if (EntityDraftMapCache == null)
+        if (_entityDraftMapCache == null)
             throw new("Needs cached list of draft-branches, but list is null");
-        if (!EntityDraftMapCache.ContainsKey(newEnt.EntityId))
+        if (!_entityDraftMapCache.TryGetValue(newEnt.EntityId, out var existingDraftId))
             throw new("Expected item to be preloaded in draft-branching map, but not found");
-        var existingDraftId = EntityDraftMapCache[newEnt.EntityId];
 
         // only true, if there is an "attached" draft; false if the item itself is draft
         var hasDraft = existingDraftId != null && newEnt.EntityId != existingDraftId; 
 
         if (logDetails)
-            l.A($"draft check: id:{newEnt.EntityId} {nameof(existingDraftId)}:{existingDraftId}, " +
-                $"{nameof(hasDraft)}:{hasDraft}");
+            l.A($"draft check: id:{newEnt.EntityId} {nameof(existingDraftId)}:{existingDraftId}, {nameof(hasDraft)}:{hasDraft}");
 
-        var placeDraftInBranch = ((Entity)newEnt).PlaceDraftInBranch;
+        // #WipDraftShouldBranch
+        //var placeDraftInBranch = ((Entity)newEnt).PlaceDraftInBranch;
+        var placeDraftInBranch = so.DraftShouldBranch;
 
         // if it's being saved as published, or the draft will be without an old original, then exit 
         if (newEnt.IsPublished || !placeDraftInBranch)
         {
             if (logDetails)
-                l.A(
-                    $"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
-            return ((existingDraftId, hasDraft, newEnt), existingDraftId?.ToString() ?? "null");
+                l.A($"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
+            return l.Return((existingDraftId, hasDraft, newEnt), existingDraftId?.ToString() ?? "null");
         }
 
-        if (logDetails) l.A($"will save as draft, and setting is PlaceDraftInBranch:true");
+        if (logDetails)
+            l.A($"will save as draft, and setting is PlaceDraftInBranch:true");
 
-        if (logDetails) l.A($"Will look for original {newEnt.EntityId} to check if it's not published.");
+        if (logDetails)
+            l.A($"Will look for original {newEnt.EntityId} to check if it's not published.");
         // check if the original is also not published, with must prevent a second branch!
         var entityInDb = DbContext.Entities.GetDbEntity(newEnt.EntityId);
         if (!entityInDb.IsPublished)
         {
-            if (logDetails) l.A("original in DB is not published, will overwrite and not branch again");
-            return ((existingDraftId, hasDraft, newEnt), existingDraftId?.ToString() ?? "null");
+            if (logDetails)
+                l.A("original in DB is not published, will overwrite and not branch again");
+            return l.Return((existingDraftId, hasDraft, newEnt), existingDraftId?.ToString() ?? "null");
         }
 
-        if (logDetails) l.A("original is published, so we'll draft in a branch");
+        if (logDetails)
+            l.A("original is published, so we'll draft in a branch");
         var clone = builder.Entity.CreateFrom(newEnt,
             publishedId: newEnt.EntityId, // set this, in case we'll create a new one
             id: existingDraftId ?? 0  // set to the draft OR 0 = new
         ) as Entity;
 
-        return ((existingDraftId,
-                false, // not additional any more, as we're now pointing this as primary
+        return l.Return((existingDraftId,
+                false, // not additional anymore, as we're now pointing this as primary
                 clone),
             existingDraftId?.ToString() ?? "null");
-    });
+    }
 
-    private Dictionary<int, int?> EntityDraftMapCache;
+    private Dictionary<int, int?> _entityDraftMapCache;
 
 
     /// <summary>

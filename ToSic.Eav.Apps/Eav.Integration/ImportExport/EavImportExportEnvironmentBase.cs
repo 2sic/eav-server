@@ -40,10 +40,13 @@ public abstract class EavImportExportEnvironmentBase(ISite site, IAppsCatalog ap
 
     public abstract void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<Message> importLog);
 
-    public SaveOptions SaveOptions(int zoneId) => Log.Func($"{nameof(zoneId)}:{zoneId}", () =>
+    public SaveOptions SaveOptions(int zoneId)
     {
+        var l = Log.Fn<SaveOptions>($"{nameof(zoneId)}:{zoneId}");
+
         var langs = appsCatalog.Zone(zoneId).Languages;
         var opts = new SaveOptions(DefaultLanguage, langs);
-        return (opts, $"langs: {langs.Count}");
-    });
+
+        return l.Return(opts, $"langs: {langs.Count}");
+    }
 }

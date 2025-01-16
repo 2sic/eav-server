@@ -91,6 +91,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CachingTests\CacheItemPolicyMakerTestAccessors.cs" />
     <Compile Include="CachingTests\CachePolicyMakerTests.cs" />
     <Compile Include="Compression\CompressorTests.cs" />
     <Compile Include="Configuration\Features.cs" />

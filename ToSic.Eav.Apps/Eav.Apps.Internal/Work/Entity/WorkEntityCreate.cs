@@ -16,7 +16,8 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
             attributes: builder.Attribute.Create(values),
             metadataFor: metadataFor);
 
-        var eid = workEntSave.New(AppWorkCtx).Save(newEnt);
+        var entSaver = workEntSave.New(AppWorkCtx);
+        var eid = entSaver.Save(newEnt, entSaver.SaveOptions());
         var guid = AppWorkCtx.DataController.Entities.TempLastSaveGuid;
 
         return l.Return((eid, guid), $"id:{eid}, guid:{guid}");
@@ -46,7 +47,8 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
         var newE = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
             contentType: AppWorkCtx.AppReader.GetContentType(typeName),
             attributes: builder.Attribute.Create(values));
-        return workEntSave.New(AppWorkCtx).Save(newE);
+        var entSaver = workEntSave.New(AppWorkCtx);
+        return entSaver.Save(newE, entSaver.SaveOptions());
     }
 
 }

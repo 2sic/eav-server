@@ -1,7 +1,5 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
-using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -143,7 +141,8 @@ public class AppInitializer(
         var newEnt = builder.Value.Entity
             .Create(appId: appStateRaw.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
 
-        entitySave.New(appStateRaw).Save(newEnt);
+        var entSaver = entitySave.New(appStateRaw);
+        entSaver.Save(newEnt, entSaver.SaveOptions());
         l.Done();
     }
 

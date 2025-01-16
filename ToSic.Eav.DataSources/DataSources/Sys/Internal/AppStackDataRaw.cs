@@ -12,7 +12,11 @@ public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
     public const string TypeName = "AppStack";
     public const string TitleFieldName = Data.Attributes.TitleNiceName;
 
-    public static DataFactoryOptions Options = new(typeName: TypeName, titleField: TitleFieldName);
+    public static DataFactoryOptions Options = new()
+    {
+        TitleField = TitleFieldName,
+        TypeName = TypeName,
+    };
 
     public string Source { get; set; } = original.SourceName;
 

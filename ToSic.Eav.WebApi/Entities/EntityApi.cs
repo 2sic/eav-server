@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-using ToSic.Eav.Context;
+﻿using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
@@ -83,8 +82,6 @@ public class EntityApi(
                 : Guid.NewGuid();
             if (hasEntity && !useEntityGuid)
                 bundle.Entity = entityBuilder.CreateFrom(bundle.Entity, guid: bundle.Header.Guid);
-            //bundle.Entity = _entityBuilder.ResetIdentifiers(bundle.Entity, newGuid: bundle.Header.Guid);
-            //(bundle.Entity as Entity).SetGuid(bundle.Header.Guid);
         }
 
         // Update header with ContentTypeName in case it wasn't there before
@@ -107,7 +104,8 @@ public class EntityApi(
         found = appState.GetDraft(found) ?? found;
 
         // If we want the original (not a copy for new) then stop here
-        if (!p.DuplicateEntity.HasValue) return found;
+        if (!p.DuplicateEntity.HasValue)
+            return found;
 
         // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct
         var copy = entityBuilder.CreateFrom(found, id: 0, guid: Guid.Empty);

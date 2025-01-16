@@ -133,7 +133,7 @@ public class Sql : CustomDataSourceAdvanced
     /// Initializes a new instance of the SqlDataSource class
     /// </summary>
     [PrivateApi]
-    public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.ExtSql")
+    public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql")
     {
         ConnectLogs([
             _dataFactory = dataFactory
@@ -319,7 +319,12 @@ public class Sql : CustomDataSourceAdvanced
                                      ?? columNames.FirstOrDefault();
                     l.A($"will use '{casedTitle}' as title field");
 
-                    var sqlFactory = _dataFactory.New(options: new(appId: Constants.TransientAppId, typeName: ContentType, titleField: casedTitle));
+                    var sqlFactory = _dataFactory.New(options: new()
+                    {
+                        AppId = Constants.TransientAppId,
+                        TitleField = casedTitle,
+                        TypeName = ContentType,
+                    });
 
                     #endregion
 

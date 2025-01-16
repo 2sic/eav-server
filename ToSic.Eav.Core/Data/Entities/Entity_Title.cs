@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Data;
 
-partial class Entity
+partial record Entity
 {
     /// <inheritdoc />
     public new IAttribute Title => TitleFieldName == null

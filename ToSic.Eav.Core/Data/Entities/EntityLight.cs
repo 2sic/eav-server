@@ -14,51 +14,58 @@ namespace ToSic.Eav.Data;
 /// </remarks>
 [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi, always use IEntity")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class EntityLight : IEntityLight
+public partial record EntityLight : IEntityLight
 {
     #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
-    /// <inheritdoc />
-    public int AppId { get; }
 
     /// <inheritdoc />
-    public int EntityId { get; internal set; } 
+    public required int AppId { get; init; }
 
     /// <inheritdoc />
-    public Guid EntityGuid { get; }
+    public required int EntityId { get; set; } // NOTE: not nice implementation, as it has a set; but won't bleed as the interface only has get
+
+    /// <inheritdoc />
+    public required Guid EntityGuid { get; init; }
 
     /// <inheritdoc />
     public object Title => TitleFieldName.HasValue() ? this[TitleFieldName] : null;
 
     [JsonIgnore]
     [PrivateApi]
-    internal string TitleFieldName => _titleFieldName ?? Type.TitleFieldName;
-    private readonly string _titleFieldName;
+    internal /*required*/ string TitleFieldName
+    {
+        get => field ?? Type.TitleFieldName;
+        init => field = value;
+    }
 
     /// <summary>
     /// List of all attributes in light-mode - single language, simple.
     /// Internal use only!
     /// </summary>
     [PrivateApi("Internal use only!")]
-    public IImmutableDictionary<string, object> AttributesLight { get; }
+    public required IImmutableDictionary<string, object> AttributesLight { get; init; }
 
     /// <inheritdoc />
-    public IContentType Type { get; }
+    public required IContentType Type { get; init; }
 
     /// <inheritdoc />
-    public DateTime Created { get; }
+    public required DateTime Created { get; init; }
         
     /// <inheritdoc />
-    public DateTime Modified { get; }
+    public required DateTime Modified { get; init; }
+
+    public required EntityPartsBuilder PartsBuilder { get; init; }
 
     /// <inheritdoc />
     [JsonIgnore]
-    public IRelationshipManager Relationships { get; }
+    public IEntityRelationships Relationships => field ??= PartsBuilder.GetRelationshipDelegate(this);
+
 
     /// <inheritdoc />
-    public ITarget MetadataFor { get; }
+    public required ITarget MetadataFor { get => field ??= new Target(); init => field = value; }
 
     /// <inheritdoc />
-    public string Owner { get; }
+    public required string Owner { get; init; }
 
     /// <inheritdoc />
     public int OwnerId => _ownerId.Get(() => int.TryParse(Owner.After("="), out var o) ? o : -1);
@@ -74,38 +81,6 @@ public partial class EntityLight : IEntityLight
             : null;
     #endregion
 
-    #region various constructors to create entities
-
-    /// <remarks>
-    /// Empty constructor for inheriting objects who need to build an Entity-Object
-    /// </remarks>
-    [PrivateApi]
-    protected EntityLight() { }
-
-    /// <summary>
-    /// Create a new Entity. Used to create InMemory Entities that are not persisted to the EAV SqlStore.
-    /// </summary>
-    [PrivateApi]
-    internal EntityLight(
-        int appId, int entityId, Guid? guid, IContentType contentType, EntityPartsBuilder partsBuilder, IImmutableDictionary<string, object> rawValues, string titleFieldName = null, 
-        DateTime? created = null, DateTime? modified = null, string owner = null,
-        ITarget metadataFor = default)
-    {
-        AppId = appId;
-        EntityId = entityId;
-        EntityGuid = guid ?? Guid.Empty;
-        Type = contentType;
-        AttributesLight = rawValues;
-        _titleFieldName = titleFieldName;
-        MetadataFor = metadataFor ?? new Target();
-        if (created.HasValue) Created = created.Value;
-        if (modified.HasValue) Modified = modified.Value;
-        if (!string.IsNullOrEmpty(owner)) Owner = owner;
-        Relationships = partsBuilder.RelationshipManager(this);
-    }
-
-
-    #endregion
 
 
     #region GetBestValue and GetTitle
@@ -123,26 +98,15 @@ public partial class EntityLight : IEntityLight
         }
 
         // map any kind of number to the one format used in other code-checks: decimal
-        if (result is short
-            || result is ushort
-            || result is int
-            || result is uint
-            || result is long
-            || result is ulong
-            || result is float
-            || result is double
-            || result is decimal)
-            return Convert.ToDecimal(result);
-
-        return result;
+        return result is short or ushort or int or uint or long or ulong or float or double or decimal
+            ? Convert.ToDecimal(result)
+            : result;
     }
 
 
 
     [PrivateApi("Testing / wip #IValueConverter")]
     public TVal GetBestValue<TVal>(string name) => GetBestValue(name).ConvertOrDefault<TVal>();
-
-
 
     /// <summary>
     /// Get internal properties by string-name like "EntityTitle", etc.
@@ -174,7 +138,6 @@ public partial class EntityLight : IEntityLight
     /// <inheritdoc />
     public string GetBestTitle() => GetBestTitle(0);
 
-    /// <inheritdoc />
     private string GetBestTitle(int recursionCount)
     {
         var bestTitle = GetBestValue(Attributes.EntityFieldTitle);
@@ -188,10 +151,7 @@ public partial class EntityLight : IEntityLight
                         ?? bestTitle;
 
         return bestTitle?.ToString();
-
     }
-
-
 
     #endregion
 

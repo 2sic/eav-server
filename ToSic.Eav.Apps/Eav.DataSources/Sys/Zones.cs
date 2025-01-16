@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
@@ -41,12 +42,17 @@ public sealed class Zones: Eav.DataSource.DataSourceBase
     /// Constructs a new Zones DS
     /// </summary>
     [PrivateApi]
-    public Zones(MyServices services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog, IDataFactory dataFactory): base(services, $"{DataSourceConstants.LogPrefix}.Zones")
+    public Zones(MyServices services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog, IDataFactory dataFactory): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones")
     {
         ConnectLogs([
             _zoneMapper = zoneMapper,
             _appsCatalog = appsCatalog,
-            _dataFactory = dataFactory.New(options: new(appId: 0, typeName: "Zone", titleField: ZoneType.Name.ToString()))
+            _dataFactory = dataFactory.New(options: new()
+            {
+                AppId = 0,
+                TitleField = ZoneType.Name.ToString(),
+                TypeName = "Zone",
+            })
         ]);
         ProvideOut(GetList);
     }

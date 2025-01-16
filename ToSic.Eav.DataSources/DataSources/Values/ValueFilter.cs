@@ -2,7 +2,7 @@
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.Plumbing;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -84,7 +84,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new ValueFilter
     /// </summary>
     [PrivateApi]
-    public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{LogPrefix}.ValFil", connect: [valLanguages])
+    public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValFil", connect: [valLanguages])
     {
         _valueLanguageService = valLanguages;
 
@@ -125,7 +125,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // Case 1/2: Handle basic "none" and "all" operators
         if (op == CompareOperators.OpNone)
-            return l.Return(EmptyList, CompareOperators.OpNone);
+            return l.Return([], CompareOperators.OpNone);
         if (op == CompareOperators.OpAll)
             return l.Return(ApplyTake(source).ToImmutableList(), CompareOperators.OpAll);
 
@@ -140,7 +140,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // if I can't find any, return empty list
         if (firstEntity == null)
-            return l.Return(EmptyList, "empty");
+            return l.Return([], "empty");
 
         // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
         // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.

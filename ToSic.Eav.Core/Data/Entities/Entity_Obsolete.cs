@@ -5,7 +5,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data;
 
-partial class Entity
+partial record Entity
 {
 
     [PrivateApi]

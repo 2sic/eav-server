@@ -51,5 +51,5 @@ public interface IAttribute : IAttributeBase
 
     [PrivateApi("internal only")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    IAttribute CloneWithNewValues(IImmutableList<IValue> values);
+    IAttribute With(IImmutableList<IValue> values);
 }

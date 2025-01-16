@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 
@@ -53,8 +53,8 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
     private string GetCorrectedTypeName(string assemblyAndType)
     {
         // Correct old stored names (ca. before 2sxc 4 to new)
-        var newName = assemblyAndType.EndsWith(V3To4DataSourceDllOld)
-            ? assemblyAndType.Replace(V3To4DataSourceDllOld, V3To4DataSourceDllNew)
+        var newName = assemblyAndType.EndsWith(DataSourceConstantsInternal.V3To4DataSourceDllOld)
+            ? assemblyAndType.Replace(DataSourceConstantsInternal.V3To4DataSourceDllOld, DataSourceConstantsInternal.V3To4DataSourceDllNew)
             : assemblyAndType;
         return newName;
     }

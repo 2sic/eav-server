@@ -8,67 +8,66 @@ using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
 using static ToSic.Eav.DataSourceTests.RelationshipTests.MetadataTestSpecs;
 
-namespace ToSic.Eav.DataSourceTests.RelationshipTests
+namespace ToSic.Eav.DataSourceTests.RelationshipTests;
+
+[TestClass]
+public class MetadataTargetsTests : TestBaseDiEavFullAndDb
 {
-    [TestClass]
-    public class MetadataTargetsTests : TestBaseDiEavFullAndDb
+    private void TestMetadataTargets(int expected, MetadataTargets ds) 
+        => Assert.AreEqual(expected, ds.ListForTests().Count(), $"should have {expected} md items");
+
+    [TestMethod]
+    public void AllMetadataOfHelp() => TestMetadataTargets(TotalHelp, PrepareDs(HelpTypeName));
+
+    [TestMethod]
+    public void MainMetadataOfHelp() => TestMetadataTargets(MainHelp, PrepareDs(HelpTypeName, typeName: TargetTypeMain));
+
+    [TestMethod]
+    public void TargetOfHelp1() => TestMetadataTargets(1, PrepareDs(ids: new [] { MetaHelpOn1 }));
+
+    [TestMethod]
+    public void TargetOfHelp2() => TestMetadataTargets(1, PrepareDs(ids: new [] { MetaHelpOn2 }));
+
+
+    [TestMethod]
+    public void PriceTargetsDefaultOfAllTypes() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName));
+
+    [TestMethod]
+    public void PriceTargetsDefault() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain));
+
+    [TestMethod]
+    public void PriceTargetsFilterDups() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: true));
+
+    [TestMethod]
+    public void PriceTargetsDontFilterDups() => TestMetadataTargets(PriceTargetsWithDups, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: false));
+
+
+    protected MetadataTargets PrepareDs(string appType = null, IEnumerable<int> ids = null, string typeName = null, bool? deduplicate = null)
     {
-        private void TestMetadataTargets(int expected, MetadataTargets ds) 
-            => Assert.AreEqual(expected, ds.ListForTests().Count(), $"should have {expected} md items");
+        var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-        [TestMethod]
-        public void AllMetadataOfHelp() => TestMetadataTargets(TotalHelp, PrepareDs(HelpTypeName));
+        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine });
+        var appDs = CreateDataSource<App>(baseDs);
 
-        [TestMethod]
-        public void MainMetadataOfHelp() => TestMetadataTargets(MainHelp, PrepareDs(HelpTypeName, typeName: TargetTypeMain));
+        var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
 
-        [TestMethod]
-        public void TargetOfHelp1() => TestMetadataTargets(1, PrepareDs(ids: new [] { MetaHelpOn1 }));
+        var dsParams = new Dictionary<string, object>();
+        if (typeName != null)
+            dsParams["ContentTypeName"] = typeName;
 
-        [TestMethod]
-        public void TargetOfHelp2() => TestMetadataTargets(1, PrepareDs(ids: new [] { MetaHelpOn2 }));
+        if(deduplicate != null)
+            dsParams["FilterDuplicates"] = deduplicate.Value;
 
+        var childDs = CreateDataSource<MetadataTargets>(inStream, dsParams);
+        //if (typeName != null)
+        //    childDs.ContentTypeName = typeName;
 
-        [TestMethod]
-        public void PriceTargetsDefaultOfAllTypes() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName));
+        //if(deduplicate != null)
+        //    childDs.FilterDuplicates = deduplicate.Value;
 
-        [TestMethod]
-        public void PriceTargetsDefault() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain));
+        // todo: unique
 
-        [TestMethod]
-        public void PriceTargetsFilterDups() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: true));
-
-        [TestMethod]
-        public void PriceTargetsDontFilterDups() => TestMetadataTargets(PriceTargetsWithDups, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: false));
-
-
-        protected MetadataTargets PrepareDs(string appType = null, IEnumerable<int> ids = null, string typeName = null, bool? deduplicate = null)
-        {
-            var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
-
-            var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: AppIdentity, lookUp: lookUpEngine));
-            var appDs = CreateDataSource<App>(baseDs);
-
-            var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
-
-            var dsParams = new Dictionary<string, object>();
-            if (typeName != null)
-                dsParams["ContentTypeName"] = typeName;
-
-            if(deduplicate != null)
-                dsParams["FilterDuplicates"] = deduplicate.Value;
-
-            var childDs = CreateDataSource<MetadataTargets>(inStream, dsParams);
-            //if (typeName != null)
-            //    childDs.ContentTypeName = typeName;
-
-            //if(deduplicate != null)
-            //    childDs.FilterDuplicates = deduplicate.Value;
-
-            // todo: unique
-
-            return childDs;
-        }
-
+        return childDs;
     }
+
 }

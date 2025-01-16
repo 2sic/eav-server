@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Data;
 
-partial class Entity
+partial record Entity
 {
     /// <inheritdoc />
     public List<IEntity> Children(string field = null, string type = null)

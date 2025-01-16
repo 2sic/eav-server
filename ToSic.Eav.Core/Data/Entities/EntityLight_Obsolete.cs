@@ -1,7 +1,7 @@
 ﻿#if NETFRAMEWORK
 namespace ToSic.Eav.Data;
 
-partial class EntityLight
+partial record EntityLight
 {
     /// <inheritdoc />
     [PrivateApi]

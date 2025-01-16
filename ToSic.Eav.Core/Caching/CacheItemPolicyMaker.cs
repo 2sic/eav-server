@@ -10,13 +10,14 @@ namespace ToSic.Eav.Caching;
 /// WIP fluid API cache specs.
 /// It should ensure that all cache variants are possible, but that our code can easily spot which ones are used.
 /// </summary>
-/// <param name="parentLog"></param>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class CacheItemPolicyMaker(ILog parentLog, IEnumerable<(string, Action<CacheItemPolicy>)> actions = default) : FunFactActionsBase<CacheItemPolicy>(parentLog, actions, "Eav.CacSpx"), IPolicyMaker
+public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolicyMaker
 {
+    internal static string LogName = "Eav.CacSpx";
+
     private IPolicyMaker Next(string name, Action<CacheItemPolicy> addition)
-        => new CacheItemPolicyMaker(parentLog, CloneActions((name, addition)));
+        => this with { Actions = CloneActions((name, addition)) };
 
     public override CacheItemPolicy CreateResult()
     {

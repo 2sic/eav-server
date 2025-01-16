@@ -16,7 +16,8 @@ namespace ToSic.Lib.Services;
 public abstract class HelperBase(ILog parentLog, string logName) : IHasLog
 {
     /// <inheritdoc />
-    [JsonIgnore]
-    [IgnoreDataMember]
+    [JsonIgnore]        // Prevent System.Text.Json from serializing this property
+    [IgnoreDataMember]  // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
+    [PrivateApi]
     public ILog Log { get; } = new Log(logName, parentLog);
 }

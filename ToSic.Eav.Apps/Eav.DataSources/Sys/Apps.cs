@@ -5,7 +5,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Types;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -59,12 +59,16 @@ public sealed class Apps: CustomDataSource
     /// Constructs a new Apps DS
     /// </summary>
     [PrivateApi]
-    public Apps(MyServices services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : base(services, $"{LogPrefix}.Apps")
+    public Apps(MyServices services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Apps")
     {
         ConnectLogs([appsCatalog, appReaders]);
         ProvideOutRaw(
             () => GetDefault(appsCatalog, appReaders),
-            options: () => new(typeName: AppsContentTypeName, titleField: AppType.Name.ToString())
+            options: () => new()
+            {
+                TitleField = AppType.Name.ToString(),
+                TypeName = AppsContentTypeName
+            }
         );
     }
 
@@ -75,7 +79,7 @@ public sealed class Apps: CustomDataSource
         // try to load the content-type - if it fails, return empty list
         var allZones = appsCatalog.Zones;
         if (!allZones.TryGetValue(OfZoneId, out var zone)) 
-            return (EmptyRawList,"fails load content-type");
+            return ([],"fails load content-type");
 
         var list = zone.Apps
             .OrderBy(a => a.Key)

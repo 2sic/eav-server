@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Json;
@@ -47,7 +46,7 @@ public class DbDataController(
     private int _zoneId;
 
     private const string UserNameUnknown = "unresolved(eav)";
-    private string _userName;
+
     /// <summary>
     /// Current UserName. Used for ChangeLog
     /// </summary>
@@ -55,15 +54,15 @@ public class DbDataController(
     {
         get
         {
-            if (_userName != null) return _userName;
+            if (field != null) return field;
             try
             {
                 // try to get using dependency injection
-                return _userName = userLazy.Value?.IdentityToken ?? UserNameUnknown;
+                return field = userLazy.Value?.IdentityToken ?? UserNameUnknown;
             }
             catch
             {
-                return _userName = UserNameUnknown;
+                return field = UserNameUnknown;
             }
         }
     }
@@ -77,28 +76,17 @@ public class DbDataController(
 
     #region Parts
 
-    internal DbVersioning Versioning => _versioning ??= new(this, compressor);
-    private DbVersioning _versioning;
-    internal DbEntity Entities => _entities ??= new(this, builder);
-    private DbEntity _entities;
-    internal DbValue Values => _values ??= new(this);
-    private DbValue _values;
-    internal DbAttribute Attributes => _attributes ??= new(this);
-    private DbAttribute _attributes;
-    internal DbRelationship Relationships => _relationships ??= new(this);
-    private DbRelationship _relationships;
-    internal DbAttributeSet AttribSet => _attributeSet ??= new(this);
-    private DbAttributeSet _attributeSet;
-    internal DbPublishing Publishing => _publishing ??= new(this, builder);
-    private DbPublishing _publishing;
-    internal DbDimensions Dimensions => _dimensions ??= new(this);
-    private DbDimensions _dimensions;
-    internal DbZone Zone => _dbZone ??= new(this);
-    private DbZone _dbZone;
-    internal DbApp App => _dbApp ??= new(this);
-    private DbApp _dbApp;
-    internal DbContentType ContentType => _contentType ??= new(this);
-    private DbContentType _contentType;
+    internal DbVersioning Versioning => field ??= new(this, compressor);
+    internal DbEntity Entities => field ??= new(this, builder);
+    internal DbValue Values => field ??= new(this);
+    internal DbAttribute Attributes => field ??= new(this);
+    internal DbRelationship Relationships => field ??= new(this);
+    internal DbAttributeSet AttribSet => field ??= new(this);
+    internal DbPublishing Publishing => field ??= new(this, builder);
+    internal DbDimensions Dimensions => field ??= new(this);
+    internal DbZone Zone => field ??= new(this);
+    internal DbApp App => field ??= new(this);
+    internal DbContentType ContentType => field ??= new(this);
 
     #endregion
 
@@ -114,8 +102,8 @@ public class DbDataController(
     {
         get
         {
-            if (_sqlDbPostInit != null)
-                return _sqlDbPostInit;
+            if (field != null)
+                return field;
 
             if (!_loggedToBootLog)
             {
@@ -125,11 +113,9 @@ public class DbDataController(
 
             // When used the first time, make sure we have the save handle attached
             dbContext.AlternateSaveHandler += SaveChanges;
-            return _sqlDbPostInit = dbContext;
+            return field = dbContext;
         }
     }
-
-    private EavDbContext _sqlDbPostInit;
 
     internal Generator<JsonSerializer> JsonSerializerGenerator { get; } = jsonSerializerGenerator;
 
@@ -165,7 +151,7 @@ public class DbDataController(
                 var zoneIdOfApp = SqlDb.ToSicEavApps.Where(a => a.AppId == appId.Value).Select(a => (int?)a.ZoneId)
                     .SingleOrDefault();
                 if (!zoneIdOfApp.HasValue)
-                    throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
+                    throw new ArgumentException($@"App with id {appId.Value} doesn't exist.", nameof(appId));
                 _appId = appId.Value;
                 _zoneId = zoneIdOfApp.Value;
                 return this;
@@ -178,7 +164,7 @@ public class DbDataController(
         {
             var foundApp = SqlDb.ToSicEavApps.FirstOrDefault(a => a.ZoneId == _zoneId && a.AppId == appId.Value);
             if (foundApp == null)
-                throw new ArgumentException("App with id " + appId.Value + " doesn't exist.", nameof(appId));
+                throw new ArgumentException($@"App with id {appId.Value} doesn't exist.", nameof(appId));
             _appId = appId.Value;
         }
         else
@@ -190,8 +176,6 @@ public class DbDataController(
     #endregion
 
     #region Save and check if to kill cache
-
-
 
     /// <summary>
     /// Persists all updates to the data source and optionally resets change tracking in the object context.
@@ -213,10 +197,13 @@ public class DbDataController(
         return modifiedCount;
     }
 
-    private void PurgeAppCacheIfReady() => Log.Do($"{_purgeAppCacheOnSave}", () =>
+    private void PurgeAppCacheIfReady()
     {
-        if (_purgeAppCacheOnSave) appsCache.Value.Purge(this);
-    });
+        var l = Log.Fn($"{_purgeAppCacheOnSave}");
+        if (_purgeAppCacheOnSave)
+            appsCache.Value.Purge(this);
+        l.Done();
+    }
 
     #endregion
 
@@ -313,17 +300,38 @@ public class DbDataController(
     /// The loader must use the same connection, to ensure it runs in existing transactions.
     /// Otherwise, the loader would be blocked from getting intermediate data while we're running changes. 
     /// </summary>
-    public IRepositoryLoader Loader => _loader ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
-    private IRepositoryLoader _loader;
+    public IRepositoryLoader Loader => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
 
-    public void DoWhileQueuingVersioning(Action action) => Versioning.DoAndSaveHistoryQueue(action);
-    public void DoWhileQueueingRelationships(Action action) => Relationships.DoWhileQueueingRelationships(action);
+    public void DoWhileQueuingVersioning(Action action)
+        => Versioning.DoAndSaveHistoryQueue(action);
 
+    public void DoWhileQueueingRelationships(Action action)
+        => Relationships.DoWhileQueueingRelationships(action);
+
+    /// <summary>
+    /// Save a list of entities together in a transaction.
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <param name="saveOptions">never null!</param>
+    /// <returns></returns>
     public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
+    {
+        var pairs = entities
+            .Select(IEntityPair<SaveOptions> (e) => new EntityPair<SaveOptions>(e, saveOptions))
+            .ToList();
+        return Save(pairs);
+    }
+
+    /// <summary>
+    /// Save a list of entities together in a transaction.
+    /// </summary>
+    /// <param name="entityOptionPairs"></param>
+    /// <returns></returns>
+    public List<int> Save(List<IEntityPair<SaveOptions>> entityOptionPairs)
     {
         var callLog = Log.Fn<List<int>>(timer: true);
         logStore.Add("save-data", Log);
-        return callLog.ReturnAsOk(Entities.SaveEntity(entities, saveOptions));
+        return callLog.ReturnAsOk(Entities.SaveEntity(entityOptionPairs));
     }
 
     public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)
@@ -335,7 +343,7 @@ public class DbDataController(
         => SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid) switch
         {
             0 => throw new ArgumentException(
-                $"ParentApp is missing. Can't find app with guid:{parentAppGuid}. Please import ParentApp first."),
+                $"ParentApp missing. Can't find app:{parentAppGuid}. Import ParentApp first."),
             1 => SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid).AppId,
             // we have more apps with requested guid
             _ => SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid && a.AppId == parentAppId) switch

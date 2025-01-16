@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data;
 /// <typeparam name="T">Type of the actual Value</typeparam>
 [PrivateApi("this is just fyi, always work with interface IValue<T>")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Value<T> : IValue<T>
+public record Value<T> : IValue<T>
 {
     /// <summary>
     /// The default constructor to create a value object. Used internally to build the memory model. 
@@ -20,15 +20,20 @@ public class Value<T> : IValue<T>
     internal Value(T typedContents, IImmutableList<ILanguage> languages = null)
     {
         TypedContents = typedContents;
-        _languages = languages ?? DimensionBuilder.NoLanguages;
+        LanguagesImmutable = languages ?? DimensionBuilder.NoLanguages;
     }
 
     public T TypedContents { get; }
 
 
     /// <inheritdoc />
-    public IEnumerable<ILanguage> Languages => _languages;
-    private readonly IImmutableList<ILanguage> _languages;
+    public IEnumerable<ILanguage> Languages => LanguagesImmutable;
+
+    public IImmutableList<ILanguage> LanguagesImmutable
+    {
+        get => field ??= DimensionBuilder.NoLanguages;
+        init => field = value;
+    }
 
     /// <inheritdoc />
     public object SerializableObject
@@ -62,7 +67,7 @@ public class Value<T> : IValue<T>
     }
 
     [PrivateApi]
-    public IValue Clone(IImmutableList<ILanguage> newLanguages) => new Value<T>(TypedContents, newLanguages);
+    public IValue With(IImmutableList<ILanguage> newLanguages) => this with { LanguagesImmutable = newLanguages };
 
     [PrivateApi]
     public object ObjectContents => TypedContents;

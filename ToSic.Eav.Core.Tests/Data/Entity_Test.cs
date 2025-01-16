@@ -44,7 +44,7 @@ public class EntityTest: TestBaseEavCore
         }
 
         // ReSharper disable once UnusedVariable
-        var relMan = new RelationshipManager(dan, null, relationshipList);
+        var relMan = new EntityRelationships(dan, null, relationshipList);
 
         Assert.AreEqual(16, relMan.AllChildren.Count());
         // note: can't test more, because the other properties are internal

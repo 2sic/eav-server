@@ -6,14 +6,14 @@ namespace ToSic.Eav.Data.Build;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EntityPartsBuilder
 {
-    private readonly Func<IEntityLight, IRelationshipManager> _getRm;
+    internal readonly Func<IEntityLight, IEntityRelationships> GetRelationshipDelegate;
     internal readonly Func<Guid, string, IMetadataOf> GetMetadataOfDelegate;
 
     public EntityPartsBuilder(
-        Func<IEntityLight, IRelationshipManager> getRelationshipManager = default,
+        Func<IEntityLight, IEntityRelationships> getRelationshipManager = default,
         Func<Guid, string, IMetadataOf> getMetadataOf = default)
     {
-        _getRm = getRelationshipManager ?? (e => new RelationshipManager(e, null, null));
+        GetRelationshipDelegate = getRelationshipManager ?? (e => new EntityRelationships(e, null, null));
         GetMetadataOfDelegate = getMetadataOf ?? EmptyGetMetadataOf;
     }
 
@@ -27,13 +27,14 @@ public class EntityPartsBuilder
     /// <returns></returns>
     public static EntityPartsBuilder ForAppAndOptionalMetadata(IAppStateCache source = default, List<IEntity> metadata = default)
         => new(
-            entity => new RelationshipManager(entity, source),
+            entity => new EntityRelationships(entity, source),
             getMetadataOf: metadata != default
                 ? CreateMetadataOfItems(metadata)
                 : CreateMetadataOfAppSources(source)
         );
 
-    private static IMetadataOf EmptyGetMetadataOf(Guid guid, string title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
+    private static IMetadataOf EmptyGetMetadataOf(Guid guid, string title)
+        => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
 
     private static Func<Guid, string, IMetadataOf> CreateMetadataOfAppSources(IHasMetadataSourceAndExpiring appSource)
         => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title,
@@ -58,5 +59,4 @@ public class EntityPartsBuilder
             deferredSource: deferredSource ?? specs.deferredSource);
     }
 
-    internal IRelationshipManager RelationshipManager(IEntityLight entity) => _getRm(entity);
 }

@@ -32,10 +32,10 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
     /// Create/clone a value based on an original which will supply most of the values.
     /// </summary>
     /// <returns></returns>
-    public IValue CreateFrom(IValue original,
-        NoParamOrder noParamOrder = default,
-        IImmutableList<ILanguage> languages = null)
-        => languages == null ? original : original.Clone(languages);
+    public IValue CreateFrom(IValue original, NoParamOrder noParamOrder = default, IImmutableList<ILanguage> languages = null)
+        => languages == null
+            ? original
+            : original.With(languages);
 
     #region Simple Values: Bool, DateTime, Number, String
 

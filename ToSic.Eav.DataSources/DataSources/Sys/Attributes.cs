@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Internal;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -48,10 +48,14 @@ public sealed class Attributes: DataSourceBase
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{LogPrefix}.Attrib", connect: [appReaders, dataFactory])
+    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders, dataFactory])
     {
         _appReaders = appReaders;
-        _dataFactory = dataFactory.New(options: new(typeName: AttribContentTypeName, titleField: nameof(IAttributeType.Title)));
+        _dataFactory = dataFactory.New(options: new()
+        {
+            TitleField = nameof(IAttributeType.Title),
+            TypeName = AttribContentTypeName,
+        });
 
         ProvideOut(GetList);
     }
@@ -64,11 +68,11 @@ public sealed class Attributes: DataSourceBase
 
         // try to load the content-type - if it fails, return empty list
         if (string.IsNullOrWhiteSpace(ContentTypeName))
-            return l.Return(EmptyList, "no type name");
+            return l.Return([], "no type name");
 
         var typeNames = ContentTypeName.CsvToArrayWithoutEmpty();
         if (typeNames.Length == 0)
-            return l.Return(EmptyList, "no type names");
+            return l.Return([], "no type names");
 
         var useStream = TypeNameFallbackToTryToUseInStream == ContentTypeName && In.ContainsKey(StreamDefaultName);
         var optionalList = useStream
@@ -83,7 +87,7 @@ public sealed class Attributes: DataSourceBase
 
 
         if (!types.Any())
-            return l.Return(EmptyList, "no type found");
+            return l.Return([], "no type found");
 
         // try to load from type, if it exists
         var attributes = types
@@ -138,7 +142,7 @@ public sealed class Attributes: DataSourceBase
 
         // No attributes, exit early
         if (list == null)
-            return l.Return(EmptyList, "no attributes found");
+            return l.Return([], "no attributes found");
 
         // Create short list of all fields for use in finding additional system fields
         var foundFieldNames = list

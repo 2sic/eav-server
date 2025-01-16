@@ -28,9 +28,9 @@ public sealed class Features : CustomDataSource
     /// Constructs a new Scopes DS
     /// </summary>
     [PrivateApi]
-    public Features(MyServices services, IEavFeaturesService featuresService) : base(services, $"{DataSourceConstants.LogPrefix}.Feats")
+    public Features(MyServices services, IEavFeaturesService featuresService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Feats")
     {
         ConnectLogs([featuresService]);
-        ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new(typeName: "Feature"));
+        ProvideOutRaw(() => featuresService.All.OrderBy(f => f.NameId), options: () => new() { TypeName = "Feature" });
     }
 }

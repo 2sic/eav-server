@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -34,7 +34,7 @@ public sealed class StreamFallback : DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public StreamFallback(MyServices services) : base(services, $"{LogPrefix}.FallBk")
+    public StreamFallback(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FallBk")
     {
         ProvideOut(GetStreamFallback);
     }
@@ -42,7 +42,7 @@ public sealed class StreamFallback : DataSourceBase
     private IImmutableList<IEntity> GetStreamFallback()
     {
         var foundStream = FindIdealFallbackStream();
-        return foundStream?.List.ToImmutableList() ?? EmptyList;
+        return foundStream?.List.ToImmutableList() ?? [];
     }
 
     private IDataStream FindIdealFallbackStream() => Log.Func(() =>

@@ -9,7 +9,11 @@ internal class ContentTypeUtil
 {
     private const string ContentTypeTypeName = "ContentType";
 
-    public static DataFactoryOptions Options = new(typeName: ContentTypeTypeName, titleField: nameof(IContentType.Name));
+    public static DataFactoryOptions Options = new()
+    {
+        TitleField = nameof(IContentType.Name),
+        TypeName = ContentTypeTypeName,
+    };
 
 
     internal static Dictionary<string, object> BuildDictionary(IContentType t) => new()

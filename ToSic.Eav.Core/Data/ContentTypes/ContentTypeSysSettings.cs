@@ -8,8 +8,4 @@
 /// </summary>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class ContentTypeSysSettings
-{
-    public ContentTypeSysSettings() { }
-
-}
+public record ContentTypeSysSettings;

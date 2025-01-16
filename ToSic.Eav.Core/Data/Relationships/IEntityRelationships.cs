@@ -1,11 +1,11 @@
 ﻿namespace ToSic.Eav.Data;
 
 /// <summary>
-/// Manages relationships of an entity - to it's children and parents.
+/// Manages relationships of an entity - to its children and parents.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public interface IRelationshipManager
+public interface IEntityRelationships
 {
     /// <summary>
     /// Get all Child Entities

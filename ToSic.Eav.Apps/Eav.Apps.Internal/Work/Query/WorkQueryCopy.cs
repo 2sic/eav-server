@@ -4,6 +4,7 @@ using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.Generics;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Serialization.Internal;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
@@ -70,11 +71,16 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
         var newQuery = _builder.Value.Entity.CreateFrom(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));
 
-        var saveList = newParts.Select(p => p.Value).Concat(newMetadata).ToList();
-        saveList.Add(newQuery);
+        var entityList = newParts.Select(p => p.Value).Concat(newMetadata).ToList();
+        entityList.Add(newQuery);
 
-        // #ExtractEntitySave - verified
-        _entSave.New(AppWorkCtx.AppReader).Save(saveList);
+
+        var entSaver = _entSave.New(AppWorkCtx.AppReader);
+        var saveOptions = entSaver.SaveOptions();
+        var saveList = entityList
+            .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
+            .ToList();
+        entSaver.Save(saveList);
         l.Done();
     }
 

@@ -27,8 +27,12 @@ public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus
     private IDataSourcesService DataSourcesFactory { get; }
 
 
-        
-    public IDataSource Data => _data ??= DataSourcesFactory.CreateDefault(new DataSourceOptions(appIdentity: AppReader.PureIdentity(), showDrafts: ShowDrafts));
+
+    public IDataSource Data => _data ??= DataSourcesFactory.CreateDefault(new DataSourceOptions
+    {
+        AppIdentityOrReader = AppReader.PureIdentity(),
+        ShowDrafts = ShowDrafts,
+    });
     private IDataSource _data;
 
 

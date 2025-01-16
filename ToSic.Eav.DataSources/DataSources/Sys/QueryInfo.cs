@@ -4,7 +4,7 @@ using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Services;
 using ToSic.Lib.Helpers;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -59,13 +59,17 @@ public sealed class QueryInfo : DataSourceBase
     /// </summary>
     public QueryInfo(MyServices services,
         LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataFactory dataFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
-        services, $"{LogPrefix}.EavQIn")
+        services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn")
     {
         ConnectLogs([
             QueryBuilder = queryBuilder,
             _queryManager = queryManager,
             _attributesGenerator = attributesGenerator,
-            _dataFactory = dataFactory.New(options: new(typeName: QueryStreamsContentType, titleField: StreamsType.Name.ToString()))
+            _dataFactory = dataFactory.New(options: new()
+            {
+                TitleField = StreamsType.Name.ToString(),
+                TypeName = QueryStreamsContentType
+            })
         ]);
         ProvideOut(GetStreamsOfQuery);
         ProvideOut(GetAttributes, "Attributes");
@@ -87,7 +91,7 @@ public sealed class QueryInfo : DataSourceBase
                                  { StreamsType.Name.ToString(), stream.Key }
                              }))
                          .ToImmutableList()
-                     ?? EmptyList;
+                     ?? [];
         return l.Return(result, $"{result.Count}");
     }
         
@@ -102,17 +106,17 @@ public sealed class QueryInfo : DataSourceBase
         // no query can happen if the name was blank
         var query = Query;
         if (query == null)
-            return l.Return(EmptyList, "null");
+            return l.Return([], "null");
 
         // check that _query has the stream name
         if (StreamName.IsEmptyOrWs())
-            return l.Return(EmptyList, "Stream Name empty");
+            return l.Return([], "Stream Name empty");
 
         var streamNames = StreamName.CsvToArrayWithoutEmpty();
         var realStreams = streamNames.Where(query.Out.ContainsKey).ToList();
 
         if (!realStreams.Any())
-            return l.Return(EmptyList, "can't find stream name in query");
+            return l.Return([], "can't find stream name in query");
 
         var results = realStreams
             .SelectMany(sName =>

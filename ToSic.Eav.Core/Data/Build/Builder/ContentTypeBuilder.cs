@@ -58,23 +58,27 @@ public class ContentTypeBuilder
 
         scope = Scopes.RenameOldScope(scope);
 
-        return new ContentType(
-            appId: appId,
-            name: name,
-            nameId: nameId,
-            id: id,
-            scope: scope,
-            decorators: decorators.ToImmutableList(),
-            ctMetadata: metadata,
-            isAlwaysShared: isAlwaysShared,
-            attributes: attributes.ToImmutableList(),
-            isDynamic: isDynamic,
-            repositoryType: repositoryType,
-            repositoryAddress: repositoryAddress,
-            // older stuff
-            onSaveSortAttributes: onSaveSortAttributes,
-            onSaveUseParentStaticName: onSaveUseParentStaticName
-        );
+        return new ContentType
+        {
+            AppId = appId,
+            Name = name,
+            NameId = nameId ?? name,
+            Id = id,
+            Scope = scope,
+            AttributesImmutable = attributes.ToImmutableList(),
+
+            AlwaysShareConfiguration = isAlwaysShared,
+            RepositoryType = repositoryType,
+            RepositoryAddress = repositoryAddress ?? "",
+            IsDynamic = isDynamic,
+
+            Metadata = metadata,
+            Decorators = decorators.ToImmutableList(),
+
+            // TODO: Remove this some day, or move to a decorator or something as it's only for temporary values/saving
+            OnSaveSortAttributes = onSaveSortAttributes ?? false,
+            OnSaveUseParentStaticName = onSaveUseParentStaticName
+        };
     }
 
     public IContentType CreateFrom(

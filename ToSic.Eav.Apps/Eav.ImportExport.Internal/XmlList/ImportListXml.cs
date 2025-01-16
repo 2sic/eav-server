@@ -178,16 +178,18 @@ public partial class ImportListXml(
                 var valueReadOnly = valueReferenceProtection == XmlConstants.ReadOnly;
 
                 // if this value is just a placeholder/reference to another value,
-                // then find the master/primary value, and add this language to it's language list
+                // then find the master/primary value, and add this language to its language list
                 var entityValue = AttributeLanguageImportHelper
                     .ValueItemOfLanguageOrNull(entityAttributes, valName, valueReferenceLanguage);
                 if (entityValue.Value != null)
                 {
                     // 2023-02-24 2dm #immutable
                     // 2023-02-28 2dm As of now we have to clone to update the languages, and replace on the values list
-                    // In future, we should move immutability "up" so this would go into a queue for values to create the final entity
-                    var updatedValue = entityValue.Value.Clone(entityValue.Value.Languages.ToImmutableList()
-                        .Add(new Language(nodeLang, valueReadOnly)));
+                    // In the future, we should move immutability "up" so this would go into a queue for values to create the final entity
+                    var updatedValue = entityValue.Value.With(
+                        entityValue.Value.Languages.ToImmutableList()
+                            .Add(new Language(nodeLang, valueReadOnly))
+                    );
                     var newValues = builder.Value.Replace(entityValue.Attribute.Values,
                         entityValue.Value, updatedValue);
                     var newAttribute = builder.Attribute.CreateFrom(entityValue.Attribute, newValues);

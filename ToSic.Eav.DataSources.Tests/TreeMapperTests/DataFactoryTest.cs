@@ -7,43 +7,42 @@ using ToSic.Eav.Data.Build;
 using ToSic.Testing.Shared;
 using ToSic.Testing.Shared.Data;
 
-namespace ToSic.Eav.DataSourceTests.TreeMapperTests
+namespace ToSic.Eav.DataSourceTests.TreeMapperTests;
+
+[TestClass]
+public class DataFactoryTest: TestBaseEavDataSource
 {
-    [TestClass]
-    public class DataFactoryTest: TestBaseEavDataSource
+    [TestMethod]
+    public void ChildrenRelationships()
     {
-        [TestMethod]
-        public void ChildrenRelationships()
+        var builder = GetService<IDataFactory>().New();
+
+        var parentRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, new List<int> { 101, 102 });
+
+        var allRaw = new List<RawItemWithOneParentAndManyChildren>
         {
-            var builder = GetService<IDataFactory>().New();
+            // the parent
+            parentRaw,
+            // the children
+            new RawItemWithOneParentAndManyChildren(101, Guid.Empty, 0, null),
+            new RawItemWithOneParentAndManyChildren(102, Guid.Empty, 0, null),
+        };
+        var all = builder.Create(allRaw);
 
-            var parentRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, new List<int> { 101, 102 });
+        const string childrenField = "Children";
+        var parent = all.First();
 
-            var allRaw = new List<RawItemWithOneParentAndManyChildren>
-            {
-                // the parent
-                parentRaw,
-                // the children
-                new RawItemWithOneParentAndManyChildren(101, Guid.Empty, 0, null),
-                new RawItemWithOneParentAndManyChildren(102, Guid.Empty, 0, null),
-            };
-            var all = builder.Create(allRaw);
+        // Control - to be sure the test can make sense
+        var getTitle = parent.Entity.TacGet("Title");
+        Assert.IsNotNull(getTitle);
+        Assert.AreEqual(getTitle, parentRaw.Title);
 
-            const string childrenField = "Children";
-            var parent = all.First();
-
-            // Control - to be sure the test can make sense
-            var getTitle = parent.Entity.TacGet("Title");
-            Assert.IsNotNull(getTitle);
-            Assert.AreEqual(getTitle, parentRaw.Title);
-
-            var childrenProperty = parent.Entity.TacGet(childrenField);
-            Assert.IsNotNull(childrenProperty);
-            var childrenList = childrenProperty as IEnumerable<IEntity>;
-            Assert.IsNotNull(childrenList);
-            Assert.AreEqual(2, childrenList.Count());
-            Assert.AreEqual(101, childrenList.First().EntityId);
-            Assert.AreEqual(102, childrenList.Skip(1).First().EntityId);
-        }
+        var childrenProperty = parent.Entity.TacGet(childrenField);
+        Assert.IsNotNull(childrenProperty);
+        var childrenList = childrenProperty as IEnumerable<IEntity>;
+        Assert.IsNotNull(childrenList);
+        Assert.AreEqual(2, childrenList.Count());
+        Assert.AreEqual(101, childrenList.First().EntityId);
+        Assert.AreEqual(102, childrenList.Skip(1).First().EntityId);
     }
 }

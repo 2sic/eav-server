@@ -23,7 +23,7 @@ public class PassThrough : DataSourceBase
     /// Constructs a new PassThrough DataSources
     /// </summary>
     [PrivateApi]
-    public PassThrough(MyServices services) : this(services, $"{DataSourceConstants.LogPrefix}.PasThr")
+    public PassThrough(MyServices services) : this(services, $"{DataSourceConstantsInternal.LogPrefix}.PasThr")
     {
     }
 

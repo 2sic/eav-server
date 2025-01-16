@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.DataSource.Internal.Errors;
 using ToSic.Eav.Plumbing;
-using static ToSic.Eav.DataSource.Internal.DataSourceConstants;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -47,7 +47,7 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public EntityIdFilter(MyServices services): base(services, $"{LogPrefix}.EntIdF")
+    public EntityIdFilter(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.EntIdF")
     {
         ProvideOut(GetList);
     }

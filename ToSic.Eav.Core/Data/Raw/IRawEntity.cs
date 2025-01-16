@@ -17,23 +17,23 @@ public interface IRawEntity
     /// If the real object doesn't have a real ID, please do not set at all.
     /// It will then keep the default and will auto-enumerate.
     /// </summary>
-    int Id { get; }
+    public int Id { get; }
 
     /// <summary>
     /// The Guid to use. Must always be set.
     /// If you don't have a GUID, use Guid.Empty
     /// </summary>
-    Guid Guid { get; }
+    public Guid Guid { get; }
 
     /// <summary>
     /// Created - either the real creation date or the DateTime.Now
     /// </summary>
-    DateTime Created { get; }
+    public DateTime Created { get; }
 
     /// <summary>
     /// Modified - either the real creation date or the DateTime.Now
     /// </summary>
-    DateTime Modified { get; }
+    public DateTime Modified { get; }
 
     /// <summary>
     /// Dictionary of all values to be added.

@@ -5,6 +5,7 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Generics;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Internal;
 using static System.StringComparer;
@@ -91,7 +92,8 @@ public partial class SimpleDataEditService(
     public IEnumerable<int> Create(string contentTypeName, IEnumerable<Dictionary<string, object>> multiValues, ITarget target = null) 
     {
         var l = Log.Fn<IEnumerable<int>>($"{contentTypeName}, items: {multiValues?.Count()}, target: {target != null}");
-        if (multiValues == null) return l.Return(null, "attributes were null");
+        if (multiValues == null)
+            return l.Return(null, "attributes were null");
 
         // ensure the type really exists
         var type = _ctxWithDb.AppReader.GetContentType(contentTypeName);
@@ -100,21 +102,34 @@ public partial class SimpleDataEditService(
 
         l.A($"Type {contentTypeName} found. Will build entities to save...");
 
-        var importEntity = multiValues.Select(values => BuildNewEntity(type, values, target, null).Entity).ToList();
+        var entSaver = entSave.New(_ctxWithDb.AppReader);
+        var saveOptions = entSaver.SaveOptions();
 
-        // #ExtractEntitySave - verified
-        var ids = entSave.New(_ctxWithDb.AppReader).Save(importEntity);
+        var importEntity = multiValues
+            .Select(values =>
+            {
+                var (entity, publishing) = BuildNewEntity(type, values, target, null);
+                var mySaveOptions = saveOptions with { DraftShouldBranch = publishing.ShouldBranchDrafts };
+                var pair = new EntityPair<SaveOptions>(entity, mySaveOptions);
+                return pair;
+            })
+            .ToList();
+
+        var ids = entSaver.Save(importEntity);
 
         return l.Return(ids, "ok");
     }
 
     private (IEntity Entity, EntitySavePublishing Publishing) BuildNewEntity(
-        IContentType type, Dictionary<string, object> values, ITarget targetOrNull, bool? existingIsPublished) 
+        IContentType type,
+        Dictionary<string, object> values,
+        ITarget targetOrNull,
+        bool? existingIsPublished) 
     {
         var l = Log.Fn<(IEntity Entity, EntitySavePublishing Publishing)>
             ($"{type.Name}, {values?.Count}, target: {targetOrNull != null}; {existingIsPublished}");
         // We're going to make changes to the dictionary, so we MUST copy it first, so we don't affect upstream code
-        // also ensure it's case insensitive...
+        // also ensure its case-insensitive...
         values = values.ToInvariantCopy();
 
         if (!values.ContainsKey(Attributes.EntityFieldGuid))
@@ -137,19 +152,27 @@ public partial class SimpleDataEditService(
         var eGuid = Guid.Parse(values[Attributes.EntityFieldGuid].ToString());
 
         // Figure out publishing before converting to IAttribute
-        var publishing = FigureOutPublishingOrNull(type, values, existingIsPublished);
+        var publishing = DetectPublishingOrError(type, values, existingIsPublished);
 
         // Prepare attributes to add
         var preparedValues = ConvertRelationsToNullArray(type, values);
         var preparedIAttributes = builder.Attribute.Create(preparedValues);
         var attributes = BuildNewEntityValues(type, preparedIAttributes, _defaultLanguageCode);
 
-        var newEntity = builder.Entity.Create(appId: _appId, guid: eGuid, contentType: type,
+        var newEntity = builder.Entity.Create(
+            appId: _appId,
+            guid: eGuid,
+            contentType: type,
             attributes: builder.Attribute.Create(attributes),
             owner: owner,
             metadataFor: targetOrNull,
-            publishing: publishing);
-        if (targetOrNull != null) l.A("FYI: Set metadata target which was provided.");
+            // #WipDraftShouldBranch
+            isPublished: publishing.ShouldPublish
+            // #WipDraftShouldBranch
+            //publishing: publishing
+        );
+        if (targetOrNull != null)
+            l.A("FYI: Set metadata target which was provided.");
 
         return l.Return((newEntity, publishing));
     }
@@ -170,9 +193,9 @@ public partial class SimpleDataEditService(
     {
         var l = Log.Fn($"update i:{entityId}");
         var original = _ctxWithDb.AppReader.List.FindRepoId(entityId);
-        var import = BuildNewEntity(original.Type, values, null, original.IsPublished);
-        // #ExtractEntitySave - verified
-        entUpdate.New(_ctxWithDb.AppReader).UpdateParts(id: entityId, partialEntity: import.Entity as Entity, publishing: import.Publishing);
+        var (entity, publishing) = BuildNewEntity(original.Type, values, null, original.IsPublished);
+        entUpdate.New(_ctxWithDb.AppReader)
+            .UpdateParts(id: entityId, partialEntity: entity, publishing: publishing);
         l.Done();
     }
 

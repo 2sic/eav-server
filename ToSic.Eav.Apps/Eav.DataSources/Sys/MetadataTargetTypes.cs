@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Metadata;
@@ -27,10 +28,15 @@ public class MetadataTargetTypes : Eav.DataSource.DataSourceBase
 {
     private readonly IDataFactory _dataFactory;
 
-    public MetadataTargetTypes(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstants.LogPrefix}.MetaTg")
+    public MetadataTargetTypes(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
     {
         ConnectLogs([
-            _dataFactory = dataFactory.New(options: new(appId: 0, typeName: "MetadataTargetTypes", titleField: Data.Attributes.TitleNiceName))
+            _dataFactory = dataFactory.New(options: new()
+            {
+                AppId = 0,
+                TitleField = Data.Attributes.TitleNiceName,
+                TypeName = "MetadataTargetTypes",
+            })
         ]);
         ProvideOut(GetList);
     }

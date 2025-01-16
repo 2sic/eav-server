@@ -29,7 +29,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     {
         var l = (logDetails ? Log : null).Fn<IEntity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
         if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
-        l.A(l.Try(() => "opts " + saveOptions.LogInfo));
+        l.A(l.Try(() => "opts " + saveOptions));
 
         #region Step 0: initial error checks / content-type
 
@@ -113,16 +113,17 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         if (original != null)
             foreach (var newAttrib in newAttribs)
                 mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages &&
-                                               mergedAttribs.ContainsKey(newAttrib.Key)
-                    ? MergeAttribute(mergedAttribs[newAttrib.Key], newAttrib.Value, saveOptions)
+                                               mergedAttribs.TryGetValue(newAttrib.Key, out var oldAttribute)
+                    ? MergeAttribute(oldAttribute, newAttrib.Value, saveOptions)
                     : newAttrib.Value;
 
         var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs, logDetails);
-        var clone = dataBuilder.Entity.CreateFrom(idProvidingEntity, id: newId, guid: preCleaned.NewGuid,
+        var clone = dataBuilder.Entity.CreateFrom(idProvidingEntity,
+            id: newId,
+            guid: preCleaned.NewGuid,
             type: newType,
             attributes: dataBuilder.Attribute.Create(preCleaned.Attributes),
             isPublished: preCleaned.NewIsPublished);
-        //var result = CorrectPublishedAndGuidImports(clone, clone.Attributes, logDetails); // as Entity;
         return l.ReturnAsOk(clone);
     }
 
@@ -172,7 +173,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                     // only keep this value, if it is either the first (so contains primary or null-language)
                     // ...or that it still has a remaining language assignment
                     if (values.Any() && !(newLangs?.Any() ?? false)) continue;
-                    values.Add(value.Clone(newLangs));
+                    values.Add(value.With(newLangs));
                 }
 
                 //field.Value.Values = values;
@@ -199,7 +200,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                         (l.Key == saveOptions.PrimaryLanguage ? 0 : 1) // first sort-order: primary language yes/no
                         + (l.ReadOnly ? 20 : 10)) // then - place read-only at the end of the list
                     .ToImmutableList();
-                return value.Clone(sortedLangs);
+                return value.With(sortedLangs);
             })
             .ToList();
         return valsWithLanguagesSorted;

@@ -29,31 +29,41 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         bool isPublished = true,
         ITarget metadataFor = default,
         EntityPartsBuilder partsBuilder = default,
-        int publishedId = default,
-        EntitySavePublishing publishing = default
+        int publishedId = default
+        // #WipDraftShouldBranch
+        //EntitySavePublishing publishing = default
     )
     {
-        // If repositoryId isn't known set it to EntityId
-        repositoryId = repositoryId == Constants.NullId ? entityId : repositoryId;
-        version = version == default ? 1 : version;
+        return new()
+        {
+            AppId = appId,
+            EntityId = entityId,
+            EntityGuid = guid,
+            Type = contentType,
+            TitleFieldName = titleField,
+            Attributes = attributes ?? AttributeBuilder.EmptyList,
 
-        // Prepare the Parts-builder in case it wasn't provided
-        partsBuilder ??= new();
+            Created = created ?? default,
+            Modified = modified ?? default,
+            Owner = owner,
+            MetadataFor = metadataFor,
+            // Prepare the Parts-builder in case it wasn't provided
+            PartsBuilder = partsBuilder ?? new(),
 
-        return new(appId, entityId, repositoryId: repositoryId,
-            partsBuilder: partsBuilder, 
-            contentType: contentType,
-            values: attributes ?? AttributeBuilder.EmptyList,
-            guid: guid,
-            titleFieldName: titleField,
-            created: created,
-            modified: modified,
-            owner: owner,
-            version: version,
-            isPublished: publishing?.ShouldPublish ?? isPublished,
-            metadataFor: metadataFor,
-            placeDraftInBranch: publishing?.ShouldBranchDrafts ?? default,
-            publishedId: publishedId);
+            // Light Attributes would only be for Entity-Light, but ATM required by design
+            AttributesLight = null,
+
+            // *** Entity stuff ***
+            // RepositoryId should default to EntityId, if not provided
+            RepositoryId = repositoryId == Constants.NullId ? entityId : repositoryId,
+            // Version should always default to 1, if not provided
+            Version = version == default ? 1 : version,
+            // #WipDraftShouldBranch
+            IsPublished = /*publishing?.ShouldPublish ??*/ isPublished,
+            // #WipDraftShouldBranch
+            //PlaceDraftInBranch = publishing?.ShouldBranchDrafts ?? default,
+            PublishedEntityId = publishedId == 0 ? null : (int?)publishedId, // fix: #3070 convert 0 to null 
+        };
     }
 
     /// <summary>
@@ -71,8 +81,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             owner: "");
 
     /// <summary>
-    /// Create a new Entity based on an Entity and Attributes
-    /// Used in the Attribute-Filter, which generates a new entity with less properties
+    /// Create a new Entity based on an Entity and replacing some of its properties
     /// </summary>
     public IEntity CreateFrom(
         IEntity original,
@@ -91,26 +100,18 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         ITarget target = default,
 
         // publishing Instructions - should go elsewhere
-        bool? placeDraftInBranch = default,
+        // #WipDraftShouldBranch
+        //bool? placeDraftInBranch = default,
         int? publishedId = default
     )
     {
+        // Fresh parts builder for relationships & metadata
+        var entityPartsBuilder = EntityPartsBuilder(original, id, guid);
+
         var asRealEntity = original as Entity;
-
-        var entityPartsBuilder = new EntityPartsBuilder(
-            ent => RelationshipManager.ForClone(ent, asRealEntity?.Relationships as RelationshipManager),
-            getMetadataOf: id == default && guid == default
-                // If identifiers don't change, it will provide the identical metadata
-                ? EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
-                // If they do change, we need to create a derived clone
-                : EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
-        );
-
-        attributes ??= asRealEntity?.Attributes;
-
         var e = Create(
             appId: appId ?? original.AppId,
-            attributes: attributes, 
+            attributes: attributes ?? asRealEntity?.Attributes, 
             entityId: id ?? original.EntityId,
             repositoryId: repositoryId ?? original.RepositoryId,
             guid: guid ?? original.EntityGuid,
@@ -122,7 +123,15 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             version: version ?? original.Version,
             metadataFor: target ?? new Target(original.MetadataFor),
 
-            publishing: new(isPublished ?? original.IsPublished, placeDraftInBranch ?? asRealEntity?.PlaceDraftInBranch ?? default),
+            isPublished: original.IsPublished,
+
+            // #WipDraftShouldBranch
+            //publishing: new()
+            //{
+            //    ShouldPublish = isPublished ?? original.IsPublished,
+            //    // #WipDraftShouldBranch
+            //    //ShouldBranchDrafts = /*placeDraftInBranch ??*/ asRealEntity?.PlaceDraftInBranch ?? default
+            //},
 
             publishedId: publishedId ?? asRealEntity?.PublishedEntityId ?? default,
                 
@@ -132,4 +141,17 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         return e;
     }
 
+    private static EntityPartsBuilder EntityPartsBuilder(IEntity original, int? newId, Guid? newGuid)
+    {
+        var oldRelManager = (original as Entity)?.Relationships as EntityRelationships;
+        var entityPartsBuilder = new EntityPartsBuilder(
+            ent => EntityRelationships.ForClone(ent, oldRelManager),
+            getMetadataOf: newId == default && newGuid == default
+                // If identifiers don't change, it will provide the identical metadata
+                ? Build.EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
+                // If they do change, we need to create a derived clone
+                : Build.EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
+        );
+        return entityPartsBuilder;
+    }
 }

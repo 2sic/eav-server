@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.WebApi.Formats;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -10,32 +11,22 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
 {
     public void UpdateGuidAndPublishedAndSaveMany(IAppWorkCtx appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
     {
-        var l = Log.Fn();
-        //foreach (var bundle in itemsToImport)
-        //{
-        //    var curEntity = (Entity)bundle.Entity;
-        //    curEntity.SetGuid(bundle.Header.Guid);
-        //    if (enforceDraft)
-        //        EnforceDraft(curEntity);
-        //}
+        var l = Log.Fn($"will save {itemsToImport.Count} items");
+
+        var saver = workEntSave.New(appCtx.AppReader);
+        var saveOptions = saver.SaveOptions();
 
         var entitiesToImport = itemsToImport
-            // TODO: NOTE: here a clone should work
             .Select(bundle => entityBuilder.CreateFrom(bundle.Entity,
                 guid: bundle.Header.Guid,
-                isPublished: enforceDraft ? (bool?)false : null,
-                placeDraftInBranch: enforceDraft ? (bool?)true : null) as IEntity
+                isPublished: enforceDraft ? false : null
+                // #WipDraftShouldBranch
+                //placeDraftInBranch: enforceDraft ? true : null
+                )
             )
-            //.Select(bundle => _entityBuilder.ResetIdentifiers(bundle.Entity,
-            //    newGuid: bundle.Header.Guid,
-            //    isPublished: enforceDraft ? (bool?)false : null,
-            //    placeDraftInBranch: enforceDraft ? (bool?)true : null)
-            //)
+            .Select(e => new EntityPair<SaveOptions>(e, saveOptions with { DraftShouldBranch = enforceDraft }))
             .ToList();
 
-        l.A($"will save {entitiesToImport.Count} items");
-        // #ExtractEntitySave - verified
-        var saver = workEntSave.New(appCtx.AppReader);
         saver.Save(entitiesToImport);
         l.Done();
     }

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps;
+﻿using System.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSources.LookUp;
@@ -33,7 +34,7 @@ public class QueryBuilder(
         try
         {
             var app = appsCatalog.AppIdentity(appId);
-            var source = dataSourceFactory.CreateDefault(new DataSourceOptions(appIdentity: app));
+            var source = dataSourceFactory.CreateDefault(new DataSourceOptions { AppIdentityOrReader = app });
             var appEntities = source.List;
 
             // use findRepo, as it uses the cache, which gives the list of all items
@@ -100,7 +101,11 @@ public class QueryBuilder(
             var partEngine = new LookUpEngine(baseLookUp, Log, sources: [querySpecsLookUp]);
             // add / set item part configuration
             //partLookUp.Add(querySpecsLookUp);
-            var partConfig = new DataSourceOptions(lookUp: partEngine, appIdentity: appIdentity);
+            var partConfig = new DataSourceOptions
+            {
+                AppIdentityOrReader = appIdentity,
+                LookUp = partEngine,
+            };
 
             // 2023-03-13 2dm - #removedQueryPartShowDrafts
             // if show-draft in overridden, add that to the settings
