@@ -14,7 +14,7 @@ public record Feature: Aspect
     {
         var newRules = licRules?.ToList() ?? [];
         // Create virtual license rule, so it can be enabled by its own GUID
-        var ownLicenseDefinition = new FeatureSet()
+        var ownLicenseDefinition = new FeatureSet
         {
             NameId = BuiltInLicenses.LicenseCustom,
             Priority = 0,
@@ -81,19 +81,15 @@ public record Feature: Aspect
     /// </summary>
     public virtual string Link
     {
-        get => _link ??= $"{PatronsUrl}/rf?{NameId}";
-        init => _link = value;
+        get => field ??= $"{PatronsUrl}/rf?{NameId}";
+        init => field = value;
     }
-
-    private string _link;
 
     public required IEnumerable<FeatureLicenseRule> LicenseRules { get; init; }
 
-    internal IReadOnlyList<FeatureLicenseRule> LicenseRulesList => _licRuleList ??= CreateLicenseRules(LicenseRules, NameId, Guid);
-    private IReadOnlyList<FeatureLicenseRule> _licRuleList;
+    internal IReadOnlyList<FeatureLicenseRule> LicenseRulesList => field ??= CreateLicenseRules(LicenseRules, NameId, Guid);
 
-    public Requirement Requirement => _requirement ??= new(ConditionIsFeature, NameId);
-    private Requirement _requirement;
+    public Requirement Requirement => field ??= new(ConditionIsFeature, NameId);
 
     public bool EnableForSystemTypes { get; init; }
 
