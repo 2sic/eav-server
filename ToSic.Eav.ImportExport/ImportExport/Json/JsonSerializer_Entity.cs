@@ -78,7 +78,8 @@ partial class JsonSerializer
 
         // new: optionally include metadata
         List<JsonEntity> itemMeta = null;
-        var metaList = (entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity>;
+        var metaList = ((entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity>)
+            .ToList();
         if (metadataDepth > 0 && metaList.Any())
             itemMeta = metaList.Select(m => ToJson(m, metadataDepth - 1)).ToList();
 
