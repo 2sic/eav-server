@@ -27,7 +27,7 @@ partial record Entity
 
     [PrivateApi]
     [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
-    public new object GetBestValue(string attributeName, bool resolveHyperlinks)
+    public /*new*/ object GetBestValue(string attributeName, bool resolveHyperlinks)
         => GetBestValue(attributeName, []);
 
 

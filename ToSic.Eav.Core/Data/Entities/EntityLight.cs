@@ -27,8 +27,16 @@ public partial record EntityLight : IEntityLight
     /// <inheritdoc />
     public required Guid EntityGuid { get; init; }
 
-    /// <inheritdoc />
-    public object Title => TitleFieldName.HasValue() ? this[TitleFieldName] : null;
+    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
+    ///// <inheritdoc />
+    //public object Title => TitleFieldName.HasValue()
+    //    ? this[TitleFieldName]
+    //    : null;
+    //private object Title => TitleFieldName.HasValue()
+    //    ? AttributesLight.TryGetValue(TitleFieldName, out var result)
+    //        ? result
+    //        : null
+    //    : null;
 
     [JsonIgnore]
     [PrivateApi]
@@ -38,12 +46,17 @@ public partial record EntityLight : IEntityLight
         init => field = value;
     }
 
-    /// <summary>
-    /// List of all attributes in light-mode - single language, simple.
-    /// Internal use only!
-    /// </summary>
-    [PrivateApi("Internal use only!")]
-    public required IImmutableDictionary<string, object> AttributesLight { get; init; }
+    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
+    ///// <summary>
+    ///// List of all attributes in light-mode - single language, simple.
+    ///// Internal use only!
+    ///// </summary>
+    ///// <remarks>
+    ///// 2dm 2025-01-17 - I believe all code paths set this to null, so it can't actually be in use.
+    ///// Should consider to remove this, as apparently it's not ever used...
+    ///// </remarks>
+    //[PrivateApi("Internal use only!")]
+    //public required IImmutableDictionary<string, object> AttributesLight { get; init; }
 
     /// <inheritdoc />
     public required IContentType Type { get; init; }
@@ -74,39 +87,41 @@ public partial record EntityLight : IEntityLight
 
     #region direct attribute accessor using this[...]
 
-    /// <inheritdoc />
-    public object this[string attributeName]
-        => AttributesLight.TryGetValue(attributeName, out var result)
-            ? result
-            : null;
+    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
+    ///// <inheritdoc />
+    //public object this[string attributeName]
+    //    => AttributesLight.TryGetValue(attributeName, out var result)
+    //        ? result
+    //        : null;
     #endregion
 
 
 
     #region GetBestValue and GetTitle
 
-    /// <inheritdoc />
-    public object GetBestValue(string attributeName) 
-    {
-        if (!AttributesLight.TryGetValue(attributeName, out var result))
-        {
-            var attributeNameLower = attributeName.ToLowerInvariant();
-            if (attributeNameLower == Attributes.EntityFieldTitle)
-                result = Title;
-            else
-                return GetInternalPropertyByName(attributeNameLower);
-        }
+    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
+    ///// <inheritdoc />
+    //public object GetBestValue(string attributeName) 
+    //{
+    //    if (!AttributesLight.TryGetValue(attributeName, out var result))
+    //    {
+    //        var attributeNameLower = attributeName.ToLowerInvariant();
+    //        if (attributeNameLower == Attributes.EntityFieldTitle)
+    //            result = Title;
+    //        else
+    //            return GetInternalPropertyByName(attributeNameLower);
+    //    }
 
-        // map any kind of number to the one format used in other code-checks: decimal
-        return result is short or ushort or int or uint or long or ulong or float or double or decimal
-            ? Convert.ToDecimal(result)
-            : result;
-    }
+    //    // map any kind of number to the one format used in other code-checks: decimal
+    //    return result is short or ushort or int or uint or long or ulong or float or double or decimal
+    //        ? Convert.ToDecimal(result)
+    //        : result;
+    //}
 
 
-
-    [PrivateApi("Testing / wip #IValueConverter")]
-    public TVal GetBestValue<TVal>(string name) => GetBestValue(name).ConvertOrDefault<TVal>();
+    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
+    //[PrivateApi("Testing / wip #IValueConverter")]
+    //public TVal GetBestValue<TVal>(string name) => GetBestValue(name).ConvertOrDefault<TVal>();
 
     /// <summary>
     /// Get internal properties by string-name like "EntityTitle", etc.
@@ -116,42 +131,40 @@ public partial record EntityLight : IEntityLight
     /// <param name="attributeNameLowerInvariant"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected virtual object GetInternalPropertyByName(string attributeNameLowerInvariant)
-    {
-        return attributeNameLowerInvariant.ToLowerInvariant() switch
+    protected virtual object GetInternalPropertyByName(string attributeNameLowerInvariant) =>
+        attributeNameLowerInvariant switch
         {
             Attributes.EntityFieldId => EntityId,
             Attributes.EntityFieldGuid => EntityGuid,
             Attributes.EntityFieldType => Type.Name,
             Attributes.EntityFieldCreated => Created,
-            Attributes.EntityFieldOwner => // added in v15, was missing before
-                Owner,
-            Attributes.EntityFieldOwnerId => // new v15.03
-                OwnerId,
+            Attributes.EntityFieldOwner => Owner, // added in v15, was missing before
+            Attributes.EntityFieldOwnerId => OwnerId, // new v15.03
             Attributes.EntityFieldModified => Modified,
             Attributes.EntityAppId => AppId,
             _ => null
         };
-    }
 
 
-    /// <inheritdoc />
-    public string GetBestTitle() => GetBestTitle(0);
+    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
+    ///// <inheritdoc />
+    //public string GetBestTitle() => GetBestTitle(0);
 
-    private string GetBestTitle(int recursionCount)
-    {
-        var bestTitle = GetBestValue(Attributes.EntityFieldTitle);
+    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
+    //private string GetBestTitle(int recursionCount)
+    //{
+    //    var bestTitle = GetBestValue(Attributes.EntityFieldTitle);
 
-        // in case the title is an entity-picker and has items, try to ask it for the title
-        // note that we're counting recursions, just to be sure it won't loop forever
-        var maybeRelationship = bestTitle as IEnumerable<IEntity>;
-        if (recursionCount < 3 && (maybeRelationship?.Any() ?? false))
-            bestTitle = (maybeRelationship.FirstOrDefault() as Entity)?
-                        .GetBestTitle(recursionCount + 1)
-                        ?? bestTitle;
+    //    // in case the title is an entity-picker and has items, try to ask it for the title
+    //    // note that we're counting recursions, just to be sure it won't loop forever
+    //    var maybeRelationship = bestTitle as IEnumerable<IEntity>;
+    //    if (recursionCount < 3 && (maybeRelationship?.Any() ?? false))
+    //        bestTitle = (maybeRelationship.FirstOrDefault() as Entity)?
+    //                    .GetBestTitle(recursionCount + 1)
+    //                    ?? bestTitle;
 
-        return bestTitle?.ToString();
-    }
+    //    return bestTitle?.ToString();
+    //}
 
     #endregion
 

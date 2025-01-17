@@ -27,16 +27,16 @@ partial record Entity
 
         // the languages are "safe" - meaning they are already all lower-cased and have the optional null-fallback key
         var languages = specs.Dimensions;
-        var field = specs.Field.ToLowerInvariant();
+        var fieldLower = specs.Field.ToLowerInvariant();
         
-        if (Attributes.TryGetValue(field, out var attribute))
+        if (Attributes.TryGetValue(fieldLower, out var attribute))
         {
             var (valueField, result) = attribute.GetTypedValue(languages, false);
             return new(result: result, valueType: (ValueTypesWithState)attribute.Type, path: path)
                 { Value = valueField, Source = this };
         }
             
-        if (field == EntityFieldTitle)
+        if (fieldLower == EntityFieldTitle)
         {
             attribute = Title;
             if (attribute == null)
@@ -48,7 +48,7 @@ partial record Entity
         }
 
         // directly return internal properties, mark as virtual to not cause further Link resolution
-        var valueFromInternalProperty = GetInternalPropertyByName(field);
+        var valueFromInternalProperty = GetInternalPropertyByName(fieldLower);
         if (valueFromInternalProperty != null)
             return new(result: valueFromInternalProperty, valueType: ValueTypesWithState.Virtual, path: path) { Source = this };
 
@@ -56,7 +56,7 @@ partial record Entity
         try
         {
             specs.LogOrNull.A("Nothing found in properties, will try Sub-Item navigation");
-            var subItem = this.TryToNavigateToEntityInList(specs, this, path.Add("SubEntity", field));
+            var subItem = this.TryToNavigateToEntityInList(specs, this, path.Add("SubEntity", fieldLower));
             if (subItem != null) return subItem;
         } catch { /* ignore */ }
 
