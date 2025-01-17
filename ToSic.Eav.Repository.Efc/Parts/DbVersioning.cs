@@ -21,7 +21,7 @@ internal  partial class DbVersioning: DbPartBase
     /// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
     internal int GetChangeLogId()
     {
-        var userName = DbContext.UserName;
+        var userName = DbContext.UserIdentityToken;
         if (_mainChangeLogId != 0) return _mainChangeLogId;
 
         var con = DbContext.SqlDb.Database.GetDbConnection();

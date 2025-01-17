@@ -18,7 +18,7 @@ partial class DbEntity
             EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),
             IsPublished = newEnt.IsPublished,
             PublishedEntityId = newEnt.IsPublished ? null : ((Entity)newEnt).GetInternalPublishedIdForSaving(),
-            Owner = string.IsNullOrEmpty(newEnt.Owner) ? DbContext.UserName : newEnt.Owner,
+            Owner = string.IsNullOrEmpty(newEnt.Owner) ? DbContext.UserIdentityToken : newEnt.Owner,
             AttributeSetId = contentTypeId,
             Version = 1,
             Json = null // use null, as we must wait to serialize till we have the entityId
