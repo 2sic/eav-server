@@ -108,7 +108,11 @@ namespace ToSic.Eav.Repository.Efc.Tests
 
         #region build SaveOptions as needed
 
-        internal readonly SaveOptions SaveDefault = new(langEn.Key, activeLangs);
+        internal readonly SaveOptions SaveDefault = new()
+        {
+            PrimaryLanguage = langEn.Key,
+            Languages = activeLangs,
+        };
 
         private SaveOptions SaveKeepAttribs => SaveDefault with
         {

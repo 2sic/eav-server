@@ -42,6 +42,10 @@ namespace ToSic.Eav.Repository.Efc.Tests.Mocks
         {
         }
        
-        public SaveOptions SaveOptions(int zoneId) => new(DefaultLanguage, appsCatalog.Zone(zoneId).Languages);
+        public SaveOptions SaveOptions(int zoneId) => new()
+        {
+            PrimaryLanguage = DefaultLanguage,
+            Languages = appsCatalog.Zone(zoneId).Languages,
+        };
     }
 }
