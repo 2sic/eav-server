@@ -124,7 +124,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             version: version ?? original.Version,
             metadataFor: target ?? new Target(original.MetadataFor),
 
-            isPublished: original.IsPublished,
+            isPublished: isPublished ?? original.IsPublished,
 
             // #WipDraftShouldBranch
             //publishing: new()
