@@ -20,11 +20,9 @@ public record SysFeature : Feature
 
     public override string Link
     {
-        get => _link.UseFallbackIfNoValue(Constants.GoUrlSysFeats);
-        init => _link = value;
+        get => field.UseFallbackIfNoValue(Constants.GoUrlSysFeats);
+        init => field = value;
     }
-
-    private readonly string _link;
 
     public override bool IsConfigurable => false;
 
@@ -41,7 +39,6 @@ public record SysFeature : Feature
     });
 
     private readonly GetOnce<IRawEntity> _newEntity = new();
-    private readonly string _nameId;
 
 
     public override string ToString() => $"{Prefix}: {Name} ({NameId} / {Guid})";

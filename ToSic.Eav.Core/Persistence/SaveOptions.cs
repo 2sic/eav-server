@@ -4,18 +4,15 @@ namespace ToSic.Eav.Persistence;
 
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public record SaveOptions(string PrimaryLanguage, List<DimensionDefinition> Languages)
+public record SaveOptions
 {
-    public List<DimensionDefinition> Languages { get; init; } = Languages;
+    public required List<DimensionDefinition> Languages { get; init; }
 
-    public string PrimaryLanguage
+    public required string PrimaryLanguage
     {
-        get => _primaryLanguageField;
-        set => _primaryLanguageField = value.ToLowerInvariant();
+        get => field;
+        set => field = value.ToLowerInvariant();
     }
-
-    // ReSharper disable once ReplaceWithFieldKeyword
-    private string _primaryLanguageField = PrimaryLanguage;
 
     public bool PreserveUntouchedAttributes { get; init; } = false;
 

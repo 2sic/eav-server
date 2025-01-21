@@ -199,7 +199,11 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         l.A($"excludeSearchPatterns:{specs.ExcludeSearchPatterns.Count}");
 
         // *** EXCLUDE FOLDERS & FILES
-        var files = AddFilesRecursive([], root, specs);
+        var topLevelFiles = GetFiles(root, specs).ToList();
+        var subFiles = GetFilesRecursive(root, specs);
+        var files = topLevelFiles
+            .Union(subFiles)
+            .ToList();
 
         return l.Return(files,"ok");
     }
@@ -230,57 +234,72 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         Log.A($"excludeSearchPatterns:{specs.ExcludeSearchPatterns.Count}");
 
         // *** EXCLUDE FOLDERS & FILES
-        var folders = AddFoldersRecursive([], root, specs);
+        var folders = GetFoldersRecursive(root, specs);
 
         return l.Return(folders,"ok");
     }
 
-    private static List<string> AddFilesRecursive(List<string> allFiles, string folderPath, FileSearchSpecs specs)
+    private List<string> GetFilesRecursive(string folderPath, FileSearchSpecs specs)
     {
-        allFiles ??= GetFiles(folderPath, specs).ToList();
-        var folders = GetFolders(folderPath, specs).ToList();
-        
-        foreach (var folder in folders)
-        {
-            allFiles.AddRange(GetFiles(folder, specs).ToList());
-            AddFilesRecursive(allFiles, folder, specs);
-        }
+        var l = Log.Fn<List<string>>($"folderPath:{folderPath}");
+        var subFolders = GetFolders(folderPath, specs).ToList();
 
-        return allFiles;
+        var allFiles = subFolders
+            .SelectMany(folder =>
+            {
+                var folderFiles = GetFiles(folder, specs);
+                var deeperFiles = GetFilesRecursive(folder, specs);
+                return folderFiles.Union(deeperFiles);
+            })
+            .ToList();
+
+        return l.Return(allFiles, $"{allFiles.Count}");
     }
 
-    private static List<string> AddFoldersRecursive(List<string> allFolders, string folderPath, FileSearchSpecs specs)
+    private List<string> GetFoldersRecursive(string folderPath, FileSearchSpecs specs)
     {
-        foreach (var folder in GetFolders(folderPath, specs).ToList())
-        {
-            allFolders.Add(folder);
-            AddFoldersRecursive(allFolders, folder, specs);
-        }
+        var l = Log.Fn<List<string>>($"folderPath:{folderPath}");
+        var subFolders = GetFolders(folderPath, specs).ToList();
+        var allFolders = subFolders
+            .SelectMany<string, string>(folder => [folder, .. GetFoldersRecursive(folderPath, specs)])
+            .ToList();
 
-        return allFolders;
+        return l.Return(allFolders, $"{allFolders.Count}");
     }
 
     private static IEnumerable<string> GetFolders(string folderPath, FileSearchSpecs specs)
     {
-        var folders = Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly);
-        foreach (var excludeSearchPattern in specs.ExcludeSearchPatterns)
-        {
-            folders = folders.Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern)).ToList();
-        }
-        return folders;
+        var folders = Directory
+            .EnumerateDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly)
+            .ToList();
+
+        return FilterList(folders, specs.ExcludeSearchPatterns);
     }
+
 
     private static IEnumerable<string> GetFiles(string folderPath, FileSearchSpecs specs)
     {
         var files = specs.FileSearchPatterns
             .SelectMany(s => Directory.EnumerateFiles(folderPath, s, SearchOption.TopDirectoryOnly))
             .ToList();
-        foreach (var excludeSearchPattern in specs.ExcludeSearchPatterns)
-        {
-            files = files.Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern)).ToList();
-        }
-        return files;
+
+        return FilterList(files, specs.ExcludeSearchPatterns);
     }
+
+    /// <summary>
+    /// Filter a list of files or folder according to the exclude list.
+    /// </summary>
+    /// <param name="paths"></param>
+    /// <param name="excludeList"></param>
+    /// <returns></returns>
+    private static List<string> FilterList(List<string> paths, List<string> excludeList) =>
+        excludeList.Aggregate(
+                paths,
+                (current, ignore) => current
+                    .Where(f => !f.ToLowerInvariant().Contains(ignore))
+                    .ToList()
+            )
+            .ToList();
 
     public record FileSearchSpecs
     {

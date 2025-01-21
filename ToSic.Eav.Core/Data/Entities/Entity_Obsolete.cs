@@ -18,16 +18,16 @@ partial record Entity
 
     [PrivateApi]
     [Obsolete("Deprecated. Do not use any more, as it cannot reliably know the real language list. Use GetBestValue(name, languageList)")]
-    public new object GetBestValue(string attributeName) => GetBestValue(attributeName, []);
+    public object GetBestValue(string attributeName) => GetBestValue(attributeName, []);
 
     [PrivateApi]
     [Obsolete("Deprecated. Do not use any more, as it cannot reliably resolve hyperlinks.")]
-    public new TVal GetBestValue<TVal>(string name) => GetBestValue(name).ConvertOrDefault<TVal>();
+    public TVal GetBestValue<TVal>(string name) => GetBestValue(name).ConvertOrDefault<TVal>();
 
 
     [PrivateApi]
     [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
-    public new object GetBestValue(string attributeName, bool resolveHyperlinks)
+    public /*new*/ object GetBestValue(string attributeName, bool resolveHyperlinks)
         => GetBestValue(attributeName, []);
 
 

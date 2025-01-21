@@ -8,6 +8,6 @@ partial record Entity
     public required IImmutableDictionary<string, IAttribute> Attributes { get; init; }
 
     /// <inheritdoc />
-    public new IAttribute this[string attributeName] => Attributes.TryGetValue(attributeName, out var result) ? result : null; 
+    public IAttribute this[string attributeName] => Attributes.TryGetValue(attributeName, out var result) ? result : null; 
 
 }

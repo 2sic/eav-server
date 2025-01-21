@@ -72,14 +72,14 @@ namespace ToSic.Eav.Interfaces
         /// The field used is determined in the <see cref="IContentType"/>.
         /// If you need a string, use GetBestTitle() instead.
         /// </returns>
-        new IAttribute Title { get; }
+        IAttribute Title { get; }
 
         /// <summary>
         /// Gets an Attribute using its StaticName
         /// </summary>
         /// <param name="attributeName">StaticName of the Attribute</param>
         /// <returns>A typed Attribute Object</returns>
-        new IAttribute this[string attributeName] { get; }
+        IAttribute this[string attributeName] { get; }
 
         /// <summary>
         /// version of this entity in the repository

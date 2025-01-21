@@ -50,7 +50,7 @@ public class DbDataController(
     /// <summary>
     /// Current UserName. Used for ChangeLog
     /// </summary>
-    public string UserName
+    public string UserIdentityToken
     {
         get
         {

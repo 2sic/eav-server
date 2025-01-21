@@ -45,7 +45,11 @@ public abstract class EavImportExportEnvironmentBase(ISite site, IAppsCatalog ap
         var l = Log.Fn<SaveOptions>($"{nameof(zoneId)}:{zoneId}");
 
         var langs = appsCatalog.Zone(zoneId).Languages;
-        var opts = new SaveOptions(DefaultLanguage, langs);
+        var opts = new SaveOptions
+        {
+            PrimaryLanguage = DefaultLanguage,
+            Languages = langs,
+        };
 
         return l.Return(opts, $"langs: {langs.Count}");
     }

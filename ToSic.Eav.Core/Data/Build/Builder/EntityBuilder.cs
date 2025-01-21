@@ -50,8 +50,9 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             // Prepare the Parts-builder in case it wasn't provided
             PartsBuilder = partsBuilder ?? new(),
 
+            // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
             // Light Attributes would only be for Entity-Light, but ATM required by design
-            AttributesLight = null,
+            //AttributesLight = null,
 
             // *** Entity stuff ***
             // RepositoryId should default to EntityId, if not provided
@@ -123,7 +124,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             version: version ?? original.Version,
             metadataFor: target ?? new Target(original.MetadataFor),
 
-            isPublished: original.IsPublished,
+            isPublished: isPublished ?? original.IsPublished,
 
             // #WipDraftShouldBranch
             //publishing: new()

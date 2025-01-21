@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources;
 [PublicApi]
 [VisualQuery(
     NiceName = "Owner Filter",
-    UiHint = "Keep only item created by a specified user",
+    UiHint = "Keep only item owned / created by a specified user",
     Icon = DataSourceIcons.PersonCircled,
     Type = DataSourceType.Security,
     NameId = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
@@ -19,7 +19,8 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.OwnerFilter",
     HelpLink = "https://go.2sxc.org/DsOwnerFilter")]
 
-public class OwnerFilter : Eav.DataSource.DataSourceBase
+// ReSharper disable once UnusedMember.Global
+public class OwnerFilter : DataSourceBase
 {
     #region Configuration-properties
 
@@ -48,16 +49,21 @@ public class OwnerFilter : Eav.DataSource.DataSourceBase
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>($"get for identity:{Identity}");
-        Configuration.Parse();
+        // Get once to not re-access the property every time
+        var identity = Identity;
 
-        if (string.IsNullOrWhiteSpace(Identity))
+        var l = Log.Fn<IImmutableList<IEntity>>($"get for identity:{identity}");
+
+        if (string.IsNullOrWhiteSpace(identity))
             return l.ReturnAsError([], "no identity");
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
-
-        return l.ReturnAsOk(source.Where(e => e.Owner == Identity).ToImmutableList());
+        return source is null
+            ? l.ReturnAsError(Error.TryGetInFailed())
+            : l.ReturnAsOk(source
+                .Where(e => e.Owner == identity)
+                .ToImmutableList()
+            );
     }
 
 }

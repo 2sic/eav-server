@@ -104,11 +104,12 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public string GetBestTitle(string[] dimensions)
         => Entity.GetBestTitle(dimensions);
 
-    /// <inheritdoc />
-    object IEntityLight.Title => ((IEntityLight) Entity).Title;
+    ///// <inheritdoc />
+    //object IEntityLight.Title => ((IEntityLight) Entity).Title;
 
-    /// <inheritdoc />
-    object IEntityLight.this[string attributeName] => ((IEntityLight) Entity)[attributeName];
+    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
+    ///// <inheritdoc />
+    //object IEntityLight.this[string attributeName] => ((IEntityLight) Entity)[attributeName];
 
     /// <inheritdoc />
     public int Version => Entity.Version;
