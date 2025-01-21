@@ -199,7 +199,11 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         l.A($"excludeSearchPatterns:{specs.ExcludeSearchPatterns.Count}");
 
         // *** EXCLUDE FOLDERS & FILES
-        var files = AddFilesRecursive([], root, specs);
+        var topLevelFiles = GetFiles(root, specs).ToList();
+        var subFiles = GetFilesRecursive(root, specs);
+        var files = topLevelFiles
+            .Union(subFiles)
+            .ToList();
 
         return l.Return(files,"ok");
     }
@@ -235,18 +239,21 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         return l.Return(folders,"ok");
     }
 
-    private static List<string> AddFilesRecursive(List<string> allFiles, string folderPath, FileSearchSpecs specs)
+    private List<string> GetFilesRecursive(string folderPath, FileSearchSpecs specs)
     {
-        allFiles ??= GetFiles(folderPath, specs).ToList();
+        var l = Log.Fn<List<string>>($"folderPath:{folderPath}");
         var folders = GetFolders(folderPath, specs).ToList();
-        
-        foreach (var folder in folders)
-        {
-            allFiles.AddRange(GetFiles(folder, specs).ToList());
-            AddFilesRecursive(allFiles, folder, specs);
-        }
 
-        return allFiles;
+        var allFiles = folders
+            .SelectMany(folder =>
+            {
+                var folderFiles = GetFiles(folder, specs).ToList();
+                var subfolderFiles = GetFilesRecursive(folder, specs);
+                return folderFiles.Union(subfolderFiles);
+            })
+            .ToList();
+
+        return l.Return(allFiles, $"{allFiles.Count}");
     }
 
     private static List<string> AddFoldersRecursive(List<string> allFolders, string folderPath, FileSearchSpecs specs)
@@ -262,12 +269,15 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
 
     private static IEnumerable<string> GetFolders(string folderPath, FileSearchSpecs specs)
     {
-        var folders = Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly);
-        foreach (var excludeSearchPattern in specs.ExcludeSearchPatterns)
-        {
-            folders = folders.Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern)).ToList();
-        }
-        return folders;
+        var folders = Directory.EnumerateDirectories(folderPath, "*.*", SearchOption.TopDirectoryOnly)
+            .ToList();
+
+        return specs.ExcludeSearchPatterns
+            .Aggregate(folders, (current, excludeSearchPattern) =>
+                current
+                    .Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern))
+                    .ToList()
+            );
     }
 
     private static IEnumerable<string> GetFiles(string folderPath, FileSearchSpecs specs)
@@ -275,11 +285,13 @@ public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(
         var files = specs.FileSearchPatterns
             .SelectMany(s => Directory.EnumerateFiles(folderPath, s, SearchOption.TopDirectoryOnly))
             .ToList();
-        foreach (var excludeSearchPattern in specs.ExcludeSearchPatterns)
-        {
-            files = files.Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern)).ToList();
-        }
-        return files;
+
+        return specs.ExcludeSearchPatterns
+            .Aggregate(files, (current, excludeSearchPattern) =>
+                current
+                    .Where(f => !f.ToLowerInvariant().Contains(excludeSearchPattern))
+                    .ToList()
+            );
     }
 
     public record FileSearchSpecs
