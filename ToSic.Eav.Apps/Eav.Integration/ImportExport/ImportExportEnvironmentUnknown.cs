@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.Persistence.Logging;
+#pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Eav.Integration;
 

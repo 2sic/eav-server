@@ -47,7 +47,7 @@ internal class EntityLoader(EfcAppLoader appLoader, Generator<IDataDeserializer>
         var rawEntities = LoadRaw(appId, entityIds);
         sqlTime.Stop();
 
-        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, entityIds, rawEntities, appLoader.Features, Log);
+        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, rawEntities, appLoader.Features, Log);
 
         var relLoader = new RelationshipLoader(appLoader, detailsLoadSpecs);
         var relatedEntities = relLoader.LoadRelationships();

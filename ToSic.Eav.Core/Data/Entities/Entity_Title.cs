@@ -3,13 +3,13 @@
 partial record Entity
 {
     /// <inheritdoc />
-    public new IAttribute Title => TitleFieldName == null
+    public IAttribute Title => TitleFieldName == null
         ? null
         : Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null;
 
 
     /// <inheritdoc />
-    public new string GetBestTitle() => GetBestTitle(null, 0);
+    public string GetBestTitle() => GetBestTitle(null, 0);
 
     /// <inheritdoc />
     public string GetBestTitle(string[] dimensions) => GetBestTitle(dimensions, 0);

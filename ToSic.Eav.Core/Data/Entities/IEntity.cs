@@ -87,14 +87,20 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// The field used is determined in the <see cref="IContentType"/>.
     /// If you need a string, use GetBestTitle() instead.
     /// </returns>
-    new IAttribute Title { get; }
+#if NETFRAMEWORK
+    new
+#endif
+        IAttribute Title { get; }
 
     /// <summary>
     /// Gets an Attribute using its StaticName
     /// </summary>
     /// <param name="attributeName">StaticName of the Attribute</param>
     /// <returns>A typed Attribute Object</returns>
-    new IAttribute this[string attributeName] { get; }
+#if NETFRAMEWORK
+    new
+#endif
+        IAttribute this[string attributeName] { get; }
 
     /// <summary>
     /// version of this entity in the repository

@@ -52,7 +52,7 @@ partial interface IEntity: Interfaces.IEntity // compatibility - only relevant f
     /// </returns>
     [Obsolete("Deprecated. Do not use any more, as it cannot reliably know the real language list. Use GetBestValue(name, languageList)")]
     [PrivateApi]
-    new object GetBestValue(string attributeName);
+    object GetBestValue(string attributeName);
 
 }
 

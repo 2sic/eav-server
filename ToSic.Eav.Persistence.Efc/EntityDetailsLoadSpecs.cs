@@ -4,7 +4,7 @@ using ToSic.Eav.Persistence.Efc.Intermediate;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class EntityDetailsLoadSpecs(int appId, int[] entityIds, List<TempEntity> entities, IEavFeaturesService features, ILog parentLog): HelperBase(parentLog, "Sql.DetLSp")
+internal class EntityDetailsLoadSpecs(int appId, List<TempEntity> entities, IEavFeaturesService features, ILog parentLog): HelperBase(parentLog, "Sql.DetLSp")
 {
     public int AppId => appId;
 
