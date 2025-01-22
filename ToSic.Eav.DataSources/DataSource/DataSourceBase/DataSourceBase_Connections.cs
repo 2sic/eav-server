@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Lib.Coding;
 using ToSic.Lib.Helpers;
@@ -19,9 +18,11 @@ partial class DataSourceBase
 
     /// <inheritdoc />
     [PublicApi]
-    public virtual IReadOnlyDictionary<string, IDataStream> In => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw));
+    public virtual IReadOnlyDictionary<string, IDataStream> In
+        => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw));
     private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new();
-    private readonly IDictionary<string, IDataStream> _inRw = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+    private readonly IDictionary<string, IDataStream> _inRw
+        = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Get a specific Stream from In.
@@ -72,8 +73,7 @@ partial class DataSourceBase
     [PublicApi]
     public virtual IReadOnlyDictionary<string, IDataStream> Out => OutWritable.AsReadOnly();
 
-    private StreamDictionary OutWritable => _outWritable ??= new(Services.CacheService);
-    private StreamDictionary _outWritable;
+    private StreamDictionary OutWritable => field ??= new(Services.CacheService);
 
     /// <inheritdoc />
     public IDataStream this[string outName] => GetStream(outName);
@@ -85,7 +85,8 @@ partial class DataSourceBase
         var l = Log.Fn<IDataStream>($"{nameof(name)}: {name}; {nameof(nullIfNotFound)}: {nullIfNotFound}; {nameof(emptyIfNotFound)}: {emptyIfNotFound}");
 
         // Check if streamName was not provided
-        if (string.IsNullOrEmpty(name)) name = DataSourceConstants.StreamDefaultName;
+        if (string.IsNullOrEmpty(name))
+            name = DataSourceConstants.StreamDefaultName;
 
         // Simple case - just get it
         if (Out.TryGetValue(name, out var foundStream))
