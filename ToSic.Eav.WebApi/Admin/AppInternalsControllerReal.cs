@@ -49,7 +49,9 @@ public class AppInternalsControllerReal(
                 {
                     "AppSettings",
                     isGlobalOrPrimary
-                        ? settingsCustomExists ? EntityListInternal(appId, "SettingsCustom", excludeAncestor: true) : null 
+                        ? settingsCustomExists
+                            ? EntityListInternal(appId, "SettingsCustom", excludeAncestor: true)
+                            : null 
                         : EntityListInternal(appId, AppLoadConstants.TypeAppSettings, excludeAncestor: true)
                 },
 
@@ -63,7 +65,9 @@ public class AppInternalsControllerReal(
                 {
                     "AppResources",
                     isGlobalOrPrimary
-                        ? resourcesCustomExists ? EntityListInternal(appId, "ResourcesCustom", excludeAncestor: true) : null
+                        ? resourcesCustomExists
+                            ? EntityListInternal(appId, "ResourcesCustom", excludeAncestor: true)
+                            : null
                         : EntityListInternal(appId, AppLoadConstants.TypeAppResources, excludeAncestor: true)
 
                 },
@@ -81,7 +85,9 @@ public class AppInternalsControllerReal(
                 {
                     "AppSettings",
                     isGlobalOrPrimary
-                        ? settingsCustomExists ? FieldAllInternal(appId, "SettingsCustom") : null
+                        ? settingsCustomExists
+                            ? FieldAllInternal(appId, "SettingsCustom")
+                            : null
                         : FieldAllInternal(appId, AppLoadConstants.TypeAppSettings)
                 },
 
@@ -89,7 +95,9 @@ public class AppInternalsControllerReal(
                 {
                     "AppResources",
                     isGlobalOrPrimary
-                        ? resourcesCustomExists ? FieldAllInternal(appId, "ResourcesCustom") : null
+                        ? resourcesCustomExists
+                            ? FieldAllInternal(appId, "ResourcesCustom")
+                            : null
                         : FieldAllInternal(appId, AppLoadConstants.TypeAppResources)
                 }
             },
@@ -99,10 +107,10 @@ public class AppInternalsControllerReal(
         };
     }
 
-    private IEnumerable<ContentTypeDto> TypeListInternal(int appId, string scope = null, bool withStatistics = false)
+    private IList<ContentTypeDto> TypeListInternal(int appId, string scope = null, bool withStatistics = false)
         => ctApiLazy.Value.List(appId, scope, withStatistics);
 
-    private IEnumerable<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
+    private List<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
         => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appsCatalog.AppIdentity(appId), contentType, GrantSets.ReadSomething)
             .GetEntitiesForAdmin(contentType, excludeAncestor);
 

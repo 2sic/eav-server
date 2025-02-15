@@ -72,19 +72,11 @@ public class ContentTypeDtoService(
     /// Returns the configuration for a content type
     /// </summary>
     public IEnumerable<ContentTypeFieldDto> GetFields(int appId, string staticName)
-    {
-        return Convert(appId, attributes.New(appId).GetFields(staticName), false);
-        //var fields = attributes.New(appId).GetFields(staticName);
-        //return convAttrDto.New().Init(appId, false).Convert(fields);
-    }
+        => Convert(appId, attributes.New(appId).GetFields(staticName), false);
 
 
     public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId)
-    {
-        return Convert(appId, attributes.New(appId).GetSharedFields(attributeId), true);
-        //var fields = attributes.New(appId).GetSharedFields(attributeId);
-        //return convAttrDto.New().Init(appId, true).Convert(fields);
-    }
+        => Convert(appId, attributes.New(appId).GetSharedFields(attributeId), true);
 
     public IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId)
         => Convert(appId, attributes.New(appId).GetAncestors(attributeId), true);

@@ -9,16 +9,12 @@ public class EavJsonConverterFactory(
     EavCollectionJsonConverter eavCollectionJsonConverter)
     : JsonConverterFactory
 {
-    public override bool CanConvert(Type typeToConvert)
-    {
-        return typeof(IEntity).IsAssignableFrom(typeToConvert)
-               || typeof(IEnumerable<IEntity>).IsAssignableFrom(typeToConvert);
-    }
+    public override bool CanConvert(Type typeToConvert) =>
+        typeof(IEntity).IsAssignableFrom(typeToConvert)
+        || typeof(IEnumerable<IEntity>).IsAssignableFrom(typeToConvert);
 
-    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-    {
-        return typeof(IEnumerable).IsAssignableFrom(typeToConvert)
-            ? (JsonConverter) eavCollectionJsonConverter
+    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options) =>
+        typeof(IEnumerable).IsAssignableFrom(typeToConvert)
+            ? eavCollectionJsonConverter
             : eavJsonConverter;
-    }
 }
