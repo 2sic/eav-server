@@ -83,7 +83,7 @@ public class MetadataControllerReal(
                 && title == null
                 && item.TryGetValue(ConvertToEavLight.InternalTypeField, out var typeInfo))
             {
-                if (typeInfo is JsonType typeDic && typeDic.Name != null) 
+                if (typeInfo is JsonType { Name: not null } typeDic) 
                     item[Attributes.TitleNiceName] = typeDic.Name;
             }
 

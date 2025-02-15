@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Context;
+﻿using System.Collections.Concurrent;
+using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization;
 using ToSic.Lib.Documentation;
@@ -255,7 +256,13 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         _excludeAttributesCache[entity.Type] = excludeAttributes;
         return excludeAttributes;
     }
-    private readonly Dictionary<object, List<string>> _excludeAttributesCache = [];
+
+    // note 2025-01-31: in 19.02 LTS there seems to be an issue on the line
+    // _excludeAttributesCache[entity.Type] = excludeAttributes; (ca. 255)
+    // ATM we believe it's a concurrency issue, but we're not sure yet.
+    // https://stackoverflow.com/questions/1320264/how-did-i-get-this-nullreferenceexception-error-here-right-after-the-constructor
+    // So we changed it to a ConcurrentDictionary to see if that helps.
+    private readonly ConcurrentDictionary<object, List<string>> _excludeAttributesCache = [];
 
     #endregion
 
