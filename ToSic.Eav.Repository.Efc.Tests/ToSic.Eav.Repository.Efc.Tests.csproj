@@ -8,7 +8,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsTestProject>true</IsTestProject>
     <NoWarn>0414;MSB3277</NoWarn>
-    <LangVersion>default</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
   </PropertyGroup>
 

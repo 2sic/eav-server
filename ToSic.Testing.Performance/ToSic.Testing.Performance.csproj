@@ -8,6 +8,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
     <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

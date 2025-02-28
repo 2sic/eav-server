@@ -9,6 +9,7 @@
     <IsTestProject>true</IsTestProject>
     <NoWarn>0414</NoWarn>
     <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">

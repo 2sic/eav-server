@@ -6,14 +6,10 @@ namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests;
 
 public abstract class VerifySwitchableServiceBase : TestBaseForIoC
 {
-    protected override void SetupServices(IServiceCollection services)
-    {
-        base.SetupServices(services);
-        services.AddTransient<ITestSwitchableService, TestSwitchableFallback>();
-        services.AddTransient<ITestSwitchableService, TestSwitchableKeep>();
-        services.AddTransient<ITestSwitchableService, TestSwitchableSkip>();
-        services
+    protected override IServiceCollection SetupServices(IServiceCollection services) =>
+        base.SetupServices(services)
+            .AddTransient<ITestSwitchableService, TestSwitchableFallback>()
+            .AddTransient<ITestSwitchableService, TestSwitchableKeep>()
+            .AddTransient<ITestSwitchableService, TestSwitchableSkip>()
             .AddLibCore();
-    }
-
 }

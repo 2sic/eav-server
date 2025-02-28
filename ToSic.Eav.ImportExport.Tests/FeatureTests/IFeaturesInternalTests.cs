@@ -12,17 +12,11 @@ namespace ToSic.Eav.ImportExport.Tests.FeatureTests
     [TestClass]
     public class IFeaturesInternalTests: TestBaseDiEavFullAndDb
     {
-        public IFeaturesInternalTests()
-        {
-            FeaturesInternal = GetService<IEavFeaturesService>();
-        }
-        internal IEavFeaturesService FeaturesInternal;
+        internal IEavFeaturesService FeaturesInternal => field ??= GetService<IEavFeaturesService>();
 
-        protected override void SetupServices(IServiceCollection services)
-        {
-            base.SetupServices(services);
-            services.AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
-        }
+        protected override IServiceCollection SetupServices(IServiceCollection services) =>
+            base.SetupServices(services)
+                .AddTransient<IPlatformInfo, TestPlatformPatronPerfectionist>();
 
 
         [TestMethod]

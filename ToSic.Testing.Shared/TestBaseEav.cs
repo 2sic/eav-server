@@ -9,13 +9,13 @@ namespace ToSic.Testing.Shared;
 
 public abstract class TestBaseEav(EavTestConfig testConfig = default) : TestBaseEavDataSource(testConfig)
 {
-    protected override void SetupServices(IServiceCollection services)
+    protected override IServiceCollection SetupServices(IServiceCollection services)
     {
         //base.SetupServices(services);
 
         // Just add all services, not perfect yet
         // Ideally should only add the services not added by previous layers
-        services
+        return services
             .AddEavEverything();
     }
 

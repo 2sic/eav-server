@@ -42,8 +42,9 @@ public abstract class TestBaseForIoC : ServiceBase, ICanGetService
     /// Override in your classes and remember to call the base.SetupServices
     /// </summary>
     /// <param name="services"></param>
-    protected virtual void SetupServices(IServiceCollection services)
+    protected virtual IServiceCollection SetupServices(IServiceCollection services)
     {
+        return services;
     }
 
     /// <summary>

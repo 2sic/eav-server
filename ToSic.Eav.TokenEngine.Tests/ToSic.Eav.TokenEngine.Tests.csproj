@@ -9,6 +9,7 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <IsTestProject>true</IsTestProject>
     <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net9.0'">

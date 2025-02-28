@@ -8,6 +8,7 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <IsTestProject>true</IsTestProject>
     <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
