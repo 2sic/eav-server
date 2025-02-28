@@ -1,34 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net472</TargetFramework>
-    <RootNamespace>ToSic.Testing.Performance</RootNamespace>
-    <AssemblyName>ToSic.Testing.Performance</AssemblyName>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
-    <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net472</TargetFramework>
+		<RootNamespace>ToSic.Testing.Performance</RootNamespace>
+		<AssemblyName>ToSic.Testing.Performance</AssemblyName>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+		<Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.Persistence.Efc.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
-    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
-    <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+		<ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
+		<ProjectReference Include="..\ToSic.Eav.Persistence.Efc.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj" />
+		<ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
+		<ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
+		<ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
+		<PackageReference Include="NETStandard.Library" Version="2.0.3" />
+		<PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Numerics" />
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="System.ComponentModel.Composition" />
+		<Reference Include="System.ComponentModel.DataAnnotations" />
+		<Reference Include="System.IO.Compression" />
+		<Reference Include="System.Numerics" />
+	</ItemGroup>
 </Project>
