@@ -1,30 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>net472;net9.0</TargetFrameworks>
-		<RootNamespace>ToSic.Eav.TokenEngine.Tests</RootNamespace>
-		<AssemblyName>ToSic.Eav.TokenEngine.Tests</AssemblyName>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
-		<IsTestProject>true</IsTestProject>
-		<Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net472;net9.0</TargetFrameworks>
+    <RootNamespace>ToSic.Eav.TokenEngine.Tests</RootNamespace>
+    <AssemblyName>ToSic.Eav.TokenEngine.Tests</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <IsTestProject>true</IsTestProject>
+    <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+  </PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)'=='net9.0'">
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net9.0'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
 
-	</ItemGroup>
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="MSTest.TestAdapter" Version="3.4.3" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestAdapter" Version="3.4.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\ToSic.Eav.Core.Tests\ToSic.Eav.Core.Tests.csproj" />
-		<ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
-		<ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core.Tests\ToSic.Eav.Core.Tests.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -1,60 +1,60 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>net472;net9.0</TargetFrameworks>
-		<RootNamespace>ToSic.Eav.Core.Tests</RootNamespace>
-		<AssemblyName>ToSic.Eav.Core.Tests</AssemblyName>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
-		<LangVersion>preview</LangVersion>
-		<IsTestProject>true</IsTestProject>
-		<Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>net472;net9.0</TargetFrameworks>
+    <RootNamespace>ToSic.Eav.Core.Tests</RootNamespace>
+    <AssemblyName>ToSic.Eav.Core.Tests</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+    <LangVersion>preview</LangVersion>
+    <IsTestProject>true</IsTestProject>
+    <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+  </PropertyGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
-		<PackageReference Include="Microsoft.AspNet.WebPages" Version="3.1.1" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-		<PackageReference Include="NETStandard.Library" Version="2.0.3" />
-	</ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+  </ItemGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
-	</ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="MSTest.TestAdapter" Version="3.4.3" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestAdapter" Version="3.4.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
-		<ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
-		<ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj" />
+  </ItemGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
-		<Reference Include="Microsoft.CSharp" />
-		<Reference Include="System.ComponentModel.Composition" />
-		<Reference Include="System.IdentityModel" />
-		<Reference Include="System.IO.Compression" />
-		<Reference Include="System.Net.Http" />
-		<Reference Include="System.Numerics" />
-		<Reference Include="System.Runtime.Caching" />
-		<Reference Include="System.Runtime.Serialization" />
-		<Reference Include="System.Security" />
-	</ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="app.config" />
-		<None Include="Signature\2sxc-ca_Base64.cer" />
-		<None Include="Signature\2sxc-ca_Base64_Public.cer" />
-		<None Include="Signature\2sxc-ca_Public.crt" />
-		<None Include="Signature\create-certificates.ps1" />
-		<None Include="Signature\create-certificates_RunAsAdmin.cmd" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Signature\2sxc-ca_Base64.cer" />
+    <None Include="Signature\2sxc-ca_Base64_Public.cer" />
+    <None Include="Signature\2sxc-ca_Public.crt" />
+    <None Include="Signature\create-certificates.ps1" />
+    <None Include="Signature\create-certificates_RunAsAdmin.cmd" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="ValueConverter\" />
-	</ItemGroup>
+  <ItemGroup>
+    <Folder Include="ValueConverter\" />
+  </ItemGroup>
 </Project>
