@@ -122,7 +122,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
         var select = "SELECT [PortalID] as entityId, HomeDirectory As entityTitle, " +
                      "[AdministratorId],[GUID],[HomeDirectory],[PortalGroupID] " +
                      "FROM [Portals]";
-        var sql = GenerateSqlDataSource(TestConfiguration.ConStr, select, ContentTypeName);
+        var sql = GenerateSqlDataSource(TestConfig.ConStr, select, ContentTypeName);
         var list = sql.ListForTests();
         Assert.IsTrue(list.Any(), "found some");
     }

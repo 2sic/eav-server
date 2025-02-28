@@ -27,7 +27,7 @@ public class AccessItemsInAppState: TestBaseDiEavFullAndDb
         Trace.Write($"Time used: {timer.ElapsedMilliseconds}");
     }
 
-    private IAppReader GetAppState() => GetService<IAppReaderFactory>().Get(TestConfig.BigDataTestsApp);
+    private IAppReader GetAppState() => GetService<IAppReaderFactory>().Get(Eav.DataSourceTests.TestConfig.BigDataTestsApp);
 
     [TestMethod]
     public void AccessOne1000TimesSame() => AccessOne1000Times(0);

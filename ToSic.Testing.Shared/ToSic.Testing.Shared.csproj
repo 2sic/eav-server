@@ -106,7 +106,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBaseEav.cs" />
     <Compile Include="TestBaseLib.cs" />
-    <Compile Include="TestConfiguration.cs" />
+    <Compile Include="EavTestConfig.cs" />
     <Compile Include="TestDataExtensions.cs" />
     <Compile Include="TestHelpers.cs" />
     <Compile Include="TestServiceBase.cs" />

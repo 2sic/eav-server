@@ -13,17 +13,17 @@ public abstract class TestBaseForIoC : ServiceBase, IServiceBuilder
 {
     #region Constructor
 
-    public TestConfiguration TestConfiguration { get; }
+    public EavTestConfig TestConfig { get; }
 
     /// <summary>
     /// The base constructor will trigger calls to SetupServices.
     /// This ensures that anything that uses this test base or a derived class will have
     /// DI prepared in the way tests stack up
     /// </summary>
-    protected TestBaseForIoC(TestConfiguration testConfiguration = default) : base("Tst.IoC")
+    protected TestBaseForIoC(EavTestConfig testConfig = default) : base("Tst.IoC")
     {
         // Store configuration
-        TestConfiguration = testConfiguration ?? new TestConfiguration();
+        TestConfig = testConfig ?? EavTestConfig.ScenarioFullPatrons;
 
         // Initialize IoC
         var services = new ServiceCollection();

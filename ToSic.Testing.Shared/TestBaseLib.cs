@@ -3,7 +3,7 @@ using ToSic.Lib;
 
 namespace ToSic.Testing.Shared;
 
-public abstract class TestBaseLib(TestConfiguration testConfiguration = default) : TestBaseForIoC(testConfiguration)
+public abstract class TestBaseLib(EavTestConfig testConfig = default) : TestBaseForIoC(testConfig)
 {
     protected override void SetupServices(IServiceCollection services)
     {
