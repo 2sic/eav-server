@@ -14,6 +14,8 @@ namespace ToSic.Eav.DataSourceTests.ExternalData;
 // ReSharper disable once InconsistentNaming
 public class CsvDsTst_RerunIfFailed: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     private const int TestFileRowCount = 40;
 
     private const int TestFileColumnCount = 5;
@@ -126,7 +128,7 @@ public class CsvDsTst_RerunIfFailed: TestBaseEavDataSource
 
     public Csv CreateCsvDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
     {
-        var source = CreateDataSource<Csv>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes());
+        var source = DsSvc.CreateDataSource<Csv>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes());
 
         source.FilePath = filePath;
         source.Delimiter = delimiter;

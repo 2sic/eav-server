@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSources;
@@ -12,11 +11,13 @@ namespace ToSic.Eav.DataSourceTests;
 [TestClass]
 public class ItemFilterDuplicatesTest: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void ItemFilterDuplicates_In0()
     {
         var desiredFinds = 0;
-        var sf = CreateDataSource<ItemFilterDuplicates>();
+        var sf = DsSvc.CreateDataSource<ItemFilterDuplicates>();
         var found = sf.ListForTests().Count();
         Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
@@ -73,7 +74,7 @@ public class ItemFilterDuplicatesTest: TestBaseEavDataSource
 
     private ItemFilterDuplicates GenerateDuplsDs(int desiredFinds, int attach)
     {
-        if(attach < 1) throw new Exception("attach must be at least 1");
+        if (attach < 1) throw new("attach must be at least 1");
         var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
         var dsf = GetService<IDataSourcesService>();
         var sf = dsf.TestCreate<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);

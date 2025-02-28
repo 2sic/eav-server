@@ -41,76 +41,85 @@ public sealed class StreamMerge: DataSourceBase
     [PrivateApi]
     public StreamMerge(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.StMrge")
     {
-        ProvideOut(GetList);
+        ProvideOut(GetAll);
         ProvideOut(GetDistinct, DistinctStream);
         ProvideOut(GetAnd, AndStream);
         ProvideOut(GetXor, XorStream);
     }
 
-    private IImmutableList<IEntity> GetList() => Log.Func(() =>
+    private IImmutableList<IEntity> GetAll()
     {
-        var streams = GetValidInStreams();
-        var result = streams
+        var l = Log.Fn<IImmutableList<IEntity>>();
+        var result = ValidInStreams
             .SelectMany(stm => stm)
             .ToImmutableList();
 
-        return (result, result.Count.ToString());
-    });
+        return l.Return(result, result.Count.ToString());
+    }
 
-    private List<IEnumerable<IEntity>> GetValidInStreams() => Log.Func(() =>
+    private List<IEnumerable<IEntity>> ValidInStreams => field ??= GetValidInStreams();
+
+    private List<IEnumerable<IEntity>> GetValidInStreams()
     {
-        if (_validInStreams != null) return (_validInStreams, "cached");
+        var l = Log.Fn<List<IEnumerable<IEntity>>>();
 
-        _validInStreams = In
+        var inStreams = In
             .OrderBy(pair => pair.Key)
             .Where(v => v.Value?.List != null)
             .Select(v => v.Value.List)
             .ToList();
 
-        return (_validInStreams, _validInStreams.Count.ToString());
-    });
-        
-    private List<IEnumerable<IEntity>> _validInStreams;
+        return l.Return(inStreams, inStreams.Count.ToString());
+    }
 
-    private IImmutableList<IEntity> GetDistinct() => Log.Func(() =>
+    private IImmutableList<IEntity> GetDistinct()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         var result = List.Distinct().ToImmutableList();
-        return (result, result.Count.ToString());
-    });
+        return l.Return(result, result.Count.ToString());
+    }
 
-    private IImmutableList<IEntity> GetAnd() => Log.Func(() =>
+    private IImmutableList<IEntity> GetAnd()
     {
-        var streams = GetValidInStreams();
+        var l = Log.Fn<IImmutableList<IEntity>>();
+        var streams = ValidInStreams;
         var streamCount = streams.Count;
-        var first = streams.FirstOrDefault();
-        var firstList = first?.ToList(); // must be separate, because we 
-        if (streamCount == 0 || firstList == null || !firstList.Any())
-            return (ImmutableList<IEntity>.Empty, "no real In");
+        var firstList = streams.FirstOrDefault()?.ToList(); // must be separate, because we
 
-        if (streamCount == 1) return (firstList.ToImmutableList(), "Just 1 In");
+        // if there are no streams, or the first stream is empty, produce empty list
+        if (streamCount == 0 || firstList == null || !firstList.Any())
+            return l.Return(ImmutableList<IEntity>.Empty, "no real In");
+
+        // if there is only 1 stream, return it
+        if (streamCount == 1)
+            return l.Return(firstList.ToImmutableList(), "Just 1 In");
 
         var others = streams
             .Skip(1)
             .ToList();
 
-        var itemsInOthers = others.SelectMany(s => s).Distinct().ToList();
+        var itemsInOthers = others
+            .SelectMany(s => s)
+            .Distinct()
+            .ToList();
 
         var final = firstList
             .Where(e => itemsInOthers.Contains(e))
             .ToImmutableList();
 
-        return (final, final.Count.ToString());
-    });
+        return l.Return(final, final.Count.ToString());
+    }
 
-    private IImmutableList<IEntity> GetXor() => Log.Func(() =>
+    private IImmutableList<IEntity> GetXor()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         var result = List
             .GroupBy(e => e)
             .Where(g => g.Count() == 1)
             .Select(g => g.First())
             .ToImmutableList();
 
-        return (result, result.Count.ToString());
-    });
+        return l.Return(result, result.Count.ToString());
+    }
 
 }

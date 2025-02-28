@@ -36,7 +36,7 @@ public class ValueSort_String: TestBaseEavDataSource
     {
         var vf = _testDataGeneratedOutsideTimer;
         var listOut = vf.ListForTests().ToList();
-        var listIn = vf.InForTests()[DataSourceConstants.StreamDefaultName].ListForTests().ToList();
+        var listIn = vf.InTac()[DataSourceConstants.StreamDefaultName].ListForTests().ToList();
         CollectionAssert.AreEqual(listOut, listIn, "Lists should be the same if no criteria applied");
     }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Code;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
@@ -9,15 +10,15 @@ using ToSic.Testing.Shared.Data;
 
 namespace ToSic.Eav.DataSourceTests;
 
-internal class AttributeRenameTester: TestServiceBase
+internal class AttributeRenameTester(ICanGetService parent)
 {
+    private DataSourcesTstBuilder DsSvc => field ??= parent.GetService<DataSourcesTstBuilder>();
+
     public AttributeRename Original;
     public AttributeRename Changed;
     public IEntity CItem;
     public List<IEntity> CList;
     public IEntity OItem;
-
-    public AttributeRenameTester(TestBaseEavDataSource parent): base(parent) {}
 
     public AttributeRenameTester Init(string map, bool preserve = true)
     {
@@ -47,8 +48,8 @@ internal class AttributeRenameTester: TestServiceBase
 
     public AttributeRename CreateRenamer(int testItemsInRootSource)
     {
-        var ds = new DataTablePerson(Parent).Generate(testItemsInRootSource, 1001);
-        var filtered = Parent.CreateDataSource<AttributeRename>(ds);
+        var ds = new DataTablePerson(parent).Generate(testItemsInRootSource, 1001);
+        var filtered = DsSvc.CreateDataSource<AttributeRename>(ds);
         return filtered;
     }
 }

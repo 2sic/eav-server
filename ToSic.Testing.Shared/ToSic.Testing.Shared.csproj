@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;net9.0</TargetFrameworks>
-    <RootNamespace>ToSic.Eav.Apps.Tests</RootNamespace>
+    <RootNamespace>ToSic.Testing.Shared</RootNamespace>
     <AssemblyName>ToSic.Testing.Shared</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
     <LangVersion>default</LangVersion>
     <IsTestProject>true</IsTestProject>
     <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

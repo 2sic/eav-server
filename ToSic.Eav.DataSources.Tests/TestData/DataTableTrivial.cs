@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
+using ToSic.Eav.Code;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -10,34 +10,28 @@ using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.DataSourceTests.TestData;
 
-public class DataTableTrivial: TestServiceBase
+public class DataTableTrivial(ICanGetService parent)
 {
-    private readonly TestBaseEavDataSource _parent;
+    private DataSourcesTstBuilder DsSvc => field ??= parent.GetService<DataSourcesTstBuilder>();
 
-    public DataTableTrivial(TestBaseEavDataSource parent) : base(parent)
-    {
-        _parent = parent;
-    }
+    private static readonly Dictionary<int, DataTable> CachedDs = new();
 
-    private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
-        
     public DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
     {
         var dataTable = new System.Data.DataTable();
-        dataTable.Columns.AddRange(new[]
-        {
-            new DataColumn(Attributes.EntityFieldId, typeof (int)),
-            new DataColumn("EntityTitle"),
-            new DataColumn(PersonSpecs.FieldFirstName),
-            new DataColumn(PersonSpecs.FieldLastName),
-            new DataColumn(PersonSpecs.FieldCity),
-            new DataColumn(PersonSpecs.FieldModifiedInternal, typeof(DateTime)),
-        });
-        AddSemirandomTrivial(dataTable, itemsToGenerate, firstId);
+        dataTable.Columns.AddRange([
+            new(Attributes.EntityFieldId, typeof (int)),
+            new("EntityTitle"),
+            new(PersonSpecs.FieldFirstName),
+            new(PersonSpecs.FieldLastName),
+            new(PersonSpecs.FieldCity),
+            new(PersonSpecs.FieldModifiedInternal, typeof(DateTime))
+        ]);
+        AddSemiRandomTrivial(dataTable, itemsToGenerate, firstId);
 
-        var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes())
+        var source = DsSvc
+                .CreateDataSource<DataTable>(new LookUpTestData(parent.GetService<DataBuilder>()).AppSetAndRes())
                 .Setup(dataTable, "Person", modifiedField: PersonSpecs.FieldModifiedInternal)
-            //.Init(LookUpTestData.AppSetAndRes())
             ;
 
         // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
@@ -49,7 +43,7 @@ public class DataTableTrivial: TestServiceBase
         return source;
     }
 
-    private static void AddSemirandomTrivial(System.Data.DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
+    private static void AddSemiRandomTrivial(System.Data.DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
     {
         for (var i = firstId; i < firstId + itemsToGenerate; i++)
         {

@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSourceTests.Caches;
 [TestClass]
 public class QuickCachesTest: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
     public IListCacheSvc GetTestListCache() => GetService<IListCacheSvc>(); // new ListCache(new Log("test"));
 
     [TestMethod]
@@ -79,7 +80,7 @@ public class QuickCachesTest: TestBaseEavDataSource
     public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
     {
         var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-        var filtered = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
+        var filtered = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
         filtered.AttachForTests(ds);
         filtered.EntityIds = entityIdsValue;
         return filtered;

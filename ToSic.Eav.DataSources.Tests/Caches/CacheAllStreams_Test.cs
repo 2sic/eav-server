@@ -16,7 +16,10 @@ public class CacheAllStreamsTest: TestBaseEavDataSource
 {
     const string FilterIdForManyTests = "1067";
     const string AlternateIdForAlternateTests = "1069";
+
     public IListCacheSvc GetTestListCache() => GetService<IListCacheSvc>(); // new ListCache(new Log("test"));
+
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 
     [TestMethod]
     public void CacheAllStreams_Check1NotInBeforeAndInAfterwards()
@@ -73,7 +76,7 @@ public class CacheAllStreamsTest: TestBaseEavDataSource
 
     private CacheAllStreams CreateCacheDS(IDataSource filtered, object options = default)
     {
-        var cacher = CreateDataSourceNew<CacheAllStreams>(/*filtered.Configuration.LookUpEngine,*/ options);
+        var cacher = DsSvc.CreateDataSourceNew<CacheAllStreams>(/*filtered.Configuration.LookUpEngine,*/ options);
         cacher.AttachForTests(filtered);
         return cacher;
     }
@@ -82,7 +85,7 @@ public class CacheAllStreamsTest: TestBaseEavDataSource
     public void CacheAllStreams_CheckInWithLongerChain()
     {
         var filtered = CreateFilterForTesting(100, FilterIdForManyTests);
-        var secondFilter = CreateDataSource<EntityTypeFilter>(filtered.Configuration.LookUpEngine);
+        var secondFilter = DsSvc.CreateDataSource<EntityTypeFilter>(filtered.Configuration.LookUpEngine);
         secondFilter.AttachForTests(filtered);
         secondFilter.TypeName = "Person";
 
@@ -189,7 +192,7 @@ public class CacheAllStreamsTest: TestBaseEavDataSource
     public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue, bool useCacheForSpeed = true)
     {
         var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001, useCacheForSpeed);
-        var filtered = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
+        var filtered = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
         filtered.AttachForTests(ds);
         filtered.EntityIds = entityIdsValue;
         return filtered;

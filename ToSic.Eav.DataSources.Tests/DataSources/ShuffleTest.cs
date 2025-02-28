@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
@@ -13,13 +12,14 @@ namespace ToSic.Eav.DataSourceTests;
 [TestClass]
 public class ShuffleTest: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
     //private const int TestVolume = 10000;
     //private ValueFilter _testDataGeneratedOutsideTimer;
     //public ValueFilterBoolean()
     //{
     //    //_testDataGeneratedOutsideTimer = ValueFilter_Test.CreateValueFilterForTesting(TestVolume);
     //}
-        
+
 
     #region shuffle tests
 
@@ -27,7 +27,7 @@ public class ShuffleTest: TestBaseEavDataSource
     private DataSources.Shuffle GenerateShuffleDS(int desiredFinds)
     {
         var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
-        var sf = CreateDataSource<Shuffle>(ds);// DataSourceFactory.GetDataSource<Shuffle>(new AppIdentity(0, 0), ds);
+        var sf = DsSvc.CreateDataSource<Shuffle>(ds);
         return sf;
     }
 
@@ -48,7 +48,7 @@ public class ShuffleTest: TestBaseEavDataSource
         var items = 5;
         var sf = GenerateShuffleDS(items);
 
-        var origSeqSorted = AreAllItemsSorted(sf.InForTests()[DataSourceConstants.StreamDefaultName]);
+        var origSeqSorted = AreAllItemsSorted(sf.InTac()[DataSourceConstants.StreamDefaultName]);
         var seqConsistent = AreAllItemsSorted(sf.Out[DataSourceConstants.StreamDefaultName]);
 
         // after checking all, it should NOT be consistent

@@ -278,7 +278,7 @@ public class ValueFilterString: TestBaseEavDataSource
         vf.Value = "inexisting city";
             
         // attach fallback to give all if no match
-        vf.Attach(StreamFallbackName, vf.InForTests()[StreamDefaultName]);
+        vf.Attach(StreamFallbackName, vf.InTac()[StreamDefaultName]);
         Assert.AreEqual(TestVolume, vf.ListForTests().Count(), "Should find exactly 0 people with this city");
     }
     #endregion

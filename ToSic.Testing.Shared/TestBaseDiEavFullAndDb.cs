@@ -19,6 +19,7 @@ public abstract class TestBaseDiEavFullAndDb(EavTestConfig testConfig = default)
         GetService<SystemLoader>().StartUp();
     }
 
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 
 
     /// <summary>
@@ -33,7 +34,7 @@ public abstract class TestBaseDiEavFullAndDb(EavTestConfig testConfig = default)
     {
         if (ids != null && ids.Any())
         {
-            var entityFilterDs = CreateDataSource<EntityIdFilter>(inStream);
+            var entityFilterDs = DsSvc.CreateDataSource<EntityIdFilter>(inStream);
             entityFilterDs.EntityIds = string.Join(",", ids);
             inStream = entityFilterDs.GetStream();
         }

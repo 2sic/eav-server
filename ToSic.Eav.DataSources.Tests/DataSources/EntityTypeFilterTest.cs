@@ -9,6 +9,8 @@ namespace ToSic.Eav.DataSourceTests;
 [TestClass]
 public class EntityTypeFilterTest: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void EntityTypeFilter_FindAllIfAllApply()
     {
@@ -31,7 +33,7 @@ public class EntityTypeFilterTest: TestBaseEavDataSource
     public EntityTypeFilter CreateEntityTypeFilterForTesting(int testItemsInRootSource)
     {
         var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-        var filtered = CreateDataSource<EntityTypeFilter>(ds);// DataSourceFactory.GetDataSource<EntityTypeFilter>(ds);
+        var filtered = DsSvc.CreateDataSource<EntityTypeFilter>(ds);// DataSourceFactory.GetDataSource<EntityTypeFilter>(ds);
         return filtered;
     }
 }

@@ -73,11 +73,9 @@ public class DataTable : CustomDataSourceAdvanced
     /// Initializes a new instance of the DataTableDataSource class
     /// </summary>
     [PrivateApi]
-    public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl")
+    public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl", connect: [dataFactory])
     {
-        ConnectLogs([
-            _dataFactory = dataFactory
-        ]);
+        _dataFactory = dataFactory;
         ProvideOut(GetEntities);
     }
 

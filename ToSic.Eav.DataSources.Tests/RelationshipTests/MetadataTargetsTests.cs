@@ -13,6 +13,8 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests;
 [TestClass]
 public class MetadataTargetsTests : TestBaseDiEavFullAndDb
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     private void TestMetadataTargets(int expected, MetadataTargets ds) 
         => Assert.AreEqual(expected, ds.ListForTests().Count(), $"should have {expected} md items");
 
@@ -23,10 +25,10 @@ public class MetadataTargetsTests : TestBaseDiEavFullAndDb
     public void MainMetadataOfHelp() => TestMetadataTargets(MainHelp, PrepareDs(HelpTypeName, typeName: TargetTypeMain));
 
     [TestMethod]
-    public void TargetOfHelp1() => TestMetadataTargets(1, PrepareDs(ids: new [] { MetaHelpOn1 }));
+    public void TargetOfHelp1() => TestMetadataTargets(1, PrepareDs(ids: [MetaHelpOn1]));
 
     [TestMethod]
-    public void TargetOfHelp2() => TestMetadataTargets(1, PrepareDs(ids: new [] { MetaHelpOn2 }));
+    public void TargetOfHelp2() => TestMetadataTargets(1, PrepareDs(ids: [MetaHelpOn2]));
 
 
     [TestMethod]
@@ -46,8 +48,8 @@ public class MetadataTargetsTests : TestBaseDiEavFullAndDb
     {
         var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine });
-        var appDs = CreateDataSource<App>(baseDs);
+        var baseDs = DsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine });
+        var appDs = DsSvc.CreateDataSource<App>(baseDs);
 
         var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
 
@@ -58,7 +60,7 @@ public class MetadataTargetsTests : TestBaseDiEavFullAndDb
         if(deduplicate != null)
             dsParams["FilterDuplicates"] = deduplicate.Value;
 
-        var childDs = CreateDataSource<MetadataTargets>(inStream, dsParams);
+        var childDs = DsSvc.CreateDataSource<MetadataTargets>(inStream, dsParams);
         //if (typeName != null)
         //    childDs.ContentTypeName = typeName;
 

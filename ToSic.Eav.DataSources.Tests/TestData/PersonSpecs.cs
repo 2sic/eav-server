@@ -14,7 +14,7 @@ public class PersonSpecs
     // ReSharper disable StringLiteralTypo
 
     public const string City1 = "Buchs";
-    public static string[] TestCities = { City1, "Grabs", "Sevelen", "Zürich" };
+    public static string[] TestCities = [City1, "Grabs", "Sevelen", "Zürich"];
     // ReSharper restore StringLiteralTypo
 
     public static int MinHeight = 150;
@@ -48,7 +48,8 @@ public class PersonSpecs
     public const string FieldBirthday = "Birthdate";
     public const string FieldBirthdayNull = "BirthdateMaybeNull";
 
-    public static string[] Fields = {
+    public static string[] Fields =
+    [
         // the id won't be listed as a field
         //DataTable.EntityIdDefaultColumnName,
         FieldFullName, 
@@ -59,7 +60,7 @@ public class PersonSpecs
         FieldHeight, 
         FieldCityMaybeNull, 
         FieldModifiedInternal
-    };
+    ];
 
     // Languages we'll use in test-data
     // Important: we'll use a fake language as the primary

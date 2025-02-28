@@ -13,6 +13,8 @@ public class SqlDsTst: TestBaseEavDataSource
     private const string ConnectionDummy = "";
     private const string ContentTypeName = "SqlData";
 
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void SqlDataSource_NoConfigChangesIfNotNecessary()
     {
@@ -131,7 +133,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
     public Sql GenerateSqlDataSource(string connection, string query, string typeName)
     {
-        return CreateDataSource<Sql>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes())
+        return DsSvc.CreateDataSource<Sql>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes())
             .Setup(connection, query, typeName);
     }
 }

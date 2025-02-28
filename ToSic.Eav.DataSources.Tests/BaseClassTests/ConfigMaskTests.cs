@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Testing.Shared;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
@@ -10,6 +9,8 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests;
 [TestClass]
 public class ConfigMaskTests: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void ConfigMaskClassic()
     {
@@ -25,6 +26,6 @@ public class ConfigMaskTests: TestBaseEavDataSource
 
 
 
-    private TestDataSourceBase GetDs() => CreateDataSource<TestDataSourceBase>();
+    private TestDataSourceBase GetDs() => DsSvc.CreateDataSource<TestDataSourceBase>();
 
 }

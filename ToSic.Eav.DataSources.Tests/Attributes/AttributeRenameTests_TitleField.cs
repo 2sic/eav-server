@@ -15,7 +15,7 @@ public partial class AttributeRenameTests
         Assert.AreEqual(10, test.CList.Count);
         Assert.AreEqual(1, test.CItem.Attributes.Count, "expected the same amount of columns");
 
-        AssertFieldsChanged(test.CItem, PersonSpecs.Fields, new[] { ShortFirst });
+        AssertFieldsChanged(test.CItem, PersonSpecs.Fields, [ShortFirst]);
 
         test.AssertValues(PersonSpecs.FieldFirstName, ShortFirst);
 

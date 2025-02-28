@@ -17,7 +17,7 @@ public class DataFactoryTest: TestBaseEavDataSource
     {
         var builder = GetService<IDataFactory>().New();
 
-        var parentRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, new List<int> { 101, 102 });
+        var parentRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, [101, 102]);
 
         var allRaw = new List<RawItemWithOneParentAndManyChildren>
         {

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Configuration;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
@@ -15,11 +11,13 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests;
 [TestClass]
 public class ConfigMaskAuto: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void EnsureNoCacheAtFirstAndCacheLater()
     {
         // Make sure it's reset
-        ConfigurationDataLoader.Cache = new ConcurrentDictionary<Type, List<ConfigMaskInfo>>();
+        ConfigurationDataLoader.Cache = new();
 
         // should be false at first
         IsFalse(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));
@@ -67,7 +65,7 @@ public class ConfigMaskAuto: TestBaseEavDataSource
     [TestMethod]
     public void ShuffleShouldHave1Mask()
     {
-        var shuffle = CreateDataSource<Shuffle>();
+        var shuffle = DsSvc.CreateDataSource<Shuffle>();
 
         AreEqual(1, shuffle.Configuration.Values.Count);
     }
