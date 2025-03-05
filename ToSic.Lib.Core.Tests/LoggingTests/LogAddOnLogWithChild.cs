@@ -6,7 +6,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests;
 /// Note: you won't see any code, because it inherits all the tests from the base class.
 /// It just has a different way of getting the Log.
 /// </summary>
-[TestClass]
+
 public class LogAddOnLogWithChild : LogAdd
 {
     /// <summary>

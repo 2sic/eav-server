@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib.Core.Tests.LoggingTests;
 
-[TestClass]
+
 public class LogAdd: LogTestBase
 {
     /// <summary>
@@ -26,8 +26,8 @@ public class LogAdd: LogTestBase
 
     public static IEnumerable<object?[]> SimpleMessages => TestDataMessages.SimpleMessages(Depth0);
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void A_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
@@ -37,8 +37,8 @@ public class LogAdd: LogTestBase
     }
 
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void A_NotEnabled(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
@@ -46,8 +46,8 @@ public class LogAdd: LogTestBase
         AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, 0);
     }
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void A_StringFunction(string testName, string expected, string message, string result, int depth)
     {
         var logFactory = LogFactory();
@@ -56,8 +56,8 @@ public class LogAdd: LogTestBase
         AssertEntry(testName, logFactory.RealLog.Entries[0], expected, result, depth);
     }
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void W_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
@@ -66,8 +66,8 @@ public class LogAdd: LogTestBase
         AssertEntry(testName, log.RealLog.Entries[0], LogConstants.WarningPrefix + expected, result, depth);
     }
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void E_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();

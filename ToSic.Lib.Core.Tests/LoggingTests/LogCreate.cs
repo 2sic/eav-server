@@ -1,9 +1,10 @@
 ﻿using ToSic.Lib.Logging;
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using static Xunit.Assert;
+
 
 namespace ToSic.Lib.Core.Tests.LoggingTests;
 
-[TestClass]
+
 public class LogCreate: LogTestBase
 {
     // Tests to add
@@ -22,16 +23,16 @@ public class LogCreate: LogTestBase
         new object[] { "Scope and Name too long", "tooLong.muchtoolong", "too", "muchto", "too.muchto" },
     };
 
-    [TestMethod]
-    [DynamicData(nameof(LogNamesData))]
+    [Theory]
+    [MemberData(nameof(LogNamesData))]
     public void CreateLogWithName(string testName, string initName, string scope, string name,  string nameId)
     {
         var logWithInitialName = new Log(initName);
         VerifyNameAndEmpty($"{testName} initial name", logWithInitialName, scope, name, nameId);
     }
 
-    [TestMethod]
-    [DynamicData(nameof(LogNamesData))]
+    [Theory]
+    [MemberData(nameof(LogNamesData))]
     public void CreateLogThenRename(string testName, string initName, string scope, string name,  string nameId)
     {
         var logRename = new Log("");
@@ -39,7 +40,7 @@ public class LogCreate: LogTestBase
         VerifyNameAndEmpty($"{testName} rename", logRename, scope, name, nameId);
     }
 
-    [TestMethod]
+    [Fact]
     public void AddThenLink()
     {
         var child = new Log("Tst.Child");
@@ -47,20 +48,20 @@ public class LogCreate: LogTestBase
         child.A("second message");
         var parent = new Log("Tst.Parent");
         parent.A("first parent message");
-        AreEqual(1, parent.Entries.Count);
-        AreEqual(2, child.Entries.Count);
+        Single(parent.Entries);
+        Equal(2, child.Entries.Count);
         child.LinkTo(parent);
-        AreEqual(3, parent.Entries.Count);
-        AreEqual(2, child.Entries.Count);
+        Equal(3, parent.Entries.Count);
+        Equal(2, child.Entries.Count);
     }
 
 
     private static void VerifyNameAndEmpty(string testName, Log log, string scope, string name, string nameId)
     {
-        AreEqual(scope, log.Scope, testName);
-        AreEqual(name, log.Name, testName);
-        AreEqual($"{nameId}[{log.Id}]", log.NameId, testName);
-        AreEqual(Depth0, log.Depth, testName);
-        AssertLogIsEmpty(log, testName);
+        Equal(scope, log.Scope);
+        Equal(name, log.Name);
+        Equal($"{nameId}[{log.Id}]", log.NameId);
+        Equal(Depth0, log.Depth);
+        AssertLogIsEmpty(log, name);
     }
 }

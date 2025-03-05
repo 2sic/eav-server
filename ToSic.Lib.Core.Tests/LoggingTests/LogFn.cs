@@ -6,7 +6,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests;
 /// Note: you won't see any code, because it inherits all the tests from the base class.
 /// It just has a different way of getting the Log.
 /// </summary>
-[TestClass]
+
 // ReSharper disable once InconsistentNaming
 public class LogFn: LogTestBase
 {
@@ -48,16 +48,16 @@ public class LogFn: LogTestBase
         AssertEntry(testName, log.Entries[indexResult], null, ExpectedResult, depth);
     }
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void NoAdd(string testName, string expected, string message, string result, int depth)
     {
         AssertDepthAndEntryCount(testName, LogFactory().RealLog, LogDepth, 1);
         AssertEntry(testName, LogFactory().RealLog.Entries[0], WrapperSignature, result, depth);
     }
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void A_NotEnabled(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
@@ -69,8 +69,8 @@ public class LogFn: LogTestBase
     }
 
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void A_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
@@ -83,8 +83,8 @@ public class LogFn: LogTestBase
     }
 
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void A_StringFunction(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
@@ -96,8 +96,8 @@ public class LogFn: LogTestBase
         CheckResult(testName, log.RealLog, 0, 2, depth);
     }
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void W_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
@@ -109,8 +109,8 @@ public class LogFn: LogTestBase
         CheckResult(testName, log.RealLog, 0, 2, depth);
     }
 
-    [TestMethod]
-    [DynamicData(nameof(SimpleMessages))]
+    [Theory]
+    [MemberData(nameof(SimpleMessages))]
     public void E_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();

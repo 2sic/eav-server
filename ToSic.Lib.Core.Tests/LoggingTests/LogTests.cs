@@ -1,15 +1,16 @@
 ﻿using ToSic.Lib.Logging;
+using static Xunit.Assert;
 
 namespace ToSic.Lib.Core.Tests.LoggingTests;
 
-[TestClass]
+
 public class LogTests
 {
-    [TestMethod]
+    [Fact]
     public void LogTest()
     {
-        var log = new Lib.Logging.Log("test");
+        var log = new Log("test");
         log.A("test-add");
-        Assert.AreEqual(1, log.Entries.Count, "should have one entry");
+        Single(log.Entries); //, "should have one entry");
     }
 }

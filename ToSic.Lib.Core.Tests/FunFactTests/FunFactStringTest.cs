@@ -1,12 +1,13 @@
 ﻿using ToSic.Lib.FunFact;
+using static Xunit.Assert;
 
 namespace ToSic.Lib.Core.Tests.FunFactTests;
 
-[TestClass]
+
 public class FunFactStringTest
 {
 
-    [TestMethod]
+    [Fact]
     public void ManualListOfFunctions()
     {
         var result = new FunFactString(null,
@@ -16,10 +17,10 @@ public class FunFactStringTest
                 ("", s => s + "!")
             ])
             .CreateResult();
-        Assert.AreEqual("Hello World!", result);
+        Equal("Hello World!", result);
     }
 
-    [TestMethod]
+    [Fact]
     public void SetReplaceOriginal()
     {
         var result = new FunFactString(null,
@@ -28,60 +29,60 @@ public class FunFactStringTest
             ])
             .Set("World")
             .CreateResult();
-        Assert.AreEqual("World", result);
+        Equal("World", result);
     }
 
-    [TestMethod]
+    [Fact]
     public void AppendToOriginal()
     {
         var result = new FunFactString(null, [])
             .Set("Hello")
             .Append(" World")
             .CreateResult();
-        Assert.AreEqual("Hello World", result);
+        Equal("Hello World", result);
     }
 
-    [TestMethod]
+    [Fact]
     public void PrependToOriginal()
     {
         var result = new FunFactString(null, [])
             .Set("World")
             .Prepend("Hello ")
             .CreateResult();
-        Assert.AreEqual("Hello World", result);
+        Equal("Hello World", result);
     }
 
-    [TestMethod]
+    [Fact]
     public void TrimOriginal()
     {
         var result = new FunFactString(null, [])
             .Set(" Hello ")
             .Trim()
             .CreateResult();
-        Assert.AreEqual("Hello", result);
+        Equal("Hello", result);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceInOriginal()
     {
         var result = new FunFactString(null, [])
             .Set("Hello World")
             .Replace("World", "Universe")
             .CreateResult();
-        Assert.AreEqual("Hello Universe", result);
+        Equal("Hello Universe", result);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceInOriginalMultipleTimes()
     {
         var result = new FunFactString(null, [])
             .Set("Hello World World")
             .Replace("World", "Universe")
             .CreateResult();
-        Assert.AreEqual("Hello Universe Universe", result);
+        Equal("Hello Universe Universe", result);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceInOriginalMultipleTimesWithDifferentValues()
     {
         var result = new FunFactString(null, [])
@@ -89,22 +90,22 @@ public class FunFactStringTest
             .Replace("World", "Universe")
             .Replace("Hello", "Hi")
             .CreateResult();
-        Assert.AreEqual("Hi Universe Universe", result);
+        Equal("Hi Universe Universe", result);
     }
 
-    [TestMethod]
+    [Fact]
     public void VerifyActionsAreNotModifiedOnOriginal()
     {
         var first = new FunFactString(null, []);
         var second = first.Set("Hello");
         var third = second.Append(" World!");
 
-        Assert.AreEqual(0, first.Actions.Count);
-        Assert.AreEqual(1, second.Actions.Count);
-        Assert.AreEqual(2, third.Actions.Count);
+        Empty(first.Actions);
+        Single(second.Actions);
+        Equal(2, third.Actions.Count);
 
-        Assert.AreEqual("", first.CreateResult());
-        Assert.AreEqual("Hello", second.CreateResult());
-        Assert.AreEqual("Hello World!", third.CreateResult());
+        Equal("", first.CreateResult());
+        Equal("Hello", second.CreateResult());
+        Equal("Hello World!", third.CreateResult());
     }
 }

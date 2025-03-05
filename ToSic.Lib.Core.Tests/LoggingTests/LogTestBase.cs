@@ -1,5 +1,6 @@
 ﻿using ToSic.Lib.Logging;
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using static Xunit.Assert;
+
 
 namespace ToSic.Lib.Core.Tests.LoggingTests;
 
@@ -10,20 +11,20 @@ public class LogTestBase: LibTestBase
 
     protected static void AssertLogIsEmpty(Log log, string testName)
     {
-        AreEqual(0, log.Entries.Count, $"Log is empty - {testName}");
+        Equal(0, log.Entries.Count);
     }
 
     protected static void AssertEntry(string testName, Entry firstMsg, string? message, string? result, int depth)
     {
-        AreEqual(message, firstMsg.Message, $"message - {testName}");
-        AreEqual(result, firstMsg.Result, $"result - {testName}");
-        AreEqual(depth, firstMsg.Depth, $"depth - {testName}");
+        Equal(message, firstMsg.Message);
+        Equal(result, firstMsg.Result);
+        Equal(depth, firstMsg.Depth);
     }
 
     internal void AssertDepthAndEntryCount(string testName, Log log, int logDepth, int entryCount)
     {
-        AreEqual(logDepth, log.Depth, $"{nameof(logDepth)} - {testName}");
-        AreEqual(entryCount, log.Entries.Count, $"{nameof(entryCount)} - {testName}");
+        Equal(logDepth, log.Depth);
+        Equal(entryCount, log.Entries.Count);
     }
 
 }

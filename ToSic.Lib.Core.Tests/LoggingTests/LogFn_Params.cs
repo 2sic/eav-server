@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib.Core.Tests.LoggingTests;
 
-[TestClass]
+
 // ReSharper disable once InconsistentNaming
 public class LogFn_Params : LogFn
 {
