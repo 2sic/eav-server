@@ -37,7 +37,7 @@ public class ShuffleTest: TestBaseEavDataSource
     {
         var desiredFinds = 100;
         var sf = GenerateShuffleDS(desiredFinds);
-        var found = sf.ListForTests().Count();
+        var found = sf.ListTac().Count();
         Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
     }
@@ -62,7 +62,7 @@ public class ShuffleTest: TestBaseEavDataSource
         // now the IDs shouldn't be incrementing one after another
         var seqConsistent = true;
         var lastId = 0;
-        foreach (var itm in sf.ListForTests())
+        foreach (var itm in sf.ListTac())
         {
             var newId = itm.EntityId;
             if (newId < lastId)

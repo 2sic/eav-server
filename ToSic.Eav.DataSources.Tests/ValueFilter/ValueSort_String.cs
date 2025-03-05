@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSources;
 using ToSic.Testing.Shared;
 using ToSic.Testing.Shared.Data;
@@ -35,8 +34,8 @@ public class ValueSort_String: TestBaseEavDataSource
     public void ValueSort_Unused()
     {
         var vf = _testDataGeneratedOutsideTimer;
-        var listOut = vf.ListForTests().ToList();
-        var listIn = vf.InTac()[DataSourceConstants.StreamDefaultName].ListForTests().ToList();
+        var listOut = vf.ListTac().ToList();
+        var listIn = vf.InTac()[DataSourceConstants.StreamDefaultName].ListTac().ToList();
         CollectionAssert.AreEqual(listOut, listIn, "Lists should be the same if no criteria applied");
     }
 
@@ -45,7 +44,7 @@ public class ValueSort_String: TestBaseEavDataSource
     {
         var vf = _testDataGeneratedOutsideTimer;
         vf.Attributes = FieldCity;
-        var result = vf.ListForTests().ToList();
+        var result = vf.ListTac().ToList();
         // check that each following city is same or larger...
         ValidateFieldIsSorted(result, FieldCity, true);
     }
@@ -82,7 +81,7 @@ public class ValueSort_String: TestBaseEavDataSource
         var vf = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume, useTable, multiLanguage);
         vf.Attributes = field;
         vf.Directions = direction;
-        var result = vf.ListForTests().ToList();
+        var result = vf.ListTac().ToList();
         // check that each following city is same or larger...
         ValidateFieldIsSorted(result, field, testAscending);
     }
@@ -98,7 +97,7 @@ public class ValueSort_String: TestBaseEavDataSource
         vf.Attributes = FieldBioForMlSortTest;
         vf.Directions = direction;
         vf.Languages = language;
-        var result = vf.ListForTests().ToList();
+        var result = vf.ListTac().ToList();
         // check that each following city is same or larger...
         ValidateFieldIsSorted(result, FieldIsMale,
             // the expected result is reversed, because string "True" is after string "False"
@@ -112,7 +111,7 @@ public class ValueSort_String: TestBaseEavDataSource
         var vf = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume, true, false);
         vf.Attributes = FieldCity + "," + FieldIsMale;
         // vf.Directions = direction;
-        var result = vf.ListForTests().ToList();
+        var result = vf.ListTac().ToList();
 
         // TODO: VERIFY RESULT
 

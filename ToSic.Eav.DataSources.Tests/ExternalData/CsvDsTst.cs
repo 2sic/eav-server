@@ -80,7 +80,7 @@ public class CsvDsTst_RerunIfFailed: TestBaseEavDataSource
         var source = CreateCsvDataSource(GetFullCsvPath(PathToCsvFiles + " - Test Semicolon Delimited.csv"),
             ";", "Anonymous", TestFileTitleColumnName /* String cannot be parsed to Int */, TestFileTitleColumnName);
         // ReSharper disable once UnusedVariable
-        var sourceList = source.ListForTests();
+        var sourceList = source.ListTac();
         DataSourceErrors.VerifyStreamIsError(source, Csv.ErrorIdNaN);
     }
 
@@ -98,7 +98,7 @@ public class CsvDsTst_RerunIfFailed: TestBaseEavDataSource
 
     private void AssertIsSourceListValid(Csv source)
     {
-        var sourceList = source.ListForTests().OrderBy(item => item.EntityId).ToList();
+        var sourceList = source.ListTac().OrderBy(item => item.EntityId).ToList();
 
         // List
         Assert.AreEqual(TestFileRowCount, sourceList.Count, "Entity list has not the expected length.");

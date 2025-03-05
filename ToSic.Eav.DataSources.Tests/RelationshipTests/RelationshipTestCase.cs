@@ -15,11 +15,11 @@ internal class RelationshipTestCase : RelationshipTestBase
     internal RelationshipFilter Api;
     internal RelationshipFilter Config;
 
-    internal IEnumerable<IEntity> All => Api.InTac()[DataSourceConstants.StreamDefaultName].ListForTests();
+    internal IEnumerable<IEntity> All => Api.InTac()[DataSourceConstants.StreamDefaultName].ListTac();
     internal int CountAll => All.Count();
 
-    internal int CountApi => Api.ListForTests().Count();
-    internal int CountConfig => Config.ListForTests().Count();
+    internal int CountApi => Api.ListTac().Count();
+    internal int CountConfig => Config.ListTac().Count();
 
 
     public string Type, 
@@ -78,7 +78,7 @@ internal class RelationshipTestCase : RelationshipTestBase
         var x = CountApi + CountConfig; // access the streams to ensure it's logged
         Trace.Write("Log after accessing DSs\n\n" + Log.Dump());
 
-        Api.ListForTests().ToList().ForEach(e => Trace.WriteLine($"item ({e.EntityId}):'{e.GetBestTitle()}'"));
+        Api.ListTac().ToList().ForEach(e => Trace.WriteLine($"item ({e.EntityId}):'{e.GetBestTitle()}'"));
 
         Assert.IsTrue(expectsResults ? CountApi > 0 : CountApi == 0, $"test: {Name} - found-Count:{CountApi} > 0");
         if(exactCount != -1)

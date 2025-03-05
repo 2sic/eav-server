@@ -18,10 +18,10 @@ public class ItemFilterDuplicatesTest: TestBaseEavDataSource
     {
         var desiredFinds = 0;
         var sf = DsSvc.CreateDataSource<ItemFilterDuplicates>();
-        var found = sf.ListForTests().Count();
+        var found = sf.ListTac().Count();
         Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListForTests().Count();
+        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListTac().Count();
         Assert.AreEqual(desiredFinds, dupls, "Should find exactly this amount people");
     }
 
@@ -31,10 +31,10 @@ public class ItemFilterDuplicatesTest: TestBaseEavDataSource
         var desiredFinds = 100;
         var desiredDupls = 0;
         var sf = GenerateDuplsDs(desiredFinds, 1);
-        var found = sf.ListForTests().Count();
+        var found = sf.ListTac().Count();
         Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListForTests().Count();
+        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListTac().Count();
         Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
     }
 
@@ -47,10 +47,10 @@ public class ItemFilterDuplicatesTest: TestBaseEavDataSource
         var desiredDupls = items;
         var sf = GenerateDuplsDs(items, 2);
 
-        var found = sf.ListForTests().Count();
+        var found = sf.ListTac().Count();
         Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListForTests().Count();
+        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListTac().Count();
         Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
     }
 
@@ -63,10 +63,10 @@ public class ItemFilterDuplicatesTest: TestBaseEavDataSource
         var desiredDupls = items;
         var sf = GenerateDuplsDs(items, 3);
 
-        var found = sf.ListForTests().Count();
+        var found = sf.ListTac().Count();
         Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
-        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListForTests().Count();
+        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListTac().Count();
         Assert.AreEqual(desiredDupls, dupls, "Should find exactly this amount people");
     }
 

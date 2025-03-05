@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests;
 public class MetadataTests: TestBaseDiEavFullAndDb
 {
     private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
-    private void TestMetadata(int expected, DataSources.Metadata ds) => Assert.AreEqual(expected, ds.ListForTests().Count(), $"should have {expected} md items");
+    private void TestMetadata(int expected, DataSources.Metadata ds) => Assert.AreEqual(expected, ds.ListTac().Count(), $"should have {expected} md items");
 
 
     [TestMethod]

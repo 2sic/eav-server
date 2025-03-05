@@ -1,9 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Testing.Shared;
 using ToSic.Testing.Shared.Data;
@@ -64,7 +62,7 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
         var fac = _queryBuilder;
         var query = fac.GetDataSourceForTesting(qDef).Main;
 
-        var list = query.ListForTests();
+        var list = query.ListTac();
         Assert.IsTrue(list.Count() > 1, "should find a few portals in the eav-testing-DB");
     }
 

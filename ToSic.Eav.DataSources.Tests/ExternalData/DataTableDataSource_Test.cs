@@ -2,8 +2,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
 
@@ -29,7 +27,7 @@ public class DataTableTst: TestBaseEavDataSource
             Assert.Fail("Access to another out should fail");
         }
         catch { }
-        Assert.IsTrue(defaultOut.ListForTests().Count() == itemsToGenerate);
+        Assert.IsTrue(defaultOut.ListTac().Count() == itemsToGenerate);
     }
 
     [TestMethod]
@@ -52,8 +50,8 @@ public class DataTableTst: TestBaseEavDataSource
         const int itemsToGenerate = 25;
         var ds = new DataTableTrivial(this).Generate(itemsToGenerate);
 
-        Assert.AreEqual(25, ds.ListForTests().Count());
-        var first = ds.ListForTests().FirstOrDefault();
+        Assert.AreEqual(25, ds.ListTac().Count());
+        var first = ds.ListTac().FirstOrDefault();
         Assert.AreEqual("Daniel Mettler", first.GetBestTitle());
     }
 

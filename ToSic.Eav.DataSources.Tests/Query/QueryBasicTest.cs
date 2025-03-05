@@ -100,7 +100,7 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
     {
         var qdef = LoadQueryDef(Eav.DataSourceTests.TestConfig.AppForQueryTests, basicId);
         var query = _queryBuilder.GetDataSourceForTesting(qdef).Main;
-        var countDef = query.ListForTests().Count();
+        var countDef = query.ListTac().Count();
         Assert.IsTrue(countDef > 0, "result > 0");
         Assert.AreEqual(basicCount, countDef);
 
@@ -110,7 +110,7 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
         // TODO: #42
         var qdef2 = _queryDefinitionBuilder.Create(eDef2, 0);
         var query2 = _queryBuilder.GetDataSourceForTesting(qdef2).Main;
-        var countDef2 = query2.ListForTests().Count();
+        var countDef2 = query2.ListTac().Count();
         Assert.AreEqual(countDef2, countDef, "countdefs should be same");
     }
 

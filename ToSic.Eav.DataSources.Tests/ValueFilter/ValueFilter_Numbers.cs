@@ -81,7 +81,7 @@ public class ValueFilterNumbers: TestBaseEavDataSource
     public void NumberFilter(string attr, string value, int expected, string operation = null)
     {
         var vf = PrepareNumberFilterDs(attr, value, operation);
-        Assert.AreEqual(expected, vf.ListForTests().Count(), "Should find exactly " + expected + " amount people");
+        Assert.AreEqual(expected, vf.ListTac().Count(), "Should find exactly " + expected + " amount people");
     }
 
     private ValueFilter PrepareNumberFilterDs(string attr, string value, string operation)

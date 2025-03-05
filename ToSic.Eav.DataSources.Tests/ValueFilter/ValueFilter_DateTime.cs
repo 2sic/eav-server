@@ -44,7 +44,7 @@ public class ValueFilterDateTime: TestBaseEavDataSource
     public void DateTimeFilter(string attr, string value, int expected, string operation, string name)
     {
         var vf = PrepareDateTimeFilterDs(attr, value, operation);
-        var list = vf.ListForTests().ToList();
+        var list = vf.ListTac().ToList();
         Assert.AreEqual(expected, list.Count(), $"{name}: find exactly " + expected + " amount people");
     }
 

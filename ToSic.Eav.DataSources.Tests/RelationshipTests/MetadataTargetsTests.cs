@@ -16,7 +16,7 @@ public class MetadataTargetsTests : TestBaseDiEavFullAndDb
     private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 
     private void TestMetadataTargets(int expected, MetadataTargets ds) 
-        => Assert.AreEqual(expected, ds.ListForTests().Count(), $"should have {expected} md items");
+        => Assert.AreEqual(expected, ds.ListTac().Count(), $"should have {expected} md items");
 
     [TestMethod]
     public void AllMetadataOfHelp() => TestMetadataTargets(TotalHelp, PrepareDs(HelpTypeName));

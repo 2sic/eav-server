@@ -50,7 +50,7 @@ public class ValueSort_DateTime: TestBaseEavDataSource
         var vf = _testDataGeneratedOutsideTimer;
         vf.Attributes = field;
         vf.Directions = asc ? "a" : "d";
-        var result = vf.ListForTests().ToList();
+        var result = vf.ListTac().ToList();
         // check that each following city is same or larger...
         ValidateDateFieldIsSorted(result, field, asc);
 

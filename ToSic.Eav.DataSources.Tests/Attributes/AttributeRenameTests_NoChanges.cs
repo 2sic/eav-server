@@ -24,7 +24,7 @@ public partial class AttributeRenameTests
     public void DefaultWithoutMap()
     {
         var attRenCompare = new AttributeRenameTester(this).CreateRenamer(10);
-        var item = attRenCompare.ListForTests().First();
+        var item = attRenCompare.ListTac().First();
         AssertHasFields(item, PersonSpecs.Fields);
         Assert.AreEqual(PersonSpecs.PersonTypeName, item.Type.Name, "Typename should not change");
     }
@@ -33,7 +33,7 @@ public partial class AttributeRenameTests
     public void NoChanges()
     {
         var attRen = new AttributeRenameTester(this).CreateRenamer(10);
-        var result = attRen.ListForTests().ToList();
+        var result = attRen.ListTac().ToList();
         Assert.AreEqual(10, result.Count);
         var item = result.First();
         Assert.AreEqual(PersonSpecs.ValueColumns, item.Attributes.Count);

@@ -12,7 +12,7 @@ public partial class AttributeRenameTests
     {
         var attRen = new AttributeRenameTester(this).CreateRenamer(10);
         attRen.TypeName = "MyNiceTypeName";
-        var result = attRen.ListForTests().ToList();
+        var result = attRen.ListTac().ToList();
         Assert.AreEqual(10, result.Count);
         var item = result.First();
         Assert.AreEqual("MyNiceTypeName", item.Type.Name, "Typename should have changed");

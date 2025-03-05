@@ -100,9 +100,9 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
         var appDs = DsSvc.CreateDataSource<App>(baseDs);
 
         // micro tests to ensure we have the right app etc.
-        Assert.IsTrue(appDs.ListForTests().Count() > 20, "appDs.List.Count() > 20");
+        Assert.IsTrue(appDs.ListTac().Count() > 20, "appDs.List.Count() > 20");
 
-        var item731 = appDs.ListForTests().FindRepoId(731);
+        var item731 = appDs.ListTac().FindRepoId(731);
         Assert.IsNotNull(item731, "expecting item 731");
         var title = item731.GetBestTitle();
         Assert.AreEqual(title, "2sic", "item 731 should have title '2sic'");
@@ -111,10 +111,10 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
 
         var stream = appDs[primaryType];
 
-        Assert.IsTrue(stream.ListForTests().Any(), "stream.List.Count() > 0");
+        Assert.IsTrue(stream.ListTac().Any(), "stream.List.Count() > 0");
 
         var relFilt = DsSvc.CreateDataSource<RelationshipFilter>(appDs.Configuration.LookUpEngine);
-        relFilt.AttachForTests(DataSourceConstants.StreamDefaultName, stream);
+        relFilt.AttachTac(DataSourceConstants.StreamDefaultName, stream);
         return relFilt;
     }
 

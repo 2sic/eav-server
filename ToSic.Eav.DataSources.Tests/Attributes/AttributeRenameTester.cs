@@ -28,9 +28,9 @@ internal class AttributeRenameTester(ICanGetService parent)
             Changed.AttributeMap = map;
         Changed.KeepOtherAttributes = preserve;
 
-        CList = Changed.ListForTests().ToList();
+        CList = Changed.ListTac().ToList();
         CItem = CList.First();
-        OItem = Original.ListForTests().First();
+        OItem = Original.ListTac().First();
         return this;
     }
 

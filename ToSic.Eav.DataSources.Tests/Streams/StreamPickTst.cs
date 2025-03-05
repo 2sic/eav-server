@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.LookUp;
@@ -23,7 +22,7 @@ public class StreamPickTst: TestBaseEavDataSource
     public void StreamPickDefault()
     {
         var streamPick = BuildStructure();
-        var list = streamPick.ListForTests();
+        var list = streamPick.ListTac();
         Assert.AreEqual(list.Count(), DefaultStreamSize, "default should have 10");
     }
 
@@ -32,7 +31,7 @@ public class StreamPickTst: TestBaseEavDataSource
     {
         var streamPick = BuildStructure();
         streamPick.StreamName = MoreStream;
-        var list = streamPick.ListForTests();
+        var list = streamPick.ListTac();
         Assert.AreEqual(list.Count(), MoreStreamSize, "default should have 27");
     }
 
@@ -50,9 +49,9 @@ public class StreamPickTst: TestBaseEavDataSource
         var ds3 = new DataTablePerson(this).Generate(53, 5300);
         var dsBuild = GetService<IDataSourcesService>();
         var streamPick = dsBuild.TestCreate<StreamPick>(appIdentity: new AppIdentity(1, 1), configLookUp: ds1.Configuration.LookUpEngine);
-        streamPick.AttachForTests(DataSourceConstants.StreamDefaultName, ds1);
-        streamPick.AttachForTests(MoreStream, ds2);
-        streamPick.AttachForTests("Lots", ds3);
+        streamPick.AttachTac(DataSourceConstants.StreamDefaultName, ds1);
+        streamPick.AttachTac(MoreStream, ds2);
+        streamPick.AttachTac("Lots", ds3);
         return streamPick;
     }
 }

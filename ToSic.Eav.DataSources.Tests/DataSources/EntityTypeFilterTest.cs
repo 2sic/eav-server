@@ -16,7 +16,7 @@ public class EntityTypeFilterTest: TestBaseEavDataSource
     {
         var vf = CreateEntityTypeFilterForTesting(1000);
         vf.TypeName = "Person";
-        Assert.AreEqual(1000, vf.ListForTests().Count(), "Should find all");
+        Assert.AreEqual(1000, vf.ListTac().Count(), "Should find all");
     }
 
     [TestMethod]
@@ -24,7 +24,7 @@ public class EntityTypeFilterTest: TestBaseEavDataSource
     {
         var vf = CreateEntityTypeFilterForTesting(1000);
         vf.TypeName = "Category";
-        Assert.AreEqual(0, vf.ListForTests().Count(), "Should find all");
+        Assert.AreEqual(0, vf.ListTac().Count(), "Should find all");
     }
 
 

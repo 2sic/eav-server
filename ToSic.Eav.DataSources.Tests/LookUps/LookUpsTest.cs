@@ -32,7 +32,7 @@ public class LookUpsTest: TestBaseEavDataSource
         }); 
         testSource.EntityIds = "1001";  // needed to ensure 
         var myConfDs = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
-        myConfDs.AttachForTests(ds);
+        myConfDs.AttachTac(ds);
         myConfDs.EntityIds = ItemToFilter;
 
         //testSource.Configuration.Values.Add("SomethingSimple", "Something");
@@ -43,10 +43,10 @@ public class LookUpsTest: TestBaseEavDataSource
         //testSource.Configuration.Values.Add("InTestNoKey", "[In:Default]");
         //testSource.Configuration.Values.Add("InTestBadKey", "[In:Default:SomeFieldWhichDoesntExist]");
         //testSource.Configuration.Values.Add("TestMyConfFirstName", "[In:MyConf:FirstName]");
-        testSource.AttachForTests(ds);
-        testSource.AttachForTests("MyConf", myConfDs);
+        testSource.AttachTac(ds);
+        testSource.AttachTac("MyConf", myConfDs);
 
-        var y = testSource.ListForTests(); // must access something to provoke configuration resolving
+        var y = testSource.ListTac(); // must access something to provoke configuration resolving
 
         Assert.AreEqual("First Name 1001", testSource.Configuration.Values["InTestFirstName"], "Tested in:Default:EntityTitle");
         Assert.AreEqual("", testSource.Configuration.Values["InTestBadStream"], "Testing in-token with invalid stream");

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
@@ -25,31 +24,31 @@ public class QuickCachesTest: TestBaseEavDataSource
 
         //var cache = ds.Root;
         var listCache = GetTestListCache();
-        Assert.IsFalse(listCache.HasTA(ds.CacheFullKey), "Should not have it in cache yet");
+        Assert.IsFalse(listCache.HasStreamTac(ds.CacheFullKey), "Should not have it in cache yet");
 
         // manually add to cache
         listCache.Set(ds[DataSourceConstants.StreamDefaultName]);
-        Assert.IsTrue(listCache.HasTA(ds.CacheFullKey + "&Stream=Default"), "Should have it in cache now");
-        Assert.IsTrue(listCache.HasTA(ds[DataSourceConstants.StreamDefaultName]), "Should also have the DS default");
+        Assert.IsTrue(listCache.HasStreamTac(ds.CacheFullKey + "&Stream=Default"), "Should have it in cache now");
+        Assert.IsTrue(listCache.HasStreamTac(ds[DataSourceConstants.StreamDefaultName]), "Should also have the DS default");
             
-        Assert.IsTrue(listCache.HasTA(ds[DataSourceConstants.StreamDefaultName]), "should have it by stream as well");
+        Assert.IsTrue(listCache.HasStreamTac(ds[DataSourceConstants.StreamDefaultName]), "should have it by stream as well");
             
 
         // Try to auto-retrieve 
-        var cached = listCache.GetTA(ds.CacheFullKey + "&Stream=Default").List;
+        var cached = listCache.GetTac(ds.CacheFullKey + "&Stream=Default").List;
 
         Assert.AreEqual(1, cached.Count);
 
-        cached = listCache.GetTA(ds[DataSourceConstants.StreamDefaultName]).List;
+        cached = listCache.GetTac(ds[DataSourceConstants.StreamDefaultName]).List;
         Assert.AreEqual(1, cached.Count);
 
-        var lci = listCache.GetTA(ds.CacheFullKey);
+        var lci = listCache.GetTac(ds.CacheFullKey);
         Assert.AreEqual(null, lci, "Cached should be null because the name isn't correct");
 
-        lci = listCache.GetTA(ds[DataSourceConstants.StreamDefaultName]);
+        lci = listCache.GetTac(ds[DataSourceConstants.StreamDefaultName]);
         Assert.AreNotEqual(null, lci, "Cached should be found because using stream instead of name");
 
-        cached = listCache.GetTA(ds[DataSourceConstants.StreamDefaultName]).List;
+        cached = listCache.GetTac(ds[DataSourceConstants.StreamDefaultName]).List;
         Assert.AreEqual(1, cached.Count());
 
     }
@@ -62,16 +61,16 @@ public class QuickCachesTest: TestBaseEavDataSource
 
         var listCache = GetTestListCache();
         //listCache.DefaultDuration = 1;
-        Assert.IsFalse(listCache.HasTA(ds.CacheFullKey), "Should not have it in cache yet");
+        Assert.IsFalse(listCache.HasStreamTac(ds.CacheFullKey), "Should not have it in cache yet");
 
-        listCache.Set(ds.CacheFullKey, ds.ListForTests().ToImmutableList(), ds.CacheTimestamp, false, durationInSeconds: 1);
-        Assert.IsTrue(listCache.HasTA(ds.CacheFullKey), "Should have it in cache now");
+        listCache.Set(ds.CacheFullKey, ds.ListTac().ToImmutableList(), ds.CacheTimestamp, false, durationInSeconds: 1);
+        Assert.IsTrue(listCache.HasStreamTac(ds.CacheFullKey), "Should have it in cache now");
 
         Thread.Sleep(400);
-        Assert.IsTrue(listCache.HasTA(ds.CacheFullKey), "Should STILL be in cache");
+        Assert.IsTrue(listCache.HasStreamTac(ds.CacheFullKey), "Should STILL be in cache");
 
         Thread.Sleep(601);
-        Assert.IsFalse(listCache.HasTA(ds.CacheFullKey), "Should NOT be in cache ANY MORE");
+        Assert.IsFalse(listCache.HasStreamTac(ds.CacheFullKey), "Should NOT be in cache ANY MORE");
     }
 
 
@@ -81,7 +80,7 @@ public class QuickCachesTest: TestBaseEavDataSource
     {
         var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
         var filtered = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
-        filtered.AttachForTests(ds);
+        filtered.AttachTac(ds);
         filtered.EntityIds = entityIdsValue;
         return filtered;
     }

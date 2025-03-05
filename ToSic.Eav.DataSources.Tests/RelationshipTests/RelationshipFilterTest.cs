@@ -38,7 +38,7 @@ public partial class RelationshipFilterTest: RelationshipTestBase
     {
         var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
 
-        var result = relFilt.ListForTests().ToList();
+        var result = relFilt.ListTac().ToList();
 
         Trace.Write(Log.Dump());
 
@@ -48,9 +48,9 @@ public partial class RelationshipFilterTest: RelationshipTestBase
     public void DS_RelFil_NoConfigFallback()
     {
         var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
-        relFilt.AttachForTests(DataSourceConstants.StreamFallbackName, relFilt.InTac()[DataSourceConstants.StreamDefaultName]);
+        relFilt.AttachTac(DataSourceConstants.StreamFallbackName, relFilt.InTac()[DataSourceConstants.StreamDefaultName]);
 
-        var result = relFilt.ListForTests().ToList();
+        var result = relFilt.ListTac().ToList();
 
         Trace.Write(Log.Dump());
         Assert.IsTrue(result.Count > 0, "count should be more than 0, as it should use fallback");

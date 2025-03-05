@@ -125,7 +125,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
                      "[AdministratorId],[GUID],[HomeDirectory],[PortalGroupID] " +
                      "FROM [Portals]";
         var sql = GenerateSqlDataSource(TestConfig.ConStr, select, ContentTypeName);
-        var list = sql.ListForTests();
+        var list = sql.ListTac();
         Assert.IsTrue(list.Any(), "found some");
     }
 

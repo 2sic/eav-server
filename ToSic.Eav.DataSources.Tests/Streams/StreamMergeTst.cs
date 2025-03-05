@@ -67,7 +67,7 @@ public class StreamMergeTst: TestBaseEavDataSource
 
         // Second has the same amount, but they should be different entity objects
         var secondSf = GenerateSecondStreamWithSomeResults(sf, itemsInSecondStream);
-        sf.Attach("another", secondSf.StreamForTests());
+        sf.Attach("another", secondSf.GetStreamTac());
         VerifyStreams(sf, desiredFinds, ItemsToGenerate, itemsInSecondStream, ItemsToGenerate - itemsInSecondStream);
     }
 
@@ -86,19 +86,19 @@ public class StreamMergeTst: TestBaseEavDataSource
 
     private void VerifyStreams(StreamMerge streamMerge, int expDefault, int expDistinct, int expAnd, int expXor)
     {
-        var found = streamMerge.ListForTests().Count();
+        var found = streamMerge.ListTac().Count();
         Trace.WriteLine("Found (Default / OR): " + found);
         Assert.AreEqual(expDefault, found, "Should find exactly this amount people after merge");
 
-        var foundDistinct = streamMerge.ListForTests(StreamMerge.DistinctStream).Count();
+        var foundDistinct = streamMerge.OutTac(StreamMerge.DistinctStream).Count();
         Trace.WriteLine("Distinct: " + foundDistinct);
         Assert.AreEqual(expDistinct, foundDistinct, "Should find exactly this amount of _distinct_ people");
 
-        var foundAnd = streamMerge.ListForTests(StreamMerge.AndStream).Count();
+        var foundAnd = streamMerge.OutTac(StreamMerge.AndStream).Count();
         Trace.WriteLine("AND: " + foundAnd);
         Assert.AreEqual(expAnd, foundAnd, "Should find exactly this amount of _AND_ people");
 
-        var foundXor = streamMerge.ListForTests(StreamMerge.XorStream).Count();
+        var foundXor = streamMerge.OutTac(StreamMerge.XorStream).Count();
         Trace.WriteLine("XOR: " + foundXor);
         Assert.AreEqual(expXor, foundXor, "Should find exactly this amount of _XOR_ people");
     }
@@ -109,7 +109,7 @@ public class StreamMergeTst: TestBaseEavDataSource
         secondSf.Attribute = Attributes.EntityIdPascalCase;
         secondSf.Operator = "<";
         secondSf.Value = (FirstId + itemsInSecondStream).ToString();
-        Assert.AreEqual(itemsInSecondStream, secondSf.ListForTests().Count(),
+        Assert.AreEqual(itemsInSecondStream, secondSf.ListTac().Count(),
             $"For next test to work, we must be sure we have {itemsInSecondStream} items here");
         return secondSf;
     }

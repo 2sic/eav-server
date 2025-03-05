@@ -18,14 +18,14 @@ public class StreamFallbackTst: TestBaseEavDataSource
         var stmf = AssembleTestFallbackStream();
         stmf.Attach(StreamDefaultName, stmf.InTac()["1"]);
 
-        Assert.AreEqual(1, stmf.ListForTests().Count(), "should have found 1");
+        Assert.AreEqual(1, stmf.ListTac().Count(), "should have found 1");
     }
 
     [TestMethod]
     public void StreamsWhereFirstFallbackIsReturned()
     {
         var stmf = AssembleTestFallbackStream();
-        Assert.AreEqual(1, stmf.ListForTests().Count(), "should be 1 - the fallback");
+        Assert.AreEqual(1, stmf.ListTac().Count(), "should be 1 - the fallback");
     }
 
     [TestMethod]
@@ -40,7 +40,7 @@ public class StreamFallbackTst: TestBaseEavDataSource
         stmf.Attach("Fallback4", inDefaultStream);
         stmf.Attach("Fallback5", inDefaultStream);
 
-        Assert.AreEqual(45, stmf.ListForTests().Count(), "Should have looped through many and found the 45");
+        Assert.AreEqual(45, stmf.ListTac().Count(), "Should have looped through many and found the 45");
         Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
     }
 
@@ -54,7 +54,7 @@ public class StreamFallbackTst: TestBaseEavDataSource
         stmf.Attach("2", stmf.InTac()[StreamDefaultName]);
         stmf.Attach("3", stmf.InTac()[StreamDefaultName]);
         stmf.Attach("Fallback5", stmf.InTac()[StreamDefaultName]);
-        Assert.AreEqual(45, stmf.ListForTests().Count(), "Should have looped through many and found the 45");
+        Assert.AreEqual(45, stmf.ListTac().Count(), "Should have looped through many and found the 45");
         Assert.AreEqual("ZMany", stmf.ReturnedStreamName);
     }
 
@@ -65,7 +65,7 @@ public class StreamFallbackTst: TestBaseEavDataSource
         stmf.Attach("1", stmf.InTac()[StreamDefaultName]);
         stmf.Attach("2", stmf.InTac()[StreamDefaultName]);
         stmf.Attach("3", stmf.InTac()[StreamDefaultName]);
-        Assert.AreEqual(0, stmf.ListForTests().Count(), "Should find none");
+        Assert.AreEqual(0, stmf.ListTac().Count(), "Should find none");
     }
 
     private StreamFallback AssembleTestFallbackStream(bool addStream1 = true, bool addStreamZMany = true)
@@ -76,9 +76,9 @@ public class StreamFallbackTst: TestBaseEavDataSource
         var dsWith1 = new DataTablePerson(this).Generate(1, 2000);
         var dsWithmany = new DataTablePerson(this).Generate(45, 4000);
         if (addStream1)
-            streams.AttachForTests("1", dsWith1);
+            streams.AttachTac("1", dsWith1);
         if (addStreamZMany)
-            streams.AttachForTests("ZMany", dsWithmany);
+            streams.AttachTac("ZMany", dsWithmany);
         return streams;
 
     }

@@ -61,7 +61,7 @@ public class DataTablePerson(ICanGetService parent)
 
         // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-        source.ListForTests().LastOrDefault();
+        source.ListTac().LastOrDefault();
 
         if (useCacheForSpeed)
             CachedDs.Add(itemsToGenerate, source);

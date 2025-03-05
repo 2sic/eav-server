@@ -18,7 +18,7 @@ public class EntityIdFilterTest: TestBaseEavDataSource
         const string itemToFilter = "1023";
         var filtered = CreateFilterForTesting(100, itemToFilter);
 
-        var ll = filtered.ListForTests();
+        var ll = filtered.ListTac();
 
         Assert.AreEqual(itemToFilter, ll.First().EntityId.ToString());
     }
@@ -30,7 +30,7 @@ public class EntityIdFilterTest: TestBaseEavDataSource
         const string itemToFilter = "";
         var filtered = CreateFilterForTesting(100, itemToFilter);
 
-        var ll = filtered.ListForTests();
+        var ll = filtered.ListTac();
 
         Assert.AreEqual(0, ll.Count(), "Should return 0 items");
     }
@@ -41,7 +41,7 @@ public class EntityIdFilterTest: TestBaseEavDataSource
         const string itemToFilter = "1011,1023,1050,1003";
         var filtered = CreateFilterForTesting(100, itemToFilter);
 
-        var ll = filtered.ListForTests();
+        var ll = filtered.ListTac();
         Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
         Assert.AreEqual(4, ll.Count(), "Count after filtering");
     }
@@ -52,7 +52,7 @@ public class EntityIdFilterTest: TestBaseEavDataSource
         const string itemToFilter = "1011, 1023 ,1050   ,1003";
         var filtered = CreateFilterForTesting(100, itemToFilter);
 
-        var ll = filtered.ListForTests();
+        var ll = filtered.ListTac();
         Assert.AreEqual("1011", ll.First().EntityId.ToString(), "Test Light that sorting IS affeted");
         Assert.AreEqual(4, ll.Count(), "Count after filtering");
     }
@@ -93,7 +93,7 @@ public class EntityIdFilterTest: TestBaseEavDataSource
     {
         var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
         var filtered = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
-        filtered.AttachForTests(ds);
+        filtered.AttachTac(ds);
         filtered.EntityIds = entityIdsValue;
         return filtered;
     }
