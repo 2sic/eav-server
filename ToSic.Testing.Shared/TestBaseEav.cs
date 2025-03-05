@@ -7,15 +7,15 @@ using ToSic.Eav.StartUp;
 
 namespace ToSic.Testing.Shared;
 
-public abstract class TestBaseEav : TestBaseEavDataSource
+public abstract class TestBaseEav(EavTestConfig testConfig = default) : TestBaseEavDataSource(testConfig)
 {
-    protected override void SetupServices(IServiceCollection services)
+    protected override IServiceCollection SetupServices(IServiceCollection services)
     {
         //base.SetupServices(services);
 
         // Just add all services, not perfect yet
         // Ideally should only add the services not added by previous layers
-        services
+        return services
             .AddEavEverything();
     }
 
@@ -28,7 +28,7 @@ public abstract class TestBaseEav : TestBaseEavDataSource
 
         // this will run after the base constructor, which configures DI
         var dbConfiguration = GetService<IDbConfiguration>();
-        dbConfiguration.ConnectionString = TestConfiguration.ConStr;
+        dbConfiguration.ConnectionString = TestConfig.ConStr;
 
         StartupGlobalFoldersAndFingerprint();
     }
@@ -37,9 +37,10 @@ public abstract class TestBaseEav : TestBaseEavDataSource
     protected void StartupGlobalFoldersAndFingerprint()
     {
         var globalConfig = GetService<IGlobalConfiguration>();
-        globalConfig.GlobalFolder = TestConfiguration.GlobalFolder;
-        if (Directory.Exists(TestConfiguration.GlobalDataCustomFolder)) 
-            globalConfig.DataCustomFolder = TestConfiguration.GlobalDataCustomFolder;
+        globalConfig.GlobalFolder = TestConfig.GlobalFolder;
+        var folderWithTestLicenses = TestConfig.GlobalDataCustomFolder;
+        if (Directory.Exists(folderWithTestLicenses)) 
+            globalConfig.DataCustomFolder = folderWithTestLicenses;
 
         // Try to reset some special static variables which may cary over through many tests
         SystemFingerprint.ResetForTest();

@@ -11,7 +11,7 @@ using ToSic.Testing.Shared.Data;
 namespace ToSic.Eav.DataSourceTests.Query;
 
 [TestClass]
-[DeploymentItem("..\\..\\" + TestConfig.GlobalQueriesData, TestConfig.TestingPath)]
+[DeploymentItem("..\\..\\" + Eav.DataSourceTests.TestConfig.GlobalQueriesData, Eav.DataSourceTests.TestConfig.TestingPath)]
 public class QueryGlobalTest: TestBaseDiEavFullAndDb
 {
     public QueryGlobalTest()
@@ -31,7 +31,7 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     [ClassInitialize]
     public static void Config(TestContext context)
     {
-        TestGlobalFolderRepository.PathToUse = TestConfig.TestingPath;
+        TestGlobalFolderRepository.PathToUse = Eav.DataSourceTests.TestConfig.TestingPath;
     }
 
     [TestMethod]
@@ -59,7 +59,7 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     {
         var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones");
 
-        var qDef = _queryDefinitionBuilder.Create(queryEnt, TestConfig.AppForQueryTests);
+        var qDef = _queryDefinitionBuilder.Create(queryEnt, Eav.DataSourceTests.TestConfig.AppForQueryTests);
 
         var fac = _queryBuilder;
         var query = fac.GetDataSourceForTesting(qDef).Main;

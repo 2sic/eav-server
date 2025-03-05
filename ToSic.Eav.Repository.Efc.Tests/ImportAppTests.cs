@@ -29,12 +29,10 @@ namespace ToSic.Eav.Repository.Efc.Tests
             _zoneManager = GetService<ZoneManager>();
         }
 
-        protected override void SetupServices(IServiceCollection services)
-        {
-            base.SetupServices(services);
-            services.AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
-            services.AddTransient<XmlImportWithFiles, XmlImportFull>();
-        }
+        protected override IServiceCollection SetupServices(IServiceCollection services) =>
+            base.SetupServices(services)
+                .AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>()
+                .AddTransient<XmlImportWithFiles, XmlImportFull>();
 
         //public const string BaseTestPath = @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
         #region Test Data

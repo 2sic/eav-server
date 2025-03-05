@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
@@ -10,6 +9,8 @@ namespace ToSic.Eav.DataSourceTests.LookUps;
 [TestClass]
 public class LookUpsTest: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void DataTargetValueProvider_General()
     {
@@ -18,7 +19,7 @@ public class LookUpsTest: TestBaseEavDataSource
         const string ItemToFilter = "1023";
         var ds = new DataTablePerson(this).Generate(ItemsToGenerate, 1001);
 
-        var testSource = CreateDataSourceNew<EntityIdFilter>(/*ds.Configuration.LookUpEngine*/ options: new
+        var testSource = DsSvc.CreateDataSourceNew<EntityIdFilter>(options: new
         {
             SomethingSimple = "Something",
             Token1 = new LookUpEngineTests().OriginalSettingDefaultCat,
@@ -30,7 +31,7 @@ public class LookUpsTest: TestBaseEavDataSource
             TestMyConfFirstName = "[In:MyConf:FirstName]",
         }); 
         testSource.EntityIds = "1001";  // needed to ensure 
-        var myConfDs = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
+        var myConfDs = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
         myConfDs.AttachForTests(ds);
         myConfDs.EntityIds = ItemToFilter;
 

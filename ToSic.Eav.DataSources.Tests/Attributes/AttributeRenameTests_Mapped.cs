@@ -20,7 +20,7 @@ Last=LastName";
         Assert.AreEqual(10, test.CList.Count);
         Assert.AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
-        AssertFieldsChanged(test.CItem, new []{ PersonSpecs.FieldFullName}, new []{ShortName});
+        AssertFieldsChanged(test.CItem, [PersonSpecs.FieldFullName], [ShortName]);
 
         test.AssertValues(PersonSpecs.FieldFullName, ShortName);
         test.AssertValues(PersonSpecs.FieldFirstName);
@@ -34,7 +34,7 @@ Last=LastName";
         Assert.AreNotEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected a different amount of columns");
         Assert.AreEqual(1, test.CItem.Attributes.Count, "expect only 1 field now");
 
-        AssertFieldsChanged(test.CItem, PersonSpecs.Fields, new[] { ShortName });
+        AssertFieldsChanged(test.CItem, PersonSpecs.Fields, [ShortName]);
 
         test.AssertValues(PersonSpecs.FieldFullName, ShortName);
     }
@@ -55,8 +55,8 @@ Last=LastName";
         Assert.AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
         AssertFieldsChanged(test.CItem,
-            new[] { PersonSpecs.FieldFullName, PersonSpecs.FieldFirstName, PersonSpecs.FieldLastName },
-            new[] { ShortName, ShortFirst, ShortLast });
+            [PersonSpecs.FieldFullName, PersonSpecs.FieldFirstName, PersonSpecs.FieldLastName],
+            [ShortName, ShortFirst, ShortLast]);
 
         test.AssertValues(PersonSpecs.FieldFullName, ShortName);
         test.AssertValues(PersonSpecs.FieldFirstName, ShortFirst);
@@ -72,7 +72,7 @@ Last=LastName";
 
         AssertFieldsChanged(test.CItem, 
             PersonSpecs.Fields,
-            new[] {ShortName, ShortFirst, ShortLast});
+            [ShortName, ShortFirst, ShortLast]);
 
         test.AssertValues(PersonSpecs.FieldFullName, ShortName);
         test.AssertValues(PersonSpecs.FieldFirstName, ShortFirst);

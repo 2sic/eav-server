@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSources;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -16,7 +15,7 @@ internal class RelationshipTestCase : RelationshipTestBase
     internal RelationshipFilter Api;
     internal RelationshipFilter Config;
 
-    internal IEnumerable<IEntity> All => Api.InForTests()[DataSourceConstants.StreamDefaultName].ListForTests();
+    internal IEnumerable<IEntity> All => Api.InTac()[DataSourceConstants.StreamDefaultName].ListForTests();
     internal int CountAll => All.Count();
 
     internal int CountApi => Api.ListForTests().Count();

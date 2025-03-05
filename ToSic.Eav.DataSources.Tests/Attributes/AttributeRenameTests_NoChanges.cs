@@ -2,15 +2,18 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests;
 
 public partial class AttributeRenameTests
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void DefaultConfiguration()
     {
-        var attrRename = CreateDataSource<AttributeRename>(); // DataSourceFactory.GetDataSource<AttributeRename>(new AppIdentity(1, 1), null, LookUpTestData.EmptyLookupEngine);
+        var attrRename = DsSvc.CreateDataSource<AttributeRename>();
         attrRename.Configuration.Parse();
         Assert.AreEqual(true, attrRename.KeepOtherAttributes);
         Assert.AreEqual("", attrRename.AttributeMap);

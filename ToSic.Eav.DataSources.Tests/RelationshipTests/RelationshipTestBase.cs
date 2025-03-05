@@ -5,7 +5,6 @@ using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
 using ToSic.Lib.Logging;
@@ -30,6 +29,7 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
 
     #endregion
 
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 
     protected new ILog Log { get; } = new Log("Tst.DSRelF");
 
@@ -91,13 +91,13 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
 
     protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
     {
-        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions
+        var baseDs = DsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions
             {
                 AppIdentityOrReader = RelationshipTestSpecs.AppIdentity,
                 LookUp = config
             }
         );
-        var appDs = CreateDataSource<App>(baseDs);
+        var appDs = DsSvc.CreateDataSource<App>(baseDs);
 
         // micro tests to ensure we have the right app etc.
         Assert.IsTrue(appDs.ListForTests().Count() > 20, "appDs.List.Count() > 20");
@@ -113,7 +113,7 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
 
         Assert.IsTrue(stream.ListForTests().Any(), "stream.List.Count() > 0");
 
-        var relFilt = CreateDataSource<RelationshipFilter>(appDs.Configuration.LookUpEngine);
+        var relFilt = DsSvc.CreateDataSource<RelationshipFilter>(appDs.Configuration.LookUpEngine);
         relFilt.AttachForTests(DataSourceConstants.StreamDefaultName, stream);
         return relFilt;
     }
@@ -123,7 +123,7 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
     {
         var testData = new LookUpTestData(GetService<DataBuilder>());
         var lookup = testData.BuildLookUpEntity(DataSourceConstants.MyConfigurationSourceName, vals);
-        var vc = testData.AppSetAndRes(sources: new List<ILookUp>{lookup});
+        var vc = testData.AppSetAndRes(sources: [lookup]);
         return vc;
     }
 

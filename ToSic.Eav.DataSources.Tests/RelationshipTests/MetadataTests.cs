@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests;
 [TestClass]
 public class MetadataTests: TestBaseDiEavFullAndDb
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
     private void TestMetadata(int expected, DataSources.Metadata ds) => Assert.AreEqual(expected, ds.ListForTests().Count(), $"should have {expected} md items");
 
 
@@ -30,10 +31,11 @@ public class MetadataTests: TestBaseDiEavFullAndDb
     public void MainTargetsPriceOnly() => TestMetadata(PricesTotal, PrepareDs(TargetTypeMain, typeName: PriceTypeName));
 
     [TestMethod]
-    public void MainSingleItem() => TestMetadata(Item2P1HTotal, PrepareDs(TargetTypeMain, ids: new[] { Item2P1H }));
+    public void MainSingleItem() => TestMetadata(Item2P1HTotal, PrepareDs(TargetTypeMain, ids: [Item2P1H]));
 
     [TestMethod]
-    public void MainSingleItemPriceOnly() => TestMetadata(PricesTotal, PrepareDs(TargetTypeMain, typeName: PriceTypeName, ids: new[] { Item2P1H }));
+    public void MainSingleItemPriceOnly() => TestMetadata(PricesTotal, PrepareDs(TargetTypeMain, typeName: PriceTypeName, ids:
+        [Item2P1H]));
 
 
 
@@ -41,8 +43,8 @@ public class MetadataTests: TestBaseDiEavFullAndDb
     {
         if(lookUpEngine == null) lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
 
-        var baseDs = DataSourceFactory.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine } );
-        var appDs = CreateDataSource<App>(baseDs);
+        var baseDs = DsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine } );
+        var appDs = DsSvc.CreateDataSource<App>(baseDs);
 
         var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
 
@@ -50,7 +52,7 @@ public class MetadataTests: TestBaseDiEavFullAndDb
         if (typeName != null)
             dsParams["ContentTypeName"] = typeName;
 
-        var childDs = CreateDataSource<DataSources.Metadata>(inStream, dsParams);
+        var childDs = DsSvc.CreateDataSource<DataSources.Metadata>(inStream, dsParams);
         //if (typeName != null)
         //    childDs.ContentTypeName = typeName;
 

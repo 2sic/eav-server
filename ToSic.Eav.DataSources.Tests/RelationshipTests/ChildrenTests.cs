@@ -24,26 +24,26 @@ public class ChildrenTests: ChildParentTestBase<Children>
     [TestMethod]
     public void PersonsOneGetOneCompany()
     {
-        var cl = PrepareDs(Person, new []{ PersonWithCompany }, Company);
+        var cl = PrepareDs(Person, [PersonWithCompany], Company);
         Assert.AreEqual(PersonCompanyCount, cl.ListForTests().Count());
     }
 
     [TestMethod]
     public void CompanyOneHas5Children()
     {
-        var cl = PrepareDs(Company, new []{ CompanyIdWithCountryAnd4Categories });
+        var cl = PrepareDs(Company, [CompanyIdWithCountryAnd4Categories]);
         Assert.AreEqual(5, cl.ListForTests().Count());
     }
     [TestMethod]
     public void CompanyOneHas4Categories()
     {
-        var cl = PrepareDs(Company, new []{ CompanyIdWithCountryAnd4Categories }, Categories);
+        var cl = PrepareDs(Company, [CompanyIdWithCountryAnd4Categories], Categories);
         Assert.AreEqual(4, cl.ListForTests().Count());
     }
     [TestMethod]
     public void CompanyOneHas1Country()
     {
-        var cl = PrepareDs(Company, new []{ CompanyIdWithCountryAnd4Categories }, Country);
+        var cl = PrepareDs(Company, [CompanyIdWithCountryAnd4Categories], Country);
         Assert.AreEqual(1, cl.ListForTests().Count());
     }
 

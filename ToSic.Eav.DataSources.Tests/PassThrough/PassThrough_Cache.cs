@@ -10,14 +10,13 @@ namespace ToSic.Eav.DataSourceTests;
 [TestClass]
 public class PassThrough_Cache: TestBaseEavDataSource
 {
-
-    #region bool tests
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 
 
     [TestMethod]
     public void PassThrough_CacheKey()
     {
-        var outSource = CreateDataSource<PassThrough>();
+        var outSource = DsSvc.CreateDataSource<PassThrough>();
         var partialKey = outSource.CachePartialKey;
         var fullKey = outSource.CacheFullKey;
         Trace.WriteLine("Partial Key:" + partialKey);
@@ -26,8 +25,4 @@ public class PassThrough_Cache: TestBaseEavDataSource
         Assert.IsNotNull(fullKey);
     }
 
-
-
-    #endregion
-        
 }

@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Testing.Shared;
@@ -15,12 +14,10 @@ public class ValueConversionTests: TestBaseForIoC
 {
     #region Initialize Test
 
-    protected override void SetupServices(IServiceCollection services)
-    {
-        base.SetupServices(services);
-        services.AddTransient<ExportImportValueConversion>();
-        services.AddTransient<IValueConverter, MockValueConverter>();
-    }
+    protected override IServiceCollection SetupServices(IServiceCollection services) =>
+        base.SetupServices(services)
+            .AddTransient<ExportImportValueConversion>()
+            .AddTransient<IValueConverter, MockValueConverter>();
 
     #endregion
 

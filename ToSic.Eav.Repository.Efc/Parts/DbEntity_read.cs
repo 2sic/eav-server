@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repository.Efc.Parts;
+﻿using System.Linq;
+
+namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbEntity
 {
@@ -35,7 +37,9 @@ partial class DbEntity
     internal ToSicEavEntities[] GetDbEntities(int[] repositoryIds)
     {
         var callLog = DbContext.Log.Fn<ToSicEavEntities[]>($"Get {repositoryIds.Length}", timer: true);
-        var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
+        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+        // var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
+        var found = EntityQuery.Where(e => Enumerable.Contains(repositoryIds, e.EntityId)).ToArray();
         return callLog.Return(found, found.Length.ToString());
     }
 
@@ -43,7 +47,9 @@ partial class DbEntity
     //    => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
 
     private List<ToSicEavEntities> GetDbEntities(int[] entityIds, string includes)
-        => IncludeMultiple(EntityQuery, includes).Where(e => entityIds.Contains(e.EntityId)).ToList();
+        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+        // => IncludeMultiple(EntityQuery, includes).Where(e => entityIds.Contains(e.EntityId)).ToList();
+        => IncludeMultiple(EntityQuery, includes).Where(e => Enumerable.Contains(entityIds, e.EntityId)).ToList();
 
     private static IQueryable<ToSicEavEntities> IncludeMultiple(IQueryable<ToSicEavEntities> origQuery, string additionalTables)
     {
@@ -68,7 +74,9 @@ partial class DbEntity
         => EntityQuery.Where(e => e.EntityGuid == entityGuid
                                   && !e.ChangeLogDeleted.HasValue
                                   && !e.AttributeSet.ChangeLogDeleted.HasValue
-                                  && DbContext.AppIds.Contains(e.AppId));
+                                    // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+                                    // && DbContext.AppIds.Contains(e.AppId));
+                                    && Enumerable.Contains(DbContext.AppIds, e.AppId));
 
     /// <summary>
     /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
@@ -105,10 +113,15 @@ partial class DbEntity
     // 2020-10-07 2dm experiment with fewer requests
     internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid[] entityGuid)
         => EntityQuery
-            .Where(e => entityGuid.Contains(e.EntityGuid)
+            .Where(e =>
+                        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+                        // entityGuid.Contains(e.EntityGuid)
+                        Enumerable.Contains(entityGuid, e.EntityGuid)
                         && e.ChangeLogDeleted == null
                         && e.AttributeSet.ChangeLogDeleted == null
-                        && DbContext.AppIds.Contains(e.AppId)
+                        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+                        // && DbContext.AppIds.Contains(e.AppId)
+                        && Enumerable.Contains(DbContext.AppIds, e.AppId)
             );
 
 

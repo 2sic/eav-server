@@ -32,7 +32,7 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
     [TestMethod]
     public void LookForQuery_DeepApi()
     {
-        var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
+        var qdef = LoadQueryDef(Eav.DataSourceTests.TestConfig.AppForQueryTests, basicId);
         Assert.IsNotNull(qdef.Entity);
 
         var metadata = qdef.Entity.Metadata.ToList();
@@ -53,7 +53,7 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
     [TestMethod]
     public void Query_To_Json()
     {
-        var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
+        var qdef = LoadQueryDef(Eav.DataSourceTests.TestConfig.AppForQueryTests, basicId);
         var ser = _jsonSerializer;
         var justHeader = ser.Serialize(qdef.Entity, 0);
         var full = ser.Serialize(qdef.Entity, 10);
@@ -67,7 +67,7 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
     [TestMethod]
     public void Query_to_Json_and_back()
     {
-        var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
+        var qdef = LoadQueryDef(Eav.DataSourceTests.TestConfig.AppForQueryTests, basicId);
         var ser = Serializer();
         var strHead = ser.Serialize(qdef.Entity, 0);
         var full = ser.Serialize(qdef.Entity, 10);
@@ -91,14 +91,14 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
     private JsonSerializer Serializer()
     {
         var ser = _jsonSerializer;
-        ser.Initialize(TestConfig.AppForQueryTests, new List<IContentType>(), null);
+        ser.Initialize(Eav.DataSourceTests.TestConfig.AppForQueryTests, new List<IContentType>(), null);
         return ser;
     }
 
     [TestMethod]
     public void Query_Run_And_Run_Materialized()
     {
-        var qdef = LoadQueryDef(TestConfig.AppForQueryTests, basicId);
+        var qdef = LoadQueryDef(Eav.DataSourceTests.TestConfig.AppForQueryTests, basicId);
         var query = _queryBuilder.GetDataSourceForTesting(qdef).Main;
         var countDef = query.ListForTests().Count();
         Assert.IsTrue(countDef > 0, "result > 0");

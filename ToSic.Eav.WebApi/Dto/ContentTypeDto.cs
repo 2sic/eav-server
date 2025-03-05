@@ -16,6 +16,9 @@ public class ContentTypeDto: IdNameDto
     public int? SharedDefId { get; set; }
     public int Items { get; set; }
     public int Fields { get; set; }
+
+    public string TitleField { get; set; }
+
     public IEnumerable<EavLightEntityReference> Metadata { get; set; }
     public IDictionary<string, object> Properties { get; set; }
 

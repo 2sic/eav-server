@@ -1,216 +1,53 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C212A78C-25BB-4A77-AFBB-B5939352CE36}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net472;net9.0</TargetFrameworks>
     <RootNamespace>ToSic.Eav.DataSourceTests</RootNamespace>
     <AssemblyName>ToSic.Eav.DataSources.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <LangVersion>preview</LangVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <LangVersion>preview</LangVersion>
+    <IsTestProject>true</IsTestProject>
+    <Configurations>Debug;Release;efc and WebApi;debug eav only;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'efc and WebApi|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\efc and WebApi\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'debug eav only|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\debug eav only\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dbg Testing|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Dbg Testing\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Oqtane|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug Oqtane\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugOqtane|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\DebugOqtane\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugDnn|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\DebugDnn\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <!-- 2020-03-02 2dm tried to fix issue running some tests according to https://github.com/dotnet/efcore/issues/7889 but didn't work -->
-  <!--<PropertyGroup>
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-  </PropertyGroup>-->
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.0" />
+  </ItemGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.4.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.4.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Core.Tests\ToSic.Eav.Core.Tests.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.ImportExport.Tests\ToSic.Eav.ImportExport.Tests.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.TokenEngine.Tests\ToSic.Eav.TokenEngine.Tests.csproj" />
+    <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj" />
+    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AppStateTests\AccessItemsInAppState.cs" />
-    <Compile Include="Attributes\AttributeRenameTester.cs" />
-    <Compile Include="Attributes\AttributeRenameTests_TitleField.cs" />
-    <Compile Include="Attributes\AttributeRenameTests_Type.cs" />
-    <Compile Include="Attributes\AttributeRenameTests_Mapped.cs" />
-    <Compile Include="Attributes\AttributeRenameTests_NoChanges.cs" />
-    <Compile Include="Attributes\AttributeRenameTests.cs" />
-    <Compile Include="BaseClassTests\ConfigMaskAuto.cs" />
-    <Compile Include="BaseClassTests\ConfigurationDataLoaderTestAccessors.cs" />
-    <Compile Include="BaseClassTests\GetThisTests.cs" />
-    <Compile Include="BaseClassTests\ConfigMaskTests.cs" />
-    <Compile Include="BaseClassTests\TestDsGetThis.cs" />
-    <Compile Include="BaseClassTests\TestDataSourceBase.cs" />
-    <Compile Include="Caches\CacheAllStreams_Test.cs" />
-    <Compile Include="Caches\QuickCaches_Test.cs" />
-    <Compile Include="DataSourceErrors.cs" />
-    <Compile Include="DataSources\EntityIdFilterTest.cs" />
-    <Compile Include="DataSources\EntityTypeFilterTest.cs" />
-    <Compile Include="ExtensionsForTesting.cs" />
-    <Compile Include="ExternalData\CsvDsTst.cs" />
-    <Compile Include="ExternalData\DataTableDataSource_Test.cs" />
-    <Compile Include="ExternalData\SqlDsTst.cs" />
-    <Compile Include="ImportExport %28disabled, refactoring%29\XmlExport_Test.cs" />
-    <Compile Include="ImportExport %28disabled, refactoring%29\XmlImport_Test.cs" />
-    <Compile Include="DataSources\ItemFilterDuplicatesTest.cs" />
-    <Compile Include="LookUps\LookUpsTest.cs" />
-    <Compile Include="DataSources\PagingTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RelationshipTests\MetadataTargetsTests.cs" />
-    <Compile Include="RelationshipTests\MetadataTests.cs" />
-    <Compile Include="RelationshipTests\ChildParentTestBase.cs" />
-    <Compile Include="RelationshipTests\ParentsTests.cs" />
-    <Compile Include="RelationshipTests\ChildrenTests.cs" />
-    <Compile Include="RelationshipTests\MetadataTestSpecs.cs" />
-    <Compile Include="RelationshipTests\RelationshipTestSpecs.cs" />
-    <Compile Include="TestData\DataTableTrivial.cs" />
-    <Compile Include="TestData\DataTablePerson.cs" />
-    <Compile Include="TestData\PersonGenerator.cs" />
-    <Compile Include="TestData\Person.cs" />
-    <Compile Include="TestData\PersonsDataSource.cs" />
-    <Compile Include="TestData\PersonSpecs.cs" />
-    <Compile Include="TestData\RandomData.cs" />
-    <Compile Include="TreeMapperTests\RawItemWithOneParentAndManyChildren.cs" />
-    <Compile Include="TreeMapperTests\DataFactoryTest.cs" />
-    <Compile Include="ValueFilter\ValueFilterMaker.cs" />
-    <Compile Include="Query\QueryBasicTest.cs" />
-    <Compile Include="Query\QueryGlobalTest.cs" />
-    <Compile Include="Query\ParamsFromUrlTests.cs" />
-    <Compile Include="RelationshipTests\RelationshipTestCase.cs" />
-    <Compile Include="RelationshipTests\RelationshipTestBase.cs" />
-    <Compile Include="RelationshipTests\RelationshipFilterTest_Modes.cs" />
-    <Compile Include="RelationshipTests\RelationshipFilterTest.cs" />
-    <Compile Include="DataSources\ShuffleTest.cs" />
-    <Compile Include="DataSourceTests.cs" />
-    <Compile Include="PassThrough\PassThrough_Cache.cs" />
-    <Compile Include="Streams\StreamMergeTst.cs" />
-    <Compile Include="Streams\StreamPickTst.cs" />
-    <Compile Include="Streams\StreamFallbackTst.cs" />
-    <Compile Include="TestConfig.cs" />
-    <Compile Include="CheckVisualQueryAttribute.cs" />
-    <Compile Include="ValueFilter\ValueFilter_DateTime.cs" />
-    <Compile Include="ValueFilter\ValueFilter_Numbers.cs" />
-    <Compile Include="ValueFilter\ValueFilter_Boolean.cs" />
-    <Compile Include="ValueFilter\ValueSort_Shared.cs" />
-    <Compile Include="ValueFilter\ValueSort_DateTime.cs" />
-    <Compile Include="ValueFilter\ValueSort_String.cs" />
-    <Compile Include="ValueFilter\ValueFilter_String.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.Core.Tests\ToSic.Eav.Core.Tests.csproj">
-      <Project>{afed35b5-8e43-4f46-8e4d-fc3f07244d8b}</Project>
-      <Name>ToSic.Eav.Core.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj">
-      <Project>{82f94588-269b-4cdd-98d1-d5cb14c39090}</Project>
-      <Name>ToSic.Eav.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj">
-      <Project>{daae8e21-ca5f-400b-9f5a-5e4e1196b21b}</Project>
-      <Name>ToSic.Eav.DataSources</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.ImportExport.Tests\ToSic.Eav.ImportExport.Tests.csproj">
-      <Project>{00C8672B-E79E-42D4-A512-6C0ABCCAF046}</Project>
-      <Name>ToSic.Eav.ImportExport.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj">
-      <Project>{5A75CD35-99F4-4CF0-944A-DC0F5D68B430}</Project>
-      <Name>ToSic.Eav.ImportExport</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav.TokenEngine.Tests\ToSic.Eav.TokenEngine.Tests.csproj">
-      <Project>{ef7808df-f67f-4e0a-a851-21358773dd25}</Project>
-      <Name>ToSic.Eav.TokenEngine.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Eav\ToSic.Eav.csproj">
-      <Project>{cf3b9349-8c66-4901-8edb-a4ec1d75326b}</Project>
-      <Name>ToSic.Eav</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj">
-      <Project>{bc93efb1-d740-4617-9c90-d9167f9e4545}</Project>
-      <Name>ToSic.Lib.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj">
-      <Project>{41243c6d-2d10-4285-8af2-719497ae00db}</Project>
-      <Name>ToSic.Testing.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
+
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Files\CsvDataSource - Test Invalid Row.csv">
@@ -234,27 +71,4 @@
     <None Include="Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
     <None Include="Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MSTest.TestAdapter">
-      <Version>3.4.3</Version>
-    </PackageReference>
-    <PackageReference Include="MSTest.TestFramework">
-      <Version>3.4.3</Version>
-    </PackageReference>
-    <PackageReference Include="NETStandard.Library">
-      <Version>2.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Collections.Immutable">
-      <Version>9.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Diagnostics.DiagnosticSource">
-      <Version>9.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation">
-      <Version>4.3.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

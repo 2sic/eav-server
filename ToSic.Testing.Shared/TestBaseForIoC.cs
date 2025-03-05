@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Code;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -9,21 +10,21 @@ namespace ToSic.Testing.Shared;
 /// Very base class for Tests which use Dependency Injection.
 /// This base class only provides the infrastructure, but does not register any services yet.
 /// </summary>
-public abstract class TestBaseForIoC : ServiceBase, IServiceBuilder
+public abstract class TestBaseForIoC : ServiceBase, ICanGetService
 {
     #region Constructor
 
-    public TestConfiguration TestConfiguration { get; }
+    public EavTestConfig TestConfig { get; }
 
     /// <summary>
     /// The base constructor will trigger calls to SetupServices.
     /// This ensures that anything that uses this test base or a derived class will have
     /// DI prepared in the way tests stack up
     /// </summary>
-    protected TestBaseForIoC(TestConfiguration testConfiguration = default) : base("Tst.IoC")
+    protected TestBaseForIoC(EavTestConfig testConfig = default) : base("Tst.IoC")
     {
         // Store configuration
-        TestConfiguration = testConfiguration ?? new TestConfiguration();
+        TestConfig = testConfig ?? EavTestConfig.ScenarioFullPatrons;
 
         // Initialize IoC
         var services = new ServiceCollection();
@@ -41,8 +42,9 @@ public abstract class TestBaseForIoC : ServiceBase, IServiceBuilder
     /// Override in your classes and remember to call the base.SetupServices
     /// </summary>
     /// <param name="services"></param>
-    protected virtual void SetupServices(IServiceCollection services)
+    protected virtual IServiceCollection SetupServices(IServiceCollection services)
     {
+        return services;
     }
 
     /// <summary>
@@ -70,7 +72,7 @@ public abstract class TestBaseForIoC : ServiceBase, IServiceBuilder
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public T GetService<T>() => ServiceProvider.Build<T>(Log);
+    public T GetService<T>() where T : class => ServiceProvider.Build<T>(Log);
 
     #endregion
 

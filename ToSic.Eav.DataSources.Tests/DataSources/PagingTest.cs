@@ -14,6 +14,8 @@ public class PagingTest: TestBaseEavDataSource
 {
     private readonly int seedId = 1001;
 
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void Paging_BasicPagingPg1On1000Items()
     {
@@ -81,7 +83,7 @@ public class PagingTest: TestBaseEavDataSource
     public DataSources.Paging CreatePagingForTesting(int testItemsInRootSource)
     {
         var ds = new DataTablePerson(this).Generate(testItemsInRootSource, seedId);
-        return /*DataSourceFactory.*/CreateDataSource<DataSources.Paging>(ds);
+        return DsSvc.CreateDataSource<DataSources.Paging>(ds);
         //return filtered;
     }
 
@@ -89,9 +91,5 @@ public class PagingTest: TestBaseEavDataSource
 
 public static class DecimalHelpers
 {
-    public static decimal ToDecimal(this Int32 original)
-    {
-        return Convert.ToDecimal(original);
-    }
-
+    public static decimal ToDecimal(this Int32 original) => Convert.ToDecimal(original);
 }

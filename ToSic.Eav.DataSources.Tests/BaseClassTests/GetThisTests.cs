@@ -7,6 +7,8 @@ namespace ToSic.Eav.DataSourceTests.BaseClassTests;
 [TestClass]
 public class GetThisTests: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod] public void GetThisString() => AreEqual(TestDsGetThis.ExpectedGetThisString, GetPropsDs().GetThisString);
 
     [TestMethod] public void GetThisTrue() => AreEqual(true, GetPropsDs().GetThisTrue);
@@ -17,7 +19,7 @@ public class GetThisTests: TestBaseEavDataSource
 
     private TestDsGetThis GetPropsDs()
     {
-        var ds = CreateDataSource<TestDsGetThis>();
+        var ds = DsSvc.CreateDataSource<TestDsGetThis>();
         ds.Configuration.Parse();
         return ds;
     }

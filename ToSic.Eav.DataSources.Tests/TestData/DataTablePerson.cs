@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
+using ToSic.Eav.Code;
 using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -10,42 +10,36 @@ using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.DataSourceTests.TestData;
 
-public class DataTablePerson: TestServiceBase
+public class DataTablePerson(ICanGetService parent)
 {
-    private readonly TestBaseEavDataSource _parent;
+    private DataSourcesTstBuilder DsSvc => field ??= parent.GetService<DataSourcesTstBuilder>();
 
-    public DataTablePerson(TestBaseEavDataSource parent) : base(parent)
-    {
-        _parent = parent;
-        _dataBuilder = GetService<DataBuilder>();
-    }
 
-    private readonly DataBuilder _dataBuilder;
+    private DataBuilder DataBuilder => field ??= parent.GetService<DataBuilder>();
 
-    private static readonly Dictionary<int, DataTable> CachedDs = new Dictionary<int, DataTable>();
+    private static readonly Dictionary<int, DataTable> CachedDs = new();
 
     public DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
     {
-        if (useCacheForSpeed && CachedDs.ContainsKey(itemsToGenerate))
-            return CachedDs[itemsToGenerate];
+        if (useCacheForSpeed && CachedDs.TryGetValue(itemsToGenerate, out var generate))
+            return generate;
 
         var dataTable = new System.Data.DataTable();
-        dataTable.Columns.AddRange(new[]
-        {
-            new DataColumn(Attributes.EntityFieldId, typeof (int)),
-            new DataColumn(PersonSpecs.FieldFullName),
-            new DataColumn(PersonSpecs.FieldFirstName),
-            new DataColumn(PersonSpecs.FieldLastName),
-            new DataColumn(PersonSpecs.FieldCity),
-            new DataColumn(PersonSpecs.FieldIsMale, typeof (bool)),
-            new DataColumn(PersonSpecs.FieldBirthday, typeof (DateTime)),
-            new DataColumn(PersonSpecs.FieldBirthdayNull, typeof(DateTime)),
-            new DataColumn(PersonSpecs.FieldHeight, typeof (int)),
-            new DataColumn(PersonSpecs.FieldCityMaybeNull, typeof(string)),
-            new DataColumn(PersonSpecs.FieldModifiedInternal, typeof(DateTime)),
-        });
+        dataTable.Columns.AddRange([
+            new(Attributes.EntityFieldId, typeof (int)),
+            new(PersonSpecs.FieldFullName),
+            new(PersonSpecs.FieldFirstName),
+            new(PersonSpecs.FieldLastName),
+            new(PersonSpecs.FieldCity),
+            new(PersonSpecs.FieldIsMale, typeof (bool)),
+            new(PersonSpecs.FieldBirthday, typeof (DateTime)),
+            new(PersonSpecs.FieldBirthdayNull, typeof(DateTime)),
+            new(PersonSpecs.FieldHeight, typeof (int)),
+            new(PersonSpecs.FieldCityMaybeNull, typeof(string)),
+            new(PersonSpecs.FieldModifiedInternal, typeof(DateTime))
+        ]);
 
-        new PersonGenerator(_dataBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
+        new PersonGenerator(DataBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
             .ForEach(person => dataTable.Rows.Add(person.Id,
                 person.FullName,
                 person.First,
@@ -58,7 +52,7 @@ public class DataTablePerson: TestServiceBase
                 person.CityOrNull,
                 person.Modified));
 
-        var source = _parent.CreateDataSource<DataTable>(new LookUpTestData(_dataBuilder).AppSetAndRes())
+        var source = DsSvc.CreateDataSource<DataTable>(new LookUpTestData(DataBuilder).AppSetAndRes())
                 .Setup(dataTable, PersonSpecs.PersonTypeName, 
                     titleField: PersonSpecs.FieldFullName, 
                     modifiedField: PersonSpecs.FieldModifiedInternal)

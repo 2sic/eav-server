@@ -8,11 +8,12 @@ public class Settings
 
     public static string[] ExcludeFolders =
     [
-        ".git",
-        "node_modules",
-        "bower_components",
-        ".vs",
-        "obj"
+        ".git",                 // Git versioning folder
+        "node_modules",         // js dependencies, can always be restored with npm ci
+        "bower_components",     // older js build dependencies
+        ".vs",                  // Visual Studio settings / caches
+        "obj",                  // temporary c# build files
+        ".angular",             // temporary angular build files
     ];
 
     public static string[] ExcludeRootFolders =

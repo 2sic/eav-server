@@ -16,7 +16,7 @@ public static class ExtensionsForTesting
     /// </summary>
     /// <param name="target"></param>
     /// <returns></returns>
-    public static IReadOnlyDictionary<string, IDataStream> InForTests(this IDataSource target) => target.In;
+    public static IReadOnlyDictionary<string, IDataStream> InTac(this IDataSource target) => target.In;
 
     public static void AttachForTests(this IDataSource target, IDataSource source) => target.Attach(source);
 

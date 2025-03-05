@@ -10,6 +10,8 @@ namespace ToSic.Eav.DataSourceTests;
 [TestClass]
 public class EntityIdFilterTest: TestBaseEavDataSource
 {
+    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+
     [TestMethod]
     public void EntityIdFilter_SingleItem()
     {
@@ -90,7 +92,7 @@ public class EntityIdFilterTest: TestBaseEavDataSource
     public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
     {
         var ds = new DataTablePerson(this).Generate(testItemsInRootSource, 1001);
-        var filtered = CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
+        var filtered = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
         filtered.AttachForTests(ds);
         filtered.EntityIds = entityIdsValue;
         return filtered;

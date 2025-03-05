@@ -12,14 +12,14 @@ public class ParentsTests: ChildParentTestBase<Parents>
     [TestMethod]
     public void PersonsOneHasNoParents()
     {
-        var cl = PrepareDs(Person, new []{ PersonWithCompany }, Company);
+        var cl = PrepareDs(Person, [PersonWithCompany], Company);
         Assert.AreEqual(0, cl.ListForTests().Count());
     }
 
     [TestMethod]
     public void CountrySwitzerlandHas2Parents()
     {
-        var cl = PrepareDs(Country, new []{ CountrySwitzerland });
+        var cl = PrepareDs(Country, [CountrySwitzerland]);
         Assert.AreEqual(CountrySwitzerlandParents, cl.ListForTests().Count());
     }
         
