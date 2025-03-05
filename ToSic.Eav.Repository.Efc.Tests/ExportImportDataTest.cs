@@ -5,31 +5,30 @@ using ToSic.Lib.Logging;
 
 using ToSic.Testing.Shared;
 
-namespace ToSic.Eav.Repository.Efc.Tests
+namespace ToSic.Eav.Repository.Efc.Tests;
+
+[TestClass]
+public class ExportImportDataTest: TestBaseDiEavFullAndDb
 {
-    [TestClass]
-    public class ExportImportDataTest: TestBaseDiEavFullAndDb
+    private readonly XmlExporter _xmlExporter;
+
+    public ExportImportDataTest()
     {
-        private readonly XmlExporter _xmlExporter;
+        _xmlExporter = GetService<XmlExporter>();
+    }
+    [TestMethod]
+    [Ignore] // ignore for now, reason is that we don't have a mock-portal-settings provider
+    public void ExportData()
+    {
+        var Log = new Log("TstExp");
+        var zoneId = 2;
+        var appId = 2;
+        var appState = GetService<IAppReaderFactory>().Get(new AppIdentity(zoneId, appId));
 
-        public ExportImportDataTest()
-        {
-            _xmlExporter = GetService<XmlExporter>();
-        }
-        [TestMethod]
-        [Ignore] // ignore for now, reason is that we don't have a mock-portal-settings provider
-        public void ExportData()
-        {
-            var Log = new Log("TstExp");
-            var zoneId = 2;
-            var appId = 2;
-            var appState = GetService<IAppReaderFactory>().Get(new AppIdentity(zoneId, appId));
+        var fileXml = _xmlExporter.Init(new AppExportSpecs(zoneId, appId), appState, false,
+            /*contentTypeIdsString?.Split(';') ?? */[],
+            /*entityIdsString?.Split(';') ?? */[]
+        ).GenerateNiceXml();
 
-            var fileXml = _xmlExporter.Init(new AppExportSpecs(zoneId, appId), appState, false,
-                /*contentTypeIdsString?.Split(';') ?? */[],
-                /*entityIdsString?.Split(';') ?? */[]
-            ).GenerateNiceXml();
-
-        }
     }
 }
