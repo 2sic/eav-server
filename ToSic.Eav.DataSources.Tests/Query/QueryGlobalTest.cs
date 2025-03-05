@@ -12,16 +12,9 @@ namespace ToSic.Eav.DataSourceTests.Query;
 [DeploymentItem("..\\..\\" + Eav.DataSourceTests.TestConfig.GlobalQueriesData, Eav.DataSourceTests.TestConfig.TestingPath)]
 public class QueryGlobalTest: TestBaseDiEavFullAndDb
 {
-    public QueryGlobalTest()
-    {
-        _queryBuilder = GetService<QueryBuilder>();
-        _queryManager = GetService<QueryManager>();
-        _queryDefinitionBuilder = GetService<QueryDefinitionBuilder>();
-    }
-
-    private readonly QueryBuilder _queryBuilder;
-    private readonly QueryManager _queryManager;
-    private readonly QueryDefinitionBuilder _queryDefinitionBuilder;
+    private QueryBuilder QueryBuilder => field ??= GetService<QueryBuilder>();
+    private QueryManager QueryManager => field ??= GetService<QueryManager>();
+    private QueryDefinitionBuilder QueryDefinitionBuilder => field ??= GetService<QueryDefinitionBuilder>();
 
 
     private const int GlobalQueryCount = 15; // count in v15.03
@@ -35,9 +28,9 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     [TestMethod]
     public void FindGlobalQueries()
     {
-        var queries = _queryManager.AllQueryItems(Constants.PresetIdentity);
+        var queries = QueryManager.AllQueryItems(Constants.PresetIdentity);
         var count = queries.Count;
-        Assert.IsTrue(GlobalQueryCount <= count && count <= GlobalQueryCount + 5, $"should find {GlobalQueryCount} +/-5 query definitions, found {queries.Count}");
+        Assert.IsTrue(count is >= GlobalQueryCount and <= GlobalQueryCount + 5, $"should find {GlobalQueryCount} +/-5 query definitions, found {queries.Count}");
     }
 
 
@@ -45,21 +38,21 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     public void ReviewGlobalZonesQuery()
     {
         var queryName = $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones";
-        var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, queryName);
+        var queryEnt = QueryManager.FindQuery(Constants.PresetIdentity, queryName);
         Assert.AreEqual(queryName, queryEnt.TacGet<string>("Name"), "should find zones");
 
-        var qdef = _queryDefinitionBuilder.Create(queryEnt, queryEnt.AppId);
-        Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the qdef, should have the zone + sort = 2 parts");
+        var qdef = QueryDefinitionBuilder.Create(queryEnt, queryEnt.AppId);
+        Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the query definition, should have the zone + sort = 2 parts");
     }
 
     [TestMethod]
     public void UseGlobalZonesQuery()
     {
-        var queryEnt = _queryManager.FindQuery(Constants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones");
+        var queryEnt = QueryManager.FindQuery(Constants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones");
 
-        var qDef = _queryDefinitionBuilder.Create(queryEnt, Eav.DataSourceTests.TestConfig.AppForQueryTests);
+        var qDef = QueryDefinitionBuilder.Create(queryEnt, Eav.DataSourceTests.TestConfig.AppForQueryTests);
 
-        var fac = _queryBuilder;
+        var fac = QueryBuilder;
         var query = fac.GetDataSourceForTesting(qDef).Main;
 
         var list = query.ListTac();
