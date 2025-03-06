@@ -1,14 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Text.Json;
+﻿using System.Text.Json;
+using ToSic.Eav.Serialization;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Serialization.Tests;
+namespace ToSic.Eav.Tests.Serialization;
 
-[TestClass()]
 public class ExceptionConverterTests
 {
-    [TestMethod()]
+    [Fact]
     // https://github.com/dotnet/runtime/issues/43026#issuecomment-949966701
     public void SerializeNestedExceptionsContainsNullsSuccess()
     {
@@ -41,10 +38,10 @@ public class ExceptionConverterTests
 
         var json = JsonSerializer.Serialize(ex, jsonOpts);
 
-        StringAssert.Contains(json, "42");
-        StringAssert.Contains(json, paramName);
-        StringAssert.Contains(json, iAmError);
-        StringAssert.Contains(json, someOutOfRangeErrorOccurred);
-        StringAssert.Contains(json, "null");
+        Assert.Contains("42", json);
+        Assert.Contains(paramName, json);
+        Assert.Contains(iAmError, json);
+        Assert.Contains(someOutOfRangeErrorOccurred, json);
+        Assert.Contains("null", json);
     }
 }
