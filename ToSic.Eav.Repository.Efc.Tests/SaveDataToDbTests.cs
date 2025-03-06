@@ -83,7 +83,7 @@ public class SaveDataToDbTests: TestBaseDiEavFullAndDb
         var itm1 = app1.List.One(test.ExistingItem);
 
         // todo: make some minor changes
-        var itmNewTitle = GetService<DataBuilder>().TestCreate(appId: test.AppId, entityId: 0, contentType: itm1.Type, values: new()
+        var itmNewTitle = GetService<DataBuilder>().CreateEntityTac(appId: test.AppId, entityId: 0, contentType: itm1.Type, values: new()
         {
             {test.TitleField, "changed title on " + DateTime.Now}
         });
@@ -125,7 +125,7 @@ public class SaveDataToDbTests: TestBaseDiEavFullAndDb
         var app1 = loader1.AppStateReaderRawTA(test.AppId);
         var ct1 = app1.GetContentType(ctName);
 
-        var newE = GetService<DataBuilder>().TestCreate(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new()
+        var newE = GetService<DataBuilder>().CreateEntityTac(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new()
         {
             { test.TitleField, ctTitle }
         });

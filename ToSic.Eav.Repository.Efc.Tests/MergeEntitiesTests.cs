@@ -47,7 +47,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
         return Builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
     }
 
-    IContentType _ctPerson => Builder.ContentType.TestCreate(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>
+    IContentType _ctPerson => Builder.ContentType.CreateContentTypeTac(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>
     {
         ContentTypeAttribute(AppId, "FullName", "String", true, 0, 0),
         ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
@@ -59,7 +59,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
 
     readonly Entity _origENull = null;
 
-    private Entity GirlSingle => Builder.TestCreate(appId: AppId, entityId: 999, contentType: _ctPerson, values: new()
+    private Entity GirlSingle => Builder.CreateEntityTac(appId: AppId, entityId: 999, contentType: _ctPerson, values: new()
     {
         {"FullName", "Sandra Unmarried"},
         {"FirstName", "Sandra"},
@@ -67,7 +67,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
         {"Birthday", new DateTime(1981, 5, 14) }
     });
 
-    private Entity GirlMarried => Builder.TestCreate(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new()
+    private Entity GirlMarried => Builder.CreateEntityTac(appId: AppId, contentType: Builder.ContentType.Transient("DynPerson"), values: new()
     {
         {"FullName", "Sandra Unmarried-Married"},
         {"FirstName", "Sandra"},
@@ -77,7 +77,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
         {"WeddingDate", DateTime.Today }
     });
 
-    private Entity GirlMarriedUpdate => Builder.TestCreate(appId: AppId, contentType: _ctPerson, values: new()
+    private Entity GirlMarriedUpdate => Builder.CreateEntityTac(appId: AppId, contentType: _ctPerson, values: new()
     {
         {"FullName", "Sandra Unmarried-Married"},
         //{"FirstName", "Sandra"},
@@ -146,7 +146,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
 
     #region Test Data ML
 
-    IContentType _ctMlProduct => Builder.ContentType.TestCreate(appId: -1, name: "Product", attributes: new List<IContentTypeAttribute>
+    IContentType _ctMlProduct => Builder.ContentType.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeAttribute>
         {
             ContentTypeAttribute(AppId, Attributes.TitleNiceName, "String", true, 0, 0),
             ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
@@ -155,7 +155,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
     );
 
     private readonly Entity _prodNull = null;
-    private Entity ProdNoLang => Builder.TestCreate(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new()
+    private Entity ProdNoLang => Builder.CreateEntityTac(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new()
     {
         { Attributes.TitleNiceName, "Original Product No Lang" },
         { "Teaser", "Original Teaser no lang" },
@@ -166,20 +166,20 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
     private Entity _prodEn;
     private Entity GetProdEn() 
     {
-        var title = Builder.Attribute.TestCreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
+        var title = Builder.Attribute.CreateTypedAttributeTac(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
         {
             Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn}),
         });
-        var teaser = Builder.Attribute.TestCreateTyped("Teaser", ValueTypes.String, new List<IValue>
+        var teaser = Builder.Attribute.CreateTypedAttributeTac("Teaser", ValueTypes.String, new List<IValue>
         {
             Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { langEn }),
         });
-        var file = Builder.Attribute.TestCreateTyped("File", ValueTypes.String, new List<IValue>
+        var file = Builder.Attribute.CreateTypedAttributeTac("File", ValueTypes.String, new List<IValue>
         {
             Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
         });
 
-        return Builder.TestCreate(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new()
+        return Builder.CreateEntityTac(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new()
         {
             {title.Name, title},
             {teaser.Name, teaser},
@@ -194,7 +194,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
 
     private Entity GetProductEntityMl()
     {
-        var title = Builder.Attribute.TestCreateTyped(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
+        var title = Builder.Attribute.CreateTypedAttributeTac(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
         {
             Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn }),
             Builder.Value.Build4Test(ValueTypes.String, "Title DE",
@@ -202,7 +202,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
             Builder.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { langFr })
         });
 
-        var teaser = Builder.Attribute.TestCreateTyped("Teaser", ValueTypes.String, new List<IValue>
+        var teaser = Builder.Attribute.CreateTypedAttributeTac("Teaser", ValueTypes.String, new List<IValue>
         {
             Builder.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {langDeDe }),
             Builder.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {langDeCh }),
@@ -210,7 +210,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
             // special test: leave EN (primary) at end of list, as this could happen in real life
             Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn }),
         });
-        var file = Builder.Attribute.TestCreateTyped("File", ValueTypes.String, new List<IValue>
+        var file = Builder.Attribute.CreateTypedAttributeTac("File", ValueTypes.String, new List<IValue>
         {
             Builder.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
             Builder.Value.Build4Test(ValueTypes.String, "File de de",
@@ -221,7 +221,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
             Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
         });
 
-        return Builder.TestCreate(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new()
+        return Builder.CreateEntityTac(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new()
         {
             {title.Name, title},
             {teaser.Name, teaser},

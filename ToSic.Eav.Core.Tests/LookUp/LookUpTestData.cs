@@ -31,30 +31,24 @@ public class LookUpTestData(DataBuilder builder)
 
     public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
     {
-        var ent = builder.TestCreate(appId: appId, contentType: builder.ContentType.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
+        var ent = builder.CreateEntityTac(appId: appId, contentType: builder.ContentType.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
         return new(name, ent, null);
     }
 
-    private LookUpInEntity AppSettings(int appId)
-    {
-        var values = new Dictionary<string, object>
+    private LookUpInEntity AppSettings(int appId) =>
+        BuildLookUpEntity(KeyAppSettings, new()
         {
-            {Attributes.TitleNiceName, "App Settings"},
-            {"DefaultCategoryName", LookUpEngineTests.DefaultCategory},
-            {"MaxPictures", LookUpEngineTests.MaxPictures},
-            {"PicsPerRow", "3"}
-        };
-        return BuildLookUpEntity(KeyAppSettings, values, appId);
-    }
+            { Attributes.TitleNiceName, "App Settings" },
+            { "DefaultCategoryName", LookUpEngineTests.DefaultCategory },
+            { "MaxPictures", LookUpEngineTests.MaxPictures },
+            { "PicsPerRow", "3" }
+        }, appId);
 
-    private LookUpInEntity AppResources(int appId)
-    {
-        var values = new Dictionary<string, object>
+    private LookUpInEntity AppResources(int appId) =>
+        BuildLookUpEntity(KeyAppResources, new()
         {
-            {Attributes.TitleNiceName, "Resources"},
-            {"Greeting", "Hello there!"},
-            {"Introduction", "Welcome to this"}
-        };
-        return BuildLookUpEntity(KeyAppResources, values, appId);
-    }
+            { Attributes.TitleNiceName, "Resources" },
+            { "Greeting", "Hello there!" },
+            { "Introduction", "Welcome to this" }
+        }, appId);
 }

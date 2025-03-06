@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.LookUp;
+﻿using System.Text.RegularExpressions;
+using static Xunit.Assert;
 
-namespace ToSic.Eav.Core.Tests.LookUp.Tokens;
+namespace ToSic.Eav.LookUp.Tokens;
 
-[TestClass]
-public class TokenReplaceTst
+public class TokenReplaceTest
 {
     #region Test Values
 
-    private readonly string[] ValidPureTokens =
+    public static TheoryData<string> ValidPureTokens =
     [
         "[Source:Key]",
         "[Source:Key|format]",
@@ -20,14 +16,15 @@ public class TokenReplaceTst
         "[QueryString:Something||[Module:ModuleId]]"
     ];
 
-    private readonly string[] ValidTokensWithSubTokens =
+    public static TheoryData<string> ValidTokensWithSubTokens =>
     [
         "[AppSettings:Owner:Name]",
         "[AppSettings:Owner:Name||Nobody]",
         "[AppSettings:Owner:Name||[AppSettings:DefaultOwner:Name||Nobody]]"
     ];
 
-    private readonly string[] ValidMixedSingleTokens =
+
+    public static TheoryData<string> ValidMixedSingleTokens =
     [
         "The param was [QueryString:Id]",
         "[QueryString:Id] was the Param",
@@ -40,7 +37,7 @@ example with multiline [But:OnlyASingle] Token
 or not"
     ];
 
-    private readonly string[] ValidMixedMultiTokens =
+    public static TheoryData<string> ValidMixedMultiTokens =
     [
         "The param was [QueryString:Id] or it is [QueryString:Something]",
         "[QueryString:Id] was the Param or this [Source:Key] or this [Kiss:This||[Or:This]]",
@@ -61,7 +58,7 @@ and a [bad token without property] and a [Source::SubkeyWithoutKey]
 but this should [token:key] again"
     ];
 
-    private readonly string[] InvalidTokens =
+    public static TheoryData<string> InvalidTokens =
     [
         "not a token",
         "[]",
@@ -81,20 +78,23 @@ but this should [token:key] again"
         "[Source:Key||[Invalid:Fallback|]"
     ];
 
-    private readonly Dictionary<string, string> qsValues = new()
-    {
-        {"Id", "27"},
-        {"View", "Details"}
-    };
-    private readonly Dictionary<string, string> srcValues = new()
-    {
-        {"Key", "Kabcd"},
-        {"Value", "Whatever"},
-        {"View", "Details"}
-    };
-    private readonly LookUpInDictionary QueryString = new("QueryString");
-    private readonly LookUpInDictionary Source = new("Source");
-    private readonly Dictionary<string, ILookUp> AllSources = new(); 
+
+    //private readonly Dictionary<string, string> qsValues = new()
+    //{
+    //    {"Id", "27"},
+    //    {"View", "Details"}
+    //};
+
+    //private readonly Dictionary<string, string> srcValues = new()
+    //{
+    //    {"Key", "Kabcd"},
+    //    {"Value", "Whatever"},
+    //    {"View", "Details"}
+    //};
+
+    //private readonly LookUpInDictionary QueryString = new("QueryString");
+    //private readonly LookUpInDictionary Source = new("Source");
+    //private readonly Dictionary<string, ILookUp> AllSources = new(); 
 
     #endregion
 
@@ -103,123 +103,109 @@ but this should [token:key] again"
     private readonly Regex tokenRegEx = TokenReplace.Tokenizer;
          
 
-    public TokenReplaceTst()
-    {
-        // Initialize the QueryString PropertyAccess
-        foreach (var qsValue in qsValues)
-            QueryString.Properties.Add(qsValue.Key,qsValue.Value);
-        foreach (var srcValue in srcValues)
-            Source.Properties.Add(srcValue.Key, srcValue.Value);
-        AllSources.Add(QueryString.Name, QueryString);
-        AllSources.Add(Source.Name, Source);
-    }
+    //public TokenReplaceTest()
+    //{
+    //    // Initialize the QueryString PropertyAccess
+    //    foreach (var qsValue in qsValues)
+    //        QueryString.Properties.Add(qsValue.Key,qsValue.Value);
+    //    foreach (var srcValue in srcValues)
+    //        Source.Properties.Add(srcValue.Key, srcValue.Value);
+    //    AllSources.Add(QueryString.Name, QueryString);
+    //    AllSources.Add(Source.Name, Source);
+    //}
 
     #endregion
 
     #region ContainsToken tests
-    [TestMethod]
-    public void TokenReplace_ContainsToken()
-    {
-        foreach (var validPureToken in ValidPureTokens)
-            Assert.IsTrue(TokenReplace.ContainsTokens(validPureToken));
 
-        foreach (var validMixedSingleToken in ValidMixedSingleTokens)
-            Assert.IsTrue(TokenReplace.ContainsTokens(validMixedSingleToken));
+    [Theory]
+    [MemberData(nameof(ValidPureTokens))]
+    public void ValidPureTokensContainsToken(string key) =>
+        True(TokenReplace.ContainsTokens(key));
 
-        foreach (var validMixedMultiToken in ValidMixedMultiTokens)
-            Assert.IsTrue(TokenReplace.ContainsTokens(validMixedMultiToken));
-    }
+    [Theory]
+    [MemberData(nameof(ValidMixedSingleTokens))]
+    public void ValidMixedSingleTokensContainsToken(string key) =>
+        True(TokenReplace.ContainsTokens(key));
 
-    [TestMethod]
-    public void TokenReplace_ContainsTokenWithSubtoken()
-    {
-        foreach (var token in ValidTokensWithSubTokens)
-            Assert.IsTrue(TokenReplace.ContainsTokens(token));   
-    }
+    [Theory]
+    [MemberData(nameof(ValidMixedMultiTokens))]
+    public void ValidMixedMultiTokensContainsToken(string key) =>
+        True(TokenReplace.ContainsTokens(key));
 
-    [TestMethod]
-    public void TokenReplace_DoesntContainToken()
-    {
-        foreach (var invalidToken in InvalidTokens)
-            Assert.IsFalse(TokenReplace.ContainsTokens(invalidToken));
-    }
+    [Theory]
+    [MemberData(nameof(ValidTokensWithSubTokens))]
+    public void TokenReplace_ContainsTokenWithSubtokenNew(string token) =>
+        True(TokenReplace.ContainsTokens(token));
+
+    [Theory]
+    [MemberData(nameof(InvalidTokens))]
+    public void TokenReplace_DoesNotContainTokenNew(string invalidToken) =>
+        False(TokenReplace.ContainsTokens(invalidToken));
 
     #endregion
 
     #region Test Simple Token Detection
 
-    [TestMethod]
-    public void TokenReplace_ValidPureTokens()
+    [Theory]
+    [MemberData(nameof(ValidPureTokens))]
+    public void TokenReplace_ValidPureTokens(string testToken)
     {
-        foreach (var testToken in ValidPureTokens)
-        {
-            var results = tokenRegEx.Matches(testToken);
-            Assert.IsTrue(results.Count == 1, "Found too many results (" + results.Count + ") for token: " + testToken);
-            Assert.IsTrue(results[0].Result("${object}").Length > 0,
-                "The group is of the wrong type, ${object}, but that's empty: " + testToken);
-        }
+        var results = tokenRegEx.Matches(testToken);
+        True(results.Count == 1, "Found too many results (" + results.Count + ") for token: " + testToken);
+        True(results[0].Result("${object}").Length > 0,
+            "The group is of the wrong type, ${object}, but that's empty: " + testToken);
     }
 
-    [TestMethod]
-    public void TokenReplace_ValidMixedSingleTokens()
+    [Theory]
+    [MemberData(nameof(ValidMixedSingleTokens))]
+    public void TokenReplace_ValidMixedSingleTokens2(string testToken)
     {
-        foreach (var testToken in ValidMixedSingleTokens)
-        {
-            var results = tokenRegEx.Matches(testToken);
-            Assert.IsTrue(results.Count == 1, "Should have found 1 placeholders: " + testToken);
+        var results = tokenRegEx.Matches(testToken);
+        True(results.Count == 1, "Should have found 1 placeholders: " + testToken);
 
-            // Check that it only has 1 token match
-            var count = CountSpecificResultTypes(results, "${object}");
-            Assert.IsTrue(count == 1, "didn't find expected amount of ${object} should have found 1, found " + count + ": " + testToken);
-
-        }
+        // Check that it only has 1 token match
+        var count = CountSpecificResultTypes(results, "${object}");
+        True(count == 1, "didn't find expected amount of ${object} should have found 1, found " + count + ": " + testToken);
     }
 
-    [TestMethod]
-    public void TokenReplace_ValidMixedMultiTokens()
+    [Theory]
+    [MemberData(nameof(ValidMixedMultiTokens))]
+    public void TokenReplace_ValidMixedMultiTokens(string testToken)
     {
-        foreach (var testToken in ValidMixedMultiTokens)
-        {
-            var results = tokenRegEx.Matches(testToken);
-            Assert.IsTrue(results.Count > 1, "Should have found more than 1 placeholders: " + testToken);
+        var results = tokenRegEx.Matches(testToken);
+        True(results.Count > 1, "Should have found more than 1 placeholders: " + testToken);
 
-            // Check that it only has 1 token match
-            var count = CountSpecificResultTypes(results, "${object}");
-            Assert.IsTrue(count > 1, "didn't find expected amount of ${object} should have found 1, found " + count + ": " + testToken);
-
-        }
+        // Check that it only has 1 token match
+        var count = CountSpecificResultTypes(results, "${object}");
+        True(count > 1, "didn't find expected amount of ${object} should have found 1, found " + count + ": " + testToken);
     }
 
-    [TestMethod]
-    public void TokenReplace_InvalidTokens()
+    [Theory]
+    [MemberData(nameof(InvalidTokens))]
+    public void TokenReplace_InvalidTokens(string testToken)
     {
-        foreach (var testToken in InvalidTokens)
-        {
-            var results = tokenRegEx.Matches(testToken);
-
-            var count = CountSpecificResultTypes(results, "${object}");
-            Assert.IsTrue(count == 0, "Shouldn't find object - but did: " + testToken);
-                
-        }
+        var results = tokenRegEx.Matches(testToken);
+        var count = CountSpecificResultTypes(results, "${object}");
+        True(count == 0, "Shouldn't find object - but did: " + testToken);
     }
+
     #endregion
 
     #region Simple Replace Tests
-    [TestMethod]
-    public void TokenReplace_SimpleReplaceOnValidPureTokens()
+    [Theory]
+    [MemberData(nameof(ValidPureTokens))]
+    public void TokenReplace_SimpleReplaceOnValidPureTokens(string token)
     {
         // since the test string contains only the token, it should leave only this token as a result
-        foreach (var token in ValidPureTokens)
-        {
-            var result = tokenRegEx.Replace(token, "12345");
-            Assert.IsTrue(result == "12345", "Result should be 12345, apparently it isn't. Token was " + token + ", result was: " + result);
-        }
+        var result = tokenRegEx.Replace(token, "12345");
+        True(result == "12345", "Result should be 12345, apparently it isn't. Token was " + token + ", result was: " + result);
     }
     #endregion
 
     #region Complex Replace Tests with 0 or 2 recurrances
 
-    [TestMethod]
+    [Fact]
     public void TokenReplace_ComplexReplace()
     {
         var original =
@@ -232,7 +218,7 @@ but this should [token:key] again
 Now try a token which returns a token: [AppSettings:UserNameMaybeFromUrl||Johny]";
             
         // Even without recurrence it should process the fallback-token at least once
-        var expectedNoRecurrance =
+        var expectedNoRecurrence =
             @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = 27
 and a token with sub-token for fallback 4567
 some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] shouldn't either nor should [ something
@@ -241,7 +227,7 @@ and a [bad token without property] and a [Source::SubkeyWithoutKey]
 but this should What a Token! again
 Now try a token which returns a token: [QueryString:UserName||Samantha]";
 
-        var expectedRecurrance =
+        var expectedRecurrence =
             @"Select * From Users Where UserId = Daniel or UserId = -1 or UserId = 27
 and a token with sub-token for fallback 4567
 some tests [] shouldn't capture and [ ] shouldn't capture either, + [MyName] shouldn't either nor should [ something
@@ -260,7 +246,7 @@ Now try a token which returns a token: Daniel";
         appS.Properties.Add("UserNameMaybeFromUrl", "[QueryString:UserName||Samantha]");
         var tok = new LookUpInDictionary("token");
         tok.Properties.Add("key", "What a Token!");
-        var engine = LookUpTestData.EmptyLookupEngine([
+        var engine = new LookUpEngine(null, sources: [
             qs,
             mod,
             appS,
@@ -268,16 +254,16 @@ Now try a token which returns a token: Daniel";
         ]);
 
         var tr = new TokenReplace(engine);
-        var resultNoRecurrance = tr.ReplaceTokens(original);
-        Assert.AreEqual(expectedNoRecurrance, resultNoRecurrance, "No Recurrance");
-        var resultRecurrance = tr.ReplaceTokens(original, 2);
-        Assert.AreEqual(expectedRecurrance, resultRecurrance, "With 2x looping");
+        var resultNoRecurrence = tr.ReplaceTokens(original);
+        Equal(expectedNoRecurrence, resultNoRecurrence);//, "No Recurrence");
+        var resultRecurrence = tr.ReplaceTokens(original, 2);
+        Equal(expectedRecurrence, resultRecurrence); //, "With 2x looping");
     }
 
     #endregion
 
 
-    //todo
+    // todo
     // test sub-tokens
     // test format
     // test clean replace
@@ -288,11 +274,11 @@ Now try a token which returns a token: Daniel";
     /// <param name="results"></param>
     /// <param name="resultName"></param>
     /// <returns></returns>
-    public int CountSpecificResultTypes(MatchCollection results, string resultName)
+    private int CountSpecificResultTypes(MatchCollection results, string resultName)
     {
         var count = 0;
         foreach (Match match in results)
-            if (!String.IsNullOrEmpty(match.Result(resultName)))
+            if (!string.IsNullOrEmpty(match.Result(resultName)))
                 count++;
         return count;
     }

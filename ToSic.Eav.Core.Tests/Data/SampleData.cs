@@ -19,7 +19,7 @@ public class SampleData(DataBuilder builder)
         return builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
     }
 
-    IContentType CtTestType => builder.ContentType.TestCreate(appId: AppId, name: "TestType", attributes: new List<IContentTypeAttribute>
+    IContentType CtTestType => builder.ContentType.CreateContentTypeTac(appId: AppId, name: "TestType", attributes: new List<IContentTypeAttribute>
         {
             ContentTypeAttribute(AppId, "FirstName", DataTypes.String, true, 0, 0),
             ContentTypeAttribute(AppId, "LastName", DataTypes.String, false, 0, 0),
@@ -30,7 +30,7 @@ public class SampleData(DataBuilder builder)
     );
 
 
-    IContentType CtPet => builder.ContentType.TestCreate(appId: AppId, name: "Pet", attributes: new List<IContentTypeAttribute>
+    IContentType CtPet => builder.ContentType.CreateContentTypeTac(appId: AppId, name: "Pet", attributes: new List<IContentTypeAttribute>
         {
             ContentTypeAttribute(AppId, "FirstName", DataTypes.String, true, 0, 0),
             ContentTypeAttribute(AppId, "LastName", DataTypes.String, false, 0, 0),
@@ -50,7 +50,7 @@ public class SampleData(DataBuilder builder)
             {"Age", 37},
             {"AnyDate", DateTime.Parse("2019-11-06T01:00:05Z") }
         };
-        var entDaniel = builder.TestCreate(appId: AppId, entityId: 1, contentType: CtTestType, values: valDaniel, titleField: "FirstName");
+        var entDaniel = builder.CreateEntityTac(appId: AppId, entityId: 1, contentType: CtTestType, values: valDaniel, titleField: "FirstName");
         return entDaniel;
     }
 
@@ -64,7 +64,7 @@ public class SampleData(DataBuilder builder)
             {"Age", 6}
         };
 
-        var entLeonie = builder.TestCreate(appId: AppId, entityId: 2, contentType: CtTestType, values: valLeonie, titleField: "FirstName");
+        var entLeonie = builder.CreateEntityTac(appId: AppId, entityId: 2, contentType: CtTestType, values: valLeonie, titleField: "FirstName");
         return entLeonie;
     }
     public IEntity TestEntityPet(int petNumber)
@@ -77,7 +77,7 @@ public class SampleData(DataBuilder builder)
             {"Age", petNumber}
         };
 
-        var entPet = builder.TestCreate(appId: AppId, entityId: 1000 + petNumber, contentType: CtPet, values: valsPet, titleField: "FirstName");
+        var entPet = builder.CreateEntityTac(appId: AppId, entityId: 1000 + petNumber, contentType: CtPet, values: valsPet, titleField: "FirstName");
         return entPet;
     }
         

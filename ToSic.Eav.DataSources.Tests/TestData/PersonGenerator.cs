@@ -73,7 +73,7 @@ internal class PersonGenerator
             {FieldHeight, MaybeMakeMlNonString(multiLanguage, FieldHeight, ValueTypes.Number, person.Height)},
             {FieldBioForMlSortTest, MaybeMakeMlBio(multiLanguage, person.IsMale)}
         };
-        return DataBuilder.TestCreate(appId: 0, entityId: person.Id, contentType: DataBuilder.ContentType.Transient(PersonTypeName), values: dic,
+        return DataBuilder.CreateEntityTac(appId: 0, entityId: person.Id, contentType: DataBuilder.ContentType.Transient(PersonTypeName), values: dic,
             titleField: FieldFullName, modified: person.Modified);
     }
 
@@ -84,7 +84,7 @@ internal class PersonGenerator
     {
         if (!convert) return original;
 
-        var attribute = DataBuilder.Attribute.TestCreateTyped(name,  ValueTypes.String, new List<IValue>
+        var attribute = DataBuilder.Attribute.CreateTypedAttributeTac(name,  ValueTypes.String, new List<IValue>
         {
             DataBuilder.Value.Build4Test(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri}),
             DataBuilder.Value.Build4Test(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn}),
@@ -101,7 +101,7 @@ internal class PersonGenerator
     {
         if (!convert) return isMale ? BioMaleNoLangLast : BioFemaleNoLangFirst;
 
-        var attribute = DataBuilder.Attribute.TestCreateTyped(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
+        var attribute = DataBuilder.Attribute.CreateTypedAttributeTac(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
         {
             DataBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn }),
             DataBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
@@ -116,7 +116,7 @@ internal class PersonGenerator
     private object MaybeMakeMlNonString<T>(bool convert, string name, ValueTypes type, T original) =>
         !convert
             ? (object) original
-            : DataBuilder.Attribute.TestCreateTyped(name, type, new List<IValue>
+            : DataBuilder.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
             {
                 DataBuilder.Value.Build4Test(type, original, DimensionBuilder.NoLanguages),
             });

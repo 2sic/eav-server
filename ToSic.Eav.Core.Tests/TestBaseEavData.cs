@@ -9,7 +9,7 @@ namespace ToSic.Eav.Core.Tests;
 
 public static class DataTestExtensions
 {
-    public static Entity TestCreate(
+    public static Entity CreateEntityTac(
         this DataBuilder dataBuilder,
         int appId,
         IContentType contentType,
@@ -51,7 +51,7 @@ public static class DataTestExtensions
 
     }
 
-    public static IContentType TestCreate(this ContentTypeBuilder builder,
+    public static IContentType CreateContentTypeTac(this ContentTypeBuilder builder,
         int appId,
         string name,
         int? id = default,
@@ -67,6 +67,6 @@ public static class DataTestExtensions
             attributes: attributes);
     }
 
-    public static IAttribute TestCreateTyped(this AttributeBuilder builder, string name, ValueTypes type, IList<IValue> values = null)
+    public static IAttribute CreateTypedAttributeTac(this AttributeBuilder builder, string name, ValueTypes type, IList<IValue> values = null)
         => builder.Create(name, type, values);
 }
