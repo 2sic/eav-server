@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
+using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.LookUps;
@@ -22,7 +22,7 @@ public class LookUpsTest: TestBaseEavDataSource
         var testSource = DsSvc.CreateDataSourceNew<EntityIdFilter>(options: new
         {
             SomethingSimple = "Something",
-            Token1 = new LookUpEngineTests().OriginalSettingDefaultCat,
+            Token1 = LookUpTestConstants.OriginalSettingDefaultCat,
             InTestTitle = "[In:Default:EntityTitle]",
             InTestFirstName = "[In:Default:FirstName]",
             InTestBadStream = "[In:InvalidStream:Field]",

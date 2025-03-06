@@ -9,4 +9,7 @@ public class LookUpTestConstants
     public const string KeyAppResources = "AppResources";
 
     internal const int AppIdUnknown = -1;
+
+    public const string OriginalSettingDefaultCat = "[AppSettings:DefaultCategoryName]";
+
 }

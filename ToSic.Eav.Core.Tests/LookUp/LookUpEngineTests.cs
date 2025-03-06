@@ -13,12 +13,10 @@ public class LookUpEngineTests: TestBaseEavCore
 {
 
     #region Important Values which will be checked when resolved
-    public string OriginalSettingDefaultCat = "[AppSettings:DefaultCategoryName]";
     private readonly string ResolvedSettingDefaultCat = "All";
     private readonly string OriginalSettingMaxItems = "[AppSettings:MaxItems||100]";
-    public static string ResolvedSettingMaxItems = "100";
-    //public static string MaxPictures = "21";
-    //public static string DefaultCategory = "All";
+    private static string ResolvedSettingMaxItems = "100";
+
     #endregion
 
     [TestMethod]
@@ -33,7 +31,7 @@ public class LookUpEngineTests: TestBaseEavCore
         var settings = Settings();
         Assert.IsTrue(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
         Assert.AreEqual("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").GetTac(Attributes.TitleNiceName));
-        Assert.AreEqual(OriginalSettingDefaultCat, settings["DefaultCategory"]);
+        Assert.AreEqual(LookUpTestConstants.OriginalSettingDefaultCat, settings["DefaultCategory"]);
         Assert.AreEqual(OriginalSettingMaxItems, settings["MaxItems"]);
     }
 
@@ -95,10 +93,10 @@ public class LookUpEngineTests: TestBaseEavCore
     private IDictionary<string, string> Settings() =>
         new Dictionary<string, string>
         {
-            {Attributes.TitleNiceName, "Settings"},
-            {"DefaultCategory", OriginalSettingDefaultCat},
-            {"MaxItems", OriginalSettingMaxItems},
-            {"PicsPerRow", "3"}
+            { Attributes.TitleNiceName, "Settings" },
+            { "DefaultCategory", LookUpTestConstants.OriginalSettingDefaultCat },
+            { "MaxItems", OriginalSettingMaxItems },
+            { "PicsPerRow", "3" }
         };
 
     /// <summary>
@@ -106,22 +104,21 @@ public class LookUpEngineTests: TestBaseEavCore
     /// </summary>
     /// <param name="tweakSuffix">For tweak testing, suffix added to value...</param>
     /// <returns></returns>
-    private IDictionary<string, string> TestTokens(string tweakSuffix = default)
+    private IDictionary<string, string> TestTokens(string tweakSuffix = default) =>
         // The dictionary - keys are the expected result, value are the tokens to use...
-        => new Dictionary<string, string>
+        new Dictionary<string, string>
         {
-            {"App Settings" + tweakSuffix, "[AppSettings:Title]"},
-            {LookUpTestConstants.DefaultCategory + tweakSuffix, "[AppSettings:DefaultCategoryName]"},
-            {$"!{LookUpTestConstants.DefaultCategory}{tweakSuffix}!", "![AppSettings:DefaultCategoryName]!"},
-            {$"xyz{LookUpTestConstants.DefaultCategory}{tweakSuffix}123", "xyz[AppSettings:DefaultCategoryName]123"},
-            {$" {LookUpTestConstants.DefaultCategory}{tweakSuffix} ", " [AppSettings:DefaultCategoryName] "},
-            {LookUpTestConstants.MaxPictures + tweakSuffix, "[AppSettings:MaxPictures]"},
-            {"3" + tweakSuffix, "[AppSettings:PicsPerRow]"},
-            {"Resources" + tweakSuffix, "[AppResources:Title]" },
+            { "App Settings" + tweakSuffix, "[AppSettings:Title]" },
+            { LookUpTestConstants.DefaultCategory + tweakSuffix, "[AppSettings:DefaultCategoryName]" },
+            { $"!{LookUpTestConstants.DefaultCategory}{tweakSuffix}!", "![AppSettings:DefaultCategoryName]!" },
+            { $"xyz{LookUpTestConstants.DefaultCategory}{tweakSuffix}123", "xyz[AppSettings:DefaultCategoryName]123" },
+            { $" {LookUpTestConstants.DefaultCategory}{tweakSuffix} ", " [AppSettings:DefaultCategoryName] " },
+            { LookUpTestConstants.MaxPictures + tweakSuffix, "[AppSettings:MaxPictures]" },
+            { "3" + tweakSuffix, "[AppSettings:PicsPerRow]" },
+            { "Resources" + tweakSuffix, "[AppResources:Title]" },
 
             // incomplete token, don't change
-            {"[AppResources:Title", "[AppResources:Title" },
-            {"", "[AppResources:unknown]" },
-
+            { "[AppResources:Title", "[AppResources:Title" },
+            { "", "[AppResources:unknown]" },
         };
 }
