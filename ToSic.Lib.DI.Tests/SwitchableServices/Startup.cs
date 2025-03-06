@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Lib;
-using ToSic.Testing.Shared;
+using ToSic.Lib.DI.SwitchableServices.Services;
 
-namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests;
+namespace ToSic.Lib.DI.SwitchableServices;
 
-public abstract class VerifySwitchableServiceBase : TestBaseForIoC
+public class Startup
 {
-    protected override IServiceCollection SetupServices(IServiceCollection services) =>
-        base.SetupServices(services)
+    public void ConfigureServices(IServiceCollection services) =>
+        services
             .AddTransient<ITestSwitchableService, TestSwitchableFallback>()
             .AddTransient<ITestSwitchableService, TestSwitchableKeep>()
             .AddTransient<ITestSwitchableService, TestSwitchableSkip>()

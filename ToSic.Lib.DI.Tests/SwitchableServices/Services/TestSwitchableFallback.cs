@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Core.Tests.PlumbingTests.DITests;
+﻿namespace ToSic.Lib.DI.SwitchableServices.Services;
 
 public class TestSwitchableFallback: ITestSwitchableService
 {
