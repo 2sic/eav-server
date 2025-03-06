@@ -11,10 +11,10 @@ namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack;
 public class LookUpInStackTests: PropLookupStackBase
 {
     [TestMethod]
-    public void BasicDotNotation() => AreEqual(ChildJb1.Name, GetLookup().Get($"{FieldChildren}.{FieldName}"));
+    public void BasicDotNotation() => AreEqual(ChildJb1.Name, GetLookup().GetTac($"{FieldChildren}.{FieldName}"));
 
     [TestMethod]
-    public void BasicColonNotation() => AreEqual(ChildJb1.Name, GetLookup().Get($"{FieldChildren}:{FieldName}"));
+    public void BasicColonNotation() => AreEqual(ChildJb1.Name, GetLookup().GetTac($"{FieldChildren}:{FieldName}"));
 
     private LookUpInStack GetLookup()
     {

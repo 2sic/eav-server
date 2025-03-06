@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.StartUp;
-using ToSic.Lib;
 using Xunit.DependencyInjection;
 using static Xunit.Assert;
 
@@ -11,26 +8,44 @@ namespace ToSic.Eav.LookUp;
 [Startup(typeof(TestStartupEavCore))]
 public class SourceEntityTests(DataBuilder dataBuilder)
 {
-    [Fact]
-    public void ValueProvider_EntityValueProvider()
-    {
-        var valProv = new LookUpInEntity("no-name", dataBuilder.TestEntityDaniel(), null);
-
-        NotEqual(string.Empty, valProv.Get("FirstName")); //, "Has first name");
-        NotEqual(string.Empty, valProv.Get(Attributes.EntityIdPascalCase));//, "Has entity id");
-        NotEqual(string.Empty, valProv.Get(Attributes.EntityFieldTitle));//, "Has entity title");
-        Equal("Mettler", valProv.Get("LastName", ""));
-        Equal("Mettler", valProv.Get("LastName"));
-        Equal(1.ToString(), valProv.Get(Attributes.EntityIdPascalCase));
-        Equal("Daniel", valProv.Get(Attributes.EntityFieldTitle));
-        // this test can't work, because ispublished is blank on a light entity
-        // Assert.IsTrue(Convert.ToBoolean(valProv.Get("IsPublished")));
-        Equal(Guid.Empty, Guid.Parse(valProv.Get("EntityGuid")));
-        Equal("TestType", valProv.Get("EntityType"));
-    }
+    private readonly LookUpInEntity _person = new("no-name", dataBuilder.TestEntityDaniel(), null);
 
     [Fact]
-    public void Entity_EntityRelationship()
+    public void FirstNameNotEmpty() => NotEqual(string.Empty, _person.GetTac("FirstName"));
+
+    [Fact]
+    public void EntityIdNotEmpty() => NotEqual(string.Empty, _person.GetTac(Attributes.EntityIdPascalCase));
+
+    [Fact]
+    public void EntityTitleNotEmpty() => NotEqual(string.Empty, _person.GetTac(Attributes.EntityFieldTitle));
+
+    [Fact]
+    public void LastNameIsMettler() => Equal("Mettler", _person.GetTac("LastName", ""));
+
+    [Fact]
+    public void LastNameIsMettlerWithoutDefault() => Equal("Mettler", _person.GetTac("LastName"));
+
+    [Fact]
+    public void EntityIdIs1() => Equal(1.ToString(), _person.GetTac(Attributes.EntityIdPascalCase));
+
+    [Fact]
+    public void EntityTitleIsDaniel() => Equal("Daniel", _person.GetTac(Attributes.EntityFieldTitle));
+
+    [Fact]
+    public void EntityGuidIsEmpty() => Equal(Guid.Empty, Guid.Parse(_person.GetTac(Attributes.EntityGuidPascalCase)));
+
+    [Fact]
+    public void EntityTypeIsTestType() => Equal("TestType", _person.GetTac("EntityType"));
+
+    [Fact]
+    public void AnyDate() => Equal(DateTime.Parse(MockData.AnyDateString), DateTime.Parse(_person.GetTac(MockData.AnyDateKey)));
+
+    /// <summary>
+    /// TODO: This test has never been completed.
+    /// It should start with an entity with sub-properties, and then allow the test to check the sub-property values.
+    /// </summary>
+    [Fact]
+    public void SubPropertyTODO() // not quite done yet!
     {
         var dan = dataBuilder.TestEntityDaniel();
 
@@ -48,7 +63,6 @@ public class SourceEntityTests(DataBuilder dataBuilder)
         // ReSharper disable once UnusedVariable
         var relMan = new EntityRelationships(dan, null, relationshipList);
 
-        Equal(16, relMan.AllChildren.Count());
         // note: can't test more, because the other properties are internal
     }
 

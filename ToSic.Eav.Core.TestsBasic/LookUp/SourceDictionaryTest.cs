@@ -14,27 +14,27 @@ public class SourceDictionaryTest
     }
 
     [Fact]
-    public void Alpha() => NotEqual(string.Empty, CreateDicSource().Get("Alpha"));
+    public void Alpha() => NotEqual(string.Empty, CreateDicSource().GetTac("Alpha"));
 
     [Fact]
-    public void alpha() => NotEqual(string.Empty, CreateDicSource().Get("alpha"));
+    public void alpha() => NotEqual(string.Empty, CreateDicSource().GetTac("alpha"));
 
     [Fact]
-    public void Bravo() => NotEqual(string.Empty, CreateDicSource().Get("Bravo"));
+    public void Bravo() => NotEqual(string.Empty, CreateDicSource().GetTac("Bravo"));
 
     [Fact]
-    public void Charlie() => Equal(string.Empty, CreateDicSource().Get("Charlie"));
+    public void Charlie() => Equal(string.Empty, CreateDicSource().GetTac("Charlie"));
 
     [Fact]
-    public void AlphaWithDefault() => Equal("found", CreateDicSource().Get("Alpha", ""));
+    public void AlphaWithDefault() => Equal("found", CreateDicSource().GetTac("Alpha", ""));
 
     [Fact]
-    public void BravoWithDefault() => Equal("found it too", CreateDicSource().Get("Bravo", ""));
+    public void BravoWithDefault() => Equal("found it too", CreateDicSource().GetTac("Bravo", ""));
 
     [Fact]
-    public void GrandchildWithDefault() => Equal("found", CreateDicSource().Get("Child:Grandchild", ""));
+    public void GrandchildWithDefault() => Equal("found", CreateDicSource().GetTac("Child:Grandchild", ""));
 
     [Fact]
-    public void ChildWithDefault() => Equal(string.Empty, CreateDicSource().Get("Child", ""));
+    public void ChildWithDefault() => Equal(string.Empty, CreateDicSource().GetTac("Child", ""));
 
 }

@@ -32,7 +32,7 @@ public class LookUpEngineTests: TestBaseEavCore
     {
         var settings = Settings();
         Assert.IsTrue(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
-        Assert.AreEqual("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").Get(Attributes.TitleNiceName));
+        Assert.AreEqual("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").GetTac(Attributes.TitleNiceName));
         Assert.AreEqual(OriginalSettingDefaultCat, settings["DefaultCategory"]);
         Assert.AreEqual(OriginalSettingMaxItems, settings["MaxItems"]);
     }
