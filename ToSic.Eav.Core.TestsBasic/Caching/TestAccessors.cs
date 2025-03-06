@@ -1,7 +1,6 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Caching;
 
-namespace ToSic.Eav.Tests.Caching;
+namespace ToSic.Eav.Caching;
 
 internal static class TestAccessors
 {

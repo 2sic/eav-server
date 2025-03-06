@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Internal.Compression;
 
-namespace ToSic.Eav.Tests.Compression;
+namespace ToSic.Eav.Compression;
 
 public class CompressorTests
 {

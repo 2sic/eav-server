@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Caching;
-using ToSic.Lib.Logging;
+﻿using ToSic.Lib.Logging;
 using static Xunit.Assert;
 
-namespace ToSic.Eav.Tests.Caching;
+namespace ToSic.Eav.Caching;
 
 public class CachePolicyMakerTests
 {

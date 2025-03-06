@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.Identity;
 
-namespace ToSic.Eav.Tests.Identity;
+namespace ToSic.Eav.Identity;
 
 public class GuidMapperTest
 {

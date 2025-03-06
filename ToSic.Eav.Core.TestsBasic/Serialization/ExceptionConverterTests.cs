@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
-using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.Tests.Serialization;
+namespace ToSic.Eav.Serialization;
 
 public class ExceptionConverterTests
 {

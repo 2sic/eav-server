@@ -6,8 +6,14 @@
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <RootNamespace>ToSic.Eav.Tests</RootNamespace>
+    <RootNamespace>ToSic.Eav</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Plumbing\NewFolder\**" />
+    <EmbeddedResource Remove="Plumbing\NewFolder\**" />
+    <None Remove="Plumbing\NewFolder\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
