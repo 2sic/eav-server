@@ -53,8 +53,4 @@
     <None Include="Signature\create-certificates.ps1" />
     <None Include="Signature\create-certificates_RunAsAdmin.cmd" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ValueConverter\" />
-  </ItemGroup>
 </Project>
