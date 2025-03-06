@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData;
@@ -72,8 +72,8 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
 
         sql.Configuration.Parse();
         var parsed = sql.Configuration.Values;
-        Assert.AreEqual(LookUpEngineTests.MaxPictures, parsed["@" + Sql.ExtractedParamPrefix + "1"]);
-        Assert.AreEqual(LookUpEngineTests.DefaultCategory, parsed["@" + Sql.ExtractedParamPrefix + "2"]);
+        Assert.AreEqual(LookUpTestConstants.MaxPictures, parsed["@" + Sql.ExtractedParamPrefix + "1"]);
+        Assert.AreEqual(LookUpTestConstants.DefaultCategory, parsed["@" + Sql.ExtractedParamPrefix + "2"]);
         Assert.AreEqual("CorrectlyDefaulted", parsed["@" + Sql.ExtractedParamPrefix + "3"]);
     }
 

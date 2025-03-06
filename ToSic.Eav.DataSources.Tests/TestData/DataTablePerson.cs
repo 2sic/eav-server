@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using ToSic.Eav.Code;
-using ToSic.Eav.Core.Tests.LookUp;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 

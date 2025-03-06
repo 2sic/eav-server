@@ -1,22 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.Core.Tests.LookUp;
+namespace ToSic.Eav.LookUp;
 
 public class LookUpTestData(DataBuilder builder)
 {
-    public const string KeyAppSettings = "AppSettings";
-    public const string KeyAppResources = "AppResources";
-
-    private const int AppIdX = -1;
-
-    public static LookUpEngine EmptyLookupEngine(List<ILookUp> sources = default)
+    public static LookUpEngine EmptyLookupEngine(List<ILookUp> sources = null)
         => new(null, sources: sources);
 
-    public LookUpEngine AppSetAndRes(int appId = AppIdX, List<ILookUp> sources = default)
+    public LookUpEngine AppSetAndRes(int appId = LookUpTestConstants.AppIdUnknown, List<ILookUp> sources = null)
     {
         sources ??= [];
         var vc = EmptyLookupEngine(sources: sources.Concat(new List<ILookUp>
@@ -28,23 +20,23 @@ public class LookUpTestData(DataBuilder builder)
         return vc;
     }
 
-    public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = AppIdX)
+    public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = LookUpTestConstants.AppIdUnknown)
     {
         var ent = builder.CreateEntityTac(appId: appId, contentType: builder.ContentType.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
         return new(name, ent, null);
     }
 
     private LookUpInEntity AppSettings(int appId) =>
-        BuildLookUpEntity(KeyAppSettings, new()
+        BuildLookUpEntity(LookUpTestConstants.KeyAppSettings, new()
         {
             { Attributes.TitleNiceName, "App Settings" },
-            { "DefaultCategoryName", LookUpEngineTests.DefaultCategory },
-            { "MaxPictures", LookUpEngineTests.MaxPictures },
+            { "DefaultCategoryName", LookUpTestConstants.DefaultCategory },
+            { "MaxPictures", LookUpTestConstants.MaxPictures },
             { "PicsPerRow", "3" }
         }, appId);
 
     private LookUpInEntity AppResources(int appId) =>
-        BuildLookUpEntity(KeyAppResources, new()
+        BuildLookUpEntity(LookUpTestConstants.KeyAppResources, new()
         {
             { Attributes.TitleNiceName, "Resources" },
             { "Greeting", "Hello there!" },

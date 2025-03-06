@@ -47,22 +47,22 @@ public static class BuildTestAccessors
 
     }
 
-    public static IContentType CreateContentTypeTac(this ContentTypeBuilder builder,
-        int appId,
-        string name,
-        int? id = default,
-        string nameId = default,
-        string scope = default,
-        IList<IContentTypeAttribute> attributes = default)
-    {
-        return builder.Create(appId: appId,
-            id: id ?? 0,
-            name: name,
-            nameId: nameId,
-            scope: scope ?? "TestScope",
-            attributes: attributes);
-    }
+    //public static IContentType CreateContentTypeTac(this ContentTypeBuilder builder,
+    //    int appId,
+    //    string name,
+    //    int? id = default,
+    //    string nameId = default,
+    //    string scope = default,
+    //    IList<IContentTypeAttribute> attributes = default)
+    //{
+    //    return builder.Create(appId: appId,
+    //        id: id ?? 0,
+    //        name: name,
+    //        nameId: nameId,
+    //        scope: scope ?? "TestScope",
+    //        attributes: attributes);
+    //}
 
-    public static IAttribute CreateTypedAttributeTac(this AttributeBuilder builder, string name, ValueTypes type, IList<IValue> values = null)
-        => builder.Create(name, type, values);
+    //public static IAttribute CreateTypedAttributeTac(this AttributeBuilder builder, string name, ValueTypes type, IList<IValue> values = null)
+    //    => builder.Create(name, type, values);
 }

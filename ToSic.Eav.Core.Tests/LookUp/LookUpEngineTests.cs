@@ -17,8 +17,8 @@ public class LookUpEngineTests: TestBaseEavCore
     private readonly string ResolvedSettingDefaultCat = "All";
     private readonly string OriginalSettingMaxItems = "[AppSettings:MaxItems||100]";
     public static string ResolvedSettingMaxItems = "100";
-    public static string MaxPictures = "21";
-    public static string DefaultCategory = "All";
+    //public static string MaxPictures = "21";
+    //public static string DefaultCategory = "All";
     #endregion
 
     [TestMethod]
@@ -74,7 +74,7 @@ public class LookUpEngineTests: TestBaseEavCore
         {
             {Attributes.TitleNiceName, overridenTitle}
         };
-        var appSettingsSource = new LookUpInDictionary(LookUpTestData.KeyAppSettings, overrideDic);
+        var appSettingsSource = new LookUpInDictionary(LookUpTestConstants.KeyAppSettings, overrideDic);
         // test before override
         var result = mainEngine.LookUp(TestTokens(), overrides: new List<ILookUp> { appSettingsSource });
         Assert.AreEqual(overridenTitle, result["App Settings"], "should override");
@@ -111,11 +111,11 @@ public class LookUpEngineTests: TestBaseEavCore
         => new Dictionary<string, string>
         {
             {"App Settings" + tweakSuffix, "[AppSettings:Title]"},
-            {DefaultCategory + tweakSuffix, "[AppSettings:DefaultCategoryName]"},
-            {$"!{DefaultCategory}{tweakSuffix}!", "![AppSettings:DefaultCategoryName]!"},
-            {$"xyz{DefaultCategory}{tweakSuffix}123", "xyz[AppSettings:DefaultCategoryName]123"},
-            {$" {DefaultCategory}{tweakSuffix} ", " [AppSettings:DefaultCategoryName] "},
-            {MaxPictures + tweakSuffix, "[AppSettings:MaxPictures]"},
+            {LookUpTestConstants.DefaultCategory + tweakSuffix, "[AppSettings:DefaultCategoryName]"},
+            {$"!{LookUpTestConstants.DefaultCategory}{tweakSuffix}!", "![AppSettings:DefaultCategoryName]!"},
+            {$"xyz{LookUpTestConstants.DefaultCategory}{tweakSuffix}123", "xyz[AppSettings:DefaultCategoryName]123"},
+            {$" {LookUpTestConstants.DefaultCategory}{tweakSuffix} ", " [AppSettings:DefaultCategoryName] "},
+            {LookUpTestConstants.MaxPictures + tweakSuffix, "[AppSettings:MaxPictures]"},
             {"3" + tweakSuffix, "[AppSettings:PicsPerRow]"},
             {"Resources" + tweakSuffix, "[AppResources:Title]" },
 

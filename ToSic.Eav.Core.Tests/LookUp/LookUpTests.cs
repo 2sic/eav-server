@@ -12,27 +12,9 @@ namespace ToSic.Eav.Core.Tests.LookUp;
 public class LookUpTests: TestBaseEavCore
 {
     [TestMethod]
-    public void ValueProvider_StaticValueProvider()
-    {
-        var sv = new LookUpInDictionary("Demo");
-        sv.Properties.Add("Alpha", "found");
-        sv.Properties.Add("Bravo", "found it too");
-        sv.Properties.Add("Child:Grandchild", "found");
-
-        Assert.AreNotEqual(string.Empty, sv.Get("Alpha"));
-        Assert.AreNotEqual(string.Empty, sv.Get("alpha")); // true now that caps don't matter
-        Assert.AreNotEqual(string.Empty, sv.Get("Bravo"));
-        Assert.AreEqual(string.Empty,sv.Get("Charlie"));
-        Assert.IsTrue(sv.Get("Alpha", "") == "found");
-        Assert.IsTrue(sv.Get("Bravo", "") == "found it too");
-        Assert.IsTrue(sv.Get("Child:Grandchild", "") == "found");
-        Assert.IsTrue(sv.Get("Child", "") == string.Empty);
-    }
-
-    [TestMethod]
     public void ValueProvider_EntityValueProvider()
     {
-        ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<DataBuilder>()).TestEntityDaniel(), null);
+        ILookUp valProv = new LookUpInEntity("no-name", GetService<DataBuilder>().TestEntityDaniel(), null);
 
         Assert.AreNotEqual(string.Empty, valProv.Get("FirstName"), "Has first name");
         Assert.AreNotEqual(string.Empty, valProv.Get(Attributes.EntityIdPascalCase), "Has entity id");
@@ -50,7 +32,7 @@ public class LookUpTests: TestBaseEavCore
     [TestMethod]
     public void ValueProvider_EntityValueProvider_DateTimeFormat()
     {
-        ILookUp valProv = new LookUpInEntity("no-name", new SampleData(GetService<DataBuilder>()).TestEntityDaniel(), null);
+        ILookUp valProv = new LookUpInEntity("no-name", GetService<DataBuilder>().TestEntityDaniel(), null);
             
         Assert.AreEqual(DateTime.Parse("2019-11-06T01:00:05Z"), DateTime.Parse(valProv.Get("AnyDate")));
         Assert.AreEqual("TestType", valProv.Get("EntityType"));
