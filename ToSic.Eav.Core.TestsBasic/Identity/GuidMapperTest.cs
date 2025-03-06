@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
+﻿using Xunit.Abstractions;
 
 namespace ToSic.Eav.Identity;
 
-public class GuidMapperTest
+public class GuidMapperTest(ITestOutputHelper output)
 {
     public string GuidCompressTac(Guid value) => value.GuidCompress();
     public Guid GuidRestoreTac(string value) => Mapper.GuidRestore(value);
@@ -21,7 +21,7 @@ public class GuidMapperTest
     {
         var data = new Guid("883668ac-b1fd-47fa-acef-00500e5979fa");
         var compressed = GuidCompressTac(data);
-        Trace.WriteLine($"Compressed: {compressed}");
+        output.WriteLine($"Compressed: {compressed}");
         var uncompressed = GuidRestoreTac(compressed);
         Assert.Equal(data, uncompressed);
     }

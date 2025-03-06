@@ -1,41 +1,38 @@
-﻿using System;
-using System.Diagnostics;
-using System.Text.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Text.Json;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
+using Xunit.Abstractions;
 
-namespace ToSic.Eav.Core.Tests.Configuration;
+namespace ToSic.Eav.Configuration.Features;
 
-[TestClass]
-public class Features
+public class Features(ITestOutputHelper output)
 {
-    [TestMethod]
+    [Fact]
     public void Features_Export_Test()
     {
         var x = new FeatureStatesPersisted();
         x.Features.Add(new()
         {
-            Id = new(),
+            Id = Guid.Empty,
             Enabled = true,
             Expires = DateTime.Today
         });
 
         x.Features.Add(new()
         {
-            Id = new(),
+            Id = Guid.Empty,
             Enabled = false,
             Expires = DateTime.Today
         });
 
         x.Features.Add(new()
         {
-            Id = new(),
+            Id = Guid.Empty,
             Enabled = false,
             Expires = DateTime.Today.AddDays(-1)
         });
 
         var ser = JsonSerializer.Serialize(x, JsonOptions.UnsafeJsonWithoutEncodingHtml);
-        Trace.WriteLine(ser);
+        output.WriteLine(ser);
     }
 }
