@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Globalization;
 using static System.Threading.Thread;
 
-namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests;
+namespace ToSic.Eav.Plumbing.ObjectExtension;
 
 public partial class ConvertOrFallback
 {
 
-    [TestMethod]
+    [Fact]
     public void ObjectToInt()
     {
         // 0 should always default
@@ -16,16 +14,16 @@ public partial class ConvertOrFallback
         ConvFbQuick(new List<string>(), 42, 42);
     }
 
-    [TestMethod]
+    [Fact]
     public void NullToInt()
     {
         // 0 should always default
-        ConvFbQuick(null, 27, 27);
+        ConvFbQuick(null!, 27, 27);
     }
 
 
 
-    [TestMethod]
+    [Fact]
     public void StringToInt()
     {
         ConvFbQuick("0", 333, 0);
@@ -35,7 +33,7 @@ public partial class ConvertOrFallback
         ConvFbQuick("nothing", 42, 42);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToFloat()
     {
         ConvFbQuick("0", 333f, 0f);
@@ -45,7 +43,7 @@ public partial class ConvertOrFallback
         ConvFbQuick("nothing", 42f, 42f);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringFractionToFloat()
     {
         // now with correct decimals
@@ -61,7 +59,7 @@ public partial class ConvertOrFallback
         ConvFallback("-42,42", 333f, true, -4242f, -42.42f, -4242f);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringFractionToFloatWrongCulture()
     {
         // Now change threading culture
@@ -75,7 +73,7 @@ public partial class ConvertOrFallback
         CurrentThread.CurrentCulture = current;
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToDouble()
     {
         ConvFbQuick("0", 333d, 0d);
@@ -97,7 +95,7 @@ public partial class ConvertOrFallback
         ConvFallback("-42,42", 333d, true, -4242d, -42.42d, -4242d);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToDecimal()
     {
         ConvFbQuick("0", 333m, 0m);
@@ -107,7 +105,7 @@ public partial class ConvertOrFallback
         ConvFbQuick("nothing", 42m, 42m);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringFractionsToDecimal()
     {
         // now with correct decimals

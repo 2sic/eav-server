@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿
 
-namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests;
+namespace ToSic.Eav.Plumbing.ObjectExtension;
 
-[TestClass]
+
 public class ConvertToNumber: ConvertTestBase
 {
 
 
-    [TestMethod]
+    [Fact]
     public void StringToInt()
     {
         ConvT(null, 0, 0);
@@ -22,7 +22,7 @@ public class ConvertToNumber: ConvertTestBase
         ConvT("   5.9  ", 0, 6);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToIntNull()
     {
         ConvT<int?>(null, null, null);
@@ -34,7 +34,7 @@ public class ConvertToNumber: ConvertTestBase
         ConvT<int?>("5.9", null, 6);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToFloat()
     {
         ConvT(null, 0f, 0f);
@@ -46,7 +46,7 @@ public class ConvertToNumber: ConvertTestBase
         ConvT("-99.7", -99.7f, -99.7f);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToDecimal()
     {
         ConvT(null, 0m, 0m);
@@ -58,7 +58,7 @@ public class ConvertToNumber: ConvertTestBase
         ConvT("-99.7", -99.7m, -99.7m);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToFloatNull()
     {
         ConvT<float?>(null, null, null);
@@ -70,7 +70,7 @@ public class ConvertToNumber: ConvertTestBase
         ConvT<float?>("-99.7", -99.7f, -99.7f);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToDecimalNull()
     {
         ConvT<decimal?>(null, null, null);

@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿
 
-namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests;
+namespace ToSic.Eav.Plumbing.ObjectExtension;
 
-[TestClass]
+
 public partial class ConvertOrFallback: ConvertTestBase
 {
     const string Fallback = "this-is-the-fallback";
 
-    [TestMethod]
+    [Fact]
     public void StringToString()
     {
         ConvFbQuick<string>(null, null, null);

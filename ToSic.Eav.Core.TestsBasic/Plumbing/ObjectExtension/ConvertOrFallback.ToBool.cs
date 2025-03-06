@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests;
+﻿namespace ToSic.Eav.Plumbing.ObjectExtension;
 
 public partial class ConvertOrFallback
 {
-    [TestMethod]
+    [Fact]
     public void NumberToBoolFallback()
     {
         // 0 should false
@@ -25,7 +22,7 @@ public partial class ConvertOrFallback
         ConvFbQuick(0.1, false, true);
     }
 
-    [TestMethod]
+    [Fact]
     public void NumberNullableToBoolFallback()
     {
         // 0 should false
@@ -47,14 +44,14 @@ public partial class ConvertOrFallback
         ConvFbQuick(new double?(0.1), false, true);
     }
 
-    [TestMethod]
+    [Fact]
     public void ObjectToBoolFallback()
     {
         // all objects should default
         ConvFbQuick(new List<string>(), true, true);
         ConvFbQuick(new List<string>(), false, false);
     }
-    [TestMethod]
+    [Fact]
     public void StringToBoolFallback()
     {
         // Nulls should always false

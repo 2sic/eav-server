@@ -1,19 +1,16 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace ToSic.Eav.Plumbing.ObjectExtension;
 
-namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests;
 
-[TestClass]
 public class ConvertToDateTime: ConvertTestBase
 {
 
-    [TestMethod]
+    [Fact]
     public void NullToDateTime()
     {
         ConvT(null, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringDateToDateTime()
     {
         ConvT("", DateTime.MinValue, DateTime.MinValue, DateTime.MinValue);
@@ -21,7 +18,7 @@ public class ConvertToDateTime: ConvertTestBase
         ConvT("2021-12-31", new(2021, 12, 31), new DateTime(2021, 12, 31));
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToDateTime()
     {
         ConvT("", DateTime.MinValue, DateTime.MinValue, DateTime.MinValue);

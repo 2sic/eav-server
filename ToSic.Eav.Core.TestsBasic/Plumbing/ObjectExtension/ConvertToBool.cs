@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+﻿
 
-namespace ToSic.Eav.Core.Tests.PlumbingTests.ObjectExtensionTests;
 
-[TestClass]
+namespace ToSic.Eav.Plumbing.ObjectExtension;
+
+
 public class ConvertToBool: ConvertTestBase
 {
 
-    [TestMethod]
+    [Fact]
     public void NumberToBool()
     {
         ConvT(null, false, false, false);
@@ -21,7 +21,7 @@ public class ConvertToBool: ConvertTestBase
         ConvT(-3.7, true, true, true);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToBool()
     {
         ConvT(null, false, false, false);
@@ -39,11 +39,11 @@ public class ConvertToBool: ConvertTestBase
         ConvT("FALSE", false, false, false);
     }
 
-    [TestMethod]
+    [Fact]
     public void StringToBoolNull()
     {
-        IsTrue(0.TestConvertOrDefault<bool?>().HasValue);
-        IsTrue("true".TestConvertOrDefault<bool?>().HasValue);
+        Assert.True(0.ConvertOrDefaultTac<bool?>().HasValue);
+        Assert.True("true".ConvertOrDefaultTac<bool?>().HasValue);
 
         ConvT<bool?>(null, null, null, null);
         ConvT<bool?>("", null, null, null);
