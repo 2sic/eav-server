@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Metadata;
 using ToSic.Lib.Coding;
 
-namespace ToSic.Eav.Core.Tests;
+namespace ToSic.Eav.Data.Build;
 
-public static class DataTestExtensions
+public static class BuildTestAccessors
 {
     public static Entity CreateEntityTac(
         this DataBuilder dataBuilder,

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ToSic.Eav.Core.Tests;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Testing.Shared;
@@ -9,14 +8,9 @@ using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 
 namespace ToSic.Eav.DataSourceTests.TestData;
 
-internal class PersonGenerator
+internal class PersonGenerator(DataBuilder dataBuilder)
 {
-
-    public PersonGenerator(DataBuilder dataBuilder)
-    {
-        DataBuilder = dataBuilder;
-    }
-    public DataBuilder DataBuilder { get; }
+    public DataBuilder DataBuilder { get; } = dataBuilder;
 
     private static Person SemiRandom(int i)
     {

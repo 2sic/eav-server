@@ -38,7 +38,8 @@ public class CompressorTests(ITestOutputHelper output)
 
         output.WriteLine($"Elapsed Time is {stopwatch.ElapsedMilliseconds} ms.");
 
-        Assert.True(stopwatch.ElapsedMilliseconds < 200, $"Elapsed Time is {stopwatch.ElapsedMilliseconds} ms.");
+        // Note: not a real test, so the time is very high, since in parallel mode it will usually be quite high
+        Assert.True(stopwatch.ElapsedMilliseconds < 500, $"Elapsed Time is {stopwatch.ElapsedMilliseconds} ms.");
     }
 
     [Fact]
