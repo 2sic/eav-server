@@ -3,20 +3,18 @@ using ToSic.Eav.TestData;
 
 namespace ToSic.Eav.DataSourceTests.LookUps;
 
-[TestClass]
-public class LookUpsTest: TestBaseEavDataSource
+[Startup(typeof(TestStartupEavCoreAndDataSources))]
+public class LookUpsTest(DataSourcesTstBuilder dsSvc, DataTablePerson personTableGenerator)
 {
-    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
-
-    [TestMethod]
+    [Fact]
     public void DataTargetValueProvider_General()
     {
         // Assemble a simple source-stream with demo data
         const int ItemsToGenerate = 499;
         const string ItemToFilter = "1023";
-        var ds = new DataTablePerson(this).Generate(ItemsToGenerate, 1001);
+        var ds = personTableGenerator.Generate(ItemsToGenerate, 1001);
 
-        var testSource = DsSvc.CreateDataSourceNew<EntityIdFilter>(options: new
+        var testSource = dsSvc.CreateDataSourceNew<EntityIdFilter>(options: new
         {
             SomethingSimple = "Something",
             Token1 = LookUpTestConstants.OriginalSettingDefaultCat,
@@ -28,7 +26,7 @@ public class LookUpsTest: TestBaseEavDataSource
             TestMyConfFirstName = "[In:MyConf:FirstName]",
         }); 
         testSource.EntityIds = "1001";  // needed to ensure 
-        var myConfDs = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
+        var myConfDs = dsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
         myConfDs.AttachTac(ds);
         myConfDs.EntityIds = ItemToFilter;
 
@@ -45,10 +43,10 @@ public class LookUpsTest: TestBaseEavDataSource
 
         var y = testSource.ListTac(); // must access something to provoke configuration resolving
 
-        AreEqual("First Name 1001", testSource.Configuration.Values["InTestFirstName"], "Tested in:Default:EntityTitle");
-        AreEqual("", testSource.Configuration.Values["InTestBadStream"], "Testing in-token with invalid stream");
-        AreEqual("", testSource.Configuration.Values["InTestNoKey"], "Testing in-token with missing field");
-        AreEqual("First Name " + ItemToFilter, testSource.Configuration.Values["TestMyConfFirstName"], "MyConf stream First Name");
-        AreEqual("", testSource.Configuration.Values["InTestBadKey"], "Testing in-token with incorrect field name");
+        Equal("First Name 1001", testSource.Configuration.Values["InTestFirstName"]);//, "Tested in:Default:EntityTitle");
+        Equal("", testSource.Configuration.Values["InTestBadStream"]);//, "Testing in-token with invalid stream");
+        Equal("", testSource.Configuration.Values["InTestNoKey"]);//, "Testing in-token with missing field");
+        Equal("First Name " + ItemToFilter, testSource.Configuration.Values["TestMyConfFirstName"]);//, "MyConf stream First Name");
+        Equal("", testSource.Configuration.Values["InTestBadKey"]);//, "Testing in-token with incorrect field name");
     }
 }

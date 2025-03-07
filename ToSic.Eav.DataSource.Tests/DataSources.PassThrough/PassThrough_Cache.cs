@@ -4,22 +4,19 @@ namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
-[TestClass]
-public class PassThrough_Cache: TestBaseEavDataSource
+[Startup(typeof(TestStartupEavCoreAndDataSources))]
+public class PassThrough_Cache(DataSourcesTstBuilder dsSvc)
 {
-    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
-
-
-    [TestMethod]
+    [Fact]
     public void PassThrough_CacheKey()
     {
-        var outSource = DsSvc.CreateDataSource<PassThrough>();
+        var outSource = dsSvc.CreateDataSource<PassThrough>();
         var partialKey = outSource.CachePartialKey;
         var fullKey = outSource.CacheFullKey;
         Trace.WriteLine("Partial Key:" + partialKey);
         Trace.WriteLine("Full Key: " + fullKey);
-        IsNotNull(partialKey);
-        IsNotNull(fullKey);
+        NotNull(partialKey);
+        NotNull(fullKey);
     }
 
 }
