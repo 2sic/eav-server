@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Fingerprint;
-using ToSic.Eav.StartUp;
 
 namespace ToSic.Testing.Shared;
 
