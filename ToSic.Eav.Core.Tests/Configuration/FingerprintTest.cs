@@ -5,7 +5,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.Core.Tests.Configuration;
 
 [TestClass]
-public class FingerprintTest: TestBaseDiEavFullAndDb
+public class FingerprintTest: TestBaseDiEavFullAndDb // TestBaseEavCore
 {
     [TestMethod]
     public void FingerprintExistsAndStaysTheSame()

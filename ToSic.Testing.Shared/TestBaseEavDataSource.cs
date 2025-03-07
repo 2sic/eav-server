@@ -8,6 +8,5 @@ public abstract class TestBaseEavDataSource(EavTestConfig testConfig = default)
 {
     protected override IServiceCollection SetupServices(IServiceCollection services) =>
         base.SetupServices(services)
-            // DataSources
             .AddDataSources();
 }

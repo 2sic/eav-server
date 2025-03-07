@@ -9,37 +9,36 @@ using ToSic.Eav.Serialization.Internal;
 using ToSic.Testing.Shared;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Persistence.Efc.Tests
+namespace ToSic.Eav.Persistence.Efc.Tests;
+
+[TestClass]
+public class Efc11TestBase: TestBaseDiEavFullAndDb
 {
-    [TestClass]
-    public class Efc11TestBase: TestBaseDiEavFullAndDb
-    {
-        #region test preparations
+    #region test preparations
 
         
-        public EavDbContext Db;
-        public EfcAppLoader Loader;
+    public EavDbContext Db;
+    public EfcAppLoader Loader;
 
-        [TestInitialize]
-        public void Init()
-        {
-            Trace.Write("initializing DB & loader");
-            Db = GetService<EavDbContext>();
-            Loader = NewLoader();
-        }
-
-        public EfcAppLoader NewLoader() => GetService<EfcAppLoader>().UseExistingDb(Db);
-
-
-        protected JsonSerializer SerializerOfApp(int appId)
-        {
-            var app = Loader.AppStateReaderRawTA(appId);
-            return GetService<JsonSerializer>().SetApp(app);
-        }
-
-        #endregion
-
-
-        public IEnumerable<string> LogItems => (Log as Log)?.Entries.Select(e => e.Source + ">" + e.Message);
+    [TestInitialize]
+    public void Init()
+    {
+        Trace.Write("initializing DB & loader");
+        Db = GetService<EavDbContext>();
+        Loader = NewLoader();
     }
+
+    public EfcAppLoader NewLoader() => GetService<EfcAppLoader>().UseExistingDb(Db);
+
+
+    protected JsonSerializer SerializerOfApp(int appId)
+    {
+        var app = Loader.AppStateReaderRawTA(appId);
+        return GetService<JsonSerializer>().SetApp(app);
+    }
+
+    #endregion
+
+
+    public IEnumerable<string> LogItems => (Log as Log)?.Entries.Select(e => e.Source + ">" + e.Message);
 }
