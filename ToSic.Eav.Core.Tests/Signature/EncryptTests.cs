@@ -18,7 +18,7 @@ public class EncryptTests
     public void TestBasicAesCrypto()
     {
         var crypto = GetAes();
-        var encrypted = crypto.EncryptToBase64(TestMessage, new(true) { Password = DummyPassword});
+        var encrypted = crypto.EncryptToBase64(TestMessage, new(true) { Password = DummyPassword });
         Trace.WriteLine($"encrypted:'{encrypted.Value}'; IV:'{encrypted.Iv}'");
         Trace.WriteLine(crypto.Log.Dump());
         Assert.AreNotEqual(TestMessage, encrypted.Value);
@@ -26,8 +26,11 @@ public class EncryptTests
 
         // reset crypto to get a fresh log
         crypto = GetAes();
-        var decrypted = crypto.DecryptFromBase64(encrypted.Value,
-            new(true) { InitializationVector64 = encrypted.Iv });
+        var decrypted = crypto.DecryptFromBase64(encrypted.Value, new(true)
+        {
+            Password = DummyPassword,
+            InitializationVector64 = encrypted.Iv
+        });
         Trace.WriteLine($"decrypted:{decrypted}");
         Trace.WriteLine(crypto.Log.Dump());
         Assert.AreEqual(TestMessage, decrypted);
@@ -35,7 +38,7 @@ public class EncryptTests
 
     [TestMethod]
     [Ignore("doesn't work at all yet, don't use")]
-    public void EncryptAndDecriptUsingKeyPair()
+    public void EncryptAndDecryptUsingKeyPair()
     {
 
         var encryptor = new BasicEncryptionNotReadyForUse();

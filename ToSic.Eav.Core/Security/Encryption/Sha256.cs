@@ -14,20 +14,13 @@ public class Sha256
     /// <param name="value"></param>
     /// <returns></returns>
     /// <remarks>
-    /// In v15.01 we changed this to use the CryptoServiceProvider which should be FIPS compliant
+    /// * In v15.01 we changed this to use the CryptoServiceProvider which is FIPS compliant
+    /// * In v19.03-03 we changed `new SHA256CryptoServiceProvider()` to be `SHA256.Create()` because of obsolete warnings
     /// </remarks>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string Hash(string value) 
-        => Hash(new SHA256CryptoServiceProvider(), value);
+        => Hasher.Hash(SHA256.Create(), value);
 
-    internal static string Hash(HashAlgorithm hasher, string value)
-    {
-        var hash = new StringBuilder();
-        var crypto = hasher.ComputeHash(Encoding.UTF8.GetBytes(value));
-        foreach (var theByte in crypto)
-            hash.Append(theByte.ToString("x2"));
-        return hash.ToString();
-    }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public string SignBase64(string certificateBase64, byte[] data)

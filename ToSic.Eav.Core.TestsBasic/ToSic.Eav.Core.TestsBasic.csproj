@@ -33,5 +33,9 @@
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Security.Encryption\" />
+  </ItemGroup>
+
 
 </Project>

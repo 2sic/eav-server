@@ -1,10 +1,7 @@
 ﻿// 2018-03-09 2dm disabled various tests related to code-based content-types, which ATM are never in use
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace ToSic.Eav.Core.Tests.Types;
 
-[TestClass]
 public class GlobalManagerTests
 {
     public const int CodeTypesCount = 0; // 2018-03-09 no more code-types provided
