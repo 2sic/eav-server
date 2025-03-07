@@ -48,10 +48,9 @@
 
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Signature\2sxc-ca_Base64.cer" />
-    <None Include="Signature\2sxc-ca_Base64_Public.cer" />
-    <None Include="Signature\2sxc-ca_Public.crt" />
-    <None Include="Signature\create-certificates.ps1" />
-    <None Include="Signature\create-certificates_RunAsAdmin.cmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Signature\" />
   </ItemGroup>
 </Project>

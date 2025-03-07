@@ -1,12 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Core.Tests.Signature;
 
-[TestClass]
-public class EncryptTests
+public class AesCrypto
 {
     private AesCryptographyService GetAes() => new(new()) { Debug = true };
 
@@ -14,15 +12,15 @@ public class EncryptTests
     private const string DummyPassword = "dummy-password";
     private const string PreviousEncryptionSha256 = "L3pBTTJ9+Ow1aRRWX4Flykh3UEfO7/XffcEuJPVKABg=";
 
-    [TestMethod]
+    [Fact]
     public void TestBasicAesCrypto()
     {
         var crypto = GetAes();
         var encrypted = crypto.EncryptToBase64(TestMessage, new(true) { Password = DummyPassword });
         Trace.WriteLine($"encrypted:'{encrypted.Value}'; IV:'{encrypted.Iv}'");
         Trace.WriteLine(crypto.Log.Dump());
-        Assert.AreNotEqual(TestMessage, encrypted.Value);
-        Assert.AreNotEqual(PreviousEncryptionSha256, encrypted.Value, "each encryption should give a different result - but that's not implemented yet");
+        Assert.NotEqual(TestMessage, encrypted.Value);
+        Assert.NotEqual(PreviousEncryptionSha256, encrypted.Value); //, "each encryption should give a different result - but that's not implemented yet");
 
         // reset crypto to get a fresh log
         crypto = GetAes();
@@ -33,19 +31,7 @@ public class EncryptTests
         });
         Trace.WriteLine($"decrypted:{decrypted}");
         Trace.WriteLine(crypto.Log.Dump());
-        Assert.AreEqual(TestMessage, decrypted);
+        Assert.Equal(TestMessage, decrypted);
     }
 
-    [TestMethod]
-    [Ignore("doesn't work at all yet, don't use")]
-    public void EncryptAndDecryptUsingKeyPair()
-    {
-
-        var encryptor = new BasicEncryptionNotReadyForUse();
-        var encrypted = encryptor.Encrypt(TestMessage);
-        Assert.AreNotEqual(TestMessage, encrypted);
-
-        var decrypted = encryptor.Decrypt(encrypted);
-        Assert.AreEqual(TestMessage, decrypted);
-    }
 }

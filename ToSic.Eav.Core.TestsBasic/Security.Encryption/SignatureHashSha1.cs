@@ -1,17 +1,14 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ToSic.Eav.Core.Tests.Signature;
 
-[TestClass]
 public class SignatureHashSha1
 {
 
-    [TestMethod]
+    [Fact]
     public void SignatureSha1ValidationTest()
     {
         var Json = TestData.Json;
@@ -48,6 +45,6 @@ public class SignatureHashSha1
         var isValidSignature = cspPublic.VerifyHash(hashClient, "SHA1", signatureClient);
         Trace.WriteLine($"client:  Signature valid {isValidSignature}");
 
-        Assert.AreEqual(true, isValidSignature);
+        Assert.Equal(true, isValidSignature);
     }
 }
