@@ -1,30 +1,32 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Data;
+using ToSic.Eav.TestData;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
-[TestClass]
-public class StreamMergeTst: TestBaseEavDataSource
+[Startup(typeof(TestStartupEavCoreAndDataSources))]
+public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
 {
     private const int ItemsToGenerate = 100;
     private const int FirstId = 1001;
 
-    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 
-    [TestMethod]
+    [Fact]
     public void StreamMerge_In0Streams()
     {
         var sf = DsSvc.CreateDataSource<StreamMerge>();
         VerifyStreams(sf, 0, 0, 0, 0);
     }
 
-    [TestMethod]
+    [Fact]
     public void StreamMerge_In1Stream()
     {
         var streamMerge = CreateMergeDs(ItemsToGenerate);
         VerifyStreams(streamMerge, ItemsToGenerate, ItemsToGenerate, ItemsToGenerate, ItemsToGenerate);
     }
 
-    [TestMethod]
+    [Fact]
     public void StreamMerge_In2IdenticalStreams()
     {
         var desiredFinds = ItemsToGenerate * 2;
@@ -34,10 +36,10 @@ public class StreamMergeTst: TestBaseEavDataSource
     }
 
 
-    [DataRow(2, "two lists")]
-    [DataRow(3, "three lists")]
-    [DataRow(4, "four lists")]
-    [TestMethod]
+    [Theory]
+    [InlineData(2, "two lists")]
+    [InlineData(3, "three lists")]
+    [InlineData(4, "four lists")]
     public void StreamMerge_InDifferentMany(int amount, string name)
     {
         var desiredFinds = ItemsToGenerate * amount;
@@ -50,9 +52,9 @@ public class StreamMergeTst: TestBaseEavDataSource
         VerifyStreams(main, desiredFinds, desiredFinds, 0, desiredFinds);
     }
 
-    [DataRow(0.5, "half")]
-    [DataRow(0.25, "quarter")]
-    [TestMethod]
+    [Theory]
+    [InlineData(0.5, "half")]
+    [InlineData(0.25, "quarter")]
     public void StreamMerge_In2WithHalf(double fraction, string name)
     {
         var itemsInSecondStream = (int)(ItemsToGenerate * fraction);
@@ -66,7 +68,7 @@ public class StreamMergeTst: TestBaseEavDataSource
     }
 
 
-    [TestMethod]
+    [Fact]
     public void StreamMerge_In2Null1()
     {
         var desiredFinds = ItemsToGenerate * 3;
@@ -82,19 +84,19 @@ public class StreamMergeTst: TestBaseEavDataSource
     {
         var found = streamMerge.ListTac().Count();
         Trace.WriteLine("Found (Default / OR): " + found);
-        AreEqual(expDefault, found, "Should find exactly this amount people after merge");
+        Equal(expDefault, found); //, "Should find exactly this amount people after merge");
 
         var foundDistinct = streamMerge.OutTac(StreamMerge.DistinctStream).Count();
         Trace.WriteLine("Distinct: " + foundDistinct);
-        AreEqual(expDistinct, foundDistinct, "Should find exactly this amount of _distinct_ people");
+        Equal(expDistinct, foundDistinct); //, "Should find exactly this amount of _distinct_ people");
 
         var foundAnd = streamMerge.OutTac(StreamMerge.AndStream).Count();
         Trace.WriteLine("AND: " + foundAnd);
-        AreEqual(expAnd, foundAnd, "Should find exactly this amount of _AND_ people");
+        Equal(expAnd, foundAnd); //, "Should find exactly this amount of _AND_ people");
 
         var foundXor = streamMerge.OutTac(StreamMerge.XorStream).Count();
         Trace.WriteLine("XOR: " + foundXor);
-        AreEqual(expXor, foundXor, "Should find exactly this amount of _XOR_ people");
+        Equal(expXor, foundXor); //, "Should find exactly this amount of _XOR_ people");
     }
 
     private ValueFilter GenerateSecondStreamWithSomeResults(StreamMerge sf, int itemsInSecondStream)
@@ -103,8 +105,7 @@ public class StreamMergeTst: TestBaseEavDataSource
         secondSf.Attribute = Attributes.EntityIdPascalCase;
         secondSf.Operator = "<";
         secondSf.Value = (FirstId + itemsInSecondStream).ToString();
-        AreEqual(itemsInSecondStream, secondSf.ListTac().Count(),
-            $"For next test to work, we must be sure we have {itemsInSecondStream} items here");
+        Equal(itemsInSecondStream, secondSf.ListTac().Count()); //, $"For next test to work, we must be sure we have {itemsInSecondStream} items here");
         return secondSf;
     }
 
@@ -114,5 +115,5 @@ public class StreamMergeTst: TestBaseEavDataSource
         DsSvc.CreateDataSource<StreamMerge>(SourceList(desiredFinds));
 
     private DataTable SourceList(int desiredFinds, int firstId = FirstId) =>
-        new DataTablePerson(this).Generate(desiredFinds, firstId, useCacheForSpeed: false /* don't cache, because we do duplicate checking in these tests */);
+        personTableGenerator.New().Generate(desiredFinds, firstId, useCacheForSpeed: false /* don't cache, because we do duplicate checking in these tests */);
 }

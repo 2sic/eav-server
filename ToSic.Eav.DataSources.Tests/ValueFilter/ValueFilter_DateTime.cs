@@ -1,5 +1,5 @@
 ﻿using static ToSic.Eav.DataSources.CompareOperators;
-using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
+using static ToSic.Eav.TestData.PersonSpecs;
 
 namespace ToSic.Eav.DataSourceTests;
 // Todo

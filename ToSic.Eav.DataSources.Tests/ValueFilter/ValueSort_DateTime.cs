@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSourceTests;
+﻿using ToSic.Eav.TestData;
+
+namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 // Create tests with multiple fields to sort

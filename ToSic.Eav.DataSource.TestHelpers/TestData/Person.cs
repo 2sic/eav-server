@@ -1,9 +1,7 @@
-﻿namespace ToSic.Eav.DataSourceTests.TestData;
+﻿namespace ToSic.Eav.TestData;
 
 internal class Person
 {
-    internal Person() { }
-
     public int Id;
     public string FullName;
     public string First;

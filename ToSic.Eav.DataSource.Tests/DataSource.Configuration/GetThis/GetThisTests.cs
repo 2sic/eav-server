@@ -1,6 +1,4 @@
-﻿using ToSic.Testing.Shared;
-
-namespace ToSic.Eav.DataSource.Configuration;
+﻿namespace ToSic.Eav.DataSource.Configuration;
 
 [Startup(typeof(TestStartupEavCoreAndDataSources))]
 public class GetThisTests(DataSourcesTstBuilder dsSvc)

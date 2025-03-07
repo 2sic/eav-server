@@ -1,16 +1,19 @@
 ﻿using ToSic.Eav.Code;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
-namespace ToSic.Eav.DataSourceTests.TestData;
+namespace ToSic.Eav.TestData;
 
-public class DataTablePerson(ICanGetService parent)
+public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {
-    private DataSourcesTstBuilder DsSvc => field ??= parent.GetService<DataSourcesTstBuilder>();
 
-
-    private DataBuilder DataBuilder => field ??= parent.GetService<DataBuilder>();
+    public DataTablePerson(ICanGetService parent): this(parent.GetService<DataSourcesTstBuilder>(), parent.GetService<DataBuilder>())
+    {
+    }
 
     private static readonly Dictionary<int, DataTable> CachedDs = new();
 
@@ -34,7 +37,7 @@ public class DataTablePerson(ICanGetService parent)
             new(PersonSpecs.FieldModifiedInternal, typeof(DateTime))
         ]);
 
-        new PersonGenerator(DataBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
+        new PersonGenerator(dataBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
             .ForEach(person => dataTable.Rows.Add(person.Id,
                 person.FullName,
                 person.First,
@@ -47,7 +50,7 @@ public class DataTablePerson(ICanGetService parent)
                 person.CityOrNull,
                 person.Modified));
 
-        var source = DsSvc.CreateDataSource<DataTable>(new LookUpTestData(DataBuilder).AppSetAndRes())
+        var source = dsSvc.CreateDataSource<DataTable>(new LookUpTestData(dataBuilder).AppSetAndRes())
                 .Setup(dataTable, PersonSpecs.PersonTypeName, 
                     titleField: PersonSpecs.FieldFullName, 
                     modifiedField: PersonSpecs.FieldModifiedInternal)

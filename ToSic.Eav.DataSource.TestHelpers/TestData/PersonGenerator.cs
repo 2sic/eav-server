@@ -1,12 +1,11 @@
-﻿using ToSic.Eav.Data.Build;
-using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
+﻿using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
+using static ToSic.Eav.TestData.PersonSpecs;
 
-namespace ToSic.Eav.DataSourceTests.TestData;
+namespace ToSic.Eav.TestData;
 
 internal class PersonGenerator(DataBuilder dataBuilder)
 {
-    public DataBuilder DataBuilder { get; } = dataBuilder;
-
     private static Person SemiRandom(int i)
     {
         var firstName = "First Name " + i;
@@ -62,27 +61,28 @@ internal class PersonGenerator(DataBuilder dataBuilder)
             {FieldHeight, MaybeMakeMlNonString(multiLanguage, FieldHeight, ValueTypes.Number, person.Height)},
             {FieldBioForMlSortTest, MaybeMakeMlBio(multiLanguage, person.IsMale)}
         };
-        return DataBuilder.CreateEntityTac(appId: 0, entityId: person.Id, contentType: DataBuilder.ContentType.Transient(PersonTypeName), values: dic,
+        return dataBuilder.CreateEntityTac(appId: 0, entityId: person.Id, contentType: dataBuilder.ContentType.Transient(PersonTypeName), values: dic,
             titleField: FieldFullName, modified: person.Modified);
     }
 
-    // todo: should be non-static some day, when the test-code isn't static any more
-    private static ILanguage Clone(ILanguage orig, bool readOnly) => new DimensionBuilder().CreateFrom(orig, readOnly);
+    // todo: should be non-static some day, when the test-code isn't static anymore
+    private static ILanguage Clone(ILanguage orig, bool readOnly)
+        => new DimensionBuilder().CreateFrom(orig, readOnly);
 
     private object MaybeMakeMl(bool convert, string name, string original)
     {
         if (!convert) return original;
 
-        var attribute = DataBuilder.Attribute.CreateTypedAttributeTac(name,  ValueTypes.String, new List<IValue>
+        var attribute = dataBuilder.Attribute.CreateTypedAttributeTac(name,  ValueTypes.String, new List<IValue>
         {
-            DataBuilder.Value.BuildTac(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri}),
-            DataBuilder.Value.BuildTac(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn}),
-            DataBuilder.Value.BuildTac(ValueTypes.String, DeMult + original, new List<ILanguage>
+            dataBuilder.Value.BuildTac(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri}),
+            dataBuilder.Value.BuildTac(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn}),
+            dataBuilder.Value.BuildTac(ValueTypes.String, DeMult + original, new List<ILanguage>
             {
                 LangDeDe, 
                 Clone(LangDeCh, true)
             }),
-            DataBuilder.Value.BuildTac(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr })
+            dataBuilder.Value.BuildTac(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr })
         });
         return attribute;
     }
@@ -90,10 +90,10 @@ internal class PersonGenerator(DataBuilder dataBuilder)
     {
         if (!convert) return isMale ? BioMaleNoLangLast : BioFemaleNoLangFirst;
 
-        var attribute = DataBuilder.Attribute.CreateTypedAttributeTac(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
+        var attribute = dataBuilder.Attribute.CreateTypedAttributeTac(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
         {
-            DataBuilder.Value.BuildTac(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn }),
-            DataBuilder.Value.BuildTac(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
+            dataBuilder.Value.BuildTac(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn }),
+            dataBuilder.Value.BuildTac(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
             {
                 LangDeDe, 
                 Clone(LangDeCh, true)
@@ -105,8 +105,8 @@ internal class PersonGenerator(DataBuilder dataBuilder)
     private object MaybeMakeMlNonString<T>(bool convert, string name, ValueTypes type, T original) =>
         !convert
             ? (object) original
-            : DataBuilder.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
+            : dataBuilder.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
             {
-                DataBuilder.Value.BuildTac(type, original, DimensionBuilder.NoLanguages),
+                dataBuilder.Value.BuildTac(type, original, DimensionBuilder.NoLanguages),
             });
 }

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource;
 
-namespace ToSic.Eav.DataSourceTests.TestData;
+namespace ToSic.Eav.TestData;
 
 public class PersonsDataSource: DataSourceBase
 {

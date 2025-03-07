@@ -1,31 +1,33 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
+using ToSic.Eav.TestData;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
-[TestClass]
-public class StreamPickTst: TestBaseEavDataSource
+[Startup(typeof(TestStartupEavCoreAndDataSources))]
+public class StreamPickTst(IDataSourcesService dsBuild, Generator<DataTablePerson> personTableGenerator)
 {
     private const int DefaultStreamSize = 10;
     private const int MoreStreamSize = 27;
     private const string MoreStream = "More";
 
-    [TestMethod]
+    [Fact]
     public void StreamPickDefault()
     {
         var streamPick = BuildStructure();
         var list = streamPick.ListTac();
-        AreEqual(list.Count(), DefaultStreamSize, "default should have 10");
+        Equal(list.Count(), DefaultStreamSize); //, "default should have 10");
     }
 
-    [TestMethod]
+    [Fact]
     public void StreamPickMore()
     {
         var streamPick = BuildStructure();
         streamPick.StreamName = MoreStream;
         var list = streamPick.ListTac();
-        AreEqual(list.Count(), MoreStreamSize, "default should have 27");
+        Equal(list.Count(), MoreStreamSize); //, "default should have 27");
     }
 
 
@@ -37,10 +39,10 @@ public class StreamPickTst: TestBaseEavDataSource
             {"StreamParam", "Lots"}
         });
 
-        var ds1 = new DataTablePerson(this).Generate(DefaultStreamSize, 1000);
-        var ds2 = new DataTablePerson(this).Generate(MoreStreamSize, 2700);
-        var ds3 = new DataTablePerson(this).Generate(53, 5300);
-        var dsBuild = GetService<IDataSourcesService>();
+        var ds1 = personTableGenerator.New().Generate(DefaultStreamSize, 1000);
+        var ds2 = personTableGenerator.New().Generate(MoreStreamSize, 2700);
+        var ds3 = personTableGenerator.New().Generate(53, 5300);
+        //var dsBuild = GetService<IDataSourcesService>();
         var streamPick = dsBuild.CreateTac<StreamPick>(appIdentity: new AppIdentity(1, 1), configLookUp: ds1.Configuration.LookUpEngine);
         streamPick.AttachTac(DataSourceConstants.StreamDefaultName, ds1);
         streamPick.AttachTac(MoreStream, ds2);

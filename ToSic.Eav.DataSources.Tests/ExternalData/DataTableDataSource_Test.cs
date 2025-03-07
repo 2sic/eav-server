@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.DataSourceTests.ExternalData;
+﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.TestData;
+
+namespace ToSic.Eav.DataSourceTests.ExternalData;
 
 [TestClass]
 public class DataTableTst: TestBaseEavDataSource
@@ -41,7 +44,7 @@ public class DataTableTst: TestBaseEavDataSource
     public void DataTable_DefaultTitleField()
     {
         const int itemsToGenerate = 25;
-        var ds = new DataTableTrivial(this).Generate(itemsToGenerate);
+        var ds = new DataTableTrivial(this.GetService<DataSourcesTstBuilder>(), GetService<DataBuilder>()).Generate(itemsToGenerate);
 
         AreEqual(25, ds.ListTac().Count());
         var first = ds.ListTac().FirstOrDefault();

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.StartUp;
+using ToSic.Eav.TestData;
 using ToSic.Lib;
 using ToSic.Testing.Shared;
 
@@ -23,6 +24,8 @@ public class TestStartupEavCoreAndDataSources
     public void ConfigureServices(IServiceCollection services) =>
         services
             .AddTransient<DataSourcesTstBuilder>()
+            .AddTransient<DataTableTrivial>()
+            .AddTransient<DataTablePerson>()
             .AddDataSources()
             .AddEavCore()
             .AddEavCoreFallbackServices()

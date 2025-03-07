@@ -1,8 +1,8 @@
-﻿namespace ToSic.Eav.DataSourceTests.TestData;
+﻿namespace ToSic.Eav.TestData;
 
 internal class RandomData
 {
-    internal static readonly Random Gen = new Random();
+    internal static readonly Random Gen = new();
 
     internal static DateTime RandomDate()
     {

@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSourceTests.TestData;
+﻿using ToSic.Eav.Data;
+
+namespace ToSic.Eav.TestData;
 
 public class PersonSpecs
 {
@@ -63,23 +65,23 @@ public class PersonSpecs
     // Languages we'll use in test-data
     // Important: we'll use a fake language as the primary
     // to better test all scenarios
-    internal const string En = "en";
-    internal const string EnUs = "en-US";
-    internal const string De = "de";
-    internal const string DeDe = "de-DE";
-    internal const string DeCh = "de-CH";
-    internal const string Fr = "fr";
-    internal const string FrFr = "fr-FR";
-    internal const string Pri = "pr";
-    internal const string PrPr = "pr-PR";
-    internal static Language LangPri = new Language(PrPr, false); // { DimensionId = 0, Key = PrPr};
-    internal static Language LangEn = new Language(EnUs, false, 1); // { DimensionId = 1, Key = EnUs };
-    internal static Language LangDeDe = new Language(DeDe, false, 42); // { DimensionId = 42, Key = DeDe };
-    internal static Language LangDeCh = new Language (DeCh, false, 39); // { DimensionId = 39, Key = DeCh };
-    internal static Language LangFr = new Language (FrFr, false, 99); // { DimensionId = 99, Key = FrFr };
+    public const string En = "en";
+    public const string EnUs = "en-US";
+    public const string De = "de";
+    public const string DeDe = "de-DE";
+    public const string DeCh = "de-CH";
+    public const string Fr = "fr";
+    public const string FrFr = "fr-FR";
+    public const string Pri = "pr";
+    public const string PrPr = "pr-PR";
+    public static Language LangPri = new(PrPr, false); // { DimensionId = 0, Key = PrPr};
+    public static Language LangEn = new(EnUs, false, 1); // { DimensionId = 1, Key = EnUs };
+    public static Language LangDeDe = new(DeDe, false, 42); // { DimensionId = 42, Key = DeDe };
+    public static Language LangDeCh = new(DeCh, false, 39); // { DimensionId = 39, Key = DeCh };
+    public static Language LangFr = new(FrFr, false, 99); // { DimensionId = 99, Key = FrFr };
 
-    internal const string PriPrefix = "PR-";
-    internal const string EnPrefix = "EN-";
-    internal const string FrPrefix = "FR-";
-    internal const string DeMult = "DE-Multi-";
+    public const string PriPrefix = "PR-";
+    public const string EnPrefix = "EN-";
+    public const string FrPrefix = "FR-";
+    public const string DeMult = "DE-Multi-";
 }

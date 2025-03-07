@@ -1,13 +1,14 @@
-﻿using ToSic.Eav.Code;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.LookUp;
+using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
-namespace ToSic.Eav.DataSourceTests.TestData;
+namespace ToSic.Eav.TestData;
 
-public class DataTableTrivial(ICanGetService parent)
+public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {
-    private DataSourcesTstBuilder DsSvc => field ??= parent.GetService<DataSourcesTstBuilder>();
+    //private DataSourcesTstBuilder DsSvc => field ??= parent.GetService<DataSourcesTstBuilder>();
 
     private static readonly Dictionary<int, DataTable> CachedDs = new();
 
@@ -24,8 +25,8 @@ public class DataTableTrivial(ICanGetService parent)
         ]);
         AddSemiRandomTrivial(dataTable, itemsToGenerate, firstId);
 
-        var source = DsSvc
-                .CreateDataSource<DataTable>(new LookUpTestData(parent.GetService<DataBuilder>()).AppSetAndRes())
+        var source = dsSvc
+                .CreateDataSource<DataTable>(new LookUpTestData(dataBuilder).AppSetAndRes())
                 .Setup(dataTable, "Person", modifiedField: PersonSpecs.FieldModifiedInternal)
             ;
 

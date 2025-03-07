@@ -1,6 +1,4 @@
 ﻿using ToSic.Eav.DataSource.Internal.Configuration;
-using ToSic.Eav.DataSources;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSource.Configuration;
 
