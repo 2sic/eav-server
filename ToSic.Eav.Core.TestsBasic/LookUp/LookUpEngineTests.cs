@@ -1,72 +1,68 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
+using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Core.Tests.LookUp;
+namespace ToSic.Eav.LookUp;
 
-[TestClass]
-public class LookUpEngineTests: TestBaseEavCore
+[Startup(typeof(TestStartupEavCore))]
+public class LookUpEngineTests(DataBuilder dataBuilder)
 {
+    #region Constants
 
-    #region Important Values which will be checked when resolved
-    private readonly string ResolvedSettingDefaultCat = "All";
-    private readonly string OriginalSettingMaxItems = "[AppSettings:MaxItems||100]";
-    private static string ResolvedSettingMaxItems = "100";
+    private const string ResolvedSettingDefaultCat = "All";
+    private const string OriginalSettingMaxItems = "[AppSettings:MaxItems||100]";
+    private const string ResolvedSettingMaxItems = "100";
 
     #endregion
 
-    [TestMethod]
+    [Fact]
     public void LookUpEngine_SourcesWork()
     {
-        var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
+        var lookUpEngine = new LookUpTestData(dataBuilder).AppSetAndRes();
         AssertLookUpEngineHasSourcesOfOriginal(lookUpEngine);
     }
 
     private void AssertLookUpEngineHasSourcesOfOriginal(ILookUpEngine lookUpEngine)
     {
         var settings = Settings();
-        Assert.IsTrue(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
-        Assert.AreEqual("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").GetTac(Attributes.TitleNiceName));
-        Assert.AreEqual(LookUpTestConstants.OriginalSettingDefaultCat, settings["DefaultCategory"]);
-        Assert.AreEqual(OriginalSettingMaxItems, settings["MaxItems"]);
+        Assert.True(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
+        Assert.Equal("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").GetTac(Attributes.TitleNiceName));
+        Assert.Equal(LookUpTestConstants.OriginalSettingDefaultCat, settings["DefaultCategory"]);
+        Assert.Equal(OriginalSettingMaxItems, settings["MaxItems"]);
     }
 
-    [TestMethod]
+    [Fact]
     public void LookUpEngine_DontModifyThingsWithoutTokens()
     {
-        var vc = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
+        var vc = new LookUpTestData(dataBuilder).AppSetAndRes();
         var settings = Settings();
         settings = vc.LookUp(settings);
-        Assert.AreEqual(ResolvedSettingDefaultCat, settings["DefaultCategory"], "Default should be all");
-        Assert.AreEqual(ResolvedSettingMaxItems, settings["MaxItems"], "Max should be 100");
+        Assert.Equal(ResolvedSettingDefaultCat, settings["DefaultCategory"]); //, "Default should be all");
+        Assert.Equal(ResolvedSettingMaxItems, settings["MaxItems"]); //, "Max should be 100");
     }
 
-    [TestMethod]
+    [Fact]
     public void BasicLookupsWork()
     {
-        var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
+        var mainEngine = new LookUpTestData(dataBuilder).AppSetAndRes(-1);
         var settings = mainEngine.LookUp(TestTokens());
         foreach (var setting in settings)
-            Assert.AreEqual(setting.Key, setting.Value, $"expected '{setting.Key}', got '{setting.Value}'");
+            Assert.Equal(setting.Key, setting.Value); //, $"expected '{setting.Key}', got '{setting.Value}'");
     }
 
-    [TestMethod]
+    [Fact]
     public void BasicLookupsWithTweaks()
     {
-        var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
+        var mainEngine = new LookUpTestData(dataBuilder).AppSetAndRes(-1);
         var settings = mainEngine.LookUp(TestTokens("-tweaked"), tweak: t => t.PostProcess(v => v + "-tweaked"));
         foreach (var setting in settings)
-            Assert.AreEqual(setting.Key, setting.Value, $"expected '{setting.Key}', got '{setting.Value}'");
+            Assert.Equal(setting.Key, setting.Value); //, $"expected '{setting.Key}', got '{setting.Value}'");
     }
 
-    [TestMethod]
+    [Fact]
     public void OverrideLookUps()
     {
-        var mainEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes(-1);
+        var mainEngine = new LookUpTestData(dataBuilder).AppSetAndRes(-1);
         const string overridenTitle = "overriden Title";
         var overrideDic = new Dictionary<string, string>
         {
@@ -75,15 +71,15 @@ public class LookUpEngineTests: TestBaseEavCore
         var appSettingsSource = new LookUpInDictionary(LookUpTestConstants.KeyAppSettings, overrideDic);
         // test before override
         var result = mainEngine.LookUp(TestTokens(), overrides: new List<ILookUp> { appSettingsSource });
-        Assert.AreEqual(overridenTitle, result["App Settings"], "should override");
+        Assert.Equal(overridenTitle, result["App Settings"]); //, "should override");
     }
 
-    [TestMethod]
+    [Fact]
     public void InheritEngine()
     {
-        var original = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
+        var original = new LookUpTestData(dataBuilder).AppSetAndRes();
         var cloned = new LookUpEngine(original, null);
-        Assert.AreEqual(0, cloned.Sources.Count());
+        Assert.Empty(cloned.Sources);
         AssertLookUpEngineHasSourcesOfOriginal(cloned.Downstream);
     }
 
@@ -104,9 +100,9 @@ public class LookUpEngineTests: TestBaseEavCore
     /// </summary>
     /// <param name="tweakSuffix">For tweak testing, suffix added to value...</param>
     /// <returns></returns>
-    private IDictionary<string, string> TestTokens(string tweakSuffix = default) =>
+    private Dictionary<string, string> TestTokens(string? tweakSuffix = null) =>
         // The dictionary - keys are the expected result, value are the tokens to use...
-        new Dictionary<string, string>
+        new()
         {
             { "App Settings" + tweakSuffix, "[AppSettings:Title]" },
             { LookUpTestConstants.DefaultCategory + tweakSuffix, "[AppSettings:DefaultCategoryName]" },
