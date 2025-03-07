@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Repositories;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Persistence.Efc.Tests;
 
@@ -23,9 +21,9 @@ public class Efc11LoadTests : Efc11TestBase
     [TestMethod]
     public void TestLoadXAppBlog()
     {
-        var results = Loader.AppStateReaderRawTA(2);
+        var results = Loader.AppStateReaderRawTac(2);
 
-        Assert.IsTrue(results.List.Count > 1097 && results.List.Count < 1200, "tried counting entities on the blog-app");
+        Assert.IsTrue(results.List.Count is > 1097 and < 1200, "tried counting entities on the blog-app");
     }
 
     [Ignore]
@@ -36,7 +34,7 @@ public class Efc11LoadTests : Efc11TestBase
         for (var i = 0; i < loadCount; i++)
         {
             Loader = NewLoader();
-            Loader.AppStateReaderRawTA(2);
+            Loader.AppStateReaderRawTac(2);
         }
     }
 

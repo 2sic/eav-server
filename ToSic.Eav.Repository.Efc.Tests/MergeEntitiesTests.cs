@@ -6,7 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Persistence;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Data;
+
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Repository.Efc.Tests;
@@ -167,15 +167,15 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
     {
         var title = Builder.Attribute.CreateTypedAttributeTac(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
         {
-            Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn}),
+            Builder.Value.BuildTac(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn}),
         });
         var teaser = Builder.Attribute.CreateTypedAttributeTac("Teaser", ValueTypes.String, new List<IValue>
         {
-            Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { langEn }),
+            Builder.Value.BuildTac(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { langEn }),
         });
         var file = Builder.Attribute.CreateTypedAttributeTac("File", ValueTypes.String, new List<IValue>
         {
-            Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
+            Builder.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
         });
 
         return Builder.CreateEntityTac(appId: AppId, entityId: 3006, contentType: Builder.ContentType.Transient("Product"), values: new()
@@ -195,29 +195,29 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
     {
         var title = Builder.Attribute.CreateTypedAttributeTac(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
         {
-            Builder.Value.Build4Test(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn }),
-            Builder.Value.Build4Test(ValueTypes.String, "Title DE",
+            Builder.Value.BuildTac(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn }),
+            Builder.Value.BuildTac(ValueTypes.String, "Title DE",
                 new List<ILanguage> { langDeDe, Clone(langDeCh, true)}),
-            Builder.Value.Build4Test(ValueTypes.String, "titre FR", new List<ILanguage> { langFr })
+            Builder.Value.BuildTac(ValueTypes.String, "titre FR", new List<ILanguage> { langFr })
         });
 
         var teaser = Builder.Attribute.CreateTypedAttributeTac("Teaser", ValueTypes.String, new List<IValue>
         {
-            Builder.Value.Build4Test(ValueTypes.String, "teaser de de", new List<ILanguage> {langDeDe }),
-            Builder.Value.Build4Test(ValueTypes.String, "teaser de CH", new List<ILanguage> {langDeCh }),
-            Builder.Value.Build4Test(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
+            Builder.Value.BuildTac(ValueTypes.String, "teaser de de", new List<ILanguage> {langDeDe }),
+            Builder.Value.BuildTac(ValueTypes.String, "teaser de CH", new List<ILanguage> {langDeCh }),
+            Builder.Value.BuildTac(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
             // special test: leave EN (primary) at end of list, as this could happen in real life
-            Builder.Value.Build4Test(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn }),
+            Builder.Value.BuildTac(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn }),
         });
         var file = Builder.Attribute.CreateTypedAttributeTac("File", ValueTypes.String, new List<IValue>
         {
-            Builder.Value.Build4Test(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
-            Builder.Value.Build4Test(ValueTypes.String, "File de de",
+            Builder.Value.BuildTac(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
+            Builder.Value.BuildTac(ValueTypes.String, "File de de",
                 new List<ILanguage> { langDeDe, langFr }),
-            Builder.Value.Build4Test(ValueTypes.String, "File FR", new List<ILanguage> {langFr }),
+            Builder.Value.BuildTac(ValueTypes.String, "File FR", new List<ILanguage> {langFr }),
             // special test - empty language item
-            Builder.Value.Build4Test(ValueTypes.String, "File without language!", DimensionBuilder.NoLanguages.ToList()),
-            Builder.Value.Build4Test(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
+            Builder.Value.BuildTac(ValueTypes.String, "File without language!", DimensionBuilder.NoLanguages.ToList()),
+            Builder.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
         });
 
         return Builder.CreateEntityTac(appId: AppId, entityId: 430, contentType: Builder.ContentType.Transient("Product"), values: new()
@@ -290,22 +290,22 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
             .Count(), "should have 2 titles with languages - EN and a shared DE+CH");
         Assert.AreEqual(2, merged[Attributes.TitleNiceName].ValuesTac()
             .Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count(), "should have 2 languages on the shared DE+CH");
-        Assert.AreEqual(ProductEntityEn.TacGet<string>(Attributes.TitleNiceName),
-            merged.TacGet<string>(Attributes.TitleNiceName, languages: [langEn.Key]), "en title should be the en-value");
+        Assert.AreEqual(ProductEntityEn.GetTac<string>(Attributes.TitleNiceName),
+            merged.GetTac<string>(Attributes.TitleNiceName, languages: [langEn.Key]), "en title should be the en-value");
         Assert.AreEqual(
-            mainMultiLang.TacGet<string>(Attributes.TitleNiceName, language: langDeDe.Key),
-            merged.TacGet(Attributes.TitleNiceName, language: langDeDe.Key),
+            mainMultiLang.GetTac<string>(Attributes.TitleNiceName, language: langDeDe.Key),
+            merged.GetTac(Attributes.TitleNiceName, language: langDeDe.Key),
             "de title should be the ML-value"
         );
         Assert.AreEqual(
-            mainMultiLang.TacGet<string>(Attributes.TitleNiceName, language: langDeCh.Key),
-            merged.TacGet(Attributes.TitleNiceName, language: langDeCh.Key),
+            mainMultiLang.GetTac<string>(Attributes.TitleNiceName, language: langDeCh.Key),
+            merged.GetTac(Attributes.TitleNiceName, language: langDeCh.Key),
             "ch title should be the ML-value"
         );
 
         Assert.AreNotEqual(
-            additionEn.TacGet<string>(Attributes.TitleNiceName, language: langDeCh.Key),
-            merged.TacGet(Attributes.TitleNiceName, languages: [langDeCh.Key]).ToString(),
+            additionEn.GetTac<string>(Attributes.TitleNiceName, language: langDeCh.Key),
+            merged.GetTac(Attributes.TitleNiceName, languages: [langDeCh.Key]).ToString(),
             "ch title should not be replaced with the the ML-value"
         );
         var firstVal = merged[Attributes.TitleNiceName].ValuesTac().First();
@@ -373,7 +373,7 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
         AssertBasicsInMerge(_origENull, GirlMarried, merged, GirlMarried);
         Assert.AreNotSame(GirlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same object in this case");
 
-        Assert.AreEqual(merged.TacGet<string>("FullName"), GirlMarried.TacGet<string>("FullName"), "full name should be that of married");
+        Assert.AreEqual(merged.GetTac<string>("FullName"), GirlMarried.GetTac<string>("FullName"), "full name should be that of married");
     }
 
     [TestMethod]
@@ -384,8 +384,8 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
         Assert.AreEqual(GirlSingle.Attributes.Count, merged.Attributes.Count, "this test case should keep all values of the first type");
         AssertBasicsInMerge(_origENull, GirlMarried, merged, GirlSingle);
         Assert.AreNotSame(GirlMarried.Attributes, merged.Attributes, "attributes new / merged shouldn't be same");
-        Assert.AreEqual(merged.TacGet<string>("FullName"), GirlMarried.TacGet<string>("FullName"), "full name should be that of married");
-        Assert.AreNotEqual(merged.TacGet<string>("FullName"), GirlSingle.TacGet<string>("FullName"), "full name should be that of married");
+        Assert.AreEqual(merged.GetTac<string>("FullName"), GirlMarried.GetTac<string>("FullName"), "full name should be that of married");
+        Assert.AreNotEqual(merged.GetTac<string>("FullName"), GirlSingle.GetTac<string>("FullName"), "full name should be that of married");
 
         // Merge keeping 
         merged = _entitySaver.TestCreateMergedForSavingTac(GirlSingle, GirlMarried, SaveKeepAttribs);
@@ -434,9 +434,9 @@ public class MergeEntitiesTests: TestBaseDiEavFullAndDb
         var merged = _entitySaver.TestCreateMergedForSavingTac(GirlSingle, GirlMarried, SaveSkipExisting);
         // var expectedFields = new List<string> {"FullName", "FirstName", "LastName", "Birthday", "Husband"};
         Assert.IsNotNull(merged, "result should never be null");
-        Assert.AreEqual(GirlSingle.TacGet<string>("FullName"), merged.TacGet<string>("FullName"), "should keep single name");
-        Assert.AreEqual(GirlSingle.TacGet<string>("LastName"), merged.TacGet<string>("LastName"), "should keep single name");
-        Assert.AreEqual(GirlMarried.TacGet<string>("Husband"), merged.TacGet<string>("Husband"), "should keep single name");
+        Assert.AreEqual(GirlSingle.GetTac<string>("FullName"), merged.GetTac<string>("FullName"), "should keep single name");
+        Assert.AreEqual(GirlSingle.GetTac<string>("LastName"), merged.GetTac<string>("LastName"), "should keep single name");
+        Assert.AreEqual(GirlMarried.GetTac<string>("Husband"), merged.GetTac<string>("Husband"), "should keep single name");
     }
 
     [TestMethod]

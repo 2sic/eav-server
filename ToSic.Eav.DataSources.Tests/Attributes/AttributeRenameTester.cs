@@ -6,7 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Data;
+
 
 namespace ToSic.Eav.DataSourceTests;
 
@@ -41,8 +41,8 @@ internal class AttributeRenameTester(ICanGetService parent)
         Assert.AreNotEqual(original, modified, "This test should never receive the same items!");
         fieldNew = fieldNew ?? fieldOriginal;
         Assert.AreEqual(
-            original.TacGet<string>(fieldOriginal),
-            modified.TacGet<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
+            original.GetTac<string>(fieldOriginal),
+            modified.GetTac<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
 
     }
 

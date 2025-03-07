@@ -77,12 +77,12 @@ public class ItemFilterDuplicatesTest: TestBaseEavDataSource
         if (attach < 1) throw new("attach must be at least 1");
         var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
         var dsf = GetService<IDataSourcesService>();
-        var sf = dsf.TestCreate<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);
+        var sf = dsf.CreateTac<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);
 
         for (int i = 1; i < attach; i++)
             sf.Attach("another" + i, ds.Out.First().Value);
 
-        var unique = dsf.TestCreate<ItemFilterDuplicates>(appIdentity: new AppIdentity(0, 0), upstream: sf);
+        var unique = dsf.CreateTac<ItemFilterDuplicates>(appIdentity: new AppIdentity(0, 0), upstream: sf);
         return unique;
     }
 }

@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Internal;
 using ToSic.Testing.Shared;
 using ToSic.Lib.Logging;
@@ -33,7 +33,7 @@ public class Efc11TestBase: TestBaseDiEavFullAndDb
 
     protected JsonSerializer SerializerOfApp(int appId)
     {
-        var app = Loader.AppStateReaderRawTA(appId);
+        var app = Loader.AppStateReaderRawTac(appId);
         return GetService<JsonSerializer>().SetApp(app);
     }
 

@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Data;
+
 
 namespace ToSic.Eav.DataSourceTests.Query;
 
@@ -39,7 +40,7 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     {
         var queryName = $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones";
         var queryEnt = QueryManager.FindQuery(Constants.PresetIdentity, queryName);
-        Assert.AreEqual(queryName, queryEnt.TacGet<string>("Name"), "should find zones");
+        Assert.AreEqual(queryName, queryEnt.GetTac<string>("Name"), "should find zones");
 
         var qdef = QueryDefinitionBuilder.Create(queryEnt, queryEnt.AppId);
         Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the query definition, should have the zone + sort = 2 parts");

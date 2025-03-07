@@ -2,10 +2,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Mocks;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Mocks;
 
 namespace ToSic.Eav.Apps.Tests.ImportExport;
 

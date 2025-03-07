@@ -80,14 +80,14 @@ internal class PersonGenerator(DataBuilder dataBuilder)
 
         var attribute = DataBuilder.Attribute.CreateTypedAttributeTac(name,  ValueTypes.String, new List<IValue>
         {
-            DataBuilder.Value.Build4Test(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri}),
-            DataBuilder.Value.Build4Test(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn}),
-            DataBuilder.Value.Build4Test(ValueTypes.String, DeMult + original, new List<ILanguage>
+            DataBuilder.Value.BuildTac(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri}),
+            DataBuilder.Value.BuildTac(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn}),
+            DataBuilder.Value.BuildTac(ValueTypes.String, DeMult + original, new List<ILanguage>
             {
                 LangDeDe, 
                 Clone(LangDeCh, true)
             }),
-            DataBuilder.Value.Build4Test(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr })
+            DataBuilder.Value.BuildTac(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr })
         });
         return attribute;
     }
@@ -97,8 +97,8 @@ internal class PersonGenerator(DataBuilder dataBuilder)
 
         var attribute = DataBuilder.Attribute.CreateTypedAttributeTac(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
         {
-            DataBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn }),
-            DataBuilder.Value.Build4Test(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
+            DataBuilder.Value.BuildTac(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn }),
+            DataBuilder.Value.BuildTac(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
             {
                 LangDeDe, 
                 Clone(LangDeCh, true)
@@ -112,6 +112,6 @@ internal class PersonGenerator(DataBuilder dataBuilder)
             ? (object) original
             : DataBuilder.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
             {
-                DataBuilder.Value.Build4Test(type, original, DimensionBuilder.NoLanguages),
+                DataBuilder.Value.BuildTac(type, original, DimensionBuilder.NoLanguages),
             });
 }

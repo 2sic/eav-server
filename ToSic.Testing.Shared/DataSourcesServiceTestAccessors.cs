@@ -6,31 +6,36 @@ using ToSic.Lib.Coding;
 
 namespace ToSic.Testing.Shared;
 
-public static class DataSourceFactoryTestExtensions
+public static class DataSourcesServiceTestAccessors
 {
-    public static TDataSource TestCreate<TDataSource>(
+    public static TDataSource CreateTac<TDataSource>(
         this IDataSourcesService dsf,
         NoParamOrder noParamOrder = default,
         IDataSource upstream = default,
         IAppIdentity appIdentity = default,
         ILookUpEngine configLookUp = default) where TDataSource : IDataSource
-        => dsf.Create<TDataSource>(attach: upstream, options: new DataSourceOptions
-        {
-            AppIdentityOrReader = appIdentity,
-            LookUp = configLookUp,
-        });
+        => dsf.Create<TDataSource>(
+            attach: upstream,
+            options: new DataSourceOptions
+            {
+                AppIdentityOrReader = appIdentity,
+                LookUp = configLookUp,
+            }
+        );
 
-    public static TDataSource TestCreateNew<TDataSource>(
+    public static TDataSource CreateNewTac<TDataSource>(
         this IDataSourcesService dsf,
         NoParamOrder noParamOrder = default,
         IDataSource upstream = default,
         IAppIdentity appIdentity = default,
         object options = default) where TDataSource : IDataSource
-        => dsf.Create<TDataSource>(attach: upstream, options: new DataSourceOptionConverter()
-            .Create(new DataSourceOptions
+        => dsf.Create<TDataSource>(
+            attach: upstream,
+            options: new DataSourceOptionConverter().Create(new DataSourceOptions
             {
                 AppIdentityOrReader = appIdentity,
                 LookUp = new LookUpEngine(null),
-            }, options));
+            }, options)
+        );
 
 }

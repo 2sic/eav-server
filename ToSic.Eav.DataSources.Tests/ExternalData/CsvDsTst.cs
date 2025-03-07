@@ -6,7 +6,7 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.LookUp;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Data;
+
 
 namespace ToSic.Eav.DataSourceTests.ExternalData;
 
@@ -123,7 +123,7 @@ public class CsvDsTst_RerunIfFailed: TestBaseEavDataSource
 
     private static object GetAttributeValue(IEntity entity, string name)
     {
-        return entity.TacGet(entity.Attributes[name].Name);
+        return entity.GetTac(entity.Attributes[name].Name);
     }
 
     public Csv CreateCsvDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)

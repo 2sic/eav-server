@@ -60,7 +60,7 @@ namespace ToSic.Eav.ImportExport.Tests.json
         private void Test_ExportAllOfAnApp(int appId)
         {
             var loader = _loader;
-            var app = loader.AppStateReaderRawTA(appId);
+            var app = loader.AppStateReaderRawTac(appId);
             var exBuilder = _jsonSerializer.SetApp(app);
 
             var maxCount = 1000;

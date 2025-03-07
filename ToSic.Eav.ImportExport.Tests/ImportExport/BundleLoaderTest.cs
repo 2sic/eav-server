@@ -10,7 +10,7 @@ using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Logging;
-using ToSic.Testing.Shared.Data;
+
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests
@@ -33,7 +33,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var entities = LoadAllEntitiesInBundles();
             var someData = entities.FirstOrDefault(e => e.Type.Name.Contains("SomeData"));
             Assert.AreEqual(4, entities.Count, "test case has 4 entity in bundles to deserialize");
-            Assert.AreEqual("fp638089655185445243", someData.TacGet("FirstProperty"));
+            Assert.AreEqual("fp638089655185445243", someData.GetTac("FirstProperty"));
         }
 
         [TestMethod]

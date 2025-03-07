@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Data;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Data;
+
 
 namespace ToSic.Eav.DataSourceTests;
 // Todo
@@ -21,10 +22,10 @@ public class PagingTest: TestBaseEavDataSource
     {
         var ds = CreatePagingForTesting(1000);
         var pgStream = ds["Paging"].ListTac().First();
-        Assert.AreEqual(1.ToDecimal(), pgStream.TacGet<int>("PageNumber"));
-        Assert.AreEqual(10.ToDecimal(), pgStream.TacGet<int>("PageSize"));
-        Assert.AreEqual(100.ToDecimal(), pgStream.TacGet<int>("PageCount"));
-        Assert.AreEqual(1000.ToDecimal(), pgStream.TacGet<int>("ItemCount"));
+        Assert.AreEqual(1.ToDecimal(), pgStream.GetTac<int>("PageNumber"));
+        Assert.AreEqual(10.ToDecimal(), pgStream.GetTac<int>("PageSize"));
+        Assert.AreEqual(100.ToDecimal(), pgStream.GetTac<int>("PageCount"));
+        Assert.AreEqual(1000.ToDecimal(), pgStream.GetTac<int>("ItemCount"));
 
         var result = ds.ListTac();
         Assert.AreEqual(10, result.Count());
@@ -37,10 +38,10 @@ public class PagingTest: TestBaseEavDataSource
         var ds = CreatePagingForTesting(1001);
         ds.PageNumber = 7;
         var pgstream = ds["Paging"].ListTac().First();
-        Assert.AreEqual(7.ToDecimal(), pgstream.TacGet<int>("PageNumber"));
-        Assert.AreEqual(10.ToDecimal(), pgstream.TacGet<int>("PageSize"));
-        Assert.AreEqual(101.ToDecimal(), pgstream.TacGet<int>("PageCount"));
-        Assert.AreEqual(1001.ToDecimal(), pgstream.TacGet<int>("ItemCount"));
+        Assert.AreEqual(7.ToDecimal(), pgstream.GetTac<int>("PageNumber"));
+        Assert.AreEqual(10.ToDecimal(), pgstream.GetTac<int>("PageSize"));
+        Assert.AreEqual(101.ToDecimal(), pgstream.GetTac<int>("PageCount"));
+        Assert.AreEqual(1001.ToDecimal(), pgstream.GetTac<int>("ItemCount"));
 
         var result = ds.ListTac();
         Assert.AreEqual(10, result.Count());
@@ -54,10 +55,10 @@ public class PagingTest: TestBaseEavDataSource
         ds.PageSize = 50;
         ds.PageNumber = 5;
         var pgstream = ds["Paging"].ListTac().First();
-        Assert.AreEqual(5.ToDecimal(), pgstream.TacGet<int>("PageNumber"));
-        Assert.AreEqual(50.ToDecimal(), pgstream.TacGet<int>("PageSize"));
-        Assert.AreEqual(5.ToDecimal(), pgstream.TacGet<int>("PageCount"));
-        Assert.AreEqual(223.ToDecimal(), pgstream.TacGet<int>("ItemCount"));
+        Assert.AreEqual(5.ToDecimal(), pgstream.GetTac<int>("PageNumber"));
+        Assert.AreEqual(50.ToDecimal(), pgstream.GetTac<int>("PageSize"));
+        Assert.AreEqual(5.ToDecimal(), pgstream.GetTac<int>("PageCount"));
+        Assert.AreEqual(223.ToDecimal(), pgstream.GetTac<int>("ItemCount"));
 
         var result = ds.ListTac();
         Assert.AreEqual(23, result.Count());

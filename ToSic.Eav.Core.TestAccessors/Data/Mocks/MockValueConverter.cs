@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Eav.Data;
-
-namespace ToSic.Testing.Shared.Mocks;
+﻿namespace ToSic.Eav.Data.Mocks;
 
 /// <summary>
 /// Will pretend to convert links beginning with "page:" or "link:"

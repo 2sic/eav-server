@@ -48,7 +48,7 @@ public class StreamPickTst: TestBaseEavDataSource
         var ds2 = new DataTablePerson(this).Generate(MoreStreamSize, 2700);
         var ds3 = new DataTablePerson(this).Generate(53, 5300);
         var dsBuild = GetService<IDataSourcesService>();
-        var streamPick = dsBuild.TestCreate<StreamPick>(appIdentity: new AppIdentity(1, 1), configLookUp: ds1.Configuration.LookUpEngine);
+        var streamPick = dsBuild.CreateTac<StreamPick>(appIdentity: new AppIdentity(1, 1), configLookUp: ds1.Configuration.LookUpEngine);
         streamPick.AttachTac(DataSourceConstants.StreamDefaultName, ds1);
         streamPick.AttachTac(MoreStream, ds2);
         streamPick.AttachTac("Lots", ds3);

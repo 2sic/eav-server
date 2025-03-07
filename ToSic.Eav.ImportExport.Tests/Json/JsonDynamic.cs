@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Json;
 using ToSic.Eav.Repository.Efc.Tests;
-using ToSic.Testing.Shared.Data;
+
 
 namespace ToSic.Eav.ImportExport.Tests.json
 {
@@ -45,8 +46,8 @@ namespace ToSic.Eav.ImportExport.Tests.json
             ent = serializer.Deserialize(jsonDynamic, true); // should work too
             Assert.AreEqual(6, ent.Attributes.Count, "second dynamic entity should also have 6 attribs");
 
-            Assert.AreEqual("v1", ent.TacGet("f1"), "added field f1 should be v1");
-            Assert.AreEqual(specs.TestItemLinkValue, ent.TacGet(specs.TestItemLinkField), "original fields should still work");
+            Assert.AreEqual("v1", ent.GetTac("f1"), "added field f1 should be v1");
+            Assert.AreEqual(specs.TestItemLinkValue, ent.GetTac(specs.TestItemLinkField), "original fields should still work");
             Assert.AreEqual(null, ent.GetBestTitle(), "shouldn't have a real title");
         }
 

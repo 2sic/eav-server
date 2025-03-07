@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Data.Build;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.TestData;
 
-public static class MockData
+public static class TestEntities
 {
     public const int AppId = -1;
 

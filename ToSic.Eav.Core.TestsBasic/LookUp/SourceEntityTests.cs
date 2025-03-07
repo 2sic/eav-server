@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.TestData;
 using Xunit.DependencyInjection;
 using static Xunit.Assert;
 
@@ -38,7 +39,7 @@ public class SourceEntityTests(DataBuilder dataBuilder)
     public void EntityTypeIsTestType() => Equal("TestType", _person.GetTac("EntityType"));
 
     [Fact]
-    public void AnyDate() => Equal(DateTime.Parse(MockData.AnyDateString), DateTime.Parse(_person.GetTac(MockData.AnyDateKey)));
+    public void AnyDate() => Equal(DateTime.Parse(TestEntities.AnyDateString), DateTime.Parse(_person.GetTac(TestEntities.AnyDateKey)));
 
     /// <summary>
     /// TODO: This test has never been completed.

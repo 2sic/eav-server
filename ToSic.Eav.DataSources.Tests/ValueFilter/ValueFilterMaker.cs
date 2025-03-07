@@ -29,7 +29,7 @@ public class ValueFilterMaker(ICanGetService parent)
             ? new DataTablePerson(parent).Generate(itemsToGenerate) as IDataSource
             : DsSvc.CreateDataSource<PersonsDataSource>(new LookUpTestData(parent.GetService<DataBuilder>()).AppSetAndRes())
                 .Init(itemsToGenerate, multiLanguage: multiLanguage);
-        var filtered = DsSvc.DataSourceSvc.TestCreate<ValueSort>(upstream: ds);
+        var filtered = DsSvc.DataSourceSvc.CreateTac<ValueSort>(upstream: ds);
         return filtered;
     }
 

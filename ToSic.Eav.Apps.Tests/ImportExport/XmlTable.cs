@@ -29,7 +29,7 @@ public class XmlTable: TestBaseDiEavFullAndDb
     private ExportListXml BuildExporter(int appId, string ctName)
     {
         var loader = GetService<IRepositoryLoader>();
-        var appPackage = loader.AppStateReaderRawTA(appId);
+        var appPackage = loader.AppStateReaderRawTac(appId);
         var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
         return GetService<ExportListXml>().Init(appPackage, type);
     }

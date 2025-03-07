@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
-using ToSic.Testing.Shared.Data;
+
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 // ReSharper disable once CheckNamespace
@@ -52,7 +52,7 @@ namespace ToSic.Eav.Persistence.File.Tests
             var conMetaStr = conMeta.FirstOrDefault(e => e.Type.Name == "@string-default");
             IsNotNull(conMetaStr, "should have string metadata");
 
-            var lines = (decimal)conMetaStr.TacGet("RowCount");
+            var lines = (decimal)conMetaStr.GetTac("RowCount");
             AreEqual(3, lines);
         }
 
@@ -72,16 +72,16 @@ namespace ToSic.Eav.Persistence.File.Tests
             var conMetaAll = meta.FirstOrDefault(e => e.Type.Name == "Basics");
             IsNotNull(conMetaAll, "should have Basics metadata");
 
-            var niceName = conMetaAll.TacGet<string>("NiceName");
+            var niceName = conMetaAll.GetTac<string>("NiceName");
             AreEqual("sql content type", niceName);
-            var active = conMetaAll.TacGet<bool>("Active");
+            var active = conMetaAll.GetTac<bool>("Active");
             IsTrue(active, "should have an active-info");
 
 
             var conMetaStr = meta.FirstOrDefault(e => e.Type.Name == "Enhancements");
             IsNotNull(conMetaStr, "should have Enhancements metadata");
 
-            var icon = conMetaStr.TacGet<string>("Icon");
+            var icon = conMetaStr.GetTac<string>("Icon");
             AreEqual("icon.png", icon);
         }
 

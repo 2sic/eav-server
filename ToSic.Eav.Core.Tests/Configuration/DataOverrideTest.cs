@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Data;
 
 namespace ToSic.Eav.Core.Tests.Configuration;
 
@@ -44,7 +43,7 @@ public class DataOverrideTest : TestBaseDiEavFullAndDb
         Assert.AreEqual(1, entities.Count());
 
         var entity = primaryApp.List.One(guid);
-        var html = entity.TacGet<string>(htmlField);
+        var html = entity.GetTac<string>(htmlField);
 
         Assert.AreEqual(expected, html.Contains(testString));
     }

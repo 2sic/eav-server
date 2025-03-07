@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Data;
+
 
 namespace ToSic.Eav.DataSourceTests.TreeMapperTests;
 
@@ -33,11 +33,11 @@ public class DataFactoryTest: TestBaseEavDataSource
         var parent = all.First();
 
         // Control - to be sure the test can make sense
-        var getTitle = parent.Entity.TacGet("Title");
+        var getTitle = parent.Entity.GetTac("Title");
         Assert.IsNotNull(getTitle);
         Assert.AreEqual(getTitle, parentRaw.Title);
 
-        var childrenProperty = parent.Entity.TacGet(childrenField);
+        var childrenProperty = parent.Entity.GetTac(childrenField);
         Assert.IsNotNull(childrenProperty);
         var childrenList = childrenProperty as IEnumerable<IEntity>;
         Assert.IsNotNull(childrenList);

@@ -6,7 +6,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Testing.Shared;
-using ToSic.Testing.Shared.Data;
+
 
 namespace ToSic.Eav.DataSourceTests;
 // Todo
@@ -58,10 +58,10 @@ public class ValueSort_DateTime: TestBaseEavDataSource
 
     private static void ValidateDateFieldIsSorted(List<IEntity> list, string field, bool asc)
     {
-        var previous = list.First().TacGet<DateTime?>(field);
+        var previous = list.First().GetTac<DateTime?>(field);
         foreach (var entity in list)
         {
-            var next = entity.TacGet<DateTime?>(field);
+            var next = entity.GetTac<DateTime?>(field);
 
             if (next == null || previous == null)
             {
