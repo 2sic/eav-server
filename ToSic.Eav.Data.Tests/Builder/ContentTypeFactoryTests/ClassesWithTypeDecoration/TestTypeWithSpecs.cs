@@ -1,8 +1,6 @@
-﻿using System;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Internal;
+﻿using ToSic.Eav.Data.Internal;
 
-namespace ToSic.Eav.Core.Tests.Data.ContentTypeFactoryTests;
+namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 internal class TestTypeWithSpecs: TestTypeWithSpecsEmpty

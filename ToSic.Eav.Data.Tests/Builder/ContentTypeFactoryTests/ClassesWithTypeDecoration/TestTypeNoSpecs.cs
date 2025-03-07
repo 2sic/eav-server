@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Core.Tests.Data.ContentTypeFactoryTests;
+﻿namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
 
 internal class TestTypeNoSpecs
 {

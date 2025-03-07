@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.Core.Tests.Data.ContentTypeFactoryTests;
+﻿namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
 
 /// <summary>
 /// Properties such as ID and Guid should not be used for attributes.

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Diagnostics;
+using Xunit.Abstractions;
 
-namespace ToSic.Eav.Core.Tests.Data;
+namespace ToSic.Eav;
 
 /// <summary>
 /// Test which kind of comparison is faster.
@@ -12,8 +10,7 @@ namespace ToSic.Eav.Core.Tests.Data;
 /// - using a function with a compare-function as parameter
 /// - using the generic EqualityComparer - which is the slowest but ATM the default for attribute-value find
 /// </summary>
-[TestClass]
-public class EqualityComparerPerformance
+public class EqualityComparerPerformance(ITestOutputHelper output)
 {
     private const int Iterations = 1000000;
 
@@ -22,7 +19,7 @@ public class EqualityComparerPerformance
     private static bool IsDefaultFn<T>(T value, Func<T, bool> compare) => compare(value);
 
 
-    [TestMethod]
+    [Fact]
     public void TestPerformanceForNumberEqualsDefault()
     {
         // start timer
@@ -31,10 +28,10 @@ public class EqualityComparerPerformance
         for (var i = 0; i < Iterations; i++)
             ok = i == default;
         sw.Stop();
-        Trace.WriteLine($"Time: {sw.ElapsedMilliseconds}ms / {sw.ElapsedTicks} Ticks, ok: {ok}");
+        output.WriteLine($"Time: {sw.ElapsedMilliseconds}ms / {sw.ElapsedTicks} Ticks, ok: {ok}");
     }
 
-    [TestMethod]
+    [Fact]
     public void TestPerformanceForNumberEqualsDefaultWithFn()
     {
         // start timer
@@ -43,10 +40,10 @@ public class EqualityComparerPerformance
         for (var i = 0; i < Iterations; i++)
             ok = IsDefault(i);
         sw.Stop();
-        Trace.WriteLine($"Time: {sw.ElapsedMilliseconds}ms / {sw.ElapsedTicks} Ticks, ok: {ok}");
+        output.WriteLine($"Time: {sw.ElapsedMilliseconds}ms / {sw.ElapsedTicks} Ticks, ok: {ok}");
     }
 
-    [TestMethod]
+    [Fact]
     public void TestPerformanceForNumberEqualsDefaultWithFnInParam()
     {
         // start timer
@@ -55,10 +52,10 @@ public class EqualityComparerPerformance
         for (var i = 0; i < Iterations; i++)
             ok = IsDefaultFn(i, IsDefault);
         sw.Stop();
-        Trace.WriteLine($"Time: {sw.ElapsedMilliseconds}ms / {sw.ElapsedTicks} Ticks, ok: {ok}");
+        output.WriteLine($"Time: {sw.ElapsedMilliseconds}ms / {sw.ElapsedTicks} Ticks, ok: {ok}");
     }
 
-    [TestMethod]
+    [Fact]
     public void TestPerformanceForNumberEqualsDefaultWithGeneric()
     {
         // start timer
@@ -67,7 +64,7 @@ public class EqualityComparerPerformance
         for (var i = 0; i < Iterations; i++)
             ok = EqualityComparer<int>.Default.Equals(i, default);
         sw.Stop();
-        Trace.WriteLine($"Time: {sw.ElapsedMilliseconds}ms / {sw.ElapsedTicks} Ticks, ok: {ok}");
+        output.WriteLine($"Time: {sw.ElapsedMilliseconds}ms / {sw.ElapsedTicks} Ticks, ok: {ok}");
     }
 
 }
