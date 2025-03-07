@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
+﻿using System.Diagnostics;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -80,15 +75,15 @@ internal class RelationshipTestCase : RelationshipTestBase
 
         Api.ListTac().ToList().ForEach(e => Trace.WriteLine($"item ({e.EntityId}):'{e.GetBestTitle()}'"));
 
-        Assert.IsTrue(expectsResults ? CountApi > 0 : CountApi == 0, $"test: {Name} - found-Count:{CountApi} > 0");
+        IsTrue(expectsResults ? CountApi > 0 : CountApi == 0, $"test: {Name} - found-Count:{CountApi} > 0");
         if(exactCount != -1)
-            Assert.AreEqual(exactCount, CountApi, $"test: {Name} - missed expected exact count");
+            AreEqual(exactCount, CountApi, $"test: {Name} - missed expected exact count");
 
         if (shouldReturnAll)
-            Assert.AreEqual(CountApi, CountAll, $"test: {Name} - all == count not met");
+            AreEqual(CountApi, CountAll, $"test: {Name} - all == count not met");
         else
-            Assert.IsTrue(CountApi < CountAll, $"test: {Name} - foundCount < allComps");
+            IsTrue(CountApi < CountAll, $"test: {Name} - foundCount < allComps");
 
-        Assert.AreEqual(CountApi, CountConfig, $"test: {Name} - api and config should be the same");
+        AreEqual(CountApi, CountConfig, $"test: {Name} - api and config should be the same");
     }
 }

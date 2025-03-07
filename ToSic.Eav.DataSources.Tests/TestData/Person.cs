@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Eav.DataSourceTests.TestData;
+﻿namespace ToSic.Eav.DataSourceTests.TestData;
 
 internal class Person
 {

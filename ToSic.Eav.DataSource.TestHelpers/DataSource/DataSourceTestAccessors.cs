@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal.Caching;
 
 namespace ToSic.Eav.DataSourceTests;
 
 /// <summary>
 /// These extensions will access the normal List/Stream properties, but by making all tests use this, we have a cleaner use count in the Code.
 /// </summary>
-public static class ExtensionsForTesting
+public static class DataSourceTestAccessors
 {
     /// <summary>
     /// All test code should use this property, to ensure that we don't have a huge usage-count on the In-stream just because of tests
@@ -40,15 +38,4 @@ public static class ExtensionsForTesting
     public static IEnumerable<IEntity> ListTac(this IDataStream stream)
         => stream.List;
 
-    public static bool HasStreamTac(this IListCacheSvc listCache, string key)
-        => listCache.HasStream(key);
-
-    public static bool HasStreamTac(this IListCacheSvc listCache, IDataStream dataStream)
-        => listCache.HasStream(dataStream);
-
-    public static ListCacheItem GetTac(this IListCacheSvc listCache, string key)
-        => listCache.Get(key);
-
-    public static ListCacheItem GetTac(this IListCacheSvc listCache, IDataStream dataStream)
-        => listCache.Get(dataStream);
 }

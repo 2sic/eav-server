@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
-
-namespace ToSic.Eav.DataSourceTests.ExternalData;
+﻿namespace ToSic.Eav.DataSourceTests.ExternalData;
 
 [TestClass]
 public class DataTableTst: TestBaseEavDataSource
@@ -16,18 +9,18 @@ public class DataTableTst: TestBaseEavDataSource
     {
         const int itemsToGenerate = 499;
         var ds = new DataTablePerson(this).Generate(itemsToGenerate);
-        Assert.IsTrue(ds.InTac().Count == 0, "In count should be 0");
-        Assert.IsTrue(ds.Out.Count == 1, "Out count should be 1");
+        IsTrue(ds.InTac().Count == 0, "In count should be 0");
+        IsTrue(ds.Out.Count == 1, "Out count should be 1");
         var defaultOut = ds[DataSourceConstants.StreamDefaultName];
-        Assert.IsTrue(defaultOut != null);
+        IsTrue(defaultOut != null);
         try
         {
             // ReSharper disable once UnusedVariable
             var x = ds["Something"];
-            Assert.Fail("Access to another out should fail");
+            Fail("Access to another out should fail");
         }
         catch { }
-        Assert.IsTrue(defaultOut.ListTac().Count() == itemsToGenerate);
+        IsTrue(defaultOut.ListTac().Count() == itemsToGenerate);
     }
 
     [TestMethod]
@@ -38,10 +31,10 @@ public class DataTableTst: TestBaseEavDataSource
 
         //var expKey = "DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person";
         var expKey = "DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName";
-        Assert.AreEqual(expKey, ds.CachePartialKey);
-        Assert.AreEqual(expKey, ds.CacheFullKey);
+        AreEqual(expKey, ds.CachePartialKey);
+        AreEqual(expKey, ds.CacheFullKey);
         var lastRefresh = ds.CacheTimestamp; // get this before comparison, because sometimes slow execution will get strange results
-        Assert.IsTrue(DateTime.Now.Ticks >= lastRefresh, "Date-check of cache refresh");
+        IsTrue(DateTime.Now.Ticks >= lastRefresh, "Date-check of cache refresh");
     }
 
     [TestMethod]
@@ -50,9 +43,9 @@ public class DataTableTst: TestBaseEavDataSource
         const int itemsToGenerate = 25;
         var ds = new DataTableTrivial(this).Generate(itemsToGenerate);
 
-        Assert.AreEqual(25, ds.ListTac().Count());
+        AreEqual(25, ds.ListTac().Count());
         var first = ds.ListTac().FirstOrDefault();
-        Assert.AreEqual("Daniel Mettler", first.GetBestTitle());
+        AreEqual("Daniel Mettler", first.GetBestTitle());
     }
 
 

@@ -1,11 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
@@ -24,7 +17,7 @@ public class ShuffleTest: TestBaseEavDataSource
     #region shuffle tests
 
 
-    private DataSources.Shuffle GenerateShuffleDS(int desiredFinds)
+    private Shuffle GenerateShuffleDS(int desiredFinds)
     {
         var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
         var sf = DsSvc.CreateDataSource<Shuffle>(ds);
@@ -38,7 +31,7 @@ public class ShuffleTest: TestBaseEavDataSource
         var desiredFinds = 100;
         var sf = GenerateShuffleDS(desiredFinds);
         var found = sf.ListTac().Count();
-        Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
+        AreEqual(desiredFinds, found, "Should find exactly this amount people");
 
     }
 
@@ -52,8 +45,8 @@ public class ShuffleTest: TestBaseEavDataSource
         var seqConsistent = AreAllItemsSorted(sf.Out[DataSourceConstants.StreamDefaultName]);
 
         // after checking all, it should NOT be consistent
-        Assert.IsTrue(origSeqSorted, "original sequence SHOULD be sorted");
-        Assert.IsFalse(seqConsistent, "sequence should NOT be not-sorted");
+        IsTrue(origSeqSorted, "original sequence SHOULD be sorted");
+        IsFalse(seqConsistent, "sequence should NOT be not-sorted");
 
     }
 

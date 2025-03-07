@@ -1,10 +1,6 @@
 ﻿using ToSic.Eav.Code;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.TestData;
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests;
 

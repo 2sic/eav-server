@@ -1,12 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Diagnostics;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Query;
 
@@ -33,10 +28,10 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
     public void LookForQuery_DeepApi()
     {
         var qdef = LoadQueryDef(Eav.DataSourceTests.TestConfig.AppForQueryTests, basicId);
-        Assert.IsNotNull(qdef.Entity);
+        IsNotNull(qdef.Entity);
 
         var metadata = qdef.Entity.Metadata.ToList();
-        Assert.IsTrue(metadata.Count > 0);
+        IsTrue(metadata.Count > 0);
 
     }
 
@@ -57,7 +52,7 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
         var ser = _jsonSerializer;
         var justHeader = ser.Serialize(qdef.Entity, 0);
         var full = ser.Serialize(qdef.Entity, 10);
-        Assert.IsTrue(full.Length > justHeader.Length *2, "full serialized should be much longer");
+        IsTrue(full.Length > justHeader.Length *2, "full serialized should be much longer");
         Trace.WriteLine("basic");
         Trace.WriteLine(justHeader);
         Trace.WriteLine("full");
@@ -73,17 +68,17 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
         var full = ser.Serialize(qdef.Entity, 10);
 
         var eHead2 = ser.Deserialize(strHead, true);
-        Assert.IsTrue(eHead2.Metadata.Count() == 0, "header without metadata should also have non after restoring");
+        IsTrue(eHead2.Metadata.Count() == 0, "header without metadata should also have non after restoring");
 
         var strHead2 = ser.Serialize(eHead2);
-        Assert.AreEqual(strHead2, strHead2, "header without metadata serialized and back should be the same");
+        AreEqual(strHead2, strHead2, "header without metadata serialized and back should be the same");
 
         var fullBack = ser.Deserialize(full, true);
-        Assert.AreEqual(fullBack.Metadata.Count(), qdef.Entity.Metadata.Count(),
+        AreEqual(fullBack.Metadata.Count(), qdef.Entity.Metadata.Count(),
             "full with metadata should also have after restoring");
 
         var full2 = ser.Serialize(fullBack, 10);
-        Assert.AreEqual(full, full2, "serialize, deserialize and serialize should get same thing");
+        AreEqual(full, full2, "serialize, deserialize and serialize should get same thing");
 
 
     }
@@ -101,8 +96,8 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
         var qdef = LoadQueryDef(Eav.DataSourceTests.TestConfig.AppForQueryTests, basicId);
         var query = _queryBuilder.GetDataSourceForTesting(qdef).Main;
         var countDef = query.ListTac().Count();
-        Assert.IsTrue(countDef > 0, "result > 0");
-        Assert.AreEqual(basicCount, countDef);
+        IsTrue(countDef > 0, "result > 0");
+        AreEqual(basicCount, countDef);
 
         var ser = Serializer();
         var strQuery = ser.Serialize(qdef.Entity, 10);
@@ -111,7 +106,7 @@ public class QueryBasicTest: TestBaseDiEavFullAndDb
         var qdef2 = _queryDefinitionBuilder.Create(eDef2, 0);
         var query2 = _queryBuilder.GetDataSourceForTesting(qdef2).Main;
         var countDef2 = query2.ListTac().Count();
-        Assert.AreEqual(countDef2, countDef, "countdefs should be same");
+        AreEqual(countDef2, countDef, "countdefs should be same");
     }
 
 }

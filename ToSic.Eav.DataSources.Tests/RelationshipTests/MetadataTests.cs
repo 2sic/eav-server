@@ -1,11 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 using static ToSic.Eav.DataSourceTests.RelationshipTests.MetadataTestSpecs;
 
 namespace ToSic.Eav.DataSourceTests.RelationshipTests;
@@ -14,7 +8,7 @@ namespace ToSic.Eav.DataSourceTests.RelationshipTests;
 public class MetadataTests: TestBaseDiEavFullAndDb
 {
     private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
-    private void TestMetadata(int expected, DataSources.Metadata ds) => Assert.AreEqual(expected, ds.ListTac().Count(), $"should have {expected} md items");
+    private void TestMetadata(int expected, DataSources.Metadata ds) => AreEqual(expected, ds.ListTac().Count(), $"should have {expected} md items");
 
 
     [TestMethod]

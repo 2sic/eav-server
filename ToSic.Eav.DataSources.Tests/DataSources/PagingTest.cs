@@ -1,12 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
-
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
@@ -22,14 +14,14 @@ public class PagingTest: TestBaseEavDataSource
     {
         var ds = CreatePagingForTesting(1000);
         var pgStream = ds["Paging"].ListTac().First();
-        Assert.AreEqual(1.ToDecimal(), pgStream.GetTac<int>("PageNumber"));
-        Assert.AreEqual(10.ToDecimal(), pgStream.GetTac<int>("PageSize"));
-        Assert.AreEqual(100.ToDecimal(), pgStream.GetTac<int>("PageCount"));
-        Assert.AreEqual(1000.ToDecimal(), pgStream.GetTac<int>("ItemCount"));
+        AreEqual(1.ToDecimal(), pgStream.GetTac<int>("PageNumber"));
+        AreEqual(10.ToDecimal(), pgStream.GetTac<int>("PageSize"));
+        AreEqual(100.ToDecimal(), pgStream.GetTac<int>("PageCount"));
+        AreEqual(1000.ToDecimal(), pgStream.GetTac<int>("ItemCount"));
 
         var result = ds.ListTac();
-        Assert.AreEqual(10, result.Count());
-        Assert.AreEqual(seedId, result.First().EntityId);
+        AreEqual(10, result.Count());
+        AreEqual(seedId, result.First().EntityId);
     }
 
     [TestMethod]
@@ -38,14 +30,14 @@ public class PagingTest: TestBaseEavDataSource
         var ds = CreatePagingForTesting(1001);
         ds.PageNumber = 7;
         var pgstream = ds["Paging"].ListTac().First();
-        Assert.AreEqual(7.ToDecimal(), pgstream.GetTac<int>("PageNumber"));
-        Assert.AreEqual(10.ToDecimal(), pgstream.GetTac<int>("PageSize"));
-        Assert.AreEqual(101.ToDecimal(), pgstream.GetTac<int>("PageCount"));
-        Assert.AreEqual(1001.ToDecimal(), pgstream.GetTac<int>("ItemCount"));
+        AreEqual(7.ToDecimal(), pgstream.GetTac<int>("PageNumber"));
+        AreEqual(10.ToDecimal(), pgstream.GetTac<int>("PageSize"));
+        AreEqual(101.ToDecimal(), pgstream.GetTac<int>("PageCount"));
+        AreEqual(1001.ToDecimal(), pgstream.GetTac<int>("ItemCount"));
 
         var result = ds.ListTac();
-        Assert.AreEqual(10, result.Count());
-        Assert.AreEqual(seedId + 60, result.First().EntityId);
+        AreEqual(10, result.Count());
+        AreEqual(seedId + 60, result.First().EntityId);
     }
 
     [TestMethod]
@@ -55,15 +47,15 @@ public class PagingTest: TestBaseEavDataSource
         ds.PageSize = 50;
         ds.PageNumber = 5;
         var pgstream = ds["Paging"].ListTac().First();
-        Assert.AreEqual(5.ToDecimal(), pgstream.GetTac<int>("PageNumber"));
-        Assert.AreEqual(50.ToDecimal(), pgstream.GetTac<int>("PageSize"));
-        Assert.AreEqual(5.ToDecimal(), pgstream.GetTac<int>("PageCount"));
-        Assert.AreEqual(223.ToDecimal(), pgstream.GetTac<int>("ItemCount"));
+        AreEqual(5.ToDecimal(), pgstream.GetTac<int>("PageNumber"));
+        AreEqual(50.ToDecimal(), pgstream.GetTac<int>("PageSize"));
+        AreEqual(5.ToDecimal(), pgstream.GetTac<int>("PageCount"));
+        AreEqual(223.ToDecimal(), pgstream.GetTac<int>("ItemCount"));
 
         var result = ds.ListTac();
-        Assert.AreEqual(23, result.Count());
-        Assert.AreEqual(seedId + 200, result.First().EntityId);
-        Assert.AreEqual(seedId + 223 -1, result.Last().EntityId);
+        AreEqual(23, result.Count());
+        AreEqual(seedId + 200, result.First().EntityId);
+        AreEqual(seedId + 223 -1, result.Last().EntityId);
     }
 
     [TestMethod]
@@ -71,20 +63,20 @@ public class PagingTest: TestBaseEavDataSource
     {
         var ds = CreatePagingForTesting(45);
         var expectedPartialKey = "Paging:NoGuid&PageNumber=1&PageSize=10";
-        Assert.AreEqual(expectedPartialKey, ds.CachePartialKey);
-        Assert.AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName" +
+        AreEqual(expectedPartialKey, ds.CachePartialKey);
+        AreEqual("DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName" +
                         ">" + expectedPartialKey, ds.CacheFullKey);
         var lastRefresh = ds.CacheTimestamp; // get this before comparison, because sometimes slow execution will get strange results
-        Assert.IsTrue(DateTime.Now.Ticks >= lastRefresh, "Date-check of cache refresh");
+        IsTrue(DateTime.Now.Ticks >= lastRefresh, "Date-check of cache refresh");
     }
 
     // to test
     // pickup of settings when it has settings
         
-    public DataSources.Paging CreatePagingForTesting(int testItemsInRootSource)
+    public Paging CreatePagingForTesting(int testItemsInRootSource)
     {
         var ds = new DataTablePerson(this).Generate(testItemsInRootSource, seedId);
-        return DsSvc.CreateDataSource<DataSources.Paging>(ds);
+        return DsSvc.CreateDataSource<Paging>(ds);
         //return filtered;
     }
 

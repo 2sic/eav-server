@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSourceTests.TestData;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 
 public partial class AttributeRenameTests
 {
@@ -17,8 +14,8 @@ Last=LastName";
     public void Map1ChangeWithPreserve()
     {
         var test = new AttributeRenameTester(this).Init(MapBasic1);
-        Assert.AreEqual(10, test.CList.Count);
-        Assert.AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
+        AreEqual(10, test.CList.Count);
+        AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
         AssertFieldsChanged(test.CItem, [PersonSpecs.FieldFullName], [ShortName]);
 
@@ -30,9 +27,9 @@ Last=LastName";
     public void Map1ChangeWithDropRest()
     {
         var test = new AttributeRenameTester(this).Init(MapBasic1, false);
-        Assert.AreEqual(10, test.CList.Count);
-        Assert.AreNotEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected a different amount of columns");
-        Assert.AreEqual(1, test.CItem.Attributes.Count, "expect only 1 field now");
+        AreEqual(10, test.CList.Count);
+        AreNotEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected a different amount of columns");
+        AreEqual(1, test.CItem.Attributes.Count, "expect only 1 field now");
 
         AssertFieldsChanged(test.CItem, PersonSpecs.Fields, [ShortName]);
 
@@ -51,8 +48,8 @@ Last=LastName";
     public void Map3ChangeWithPreserve(string map)
     {
         var test = new AttributeRenameTester(this).Init(map);
-        Assert.AreEqual(10, test.CList.Count);
-        Assert.AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
+        AreEqual(10, test.CList.Count);
+        AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
 
         AssertFieldsChanged(test.CItem,
             [PersonSpecs.FieldFullName, PersonSpecs.FieldFirstName, PersonSpecs.FieldLastName],
@@ -67,8 +64,8 @@ Last=LastName";
     public void Map3ChangeWithDropRest()
     {
         var test = new AttributeRenameTester(this).Init(Map3Fields, false);
-        Assert.AreEqual(10, test.CList.Count);
-        Assert.AreEqual(3, test.CItem.Attributes.Count, "expected the same amount of columns");
+        AreEqual(10, test.CList.Count);
+        AreEqual(3, test.CItem.Attributes.Count, "expected the same amount of columns");
 
         AssertFieldsChanged(test.CItem, 
             PersonSpecs.Fields,

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 
 namespace ToSic.Eav.DataSourceTests.TestData;
 
-public class PersonsDataSource: Eav.DataSource.DataSourceBase
+public class PersonsDataSource: DataSourceBase
 {
     public PersonsDataSource(MyServices services, DataBuilder dataBuilder): base(services, "TST.Person")
     {

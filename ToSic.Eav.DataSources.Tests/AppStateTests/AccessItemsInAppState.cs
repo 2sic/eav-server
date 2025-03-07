@@ -1,9 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Diagnostics;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.AppStateTests;
 

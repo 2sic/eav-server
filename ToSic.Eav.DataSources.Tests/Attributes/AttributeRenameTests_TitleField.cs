@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSourceTests.TestData;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 
 public partial class AttributeRenameTests
 {
@@ -12,15 +9,15 @@ public partial class AttributeRenameTests
     public void TitleChange()
     {
         var test = new AttributeRenameTester(this).Init(MapDropTitle, false);
-        Assert.AreEqual(10, test.CList.Count);
-        Assert.AreEqual(1, test.CItem.Attributes.Count, "expected the same amount of columns");
+        AreEqual(10, test.CList.Count);
+        AreEqual(1, test.CItem.Attributes.Count, "expected the same amount of columns");
 
         AssertFieldsChanged(test.CItem, PersonSpecs.Fields, [ShortFirst]);
 
         test.AssertValues(PersonSpecs.FieldFirstName, ShortFirst);
 
-        Assert.AreEqual(null, test.CItem.GetBestTitle(), "should get null title?");
-        Assert.AreEqual(null, test.CItem.Title, "title attribute will be null");
+        AreEqual(null, test.CItem.GetBestTitle(), "should get null title?");
+        AreEqual(null, test.CItem.Title, "title attribute will be null");
     }
 
 

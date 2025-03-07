@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data;
-
-namespace ToSic.Eav.DataSourceTests.TestData;
+﻿namespace ToSic.Eav.DataSourceTests.TestData;
 
 public class PersonSpecs
 {

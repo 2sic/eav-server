@@ -1,9 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
@@ -34,7 +29,7 @@ public class ValueFilterBoolean: TestBaseEavDataSource
         vf.Attribute = "IsMale";
         vf.Value = compareValue;
         var found = vf.ListTac().Count();
-        Assert.AreEqual(desiredFinds, found, "Should find exactly this amount people");
+        AreEqual(desiredFinds, found, "Should find exactly this amount people");
     }
 
 }

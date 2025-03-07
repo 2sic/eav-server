@@ -1,11 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 
 [TestClass]
 public partial class AttributeRenameTests: TestBaseEavDataSource
@@ -13,12 +6,12 @@ public partial class AttributeRenameTests: TestBaseEavDataSource
         
     private static void AssertHasFields(IEntity item, IEnumerable<string> fieldsExpected)
     {
-        foreach (var f in fieldsExpected) Assert.IsTrue(item.Attributes.ContainsKey(f), $"should have field '{f}'");
+        foreach (var f in fieldsExpected) IsTrue(item.Attributes.ContainsKey(f), $"should have field '{f}'");
     }
 
     private static void AssertDoesNotHaveFields(IEntity item, IEnumerable<string> fieldsExpected)
     {
-        foreach (var f in fieldsExpected) Assert.IsFalse(item.Attributes.ContainsKey(f), $"should have field '{f}'");
+        foreach (var f in fieldsExpected) IsFalse(item.Attributes.ContainsKey(f), $"should have field '{f}'");
     }
 
     private static List<string> ChangeFieldList(string[] removeFields, string[] addFields)

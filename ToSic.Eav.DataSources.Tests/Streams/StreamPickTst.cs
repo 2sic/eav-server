@@ -1,13 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.TestData;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
@@ -23,7 +16,7 @@ public class StreamPickTst: TestBaseEavDataSource
     {
         var streamPick = BuildStructure();
         var list = streamPick.ListTac();
-        Assert.AreEqual(list.Count(), DefaultStreamSize, "default should have 10");
+        AreEqual(list.Count(), DefaultStreamSize, "default should have 10");
     }
 
     [TestMethod]
@@ -32,7 +25,7 @@ public class StreamPickTst: TestBaseEavDataSource
         var streamPick = BuildStructure();
         streamPick.StreamName = MoreStream;
         var list = streamPick.ListTac();
-        Assert.AreEqual(list.Count(), MoreStreamSize, "default should have 27");
+        AreEqual(list.Count(), MoreStreamSize, "default should have 27");
     }
 
 

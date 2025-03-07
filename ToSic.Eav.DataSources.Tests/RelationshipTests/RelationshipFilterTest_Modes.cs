@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.RelationshipTests;
+﻿using ToSic.Eav.DataSourceTests.RelationshipTests;
 
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests;
 
@@ -117,7 +115,7 @@ public partial class RelationshipFilterTest
         not.CompareMode = "not-" + not.CompareMode;
         not.Run(true);
 
-        Assert.IsTrue(original.CountAll == original.CountApi + not.CountApi, 
+        IsTrue(original.CountAll == original.CountApi + not.CountApi, 
             "not and default should together have the total failed "
             + $"tot:{original.CountAll}, having2:{original.CountApi}, not-having:{not.CountApi}");
     }
@@ -211,7 +209,7 @@ public partial class RelationshipFilterTest
     {
         var tst = BuildContainsAnything();
         tst.Run(true);
-        Assert.IsTrue(tst.CountApi > 5, "should get more than 5 hits");
+        IsTrue(tst.CountApi > 5, "should get more than 5 hits");
     }
 
     /// <summary>

@@ -1,11 +1,6 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 
 
 namespace ToSic.Eav.DataSourceTests.ExternalData;
@@ -101,23 +96,23 @@ public class CsvDsTst_RerunIfFailed: TestBaseEavDataSource
         var sourceList = source.ListTac().OrderBy(item => item.EntityId).ToList();
 
         // List
-        Assert.AreEqual(TestFileRowCount, sourceList.Count, "Entity list has not the expected length.");
+        AreEqual(TestFileRowCount, sourceList.Count, "Entity list has not the expected length.");
 
         // Entities
         for (var i = 0; i < sourceList.Count; i++)
         {
             var entity = sourceList.ElementAt(i);
 
-            Assert.AreEqual(TestFileColumnCount, entity.Attributes.Count, "Entity " + i + ": Attributes do not match the columns in the file.");
+            AreEqual(TestFileColumnCount, entity.Attributes.Count, "Entity " + i + ": Attributes do not match the columns in the file.");
             if (string.IsNullOrEmpty(source.IdColumnName))
             {
-                Assert.AreEqual(i + 2, entity.EntityId, "Entity " + i + ": ID does not match.");
+                AreEqual(i + 2, entity.EntityId, "Entity " + i + ": ID does not match.");
             }
             else
             {
-                Assert.AreEqual(GetAttributeValue(entity, source.IdColumnName), entity.EntityId.ToString(), "Entity " + i + ": ID does not match.");
+                AreEqual(GetAttributeValue(entity, source.IdColumnName), entity.EntityId.ToString(), "Entity " + i + ": ID does not match.");
             }
-            Assert.IsNotNull(GetAttributeValue(entity, source.TitleColumnName), "Entity " + i + ": Title should not be null.");
+            IsNotNull(GetAttributeValue(entity, source.TitleColumnName), "Entity " + i + ": Title should not be null.");
         }
     }
 

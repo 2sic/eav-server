@@ -5,7 +5,7 @@ using ToSic.Testing.Shared;
 namespace ToSic.Eav.DataSource.Configuration;
 
 [Startup(typeof(TestStartupEavCoreAndDataSources))]
-public class ConfigMaskAuto(DataSourcesTstBuilder DsSvc, ConfigurationDataLoader findConfigs)
+public class ConfigMaskAuto(DataSourcesTstBuilder dsSvc, ConfigurationDataLoader findConfigs)
 {
     [Fact]
     public void EnsureNoCacheAtFirstAndCacheLater()
@@ -15,7 +15,6 @@ public class ConfigMaskAuto(DataSourcesTstBuilder DsSvc, ConfigurationDataLoader
 
         // should be false at first
         False(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));
-        //var findConfigs = GetService<ConfigurationDataLoader>();
         var masks = findConfigs.GetTokensTac(typeof(Shuffle));
         True(ConfigurationDataLoader.Cache.ContainsKey(typeof(Shuffle)));
     }
@@ -23,16 +22,14 @@ public class ConfigMaskAuto(DataSourcesTstBuilder DsSvc, ConfigurationDataLoader
     [Fact]
     public void GetMasksForShuffle()
     {
-        //var findConfigs = GetService<ConfigurationDataLoader>();
         var masks = findConfigs.GetTokensTac(typeof(Shuffle));
-        Equal(1, masks.Count);
+        Single(masks);
         Equal($"[{DataSourceConstants.MyConfigurationSourceName}:Take||0]", masks.First().Token);
     }
 
     [Fact]
     public void GetMasksForInheritedDataSource()
     {
-        //var findConfigs = GetService<ConfigurationDataLoader>();
         var masks = findConfigs.GetTokensTac(typeof(Children));
         Equal(3, masks.Count);
         Equal($"[{DataSourceConstants.MyConfigurationSourceName}:{nameof(Children.FieldName)}]", masks.Skip(1).First().Token);
@@ -41,7 +38,6 @@ public class ConfigMaskAuto(DataSourcesTstBuilder DsSvc, ConfigurationDataLoader
     [Fact]
     public void GetMasksWithOtherFieldName()
     {
-        //var findConfigs = GetService<ConfigurationDataLoader>();
         var masks = findConfigs.GetTokensTac(typeof(RelationshipFilter));
         Equal(6, masks.Count);
         Equal($"[{DataSourceConstants.MyConfigurationSourceName}:Direction||{RelationshipFilter.DefaultDirection}]", masks.First(m => m.Key == nameof(RelationshipFilter.ChildOrParent)).Token);
@@ -50,7 +46,6 @@ public class ConfigMaskAuto(DataSourcesTstBuilder DsSvc, ConfigurationDataLoader
     [Fact]
     public void GetMasksWithEnumDefault()
     {
-        //var findConfigs = GetService<ConfigurationDataLoader>();
         var masks = findConfigs.GetTokensTac(typeof(RelationshipFilter));
         Equal(6, masks.Count);
         Equal($"[{DataSourceConstants.MyConfigurationSourceName}:Comparison||contains]", masks.First(m => m.Key == nameof(RelationshipFilter.CompareMode)).Token);
@@ -59,9 +54,8 @@ public class ConfigMaskAuto(DataSourcesTstBuilder DsSvc, ConfigurationDataLoader
     [Fact]
     public void ShuffleShouldHave1Mask()
     {
-        var shuffle = DsSvc.CreateDataSource<Shuffle>();
-
-        Equal(1, shuffle.Configuration.Values.Count);
+        var shuffle = dsSvc.CreateDataSource<Shuffle>();
+        Single(shuffle.Configuration.Values);
     }
 
 }

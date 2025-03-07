@@ -1,7 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
 using ToSic.Lib.Logging;
 
@@ -30,7 +27,7 @@ public partial class RelationshipFilterTest: RelationshipTestBase
     {
         var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
         Trace.Write(Log.Dump());
-        Assert.IsNotNull(relFilt, "relFilt != null");
+        IsNotNull(relFilt, "relFilt != null");
     }
 
     [TestMethod]
@@ -42,7 +39,7 @@ public partial class RelationshipFilterTest: RelationshipTestBase
 
         Trace.Write(Log.Dump());
 
-        Assert.IsTrue(result.Count == 0, "result.Count == 0");
+        IsTrue(result.Count == 0, "result.Count == 0");
     }
     [TestMethod]
     public void DS_RelFil_NoConfigFallback()
@@ -53,7 +50,7 @@ public partial class RelationshipFilterTest: RelationshipTestBase
         var result = relFilt.ListTac().ToList();
 
         Trace.Write(Log.Dump());
-        Assert.IsTrue(result.Count > 0, "count should be more than 0, as it should use fallback");
+        IsTrue(result.Count > 0, "count should be more than 0, as it should use fallback");
     }
 
     [TestMethod]

@@ -1,10 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
@@ -88,19 +82,19 @@ public class StreamMergeTst: TestBaseEavDataSource
     {
         var found = streamMerge.ListTac().Count();
         Trace.WriteLine("Found (Default / OR): " + found);
-        Assert.AreEqual(expDefault, found, "Should find exactly this amount people after merge");
+        AreEqual(expDefault, found, "Should find exactly this amount people after merge");
 
         var foundDistinct = streamMerge.OutTac(StreamMerge.DistinctStream).Count();
         Trace.WriteLine("Distinct: " + foundDistinct);
-        Assert.AreEqual(expDistinct, foundDistinct, "Should find exactly this amount of _distinct_ people");
+        AreEqual(expDistinct, foundDistinct, "Should find exactly this amount of _distinct_ people");
 
         var foundAnd = streamMerge.OutTac(StreamMerge.AndStream).Count();
         Trace.WriteLine("AND: " + foundAnd);
-        Assert.AreEqual(expAnd, foundAnd, "Should find exactly this amount of _AND_ people");
+        AreEqual(expAnd, foundAnd, "Should find exactly this amount of _AND_ people");
 
         var foundXor = streamMerge.OutTac(StreamMerge.XorStream).Count();
         Trace.WriteLine("XOR: " + foundXor);
-        Assert.AreEqual(expXor, foundXor, "Should find exactly this amount of _XOR_ people");
+        AreEqual(expXor, foundXor, "Should find exactly this amount of _XOR_ people");
     }
 
     private ValueFilter GenerateSecondStreamWithSomeResults(StreamMerge sf, int itemsInSecondStream)
@@ -109,7 +103,7 @@ public class StreamMergeTst: TestBaseEavDataSource
         secondSf.Attribute = Attributes.EntityIdPascalCase;
         secondSf.Operator = "<";
         secondSf.Value = (FirstId + itemsInSecondStream).ToString();
-        Assert.AreEqual(itemsInSecondStream, secondSf.ListTac().Count(),
+        AreEqual(itemsInSecondStream, secondSf.ListTac().Count(),
             $"For next test to work, we must be sure we have {itemsInSecondStream} items here");
         return secondSf;
     }

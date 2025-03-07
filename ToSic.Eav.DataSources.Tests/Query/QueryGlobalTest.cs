@@ -1,10 +1,6 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource.Internal;
+﻿using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
-using ToSic.Testing.Shared;
 
 
 namespace ToSic.Eav.DataSourceTests.Query;
@@ -31,7 +27,7 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     {
         var queries = QueryManager.AllQueryItems(Constants.PresetIdentity);
         var count = queries.Count;
-        Assert.IsTrue(count is >= GlobalQueryCount and <= GlobalQueryCount + 5, $"should find {GlobalQueryCount} +/-5 query definitions, found {queries.Count}");
+        IsTrue(count is >= GlobalQueryCount and <= GlobalQueryCount + 5, $"should find {GlobalQueryCount} +/-5 query definitions, found {queries.Count}");
     }
 
 
@@ -40,10 +36,10 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
     {
         var queryName = $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones";
         var queryEnt = QueryManager.FindQuery(Constants.PresetIdentity, queryName);
-        Assert.AreEqual(queryName, queryEnt.GetTac<string>("Name"), "should find zones");
+        AreEqual(queryName, queryEnt.GetTac<string>("Name"), "should find zones");
 
         var qdef = QueryDefinitionBuilder.Create(queryEnt, queryEnt.AppId);
-        Assert.AreEqual(2, qdef.Parts.Count, "counting parts of the query definition, should have the zone + sort = 2 parts");
+        AreEqual(2, qdef.Parts.Count, "counting parts of the query definition, should have the zone + sort = 2 parts");
     }
 
     [TestMethod]
@@ -57,7 +53,7 @@ public class QueryGlobalTest: TestBaseDiEavFullAndDb
         var query = fac.GetDataSourceForTesting(qDef).Main;
 
         var list = query.ListTac();
-        Assert.IsTrue(list.Count() > 1, "should find a few portals in the eav-testing-DB");
+        IsTrue(list.Count() > 1, "should find a few portals in the eav-testing-DB");
     }
 
 

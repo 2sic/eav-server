@@ -1,11 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
@@ -81,7 +74,7 @@ public class ValueFilterNumbers: TestBaseEavDataSource
     public void NumberFilter(string attr, string value, int expected, string operation = null)
     {
         var vf = PrepareNumberFilterDs(attr, value, operation);
-        Assert.AreEqual(expected, vf.ListTac().Count(), "Should find exactly " + expected + " amount people");
+        AreEqual(expected, vf.ListTac().Count(), "Should find exactly " + expected + " amount people");
     }
 
     private ValueFilter PrepareNumberFilterDs(string attr, string value, string operation)

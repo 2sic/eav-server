@@ -1,15 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSourceTests.RelationshipTests;
 using ToSic.Lib.Logging;
 
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests;
 
@@ -99,18 +92,18 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
         var appDs = DsSvc.CreateDataSource<App>(baseDs);
 
         // micro tests to ensure we have the right app etc.
-        Assert.IsTrue(appDs.ListTac().Count() > 20, "appDs.List.Count() > 20");
+        IsTrue(appDs.ListTac().Count() > 20, "appDs.List.Count() > 20");
 
         var item731 = appDs.ListTac().FindRepoId(731);
-        Assert.IsNotNull(item731, "expecting item 731");
+        IsNotNull(item731, "expecting item 731");
         var title = item731.GetBestTitle();
-        Assert.AreEqual(title, "2sic", "item 731 should have title '2sic'");
+        AreEqual(title, "2sic", "item 731 should have title '2sic'");
 
-        Assert.IsTrue(appDs.Out.ContainsKey(primaryType), $"app should contain stream of {primaryType}");
+        IsTrue(appDs.Out.ContainsKey(primaryType), $"app should contain stream of {primaryType}");
 
         var stream = appDs[primaryType];
 
-        Assert.IsTrue(stream.ListTac().Any(), "stream.List.Count() > 0");
+        IsTrue(stream.ListTac().Any(), "stream.List.Count() > 0");
 
         var relFilt = DsSvc.CreateDataSource<RelationshipFilter>(appDs.Configuration.LookUpEngine);
         relFilt.AttachTac(DataSourceConstants.StreamDefaultName, stream);

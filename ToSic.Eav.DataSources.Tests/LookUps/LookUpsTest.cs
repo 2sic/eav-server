@@ -1,8 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
+﻿using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSourceTests.LookUps;
 
@@ -48,10 +44,10 @@ public class LookUpsTest: TestBaseEavDataSource
 
         var y = testSource.ListTac(); // must access something to provoke configuration resolving
 
-        Assert.AreEqual("First Name 1001", testSource.Configuration.Values["InTestFirstName"], "Tested in:Default:EntityTitle");
-        Assert.AreEqual("", testSource.Configuration.Values["InTestBadStream"], "Testing in-token with invalid stream");
-        Assert.AreEqual("", testSource.Configuration.Values["InTestNoKey"], "Testing in-token with missing field");
-        Assert.AreEqual("First Name " + ItemToFilter, testSource.Configuration.Values["TestMyConfFirstName"], "MyConf stream First Name");
-        Assert.AreEqual("", testSource.Configuration.Values["InTestBadKey"], "Testing in-token with incorrect field name");
+        AreEqual("First Name 1001", testSource.Configuration.Values["InTestFirstName"], "Tested in:Default:EntityTitle");
+        AreEqual("", testSource.Configuration.Values["InTestBadStream"], "Testing in-token with invalid stream");
+        AreEqual("", testSource.Configuration.Values["InTestNoKey"], "Testing in-token with missing field");
+        AreEqual("First Name " + ItemToFilter, testSource.Configuration.Values["TestMyConfFirstName"], "MyConf stream First Name");
+        AreEqual("", testSource.Configuration.Values["InTestBadKey"], "Testing in-token with incorrect field name");
     }
 }

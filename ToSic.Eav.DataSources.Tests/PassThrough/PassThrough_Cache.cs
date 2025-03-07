@@ -1,7 +1,4 @@
 ﻿using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests;
 // Todo
@@ -21,8 +18,8 @@ public class PassThrough_Cache: TestBaseEavDataSource
         var fullKey = outSource.CacheFullKey;
         Trace.WriteLine("Partial Key:" + partialKey);
         Trace.WriteLine("Full Key: " + fullKey);
-        Assert.IsNotNull(partialKey);
-        Assert.IsNotNull(fullKey);
+        IsNotNull(partialKey);
+        IsNotNull(fullKey);
     }
 
 }

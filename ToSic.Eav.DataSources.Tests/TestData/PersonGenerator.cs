@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Testing.Shared;
+﻿using ToSic.Eav.Data.Build;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 
 namespace ToSic.Eav.DataSourceTests.TestData;

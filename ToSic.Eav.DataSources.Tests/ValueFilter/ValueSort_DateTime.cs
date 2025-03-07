@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
-
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 // Create tests with multiple fields to sort
@@ -77,9 +67,9 @@ public class ValueSort_DateTime: TestBaseEavDataSource
 
 
             if (asc)
-                Assert.IsTrue(comp >= 0, "new " + field + " " + next + " should be = or larger than prev " + previous);
+                IsTrue(comp >= 0, "new " + field + " " + next + " should be = or larger than prev " + previous);
             else
-                Assert.IsTrue(comp <=0, "new " + field + " " + next + " should be = or smaller than prev " + previous);
+                IsTrue(comp <=0, "new " + field + " " + next + " should be = or smaller than prev " + previous);
             previous = next;
         }
     }

@@ -1,9 +1,5 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.DataSourceTests.ExternalData;
 
@@ -24,8 +20,8 @@ public class SqlDsTst: TestBaseEavDataSource
         var configCountBefore = config.Count;
         sql.Configuration.Parse(); 
 
-        Assert.AreEqual(configCountBefore, config.Count);
-        Assert.AreEqual(initQuery, sql.SelectCommand);
+        AreEqual(configCountBefore, config.Count);
+        AreEqual(initQuery, sql.SelectCommand);
     }
 
     #region test parameter injection
@@ -41,12 +37,12 @@ public class SqlDsTst: TestBaseEavDataSource
         var configCountBefore = config.Count;
         sql.CustomConfigurationParse();
 
-        Assert.AreEqual(configCountBefore + paramsInQuery, config.Count);
-        Assert.AreEqual(expectedQuery, sql.SelectCommand);
+        AreEqual(configCountBefore + paramsInQuery, config.Count);
+        AreEqual(expectedQuery, sql.SelectCommand);
 
         sql.Configuration.Parse();
         var parsed = sql.Configuration.Values;
-        Assert.AreEqual("", parsed["@" + Sql.ExtractedParamPrefix + "1"]);
+        AreEqual("", parsed["@" + Sql.ExtractedParamPrefix + "1"]);
     }
 
     [TestMethod]
@@ -67,14 +63,14 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
         var configCountBefore = config.Count;
         sql.CustomConfigurationParse();
 
-        Assert.AreEqual(configCountBefore + paramsInQuery, config.Count);
-        Assert.AreEqual(expectedQuery, sql.SelectCommand);
+        AreEqual(configCountBefore + paramsInQuery, config.Count);
+        AreEqual(expectedQuery, sql.SelectCommand);
 
         sql.Configuration.Parse();
         var parsed = sql.Configuration.Values;
-        Assert.AreEqual(LookUpTestConstants.MaxPictures, parsed["@" + Sql.ExtractedParamPrefix + "1"]);
-        Assert.AreEqual(LookUpTestConstants.DefaultCategory, parsed["@" + Sql.ExtractedParamPrefix + "2"]);
-        Assert.AreEqual("CorrectlyDefaulted", parsed["@" + Sql.ExtractedParamPrefix + "3"]);
+        AreEqual(LookUpTestConstants.MaxPictures, parsed["@" + Sql.ExtractedParamPrefix + "1"]);
+        AreEqual(LookUpTestConstants.DefaultCategory, parsed["@" + Sql.ExtractedParamPrefix + "2"]);
+        AreEqual("CorrectlyDefaulted", parsed["@" + Sql.ExtractedParamPrefix + "3"]);
     }
 
     #endregion
@@ -126,7 +122,7 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
                      "FROM [Portals]";
         var sql = GenerateSqlDataSource(TestConfig.ConStr, select, ContentTypeName);
         var list = sql.ListTac();
-        Assert.IsTrue(list.Any(), "found some");
+        IsTrue(list.Any(), "found some");
     }
 
     #endregion

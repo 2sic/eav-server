@@ -1,10 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.DataSourceTests.TestData;
-using ToSic.Testing.Shared;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 
 [TestClass]
 public class EntityTypeFilterTest: TestBaseEavDataSource
@@ -16,7 +10,7 @@ public class EntityTypeFilterTest: TestBaseEavDataSource
     {
         var vf = CreateEntityTypeFilterForTesting(1000);
         vf.TypeName = "Person";
-        Assert.AreEqual(1000, vf.ListTac().Count(), "Should find all");
+        AreEqual(1000, vf.ListTac().Count(), "Should find all");
     }
 
     [TestMethod]
@@ -24,7 +18,7 @@ public class EntityTypeFilterTest: TestBaseEavDataSource
     {
         var vf = CreateEntityTypeFilterForTesting(1000);
         vf.TypeName = "Category";
-        Assert.AreEqual(0, vf.ListTac().Count(), "Should find all");
+        AreEqual(0, vf.ListTac().Count(), "Should find all");
     }
 
 

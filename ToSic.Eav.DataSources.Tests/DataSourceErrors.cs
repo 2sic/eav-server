@@ -1,9 +1,4 @@
-﻿using System.Linq;
-using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 
 public static class DataSourceErrors
 {

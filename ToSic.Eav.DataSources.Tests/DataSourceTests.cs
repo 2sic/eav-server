@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSource.Internal.Catalog;
-using ToSic.Testing.Shared;
+﻿using ToSic.Eav.DataSource.Internal.Catalog;
 
 namespace ToSic.Eav.DataSourceTests;
 
@@ -22,10 +19,10 @@ public class DataSourceTests: TestBaseEavDataSource
     {
         var dsCatalog = GetService<DataSourceCatalog>();
         var dsList = dsCatalog.GetAll(false, 0);
-        Assert.AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
+        AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
 
         var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
-        Assert.IsNotNull(hasSqlDs, "should find sql-data source");
+        IsNotNull(hasSqlDs, "should find sql-data source");
     }
 
     [TestMethod]
@@ -33,13 +30,13 @@ public class DataSourceTests: TestBaseEavDataSource
     {
         var dsCatalog = GetService<DataSourceCatalog>();
         var dsList = dsCatalog.GetAll(true, 0);
-        Assert.AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
+        AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
 
         var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
-        Assert.IsNotNull(hasSqlDs, "should find sql-data source");
+        IsNotNull(hasSqlDs, "should find sql-data source");
 
         var shouldNotFind = dsList.FirstOrDefault(c => c.Type.FullName == DeferredFullName);
-        Assert.IsNull(shouldNotFind, "should NOT find deferred-data source");
+        IsNull(shouldNotFind, "should NOT find deferred-data source");
     }
 
 }

@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.DataSources;
-using ToSic.Testing.Shared;
-using static ToSic.Eav.DataSources.CompareOperators;
+﻿using static ToSic.Eav.DataSources.CompareOperators;
 using static ToSic.Eav.DataSourceTests.TestData.PersonSpecs;
 
 namespace ToSic.Eav.DataSourceTests;
@@ -45,7 +41,7 @@ public class ValueFilterDateTime: TestBaseEavDataSource
     {
         var vf = PrepareDateTimeFilterDs(attr, value, operation);
         var list = vf.ListTac().ToList();
-        Assert.AreEqual(expected, list.Count(), $"{name}: find exactly " + expected + " amount people");
+        AreEqual(expected, list.Count(), $"{name}: find exactly " + expected + " amount people");
     }
 
     private ValueFilter PrepareDateTimeFilterDs(string attr, string value, string operation)
