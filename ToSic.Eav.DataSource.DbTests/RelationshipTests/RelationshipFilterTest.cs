@@ -2,12 +2,14 @@
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.DbTests;
 using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.Testing;
 using ToSic.Lib.Logging;
+using ToSic.Testing;
 
 namespace ToSic.Eav.RelationshipTests;
 
 [Startup(typeof(TestStartupFullWithDb))]
-public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : RelationshipTestBase(dsSvc, dataBuilder), IClassFixture<FullDbFixture>
+public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : RelationshipTestBase(dsSvc, dataBuilder), IClassFixture<FullDbFixtureScenarioBasic>
 {
 
     // todo: necessary tests

@@ -2,12 +2,14 @@
 using ToSic.Eav.DataSource.DbTests;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Testing;
+using ToSic.Testing;
 using static ToSic.Eav.RelationshipTests.MetadataTestSpecs;
 
 namespace ToSic.Eav.RelationshipTests;
 
 [Startup(typeof(TestStartupFullWithDb))]
-public class MetadataTargetsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixture>
+public class MetadataTargetsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixtureScenarioBasic>
 {
     //private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 

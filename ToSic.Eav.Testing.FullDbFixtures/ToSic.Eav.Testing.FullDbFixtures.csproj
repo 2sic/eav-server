@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
-    <RootNamespace>ToSic.Testing</RootNamespace>
+    <RootNamespace>ToSic.Eav.Testing</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
