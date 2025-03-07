@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.TestData;
+﻿using ToSic.Eav.Data;
+using ToSic.Eav.DataSources.ValueFilter;
 
 namespace ToSic.Eav.DataSourceTests;
 // Todo
@@ -7,35 +8,27 @@ namespace ToSic.Eav.DataSourceTests;
 // Create tests with DATEs
 // Create tests with Modified!
 
-[TestClass]
-public class ValueSort_DateTime: TestBaseEavDataSource
+[Startup(typeof(StartupValueFilter))]
+public class ValueSort_DateTime(ValueFilterMaker valueFilterMaker)
 {
     private const int TestVolume = 30;
     private const string Birthdate = PersonSpecs.FieldBirthday;
     private const string BirthdateMaybeNull = PersonSpecs.FieldBirthdayNull;
     private const string ModifiedTest = "InternalModified";
     private const string ModifiedReal = "Modified";
-    private readonly ValueSort _testDataGeneratedOutsideTimer;
-    private readonly ValueFilterMaker _valueFilterMaker;
-
-    public ValueSort_DateTime()
-    {
-        _valueFilterMaker = new ValueFilterMaker(this);
-
-        _testDataGeneratedOutsideTimer = _valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume);
-    }
+    private readonly ValueSort _testDataGeneratedOutsideTimer = valueFilterMaker.GeneratePersonSourceWithDemoData(TestVolume);
 
 
-    [TestMethod]
+    [Fact]
     public void ValueSort_SortFieldDesc_Birthday() => SetupFilterAndRun(Birthdate, true);
 
-    [TestMethod] public void ValueSort_DateNull_Asc() => SetupFilterAndRun(BirthdateMaybeNull, true);
+    [Fact] public void ValueSort_DateNull_Asc() => SetupFilterAndRun(BirthdateMaybeNull, true);
 
-    [TestMethod] public void ValueSort_DateNull_Desc() => SetupFilterAndRun(BirthdateMaybeNull, false);
+    [Fact] public void ValueSort_DateNull_Desc() => SetupFilterAndRun(BirthdateMaybeNull, false);
 
-    [TestMethod] public void ValueSort_Sort_Modified() => SetupFilterAndRun(ModifiedReal, true);
+    [Fact] public void ValueSort_Sort_Modified() => SetupFilterAndRun(ModifiedReal, true);
 
-    [TestMethod] public void ValueSort_Sort_Modified_Desc() => SetupFilterAndRun(ModifiedReal, false);
+    [Fact] public void ValueSort_Sort_Modified_Desc() => SetupFilterAndRun(ModifiedReal, false);
 
     private void SetupFilterAndRun(string field, bool asc)
     {
@@ -69,9 +62,9 @@ public class ValueSort_DateTime: TestBaseEavDataSource
 
 
             if (asc)
-                IsTrue(comp >= 0, "new " + field + " " + next + " should be = or larger than prev " + previous);
+                True(comp >= 0, "new " + field + " " + next + " should be = or larger than prev " + previous);
             else
-                IsTrue(comp <=0, "new " + field + " " + next + " should be = or smaller than prev " + previous);
+                True(comp <=0, "new " + field + " " + next + " should be = or smaller than prev " + previous);
             previous = next;
         }
     }

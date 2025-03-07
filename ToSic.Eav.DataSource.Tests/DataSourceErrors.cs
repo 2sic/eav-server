@@ -1,6 +1,6 @@
-﻿namespace ToSic.Eav.DataSourceTests;
+﻿using ToSic.Eav.Data;
 
-// NOTE: ALREADY COPIED TO THE NEW TEST PROJECT!
+namespace ToSic.Eav.DataSourceTests;
 
 public static class DataSourceErrors
 {
@@ -12,14 +12,14 @@ public static class DataSourceErrors
     /// <param name="streamName"></param>
     public static void VerifyStreamIsError(IDataSource source, string errTitle, string streamName = DataSourceConstants.StreamDefaultName)
     {
-        IsNotNull(source);
+        NotNull(source);
         var stream = source[streamName];
-        IsNotNull(stream);
-        AreEqual(1, stream.List.Count());
+        NotNull(stream);
+        Single(stream.List);
         var firstAndOnly = stream.List.FirstOrDefault();
-        IsNotNull(firstAndOnly);
-        AreEqual(DataConstants.ErrorTypeName, firstAndOnly.Type.Name);
-        AreEqual(DataSourceErrorHelper.GenerateTitle(errTitle), firstAndOnly.GetBestTitle());
+        NotNull(firstAndOnly);
+        Equal(DataConstants.ErrorTypeName, firstAndOnly.Type.Name);
+        Equal(DataSourceErrorHelper.GenerateTitle(errTitle), firstAndOnly.GetBestTitle());
     }
 
 }

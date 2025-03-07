@@ -21,7 +21,7 @@ public class TestStartupEavCoreAndDataSources
     /// <summary>
     /// Startup helper
     /// </summary>
-    public void ConfigureServices(IServiceCollection services) =>
+    public virtual void ConfigureServices(IServiceCollection services) =>
         services
             .AddTransient<DataSourcesTstBuilder>()
             .AddTransient<DataTableTrivial>()

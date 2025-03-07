@@ -1,82 +1,76 @@
-﻿using ToSic.Eav.TestData;
+﻿using ToSic.Eav.DataSources.ValueFilter;
 
 namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
-[TestClass]
-public class ValueFilterNumbers: TestBaseEavDataSource
+[Startup(typeof(StartupValueFilter))]
+public class ValueFilterNumbers(ValueFilterMaker valueFilterMaker)
 {
     private const int TestVolume = 10000;
-    private readonly ValueFilter _testDataGeneratedOutsideTimer;
-    public ValueFilterNumbers()
-    {
-        var valueFilterMaker = new ValueFilterMaker(this);
-        _testDataGeneratedOutsideTimer = valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
-    }
-
+    private readonly ValueFilter _testDataGeneratedOutsideTimer = valueFilterMaker.CreateValueFilterForTesting(TestVolume, true);
 
 
     #region Number Filters
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumber()
         =>NumberFilter("Height", (PersonSpecs.MinHeight + 7).ToString(), 181);
         
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumberNone()
         =>NumberFilter("Height", "72", 0);
         
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumberEq()
         =>NumberFilter("Height", "182", 182, "==");
 
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumberEq2()
         =>NumberFilter("Height", "182", 182, "===");
         
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumberGt()
         => NumberFilter("Height", "180", 4368, ">");
         
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumberGtEq()
         => NumberFilter("Height", "180", 4550, ">=");
         
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumberLt()
         => NumberFilter("Height", "180", 5450, "<");
         
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumberLtEq()
         => NumberFilter("Height", "180", 5632, "<=");
 
-    [TestMethod]
+    [Fact]
     public void ValueFilter_FilterNumberNotEq()
         => NumberFilter("Height", "180", 9818, "!=");
 
     public void ValueFilter_EntityId()
-        => NumberFilter(Attributes.EntityIdPascalCase, "9818", 9818, "==");
+        => NumberFilter(EntityIdPascalCase, "9818", 9818, "==");
 
-    [TestMethod]
+    [Fact]
     public void Between()
         => NumberFilter("Height", "175 and 185", 2002, "between");
 
-    [TestMethod]
+    [Fact]
     public void BetweenNot()
         => NumberFilter("Height", "175 and 185", 10000-2002, "!between");
 
     public void NumberFilter(string attr, string value, int expected, string operation = null)
     {
         var vf = PrepareNumberFilterDs(attr, value, operation);
-        AreEqual(expected, vf.ListTac().Count(), "Should find exactly " + expected + " amount people");
+        Equal(expected, vf.ListTac().Count());//, "Should find exactly " + expected + " amount people");
     }
 
     private ValueFilter PrepareNumberFilterDs(string attr, string value, string operation)
@@ -91,7 +85,7 @@ public class ValueFilterNumbers: TestBaseEavDataSource
     #endregion
 
 
-    [TestMethod]
+    [Fact]
     public void NumberFilterInvalidOperator()
         => DataSourceErrors.VerifyStreamIsError(PrepareNumberFilterDs("Height", "180", "!!"), 
             CompareOperators.ErrorInvalidOperator);
