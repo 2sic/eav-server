@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.DataSourceTests.RelationshipTests;
+using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.DbTests;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests;
+namespace ToSic.Eav.RelationshipTests;
 
-[TestClass]
-public partial class RelationshipFilterTest: RelationshipTestBase
+[Startup(typeof(TestStartupFullWithDb))]
+public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : RelationshipTestBase(dsSvc, dataBuilder), IClassFixture<FullDbFixture>
 {
 
     // todo: necessary tests
@@ -22,15 +24,15 @@ public partial class RelationshipFilterTest: RelationshipTestBase
     // ...all compare modes: contains, first, none,...
         
 
-    [TestMethod]
+    [Fact]
     public void DS_RelFil_ConstructionWorks()
     {
         var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
         Trace.Write(Log.Dump());
-        IsNotNull(relFilt, "relFilt != null");
+        NotNull(relFilt);//, "relFilt != null");
     }
 
-    [TestMethod]
+    [Fact]
     public void DS_RelFil_NoConfigEmpty()
     {
         var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
@@ -39,9 +41,9 @@ public partial class RelationshipFilterTest: RelationshipTestBase
 
         Trace.Write(Log.Dump());
 
-        IsTrue(result.Count == 0, "result.Count == 0");
+        True(result.Count == 0, "result.Count == 0");
     }
-    [TestMethod]
+    [Fact]
     public void DS_RelFil_NoConfigFallback()
     {
         var relFilt = BuildRelationshipFilter(RelationshipTestSpecs.Company);
@@ -50,19 +52,22 @@ public partial class RelationshipFilterTest: RelationshipTestBase
         var result = relFilt.ListTac().ToList();
 
         Trace.Write(Log.Dump());
-        IsTrue(result.Count > 0, "count should be more than 0, as it should use fallback");
+        True(result.Count > 0, "count should be more than 0, as it should use fallback");
     }
 
-    [TestMethod]
+    [Fact]
     public void DS_RelFil_Companies_Having_Category_Title() 
-        => new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb).Run(true);
+        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb)
+            .Run(true);
 
-    [TestMethod]
+    [Fact]
     public void DS_RelFil_Companies_Having_Category_Active() 
-        => new RelationshipTestCase("basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, "true", relAttribute: "Active").Run(true);
+        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, "true", relAttribute: "Active")
+            .Run(true);
 
-    [TestMethod]
+    [Fact]
     public void DS_RelFil_Companies_Having_InexistingProperty_Title() 
-        => new RelationshipTestCase("basic-cat-having-inexisting-property", RelationshipTestSpecs.Company, CompInexistingProp, CatWeb).Run(false);
+        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-inexisting-property", RelationshipTestSpecs.Company, CompInexistingProp, CatWeb)
+            .Run(false);
 
 }

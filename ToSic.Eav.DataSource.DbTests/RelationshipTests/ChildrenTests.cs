@@ -1,12 +1,15 @@
 ﻿using System.Diagnostics;
-using static ToSic.Eav.DataSourceTests.RelationshipTests.RelationshipTestSpecs;
+using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.DbTests;
+using ToSic.Eav.DataSourceTests;
+using static ToSic.Eav.RelationshipTests.RelationshipTestSpecs;
 
-namespace ToSic.Eav.DataSourceTests.RelationshipTests;
+namespace ToSic.Eav.RelationshipTests;
 
-[TestClass]
-public class ChildrenTests: ChildParentTestBase<Children>
+[Startup(typeof(TestStartupFullWithDb))]
+public class ChildrenTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : ChildParentTestBase<Children>(dsSvc, dataBuilder), IClassFixture<FullDbFixture>
 {
-    [TestMethod]
+    [Fact]
     public void PersonsAllWithoutFieldReturnAllCompanies()
     {
         var cl = PrepareDsWithOptions(RelationshipTestSpecs.Person, null, optionsForLastDs: new
@@ -15,39 +18,39 @@ public class ChildrenTests: ChildParentTestBase<Children>
             FilterDuplicates = false
         });
         //cl.FilterDuplicates = false;
-        AreEqual(3, cl.ListTac().Count());
+        Equal(3, cl.ListTac().Count());
     }
 
-    [TestMethod]
+    [Fact]
     public void PersonsOneGetOneCompany()
     {
         var cl = PrepareDs(RelationshipTestSpecs.Person, [PersonWithCompany], Company);
-        AreEqual(PersonCompanyCount, cl.ListTac().Count());
+        Equal(PersonCompanyCount, cl.ListTac().Count());
     }
 
-    [TestMethod]
+    [Fact]
     public void CompanyOneHas5Children()
     {
         var cl = PrepareDs(Company, [CompanyIdWithCountryAnd4Categories]);
-        AreEqual(5, cl.ListTac().Count());
+        Equal(5, cl.ListTac().Count());
     }
-    [TestMethod]
+    [Fact]
     public void CompanyOneHas4Categories()
     {
         var cl = PrepareDs(Company, [CompanyIdWithCountryAnd4Categories], Categories);
-        AreEqual(4, cl.ListTac().Count());
+        Equal(4, cl.ListTac().Count());
     }
-    [TestMethod]
+    [Fact]
     public void CompanyOneHas1Country()
     {
         var cl = PrepareDs(Company, [CompanyIdWithCountryAnd4Categories], Country);
-        AreEqual(1, cl.ListTac().Count());
+        Single(cl.ListTac());
     }
 
-    [TestMethod]
-    public void InButNoFieldNameReturnLotsOfChildren() => IsTrue(PrepareDs().ListTac().Count() > 12);
+    [Fact]
+    public void InButNoFieldNameReturnLotsOfChildren() => True(PrepareDs().ListTac().Count() > 12);
 
-    [TestMethod]
+    [Fact]
     public void InButNoFieldNameReturnLotsOfChildrenFilterDups()
     {
         var unfiltered = PrepareDsWithOptions(optionsForLastDs: new { FilterDuplicates = false });
@@ -56,6 +59,6 @@ public class ChildrenTests: ChildParentTestBase<Children>
         Trace.WriteLine("Unfiltered Count: " + unfiltered.ListTac().Count());
         Trace.WriteLine("Filtered Count: " + filterDups.ListTac().Count());
 
-        AreNotEqual(filterDups.ListTac().Count(), unfiltered.ListTac().Count());
+        NotEqual(filterDups.ListTac().Count(), unfiltered.ListTac().Count());
     }
 }

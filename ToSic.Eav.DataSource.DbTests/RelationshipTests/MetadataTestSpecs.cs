@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 
-namespace ToSic.Eav.DataSourceTests.RelationshipTests;
+namespace ToSic.Eav.RelationshipTests;
 
 public class MetadataTestSpecs
 {

@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
+[assembly: InternalsVisibleTo("ToSic.Eav.Apps")]
+
 // This is needed for unit testing
 [assembly: InternalsVisibleTo("ToSic.Eav.UnitTests")]
-[assembly: InternalsVisibleTo("ToSic.Eav.Apps")]

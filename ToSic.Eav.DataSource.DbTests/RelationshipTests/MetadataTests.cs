@@ -1,32 +1,33 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.DbTests;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
-using static ToSic.Eav.DataSourceTests.RelationshipTests.MetadataTestSpecs;
+using static ToSic.Eav.RelationshipTests.MetadataTestSpecs;
 
-namespace ToSic.Eav.DataSourceTests.RelationshipTests;
+namespace ToSic.Eav.RelationshipTests;
 
-[TestClass]
-public class MetadataTests: TestBaseDiEavFullAndDb
+[Startup(typeof(TestStartupFullWithDb))]
+public class MetadataTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixture>
 {
-    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
-    private void TestMetadata(int expected, DataSources.Metadata ds) => AreEqual(expected, ds.ListTac().Count(), $"should have {expected} md items");
+    private void TestMetadata(int expected, DataSources.Metadata ds) => Equal(expected, ds.ListTac().Count()); //, $"should have {expected} md items");
 
 
-    [TestMethod]
+    [Fact]
     public void MainOtherTotalMetadata() => TestMetadata(1, PrepareDs(TargetTypeOther));
 
-    [TestMethod]
+    [Fact]
     public void MainTargetsTotalMetadata() => TestMetadata(ItemsCount, PrepareDs(TargetTypeMain));
 
-    [TestMethod]
+    [Fact]
     public void MainTargetsHelpOnly() => TestMetadata(MainHelp, PrepareDs(TargetTypeMain, typeName: HelpTypeName));
 
-    [TestMethod]
+    [Fact]
     public void MainTargetsPriceOnly() => TestMetadata(PricesTotal, PrepareDs(TargetTypeMain, typeName: PriceTypeName));
 
-    [TestMethod]
+    [Fact]
     public void MainSingleItem() => TestMetadata(Item2P1HTotal, PrepareDs(TargetTypeMain, ids: [Item2P1H]));
 
-    [TestMethod]
+    [Fact]
     public void MainSingleItemPriceOnly() => TestMetadata(PricesTotal, PrepareDs(TargetTypeMain, typeName: PriceTypeName, ids:
         [Item2P1H]));
 
@@ -34,18 +35,18 @@ public class MetadataTests: TestBaseDiEavFullAndDb
 
     protected DataSources.Metadata PrepareDs(string appType = null, IEnumerable<int> ids = null, string typeName = null, ILookUpEngine lookUpEngine = null)
     {
-        if(lookUpEngine == null) lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
+        if(lookUpEngine == null) lookUpEngine = new LookUpTestData(dataBuilder).AppSetAndRes();
 
-        var baseDs = DsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine } );
-        var appDs = DsSvc.CreateDataSource<App>(baseDs);
+        var baseDs = dsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine } );
+        var appDs = dsSvc.CreateDataSource<App>(baseDs);
 
-        var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
+        var inStream = dsSvc.FilterStreamByIds(ids, appDs.GetStream(appType));
 
         var dsParams = new Dictionary<string, object>();
         if (typeName != null)
             dsParams["ContentTypeName"] = typeName;
 
-        var childDs = DsSvc.CreateDataSource<DataSources.Metadata>(inStream, dsParams);
+        var childDs = dsSvc.CreateDataSource<DataSources.Metadata>(inStream, dsParams);
         //if (typeName != null)
         //    childDs.ContentTypeName = typeName;
 

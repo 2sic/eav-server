@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Internal.Configuration;
@@ -23,26 +24,31 @@ public abstract class TestBaseEav(EavTestConfig testConfig = default) : TestBase
     /// </summary>
     protected override void Configure()
     {
-        base.Configure();
+        // The base has an empty configure, and we want to clearly not call it
+        //base.Configure();
 
         // this will run after the base constructor, which configures DI
-        var dbConfiguration = GetService<IDbConfiguration>();
-        dbConfiguration.ConnectionString = TestConfig.ConStr;
+        //var dbConfiguration = GetService<IDbConfiguration>();
+        //dbConfiguration.ConnectionString = TestConfig.ConStr;
 
-        StartupGlobalFoldersAndFingerprint();
+        var fixture = new FullDbFixtureHelper(GetService<IServiceProvider>());
+        fixture.Configure(TestConfig);
+        //fixture.StartupGlobalFoldersAndFingerprint();
+
+        //StartupGlobalFoldersAndFingerprint();
     }
 
 
-    protected void StartupGlobalFoldersAndFingerprint()
-    {
-        var globalConfig = GetService<IGlobalConfiguration>();
-        globalConfig.GlobalFolder = TestConfig.GlobalFolder;
-        var folderWithTestLicenses = TestConfig.GlobalDataCustomFolder;
-        if (Directory.Exists(folderWithTestLicenses)) 
-            globalConfig.DataCustomFolder = folderWithTestLicenses;
+    //protected void StartupGlobalFoldersAndFingerprint()
+    //{
+    //    var globalConfig = GetService<IGlobalConfiguration>();
+    //    globalConfig.GlobalFolder = TestConfig.GlobalFolder;
+    //    var folderWithTestLicenses = TestConfig.GlobalDataCustomFolder;
+    //    if (Directory.Exists(folderWithTestLicenses)) 
+    //        globalConfig.DataCustomFolder = folderWithTestLicenses;
 
-        // Try to reset some special static variables which may cary over through many tests
-        SystemFingerprint.ResetForTest();
-    }
+    //    // Try to reset some special static variables which may cary over through many tests
+    //    SystemFingerprint.ResetForTest();
+    //}
 
 }

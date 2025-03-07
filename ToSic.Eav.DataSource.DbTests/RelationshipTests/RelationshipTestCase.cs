@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests;
+namespace ToSic.Eav.RelationshipTests;
 
 internal class RelationshipTestCase : RelationshipTestBase
 {
@@ -24,7 +26,11 @@ internal class RelationshipTestCase : RelationshipTestBase
         CompareMode, 
         Separator, 
         Direction;
-    internal RelationshipTestCase(string name, 
+
+    internal RelationshipTestCase(
+        DataSourcesTstBuilder dsSvc,
+        DataBuilder dataBuilder,
+        string name, 
         string type, 
         string relationship = null, 
         string filter = null, 
@@ -32,6 +38,7 @@ internal class RelationshipTestCase : RelationshipTestBase
         string compareMode = null,
         string separator = null,
         string direction = null)
+    : base(dsSvc, dataBuilder)
     {
         Name = name;
         Type = type;
@@ -75,15 +82,15 @@ internal class RelationshipTestCase : RelationshipTestBase
 
         Api.ListTac().ToList().ForEach(e => Trace.WriteLine($"item ({e.EntityId}):'{e.GetBestTitle()}'"));
 
-        IsTrue(expectsResults ? CountApi > 0 : CountApi == 0, $"test: {Name} - found-Count:{CountApi} > 0");
+        True(expectsResults ? CountApi > 0 : CountApi == 0, $"test: {Name} - found-Count:{CountApi} > 0");
         if(exactCount != -1)
-            AreEqual(exactCount, CountApi, $"test: {Name} - missed expected exact count");
+            Equal(exactCount, CountApi);//, $"test: {Name} - missed expected exact count");
 
         if (shouldReturnAll)
-            AreEqual(CountApi, CountAll, $"test: {Name} - all == count not met");
+            Equal(CountApi, CountAll);//, $"test: {Name} - all == count not met");
         else
-            IsTrue(CountApi < CountAll, $"test: {Name} - foundCount < allComps");
+            True(CountApi < CountAll, $"test: {Name} - foundCount < allComps");
 
-        AreEqual(CountApi, CountConfig, $"test: {Name} - api and config should be the same");
+        Equal(CountApi, CountConfig);//, $"test: {Name} - api and config should be the same");
     }
 }

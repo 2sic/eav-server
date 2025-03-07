@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav;
 
 public static class DataSourceErrors
 {

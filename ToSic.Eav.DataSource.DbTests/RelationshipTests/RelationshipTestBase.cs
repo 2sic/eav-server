@@ -1,12 +1,11 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSourceTests.RelationshipTests;
+using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.LookUp;
 using ToSic.Lib.Logging;
 
-using ToSic.Eav.LookUp;
+namespace ToSic.Eav.RelationshipTests;
 
-namespace ToSic.Eav.DataSourceTests.RelationshipFilterTests;
-
-public class RelationshipTestBase: TestBaseDiEavFullAndDb
+public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {
     #region Const Values for testing
 
@@ -20,8 +19,6 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
     protected const string AltSeparator = "|";
 
     #endregion
-
-    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 
     protected new ILog Log { get; } = new Log("Tst.DSRelF");
 
@@ -83,29 +80,29 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
 
     protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
     {
-        var baseDs = DsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions
+        var baseDs = dsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions
             {
                 AppIdentityOrReader = RelationshipTestSpecs.AppIdentity,
                 LookUp = config
             }
         );
-        var appDs = DsSvc.CreateDataSource<App>(baseDs);
+        var appDs = dsSvc.CreateDataSource<App>(baseDs);
 
         // micro tests to ensure we have the right app etc.
-        IsTrue(appDs.ListTac().Count() > 20, "appDs.List.Count() > 20");
+        True(appDs.ListTac().Count() > 20, "appDs.List.Count() > 20");
 
         var item731 = appDs.ListTac().FindRepoId(731);
-        IsNotNull(item731, "expecting item 731");
+        NotNull(item731);//, "expecting item 731");
         var title = item731.GetBestTitle();
-        AreEqual(title, "2sic", "item 731 should have title '2sic'");
+        Equal(title, "2sic");//, "item 731 should have title '2sic'");
 
-        IsTrue(appDs.Out.ContainsKey(primaryType), $"app should contain stream of {primaryType}");
+        True(appDs.Out.ContainsKey(primaryType), $"app should contain stream of {primaryType}");
 
         var stream = appDs[primaryType];
 
-        IsTrue(stream.ListTac().Any(), "stream.List.Count() > 0");
+        True(stream.ListTac().Any(), "stream.List.Count() > 0");
 
-        var relFilt = DsSvc.CreateDataSource<RelationshipFilter>(appDs.Configuration.LookUpEngine);
+        var relFilt = dsSvc.CreateDataSource<RelationshipFilter>(appDs.Configuration.LookUpEngine);
         relFilt.AttachTac(DataSourceConstants.StreamDefaultName, stream);
         return relFilt;
     }
@@ -113,7 +110,7 @@ public class RelationshipTestBase: TestBaseDiEavFullAndDb
 
     protected LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
     {
-        var testData = new LookUpTestData(GetService<DataBuilder>());
+        var testData = new LookUpTestData(dataBuilder);
         var lookup = testData.BuildLookUpEntity(DataSourceConstants.MyConfigurationSourceName, vals);
         var vc = testData.AppSetAndRes(sources: [lookup]);
         return vc;

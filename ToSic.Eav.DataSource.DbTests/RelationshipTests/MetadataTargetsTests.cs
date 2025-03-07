@@ -1,51 +1,53 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.DbTests;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
-using static ToSic.Eav.DataSourceTests.RelationshipTests.MetadataTestSpecs;
+using static ToSic.Eav.RelationshipTests.MetadataTestSpecs;
 
-namespace ToSic.Eav.DataSourceTests.RelationshipTests;
+namespace ToSic.Eav.RelationshipTests;
 
-[TestClass]
-public class MetadataTargetsTests : TestBaseDiEavFullAndDb
+[Startup(typeof(TestStartupFullWithDb))]
+public class MetadataTargetsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixture>
 {
-    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
+    //private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
 
     private void TestMetadataTargets(int expected, MetadataTargets ds) 
-        => AreEqual(expected, ds.ListTac().Count(), $"should have {expected} md items");
+        => Equal(expected, ds.ListTac().Count());//, $"should have {expected} md items");
 
-    [TestMethod]
+    [Fact]
     public void AllMetadataOfHelp() => TestMetadataTargets(TotalHelp, PrepareDs(HelpTypeName));
 
-    [TestMethod]
+    [Fact]
     public void MainMetadataOfHelp() => TestMetadataTargets(MainHelp, PrepareDs(HelpTypeName, typeName: TargetTypeMain));
 
-    [TestMethod]
+    [Fact]
     public void TargetOfHelp1() => TestMetadataTargets(1, PrepareDs(ids: [MetaHelpOn1]));
 
-    [TestMethod]
+    [Fact]
     public void TargetOfHelp2() => TestMetadataTargets(1, PrepareDs(ids: [MetaHelpOn2]));
 
 
-    [TestMethod]
+    [Fact]
     public void PriceTargetsDefaultOfAllTypes() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName));
 
-    [TestMethod]
+    [Fact]
     public void PriceTargetsDefault() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain));
 
-    [TestMethod]
+    [Fact]
     public void PriceTargetsFilterDups() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: true));
 
-    [TestMethod]
+    [Fact]
     public void PriceTargetsDontFilterDups() => TestMetadataTargets(PriceTargetsWithDups, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: false));
 
 
     protected MetadataTargets PrepareDs(string appType = null, IEnumerable<int> ids = null, string typeName = null, bool? deduplicate = null)
     {
-        var lookUpEngine = new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes();
+        var lookUpEngine = new LookUpTestData(dataBuilder).AppSetAndRes();
 
-        var baseDs = DsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine });
-        var appDs = DsSvc.CreateDataSource<App>(baseDs);
+        var baseDs = dsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine });
+        var appDs = dsSvc.CreateDataSource<App>(baseDs);
 
-        var inStream = FilterStreamByIds(ids, appDs.GetStream(appType));
+        var inStream = dsSvc.FilterStreamByIds(ids, appDs.GetStream(appType));
 
         var dsParams = new Dictionary<string, object>();
         if (typeName != null)
@@ -54,7 +56,7 @@ public class MetadataTargetsTests : TestBaseDiEavFullAndDb
         if(deduplicate != null)
             dsParams["FilterDuplicates"] = deduplicate.Value;
 
-        var childDs = DsSvc.CreateDataSource<MetadataTargets>(inStream, dsParams);
+        var childDs = dsSvc.CreateDataSource<MetadataTargets>(inStream, dsParams);
         //if (typeName != null)
         //    childDs.ContentTypeName = typeName;
 
