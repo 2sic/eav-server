@@ -1,14 +1,9 @@
-﻿using ToSic.Eav.DataSource;
+﻿namespace ToSic.Eav.DataSource.Configuration;
 
-namespace ToSic.Eav.DataSourceTests.BaseClassTests;
-
-public class TestDsGetThis : TestDataSourceBase
+public class TestDsGetThis(DataSourceBase.MyServices services) : TestDataSourceBase(services)
 {
     public const string ExpectedGetThisString = "ok";
 
-    public TestDsGetThis(MyServices services) : base(services)
-    {
-    }
     [Configuration(Fallback = ExpectedGetThisString)]
     public string GetThisString => Configuration.GetThis();
 

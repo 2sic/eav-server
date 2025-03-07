@@ -2,6 +2,8 @@
 using ToSic.Eav.DataSources;
 using ToSic.Eav.StartUp;
 using ToSic.Lib;
+using ToSic.Testing.Shared;
+
 #pragma warning disable CA1822
 
 namespace ToSic.Eav;
@@ -20,6 +22,7 @@ public class TestStartupEavCoreAndDataSources
     /// </summary>
     public void ConfigureServices(IServiceCollection services) =>
         services
+            .AddTransient<DataSourcesTstBuilder>()
             .AddDataSources()
             .AddEavCore()
             .AddEavCoreFallbackServices()

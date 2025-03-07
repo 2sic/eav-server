@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <Using Include="Xunit.DependencyInjection" />
   </ItemGroup>
 
   <ItemGroup>

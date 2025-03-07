@@ -10,5 +10,9 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("ToSic.Eav.UnitTests")]
 [assembly: InternalsVisibleTo("ToSic.Testing.Shared")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Apps")]
+// old
 [assembly: InternalsVisibleTo("ToSic.Eav.DataSources.Tests")]
+
+// new
+[assembly: InternalsVisibleTo("ToSic.Eav.DataSource.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Eav.DataSource.TestHelpers")]

@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal.Configuration;
+﻿using ToSic.Eav.DataSource.Internal.Configuration;
 
-namespace ToSic.Eav.DataSourceTests.BaseClassTests;
+namespace ToSic.Eav.DataSource.Configuration;
 
 internal static class ConfigurationDataLoaderTestAccessors
 {
