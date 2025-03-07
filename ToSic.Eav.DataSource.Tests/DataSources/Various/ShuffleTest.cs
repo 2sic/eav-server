@@ -1,13 +1,10 @@
-﻿using ToSic.Eav.TestData;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
-[TestClass]
-public class ShuffleTest: TestBaseEavDataSource
+[Startup(typeof(TestStartupEavCoreAndDataSources))]
+public class ShuffleTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
 {
-    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
     //private const int TestVolume = 10000;
     //private ValueFilter _testDataGeneratedOutsideTimer;
     //public ValueFilterBoolean()
@@ -21,23 +18,23 @@ public class ShuffleTest: TestBaseEavDataSource
 
     private Shuffle GenerateShuffleDS(int desiredFinds)
     {
-        var ds = new DataTablePerson(this).Generate(desiredFinds, 1001, true);
+        var ds = personTableGenerator.New().Generate(desiredFinds, 1001, true);
         var sf = DsSvc.CreateDataSource<Shuffle>(ds);
         return sf;
     }
 
 
-    [TestMethod]
+    [Fact]
     public void Shuffle_CountShuffle100()
     {
         var desiredFinds = 100;
         var sf = GenerateShuffleDS(desiredFinds);
         var found = sf.ListTac().Count();
-        AreEqual(desiredFinds, found, "Should find exactly this amount people");
+        Equal(desiredFinds, found);//, "Should find exactly this amount people");
 
     }
 
-    [TestMethod]
+    [Fact]
     public void Shuffle5_ValidateNotOrdered()
     {
         var items = 5;
@@ -47,8 +44,8 @@ public class ShuffleTest: TestBaseEavDataSource
         var seqConsistent = AreAllItemsSorted(sf.Out[DataSourceConstants.StreamDefaultName]);
 
         // after checking all, it should NOT be consistent
-        IsTrue(origSeqSorted, "original sequence SHOULD be sorted");
-        IsFalse(seqConsistent, "sequence should NOT be not-sorted");
+        True(origSeqSorted, "original sequence SHOULD be sorted");
+        False(seqConsistent, "sequence should NOT be not-sorted");
 
     }
 

@@ -1,19 +1,17 @@
-﻿using ToSic.Eav.TestData;
+﻿namespace ToSic.Eav.DataSources.Attributes;
 
-namespace ToSic.Eav.DataSourceTests;
-
-[TestClass]
-public partial class AttributeRenameTests: TestBaseEavDataSource
+[Startup(typeof(StartupAttributeRename))]
+public partial class AttributeRenameTests(AttributeRenameTester attributeRenameTester, DataSourcesTstBuilder dsSvc)
 {
         
     private static void AssertHasFields(IEntity item, IEnumerable<string> fieldsExpected)
     {
-        foreach (var f in fieldsExpected) IsTrue(item.Attributes.ContainsKey(f), $"should have field '{f}'");
+        foreach (var f in fieldsExpected) True(item.Attributes.ContainsKey(f), $"should have field '{f}'");
     }
 
     private static void AssertDoesNotHaveFields(IEntity item, IEnumerable<string> fieldsExpected)
     {
-        foreach (var f in fieldsExpected) IsFalse(item.Attributes.ContainsKey(f), $"should have field '{f}'");
+        foreach (var f in fieldsExpected) False(item.Attributes.ContainsKey(f), $"should have field '{f}'");
     }
 
     private static List<string> ChangeFieldList(string[] removeFields, string[] addFields)

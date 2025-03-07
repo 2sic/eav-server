@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.DataSources.ValueFilter;
+﻿using ToSic.Eav.DataSources.ValueFilter;
 
 namespace ToSic.Eav.DataSourceTests;
 // Todo

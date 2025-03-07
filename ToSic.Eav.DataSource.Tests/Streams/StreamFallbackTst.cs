@@ -1,5 +1,4 @@
-﻿using ToSic.Lib.DI;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 

@@ -1,13 +1,9 @@
-﻿using ToSic.Eav.Code;
-using ToSic.Eav.TestData;
+﻿using ToSic.Eav.DataSourceTests;
 
+namespace ToSic.Eav.DataSources.Attributes;
 
-namespace ToSic.Eav.DataSourceTests;
-
-internal class AttributeRenameTester(ICanGetService parent)
+public class AttributeRenameTester(DataSourcesTstBuilder dsSvc, Generator<DataTablePerson> personTableGenerator)
 {
-    private DataSourcesTstBuilder DsSvc => field ??= parent.GetService<DataSourcesTstBuilder>();
-
     public AttributeRename Original;
     public AttributeRename Changed;
     public IEntity CItem;
@@ -28,22 +24,22 @@ internal class AttributeRenameTester(ICanGetService parent)
         return this;
     }
 
-    internal void AssertValues(string fieldOriginal, string fieldNew = null)
+    internal void AssertValues(string? fieldOriginal, string? fieldNew = null)
     {
         var original = OItem;
         var modified = CItem;
-        AreNotEqual(original, modified, "This test should never receive the same items!");
+        NotEqual(original, modified);//, "This test should never receive the same items!");
         fieldNew = fieldNew ?? fieldOriginal;
-        AreEqual(
+        Equal(
             original.GetTac<string>(fieldOriginal),
-            modified.GetTac<string>(fieldNew), $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
+            modified.GetTac<string>(fieldNew)); //, $"Renamed values on field '{fieldOriginal}' should match '{fieldNew}'");
 
     }
 
     public AttributeRename CreateRenamer(int testItemsInRootSource)
     {
-        var ds = new DataTablePerson(parent).Generate(testItemsInRootSource, 1001);
-        var filtered = DsSvc.CreateDataSource<AttributeRename>(ds);
+        var ds = personTableGenerator.New().Generate(testItemsInRootSource, 1001);
+        var filtered = dsSvc.CreateDataSource<AttributeRename>(ds);
         return filtered;
     }
 }

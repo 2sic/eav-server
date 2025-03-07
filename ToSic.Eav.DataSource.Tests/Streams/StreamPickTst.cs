@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
-using ToSic.Lib.DI;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 

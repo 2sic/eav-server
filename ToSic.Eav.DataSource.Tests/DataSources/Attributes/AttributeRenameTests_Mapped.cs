@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.TestData;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSources.Attributes;
 
 public partial class AttributeRenameTests
 {
@@ -12,12 +10,12 @@ public partial class AttributeRenameTests
 First=FirstName
 Last=LastName";
 
-    [TestMethod]
+    [Fact]
     public void Map1ChangeWithPreserve()
     {
-        var test = new AttributeRenameTester(this).Init(MapBasic1);
-        AreEqual(10, test.CList.Count);
-        AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
+        var test = attributeRenameTester.Init(MapBasic1);
+        Equal(10, test.CList.Count);
+        Equal(PersonSpecs.ValueColumns, test.CItem.Attributes.Count);//, "expected the same amount of columns");
 
         AssertFieldsChanged(test.CItem, [PersonSpecs.FieldFullName], [ShortName]);
 
@@ -25,33 +23,33 @@ Last=LastName";
         test.AssertValues(PersonSpecs.FieldFirstName);
     }
 
-    [TestMethod]
+    [Fact]
     public void Map1ChangeWithDropRest()
     {
-        var test = new AttributeRenameTester(this).Init(MapBasic1, false);
-        AreEqual(10, test.CList.Count);
-        AreNotEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected a different amount of columns");
-        AreEqual(1, test.CItem.Attributes.Count, "expect only 1 field now");
+        var test = attributeRenameTester.Init(MapBasic1, false);
+        Equal(10, test.CList.Count);
+        NotEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count);//, "expected a different amount of columns");
+        Equal(1, test.CItem.Attributes.Count);//, "expect only 1 field now");
 
         AssertFieldsChanged(test.CItem, PersonSpecs.Fields, [ShortName]);
 
         test.AssertValues(PersonSpecs.FieldFullName, ShortName);
     }
 
-    [TestMethod]
-    public void Map3ChangeWithPreserve() => Map3ChangeWithPreserve(Map3Fields);
+    [Fact]
+    public void Map3ChangeWithPreserve() => Map3ChangeWithPreserveWithMap(Map3Fields);
 
     /// <summary>
     /// This test should result in the same thing as the original test, because the other field doesn't exist
     /// </summary>
-    [TestMethod]
-    public void Map3PlusFaultyWithPreserve() => Map3ChangeWithPreserve(Map3Fields + "\nNewName=DoesNotExist");
+    [Fact]
+    public void Map3PlusFaultyWithPreserve() => Map3ChangeWithPreserveWithMap(Map3Fields + "\nNewName=DoesNotExist");
 
-    public void Map3ChangeWithPreserve(string map)
+    private void Map3ChangeWithPreserveWithMap(string map)
     {
-        var test = new AttributeRenameTester(this).Init(map);
-        AreEqual(10, test.CList.Count);
-        AreEqual(PersonSpecs.ValueColumns, test.CItem.Attributes.Count, "expected the same amount of columns");
+        var test = attributeRenameTester.Init(map);
+        Equal(10, test.CList.Count);
+        Equal(PersonSpecs.ValueColumns, test.CItem.Attributes.Count);//, "expected the same amount of columns");
 
         AssertFieldsChanged(test.CItem,
             [PersonSpecs.FieldFullName, PersonSpecs.FieldFirstName, PersonSpecs.FieldLastName],
@@ -62,12 +60,12 @@ Last=LastName";
         test.AssertValues(PersonSpecs.FieldLastName, ShortLast);
     }
 
-    [TestMethod]
+    [Fact]
     public void Map3ChangeWithDropRest()
     {
-        var test = new AttributeRenameTester(this).Init(Map3Fields, false);
-        AreEqual(10, test.CList.Count);
-        AreEqual(3, test.CItem.Attributes.Count, "expected the same amount of columns");
+        var test = attributeRenameTester.Init(Map3Fields, false);
+        Equal(10, test.CList.Count);
+        Equal(3, test.CItem.Attributes.Count);//, "expected the same amount of columns");
 
         AssertFieldsChanged(test.CItem, 
             PersonSpecs.Fields,
