@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSource.DbTests;
 /// Use by adding this kind of attribute to your test class:
 /// `[Startup(typeof(TestStartupEavCore))]`
 /// </remarks>
-public class TestStartupFullWithDb
+public class StartupTestFullWithDb
 {
     /// <summary>
     /// Startup helper

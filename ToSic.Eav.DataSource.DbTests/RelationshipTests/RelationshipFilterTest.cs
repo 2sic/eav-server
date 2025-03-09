@@ -8,7 +8,7 @@ using ToSic.Testing;
 
 namespace ToSic.Eav.RelationshipTests;
 
-[Startup(typeof(TestStartupFullWithDb))]
+[Startup(typeof(StartupTestFullWithDb))]
 public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : RelationshipTestBase(dsSvc, dataBuilder), IClassFixture<FullDbFixtureScenarioBasic>
 {
 

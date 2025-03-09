@@ -8,7 +8,7 @@ using static ToSic.Eav.RelationshipTests.MetadataTestSpecs;
 
 namespace ToSic.Eav.RelationshipTests;
 
-[Startup(typeof(TestStartupFullWithDb))]
+[Startup(typeof(StartupTestFullWithDb))]
 public class MetadataTargetsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixtureScenarioBasic>
 {
     //private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();

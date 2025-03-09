@@ -3,7 +3,7 @@ using ToSic.Eav.Testing;
 
 namespace ToSic.Eav.DataSource.DbTests.VerifyFullDbStartUp;
 
-[Startup(typeof(TestStartupFullWithDb))]
+[Startup(typeof(StartupTestFullWithDb))]
 public class VerifyFullDbFixture(IDbConfiguration dbConfiguration) : IClassFixture<FullDbFixtureScenarioBasic>
 {
     [Fact]

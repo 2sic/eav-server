@@ -7,7 +7,7 @@ using static ToSic.Eav.RelationshipTests.RelationshipTestSpecs;
 
 namespace ToSic.Eav.RelationshipTests;
 
-[Startup(typeof(TestStartupFullWithDb))]
+[Startup(typeof(StartupTestFullWithDb))]
 public class ParentsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : ChildParentTestBase<Parents>(dsSvc, dataBuilder), IClassFixture<FullDbFixtureScenarioBasic>
 {
 

@@ -8,7 +8,7 @@ using static ToSic.Eav.RelationshipTests.MetadataTestSpecs;
 
 namespace ToSic.Eav.RelationshipTests;
 
-[Startup(typeof(TestStartupFullWithDb))]
+[Startup(typeof(StartupTestFullWithDb))]
 public class MetadataTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixtureScenarioBasic>
 {
     private void TestMetadata(int expected, DataSources.Metadata ds) => Equal(expected, ds.ListTac().Count()); //, $"should have {expected} md items");
