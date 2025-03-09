@@ -14,7 +14,7 @@ namespace ToSic.Eav.Internal.Loaders;
 
 [PrivateApi]
 public class EavSystemLoader(
-    SystemFingerprint fingerprint,
+    SystemFingerprint fingerprint,  // note: must be of type SystemFingerprint, not IFingerprint
     IAppLoader appLoader,
     AppsCacheSwitch appsCache,
     IEavFeaturesService features,
@@ -33,16 +33,8 @@ public class EavSystemLoader(
     public readonly IEavFeaturesService Features = features;
     private readonly ILogStore _logStore = logStore;
 
-    // note: must be of type SystemFingerprint, not IFingerprint
-
-    #region Constructor / DI
-
-    // note: must be of type SystemFingerprint, not IFingerprint
-
-    #endregion
-
     /// <summary>
-    /// Do things needed at application start
+    /// Do things we need at application start
     /// </summary>
     public void StartUp()
     {
@@ -84,7 +76,7 @@ public class EavSystemLoader(
                 .Select(e => new LicenseEntity(e))
                 .ToList()
                 ?? [];
-            l.A($"licEnt:{licEntities?.Count}");
+            l.A($"licEnt:{licEntities.Count}");
 
             // Check all licenses and show extra message
             var enterpriseLicenses = licEntities
@@ -95,9 +87,11 @@ public class EavSystemLoader(
                     return entFp;
                 })
                 .ToList();
-            l.A($"entLic:{enterpriseLicenses?.Count}");
+            l.A($"entLic:{enterpriseLicenses.Count}");
 
-            licenseLoader.Init(enterpriseLicenses).LoadLicenses();
+            licenseLoader
+                .Init(enterpriseLicenses)
+                .LoadLicenses();
         }
         catch (Exception e)
         {
@@ -138,12 +132,13 @@ public class EavSystemLoader(
                 return l.ReturnNull("ok, but 'features.json' is missing");
 
             // handle old 'features.json' format
-            var stored = featurePersistenceService.ConvertOldFeaturesFile(filePath, fileContent);
-            if (stored != null) 
-                return l.ReturnAndLog(stored, "converted to new features.json");
+            var oldState = featurePersistenceService.ConvertOldFeaturesFile(filePath, fileContent);
+            if (oldState != null) 
+                return l.ReturnAndLog(oldState, "converted to new features.json");
 
             // return features stored
-            return l.ReturnAndLog(JsonSerializer.Deserialize<FeatureStatesPersisted>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml), "ok, features loaded");
+            var newState = JsonSerializer.Deserialize<FeatureStatesPersisted>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+            return l.ReturnAndLog(newState, "ok, features loaded");
         }
         catch (Exception e)
         {

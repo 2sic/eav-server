@@ -11,19 +11,19 @@ public class SystemLoader : ServiceBase
 {
     public SystemLoader(
         ILogStore logStore,
-        IEnumerable<IStartUpRegistrations> registrations,
+        IEnumerable<IStartUpRegistrations> startUpRegistrations,
         LazySvc<EavSystemLoader> systemLoaderLazy // This must be lazy, as some dependencies of it could change till it's needed
     ) : base($"{EavLogs.Eav}SysLdr")
     {
         logStore.Add(LogNames.LogStoreStartUp, Log);
         Log.A("EAV System Loader");
         ConnectLogs([
-            _registrations = registrations,
+            _startUpRegistrations = startUpRegistrations,
             _systemLoaderLazy = systemLoaderLazy
         ]);
     }
 
-    private readonly IEnumerable<IStartUpRegistrations> _registrations;
+    private readonly IEnumerable<IStartUpRegistrations> _startUpRegistrations;
     private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
 
     /// <summary>
@@ -33,23 +33,26 @@ public class SystemLoader : ServiceBase
         ? _systemLoaderLazy.Value
         : throw new("Can't access this property unless StartUp has run first");
 
-    public void StartUp() => Log.Do(l =>
+    public void StartUp()
     {
+        var l = Log.Fn();
         DoRegistrations();
-        l.A("Will now run StartUp on EAv SystemLoader - logs are tracked separately");
+        l.A("Will now run StartUp on EAV SystemLoader - logs are tracked separately");
         _systemLoaderLazy.Value.StartUp();
-    });
+        l.Done();
+    }
 
     private void DoRegistrations()
     {
         var l = Log.Fn();
-        foreach (var registration in _registrations)
+        foreach (var registration in _startUpRegistrations)
             DoRegistration(registration);
         l.Done();
     }
 
-    private void DoRegistration(IStartUpRegistrations registration) => Log.Do(registration.NameId, l =>
+    private void DoRegistration(IStartUpRegistrations registration)
     {
+        var l = Log.Fn(registration.NameId);
         try
         {
             // TODO: to remove this init, we need to implement something in the ConnectService #dropLogInit
@@ -62,5 +65,6 @@ public class SystemLoader : ServiceBase
             l.A($"Error on registration of {registration.NameId}");
             l.Ex(ex);
         }
-    });
+        l.Done();
+    }
 }
