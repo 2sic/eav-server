@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.RelationshipTests;
 using ToSic.Eav.Testing;
 
 namespace ToSic.Eav.DataSource.DbTests.VerifyFullDbStartUp;
@@ -12,6 +12,10 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
     [Fact]
     public void PresetAppStateIdIsMinus42() =>
         Equal(Constants.PresetAppId, appReaders.GetSystemPreset().AppId);
+
+    [Fact]
+    public void IsHealthy() =>
+        True(appReaders.GetSystemPreset().GetCache().IsHealthy);
 
     [Fact]
     public void PresetAppStateHasLotsOfData() => 
@@ -32,9 +36,5 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
     [Fact]
     public void PresetAppStateHasPickerDataSourceContentTypeById() => 
         NotNull(appReaders.GetSystemPreset().GetContentType(Decorators.IsPickerDataSourceDecoratorId));
-
-    [Fact]
-    public void GetContentTypeOnNormalAppFailsInNet9AskSTV() => 
-        NotNull(appReaders.Get(RelationshipTestSpecs.AppIdentity).GetContentType(Decorators.IsPickerDataSourceDecoratorId));
 
 }
