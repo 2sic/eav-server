@@ -1,11 +1,9 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource.DbTests;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.Testing;
-using ToSic.Testing;
-using static ToSic.Eav.RelationshipTests.RelationshipTestSpecs;
+using static ToSic.Eav.DataSource.DbTests.RelationshipTests.RelationshipTestSpecs;
 
-namespace ToSic.Eav.RelationshipTests;
+namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 [Startup(typeof(StartupTestFullWithDb))]
 public class ParentsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : ChildParentTestBase<Parents>(dsSvc, dataBuilder), IClassFixture<FullDbFixtureScenarioBasic>

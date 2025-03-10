@@ -1,6 +1,6 @@
 ﻿using Xunit.Sdk;
 
-namespace ToSic.Eav.RelationshipTests;
+namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 public partial class RelationshipFilterTest
 {

@@ -1,12 +1,10 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource.DbTests;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Testing;
-using ToSic.Testing;
-using static ToSic.Eav.RelationshipTests.MetadataTestSpecs;
+using static ToSic.Eav.DataSource.DbTests.RelationshipTests.MetadataTestSpecs;
 
-namespace ToSic.Eav.RelationshipTests;
+namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 [Startup(typeof(StartupTestFullWithDb))]
 public class MetadataTargetsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixtureScenarioBasic>

@@ -4,7 +4,7 @@ using ToSic.Eav.DataSourceTests;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.RelationshipTests;
+namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 internal class RelationshipTestCase : RelationshipTestBase
 {

@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.DataSource.DbTests.RelationshipTests;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.RelationshipTests;
 using ToSic.Eav.Testing;
 
 namespace ToSic.Eav.DataSource.DbTests.VerifyFullDbStartUp;

@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.LookUp;
-using static ToSic.Eav.RelationshipTests.RelationshipTestSpecs;
+using static ToSic.Eav.DataSource.DbTests.RelationshipTests.RelationshipTestSpecs;
 
-namespace ToSic.Eav.RelationshipTests;
+namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 public class ChildParentTestBase<T>(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) where T: RelationshipDataSourceBase
 {

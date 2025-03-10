@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 
-namespace ToSic.Eav.RelationshipTests;
+namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 public class RelationshipTestSpecs
 {

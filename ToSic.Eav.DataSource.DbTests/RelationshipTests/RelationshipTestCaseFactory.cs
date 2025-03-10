@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
 
-namespace ToSic.Eav.RelationshipTests;
+namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 internal class RelationshipTestCaseFactory(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {

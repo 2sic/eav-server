@@ -3,7 +3,7 @@ using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.RelationshipTests;
+namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {
