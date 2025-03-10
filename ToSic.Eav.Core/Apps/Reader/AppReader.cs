@@ -23,8 +23,7 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
     internal IAppStateCache AppState => _appState;
 
     /// <inheritdoc />
-    public IAppSpecs Specs => _specs ??= new AppSpecs(_appState);
-    private IAppSpecs _specs;
+    public IAppSpecs Specs => field ??= new AppSpecs(_appState);
 
     #region Identity
 
