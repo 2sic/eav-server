@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSource.Configuration;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class ConfigMaskAuto(DataSourcesTstBuilder dsSvc, ConfigurationDataLoader findConfigs)
 {
     [Fact]

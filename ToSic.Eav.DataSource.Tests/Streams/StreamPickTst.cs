@@ -4,7 +4,7 @@ using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class StreamPickTst(IDataSourcesService dsBuild, Generator<DataTablePerson> personTableGenerator)
 {
     private const int DefaultStreamSize = 10;

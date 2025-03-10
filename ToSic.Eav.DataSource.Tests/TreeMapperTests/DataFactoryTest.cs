@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.TreeMapperTests;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class DataFactoryTest(IDataFactory dataFactory)
 {
     [Fact]

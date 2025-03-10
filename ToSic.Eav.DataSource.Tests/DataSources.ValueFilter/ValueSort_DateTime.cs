@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSourceTests;
 // Create tests with DATEs
 // Create tests with Modified!
 
-[Startup(typeof(StartupValueFilter))]
+[Startup(typeof(StartupTestsValueFilter))]
 public class ValueSort_DateTime(ValueFilterMaker valueFilterMaker)
 {
     private const int TestVolume = 30;

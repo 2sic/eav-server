@@ -5,7 +5,7 @@ using ToSic.Eav.DataSourceTests;
 
 namespace ToSic.Eav.DataSource.Caching;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class CacheAllStreamsTest(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
 #if NETCOREAPP

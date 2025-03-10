@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSource.Configuration;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class GetThisTests(DataSourcesTstBuilder dsSvc)
 {
 

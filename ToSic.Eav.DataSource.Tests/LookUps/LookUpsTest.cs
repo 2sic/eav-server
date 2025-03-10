@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSourceTests.LookUps;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class LookUpsTest(DataSourcesTstBuilder dsSvc, DataTablePerson personTableGenerator)
 {
     [Fact]

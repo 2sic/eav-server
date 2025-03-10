@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource.Caching;
 /// <param name="dsSvc"></param>
 /// <param name="listCache"></param>
 /// <param name="personTable"></param>
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class CacheAllStreamsFirstEmptyThenCached(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
 #if NETCOREAPP

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class StreamFallbackTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
 {
     [Fact]

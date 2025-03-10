@@ -1,14 +1,18 @@
 ﻿using ToSic.Eav.DataSource.Internal.Catalog;
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSource.Catalog;
 
-[TestClass]
-public class CheckVisualQueryAttribute: TestBaseEavDataSource
+/// <summary>
+/// Note: This Test doesn't do anything ATM as it was created at another time.
+/// Could maybe be updated to be useful though, so we didn't delete it.
+/// </summary>
+/// <param name="dsCatalog"></param>
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+public class CheckVisualQueryAttribute(DataSourceCatalog dsCatalog)
 {
-    [TestMethod]
+    [Fact]
     public void CheckGlobalNames()
     {
-        var dsCatalog = GetService<DataSourceCatalog>();
 
         var allDS = dsCatalog.GetAll(true, 0).ToList();
 

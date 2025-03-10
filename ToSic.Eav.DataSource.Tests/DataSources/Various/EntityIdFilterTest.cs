@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSources.Various;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class EntityIdFilterTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
 {
     [Fact]

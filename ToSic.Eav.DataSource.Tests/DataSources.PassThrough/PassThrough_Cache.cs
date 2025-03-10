@@ -4,7 +4,7 @@ namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class PassThrough_Cache(DataSourcesTstBuilder dsSvc)
 {
     [Fact]

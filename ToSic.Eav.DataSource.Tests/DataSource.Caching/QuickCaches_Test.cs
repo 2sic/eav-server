@@ -4,7 +4,7 @@ using ToSic.Eav.DataSourceTests;
 
 namespace ToSic.Eav.DataSource.Caching;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class QuickCachesTest(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
     [Fact]

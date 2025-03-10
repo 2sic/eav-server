@@ -4,7 +4,7 @@ using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSources.Various;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class ItemFilterDuplicatesTest(DataSourcesTstBuilder dsSvc, Generator<DataTablePerson> personTableGenerator, IDataSourcesService dataSourcesService)
 {
     [Fact]

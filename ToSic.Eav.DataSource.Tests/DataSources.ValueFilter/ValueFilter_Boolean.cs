@@ -4,7 +4,7 @@ namespace ToSic.Eav.DataSourceTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
-[Startup(typeof(StartupValueFilter))]
+[Startup(typeof(StartupTestsValueFilter))]
 public class ValueFilterBoolean(ValueFilterMaker valueFilterMaker)
 {
 

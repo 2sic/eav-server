@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
 {
     private const int ItemsToGenerate = 100;

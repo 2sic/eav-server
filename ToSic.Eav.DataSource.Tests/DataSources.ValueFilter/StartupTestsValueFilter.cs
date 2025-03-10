@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.DataSourceTests;
 
-namespace ToSic.Eav.DataSources.Attributes;
+namespace ToSic.Eav.DataSources.ValueFilter;
 
-internal class StartupAttributeRename: TestStartupEavCoreAndDataSources
+internal class StartupTestsValueFilter: StartupTestsEavCoreAndDataSources
 {
     public override void ConfigureServices(IServiceCollection services)
     {
         base.ConfigureServices(services);
-        services.AddTransient<AttributeRenameTester>();
+        services.AddTransient<ValueFilterMaker>();
     }
 }

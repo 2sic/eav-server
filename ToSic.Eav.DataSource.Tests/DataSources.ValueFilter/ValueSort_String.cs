@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSourceTests;
 // 2. Tests with multiple fileds like City,Name
 // Later: Create tests with language-parameters as well, as these tests ignore the language and always use default
 
-[Startup(typeof(StartupValueFilter))]
+[Startup(typeof(StartupTestsValueFilter))]
 public class ValueSort_String(ValueFilterMaker valueFilterMaker)
 {
     private const int TestVolume = 30;

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSources.Attributes;
 
-[Startup(typeof(StartupAttributeRename))]
+[Startup(typeof(StartupTestsAttributeRename))]
 public partial class AttributeRenameTests(AttributeRenameTester attributeRenameTester, DataSourcesTstBuilder dsSvc)
 {
         

@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.DataSource.Internal.Catalog;
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSource.Catalog;
 
-[TestClass]
-public class DataSourceTests: TestBaseEavDataSource
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+public class DataSourceTests(DataSourceCatalog dsCatalog)
 {
     public const int EavInstalledDsCount = 40; // with 2sxc it's ca. 48;
     public const int TestingAddedDsCount = 2;
@@ -14,29 +14,29 @@ public class DataSourceTests: TestBaseEavDataSource
     public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 
     //[Ignore] // disabled for now, as the SqlDs doesn't have a code-version any more
-    [TestMethod]
+    [Fact]
     public void AutoFindAllDataSources()
     {
-        var dsCatalog = GetService<DataSourceCatalog>();
+        //var dsCatalog = GetService<DataSourceCatalog>();
         var dsList = dsCatalog.GetAll(false, 0);
-        AreEqual(StandardInstalledDSCount, dsList.Count(), "expect a correct number of DSs");
+        Equal(StandardInstalledDSCount, dsList.Count());//, "expect a correct number of DSs");
 
         var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
-        IsNotNull(hasSqlDs, "should find sql-data source");
+        NotNull(hasSqlDs);//, "should find sql-data source");
     }
 
-    [TestMethod]
+    [Fact]
     public void AutoFindPipelineDataSources()
     {
-        var dsCatalog = GetService<DataSourceCatalog>();
+        //var dsCatalog = GetService<DataSourceCatalog>();
         var dsList = dsCatalog.GetAll(true, 0);
-        AreEqual(StandardInstalledPipeLineDS, dsList.Count(), "expect a correct number of DSs");
+        Equal(StandardInstalledPipeLineDS, dsList.Count());//, "expect a correct number of DSs");
 
         var hasSqlDs = dsList.FirstOrDefault(c => c.Type.FullName == SqlFullName);
-        IsNotNull(hasSqlDs, "should find sql-data source");
+        NotNull(hasSqlDs);//, "should find sql-data source");
 
         var shouldNotFind = dsList.FirstOrDefault(c => c.Type.FullName == DeferredFullName);
-        IsNull(shouldNotFind, "should NOT find deferred-data source");
+        Null(shouldNotFind);//, "should NOT find deferred-data source");
     }
 
 }

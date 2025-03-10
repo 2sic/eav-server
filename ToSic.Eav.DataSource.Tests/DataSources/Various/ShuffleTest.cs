@@ -4,7 +4,7 @@ namespace ToSic.Eav.DataSources.Various;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
-[Startup(typeof(TestStartupEavCoreAndDataSources))]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class ShuffleTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
 {
     //private const int TestVolume = 10000;
