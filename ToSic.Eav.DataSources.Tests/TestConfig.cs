@@ -1,11 +1,7 @@
-﻿using ToSic.Eav.Apps;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSourceTests;
 
 internal class TestConfig
 {
-    //public static int Zone = 2;
-
     public static int AppForQueryTests = 4;
 
 
