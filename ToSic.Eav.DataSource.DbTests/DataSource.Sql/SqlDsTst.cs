@@ -1,17 +1,17 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
+using ToSic.Eav.Testing;
 
-namespace ToSic.Eav.DataSourceTests.ExternalData;
+namespace ToSic.Eav.DataSource.DbTests.DataSource.Sql;
 
-[TestClass]
-public class SqlDsTst: TestBaseEavDataSource
+[Startup(typeof(StartupTestFullWithDb))]
+public class SqlDsTst(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixtureScenarioBasic>
 {
     private const string ConnectionDummy = "";
     private const string ContentTypeName = "SqlData";
 
-    private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
-
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_NoConfigChangesIfNotNecessary()
     {
         var initQuery = "Select * From Products";
@@ -20,16 +20,16 @@ public class SqlDsTst: TestBaseEavDataSource
         var configCountBefore = config.Count;
         sql.Configuration.Parse(); 
 
-        AreEqual(configCountBefore, config.Count);
-        AreEqual(initQuery, sql.SelectCommand);
+        Equal(configCountBefore, config.Count);
+        Equal(initQuery, sql.SelectCommand);
     }
 
     #region test parameter injection
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_SqlInjectionProtection()
     {
         var initQuery = "Select * From Products Where ProductId = [QueryString:Id]";
-        var expectedQuery = "Select * From Products Where ProductId = @" + Sql.ExtractedParamPrefix + "1";
+        var expectedQuery = "Select * From Products Where ProductId = @" + DataSources.Sql.ExtractedParamPrefix + "1";
         var paramsInQuery = 1;
         var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
         var config = sql.Configuration.Values;
@@ -37,25 +37,25 @@ public class SqlDsTst: TestBaseEavDataSource
         var configCountBefore = config.Count;
         sql.CustomConfigurationParse();
 
-        AreEqual(configCountBefore + paramsInQuery, config.Count);
-        AreEqual(expectedQuery, sql.SelectCommand);
+        Equal(configCountBefore + paramsInQuery, config.Count);
+        Equal(expectedQuery, sql.SelectCommand);
 
         sql.Configuration.Parse();
         var parsed = sql.Configuration.Values;
-        AreEqual("", parsed["@" + Sql.ExtractedParamPrefix + "1"]);
+        Equal("", parsed["@" + DataSources.Sql.ExtractedParamPrefix + "1"]);
     }
 
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_SqlInjectionProtectionComplex()
     {
         var initQuery = @"Select Top [AppSettings:MaxPictures] * 
 From Products 
 Where CatName = [AppSettings:DefaultCategoryName||NotFound] 
 And ProductSort = [AppSettings:DoesntExist||CorrectlyDefaulted]";
-        var expectedQuery = @"Select Top @" + Sql.ExtractedParamPrefix + @"1 * 
+        var expectedQuery = @"Select Top @" + DataSources.Sql.ExtractedParamPrefix + @"1 * 
 From Products 
-Where CatName = @" + Sql.ExtractedParamPrefix + @"2 
-And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
+Where CatName = @" + DataSources.Sql.ExtractedParamPrefix + @"2 
+And ProductSort = @" + DataSources.Sql.ExtractedParamPrefix + @"3";
         var paramsInQuery = 3;
 
         var sql = GenerateSqlDataSource(ConnectionDummy, initQuery, ContentTypeName);
@@ -63,73 +63,73 @@ And ProductSort = @" + Sql.ExtractedParamPrefix + @"3";
         var configCountBefore = config.Count;
         sql.CustomConfigurationParse();
 
-        AreEqual(configCountBefore + paramsInQuery, config.Count);
-        AreEqual(expectedQuery, sql.SelectCommand);
+        Equal(configCountBefore + paramsInQuery, config.Count);
+        Equal(expectedQuery, sql.SelectCommand);
 
         sql.Configuration.Parse();
         var parsed = sql.Configuration.Values;
-        AreEqual(LookUpTestConstants.MaxPictures, parsed["@" + Sql.ExtractedParamPrefix + "1"]);
-        AreEqual(LookUpTestConstants.DefaultCategory, parsed["@" + Sql.ExtractedParamPrefix + "2"]);
-        AreEqual("CorrectlyDefaulted", parsed["@" + Sql.ExtractedParamPrefix + "3"]);
+        Equal(LookUpTestConstants.MaxPictures, parsed["@" + DataSources.Sql.ExtractedParamPrefix + "1"]);
+        Equal(LookUpTestConstants.DefaultCategory, parsed["@" + DataSources.Sql.ExtractedParamPrefix + "2"]);
+        Equal("CorrectlyDefaulted", parsed["@" + DataSources.Sql.ExtractedParamPrefix + "3"]);
     }
 
     #endregion
 
     #region test bad sql statements like insert / drop etc.
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_BadSqlInsert()
     {
         var results = GenerateSqlDataSource(ConnectionDummy, "Insert something into something", ContentTypeName);
-        DataSourceErrors.VerifyStreamIsError(results, Sql.ErrorTitleForbiddenSql);
+        DataSourceErrors.VerifyStreamIsError(results, DataSources.Sql.ErrorTitleForbiddenSql);
     }
 
 
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_BadSqlSelectInsert()
         => DataSourceErrors.VerifyStreamIsError(
             GenerateSqlDataSource(ConnectionDummy, "Select * from table; Insert something", ContentTypeName),
-            Sql.ErrorTitleForbiddenSql
+            DataSources.Sql.ErrorTitleForbiddenSql
         );
 
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_BadSqlSpaceInsert()
         => DataSourceErrors.VerifyStreamIsError(
             GenerateSqlDataSource(ConnectionDummy, " Insert something into something", ContentTypeName),
-            Sql.ErrorTitleForbiddenSql);
+            DataSources.Sql.ErrorTitleForbiddenSql);
 
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_BadSqlDropInsert()
         => DataSourceErrors.VerifyStreamIsError(
             GenerateSqlDataSource(ConnectionDummy, "Drop tablename", ContentTypeName),
-            Sql.ErrorTitleForbiddenSql);
+            DataSources.Sql.ErrorTitleForbiddenSql);
 
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_BadSqlSelectDrop()
         => DataSourceErrors.VerifyStreamIsError(
             GenerateSqlDataSource(ConnectionDummy, "Select * from Products; Drop tablename", ContentTypeName),
-            Sql.ErrorTitleForbiddenSql);
+            DataSources.Sql.ErrorTitleForbiddenSql);
 
     #endregion
 
 
     #region test title / entityid fields with casing
 
-    [TestMethod]
+    [Fact]
     public void SqlDataSource_TitleCasing()
     {
         var select = "SELECT [PortalID] as entityId, HomeDirectory As entityTitle, " +
                      "[AdministratorId],[GUID],[HomeDirectory],[PortalGroupID] " +
                      "FROM [Portals]";
-        var sql = GenerateSqlDataSource(TestConfig.ConStr, select, ContentTypeName);
+        var sql = GenerateSqlDataSource(EavTestConfig.ScenarioBasic.ConStr, select, ContentTypeName);
         var list = sql.ListTac();
-        IsTrue(list.Any(), "found some");
+        True(list.Any(), "found some");
     }
 
     #endregion
 
-    public Sql GenerateSqlDataSource(string connection, string query, string typeName)
+    public DataSources.Sql GenerateSqlDataSource(string connection, string query, string typeName)
     {
-        return DsSvc.CreateDataSource<Sql>(new LookUpTestData(GetService<DataBuilder>()).AppSetAndRes())
+        return dsSvc.CreateDataSource<DataSources.Sql>(new LookUpTestData(dataBuilder).AppSetAndRes())
             .Setup(connection, query, typeName);
     }
 }
