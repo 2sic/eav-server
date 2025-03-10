@@ -1,69 +1,68 @@
 ﻿using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Lib.Logging;
 
+namespace ToSic.Eav.DataSource.Query;
 
-namespace ToSic.Eav.DataSourceTests.Query;
-
-[TestClass]
+[Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class ParamsFromUrlTests
 {
-    [TestMethod]
+    [Fact]
     public void ManyParams()
     {
         var input = @"something=other
 key=result
 key2=[token]";
         var result = QueryDefinition.GenerateParamsDic(input, new Log("dummy"));
-        AreEqual(result.Count, 3, "should find 3 items");
-        AreEqual(result["key"], "result", "key=result");
-        AreEqual(result["key2"], "[token]", "key=result");
+        Equal(result.Count, 3);//, "should find 3 items");
+        Equal(result["key"], "result");//, "key=result");
+        Equal(result["key2"], "[token]");//, "key=result");
     }
 
-    [TestMethod]
+    [Fact]
     public void SameKey()
     {
         var input = @"something=other
 key=result
 something=[token]";
         var result = QueryDefinition.GenerateParamsDic(input, new Log("dummy"));
-        AreEqual(result.Count, 2, "should find 2 items");
-        AreEqual(result["something"], "other", "should be the first set, second should be ignored");
+        Equal(result.Count, 2);//, "should find 2 items");
+        Equal(result["something"], "other");//, "should be the first set, second should be ignored");
     }
-    [TestMethod]
+    [Fact]
     public void IgnoreComments()
     {
         var input = @"// this is a comment
 key=result
 key2=[token]";
         var result = QueryDefinition.GenerateParamsDic(input, new Log("dummy"));
-        AreEqual(result.Count, 2, "should find 2 items");
-        AreEqual(result["key"], "result", "key=result");
+        Equal(result.Count, 2);//, "should find 2 items");
+        Equal(result["key"], "result");//, "key=result");
     }
 
-    [TestMethod]
+    [Fact]
     public void SingleLine()
     {
         var input = @"something=other";
         var result = QueryDefinition.GenerateParamsDic(input, new Log("dummy"));
-        AreEqual(result.Count, 1, "should find 1 items");
-        AreEqual(result["something"], "other", "should be the first set, second should be ignored");
+        Equal(result.Count, 1);//, "should find 1 items");
+        Equal(result["something"], "other");//, "should be the first set, second should be ignored");
     }
 
-    [TestMethod]
+    [Fact]
     public void KeyEqualsOnly()
     {
         var input = @"something=";
         var result = QueryDefinition.GenerateParamsDic(input, new Log("dummy"));
-        AreEqual(result.Count, 1, "should find 1 items");
-        AreEqual(result["something"], "", "should be the first set, second should be ignored");
+        Equal(result.Count, 1);//, "should find 1 items");
+        Equal(result["something"], "");//, "should be the first set, second should be ignored");
     }
 
-    [TestMethod]
+    [Fact]
     public void KeyOnly()
     {
         var input = @"something";
         var result = QueryDefinition.GenerateParamsDic(input, new Log("dummy"));
-        AreEqual(result.Count, 1, "should find 1 items");
-        AreEqual(result["something"], "", "should be the first set, second should be ignored");
+        Equal(result.Count, 1);//, "should find 1 items");
+        Equal(result["something"], "");//, "should be the first set, second should be ignored");
     }
 }
