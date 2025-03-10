@@ -33,4 +33,14 @@ public interface IAppStateCache: ICacheExpiring,
     void PreRemove();
 
     void DoInLock(ILog parentLog, Action transaction);
+
+    /// <summary>
+    /// Health-info, added in 19.03
+    /// </summary>
+    bool IsHealthy { get; }
+
+    /// <summary>
+    /// Health-info, added in 19.03
+    /// </summary>
+    string HealthMessage { get; }
 }

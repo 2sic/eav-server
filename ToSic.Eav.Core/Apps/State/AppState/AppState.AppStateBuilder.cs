@@ -79,6 +79,8 @@ partial class AppState
             catch (Exception ex)
             {
                 lState.Ex(ex);
+                st.IsHealthy = false;
+                st.HealthMessage += ex.Message + "\n";
             }
             finally
             {

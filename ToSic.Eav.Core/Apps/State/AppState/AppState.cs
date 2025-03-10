@@ -83,4 +83,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
     private string ValueOrExceptionIfNotInLoadingState(string value, string property)
         => Loading ? value : throw new($"Can't set AppState.{property} when not in loading state");
 
+    public bool IsHealthy { get; internal set; } = true;
+    public string HealthMessage { get; internal set; } = "Healthy";
+
 }
