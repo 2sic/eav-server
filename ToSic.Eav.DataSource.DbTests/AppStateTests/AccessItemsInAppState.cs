@@ -1,15 +1,18 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Testing;
+using Xunit.Abstractions;
 
-namespace ToSic.Eav.DataSourceTests.AppStateTests;
+namespace ToSic.Eav.DataSource.DbTests.AppStateTests;
 
-[TestClass]
-public class AccessItemsInAppState: TestBaseDiEavFullAndDb
+[Startup(typeof(StartupTestFullWithDb))]
+public class AccessItemsInAppState(IAppReaderFactory appReaderFactory, ITestOutputHelper output): IClassFixture<FullDbFixtureScenarioBasic>
 {
+    public static IAppIdentity BigDataTestsApp = new AppIdentity(2, 9);
     public const int ItemToAccess = 17000;
     public const int Repeats = 1000;
 
-    [TestMethod]
+    [Fact]
     public void Access1Times()
     {
         var app = GetAppState();
@@ -17,18 +20,18 @@ public class AccessItemsInAppState: TestBaseDiEavFullAndDb
         timer.Start();
 
         var found = app.List.One(ItemToAccess);
-        if (found == null) throw new Exception("should never get null, IDs are probably wrong");
+        if (found == null) throw new("should never get null, IDs are probably wrong");
 
         timer.Stop();
-        Trace.Write($"Time used: {timer.ElapsedMilliseconds}");
+        output.WriteLine($"Time used: {timer.ElapsedMilliseconds}");
     }
 
-    private IAppReader GetAppState() => GetService<IAppReaderFactory>().Get(Eav.DataSourceTests.TestConfig.BigDataTestsApp);
+    private IAppReader GetAppState() => appReaderFactory.Get(BigDataTestsApp);
 
-    [TestMethod]
+    [Fact]
     public void AccessOne1000TimesSame() => AccessOne1000Times(0);
 
-    [TestMethod]
+    [Fact]
     public void AccessOne1000TimesDiff() => AccessOne1000Times(1);
 
 
@@ -41,17 +44,17 @@ public class AccessItemsInAppState: TestBaseDiEavFullAndDb
         for (var i = 0; i < Repeats; i++)
         {
             var found = app.List.One(ItemToAccess + i * multNext);
-            if (found == null) throw new Exception("should never get null, IDs are probably wrong");
+            if (found == null) throw new("should never get null, IDs are probably wrong");
         }
 
         timer.Stop();
-        Trace.Write($"Time used: {timer.ElapsedMilliseconds}");
+        output.WriteLine($"Time used: {timer.ElapsedMilliseconds}");
     }
 
-    [TestMethod]
+    [Fact]
     public void FastAccessOne1000TimesLFASame() => AccessOneLazyFastAccess(0);
 
-    [TestMethod]
+    [Fact]
     public void FastAccessOne1000TimesLFADiff() => AccessOneLazyFastAccess(1);
 
     public void AccessOneLazyFastAccess(int multiplyCounter)
@@ -67,12 +70,12 @@ public class AccessItemsInAppState: TestBaseDiEavFullAndDb
         }
 
         timer.Stop();
-        Trace.Write($"Time used: {timer.ElapsedMilliseconds}");
+        output.WriteLine($"Time used: {timer.ElapsedMilliseconds}");
     }
 
-    //[TestMethod]
+    //[Fact]
     //public void AccessOne1000TimesFastIndexSame() => FastAccessOne1000TimesFastIndex(0);
-    //[TestMethod]
+    //[Fact]
     //public void AccessOne1000TimesFastIndexDiff() => FastAccessOne1000TimesFastIndex(1);
 
     //public void FastAccessOne1000TimesFastIndex(int multiplyCounter)
