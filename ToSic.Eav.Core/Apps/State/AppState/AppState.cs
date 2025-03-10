@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.StartUp;
+﻿using ToSic.Eav.StartUp;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps.State;
@@ -67,10 +65,9 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
     /// </summary>
     public string Folder
     {
-        get => _folder;
-        private set => _folder = ValueOrExceptionIfNotInLoadingState(value, nameof(Folder));
+        get => field;
+        private set => field = ValueOrExceptionIfNotInLoadingState(value, nameof(Folder));
     }
-    private string _folder;
 
 
     /// <summary>
@@ -79,14 +76,11 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
     /// </summary>
     public string Name
     {
-        get => _name;
-        private set => _name = ValueOrExceptionIfNotInLoadingState(value, nameof(Name));
+        get => field;
+        private set => field = ValueOrExceptionIfNotInLoadingState(value, nameof(Name));
     }
-    private string _name;
 
     private string ValueOrExceptionIfNotInLoadingState(string value, string property)
-    {
-        if (!Loading) throw new($"Can't set AppState.{property} when not in loading state");
-        return value;
-    }
+        => Loading ? value : throw new($"Can't set AppState.{property} when not in loading state");
+
 }
