@@ -33,7 +33,7 @@ public class VersioningTests(Generator<DbDataController> dbDataGenerator, GenWor
 
     // TODO: move tests to tests of ToSic.Eav.Apps
     // ATM this test doesn't work
-    [Fact] public void DevPc2dmRestoreV2CurrentlyNotReallyDoingWhatItShould()
+    [Fact] public void TestingDbRestoreV2CurrentlyNotReallyDoingWhatItShould()
     {
         var id = ItemToRestoreToV2;
         var version = 2;
