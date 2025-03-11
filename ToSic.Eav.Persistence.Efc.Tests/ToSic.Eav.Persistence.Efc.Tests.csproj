@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Projects\2sxc\2sxc\Src\packages\system.diagnostics.diagnosticsource\9.0.0\contentFiles\any\net9.0\ILLink\ILLink.Descriptors.LibraryBuild.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.3" />

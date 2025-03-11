@@ -2,7 +2,7 @@
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.Persistence.Efc.Tests19;
+namespace ToSic.Eav.Persistence.Efc.Tests;
 
 
 [Startup(typeof(StartupTestFullWithDb))]

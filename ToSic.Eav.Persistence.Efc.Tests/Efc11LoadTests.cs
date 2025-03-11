@@ -7,7 +7,7 @@ using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.Abstractions;
 
-namespace ToSic.Eav.Persistence.Efc.Tests19;
+namespace ToSic.Eav.Persistence.Efc.Tests;
 
 [Startup(typeof(StartupTestFullWithDb))]
 public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGenerator, ITestOutputHelper output)

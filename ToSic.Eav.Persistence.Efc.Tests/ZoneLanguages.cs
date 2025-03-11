@@ -5,7 +5,7 @@ using ToSic.Eav.Repositories;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.Persistence.Efc.Tests19;
+namespace ToSic.Eav.Persistence.Efc.Tests;
 
 [Startup(typeof(StartupTestFullWithDb))]
 public class ZoneLanguages(EavDbContext db, EfcAppLoader loader) : IClassFixture<DoFixtureStartup<ScenarioBasic>>

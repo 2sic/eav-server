@@ -9,7 +9,7 @@ using ToSic.Lib;
 
 #pragma warning disable CA1822
 
-namespace ToSic.Eav.Persistence.Efc.Tests19;
+namespace ToSic.Eav.Persistence.Efc.Tests;
 
 /// <summary>
 /// A Startup helper for tests which need Dependency-Injection setup for EAV Core.

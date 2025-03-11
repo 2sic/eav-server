@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Persistence.Efc.Tests19;
+﻿namespace ToSic.Eav.Persistence.Efc.Tests;
 
 internal class SqlTracing
 {

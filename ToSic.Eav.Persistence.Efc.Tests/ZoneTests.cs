@@ -1,6 +1,6 @@
 ﻿using Xunit.Abstractions;
 
-namespace ToSic.Eav.Persistence.Efc.Tests19;
+namespace ToSic.Eav.Persistence.Efc.Tests;
 
 // NOTE: This test doesn't do anything. I assume it should have created a zone and verified that it's created.
 
