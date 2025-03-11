@@ -2,11 +2,12 @@
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.DataSource.DbTests.VerifyFullDbStartUp;
+namespace ToSic.Eav.VerifyFullDbStartUp;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class SomeAppLoadedCorrectlyFromEavTestDb(IAppReaderFactory appReaders) : IClassFixture<FullDbFixtureScenarioBasic>
+public class SomeAppLoadedCorrectlyFromEavTestDb(IAppReaderFactory appReaders) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     /// <summary>
     /// This is the same App as used for Relationship tests, but what we're testing here is not specific to that app

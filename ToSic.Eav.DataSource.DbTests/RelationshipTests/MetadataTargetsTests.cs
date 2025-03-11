@@ -1,43 +1,40 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Testing;
 using static ToSic.Eav.DataSource.DbTests.RelationshipTests.MetadataTestSpecs;
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class MetadataTargetsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixtureScenarioBasic>
+public class MetadataTargetsTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-    //private DataSourcesTstBuilder DsSvc => field ??= GetService<DataSourcesTstBuilder>();
-
     private void TestMetadataTargets(int expected, MetadataTargets ds) 
         => Equal(expected, ds.ListTac().Count());//, $"should have {expected} md items");
 
-    [Fact]
-    public void AllMetadataOfHelp() => TestMetadataTargets(TotalHelp, PrepareDs(HelpTypeName));
+    [Fact] public void AllMetadataOfHelp() =>
+        TestMetadataTargets(TotalHelp, PrepareDs(HelpTypeName));
 
-    [Fact]
-    public void MainMetadataOfHelp() => TestMetadataTargets(MainHelp, PrepareDs(HelpTypeName, typeName: TargetTypeMain));
+    [Fact] public void MainMetadataOfHelp() => 
+        TestMetadataTargets(MainHelp, PrepareDs(HelpTypeName, typeName: TargetTypeMain));
 
-    [Fact]
-    public void TargetOfHelp1() => TestMetadataTargets(1, PrepareDs(ids: [MetaHelpOn1]));
+    [Fact] public void TargetOfHelp1() =>
+        TestMetadataTargets(1, PrepareDs(ids: [MetaHelpOn1]));
 
-    [Fact]
-    public void TargetOfHelp2() => TestMetadataTargets(1, PrepareDs(ids: [MetaHelpOn2]));
+    [Fact] public void TargetOfHelp2() =>
+        TestMetadataTargets(1, PrepareDs(ids: [MetaHelpOn2]));
 
 
-    [Fact]
-    public void PriceTargetsDefaultOfAllTypes() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName));
+    [Fact] public void PriceTargetsDefaultOfAllTypes() =>
+        TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName));
 
-    [Fact]
-    public void PriceTargetsDefault() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain));
+    [Fact] public void PriceTargetsDefault() =>
+        TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain));
 
-    [Fact]
-    public void PriceTargetsFilterDups() => TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: true));
+    [Fact] public void PriceTargetsFilterDups() =>
+        TestMetadataTargets(PriceTargetsUnique, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: true));
 
-    [Fact]
-    public void PriceTargetsDontFilterDups() => TestMetadataTargets(PriceTargetsWithDups, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: false));
+    [Fact] public void PriceTargetsDontFilterDups() =>
+        TestMetadataTargets(PriceTargetsWithDups, PrepareDs(PriceTypeName, typeName: TargetTypeMain, deduplicate: false));
 
 
     protected MetadataTargets PrepareDs(string appType = null, IEnumerable<int> ids = null, string typeName = null, bool? deduplicate = null)

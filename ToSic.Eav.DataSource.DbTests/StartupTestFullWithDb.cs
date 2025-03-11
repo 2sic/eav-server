@@ -3,7 +3,6 @@ using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.StartUp;
-using ToSic.Eav.Testing;
 using ToSic.Lib;
 using ToSic.Testing;
 
@@ -26,7 +25,7 @@ public class StartupTestFullWithDb
     public virtual void ConfigureServices(IServiceCollection services) =>
         services
             .AddTransient<FullDbFixtureHelper>()
-            .AddTransient<FullDbFixtureScenarioBasic>()
+            .AddTransient<DoFixtureStartup<ScenarioBasic>>()
             .AddTransient<DataSourcesTstBuilder>()
             // Apps
             .AddEavApps()

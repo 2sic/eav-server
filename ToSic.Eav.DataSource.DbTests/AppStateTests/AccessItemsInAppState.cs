@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Testing;
 using Xunit.Abstractions;
 
 namespace ToSic.Eav.DataSource.DbTests.AppStateTests;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class AccessItemsInAppState(IAppReaderFactory appReaderFactory, ITestOutputHelper output): IClassFixture<FullDbFixtureScenarioBasic>
+public class AccessItemsInAppState(IAppReaderFactory appReaderFactory, ITestOutputHelper output): IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     public static IAppIdentity BigDataTestsApp = new AppIdentity(2, 9);
     public const int ItemToAccess = 17000;

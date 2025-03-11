@@ -1,13 +1,12 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Testing;
 using static ToSic.Eav.DataSource.DbTests.RelationshipTests.MetadataTestSpecs;
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class MetadataTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixtureScenarioBasic>
+public class MetadataTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private void TestMetadata(int expected, DataSources.Metadata ds) => Equal(expected, ds.ListTac().Count()); //, $"should have {expected} md items");
 

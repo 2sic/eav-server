@@ -26,7 +26,6 @@ public class StartupTestFullWithDb
     public virtual void ConfigureServices(IServiceCollection services) =>
         services
             .AddTransient<FullDbFixtureHelper>()
-            .AddTransient<FullDbFixtureScenarioBasic>()
             //.AddTransient<DataSourcesTstBuilder>()
             // Apps
             .AddEavApps()

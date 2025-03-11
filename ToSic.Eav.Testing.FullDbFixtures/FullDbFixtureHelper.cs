@@ -1,24 +1,24 @@
 ﻿using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Fingerprint;
+using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.Testing
 {
     public class FullDbFixtureHelper(IDbConfiguration dbConfiguration, IGlobalConfiguration globalConfig)
     {
 
-        public void Configure(EavTestConfig testConfig)
+        public void Configure(TestScenario testScenario)
         {
-            dbConfiguration.ConnectionString = testConfig.ConStr;
+            dbConfiguration.ConnectionString = testScenario.ConStr;
 
-            StartupGlobalFoldersAndFingerprint(testConfig);
+            StartupGlobalFoldersAndFingerprint(testScenario);
         }
 
-        public void StartupGlobalFoldersAndFingerprint(EavTestConfig testConfig)
+        public void StartupGlobalFoldersAndFingerprint(TestScenario testScenario)
         {
-            globalConfig.GlobalFolder = testConfig.GlobalFolder;
-            var folderWithTestLicenses = testConfig.GlobalDataCustomFolder;
-            if (Directory.Exists(folderWithTestLicenses))
-                globalConfig.DataCustomFolder = folderWithTestLicenses;
+            globalConfig.GlobalFolder = testScenario.GlobalFolder;
+            if (Directory.Exists(testScenario.GlobalDataCustomFolder))
+                globalConfig.DataCustomFolder = testScenario.GlobalDataCustomFolder;
 
             // Try to reset some special static variables which may cary over through many tests
             SystemFingerprint.ResetForTest();

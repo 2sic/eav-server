@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.StartUp;
 using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 using ToSic.Lib;
 
 namespace ToSic.Testing.Shared;
 
-public abstract class TestBaseEavCore(EavTestConfig testConfig = default) : TestBaseForIoC(testConfig)
+public abstract class TestBaseEavCore(TestScenario testScenario = default) : TestBaseForIoC(testScenario)
 {
     protected override IServiceCollection SetupServices(IServiceCollection services) =>
         base.SetupServices(services)

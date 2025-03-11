@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Code;
 using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -15,17 +16,17 @@ public abstract class TestBaseForIoC : ServiceBase, ICanGetService
 {
     #region Constructor
 
-    public EavTestConfig TestConfig { get; }
+    public TestScenario TestScenario { get; }
 
     /// <summary>
     /// The base constructor will trigger calls to SetupServices.
     /// This ensures that anything that uses this test base or a derived class will have
     /// DI prepared in the way tests stack up
     /// </summary>
-    protected TestBaseForIoC(EavTestConfig testConfig = default) : base("Tst.IoC")
+    protected TestBaseForIoC(TestScenario testScenario = default) : base("Tst.IoC")
     {
         // Store configuration
-        TestConfig = testConfig ?? EavTestConfig.ScenarioFullPatrons;
+        TestScenario = testScenario ?? new ScenarioFullPatrons();
 
         // Initialize IoC
         var services = new ServiceCollection();

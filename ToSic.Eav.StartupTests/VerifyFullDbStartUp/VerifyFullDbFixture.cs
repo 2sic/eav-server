@@ -1,13 +1,14 @@
 ﻿using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.DataSource.DbTests.VerifyFullDbStartUp;
+namespace ToSic.Eav.VerifyFullDbStartUp;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class VerifyFullDbFixture(IDbConfiguration dbConfiguration) : IClassFixture<FullDbFixtureScenarioBasic>
+public class VerifyFullDbFixture(IDbConfiguration dbConfiguration) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     [Fact]
     public void VerifyFullDbFixtureConnectionString() =>
-        Equal(EavTestConfig.ScenarioBasic.ConStr, dbConfiguration.ConnectionString);
+        Equal(new ScenarioBasic().ConStr, dbConfiguration.ConnectionString);
 
 }

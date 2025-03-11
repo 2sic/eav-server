@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.Configuration;
 
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Configuration;
 [Startup(typeof(StartupTestFullWithDb))]
 public class GlobalConfigurationOverride(IAppReaderFactory appReaderFactory)
     // the fixture will also load the resources
-    : IClassFixture<FullDbFixtureScenarioBasic>
+    : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     public record TestData(string Name, Guid Guid, bool Expected);
 

@@ -1,13 +1,14 @@
 ﻿using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.SysData;
 using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.Configuration;
 
 [Startup(typeof(StartupTestFullWithDb))]
 public class LicenseCheckTest(ILicenseService licenseService)
     // the fixture will also load the licenses and stuff
-    : IClassFixture<FullDbFixtureScenarioFullPatrons>
+    : IClassFixture<DoFixtureStartup<ScenarioFullPatrons>>
 {
     /// <summary>
     /// Name of the license in the license.json file in Scenario Basic

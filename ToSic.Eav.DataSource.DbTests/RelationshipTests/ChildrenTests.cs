@@ -1,13 +1,12 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSourceTests;
-using ToSic.Eav.Testing;
 using static ToSic.Eav.DataSource.DbTests.RelationshipTests.RelationshipTestSpecs;
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class ChildrenTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : ChildParentTestBase<Children>(dsSvc, dataBuilder), IClassFixture<FullDbFixtureScenarioBasic>
+public class ChildrenTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : ChildParentTestBase<Children>(dsSvc, dataBuilder), IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     [Fact]
     public void PersonsAllWithoutFieldReturnAllCompanies()

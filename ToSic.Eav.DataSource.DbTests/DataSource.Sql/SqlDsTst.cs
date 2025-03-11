@@ -1,12 +1,11 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.Testing;
 
 namespace ToSic.Eav.DataSource.DbTests.DataSource.Sql;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class SqlDsTst(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<FullDbFixtureScenarioBasic>
+public class SqlDsTst(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private const string ConnectionDummy = "";
     private const string ContentTypeName = "SqlData";
@@ -120,7 +119,7 @@ And ProductSort = @" + DataSources.Sql.ExtractedParamPrefix + @"3";
         var select = "SELECT [PortalID] as entityId, HomeDirectory As entityTitle, " +
                      "[AdministratorId],[GUID],[HomeDirectory],[PortalGroupID] " +
                      "FROM [Portals]";
-        var sql = GenerateSqlDataSource(EavTestConfig.ScenarioBasic.ConStr, select, ContentTypeName);
+        var sql = GenerateSqlDataSource(new ScenarioBasic().ConStr, select, ContentTypeName);
         var list = sql.ListTac();
         True(list.Any(), "found some");
     }

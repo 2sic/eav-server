@@ -8,8 +8,6 @@ namespace ToSic.Eav.TestData;
 
 public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {
-    //private DataSourcesTstBuilder DsSvc => field ??= parent.GetService<DataSourcesTstBuilder>();
-
     private static readonly Dictionary<int, DataTable> CachedDs = new();
 
     public DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)

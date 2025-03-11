@@ -2,11 +2,12 @@
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.DataSource.DbTests.VerifyFullDbStartUp;
+namespace ToSic.Eav.VerifyFullDbStartUp;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixture<FullDbFixtureScenarioBasic>
+public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 
     [Fact]

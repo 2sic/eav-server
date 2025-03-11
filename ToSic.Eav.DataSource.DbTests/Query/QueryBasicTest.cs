@@ -3,7 +3,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Testing;
 
 namespace ToSic.Eav.DataSource.DbTests.Query;
 
@@ -13,7 +12,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     QueryBuilder queryBuilder,
     QueryDefinitionBuilder queryDefinitionBuilder,
     IAppReaderFactory appReaderFactory)
-    : IClassFixture<FullDbFixtureScenarioBasic>
+    : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private static int AppForQueryTests = 4; //Eav.DataSourceTests.TestConfig.AppForQueryTests;
 

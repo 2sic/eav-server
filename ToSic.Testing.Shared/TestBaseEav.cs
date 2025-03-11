@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Testing.Shared;
 
-public abstract class TestBaseEav(EavTestConfig testConfig = default) : TestBaseEavDataSource(testConfig)
+public abstract class TestBaseEav(TestScenario testScenario = default) : TestBaseEavDataSource(testScenario)
 {
     protected override IServiceCollection SetupServices(IServiceCollection services)
     {
@@ -25,7 +26,7 @@ public abstract class TestBaseEav(EavTestConfig testConfig = default) : TestBase
         // The base has an empty configure, and we want to clearly not call it
         //base.Configure();
         var fixture = GetService<FullDbFixtureHelper>();
-        fixture.Configure(TestConfig);
+        fixture.Configure(TestScenario);
     }
 
 }
