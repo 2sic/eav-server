@@ -23,10 +23,9 @@ public class Compressor(IEavFeaturesService features = null)
             _ => throw new ArgumentOutOfRangeException(nameof(compressorType), compressorType, null)
         };
 
-    public bool IsEnabled
-    {
-        get => field && _compressor != null;
-    } = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;
+    public bool IsEnabled => _isEnabled && _compressor != null;
+    // ReSharper disable once ReplaceWithFieldKeyword
+    private readonly bool _isEnabled = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;
 
     public byte[] Compress(string text) =>
         IsEnabled ? _compressor.CompressBytes(Encoding.UTF8.GetBytes(text)) : null;
