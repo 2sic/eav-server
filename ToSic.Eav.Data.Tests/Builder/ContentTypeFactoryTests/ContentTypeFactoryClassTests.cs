@@ -3,7 +3,7 @@ using ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
 
 namespace ToSic.Eav.Data.Builder;
 
-[Startup(typeof(TestStartupEavCore))]
+[Startup(typeof(StartupTestsEavCore))]
 public class ContentTypeFactoryClassTests(ContentTypeFactory factory)
 {
     private static string? GetDescription(IContentType type)

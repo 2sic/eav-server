@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSources.ValueFilter;
 

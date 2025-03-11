@@ -5,7 +5,7 @@ using Xunit.DependencyInjection;
 
 namespace ToSic.Eav.LookUp;
 
-[Startup(typeof(TestStartupEavCore))]
+[Startup(typeof(StartupTestsEavCore))]
 public class SourceEntityTests(DataBuilder dataBuilder)
 {
     private readonly LookUpInEntity _person = new("no-name", dataBuilder.TestEntityDaniel(), null);

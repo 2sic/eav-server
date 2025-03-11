@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Builder;
 
-[Startup(typeof(TestStartupEavCore))]
+[Startup(typeof(StartupTestsEavCore))]
 public class ContentType_Test(ContentTypeBuilder ctBuilder)
 {
     [Fact]

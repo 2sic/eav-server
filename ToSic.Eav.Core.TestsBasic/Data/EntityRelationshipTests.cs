@@ -4,7 +4,7 @@ using Xunit.DependencyInjection;
 
 namespace ToSic.Eav.Data;
 
-[Startup(typeof(TestStartupEavCore))]
+[Startup(typeof(StartupTestsEavCore))]
 public class EntityRelationshipTests(DataBuilder dataBuilder)
 {
 

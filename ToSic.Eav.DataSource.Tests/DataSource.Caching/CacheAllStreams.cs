@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSource.Caching;
 

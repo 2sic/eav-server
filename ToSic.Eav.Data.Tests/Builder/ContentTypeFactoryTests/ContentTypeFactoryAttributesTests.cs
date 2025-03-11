@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Internal;
 
 namespace ToSic.Eav.Data.Builder;
 
-[Startup(typeof(TestStartupEavCore))]
+[Startup(typeof(StartupTestsEavCore))]
 public class ContentTypeFactoryAttributesTests(ContentTypeFactory factory)
 {
     private void AssertAttribute(IContentType ct, string name, ValueTypes type, bool isTitle = false, string description = default)

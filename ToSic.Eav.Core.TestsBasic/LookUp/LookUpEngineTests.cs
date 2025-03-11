@@ -4,7 +4,7 @@ using Xunit.DependencyInjection;
 
 namespace ToSic.Eav.LookUp;
 
-[Startup(typeof(TestStartupEavCore))]
+[Startup(typeof(StartupTestsEavCore))]
 public class LookUpEngineTests(DataBuilder dataBuilder)
 {
     #region Constants

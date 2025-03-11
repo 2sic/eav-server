@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource.Configuration;
+﻿using ToSic.Eav.StartupTests;
+
+namespace ToSic.Eav.DataSource.Configuration;
 
 [Startup(typeof(StartupTestsEavCoreAndDataSources))]
 public class ConfigMaskTests(DataSourcesTstBuilder dsSvc)
