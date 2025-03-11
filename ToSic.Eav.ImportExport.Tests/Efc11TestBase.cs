@@ -1,3 +1,5 @@
+﻿using ToSic.Eav.Repositories;
+using ToSic.Eav.Serialization.Internal;
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,11 +14,11 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.Persistence.Efc.Tests;
 
 [TestClass]
-public class Efc11TestBase: TestBaseDiEavFullAndDb
+public class Efc11TestBase : TestBaseDiEavFullAndDb
 {
     #region test preparations
 
-        
+
     public EavDbContext Db;
     public EfcAppLoader Loader;
 

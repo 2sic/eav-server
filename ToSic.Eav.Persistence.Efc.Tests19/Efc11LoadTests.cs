@@ -62,24 +62,16 @@ public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGener
         output.WriteLine($"Loading took {x.ElapsedMilliseconds}ms");
     }
 
-    [Fact]
-    public void LoadContentTypesOf2TenXCached()
+    [Theory]
+    [InlineData(25)]
+    public void LoadContentTypesOfBlogTen(int max)
     {
+        var timer = Stopwatch.StartNew();
         var results = TestLoadCts(BlogAppId);
-        for (var x = 0; x < 9; x++)
+        for (var x = 0; x < max; x++)
             results = TestLoadCts(BlogAppId);
         Equal(ExpectedContentTypesOnBlog, results.Count);//, "dummy test: ");
-    }
-
-    [Fact]
-    public void LoadContentTypesOf2TenXCleared()
-    {
-        var results = TestLoadCts(BlogAppId);
-        for (var x = 0; x < 9; x++)
-        {
-            results = TestLoadCts(BlogAppId);
-        }
-        Equal(ExpectedContentTypesOnBlog, results.Count);//, "dummy test: ");
+        output.WriteLine($"Loading {max} times took {timer.ElapsedMilliseconds}ms");
     }
 
     private IList<IContentType> TestLoadCts(int appId) => (Loader as IRepositoryLoader).ContentTypes(appId, null);
