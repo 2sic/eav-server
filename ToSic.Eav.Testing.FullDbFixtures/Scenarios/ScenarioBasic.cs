@@ -5,10 +5,7 @@
 /// </summary>
 public record ScenarioBasic: TestScenario
 {
-    public ScenarioBasic()
-    {
-        ConStr = ScenarioConstants.DefaultConnectionString;
-        GlobalFolder = ScenarioConstants.DefaultGlobalFolder;
-        GlobalDataCustomFolder = $"{ScenarioConstants.DevMaterialsRoot}ScenarioBasic\\{ScenarioConstants.DevMaterialsEnd}";
-    }
+    public override string ConStr => ScenarioConstants.DefaultConnectionString;
+    public override string GlobalFolder => ScenarioConstants.DefaultGlobalFolder;
+    public override string GlobalDataCustomFolder => $"{ScenarioConstants.DevMaterialsRoot}ScenarioBasic\\{ScenarioConstants.DevMaterialsEnd}";
 }

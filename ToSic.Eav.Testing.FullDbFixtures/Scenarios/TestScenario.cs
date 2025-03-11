@@ -15,16 +15,16 @@ public record TestScenario
     /// <summary>
     /// Connection String to the DB
     /// </summary>
-    public /*required*/ string ConStr { get; init; } = "";
+    public virtual /*required*/ string ConStr { get; init; } = "";
 
     /// <summary>
     /// Global Data Folder with all the EAV/2sxc Content-Types and Settings
     /// </summary>
-    public /*required*/ string GlobalFolder { get; init; } = "";
+    public virtual /*required*/ string GlobalFolder { get; init; } = "";
 
     /// <summary>
     /// Custom Data Folder for specific features/licenses etc.
     /// </summary>
-    public /*required*/ string GlobalDataCustomFolder { get; init; } = "";
+    public virtual /*required*/ string GlobalDataCustomFolder { get; init; } = "";
 
 }
