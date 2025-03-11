@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;

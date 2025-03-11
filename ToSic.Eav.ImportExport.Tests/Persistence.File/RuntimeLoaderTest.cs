@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Core.Tests.Types;
 using ToSic.Eav.Internal.Loaders;

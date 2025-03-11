@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Tests.Json;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc.Tests;

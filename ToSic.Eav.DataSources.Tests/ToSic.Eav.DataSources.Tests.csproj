@@ -50,11 +50,5 @@
 
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
-    <None Include="Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ExternalData\" />
   </ItemGroup>
 </Project>

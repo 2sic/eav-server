@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Features;
 using ToSic.Testing.Shared;
