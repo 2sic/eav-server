@@ -10,12 +10,7 @@ namespace ToSic.Lib.Core.Tests.LoggingTests;
 
 public class HasLogAdd: LogAdd
 {
-    protected class ThingWithLog: ServiceBase
-    {
-        public ThingWithLog() : base("") { }
-    }
-
-    //protected override Log LogFactory(string name = "") => (Log)new ThingWithLog().Log;
+    protected class ThingWithLog() : ServiceBase("");
 
     /// <summary>
     /// Create a log for the test. Can be overriden in inheriting classes. 
@@ -25,6 +20,4 @@ public class HasLogAdd: LogAdd
         var log = (Log)new ThingWithLog().Log;
         return (log, log);
     }
-
-
 }

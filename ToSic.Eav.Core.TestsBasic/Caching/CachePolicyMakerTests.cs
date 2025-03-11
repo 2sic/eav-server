@@ -5,24 +5,27 @@ namespace ToSic.Eav.Caching;
 
 public class CachePolicyMakerTests
 {
-    private static CacheItemPolicyMaker Empty() => new() { Log = new Log("Tst.CacSpx") };
+    /// <summary>
+    /// Empty Test Constructor
+    /// </summary>
+    private static CacheItemPolicyMaker EmptyTco() => new() { Log = new Log("Tst.CacSpx") };
     
     [Fact]
     public void CpmWithoutAnything()
-        => NotNull(Empty().CreateResultTac());
+        => NotNull(EmptyTco().CreateResultTac());
 
     [Fact]
     public void CpmWithoutAnythingHasDefaultExpiration()
     {
-        Equal(DateTimeOffset.MaxValue, Empty().CreateResultTac().AbsoluteExpiration);
-        Equal(new(1, 0, 0), Empty().CreateResultTac().SlidingExpiration);
+        Equal(DateTimeOffset.MaxValue, EmptyTco().CreateResultTac().AbsoluteExpiration);
+        Equal(new(1, 0, 0), EmptyTco().CreateResultTac().SlidingExpiration);
     }
 
     [Fact]
     public void CpmWithAbsoluteExpiration()
     {
         var exp = DateTimeOffset.Now;
-        var result = Empty().SetAbsoluteExpiration(exp).CreateResultTac();
+        var result = EmptyTco().SetAbsoluteExpiration(exp).CreateResultTac();
         Equal(exp, result.AbsoluteExpiration);
         Equal(TimeSpan.Zero, result.SlidingExpiration);
     }
@@ -31,7 +34,7 @@ public class CachePolicyMakerTests
     public void CpmWithSlidingExpiration()
     {
         var exp = new TimeSpan(1, 0, 0);
-        var result = Empty().SetSlidingExpiration(exp).CreateResultTac();
+        var result = EmptyTco().SetSlidingExpiration(exp).CreateResultTac();
         Equal(DateTimeOffset.MaxValue, result.AbsoluteExpiration);
         Equal(exp, result.SlidingExpiration);
     }
@@ -45,7 +48,7 @@ public class CachePolicyMakerTests
     {
         var abs = DateTimeOffset.Now.AddHours(1);
         var sld = new TimeSpan(1, 0, 0);
-        var result = Empty().SetAbsoluteExpiration(abs).SetSlidingExpiration(sld).CreateResultTac();
+        var result = EmptyTco().SetAbsoluteExpiration(abs).SetSlidingExpiration(sld).CreateResultTac();
         Equal(abs, result.AbsoluteExpiration);
         Equal(sld, result.SlidingExpiration);
     }
