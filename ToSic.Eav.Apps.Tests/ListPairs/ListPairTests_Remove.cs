@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace ToSic.Eav.Apps.Tests;
+﻿namespace ToSic.Eav.Apps.Tests;
 
 public partial class ListPairTests
 {
@@ -10,8 +6,8 @@ public partial class ListPairTests
     [TestMethod]
     public void RemoveAt0()
     {
-        var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
-            new List<int?> {101, null, 103, null, null, null},
+        var pair = CoupledIdLists([1, 2, null, 3],
+            [101, null, 103, null, null, null],
             PName,
             CName);
         pair.Remove(0);
@@ -24,8 +20,8 @@ public partial class ListPairTests
     [TestMethod]
     public void RemoveAt1()
     {
-        var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
-            new List<int?> {101, null, 103, null, null, null},
+        var pair = CoupledIdLists([1, 2, null, 3],
+            [101, null, 103, null, null, null],
             PName,
             CName);
         pair.Remove(1);
@@ -41,8 +37,8 @@ public partial class ListPairTests
     [TestMethod]
     public void RemoveAtEnd()
     {
-        var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
-            new List<int?> {101, null, 103, 104, null, null},
+        var pair = CoupledIdLists([1, 2, null, 3],
+            [101, null, 103, 104, null, null],
             PName,
             CName);
         pair.Remove(3);
@@ -64,8 +60,8 @@ public partial class ListPairTests
 
     private void RemoveAtEndOrBeyond(int addPosition)
     {
-        var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
-            new List<int?> {101, null, 103, null, null, null},
+        var pair = CoupledIdLists([1, 2, null, 3],
+            [101, null, 103, null, null, null],
             PName,
             CName);
         pair.Remove(addPosition);

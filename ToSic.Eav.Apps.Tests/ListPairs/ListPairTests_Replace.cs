@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps.Internal.Work;
+﻿using ToSic.Eav.Apps.Internal.Work;
 
 namespace ToSic.Eav.Apps.Tests;
 
@@ -115,14 +112,13 @@ public partial class ListPairTests
 
     private static CoupledIdLists ReplaceAtX(int index, bool updatePair)
     {
-        var pair = CoupledIdLists(new List<int?> { 1, 2, null, 44 },
-            new List<int?> { 101, null, 103, null, null, null },
+        var pair = CoupledIdLists([1, 2, null, 44],
+            [101, null, 103, null, null, null],
             PName, CName);
-        pair.Replace(index, new[]
-        {
+        pair.Replace(index, [
             (true, 999 as int?), 
-            (updatePair, 777 as int?), 
-        });
+            (updatePair, 777 as int?)
+        ]);
         return pair;
     }
 

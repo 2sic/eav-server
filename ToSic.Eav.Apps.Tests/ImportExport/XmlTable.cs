@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.ImportExport.Internal.XmlList;
+﻿using ToSic.Eav.ImportExport.Internal.XmlList;
 using ToSic.Lib.Logging;
 using ToSic.Eav.Repositories;
 using ToSic.Testing.Shared;

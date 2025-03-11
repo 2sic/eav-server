@@ -11,7 +11,8 @@ public class PropLookupStackBase : PropertyLookupTestBase
     /// </summary>
     protected const string StackName = "SettingsStack";
 
-    protected readonly PropertyStack FirstJungleboy = new PropertyStack().Init(StackName, Jungleboy.StackPart, JohnDoe.StackPart, JaneDoeWithChildren.StackPart);
+    protected readonly PropertyStack FirstJungleboy = new PropertyStack()
+        .Init(StackName, Jungleboy.StackPart, JohnDoe.StackPart, JaneDoeWithChildren.StackPart);
 
     protected object FindInJbJd(string field) => GetResult(FirstJungleboy, field);
     protected object FindInJungleFirstPath(string fieldPath) => GetRequestPath(FirstJungleboy, fieldPath).Result;

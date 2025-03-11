@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps.Internal.Api01;
+﻿using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Tests.Api.Api01;
@@ -35,8 +34,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: true);
 
-        Assert.IsTrue(published); // true is default
-        Assert.IsFalse(branch); // false because is it new one, so no branch
+        IsTrue(published); // true is default
+        IsFalse(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -55,8 +54,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: false);
 
-        Assert.IsFalse(published); // false because publish is not allowed
-        Assert.IsFalse(branch); // false because is it new one, so no branch
+        IsFalse(published); // false because publish is not allowed
+        IsFalse(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -79,8 +78,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: true);
 
-        Assert.IsTrue(published); // true (and publish is allowed)
-        Assert.IsFalse(branch); // false because is it new one, so no branch
+        IsTrue(published); // true (and publish is allowed)
+        IsFalse(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -99,8 +98,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: false);
 
-        Assert.IsFalse(published); // false because publish is not allowed
-        Assert.IsFalse(branch); // false because is it new one, so no branch
+        IsFalse(published); // false because publish is not allowed
+        IsFalse(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -121,8 +120,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: true);
 
-        Assert.IsFalse(published); // false and publish is allowed
-        Assert.IsFalse(branch); // false because is it new one, so no branch
+        IsFalse(published); // false and publish is allowed
+        IsFalse(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -139,8 +138,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: false);
 
-        Assert.IsFalse(published); // false because publish is not allowed
-        Assert.IsFalse(branch); // false because is it new one, so no branch
+        IsFalse(published); // false because publish is not allowed
+        IsFalse(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -161,8 +160,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsTrue(published); // true because existing is published and save publish is allowed
-        Assert.IsFalse(branch); // false because is it allowed to save publish
+        IsTrue(published); // true because existing is published and save publish is allowed
+        IsFalse(branch); // false because is it allowed to save publish
     }
 
     /// <summary>
@@ -183,8 +182,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false because save publish is not allowed
-        Assert.IsTrue(branch); // true because save publish is not allowed
+        IsFalse(published); // false because save publish is not allowed
+        IsTrue(branch); // true because save publish is not allowed
     }
 
     /// <summary>
@@ -204,8 +203,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsTrue(published); // true (and save publish is allowed)
-        Assert.IsFalse(branch); // false because save publish is allowed
+        IsTrue(published); // true (and save publish is allowed)
+        IsFalse(branch); // false because save publish is allowed
     }
 
     /// <summary>
@@ -225,8 +224,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false because save publish is not allowed
-        Assert.IsTrue(branch); // true because save publish is not allowed
+        IsFalse(published); // false because save publish is not allowed
+        IsTrue(branch); // true because save publish is not allowed
     }
 
     /// <summary>
@@ -246,8 +245,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false (also save publish is allowed)
-        Assert.IsFalse(branch); // false because save publish is allowed
+        IsFalse(published); // false (also save publish is allowed)
+        IsFalse(branch); // false because save publish is allowed
     }
 
     /// <summary>
@@ -267,8 +266,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false because save publish is not allowed
-        Assert.IsTrue(branch); // true because save publish is not allowed
+        IsFalse(published); // false because save publish is not allowed
+        IsTrue(branch); // true because save publish is not allowed
     }
 
     /// <summary>
@@ -287,8 +286,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false (even that publish is allowed)
-        Assert.IsTrue(branch); // true because result always draft
+        IsFalse(published); // false (even that publish is allowed)
+        IsTrue(branch); // true because result always draft
     }
 
     /// <summary>
@@ -307,8 +306,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false because save publish is not allowed
-        Assert.IsTrue(branch); // true because save publish is not allowed
+        IsFalse(published); // false because save publish is not allowed
+        IsTrue(branch); // true because save publish is not allowed
     }
 
     /// <summary>
@@ -328,8 +327,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false, because it is draft
-        Assert.IsFalse(branch); // false (it is already draft)
+        IsFalse(published); // false, because it is draft
+        IsFalse(branch); // false (it is already draft)
     }
 
     /// <summary>
@@ -349,8 +348,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsTrue(published); // true because it is allowed to save publish
-        Assert.IsFalse(branch); // false because it is allowed to save publish
+        IsTrue(published); // true because it is allowed to save publish
+        IsFalse(branch); // false because it is allowed to save publish
     }
 
     /// <summary>
@@ -370,8 +369,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false because it is not allowed to save publish
-        Assert.IsFalse(branch); // false because it already a draft
+        IsFalse(published); // false because it is not allowed to save publish
+        IsFalse(branch); // false because it already a draft
     }
 
     /// <summary>
@@ -391,8 +390,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false because no publish
-        Assert.IsFalse(branch); // false because it is already draft
+        IsFalse(published); // false because no publish
+        IsFalse(branch); // false because it is already draft
     }
 
     /// <summary>
@@ -412,8 +411,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        Assert.IsFalse(published); // false because no publish
-        Assert.IsFalse(branch); // false because it is already draft
+        IsFalse(published); // false because no publish
+        IsFalse(branch); // false because it is already draft
     }
 
     /// <summary>
@@ -434,8 +433,8 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
 
         // the updated data should only be in the draft
-        Assert.IsFalse(published); // false, because it is draft
-        Assert.IsFalse(branch); // false (it is already draft)
+        IsFalse(published); // false, because it is draft
+        IsFalse(branch); // false (it is already draft)
     }
 
     /// <summary>
@@ -456,8 +455,8 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
 
         // draft become published
-        Assert.IsTrue(published); // true because it is allowed to save publish
-        Assert.IsFalse(branch); // false because it is allowed to save publish
+        IsTrue(published); // true because it is allowed to save publish
+        IsFalse(branch); // false because it is allowed to save publish
     }
 
     /// <summary>
@@ -478,8 +477,8 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
             
         // draft is updated only
-        Assert.IsFalse(published); // false because it is not allowed to save publish
-        Assert.IsFalse(branch); // false because it is already a draft
+        IsFalse(published); // false because it is not allowed to save publish
+        IsFalse(branch); // false because it is already a draft
     }
 
     /// <summary>
@@ -502,8 +501,8 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
             
         // publish is unpublished (or draft update only)
-        Assert.IsFalse(published); // false because no publish
-        Assert.IsFalse(branch); // false because it is already draft
+        IsFalse(published); // false because no publish
+        IsFalse(branch); // false because it is already draft
     }
 
     /// <summary>
@@ -524,7 +523,7 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
 
         // only draft was updated
-        Assert.IsFalse(published); // false because no publish
-        Assert.IsFalse(branch); // false because it is already draft
+        IsFalse(published); // false because no publish
+        IsFalse(branch); // false because it is already draft
     }
 }

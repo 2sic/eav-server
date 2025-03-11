@@ -1,8 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data.PropertyLookup;
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+﻿using ToSic.Eav.Data.PropertyLookup;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
 
 namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack;
@@ -38,15 +34,22 @@ public class PropLookupStackSimpleListTest: PropLookupStackBase
 
     #endregion
 
-    [TestMethod] public void JungleboyChildrenIsListOfPropL() => IsInstanceOfType(FindInJbJd(FieldChildren), typeof(IEnumerable<IPropertyLookup>));
-    [TestMethod] public void JungleboyChildrenPathIsListOfPropL() => IsInstanceOfType(FindInJungleFirstPath(FieldChildren), typeof(IEnumerable<IPropertyLookup>));
-    [TestMethod] public void JungleboyChildrenIsStackNav() => IsInstanceOfType(FindInJbJd(FieldChildren), typeof(IEnumerable<PropertyLookupWithStackNavigation>));
+    [TestMethod] public void JungleboyChildrenIsListOfPropL() =>
+        IsInstanceOfType(FindInJbJd(FieldChildren), typeof(IEnumerable<IPropertyLookup>));
+    [TestMethod] public void JungleboyChildrenPathIsListOfPropL() =>
+        IsInstanceOfType(FindInJungleFirstPath(FieldChildren), typeof(IEnumerable<IPropertyLookup>));
+    [TestMethod] public void JungleboyChildrenIsStackNav() =>
+        IsInstanceOfType(FindInJbJd(FieldChildren), typeof(IEnumerable<PropertyLookupWithStackNavigation>));
 
-    [TestMethod] public void JungleboyFirst_ChildName() => AreEqual(ChildJb1.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldName}"));
-    [TestMethod] public void JungleboyFirst_ChildDog() => AreEqual(ChildJb2.Dog, FindInJungleFirstPath($"{FieldChildren}.{FieldDog}"));
-    [TestMethod] public void JungleboyFirst_ChildCat() => AreEqual(ChildOfJaneDoe.Cat, FindInJungleFirstPath($"{FieldChildren}.{FieldCat}"));
+    [TestMethod] public void JungleboyFirst_ChildName() => 
+        AreEqual(ChildJb1.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldName}"));
+    [TestMethod] public void JungleboyFirst_ChildDog() =>
+        AreEqual(ChildJb2.Dog, FindInJungleFirstPath($"{FieldChildren}.{FieldDog}"));
+    [TestMethod] public void JungleboyFirst_ChildCat() =>
+        AreEqual(ChildOfJaneDoe.Cat, FindInJungleFirstPath($"{FieldChildren}.{FieldCat}"));
 
-    [TestMethod] public void JungleboyFirst_GrandChildName() => AreEqual(GrandchildJb.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldChildren}.{FieldName}"));
+    [TestMethod] public void JungleboyFirst_GrandChildName() =>
+        AreEqual(GrandchildJb.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldChildren}.{FieldName}"));
 
 
     [TestMethod]
