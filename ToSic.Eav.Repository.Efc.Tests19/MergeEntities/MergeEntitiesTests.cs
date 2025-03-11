@@ -1,7 +1,5 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Persistence.Efc.Tests;
-using ToSic.Eav.Repository.Efc.Tests;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.DependencyInjection;
 using IEntity = ToSic.Eav.Data.IEntity;

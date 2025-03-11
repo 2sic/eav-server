@@ -37,9 +37,7 @@
 
   <ItemGroup>
     <!-- Copy ScenarioData to bin folder for reviewing during tests -->
-    <None
-      Include="ImportApps\Import-Packages\**"
-      CopyToOutputDirectory="PreserveNewest" />
+    <None Include="ImportApps\Import-Packages\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

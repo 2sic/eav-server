@@ -8,7 +8,7 @@ namespace ToSic.Eav.Repository.Efc.Tests19.Mocks;
 public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
     : ServiceBase("Mck.ImpExp", connect: [appsCatalog]), IImportExportEnvironment
 {
-    //public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests19\";
+    // This should point to a subfolder in the bin, so that temp data is created there
     private string BasePath => TestFiles.GetTestPath("") + "\\";
 
 
