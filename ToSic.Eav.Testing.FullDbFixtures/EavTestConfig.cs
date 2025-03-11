@@ -27,13 +27,25 @@ public record EavTestConfig
     public const string DevMaterialsRoot = "C:\\Projects\\2sxc\\2sxc-dev-materials\\";
     public const string DevMaterialsEnd = "App_Data\\system-custom\\";
 
-    public string ConStr { get; set; }
+    /// <summary>
+    /// Connection String to the DB
+    /// </summary>
+    public required string ConStr { get; init; }
 
+    /// <summary>
+    /// Global Data Folder with all the EAV/2sxc Content-Types and Settings
+    /// </summary>
+    public required string GlobalFolder { get; init; }
 
-    public string GlobalFolder { get; set; }
+    /// <summary>
+    /// Custom Data Folder for specific features/licenses etc.
+    /// </summary>
+    public required string GlobalDataCustomFolder { get; init; }
 
-    public string GlobalDataCustomFolder { get; /*init;*/ /* init not yet possible */ set; }
-
+    /// <summary>
+    /// Advanced Patrons setup with additional licenses activated etc.
+    /// Requires that the developer has access to the dev-materials repository.
+    /// </summary>
     public static EavTestConfig ScenarioFullPatrons => new()
     {
         ConStr = DefaultConnectionString,
@@ -41,6 +53,9 @@ public record EavTestConfig
         GlobalDataCustomFolder = DevMaterialsRoot + DevMaterialsEnd,
     };
 
+    /// <summary>
+    /// Basic setup with all the defaults and no special features / licenses activated.
+    /// </summary>
     public static EavTestConfig ScenarioBasic = new()
     {
         ConStr = DefaultConnectionString,

@@ -1,17 +1,20 @@
 ﻿using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.SysData;
 using ToSic.Eav.Testing;
 
 namespace ToSic.Eav.Configuration;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class LicenseCheckTest(EavSystemLoader eavSystemLoader, ILicenseService licenseService) : IClassFixture<FullDbFixtureScenarioFullPatrons>
+public class LicenseCheckTest(ILicenseService licenseService)
+    // the fixture will also load the licenses and stuff
+    : IClassFixture<FullDbFixtureScenarioFullPatrons>
 {
     /// <summary>
     /// Name of the license in the license.json file in Scenario Basic
     /// </summary>
     private const string TestLicenseName = "2sxc Dev - Dev License for 2dm, STV, SDV";
+    private FeatureSetState GetLicenseOfTest() =>
+        licenseService.All.First(l => l.Title == TestLicenseName);
 
     [Fact]
     public void LicenseExists() => NotNull(GetLicenseOfTest());
@@ -28,9 +31,4 @@ public class LicenseCheckTest(EavSystemLoader eavSystemLoader, ILicenseService l
     [Fact]
     public void VersionIsValid() => True(GetLicenseOfTest().VersionIsValid);
 
-    private FeatureSetState GetLicenseOfTest()
-    {
-        eavSystemLoader.LoadLicenseAndFeatures();
-        return licenseService.All.FirstOrDefault(l => l.Title == TestLicenseName);
-    }
 }
