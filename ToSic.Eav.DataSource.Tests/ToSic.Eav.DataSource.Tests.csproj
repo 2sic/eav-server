@@ -30,5 +30,11 @@
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Copy DataSources.CsvTests/Files to bin folder for reviewing during tests -->
+    <None
+      Include="DataSources.CsvTests/Files\**"
+      CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
 </Project>

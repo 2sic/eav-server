@@ -50,25 +50,11 @@
 
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Files\CsvDataSource - Test Invalid Row.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Files\CsvDataSource - Test Quoted Text.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Files\CsvDataSource - Test Semicolon Delimited UTF8.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Files\CsvDataSource - Test Semicolon Delimited.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Files\CsvDataSource - Test Tab Delimited.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Files\CsvDataSource - Test Workbook.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Query\.data\queries\Query.Eav.Queries.Global.Apps.json" />
     <None Include="Query\.data\queries\Query.Eav.Queries.Global.Zones.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ExternalData\" />
   </ItemGroup>
 </Project>
