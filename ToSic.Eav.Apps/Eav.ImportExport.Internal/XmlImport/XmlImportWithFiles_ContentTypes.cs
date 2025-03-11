@@ -12,19 +12,21 @@ namespace ToSic.Eav.ImportExport.Internal;
 partial class XmlImportWithFiles
 {
 
-    private List<IContentType> GetImportContentTypes(IReadOnlyCollection<XElement> list) => Log.Func($"items: {list.Count}", () =>
+    private List<IContentType> GetImportContentTypes(IReadOnlyCollection<XElement> list)
     {
+        var l = Log.Fn<List<IContentType>>($"for {list.Count} items");
         // Loop through AttributeSets
         var importTypes = list
             .Select(BuildContentTypeFromXml)
             .Where(t => t != null)
             .ToList();
 
-        return (importTypes, $"found {importTypes.Count}");
-    });
+        return l.Return(importTypes, $"found {importTypes.Count}");
+    }
 
-    private IContentType BuildContentTypeFromXml(XElement xmlContentType) => Log.Func(l =>
+    private IContentType BuildContentTypeFromXml(XElement xmlContentType)
     {
+        var l = Log.Fn<IContentType>();
         var ctElement = xmlContentType.Element(XmlConstants.Attributes);
         var typeName = xmlContentType.Attribute(XmlConstants.Name).Value;
 
@@ -32,26 +34,31 @@ partial class XmlImportWithFiles
         if (ctElement != null)
         {
             // Figure out which one is the title
-            var set = ctElement.Elements(XmlConstants.Attribute).Select(xmlField =>
-            {
-                if (!bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value))
+            var set = ctElement
+                .Elements(XmlConstants.Attribute)
+                .Select(xmlField =>
+                {
+                    if (!bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value))
+                        return new
+                        {
+                            XmlElement = xmlField,
+                            IsTitle = false
+                        };
+
+                    l.A("set title on this attribute");
                     return new
                     {
                         XmlElement = xmlField,
-                        IsTitle = false
+                        IsTitle = true
                     };
-
-                l.A("set title on this attribute");
-                return new
-                {
-                    XmlElement = xmlField,
-                    IsTitle = true
-                };
-            }).ToList();
+                })
+                .ToList();
 
             // If neither is the title, make sure the first one is
             if (set.Any() && !set.Any(a => a.IsTitle))
-                set = set.Select((s, i) => i == 0 ? new { s.XmlElement, IsTitle = true } : s).ToList();
+                set = set
+                    .Select((s, i) => i == 0 ? new { s.XmlElement, IsTitle = true } : s)
+                    .ToList();
 
 
             foreach (var s in set)
@@ -91,10 +98,7 @@ partial class XmlImportWithFiles
                            bool.Parse(xmlContentType.Attribute(XmlConstants.AlwaysShareConfig).Value);
 
         if (isSharedType & !AllowUpdateOnSharedTypes)
-        {
-            l.A("trying to update a shared type, but not allowed");
-            return (null, "error");
-        }
+            return l.ReturnNull("error, trying to update a shared type, but not allowed");
 
         #endregion
 
@@ -117,7 +121,7 @@ partial class XmlImportWithFiles
         );
 
 
-        return (ct, "ok");
-    });
+        return l.Return(ct, "ok");
+    }
 
 }

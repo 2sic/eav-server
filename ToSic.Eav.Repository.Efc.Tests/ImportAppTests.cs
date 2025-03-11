@@ -4,11 +4,9 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.Apps.Internal.Work;
-using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Zip;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
-using ToSic.Sxc.Apps.Internal.ImportExport;
 using ToSic.Testing.Shared;
 
 namespace ToSic.Eav.Repository.Efc.Tests;
@@ -29,8 +27,7 @@ public class ImportAppTests: TestBaseDiEavFullAndDb
 
     protected override IServiceCollection SetupServices(IServiceCollection services) =>
         base.SetupServices(services)
-            .AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>()
-            .AddTransient<XmlImportWithFiles, XmlImportFull>();
+            .AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>();
 
     //public const string BaseTestPath = @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
     #region Test Data

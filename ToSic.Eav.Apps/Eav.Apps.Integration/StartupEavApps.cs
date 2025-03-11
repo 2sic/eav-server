@@ -96,6 +96,7 @@ public static class StartupEavApps
         services.TryAddScoped<ExportListXml>();
         services.TryAddScoped<ImportListXml>();
         services.TryAddTransient<ExportImportValueConversion>();
+        services.TryAddTransient<XmlImportWithFiles>(); // Note: added v19.03-03 2025-03-11 by 2dm https://github.com/2sic/2sxc/issues/3598
         services.TryAddTransient<XmlImportWithFiles.MyServices>();
 
         // Simple DataController - registration was missing

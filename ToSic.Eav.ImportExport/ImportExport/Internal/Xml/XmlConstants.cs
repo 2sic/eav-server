@@ -96,13 +96,15 @@ public class XmlConstants
 
     // Templates
     // note: many nodes are also in AppConstants, as they are actually standard nodes in the template-entity
-    public const string Templates = "Templates";
-    public const string Template = "Template";
-    public const string TemplateItemType = "ItemType";
-    public const string TemplateContentTypeId = "ContentTypeID";
-    public const string TemplateDemoItemId = "DemoEntityID";
-    public const string TemplateDemoItemGuid = "DemoEntityGUID";
-    public const string TemplateQueryGuidField = "PipelineEntityGUID";
+    // 2025-03-11 2dm disabled, as we removed the old obsolete XML import for these nodes
+    // https://github.com/2sic/2sxc/issues/3598
+    //public const string Templates = "Templates";
+    //public const string Template = "Template";
+    //public const string TemplateItemType = "ItemType";
+    //public const string TemplateContentTypeId = "ContentTypeID";
+    //public const string TemplateDemoItemId = "DemoEntityID";
+    //public const string TemplateDemoItemGuid = "DemoEntityGUID";
+    //public const string TemplateQueryGuidField = "PipelineEntityGUID";
 
 
     // Virtual Table Export - Placeholders/codes
