@@ -3,8 +3,6 @@ using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Repository.Efc.Tests;
 
-// Note: already moved
-
 internal static class TestExtensionMethods
 {
     public static IEntity TestCreateMergedForSavingTac(this EntitySaver saver, IEntity original, IEntity update, SaveOptions saveOptions, bool logDetails = true)

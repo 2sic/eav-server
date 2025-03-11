@@ -15,6 +15,6 @@ public class ZoneTests
     public void TestZoneCreate()
     {
         var zid = 0;//Repository.ZoneRepo.Create("create-test" + DateTime.Now);
-        Assert.True(zid != 0, "zone id");
+        True(zid != 0, "zone id");
     }
 }
