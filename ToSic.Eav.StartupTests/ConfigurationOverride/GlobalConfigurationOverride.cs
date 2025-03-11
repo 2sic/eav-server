@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Testing;
-using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.Configuration;
+namespace ToSic.Eav.ConfigurationOverride;
 
 // TODO: These tests seem to not have worked for a long time
 // Probably the setup isn't happening first.
