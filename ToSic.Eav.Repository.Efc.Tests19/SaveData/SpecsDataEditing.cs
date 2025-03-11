@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Repository.Efc.Tests;
+namespace ToSic.Eav.Repository.Efc.Tests19.SaveData;
 
 public class SpecsDataEditing : IAppIdentity
 {
