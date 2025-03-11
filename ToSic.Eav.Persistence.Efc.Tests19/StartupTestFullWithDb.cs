@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps.Integration;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.StartUp;
+using ToSic.Eav.Testing;
 using ToSic.Lib;
-using ToSic.Testing;
 
 #pragma warning disable CA1822
 
-namespace ToSic.Eav.DataSource.DbTests;
+namespace ToSic.Eav.Persistence.Efc.Tests19;
 
 /// <summary>
 /// A Startup helper for tests which need Dependency-Injection setup for EAV Core.
@@ -26,7 +27,7 @@ public class StartupTestFullWithDb
         services
             .AddTransient<FullDbFixtureHelper>()
             //.AddTransient<DoFixtureStartup<ScenarioBasic>>()
-            .AddTransient<DataSourcesTstBuilder>()
+            //.AddTransient<DataSourcesTstBuilder>()
             // Apps
             .AddEavApps()
             .AddAppFallbackServices()

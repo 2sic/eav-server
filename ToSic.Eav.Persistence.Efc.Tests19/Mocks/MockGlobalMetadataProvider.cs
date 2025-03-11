@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using ToSic.Eav.Persistence.Efc;
+﻿using System.Collections.Immutable;
 using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Lib.DI;
 
-namespace ToSic.Testing.Shared.Mocks;
+namespace ToSic.Eav.Persistence.Efc.Tests19.Mocks;
 
 public class MockGlobalMetadataProvider(LazySvc<EavDbContext> dbLazy) : EfcMetadataTargetTypes(dbLazy)
 {        
