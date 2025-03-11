@@ -21,7 +21,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests;
 /// Use by adding this kind of attribute to your test class:
 /// `[Startup(typeof(TestStartupEavCore))]`
 /// </remarks>
-public class StartupTestFullWithDb
+public class StartupTestFullWithDbAndImport
 {
     /// <summary>
     /// Startup helper
