@@ -2,13 +2,13 @@
 
 namespace ToSic.Eav.Apps.Tests;
 
-[TestClass]
+
 public partial class ListPairTests
 {
     public const string PName = "Primary";
     public const string CName = "Coupled";
 
-    [TestMethod]
+    [Fact]
     public void UnmatchedPairsAutoFixShort()
     {
         var pair = new CoupledIdLists(
@@ -20,7 +20,7 @@ public partial class ListPairTests
         AssertLength(pair, 4);
     }
 
-    [TestMethod]
+    [Fact]
     public void UnmatchedPairsAutoFixLong()
     {
         var pair = CoupledIdLists([1, 2, null, 3],
@@ -43,18 +43,16 @@ public partial class ListPairTests
     private void AssertLength(CoupledIdLists pair, int expectedLength)
     {
         var itemsNotWithLength = pair.Lists.Values.Where(list => list.Count != expectedLength);
-        AreEqual(0, itemsNotWithLength.Count(), "lengths should now match");
-        //Assert.AreEqual(expectedLength, pair.CoupledIds.Count, $"length was expected to be {expectedLength}");
+        Equal(0, itemsNotWithLength.Count());//, "lengths should now match");
+        //Assert.Equal(expectedLength, pair.CoupledIds.Count, $"length was expected to be {expectedLength}");
     }
 
     private void AssertPositions(CoupledIdLists pair, int position, int? primary, int? coupled)
     {
         var found = pair.Lists.Values.First()[position];
-        AreEqual(primary, found, 
-            $"Primary at {position} expected to be {primary} but was {found}");
+        Equal(primary, found);//, $"Primary at {position} expected to be {primary} but was {found}");
         found = pair.Lists.Values.Skip(1).First()[position];
-        AreEqual(coupled, found, 
-            $"Primary at {position} expected to be {primary} but was {found}");
+        Equal(coupled, found);//, $"Primary at {position} expected to be {primary} but was {found}");
     }
 
     private void AssertSequence(CoupledIdLists pair, int startIndex)

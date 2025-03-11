@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps.Tests;
 public partial class ListPairTests
 {
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAt0Primary()
     {
         var pair = ReplaceAtX(0, false);
@@ -14,7 +14,7 @@ public partial class ListPairTests
         AssertPositions(pair,1, 2, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAt0Both()
     {
         var pair = ReplaceAtX(0, true);
@@ -23,7 +23,7 @@ public partial class ListPairTests
         AssertPositions(pair,1, 2, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAt1Primary()
     {
         var pair = ReplaceAtX(1, false);
@@ -33,7 +33,7 @@ public partial class ListPairTests
         AssertPositions(pair,2, null, 103);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAt1Both()
     {
         var pair = ReplaceAtX(1, true);
@@ -43,7 +43,7 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAtEndPrimary()
     {
         var pair = ReplaceAtX(3, false);
@@ -53,7 +53,7 @@ public partial class ListPairTests
         AssertPositions(pair, 3, 999, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAtEndBoth()
     {
         var pair = ReplaceAtX(3, true);
@@ -63,7 +63,7 @@ public partial class ListPairTests
         AssertPositions(pair, 3, 999, 777);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAfterEndPrimary()
     {
         var pair = ReplaceAtX(4, false);
@@ -74,7 +74,7 @@ public partial class ListPairTests
         AssertPositions(pair, 4, 999, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAfterEndBoth()
     {
         var pair = ReplaceAtX(4, true);
@@ -85,7 +85,7 @@ public partial class ListPairTests
         AssertPositions(pair, 4, 999, 777);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplacePastEndPrimary()
     {
         var pair = ReplaceAtX(9, false);
@@ -97,7 +97,7 @@ public partial class ListPairTests
         AssertPositions(pair, 9, 999, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplacePastEndBoth()
     {
         var pair = ReplaceAtX(9, true);

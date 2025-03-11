@@ -3,7 +3,7 @@
 public partial class ListPairTests
 {
 
-    [TestMethod]
+    [Fact]
     public void AddAt0()
     {
         var pair = CoupledIdLists([1, 2, null, 3],
@@ -17,7 +17,7 @@ public partial class ListPairTests
         AssertPositions(pair,2, 2, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void AddAt1()
     {
         var pair = CoupledIdLists([1, 2, null, 3],
@@ -31,7 +31,7 @@ public partial class ListPairTests
         AssertPositions(pair, 2, 2, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void AddAtEnd()
     {
         var pair = CoupledIdLists([1, 2, null, 3],
@@ -46,10 +46,10 @@ public partial class ListPairTests
     }
 
 
-    [TestMethod]
+    [Fact]
     public void AddToEnd() => AddAtEndOrBeyond(4);
 
-    [TestMethod]
+    [Fact]
     public void AddToEndFarBehind() => AddAtEndOrBeyond(9);
 
     private void AddAtEndOrBeyond(int addPosition)

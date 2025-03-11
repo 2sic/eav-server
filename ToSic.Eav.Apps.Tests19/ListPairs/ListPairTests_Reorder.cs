@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Tests;
 public partial class ListPairTests
 {
 
-    [TestMethod]
+    [Fact]
     public void ReorderUnchanged()
     {
         var pair = GenerateListAndReorder([0, 1, 2, 3]);
@@ -17,7 +17,7 @@ public partial class ListPairTests
         AssertPositions(pair,3, 44, 444);
     }
 
-    [TestMethod]
+    [Fact]
     public void Reorder1023()
     {
         var pair = GenerateListAndReorder([1, 0, 2, 3]);
@@ -28,7 +28,7 @@ public partial class ListPairTests
         AssertPositions(pair, 3, 44, 444);
     }
 
-    [TestMethod]
+    [Fact]
     public void Reorder3201()
     {
         var pair = GenerateListAndReorder([3, 2, 0, 1]);
@@ -42,25 +42,25 @@ public partial class ListPairTests
     /// <summary>
     /// This test has too many re-order items but valid indexes
     /// </summary>
-    [TestMethod]
-    [ExpectedException(typeof(Exception))]
+    [Fact]
+    //[ExpectedException(typeof(Exception))]
     public void ReorderErrorLongerSequence() 
-        => GenerateListAndReorder([3, 2, 0, 1, 0, 1]);
+        => Throws<Exception>(() => GenerateListAndReorder([3, 2, 0, 1, 0, 1]));
 
-    [TestMethod]
-    [ExpectedException(typeof(Exception))]
+    [Fact]
+    //[ExpectedException(typeof(Exception))]
     public void ReorderErrorShorterSequence() 
-        => GenerateListAndReorder([3, 2, 0]);
+        => Throws<Exception>(() => GenerateListAndReorder([3, 2, 0]));
 
-    [TestMethod]
-    [ExpectedException(typeof(Exception))]
+    [Fact]
+    //[ExpectedException(typeof(Exception))]
     public void ReorderErrorReUse() 
-        => GenerateListAndReorder([3, 2, 3, 0]);
+        => Throws<Exception>(() => GenerateListAndReorder([3, 2, 3, 0]));
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentOutOfRangeException))]
+    [Fact]
+    //[ExpectedException(typeof(ArgumentOutOfRangeException))]
     public void ReorderErrorOutOfRange() 
-        => GenerateListAndReorder([3, 7, 0, 1]);
+        => Throws<ArgumentOutOfRangeException>(() => GenerateListAndReorder([3, 7, 0, 1]));
 
     private static CoupledIdLists GenerateListAndReorder(int[] newSequence)
     {

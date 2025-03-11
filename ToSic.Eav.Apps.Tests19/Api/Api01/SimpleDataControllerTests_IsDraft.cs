@@ -3,7 +3,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Tests.Api.Api01;
 
-[TestClass]
+
 // ReSharper disable once InconsistentNaming
 public class SimpleDataControllerTests_IsDraft
 {
@@ -21,12 +21,12 @@ public class SimpleDataControllerTests_IsDraft
     /// This should be the same as previous implementation. 
     /// </summary>
     /// <param name="publishedState"></param>
-    [TestMethod]
-    [DataRow(null)]
-    [DataRow("")]
-    [DataRow("null")]
-    [DataRow("NULL")]
-    [DataRow("NUll")]
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("null")]
+    [InlineData("NULL")]
+    [InlineData("NUll")]
     public void New_NoPublishedState(object publishedState)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -34,8 +34,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: true);
 
-        IsTrue(published); // true is default
-        IsFalse(branch); // false because is it new one, so no branch
+        True(published); // true is default
+        False(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -45,8 +45,8 @@ public class SimpleDataControllerTests_IsDraft
     /// This should be the same as previous implementation. 
     /// </summary>
     /// <param name="publishedState"></param>
-    [TestMethod]
-    [DataRow(null)]
+    [Theory]
+    [InlineData(null)]
     public void New_NoPublishedState_WritePublishNotAllowed(object publishedState)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -54,8 +54,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: false);
 
-        IsFalse(published); // false because publish is not allowed
-        IsFalse(branch); // false because is it new one, so no branch
+        False(published); // false because publish is not allowed
+        False(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -65,12 +65,12 @@ public class SimpleDataControllerTests_IsDraft
     /// and permissions may not work if you set it.
     /// </summary>
     /// <param name="publishedState"></param>
-    [TestMethod]
-    [DataRow(true)]
-    [DataRow(1)]
-    [DataRow("true")]
-    [DataRow("TRUE")]
-    [DataRow("TRue")]
+    [Theory]
+    [InlineData(true)]
+    [InlineData(1)]
+    [InlineData("true")]
+    [InlineData("TRUE")]
+    [InlineData("TRue")]
     public void New_True(object publishedState)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -78,8 +78,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: true);
 
-        IsTrue(published); // true (and publish is allowed)
-        IsFalse(branch); // false because is it new one, so no branch
+        True(published); // true (and publish is allowed)
+        False(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -89,8 +89,8 @@ public class SimpleDataControllerTests_IsDraft
     /// and permissions may not work if you set it.
     /// </summary>
     /// <param name="publishedState"></param>
-    [TestMethod]
-    [DataRow(true)]
+    [Theory]
+    [InlineData(true)]
     public void New_True_WritePublishNotAllowed(object publishedState)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -98,8 +98,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: false);
 
-        IsFalse(published); // false because publish is not allowed
-        IsFalse(branch); // false because is it new one, so no branch
+        False(published); // false because publish is not allowed
+        False(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -107,12 +107,12 @@ public class SimpleDataControllerTests_IsDraft
     /// 3.	False, 0, etc. – should not be published
     /// </summary>
     /// <param name="publishedState"></param>
-    [TestMethod]
-    [DataRow(false)]
-    [DataRow(0)]
-    [DataRow("false")]
-    [DataRow("FALSE")]
-    [DataRow("FAlse")]
+    [Theory]
+    [InlineData(false)]
+    [InlineData(0)]
+    [InlineData("false")]
+    [InlineData("FALSE")]
+    [InlineData("FAlse")]
     public void New_False(object publishedState)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -120,8 +120,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: true);
 
-        IsFalse(published); // false and publish is allowed
-        IsFalse(branch); // false because is it new one, so no branch
+        False(published); // false and publish is allowed
+        False(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -129,8 +129,8 @@ public class SimpleDataControllerTests_IsDraft
     /// 3.	False, 0, etc. – should not be published
     /// </summary>
     /// <param name="publishedState"></param>
-    [TestMethod]
-    [DataRow(false)]
+    [Theory]
+    [InlineData(false)]
     public void New_False_WritePublishNotAllowed(object publishedState)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -138,8 +138,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: null,
             writePublishAllowed: false);
 
-        IsFalse(published); // false because publish is not allowed
-        IsFalse(branch); // false because is it new one, so no branch
+        False(published); // false because publish is not allowed
+        False(branch); // false because is it new one, so no branch
     }
 
     /// <summary>
@@ -151,8 +151,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(null, true, true)]
+    [Theory]
+    [InlineData(null, true, true)]
     public void ExistingPublished_NoPublishedState(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -160,8 +160,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsTrue(published); // true because existing is published and save publish is allowed
-        IsFalse(branch); // false because is it allowed to save publish
+        True(published); // true because existing is published and save publish is allowed
+        False(branch); // false because is it allowed to save publish
     }
 
     /// <summary>
@@ -173,8 +173,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(null, true, false)]
+    [Theory]
+    [InlineData(null, true, false)]
     public void ExistingPublished_NoPublishedState_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -182,8 +182,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false because save publish is not allowed
-        IsTrue(branch); // true because save publish is not allowed
+        False(published); // false because save publish is not allowed
+        True(branch); // true because save publish is not allowed
     }
 
     /// <summary>
@@ -194,8 +194,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(true, true, true)]
+    [Theory]
+    [InlineData(true, true, true)]
     public void ExistingPublished_True(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -203,8 +203,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsTrue(published); // true (and save publish is allowed)
-        IsFalse(branch); // false because save publish is allowed
+        True(published); // true (and save publish is allowed)
+        False(branch); // false because save publish is allowed
     }
 
     /// <summary>
@@ -215,8 +215,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(true, true, false)]
+    [Theory]
+    [InlineData(true, true, false)]
     public void ExistingPublished_True_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -224,8 +224,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false because save publish is not allowed
-        IsTrue(branch); // true because save publish is not allowed
+        False(published); // false because save publish is not allowed
+        True(branch); // true because save publish is not allowed
     }
 
     /// <summary>
@@ -236,8 +236,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(false, true, true)]
+    [Theory]
+    [InlineData(false, true, true)]
     public void ExistingPublished_False(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -245,8 +245,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false (also save publish is allowed)
-        IsFalse(branch); // false because save publish is allowed
+        False(published); // false (also save publish is allowed)
+        False(branch); // false because save publish is allowed
     }
 
     /// <summary>
@@ -257,8 +257,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(false, true, false)]
+    [Theory]
+    [InlineData(false, true, false)]
     public void ExistingPublished_False_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -266,8 +266,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false because save publish is not allowed
-        IsTrue(branch); // true because save publish is not allowed
+        False(published); // false because save publish is not allowed
+        True(branch); // true because save publish is not allowed
     }
 
     /// <summary>
@@ -277,8 +277,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow("draft", true, true)]
+    [Theory]
+    [InlineData("draft", true, true)]
     public void ExistingPublished_Draft(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -286,8 +286,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false (even that publish is allowed)
-        IsTrue(branch); // true because result always draft
+        False(published); // false (even that publish is allowed)
+        True(branch); // true because result always draft
     }
 
     /// <summary>
@@ -297,8 +297,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow("draft", true, false)]
+    [Theory]
+    [InlineData("draft", true, false)]
     public void ExistingPublish_Draft_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -306,8 +306,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false because save publish is not allowed
-        IsTrue(branch); // true because save publish is not allowed
+        False(published); // false because save publish is not allowed
+        True(branch); // true because save publish is not allowed
     }
 
     /// <summary>
@@ -317,9 +317,9 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(null, false, true)]
-    [DataRow(null, false, false)]
+    [Theory]
+    [InlineData(null, false, true)]
+    [InlineData(null, false, false)]
     public void ExistingDraft_NoPublishedState(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -327,8 +327,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false, because it is draft
-        IsFalse(branch); // false (it is already draft)
+        False(published); // false, because it is draft
+        False(branch); // false (it is already draft)
     }
 
     /// <summary>
@@ -339,8 +339,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(true, false, true)]
+    [Theory]
+    [InlineData(true, false, true)]
     public void ExistingDraft_True(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -348,8 +348,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsTrue(published); // true because it is allowed to save publish
-        IsFalse(branch); // false because it is allowed to save publish
+        True(published); // true because it is allowed to save publish
+        False(branch); // false because it is allowed to save publish
     }
 
     /// <summary>
@@ -360,8 +360,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(true, false, false)]
+    [Theory]
+    [InlineData(true, false, false)]
     public void ExistingDraft_True_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -369,8 +369,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false because it is not allowed to save publish
-        IsFalse(branch); // false because it already a draft
+        False(published); // false because it is not allowed to save publish
+        False(branch); // false because it already a draft
     }
 
     /// <summary>
@@ -380,9 +380,9 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(false, false, true)]
-    [DataRow(false, false, false)]
+    [Theory]
+    [InlineData(false, false, true)]
+    [InlineData(false, false, false)]
     public void ExistingDraft_False(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -390,8 +390,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false because no publish
-        IsFalse(branch); // false because it is already draft
+        False(published); // false because no publish
+        False(branch); // false because it is already draft
     }
 
     /// <summary>
@@ -401,9 +401,9 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow("DRAFT", false, true)]
-    [DataRow("DRaft", false, false)]
+    [Theory]
+    [InlineData("DRAFT", false, true)]
+    [InlineData("DRaft", false, false)]
     public void ExistingDraft_Draft(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -411,8 +411,8 @@ public class SimpleDataControllerTests_IsDraft
             existingIsPublished: existingIsPublished,
             writePublishAllowed: writePublishAllowed);
 
-        IsFalse(published); // false because no publish
-        IsFalse(branch); // false because it is already draft
+        False(published); // false because no publish
+        False(branch); // false because it is already draft
     }
 
     /// <summary>
@@ -422,9 +422,9 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(null, false, true)]
-    [DataRow(null, false, false)]
+    [Theory]
+    [InlineData(null, false, true)]
+    [InlineData(null, false, false)]
     public void ExistingDraftAndPublish_NoPublishedState(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -433,8 +433,8 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
 
         // the updated data should only be in the draft
-        IsFalse(published); // false, because it is draft
-        IsFalse(branch); // false (it is already draft)
+        False(published); // false, because it is draft
+        False(branch); // false (it is already draft)
     }
 
     /// <summary>
@@ -445,8 +445,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(true, false, true)]
+    [Theory]
+    [InlineData(true, false, true)]
     public void ExistingDraftAndPublish_True(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -455,8 +455,8 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
 
         // draft become published
-        IsTrue(published); // true because it is allowed to save publish
-        IsFalse(branch); // false because it is allowed to save publish
+        True(published); // true because it is allowed to save publish
+        False(branch); // false because it is allowed to save publish
     }
 
     /// <summary>
@@ -467,8 +467,8 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(true, false, false)]
+    [Theory]
+    [InlineData(true, false, false)]
     public void ExistingDraftAndPublish_True_WritePublishNotAllowed(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -477,8 +477,8 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
             
         // draft is updated only
-        IsFalse(published); // false because it is not allowed to save publish
-        IsFalse(branch); // false because it is already a draft
+        False(published); // false because it is not allowed to save publish
+        False(branch); // false because it is already a draft
     }
 
     /// <summary>
@@ -490,9 +490,9 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow(false, false, true)]
-    [DataRow(false, false, false)]
+    [Theory]
+    [InlineData(false, false, true)]
+    [InlineData(false, false, false)]
     public void ExistingDraftAndPublish_False(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -501,8 +501,8 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
             
         // publish is unpublished (or draft update only)
-        IsFalse(published); // false because no publish
-        IsFalse(branch); // false because it is already draft
+        False(published); // false because no publish
+        False(branch); // false because it is already draft
     }
 
     /// <summary>
@@ -512,9 +512,9 @@ public class SimpleDataControllerTests_IsDraft
     /// <param name="publishedState"></param>
     /// <param name="existingIsPublished"></param>
     /// <param name="writePublishAllowed"></param>
-    [TestMethod]
-    [DataRow("DRAFT", false, true)]
-    [DataRow("DRaft", false, false)]
+    [Theory]
+    [InlineData("DRAFT", false, true)]
+    [InlineData("DRaft", false, false)]
     public void ExistingDraftAndPublish_Draft(object publishedState, bool? existingIsPublished, bool writePublishAllowed)
     {
         var (published, branch) = TestGetPublishSpecs(
@@ -523,7 +523,7 @@ public class SimpleDataControllerTests_IsDraft
             writePublishAllowed: writePublishAllowed);
 
         // only draft was updated
-        IsFalse(published); // false because no publish
-        IsFalse(branch); // false because it is already draft
+        False(published); // false because no publish
+        False(branch); // false because it is already draft
     }
 }

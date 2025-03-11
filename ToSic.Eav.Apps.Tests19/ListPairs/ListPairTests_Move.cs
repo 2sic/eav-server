@@ -3,7 +3,7 @@
 public partial class ListPairTests
 {
 
-    [TestMethod]
+    [Fact]
     public void Move0_1()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -18,7 +18,7 @@ public partial class ListPairTests
     }
 
 
-    [TestMethod]
+    [Fact]
     public void Move1_0()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -32,7 +32,7 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
     }
 
-    [TestMethod]
+    [Fact]
     public void Move0_0()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -46,7 +46,7 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
     }
 
-    [TestMethod]
+    [Fact]
     public void Move1_1()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -60,7 +60,7 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
     }
 
-    [TestMethod]
+    [Fact]
     public void Move0_2()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -75,7 +75,7 @@ public partial class ListPairTests
         AssertPositions(pair, 3, 44, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void MoveEndTwo2_3()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -90,7 +90,7 @@ public partial class ListPairTests
         AssertPositions(pair, 3, null, 103);
     }
 
-    [TestMethod]
+    [Fact]
     public void MoveEndPastEnd()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -104,10 +104,10 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
         AssertPositions(pair, 3, 44, 104);
 
-        IsNotNull(changes);
+        NotNull(changes);
     }
 
-    [TestMethod]
+    [Fact]
     public void MoveEndPastEndFar()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -121,10 +121,10 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
         AssertPositions(pair, 3, 44, 104);
 
-        IsNotNull(changes, "should have changes, because it should move to end");
+        NotNull(changes);//, "should have changes, because it should move to end");
     }
 
-    [TestMethod]
+    [Fact]
     public void MoveOutsideOfRange()
     {
         var pair = CoupledIdLists([1, 2, null, 44],
@@ -138,6 +138,6 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
         AssertPositions(pair, 3, 44, 104);
 
-        IsNull(changes, "should not have any changes");
+        Null(changes);//, "should not have any changes");
     }
 }
