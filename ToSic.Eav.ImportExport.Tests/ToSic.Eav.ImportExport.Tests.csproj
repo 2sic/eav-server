@@ -31,7 +31,6 @@
   <ItemGroup>
     <!--<ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />-->
     <!--<ProjectReference Include="..\ToSic.Eav.Apps.Tests\ToSic.Eav.Apps.Tests.csproj" />-->
-    <ProjectReference Include="..\ToSic.Eav.Core.Tests\ToSic.Eav.Core.Tests.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj" />

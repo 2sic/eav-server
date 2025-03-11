@@ -1,14 +1,15 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-using ToSic.Testing.Shared;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Testing;
 
-namespace ToSic.Eav.Core.Tests.Configuration;
+namespace ToSic.Eav.Configuration;
 
-[TestClass]
-public class DataOverrideTest : TestBaseDiEavFullAndDb
+// TODO: These tests seem to not have worked for a long time
+// Probably the setup isn't happening first.
+// It appears that there should be some override settings which should be used as well, which are not applied here
+// Needs some time to restore functionality
+
+[Startup(typeof(StartupTestFullWithDb))]
+public class GlobalConfigurationOverride(IAppReaderFactory appReaderFactory) : IClassFixture<FullDbFixtureScenarioBasic>
 {
     //public DataOverrideTest() => Build<EavSystemLoader>().LoadLicenseAndFeatures();
 
@@ -19,7 +20,7 @@ public class DataOverrideTest : TestBaseDiEavFullAndDb
     private const string testString = "test-is-override";
 
     // TODO: @STV - this seems to fail, it appears that the normal data isn't loaded, only system-custom ?
-    [TestMethod]
+    [Fact]
     public void TestNormalFancybox4() => TestWebResourcesExistsOnceAndMayHaveValue(fancybox4ItemGuid, false);
 
     /// <summary>
@@ -29,23 +30,22 @@ public class DataOverrideTest : TestBaseDiEavFullAndDb
     /// - On load, it should _replace_ the original item
     /// - and make sure it's used instead
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void TestOverrideFancybox3() => TestWebResourcesExistsOnceAndMayHaveValue(fancybox3ItemGuid, true);
 
 
     private void TestWebResourcesExistsOnceAndMayHaveValue(Guid guid, bool expected)
     {
-        var appStates = GetService<IAppReaderFactory>();
-        var primaryApp = appStates.GetSystemPreset();
+        var primaryApp = appReaderFactory.GetSystemPreset();
 
         // Verify there is only one with this guid
         var entities = primaryApp.List.Where(e => e.EntityGuid == guid);
-        Assert.AreEqual(1, entities.Count());
+        Single(entities);
 
         var entity = primaryApp.List.One(guid);
         var html = entity.GetTac<string>(htmlField);
 
-        Assert.AreEqual(expected, html.Contains(testString));
+        Equal(expected, html.Contains(testString));
     }
 
 
