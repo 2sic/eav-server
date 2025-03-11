@@ -1,18 +1,16 @@
-﻿using ToSic.Lib.Logging;
-using static Xunit.Assert;
-
+﻿using System.Runtime.CompilerServices;
 
 namespace ToSic.Lib.Core.Tests.LoggingTests;
 
-public class LogTestBase: LibTestBase
+public class LogTestBase
 {
     public const int Depth0 = 0;
     public const string? ResultNone = null;
 
-    protected static void AssertLogIsEmpty(Log log, string testName)
-    {
-        Equal(0, log.Entries.Count);
-    }
+    protected string ThisMethodName([CallerMemberName] string? cName = null) => cName;
+
+    protected static void AssertLogIsEmpty(Log log, string testName) =>
+        Empty(log.Entries);
 
     protected static void AssertEntry(string testName, Entry firstMsg, string? message, string? result, int depth)
     {

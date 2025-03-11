@@ -20,7 +20,7 @@ public class CompressorTests(ITestOutputHelper output)
     private static void Compress(CompressorType compressorType, int expectedSize)
     {
         var compress = new Compressor().InitCompressor(compressorType).Compress(JsonTest);
-        Assert.Equal(expectedSize, compress.Length);
+        Equal(expectedSize, compress.Length);
     }
 
     private void Performance(CompressorType compressorType)
@@ -39,7 +39,7 @@ public class CompressorTests(ITestOutputHelper output)
         output.WriteLine($"Elapsed Time is {stopwatch.ElapsedMilliseconds} ms.");
 
         // Note: not a real test, so the time is very high, since in parallel mode it will usually be quite high
-        Assert.True(stopwatch.ElapsedMilliseconds < 500, $"Elapsed Time is {stopwatch.ElapsedMilliseconds} ms.");
+        True(stopwatch.ElapsedMilliseconds < 500, $"Elapsed Time is {stopwatch.ElapsedMilliseconds} ms.");
     }
 
     [Fact]

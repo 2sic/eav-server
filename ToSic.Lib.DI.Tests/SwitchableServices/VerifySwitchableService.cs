@@ -1,5 +1,4 @@
 ﻿using ToSic.Lib.DI.SwitchableServices.Services;
-using static Xunit.Assert;
 
 namespace ToSic.Lib.DI.SwitchableServices;
 

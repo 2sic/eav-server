@@ -1,6 +1,4 @@
-﻿using static Xunit.Assert;
-
-namespace ToSic.Eav.Plumbing;
+﻿namespace ToSic.Eav.Plumbing;
 
 public class SubStringTests
 {

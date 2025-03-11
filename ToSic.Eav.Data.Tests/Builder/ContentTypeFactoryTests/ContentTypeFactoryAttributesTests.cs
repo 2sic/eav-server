@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
 using ToSic.Eav.Data.Internal;
-using Xunit.DependencyInjection;
 
 namespace ToSic.Eav.Data.Builder;
 
@@ -11,21 +10,21 @@ public class ContentTypeFactoryAttributesTests(ContentTypeFactory factory)
     private void AssertAttribute(IContentType ct, string name, ValueTypes type, bool isTitle = false, string description = default)
     {
         var attribute = ct.Attributes.FirstOrDefault(a => a.Name == name);
-        Assert.NotNull(attribute); //, $"{name} null check");
-        Assert.Equal(name, attribute.Name); //, $"{name} Name check");
-        Assert.Equal(type, attribute.Type); //, $"{name} type check");
-        Assert.Equal(isTitle, attribute.IsTitle); //, $"{name} IsTitle check");
+        NotNull(attribute); //, $"{name} null check");
+        Equal(name, attribute.Name); //, $"{name} Name check");
+        Equal(type, attribute.Type); //, $"{name} type check");
+        Equal(isTitle, attribute.IsTitle); //, $"{name} IsTitle check");
         if (description != default)
-            Assert.Equal(description, attribute.Metadata.GetBestValue<string>(AttributeMetadata.DescriptionField)); //, $"{name} Description check");
+            Equal(description, attribute.Metadata.GetBestValue<string>(AttributeMetadata.DescriptionField)); //, $"{name} Description check");
     }
 
     private ContentTypeVirtualAttributes GetVAttribDecorator(Type t) => factory.Create(t).GetDecorator<ContentTypeVirtualAttributes>();
         
     [Fact]
-    public void Attributes_NoSpec_Count() => Assert.Equal(4, factory.Create(typeof(TestTypeNoSpecs)).Attributes.Count());
+    public void Attributes_NoSpec_Count() => Equal(4, factory.Create(typeof(TestTypeNoSpecs)).Attributes.Count());
 
     [Fact]
-    public void Attributes_NoSpec_NoVDecorator() => Assert.Null(GetVAttribDecorator(typeof(TestTypeNoSpecs)));
+    public void Attributes_NoSpec_NoVDecorator() => Null(GetVAttribDecorator(typeof(TestTypeNoSpecs)));
 
     [Theory]
     [InlineData(nameof(TestTypeNoSpecs.Name), ValueTypes.String)]
@@ -36,7 +35,7 @@ public class ContentTypeFactoryAttributesTests(ContentTypeFactory factory)
         => AssertAttribute(factory.Create(typeof(TestTypeNoSpecs)), name, type);
 
     [Fact]
-    public void Attributes_WithSpec_Count() => Assert.Equal(5, factory.Create(typeof(TestTypeWithSpecs)).Attributes.Count());
+    public void Attributes_WithSpec_Count() => Equal(5, factory.Create(typeof(TestTypeWithSpecs)).Attributes.Count());
 
     [Theory]
     [InlineData(nameof(TestTypeWithSpecs.Name) + "Mod", ValueTypes.String, true)]
@@ -56,18 +55,18 @@ public class ContentTypeFactoryAttributesTests(ContentTypeFactory factory)
     [InlineData(nameof(TestTypeWithSpecs.InternalProperty))]
     [InlineData("PrivateProperty")]
     public void Attributes_WithSpec_SkipIgnores(string name)
-        => Assert.False(factory.Create(typeof(TestTypeWithSpecs)).Attributes.Any(a => a.Name == name));
+        => False(factory.Create(typeof(TestTypeWithSpecs)).Attributes.Any(a => a.Name == name));
 
     [Fact]
-    public void Attributes_WithSpec_VDecoratorHas() => Assert.NotNull(GetVAttribDecorator(typeof(TestTypeWithSpecs)));
+    public void Attributes_WithSpec_VDecoratorHas() => NotNull(GetVAttribDecorator(typeof(TestTypeWithSpecs)));
 
     [Fact]
-    public void Attributes_WithSpec_VDecoratorExactly2() => Assert.Equal(2, GetVAttribDecorator(typeof(TestTypeWithSpecs))?.VirtualAttributes.Count);
+    public void Attributes_WithSpec_VDecoratorExactly2() => Equal(2, GetVAttribDecorator(typeof(TestTypeWithSpecs))?.VirtualAttributes.Count);
 
     [Fact]
     public void Attributes_InternalFields()
     {
         var x = factory.Create(typeof(TestTypeInternalFields));
-        Assert.Single(x.Attributes);
+        Single(x.Attributes);
     }
 }

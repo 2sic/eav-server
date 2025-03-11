@@ -1,5 +1,4 @@
-﻿using ToSic.Lib.Logging;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
 
 namespace ToSic.Lib.Core.Tests.LoggingTests;
 
@@ -7,10 +6,8 @@ namespace ToSic.Lib.Core.Tests.LoggingTests;
 // ReSharper disable once InconsistentNaming
 public class Log_Prop: LogTestBase
 {
-    public class ObjectWithProperties: HelperBase
+    public class ObjectWithProperties() : HelperBase(null, "tst.test")
     {
-        public ObjectWithProperties() : base(null, "tst.test") { }
-
         public string Hello => Log.Getter(() => "hello");
 
         public string Name
@@ -32,11 +29,11 @@ public class Log_Prop: LogTestBase
     {
         var o = new ObjectWithProperties();
         var x = o.Hello;
-        Assert.Equal("hello", x);
+        Equal("hello", x);
         var entries = ((Log)o.Log).Entries;
-        Assert.Equal(2, entries.Count); //, "should have two entries (start/stop)");
-        Assert.Equal($"get:{nameof(o.Hello)}", entries[0].Message);
-        Assert.Equal("hello", entries[0].Result);
+        Equal(2, entries.Count); //, "should have two entries (start/stop)");
+        Equal($"get:{nameof(o.Hello)}", entries[0].Message);
+        Equal("hello", entries[0].Result);
     }
 
     [Fact]
@@ -49,18 +46,18 @@ public class Log_Prop: LogTestBase
         };
         var x = o.Name;
         o.NameSetWithBody = "Jane";
-        Assert.Equal(result, x);
+        Equal(result, x);
         var entries = ((Log)o.Log).Entries;
-        Assert.Equal(6, entries.Count); //, "should have two entries (start/stop)");
+        Equal(6, entries.Count); //, "should have two entries (start/stop)");
         // Check Setter - with result!
-        Assert.Equal($"set:{nameof(o.Name)}=", entries[0].Message);
-        Assert.Equal(result, entries[0].Result);
+        Equal($"set:{nameof(o.Name)}=", entries[0].Message);
+        Equal(result, entries[0].Result);
         // Check getter
-        Assert.Equal($"get:{nameof(o.Name)}", entries[2].Message);
-        Assert.Equal(result, entries[2].Result);
+        Equal($"get:{nameof(o.Name)}", entries[2].Message);
+        Equal(result, entries[2].Result);
         // Check Setter - no result as it's a setter with a { } wrapping and so the value-set doesn't bleed back
-        Assert.Equal($"set:{nameof(o.NameSetWithBody)}", entries[4].Message);
-        Assert.Equal(null, entries[4].Result);
+        Equal($"set:{nameof(o.NameSetWithBody)}", entries[4].Message);
+        Equal(null, entries[4].Result);
     }
         
 }

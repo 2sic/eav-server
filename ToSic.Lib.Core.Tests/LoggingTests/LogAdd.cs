@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Logging;
-
-namespace ToSic.Lib.Core.Tests.LoggingTests;
+﻿namespace ToSic.Lib.Core.Tests.LoggingTests;
 
 
 public class LogAdd: LogTestBase

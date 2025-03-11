@@ -1,8 +1,4 @@
-﻿using ToSic.Lib.Logging;
-using static Xunit.Assert;
-
-
-namespace ToSic.Lib.Core.Tests.LoggingTests;
+﻿namespace ToSic.Lib.Core.Tests.LoggingTests;
 
 
 // ReSharper disable once InconsistentNaming

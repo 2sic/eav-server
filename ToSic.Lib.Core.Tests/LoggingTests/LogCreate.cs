@@ -1,8 +1,4 @@
-﻿using ToSic.Lib.Logging;
-using static Xunit.Assert;
-
-
-namespace ToSic.Lib.Core.Tests.LoggingTests;
+﻿namespace ToSic.Lib.Core.Tests.LoggingTests;
 
 
 public class LogCreate: LogTestBase
@@ -13,15 +9,15 @@ public class LogCreate: LogTestBase
     // - Create with CodeRef
     // - etc.
 
-    public static IEnumerable<object[]> LogNamesData => new[]
-    {
-        new object[] { "Name only", "test", "", "test", "test" },
-        new object[] { "Short name only", "123", "", "123", "123" },
-        new object[] { "Normal name and scope", "scp.name", "scp", "name", "scp.name" },
-        new object[] { "Normal name and scope 2", "Scp.NameEx", "Scp", "NameEx", "Scp.NameEx" },
-        new object[] { "Name too long", "muchtoolong", "", "muchto", "muchto" },
-        new object[] { "Scope and Name too long", "tooLong.muchtoolong", "too", "muchto", "too.muchto" },
-    };
+    public static IEnumerable<object[]> LogNamesData =>
+    [
+        ["Name only", "test", "", "test", "test"],
+        ["Short name only", "123", "", "123", "123"],
+        ["Normal name and scope", "scp.name", "scp", "name", "scp.name"],
+        ["Normal name and scope 2", "Scp.NameEx", "Scp", "NameEx", "Scp.NameEx"],
+        ["Name too long", "muchtoolong", "", "muchto", "muchto"],
+        ["Scope and Name too long", "tooLong.muchtoolong", "too", "muchto", "too.muchto"]
+    ];
 
     [Theory]
     [MemberData(nameof(LogNamesData))]

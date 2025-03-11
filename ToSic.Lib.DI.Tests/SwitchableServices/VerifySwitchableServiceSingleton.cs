@@ -1,5 +1,4 @@
 ﻿using ToSic.Lib.DI.SwitchableServices.Services;
-using static Xunit.Assert;
 
 namespace ToSic.Lib.DI.SwitchableServices;
 
@@ -13,9 +12,6 @@ public class VerifySwitchableServiceSingleton(
     ServiceSwitcherSingleton<ITestSwitchableService> switcher4
 )
 {
-    /// <summary>
-    /// This must run before everything
-    /// </summary>
     [Fact]
     public void AccessSingletonN001() =>
         False(switcher1.IsValueCreated, "shouldn't be created at first");

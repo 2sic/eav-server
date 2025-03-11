@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.TestData;
 using Xunit.DependencyInjection;
-using static Xunit.Assert;
 
 namespace ToSic.Eav.Data;
 

@@ -1,5 +1,4 @@
 ﻿using ToSic.Lib.Logging;
-using static Xunit.Assert;
 
 namespace ToSic.Eav.Caching;
 

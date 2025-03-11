@@ -1,10 +1,9 @@
 ﻿using ToSic.Lib.FunFact;
-using static Xunit.Assert;
 
 namespace ToSic.Lib.Core.Tests.FunFactTests;
 
 
-public class FunFactStringTest
+public class FunctionalFactoryStringTests
 {
 
     [Fact]

@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Logging;
-
-namespace ToSic.Lib.Core.Tests.LoggingTests;
+﻿namespace ToSic.Lib.Core.Tests.LoggingTests;
 
 /// <summary>
 /// Note: you won't see any code, because it inherits all the tests from the base class.

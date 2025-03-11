@@ -1,6 +1,4 @@
-﻿using static Xunit.Assert;
-
-namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Eav.LookUp;
 
 public class SourceDictionaryTest
 {

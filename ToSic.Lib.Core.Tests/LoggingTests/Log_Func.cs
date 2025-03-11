@@ -1,7 +1,4 @@
-﻿using ToSic.Lib.Logging;
-
-
-namespace ToSic.Lib.Core.Tests.LoggingTests;
+﻿namespace ToSic.Lib.Core.Tests.LoggingTests;
 
 
 // ReSharper disable once InconsistentNaming
