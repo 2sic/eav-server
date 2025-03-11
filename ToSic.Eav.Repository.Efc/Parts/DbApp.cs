@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Serialization;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+// ReSharper disable InvokeAsExtensionMethod
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
@@ -102,38 +103,60 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
     private void DeleteAppWithoutStoredProcedure(int appId, bool alsoDeleteAppEntry)
     {
         var db = DbContext.SqlDb;
-        var appContentTypes = db.ToSicEavAttributeSets.Where(a => a.AppId == appId).ToList();
-        var contentTypeIds = appContentTypes.Select(ct => ct.AttributeSetId).ToArray();
+        var appContentTypes = db.ToSicEavAttributeSets
+            .Where(a => a.AppId == appId)
+            .ToList();
+        var contentTypeIds = appContentTypes
+            .Select(ct => ct.AttributeSetId)
+            .ToArray();
             
         // WIP v13 - now with Inherited Apps, we have entities which point to a content-type which doesn't belong to the App itself
         const bool useV12Method = false;
         var appEntities = useV12Method
-            ? db.ToSicEavEntities.Where(e => appContentTypes.Contains(e.AttributeSet))
+        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+            //? db.ToSicEavEntities.Where(e => appContentTypes.Contains(e.AttributeSet))
+            ? db.ToSicEavEntities.Where(e => Enumerable.Contains(appContentTypes, e.AttributeSet))
             : db.ToSicEavEntities.Where(e => e.AppId == appId);
 
         var entityIds = appEntities.Select(e => e.EntityId).ToArray();
 
         // Delete Value-Dimensions
-        var appValues = db.ToSicEavValues.Where(v => entityIds.Contains(v.EntityId));
-        var appValueIds = appValues.Select(a => a.ValueId).ToList();
-        var valDimensions = db.ToSicEavValuesDimensions.Where(vd => appValueIds.Contains(vd.ValueId));
+        var appValues = db.ToSicEavValues
+        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+            //.Where(v => entityIds.Contains(v.EntityId));
+            .Where(v => Enumerable.Contains(entityIds, v.EntityId));
+        var appValueIds = appValues
+            .Select(a => a.ValueId)
+            .ToList();
+        var valDimensions = db.ToSicEavValuesDimensions
+        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+            //.Where(vd => appValueIds.Contains(vd.ValueId));
+            .Where(vd => Enumerable.Contains(appValueIds, vd.ValueId));
         db.RemoveRange(valDimensions);
         db.RemoveRange(appValues.ToList());
 
 
         // Delete Parent-EntityRelationships & Child-EntityRelationships
         var dbRelTable = db.ToSicEavEntityRelationships;
-        var relationshipsWithAppParents = dbRelTable.Where(rel => entityIds.Contains(rel.ParentEntityId));
+        var relationshipsWithAppParents = dbRelTable
+        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+            //.Where(rel => entityIds.Contains(rel.ParentEntityId));
+            .Where(rel => Enumerable.Contains(entityIds, rel.ParentEntityId));
         db.RemoveRange(relationshipsWithAppParents.ToList());
-        var relationshipsWithAppChildren = dbRelTable.Where(rel => entityIds.Contains(rel.ChildEntityId ?? -1));
+        var relationshipsWithAppChildren = dbRelTable
+        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+            //.Where(rel => entityIds.Contains(rel.ChildEntityId ?? -1));
+            .Where(rel => Enumerable.Contains(entityIds, rel.ChildEntityId ?? -1));
         db.RemoveRange(relationshipsWithAppChildren.ToList());
 
         // Delete Entities
         db.RemoveRange(appEntities);
 
         // Delete Attributes
-        var attributeSetMappings =
-            db.ToSicEavAttributesInSets.Where(aInS => contentTypeIds.Contains(aInS.AttributeSetId));
+        var attributeSetMappings = db.ToSicEavAttributesInSets
+        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+                //.Where(aInS => contentTypeIds.Contains(aInS.AttributeSetId));
+                .Where(aInS => Enumerable.Contains(contentTypeIds, aInS.AttributeSetId));
         var attributes = attributeSetMappings.Select(asm => asm.Attribute);
         db.RemoveRange(attributes.ToList());
 
