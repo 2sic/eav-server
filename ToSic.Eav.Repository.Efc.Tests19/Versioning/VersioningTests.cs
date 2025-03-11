@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.Persistence.Efc.Tests;
 using ToSic.Eav.Persistence.Versions;
-using ToSic.Eav.Repository.Efc.Tests.Mocks;
-using ToSic.Testing.Shared;
+using ToSic.Eav.Testing.Scenarios;
+using ToSic.Lib.DI;
+using Xunit.Abstractions;
+using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Repository.Efc.Tests;
+namespace ToSic.Eav.Repository.Efc.Tests19.Versioning;
 
-[TestClass]
-public class VersioningTests: TestBaseDiEavFullAndDb
+[Startup(typeof(StartupTestFullWithDb))]
+public class VersioningTests(Generator<DbDataController> dbDataGenerator, GenWorkDb<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
+    : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     #region Test Data
     public class VersioningTestSpecs: IAppIdentity
@@ -31,22 +31,16 @@ public class VersioningTests: TestBaseDiEavFullAndDb
 
     #endregion
 
-    public VersioningTests()
-    {
-        Environment = GetService<ImportExportEnvironmentMock>();
-    }
-
-    // todo: move tests to tests of ToSic.Eav.Apps
+    // TODO: move tests to tests of ToSic.Eav.Apps
     // ATM this test doesn't work
-    [TestMethod]
-    public void DevPc2dmRestoreV2()
+    [Fact] public void DevPc2dmRestoreV2CurrentlyNotReallyDoingWhatItShould()
     {
         var id = ItemToRestoreToV2;
         var version = 2;
 
         //var appManager = GetService<AppManager>().Init(Specs);
-        var versionSvc = GetService<GenWorkDb<WorkEntityVersioning>>().New(appId: Specs.AppId);
-        var dc = GetService<DbDataController>().Init(Specs.ZoneId, Specs.AppId);
+        var versionSvc = workEntityVersioning.New(appId: Specs.AppId);
+        var dc = dbDataGenerator.New().Init(Specs.ZoneId, Specs.AppId);
         //var all = appManager.Entities.VersionHistory(id);
         dc.Versioning.GetHistoryList(id, false);
         var all = versionSvc.VersionHistory(id);
@@ -56,22 +50,18 @@ public class VersioningTests: TestBaseDiEavFullAndDb
         //versionSvc.VersionRestore(id, vId);
     }
 
-    [TestMethod]
-    public void GetHistoryTests()
-    {
+    [Fact] public void GetHistoryTests() =>
         GetHistoryTest(TestItemWithCa20Changes, TestItemWithCa20ChangesCount);
-    }
 
-    [TestMethod]
-    public void GetVersion6OfItemWith20()
+    [Fact] public void GetVersion6OfItemWith20()
     {
         var id = TestItemWithCa20Changes;
         var version = 6;
-        var _dbData = GetService<DbDataController>().Init(Specs.ZoneId, null);
+        var _dbData = dbDataGenerator.New().Init(Specs.ZoneId, null);
         var all = _dbData.Versioning.GetHistoryList(id, false);
         var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
         var vItem = _dbData.Versioning.GetItem(id, vId);
-        Console.Write(vItem.Json);
+        output.WriteLine(vItem.Json);
     }
 
 
@@ -79,9 +69,9 @@ public class VersioningTests: TestBaseDiEavFullAndDb
 
     private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
     {
-        var _dbData = GetService<DbDataController>().Init(Specs.ZoneId, null);
-        var history = _dbData.Versioning.GetHistoryList(entityId, true);
-        Assert.AreEqual(expectedCount, history.Count, $"should have {expectedCount} items in history for this one");
+        var dbData = dbDataGenerator.New().Init(Specs.ZoneId, null);
+        var history = dbData.Versioning.GetHistoryList(entityId, true);
+        Equal(expectedCount, history.Count);//, $"should have {expectedCount} items in history for this one");
         return history;
     }
         

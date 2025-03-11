@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks;
 
-// NOTE: Already moved...
-
-internal class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
+public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
     : ServiceBase("Mck.ImpExp", connect: [appsCatalog]), IImportExportEnvironment
 {
     public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests\";
