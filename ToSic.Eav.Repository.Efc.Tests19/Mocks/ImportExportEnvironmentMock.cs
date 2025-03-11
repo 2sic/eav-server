@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Repository.Efc.Tests.Mocks;
+namespace ToSic.Eav.Repository.Efc.Tests19.Mocks;
 
 public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
     : ServiceBase("Mck.ImpExp", connect: [appsCatalog]), IImportExportEnvironment
 {
-    public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests\";
+    //public string BasePath { get; set; }= @"C:\Projects\2sxc\eav-server\ToSic.Eav.Repository.Efc.Tests19\";
+    private string BasePath => TestFiles.GetTestPath("") + "\\";
 
 
     public virtual List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
