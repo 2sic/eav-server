@@ -1,19 +1,17 @@
 ﻿using ToSic.Eav.ImportExport.Internal.XmlList;
-using ToSic.Lib.Logging;
 using ToSic.Eav.Repositories;
-using ToSic.Testing.Shared;
+using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Tests.ImportExport;
+namespace ToSic.Eav.Apps.Tests19.AppXml;
 
-[TestClass]
-public class XmlTable: TestBaseDiEavFullAndDb
+public class XmlTable(IRepositoryLoader loader, ExportListXml exportListXml)
 {
 
     public new static ILog Log = new Log("TstXml");
     private int AppId = 78;
 
-    [TestMethod]
-    [Ignore]
+    [Fact(Skip = "Not done")]
+    
     public void XmlTable_ResolveWithFullFallback()
     {
         var exporter = BuildExporter(AppId, "BlogPost");
@@ -22,13 +20,11 @@ public class XmlTable: TestBaseDiEavFullAndDb
 
     }
 
-
-
     private ExportListXml BuildExporter(int appId, string ctName)
     {
-        var loader = GetService<IRepositoryLoader>();
+        //var loader = GetService<IRepositoryLoader>();
         var appPackage = loader.AppStateReaderRawTac(appId);
         var type = appPackage.ContentTypes.First(ct => ct.Name == ctName);
-        return GetService<ExportListXml>().Init(appPackage, type);
+        return exportListXml.Init(appPackage, type);
     }
 }
