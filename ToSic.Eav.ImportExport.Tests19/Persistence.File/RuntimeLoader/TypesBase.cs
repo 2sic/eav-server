@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Core.Tests.Types;
+﻿namespace ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 
 /// <summary>
 /// Note: this seem like an old test which tried to implement code-based-content types.

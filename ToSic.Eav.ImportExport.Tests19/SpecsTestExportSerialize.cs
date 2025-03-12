@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps;
-
-namespace ToSic.Eav.ImportExport.Tests;
+﻿namespace ToSic.Eav.ImportExport.Tests;
 
 public class SpecsTestExportSerialize: IAppIdentity
 {

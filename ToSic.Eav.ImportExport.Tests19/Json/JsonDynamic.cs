@@ -1,8 +1,9 @@
 ﻿using ToSic.Eav.ImportExport.Tests;
+using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 
 namespace ToSic.Eav.ImportExport.Tests19.Json;
 
-public class JsonDynamic(JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class JsonDynamic(JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
 {
     [Fact]
     public void DeserializeDynamicByDefaultMustFail()

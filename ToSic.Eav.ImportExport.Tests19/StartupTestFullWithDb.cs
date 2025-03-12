@@ -5,8 +5,6 @@ using ToSic.Eav.Integration;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.StartUp;
 using ToSic.Lib;
-using ToSic.Testing;
-using ToSic.Testing.Shared;
 
 #pragma warning disable CA1822
 

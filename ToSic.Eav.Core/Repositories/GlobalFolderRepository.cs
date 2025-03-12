@@ -17,10 +17,6 @@ namespace ToSic.Eav.Repositories;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class GlobalFolderRepository(IGlobalConfiguration config) : FolderBasedRepository
 {
-    #region DI Constructor
-
-    #endregion
-
     public override List<string> RootPaths
     {
         get

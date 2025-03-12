@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using ToSic.Eav.DataSource.DbTests;
+﻿using ToSic.Eav.DataSource.DbTests;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Tests;
+using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 using ToSic.Eav.Repositories;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
@@ -9,7 +9,7 @@ using Xunit.DependencyInjection;
 namespace ToSic.Eav.ImportExport.Tests19.XmlSerialization;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class XmlSerializationTests(XmlSerializer xmlSerializer, IRepositoryLoader repoLoader, IAppsCatalog appsCatalog, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class XmlSerializationTests(XmlSerializer xmlSerializer, IRepositoryLoader repoLoader, IAppsCatalog appsCatalog, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
 {
 
     [Fact]

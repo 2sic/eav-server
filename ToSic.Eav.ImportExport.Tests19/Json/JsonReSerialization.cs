@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.ImportExport.Tests;
+using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Internal;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests19.Json;
 
-public class JsonReSerialization(JsonSerializer jsonSerializer, IRepositoryLoader loader, JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class JsonReSerialization(JsonSerializer jsonSerializer, IRepositoryLoader loader, JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
 {
 
     [Fact]

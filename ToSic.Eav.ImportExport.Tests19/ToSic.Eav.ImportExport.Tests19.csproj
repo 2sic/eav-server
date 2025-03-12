@@ -43,5 +43,11 @@
   <ItemGroup>
     <!-- Copy ScenarioData to bin folder for reviewing during tests -->
     <None Include="Json\Scenarios\**" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Persistence.File\Scenarios\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Persistence.File\Scenarios\.data\readme.md" />
+    <None Include="Persistence.File\Tst_FileLoader_Query.cs" />
   </ItemGroup>
 </Project>

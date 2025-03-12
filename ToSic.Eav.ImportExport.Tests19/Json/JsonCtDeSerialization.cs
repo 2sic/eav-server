@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.ImportExport.Tests;
+using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 using Xunit.Abstractions;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
@@ -6,7 +7,7 @@ namespace ToSic.Eav.ImportExport.Tests19.Json;
 
 // TODO: update stored file to match current serialization
 
-public class JsonCtDeSerialization(ITestOutputHelper output, JsonTestHelpers jsonTestHelper) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class JsonCtDeSerialization(ITestOutputHelper output, JsonTestHelpers jsonTestHelper) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
 {
     [Fact]
     //[DeploymentItem("..\\..\\" + typesPath, testTypesPath)]

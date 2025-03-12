@@ -53,6 +53,5 @@
 
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Persistence.File\.data\readme.md" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using ToSic.Eav.Repositories;
+﻿using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.ImportExport.Tests.Persistence.File;
+namespace ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 
 public class TestGlobalFolderRepository: FolderBasedRepository
 {
