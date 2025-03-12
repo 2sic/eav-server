@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Repository.Efc.Tests19;
+namespace ToSic.Eav.Repository.Efc.Tests;
 
 internal static class EntitySaverTestAccessors
 {

@@ -4,7 +4,7 @@ using ToSic.Eav.Testing.Scenarios;
 using ToSic.Lib.Logging;
 using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Repository.Efc.Tests19.ExportXml;
+namespace ToSic.Eav.Repository.Efc.Tests.ExportXml;
 
 [Startup(typeof(StartupTestFullWithDbAndImport))]
 public class ExportImportDataTest(XmlExporter xmlExporter, IAppReaderFactory appReaderFactory) : IClassFixture<DoFixtureStartup<ScenarioBasic>>

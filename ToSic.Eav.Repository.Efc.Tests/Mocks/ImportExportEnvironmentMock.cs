@@ -3,7 +3,7 @@ using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Repository.Efc.Tests19.Mocks;
+namespace ToSic.Eav.Repository.Efc.Tests.Mocks;
 
 public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
     : ServiceBase("Mck.ImpExp", connect: [appsCatalog]), IImportExportEnvironment

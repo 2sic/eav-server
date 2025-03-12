@@ -7,7 +7,7 @@ using ToSic.Eav.Testing.Scenarios;
 using ToSic.Lib.DI;
 using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Repository.Efc.Tests19.SaveData;
+namespace ToSic.Eav.Repository.Efc.Tests.SaveData;
 
 /// <summary>
 /// Make various changes and see if they worked - but rollback any changes afterward using transactions.

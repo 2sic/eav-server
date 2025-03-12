@@ -4,7 +4,7 @@ using ToSic.Eav.Testing.Scenarios;
 using Xunit.DependencyInjection;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Repository.Efc.Tests19.MergeEntities;
+namespace ToSic.Eav.Repository.Efc.Tests.MergeEntities;
 
 // TODO: THIS IS A VERY long test class - consider splitting it up into multiple classes
 

@@ -3,7 +3,7 @@ using ToSic.Eav.ImportExport.Internal.Zip;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Repository.Efc.Tests19.ImportApps;
+namespace ToSic.Eav.Repository.Efc.Tests.ImportApps;
 
 // TODO: NOT PARALLEL!
 
@@ -11,8 +11,6 @@ namespace ToSic.Eav.Repository.Efc.Tests19.ImportApps;
 public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneManager zoneManager)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-
-    //public const string BaseTestPath = @"C:\Projects\eav-server\ToSic.Eav.Repository.Efc.Tests\";
     #region Test Data
 
     internal class AppImportDef
@@ -57,7 +55,7 @@ public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneMa
 
         bool succeeded;
 
-        using (FileStream fsSource = new FileStream(testFileName, FileMode.Open, FileAccess.Read))
+        using (var fsSource = new FileStream(testFileName, FileMode.Open, FileAccess.Read))
         {
             zipImport.Init(ZoneId, null, true);
             succeeded = zipImport.ImportZip(fsSource, baseTestPath + @"Temp\");
@@ -68,9 +66,12 @@ public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneMa
 
     private void DeleteAnApp(string appGuid)
     {
-        var appList = dbData.Init(ZoneId, null).SqlDb.ToSicEavApps.Where(a => a.ZoneId == ZoneId).ToList();
+        var appList = dbData.Init(ZoneId, null).SqlDb.ToSicEavApps
+            .Where(a => a.ZoneId == ZoneId)
+            .ToList();
         var appId = appList.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;
-        if (appId > 0) zoneManager.SetId(ZoneId).DeleteApp(appId, true);
+        if (appId > 0)
+            zoneManager.SetId(ZoneId).DeleteApp(appId, true);
 
     }
 }

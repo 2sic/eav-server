@@ -7,7 +7,7 @@ using ToSic.Lib.DI;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Repository.Efc.Tests19.Versioning;
+namespace ToSic.Eav.Repository.Efc.Tests.Versioning;
 
 [Startup(typeof(StartupTestFullWithDbAndImport))]
 public class VersioningTests(Generator<DbDataController> dbDataGenerator, GenWorkDb<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
