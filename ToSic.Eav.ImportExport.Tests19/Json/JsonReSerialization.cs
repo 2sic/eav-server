@@ -1,59 +1,48 @@
-﻿using System;
+﻿using ToSic.Eav.ImportExport.Tests;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Repository.Efc.Tests;
 using ToSic.Eav.Serialization.Internal;
-using ToSic.Testing.Shared;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
-namespace ToSic.Eav.ImportExport.Tests.json;
+namespace ToSic.Eav.ImportExport.Tests19.Json;
 
-[TestClass]
-public class JsonReSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
+public class JsonReSerialization(JsonSerializer jsonSerializer, IRepositoryLoader loader, JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-    private readonly JsonSerializer _jsonSerializer;
-    private readonly IRepositoryLoader _loader;
 
-    public JsonReSerialization()
-    {
-        _jsonSerializer = GetService<JsonSerializer>();
-        _loader = GetService<IRepositoryLoader>();
-    }
-
-    [TestMethod]
+    [Fact]
     public void JsonReExportHome()
     {
         var test = new SpecsTestExportSerialize();
         Test_DoubleExportEntity(test.AppId, test.TestItemToSerialize);
     }
 
-    [TestMethod]
+    [Fact]
     public void JsonReExportContentGroup()
     {
         var test = new SpecsTestExportSerialize();
         Test_DoubleExportEntity(test.AppId, test.ContentBlockWithALotOfItems);
     }
 
-    private void Test_DoubleExportEntity(int appId, int eid, JsonSerializer serializer = null)
+    private void Test_DoubleExportEntity(int appId, int eid, JsonSerializer? serializer = null)
     {
-        serializer = serializer ?? SerializerOfApp(appId);
+        serializer ??= jsonTestHelpers.SerializerOfApp(appId);
         var json = GetJsonOfEntity(appId, eid, serializer);
 
         var ent = serializer.Deserialize(json);
         var json2 = serializer.Serialize(ent);
         //Trace.Write($"{{ \"First\": {json}, \"Second\": {json2}}}");
-        Assert.AreEqual(json, json2, "serialize, de-serialize, and serialize again should be the same!");
+        Equal(json, json2);//, "serialize, de-serialize, and serialize again should be the same!");
     }
 
 
-    private string GetJsonOfEntity(int appId, int eId, JsonSerializer ser = null)
+    private string GetJsonOfEntity(int appId, int eId, JsonSerializer? ser = null)
     {
-        var exBuilder = ser ?? SerializerOfApp(appId);
-        var xmlEnt = exBuilder.Serialize(eId);
+        ser ??= jsonTestHelpers.SerializerOfApp(appId);
+        var xmlEnt = ser.Serialize(eId);
         return xmlEnt;
     }
 
 
-    [TestMethod]
+    [Fact]
     public void Json_ReExportHundredsOfAnApp()
     {
         var test = new SpecsTestExportSerialize();
@@ -65,9 +54,9 @@ public class JsonReSerialization: Eav.Persistence.Efc.Tests.Efc11TestBase
 
     private void Test_DoubleExportAllOfAnApp(int appId)
     {
-        var loader = _loader; 
+        //var loader = _loader; 
         var app = loader.AppStateReaderRawTac(appId);
-        var exBuilder = _jsonSerializer.SetApp(app);
+        var exBuilder = jsonSerializer.SetApp(app);
 
         var maxCount = 1000;
         var skip = 0;

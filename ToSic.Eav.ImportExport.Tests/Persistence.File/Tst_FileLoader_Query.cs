@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Persistence.Efc.Tests;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -11,15 +11,19 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Persistence.File.Tests;
 
 [TestClass]
-[DeploymentItem("..\\..\\" + PathWith3Types, TestingPath3)]
-public class Tst_FileLoader_Query: PersistenceTestsBase
+[DeploymentItem("..\\..\\" + PersistenceTestConstants.PathWith3Types, PersistenceTestConstants.TestingPath3)]
+public class Tst_FileLoader_Query: Efc11TestBase
 {
+    /// <summary>
+    /// Probably set at test-time?
+    /// </summary>
+    public TestContext TestContext { get; set; }
 
     [TestMethod]
     public void FLoader_LoadQueriesAndCount()
     {
         var cts = LoadAllQueries();
-        Assert.AreEqual(3, cts.Count, "test case has 3 content-types to deserialize");
+        AreEqual(3, cts.Count, "test case has 3 content-types to deserialize");
     }
        
         
@@ -27,8 +31,9 @@ public class Tst_FileLoader_Query: PersistenceTestsBase
 
     private IList<IEntity> LoadAllQueries()
     {
-        Trace.WriteLine($"path:'{TestStorageRoot}'");
-        var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+        var testStorageRoot = PersistenceTestConstants.TestStorageRoot(TestContext);
+        Trace.WriteLine($"path:'{testStorageRoot}'");
+        var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
         IList<IEntity> cts;
         try
         {

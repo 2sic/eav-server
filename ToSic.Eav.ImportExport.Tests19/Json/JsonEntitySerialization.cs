@@ -1,50 +1,38 @@
-﻿using System;
-using System.Diagnostics;
-using ToSic.Eav.ImportExport.Tests.Json;
+﻿using ToSic.Eav.ImportExport.Tests;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Repository.Efc.Tests;
 using ToSic.Eav.Serialization.Internal;
-using ToSic.Testing.Shared;
+using Xunit.Abstractions;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
-namespace ToSic.Eav.ImportExport.Tests.json;
+namespace ToSic.Eav.ImportExport.Tests19.Json;
 
-[TestClass]
-public class JsonEntitySerialization: JsonTestBase
+
+public class JsonEntitySerialization(JsonSerializer jsonSerializer, IRepositoryLoader loader, ITestOutputHelper output, JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-    private readonly JsonSerializer _jsonSerializer;
-    private readonly IRepositoryLoader _loader;
-
-    public JsonEntitySerialization()
-    {
-        _jsonSerializer = GetService<JsonSerializer>();
-        _loader = GetService<IRepositoryLoader>();
-    }
-
-    [TestMethod]
+    [Fact]
     public void Json_ExportItemOnHome()
     {
         var test = new SpecsTestExportSerialize();
-        var json = GetJsonOfEntity(test.AppId, test.TestItemToSerialize);
-        Trace.Write(json);
-        Assert.IsTrue(json.Length > 200, "should get a long json string");
+        var json = jsonTestHelpers.GetJsonOfEntity(test.AppId, test.TestItemToSerialize);
+        output.WriteLine(json);
+        True(json.Length > 200, "should get a long json string");
     }
         
 
-    [TestMethod]
+    [Fact]
     public void Json_ExportCBWithRelationships()
     {
         var test = new SpecsTestExportSerialize();
-        var json = GetJsonOfEntity(test.AppId, test.ContentBlockWithALotOfItems);
-        Trace.Write(json);
-        Assert.IsTrue(json.Length > 200, "should get a long json string");
+        var json = jsonTestHelpers.GetJsonOfEntity(test.AppId, test.ContentBlockWithALotOfItems);
+        output.WriteLine(json);
+        True(json.Length > 200, "should get a long json string");
     }
 
 
         
 
 
-    [TestMethod]
+    [Fact]
     public void Json_ExportHundredsOfAnApp()
     {
         var test = new SpecsTestExportSerialize();
@@ -58,9 +46,9 @@ public class JsonEntitySerialization: JsonTestBase
 
     private void Test_ExportAllOfAnApp(int appId)
     {
-        var loader = _loader;
+        //var loader = _loader;
         var app = loader.AppStateReaderRawTac(appId);
-        var exBuilder = _jsonSerializer.SetApp(app);
+        var exBuilder = jsonSerializer.SetApp(app);
 
         var maxCount = 1000;
         var skip = 0;
@@ -81,7 +69,7 @@ public class JsonEntitySerialization: JsonTestBase
         }
         catch (Exception ex)
         {
-            throw new Exception($"had issue after count{count}", ex);
+            throw new($"had issue after count{count}", ex);
         }
     }
 

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps.Integration;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.StartUp;
 using ToSic.Lib;
 using ToSic.Testing;
+using ToSic.Testing.Shared;
 
 #pragma warning disable CA1822
 
@@ -28,7 +30,7 @@ public class StartupTestFullWithDb
         services
             .AddTransient<FullDbFixtureHelper>()
             //.AddTransient<DoFixtureStartup<ScenarioBasic>>()
-            .AddTransient<DataSourcesTstBuilder>()
+            //.AddTransient<DataSourcesTstBuilder>()
             // Apps
             .AddEavApps()
             .AddAppFallbackServices()

@@ -1,52 +1,43 @@
-﻿using System;
-using System.Diagnostics;
-using ToSic.Eav.Apps;
+﻿using System.Diagnostics;
+using ToSic.Eav.DataSource.DbTests;
 using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.ImportExport.Tests;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Repository.Efc.Tests;
-using ToSic.Testing.Shared;
+using Xunit.Abstractions;
+using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.ImportExport.Tests;
+namespace ToSic.Eav.ImportExport.Tests19.XmlSerialization;
 
-[TestClass]
-public class XmlSerializationTests: TestBaseDiEavFullAndDb
+[Startup(typeof(StartupTestFullWithDb))]
+public class XmlSerializationTests(XmlSerializer xmlSerializer, IRepositoryLoader repoLoader, IAppsCatalog appsCatalog, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-    private readonly XmlSerializer _xmlSerializer;
-    public XmlSerializationTests()
-    {
-        _xmlSerializer = GetService<XmlSerializer>();
-    }
 
-    //private int AppId = 2;
-    //private int TestItemId = 0;
-
-    [TestMethod]
+    [Fact]
     public void Xml_SerializeItemOnHome()
     {
         var test = new SpecsTestExportSerialize();
-        var appReader = GetService<IRepositoryLoader>().AppStateReaderRawTac(test.AppId);
+        var appReader = repoLoader.AppStateReaderRawTac(test.AppId);
         //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
-        var languageMap = GetService<IAppsCatalog>()
+        var languageMap = appsCatalog
             .Zone(test.ZoneId).LanguagesActive
             .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
-        var exBuilder = _xmlSerializer.Init(languageMap, appReader);
+        var exBuilder = xmlSerializer.Init(languageMap, appReader);
         var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
-        Assert.IsTrue(xmlEnt.Length > 200, "should get a long xml string");
-        Trace.Write(xmlEnt);
+        True(xmlEnt.Length > 200, "should get a long xml string");
+        output.WriteLine(xmlEnt);
         //Assert.AreEqual(xmlstring, xmlEnt, "xml strings should be identical");
     }
 
-    [Ignore]
-    [TestMethod]
+    [Fact]
     public void Xml_CompareAllSerializedEntitiesOfApp()
     {
         var test = new SpecsTestExportSerialize();
         var appId = test.AppId;
-        var appReader = GetService<IRepositoryLoader>().AppStateReaderRawTac(appId);
-        var languageMap = GetService<IAppsCatalog>()
+        var appReader = repoLoader.AppStateReaderRawTac(appId);
+        var languageMap = appsCatalog
             .Zone(test.ZoneId).LanguagesActive
             .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
-        var exBuilder = _xmlSerializer.Init(languageMap, appReader);
+        var exBuilder = xmlSerializer.Init(languageMap, appReader);
 
         var maxCount = 500;
         var skip = 0;

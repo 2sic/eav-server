@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
-using ToSic.Eav.ImportExport;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Persistence.Efc.Tests;
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Logging;
 
@@ -14,15 +13,20 @@ using ToSic.Lib.Logging;
 namespace ToSic.Eav.Persistence.File.Tests;
 
 [TestClass]
-public class BundleLoaderTest: PersistenceTestsBase
+public class BundleLoaderTest: Efc11TestBase
 {
+    /// <summary>
+    /// Probably set at test-time?
+    /// </summary>
+    public TestContext TestContext { get; set; }
+
     [TestMethod]
     public void TypesInBundles()
     {
         var cts = LoadAllTypesInBundles();
         var someDataType = cts.FirstOrDefault(ct => ct.Name.Contains("SomeData"));
-        Assert.IsNotNull(someDataType, "should find the SomeData type");
-        Assert.AreEqual("Default", someDataType.Scope, "scope should be default");
+        IsNotNull(someDataType, "should find the SomeData type");
+        AreEqual("Default", someDataType.Scope, "scope should be default");
     }
 
     [TestMethod]
@@ -30,8 +34,8 @@ public class BundleLoaderTest: PersistenceTestsBase
     {
         var entities = LoadAllEntitiesInBundles();
         var someData = entities.FirstOrDefault(e => e.Type.Name.Contains("SomeData"));
-        Assert.AreEqual(4, entities.Count, "test case has 4 entity in bundles to deserialize");
-        Assert.AreEqual("fp638089655185445243", someData.GetTac("FirstProperty"));
+        AreEqual(4, entities.Count, "test case has 4 entity in bundles to deserialize");
+        AreEqual("fp638089655185445243", someData.GetTac("FirstProperty"));
     }
 
     [TestMethod]
@@ -39,21 +43,31 @@ public class BundleLoaderTest: PersistenceTestsBase
     {
         var entities = LoadAllEntities();
         var systemExportConfiguration = entities.One(new System.Guid("22db39d7-8a59-43be-be68-ea0f28880c10"));
-        Assert.IsNotNull(systemExportConfiguration, "should find the system export configuration");
+        IsNotNull(systemExportConfiguration, "should find the system export configuration");
 
         var export = new ExportConfiguration(systemExportConfiguration);
-        Assert.AreEqual("cfg2", export.Name, "name should be cfg2");
-        Assert.IsTrue(export.PreserveMarkers, "name should be cfg2");
+        AreEqual("cfg2", export.Name, "name should be cfg2");
+        IsTrue(export.PreserveMarkers, "name should be cfg2");
     }
 
     private IList<IContentType> LoadAllTypesInBundles()
     {
+        var testStorageRoot = PersistenceTestConstants.TestStorageRoot(TestContext);
         var loader = GetService<FileSystemLoader>()
-            .Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+            .Init(
+                Constants.PresetAppId,
+                testStorageRoot,
+                RepositoryTypes.TestingDoNotUse,
+                false,
+                null
+            );
+
         IList<IContentType> cts;
         try
         {
-            cts = loader.ContentTypesInBundles().Select(set => set.ContentType).ToList();
+            cts = loader.ContentTypesInBundles()
+                .Select(set => set.ContentType)
+                .ToList();
         }
         finally
         {
@@ -64,8 +78,10 @@ public class BundleLoaderTest: PersistenceTestsBase
         
     private List<IEntity> LoadAllEntitiesInBundles()
     {
-        Trace.WriteLine($"path:'{TestStorageRoot}'");
-        var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+        var testStorageRoot = PersistenceTestConstants.TestStorageRoot(TestContext);
+        Trace.WriteLine($"path:'{testStorageRoot}'");
+        var loader = GetService<FileSystemLoader>()
+            .Init(Constants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
         var relationshipsSource = new ImmutableEntitiesSource();
         try
         {
@@ -80,8 +96,9 @@ public class BundleLoaderTest: PersistenceTestsBase
         
     private IList<IEntity> LoadAllEntities()
     {
-        Trace.WriteLine($"path:'{TestStorageRoot}'");
-        var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, TestStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+        var testStorageRoot = PersistenceTestConstants.TestStorageRoot(TestContext);
+        Trace.WriteLine($"path:'{testStorageRoot}'");
+        var loader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
         IList<IEntity> entities;
         try
         {

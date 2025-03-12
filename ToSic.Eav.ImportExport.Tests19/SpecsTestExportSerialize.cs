@@ -2,8 +2,6 @@
 
 namespace ToSic.Eav.ImportExport.Tests;
 
-// Moved!
-
 public class SpecsTestExportSerialize: IAppIdentity
 {
     public int ZoneId => 4;

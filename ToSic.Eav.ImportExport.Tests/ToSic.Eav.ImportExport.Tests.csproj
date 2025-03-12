@@ -52,13 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Json\ContentTypes\System.Config ToSic.Eav.DataSources.SqlDataSource.json" />
     <None Include="app.config" />
     <None Include="Persistence.File\.data\readme.md" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Json\configuration\" />
-    <Folder Include="Json\queries\" />
   </ItemGroup>
 </Project>

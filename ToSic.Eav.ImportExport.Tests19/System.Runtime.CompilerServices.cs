@@ -21,7 +21,7 @@ namespace System.Runtime.CompilerServices
 
 namespace System.Diagnostics.CodeAnalysis
 {
-    [System.AttributeUsage(System.AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
     public sealed class SetsRequiredMembersAttribute : Attribute;
 }
 

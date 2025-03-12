@@ -1,8 +1,6 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
-
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File.Tests;
 

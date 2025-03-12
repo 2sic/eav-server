@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Internal;
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ToSic.Eav.ImportExport.Json;
@@ -13,8 +12,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Persistence.Efc.Tests;
 
-[TestClass]
-public class Efc11TestBase : TestBaseDiEavFullAndDb
+public abstract class Efc11TestBase : TestBaseDiEavFullAndDb
 {
     #region test preparations
 
@@ -27,10 +25,10 @@ public class Efc11TestBase : TestBaseDiEavFullAndDb
     {
         Trace.Write("initializing DB & loader");
         Db = GetService<EavDbContext>();
-        Loader = NewLoader();
+        Loader = GetService<EfcAppLoader>().UseExistingDb(Db); //NewLoader();
     }
 
-    public EfcAppLoader NewLoader() => GetService<EfcAppLoader>().UseExistingDb(Db);
+    //public EfcAppLoader NewLoader() => GetService<EfcAppLoader>().UseExistingDb(Db);
 
 
     protected JsonSerializer SerializerOfApp(int appId)
@@ -42,5 +40,5 @@ public class Efc11TestBase : TestBaseDiEavFullAndDb
     #endregion
 
 
-    public IEnumerable<string> LogItems => (Log as Log)?.Entries.Select(e => e.Source + ">" + e.Message);
+    //public IEnumerable<string> LogItems => (Log as Log)?.Entries.Select(e => e.Source + ">" + e.Message);
 }
