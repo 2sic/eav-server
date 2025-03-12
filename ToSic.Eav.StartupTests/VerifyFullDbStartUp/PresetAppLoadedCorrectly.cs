@@ -12,30 +12,30 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
 
     [Fact]
     public void PresetAppStateIdIsMinus42() =>
-        Equal(Constants.PresetAppId, appReaders.GetSystemPreset().AppId);
+        Equal(Constants.PresetAppId, appReaders.GetSystemPresetTac().AppId);
 
     [Fact]
     public void IsHealthy() =>
-        True(appReaders.GetSystemPreset().GetCache().IsHealthy);
+        True(appReaders.GetSystemPresetTac().GetCache().IsHealthy);
 
     [Fact]
     public void PresetAppStateHasLotsOfData() => 
-        True(appReaders.GetSystemPreset().List.Count > 100);
+        True(appReaders.GetSystemPresetTac().List.Count > 100);
 
     [Fact]
     public void PresetAppStateHasNoteDecoratorContentTypeByName() => 
-        NotNull(appReaders.GetSystemPreset().GetContentType(Decorators.NoteDecoratorName));
+        NotNull(appReaders.GetSystemPresetTac().GetContentType(Decorators.NoteDecoratorName));
 
     [Fact]
     public void PresetAppStateHasNoteDecoratorContentTypeById() => 
-        NotNull(appReaders.GetSystemPreset().GetContentType(Decorators.NoteDecoratorId));
+        NotNull(appReaders.GetSystemPresetTac().GetContentType(Decorators.NoteDecoratorId));
 
     [Fact]
     public void PresetAppStateHasNotes() => 
-        NotEmpty(appReaders.GetSystemPreset().List.OfType(Decorators.NoteDecoratorName));
+        NotEmpty(appReaders.GetSystemPresetTac().List.OfType(Decorators.NoteDecoratorName));
 
     [Fact]
     public void PresetAppStateHasPickerDataSourceContentTypeById() => 
-        NotNull(appReaders.GetSystemPreset().GetContentType(Decorators.IsPickerDataSourceDecoratorId));
+        NotNull(appReaders.GetSystemPresetTac().GetContentType(Decorators.IsPickerDataSourceDecoratorId));
 
 }

@@ -1,23 +1,23 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Testing.Shared;
+using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.ImportExport.Tests.Types;
+namespace ToSic.Eav.VerifyFullDbStartUp;
 
-[TestClass]
-// Must inherit from FullAndDb because this also preloads the global types
-public class AutoLoadFromRuntimeFiles: TestBaseDiEavFullAndDb
+[Startup(typeof(StartupTestFullWithDb))]
+public class AutoLoadFromRuntimeFiles(IAppReaderFactory appReaderFactory) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     // status 2021-11-04 is 77 files
     private int TypesInFileRuntimeMin = 75;
     private int TypesInFileRuntimeMax = 150;
 
-    [TestMethod]
+    [Fact]
     public void ScanForTypesFileBased()
     {
-        var globalApp = GetService<IAppReaderFactory>().GetSystemPreset();
+        var globalApp = appReaderFactory.GetSystemPresetTac();
         var types = globalApp.ContentTypes;
         var count = types.Count();
-        Assert.IsTrue(TypesInFileRuntimeMin < count
+        True(TypesInFileRuntimeMin < count
                       && TypesInFileRuntimeMax > count,
             $"expect a fixed about of types at dev time - got {count}");
     }

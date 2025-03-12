@@ -16,14 +16,14 @@ public class SomeAppLoadedCorrectlyFromEavTestDb(IAppReaderFactory appReaders) :
 
     [Fact]
     public void GetApp() => 
-        NotNull(appReaders.Get(AppIdentity));
+        NotNull(appReaders.GetTac(AppIdentity));
 
     [Fact]
     public void IsHealthy() =>
-        True(appReaders.Get(AppIdentity).GetCache().IsHealthy);
+        True(appReaders.GetTac(AppIdentity).GetCache().IsHealthy);
 
     [Fact]
     public void GetContentTypeOnNormalAppFailsInNet9AskSTV() => 
-        NotNull(appReaders.Get(AppIdentity).GetContentType(Decorators.IsPickerDataSourceDecoratorId));
+        NotNull(appReaders.GetTac(AppIdentity).GetContentType(Decorators.IsPickerDataSourceDecoratorId));
 
 }

@@ -32,7 +32,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
 
     private QueryDefinition LoadQueryDef(int appId, int queryId)
     {
-        var appState = appReaderFactory.Get(appId);
+        var appState = appReaderFactory.GetTac(appId);
         var pipelineEntity = queryManager.GetQueryEntity(queryId, appState);
 
         return queryDefinitionBuilder.Create(pipelineEntity, appId);

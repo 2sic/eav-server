@@ -25,7 +25,7 @@ public class AccessItemsInAppState(IAppReaderFactory appReaderFactory, ITestOutp
         output.WriteLine($"Time used: {timer.ElapsedMilliseconds}");
     }
 
-    private IAppReader GetAppState() => appReaderFactory.Get(BigDataTestsApp);
+    private IAppReader GetAppState() => appReaderFactory.GetTac(BigDataTestsApp);
 
     [Fact]
     public void AccessOne1000TimesSame() => AccessOne1000Times(0);

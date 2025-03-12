@@ -13,7 +13,7 @@ public class RuntimeLoaderTest:PersistenceTestsBase
     public RuntimeLoaderTest()
     {
         _appLoader = GetService<IAppLoader>();
-        _globalAppState = GetService<IAppReaderFactory>().GetSystemPreset();
+        _globalAppState = GetService<IAppReaderFactory>().GetSystemPresetTac();
     }
     private readonly IAppLoader _appLoader;
     private readonly IAppReader _globalAppState;

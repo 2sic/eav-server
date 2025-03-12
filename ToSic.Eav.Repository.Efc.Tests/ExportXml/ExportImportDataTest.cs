@@ -16,7 +16,7 @@ public class ExportImportDataTest(XmlExporter xmlExporter, IAppReaderFactory app
         var Log = new Log("TstExp");
         var zoneId = 2;
         var appId = 2;
-        var appState = appReaderFactory.Get(new AppIdentity(zoneId, appId));
+        var appState = appReaderFactory.GetTac(new AppIdentity(zoneId, appId));
 
         var fileXml = xmlExporter
             .Init(new AppExportSpecs(zoneId, appId), appState, false,
