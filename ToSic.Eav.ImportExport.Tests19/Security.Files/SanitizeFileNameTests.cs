@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Security.Files;
+using Xunit.Abstractions;
 
 namespace ToSic.Eav.ImportExport.Tests19.Security.Files;
 
 
-public class SanitizeFileNameTests
+public class SanitizeFileNameTests(ITestOutputHelper output)
 {
-    private static string SanitizeFileName(string fileName) => FileNames.SanitizeFileName(fileName);
+    private static string SanitizeFileNameTac(string fileName) => FileNames.SanitizeFileName(fileName);
     private const string SafeChar = FileNames.SafeChar;
 
     [Theory]
@@ -22,15 +23,21 @@ public class SanitizeFileNameTests
     [InlineData(@"C:\\path\should\not\be\here\file", "file")]
     [InlineData(@"..\..\path\not\like\file", "file")]
     [InlineData(@".\file", "file")]
-    [InlineData("something:file", "file")]
+    [InlineData("something:file", "file", "something_file")]
     [InlineData(@"/file/", SafeChar)]
-    [InlineData("file:", SafeChar)]
+    [InlineData("file:", SafeChar, "file")]
     [InlineData("bla/bla/?com3*", SafeChar)]
     [InlineData(@"+%#file#%++", "plusperhashfilehashperplusplus")]
     [InlineData("file*.*", "file_.")]
     [InlineData("file?.???", "file_.")]
-    public void SanitizeFileNameTest(string actual, string expected) =>
-        Equal(expected, SanitizeFileName(actual));
+    public void SanitizeFileNameTest(string actual, string expected, string? expectedNetCore = null)
+    {
+#if NETCOREAPP
+        Equal(expectedNetCore ?? expected, SanitizeFileNameTac(actual));
+#else
+        Equal(expected, SanitizeFileNameTac(actual));
+#endif
+    }
 
 
     [Theory]
@@ -46,6 +53,21 @@ public class SanitizeFileNameTests
     [InlineData("file\u0001")]
     [InlineData("file\u000E")]
     [InlineData("file\u001F")]
-    public void SanitizeFileNameExceptionTest(string actual) =>
-        Throws<ArgumentException> (() => SanitizeFileName(actual));
+    public void SanitizeFileNameExceptionTest(string actual)
+    {
+        // .net Framework will throw an exception, because `Path.GetFileName(...)` will complain.
+        // .net core 9 will simply drop that part of the name
+#if NETCOREAPP
+        Equal("file", SanitizeFileNameTac(actual));
+#else
+        Throws<ArgumentException>(() =>
+        {
+            // This should already throw an error
+            var result = SanitizeFileNameTac(actual);
+
+            // if not, trace for better debugging
+            output.WriteLine($"Result: '{result}'");
+        });
+#endif
+    }
 }

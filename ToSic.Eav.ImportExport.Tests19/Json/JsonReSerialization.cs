@@ -6,7 +6,7 @@ using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests19.Json;
 
-public class JsonReSerialization(JsonSerializer jsonSerializer, IRepositoryLoader loader, JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
+public class JsonReSerialization(JsonSerializer jsonSerializer, IRepositoryLoader loader, JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 
     [Fact]
