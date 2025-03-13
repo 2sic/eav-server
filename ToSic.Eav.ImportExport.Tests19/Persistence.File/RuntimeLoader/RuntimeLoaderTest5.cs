@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 namespace ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 
 
-public class RuntimeLoaderTest5(IAppReaderFactory appReaderFactor, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
+public class RuntimeLoaderTest5(IAppReaderFactory appReaderFactor, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
     private const int ExpectedTypesSysAndJson = 8;
 

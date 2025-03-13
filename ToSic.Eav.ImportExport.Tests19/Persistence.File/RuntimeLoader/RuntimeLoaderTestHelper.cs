@@ -8,9 +8,7 @@ class RuntimeLoaderTestHelper
     public static void TestWithXContentTypes(IAppReader globalAppState, ITestOutputHelper output, int min, int max)
     {
         // set loader root path, based on test environment
-
         var time = Stopwatch.StartNew();
-        TestGlobalFolderRepository.PathToUse = PersistenceTestConstants.TestingPath40;
         var count = globalAppState.ContentTypes.Count();
         time.Stop();
 
@@ -40,7 +38,7 @@ class RuntimeLoaderTestHelper
     public static void TestWith3FileTypes(IAppReader globalAppState, ITestOutputHelper output, int expected)
     {
         // set loader root path, based on test environment
-        TestGlobalFolderRepository.PathToUse = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioDotData); // PersistenceTestConstants.TestStorageRoot(TestContext);
+        //AdditionalGlobalFolderRepositoryForReflection.PathToUse = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMini); // PersistenceTestConstants.TestStorageRoot(TestContext);
 
         var all = globalAppState.ContentTypes.ToList();
         Equal(expected, all.Count);

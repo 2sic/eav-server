@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.ImportExport.Json;
+﻿using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
@@ -10,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Tests19.Json;
 public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoader loader, Generator<JsonSerializer> jsonSerializerGenerator)
 {
 #if NETCOREAPP
-    [field: AllowNull, MaybeNull]
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
 #endif
     private EfcAppLoader Loader => field ??= loader.UseExistingDb(dbContext);
 
@@ -28,5 +27,9 @@ public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoader loader, Genera
     }
 
     internal static string JsonOfContentType(JsonSerializer ser, IContentType type)
-        => ser.Serialize(type);
+        => ser.Serialize(type, new()
+        {
+            CtWithEntities = true,
+            CtAttributeIncludeInheritedMetadata = true,
+        });
 }

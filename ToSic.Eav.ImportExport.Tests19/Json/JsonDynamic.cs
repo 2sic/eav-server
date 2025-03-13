@@ -1,20 +1,20 @@
-﻿using ToSic.Eav.ImportExport.Tests;
-using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
+﻿using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 
 namespace ToSic.Eav.ImportExport.Tests19.Json;
 
-public class JsonDynamic(JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
+public class JsonDynamic(JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
+    private static SpecsTestExportSerialize Specs => new();
+
     [Fact]
     public void DeserializeDynamicByDefaultMustFail()
     {
-        var test = new SpecsTestExportSerialize();
-        var serializer = jsonTestHelpers.SerializerOfApp(test.AppId);
-        var json = jsonTestHelpers.GetJsonOfEntity(test.AppId, test.TestItemToSerialize, serializer);
+        var serializer = jsonTestHelpers.SerializerOfApp(Specs.AppId);
+        var json = jsonTestHelpers.GetJsonOfEntity(Specs.AppId, Specs.TestItemToSerialize, serializer);
 
         serializer.Deserialize(json); // should work
 
-        var jsonDynamic = ChangeTypeOfJson(test, json, "something-dynamic");
+        var jsonDynamic = ChangeTypeOfJson(Specs, json, "something-dynamic");
         Throws<FormatException>(() => serializer.Deserialize(jsonDynamic));
     }
 
@@ -22,25 +22,24 @@ public class JsonDynamic(JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixt
     [Fact]
     public void DeserializeDynamic()
     {
-        var specs = new SpecsTestExportSerialize();
-        var serializer = jsonTestHelpers.SerializerOfApp(specs.AppId);
-        var json = jsonTestHelpers.GetJsonOfEntity(specs.AppId, specs.TestItemToSerialize, serializer);
+        var serializer = jsonTestHelpers.SerializerOfApp(Specs.AppId);
+        var json = jsonTestHelpers.GetJsonOfEntity(Specs.AppId, Specs.TestItemToSerialize, serializer);
 
         var ent = serializer.Deserialize(json); // should work
-        Equal(specs.TestItemAttributeCount, ent.Attributes.Count);//, "orig has 4 attribs");
+        Equal(Specs.TestItemAttributeCount, ent.Attributes.Count);//, "orig has 4 attribs");
 
-        var jsonDynamic = ChangeTypeOfJson(specs, json, "something-dynamic");
+        var jsonDynamic = ChangeTypeOfJson(Specs, json, "something-dynamic");
         ent = serializer.Deserialize(jsonDynamic, true); // should work too
         True(ent.Type.IsDynamic, "should be dynamic");
         Equal("something-dynamic", ent.Type.NameId);//, "name should be dynamic");
-        Equal(specs.TestItemAttributeCount, ent.Attributes.Count);//, "dynamic entity should also have 4 attribs");
+        Equal(Specs.TestItemAttributeCount, ent.Attributes.Count);//, "dynamic entity should also have 4 attribs");
 
         jsonDynamic = Add2FieldsToJson(jsonDynamic);
         ent = serializer.Deserialize(jsonDynamic, true); // should work too
         Equal(6, ent.Attributes.Count);//, "second dynamic entity should also have 6 attribs");
 
         Equal("v1", ent.GetTac("f1"));//, "added field f1 should be v1");
-        Equal(specs.TestItemLinkValue, ent.GetTac(specs.TestItemLinkField));//, "original fields should still work");
+        Equal(Specs.TestItemLinkValue, ent.GetTac(Specs.TestItemLinkField));//, "original fields should still work");
         Null(ent.GetBestTitle());//, "shouldn't have a real title");
     }
 

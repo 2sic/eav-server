@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.ImportExport.Tests;
 using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
@@ -8,7 +7,7 @@ using Xunit.Abstractions;
 namespace ToSic.Eav.ImportExport.Tests19.Persistence.File;
 
 
-public class TypeExporter(ITestOutputHelper output, IRepositoryLoader loaderRaw, FileSystemLoader fsLoader) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioDotData>>
+public class TypeExporter(ITestOutputHelper output, IRepositoryLoader loaderRaw, FileSystemLoader fsLoader) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
     [Fact]
     public void TypeExp_AllSharedFromInstallation()

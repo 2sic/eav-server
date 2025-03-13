@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 
-public class RuntimeLoader400ContentTypes(IAppLoader appLoader, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
+public class RuntimeLoader400ContentTypes(IAppLoader appLoader, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
     /// <summary>
     /// Just a test that tries to load data from a folder with 40 content types - 10x.
@@ -15,10 +15,13 @@ public class RuntimeLoader400ContentTypes(IAppLoader appLoader, ITestOutputHelpe
     public void TimingWith400FileTypes()
     {
         // set loader root path, based on test environment
-        TestGlobalFolderRepository.PathToUse = TestFiles.GetTestPath(PersistenceTestConstants.Scenario40Types + "\\App_Data\\system");
+        AdditionalGlobalFolderRepositoryForReflection.PathToUse = TestFiles.GetTestPath(PersistenceTestConstants.Scenario40Types + "\\App_Data\\system");
         var loader = (AppLoader)appLoader;
         var time = Stopwatch.StartNew();
+
+        output.WriteLine($"Note: ATM the first loader is the {nameof(AdditionalGlobalFolderRepositoryForReflection)} - but that is a coincidence, so this test may need to be adjusted in future");
         var firstLoader = loader.Loaders.First();
+        
         for (var i = 0; i < 10; i++)
         {
             var cts = firstLoader.ContentTypes();

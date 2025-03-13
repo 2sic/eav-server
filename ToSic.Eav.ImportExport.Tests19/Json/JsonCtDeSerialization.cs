@@ -1,25 +1,36 @@
-﻿using ToSic.Eav.ImportExport.Tests;
-using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
+﻿using ToSic.Eav.ImportExport.Tests19.Persistence.File;
 using Xunit.Abstractions;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests19.Json;
 
-// TODO: update stored file to match current serialization
-
-public class JsonCtDeSerialization(ITestOutputHelper output, JsonTestHelpers jsonTestHelper) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
+public class JsonCtDeSerialization(ITestOutputHelper output, JsonTestHelpers jsonTestHelper) : IClassFixture<DoFixtureStartup<ScenarioBasicAndMini>>
 {
+    private const string ExpectedTestFileLocation = $"Json\\Scenarios\\ExpectedContentType\\";
+    private const string ExpectedTestFileName = "System.DataSources.c76901b5-0345-4866-9fa3-6208de7f8543.2025-03-13.json";
     [Fact]
-    //[DeploymentItem("..\\..\\" + typesPath, testTypesPath)]
-    //[Ignore("Disabled for now, should update raw template file for comparison so it would match again")]
     public void Json_LoadFile_SqlDataSource()
     {
-        var test = new SpecsTestExportSerialize();
-        var json = LoadJson("System.Config ToSic.Eav.DataSources.SqlDataSource.json");
-        var ser = jsonTestHelper.SerializerOfApp(test.AppId);
+        // Load the file as exported a while ago to compare results
+        var path = TestFiles.GetTestPath(ExpectedTestFileLocation + ExpectedTestFileName);
+        var json = File.ReadAllText(path );
+
+
+        // Just convert the json to a ContentType and back - the AppId isn't really relevant here
+        var ser = jsonTestHelper.SerializerOfApp(Constants.PresetAppId);
         var contentType = ContentType(ser, json);
         var reSer = JsonTestHelpers.JsonOfContentType(ser, contentType);
-        Equal(json, reSer);//, "original and re-serialized should be the same");
+        output.WriteLine(reSer);
+
+        // Special: The ContentTypes which we serialize again will be missing related Entities (such as formulas)
+        // This is because in this test, the ContentType is not part of an App, so it didn't have a place to store the related Entities
+        // Because of this, we only want to test the 12'000 chars or so before the Entities start
+        var jsonOriginalBeforeEntities = json.Substring(0, json.IndexOf("Entities\":[", StringComparison.Ordinal));
+        var jsonReSerializedBeforeEntities = reSer.Substring(0, reSer.IndexOf("Entities\":[", StringComparison.Ordinal));
+
+        // Verify that cut-off is where we expect it to be as of 2025-03-13. If the export changes, we may need to update this number.
+        InRange(jsonOriginalBeforeEntities.Length, 12000, 13000);
+        Equal(jsonOriginalBeforeEntities, jsonReSerializedBeforeEntities);
             
     }
 
@@ -30,9 +41,4 @@ public class JsonCtDeSerialization(ITestOutputHelper output, JsonTestHelpers jso
         return type;
     }
 
-    private string LoadJson(string path)
-    {
-        var root = TestFiles.GetTestPath($"Json\\Scenarios\\ContentTypes\\");
-        return File.ReadAllText(root + path);
-    }
 }

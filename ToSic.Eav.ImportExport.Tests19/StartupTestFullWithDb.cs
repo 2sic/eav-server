@@ -8,7 +8,7 @@ using ToSic.Lib;
 
 #pragma warning disable CA1822
 
-namespace ToSic.Eav.DataSource.DbTests;
+namespace ToSic.Eav.ImportExport.Tests19;
 
 // NOTE: QUITE A FEW DUPLICATES OF THIS - may want to consolidate
 

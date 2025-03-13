@@ -1,11 +1,11 @@
-﻿using ToSic.Eav.ImportExport.Tests;
+﻿using ToSic.Eav.ImportExport.Tests19.Persistence.File;
 using ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 using Xunit.Abstractions;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests19.Json;
 
-public class JsonCtSerialization(ITestOutputHelper output, JsonTestHelpers jsonTestHelper) : IClassFixture<DoFixtureStartup<ScenarioDotData>>
+public class JsonCtSerialization(ITestOutputHelper output, JsonTestHelpers jsonTestHelper) : IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
 
     [Fact]

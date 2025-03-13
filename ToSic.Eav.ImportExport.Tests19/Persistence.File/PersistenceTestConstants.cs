@@ -5,8 +5,8 @@ class PersistenceTestConstants
     public const string ScenarioRoot = "Persistence.File\\Scenarios\\";
 
 
-    public const string PathWith3Types = ".data\\";// "Persistence.File\\.data\\";
-    public const string ScenarioDotData = ScenarioRoot + ".data\\";
+    public const string PathMini = "Mini\\";// "Persistence.File\\.data\\";
+    public const string ScenarioMini = ScenarioRoot + "Mini\\";
     //public const string PathWith40Types = "all-for-dnn\\"; // "Persistence.File\\all-for-dnn\\";
     public const string Scenario40Types = ScenarioRoot + "40-types\\";
     public const string TestingPath3 = "testApp";

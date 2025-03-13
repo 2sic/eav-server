@@ -47,7 +47,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Persistence.File\Scenarios\.data\readme.md" />
-    <None Include="Persistence.File\Tst_FileLoader_Query.cs" />
+    <None Include="Persistence.File\CountQueriesInScenarioMini.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Json\ExpectedContentType\" />
   </ItemGroup>
 </Project>
