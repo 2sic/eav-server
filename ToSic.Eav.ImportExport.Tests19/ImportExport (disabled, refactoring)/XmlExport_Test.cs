@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_;
 
-[TestClass]
+
 public class XmlExport_Test
 {
     #region TestValues

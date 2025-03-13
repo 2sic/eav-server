@@ -47,10 +47,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Persistence.File\CountQueriesInScenarioMini.cs" />
+    <Compile Remove="Json\ExpectedContentType\**" />
+    <EmbeddedResource Remove="Json\ExpectedContentType\**" />
+    <None Remove="Json\ExpectedContentType\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Json\ExpectedContentType\" />
+    <None Include="Persistence.File\CountQueriesInScenarioMini.cs" />
   </ItemGroup>
 </Project>

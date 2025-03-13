@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
 namespace ToSic.Eav.ImportExport.Tests19.Persistence.File.RuntimeLoader;
 
+// Note: Sometimes in parallel executions this may end up picking up more than the expected number of types
+// So then just re-run by itself to verify
+// Someday improve testing configuration that it's always right...
 
 public class RuntimeLoaderTest5(IAppReaderFactory appReaderFactor, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
 {

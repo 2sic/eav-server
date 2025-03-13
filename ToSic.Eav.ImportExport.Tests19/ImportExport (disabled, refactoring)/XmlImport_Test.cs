@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSourceTests.ImportExport__disabled__refactoring_;
 
-[TestClass]
+
 public class XmlImport_Test
 {
     #region Settings
@@ -226,11 +226,6 @@ On all your devices.</PreviewContent>
 
     #endregion
 
-    [ClassInitialize]
-    public static void InitUnity(TestContext tc)
-    {
-            
-    }
 
 
     //[TestMethod]
@@ -265,7 +260,7 @@ On all your devices.</PreviewContent>
     //    // importer.PersistImportToRepository(UserNameOfTestingScript);
     //}
 
-    [TestMethod]
+    [Fact]
     public void XmlImport_Import5XmlWith20ContentItems()
     {
         //for (var x = 0; x < 5; x++)
