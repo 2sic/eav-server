@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Testing.Shared;
 
-public abstract class TestBaseEav(TestScenario testScenario = default) : TestBaseEavDataSource(testScenario)
+public abstract class TestBaseEav(TestScenario testScenario = null) : TestBaseEavCore(testScenario)
 {
     protected override IServiceCollection SetupServices(IServiceCollection services)
     {
@@ -15,6 +16,7 @@ public abstract class TestBaseEav(TestScenario testScenario = default) : TestBas
         // Ideally should only add the services not added by previous layers
         return services
             .AddTransient<FullDbFixtureHelper>()
+            .AddDataSources()
             .AddEavEverything();
     }
 

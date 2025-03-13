@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Testing.Shared;
@@ -7,7 +6,7 @@ namespace ToSic.Testing.Shared;
 /// <summary>
 /// Base class for tests providing all the Eav dependencies (Apps, etc.)
 /// </summary>
-public abstract class TestBaseDiEavFullAndDb(TestScenario testScenario = default) : TestBaseEav(testScenario)
+public abstract class TestBaseDiEavFullAndDb(TestScenario testScenario = null) : TestBaseEav(testScenario)
 {
     protected override void Configure()
     {
