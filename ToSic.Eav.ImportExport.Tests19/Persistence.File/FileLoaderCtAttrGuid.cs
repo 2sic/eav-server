@@ -1,24 +1,23 @@
-﻿using System;
-using ToSic.Eav.Data;
-using ToSic.Eav.ImportExport.Tests.Persistence.File;
+﻿using ToSic.Eav.ImportExport.Tests19.Json;
+using ToSic.Eav.Persistence.File;
+using Xunit.Abstractions;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Persistence.File.Tests;
+namespace ToSic.Eav.ImportExport.Tests19.Persistence.File;
 
-[TestClass]
-public class FileLoaderCtAttrGuid : FileLoaderCtBase
+public class FileLoaderCtAttrGuid(ITestOutputHelper output, FileSystemLoader loaderRaw, JsonTestHelpers jsonTestHelper) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
-    private const string DataFolder = "attrib-guids";
+    private const string DataFolder = "Persistence.File\\Scenarios\\attrib-guids";
     private const string CtAuthor = "AuthorWithSharedAttributes";
     private const string FFullName = "FullName";
     private const string FKey = "Key";
     private const string FKeyInherited = "KeyInherited";
     private static Guid SourceKeyGuid = new Guid("4e7164a1-72f2-4dee-97ea-55362e55e635");
 
-    [TestMethod]
+    [Fact]
     public void LoadCtAndCheckAttributeGuids()
     {
-        var cts = LoadAllTypes(DataFolder);
+        var cts = new LoaderHelper(DataFolder, Log).LoadAllTypes(loaderRaw, Log);
+        // var cts = LoadAllTypes(DataFolder);
         var author = cts.First(ct => ct.Name.Equals(CtAuthor));
 
         VerifyNormalFullName(author);
@@ -29,35 +28,35 @@ public class FileLoaderCtAttrGuid : FileLoaderCtBase
     private static void VerifySpecialKeyInherited(IContentType author)
     {
         var attKeyInherited = author[FKeyInherited];
-        IsNotNull(attKeyInherited.Guid);
-        IsFalse(attKeyInherited.SysSettings.Share);
-        AreEqual(SourceKeyGuid, attKeyInherited.SysSettings.InheritMetadataMainGuid);
-        IsTrue(attKeyInherited.SysSettings.InheritMetadata);
-        IsFalse(attKeyInherited.SysSettings.InheritNameOfPrimary);
+        NotNull(attKeyInherited.Guid);
+        False(attKeyInherited.SysSettings.Share);
+        Equal(SourceKeyGuid, attKeyInherited.SysSettings.InheritMetadataMainGuid);
+        True(attKeyInherited.SysSettings.InheritMetadata);
+        False(attKeyInherited.SysSettings.InheritNameOfPrimary);
     }
 
     private static void VerifyNormalFullName(IContentType author)
     {
         // Check an attribute which shouldn't have a guid
         var attFullName = author[FFullName];
-        IsNull(attFullName.Guid);
-        IsNull(attFullName.SysSettings);
+        Null(attFullName.Guid);
+        Null(attFullName.SysSettings);
     }
 
     private static void VerifySpecialKey(IContentType author)
     {
         // Verify the Key has a GUID
         var attKey = author[FKey];
-        IsNotNull(attKey.Guid);
-        AreEqual(SourceKeyGuid, attKey.Guid);
-        IsTrue(attKey.SysSettings.Share);
-        IsFalse(attKey.SysSettings.InheritMetadata);
+        NotNull(attKey.Guid);
+        Equal(SourceKeyGuid, attKey.Guid);
+        True(attKey.SysSettings.Share);
+        False(attKey.SysSettings.InheritMetadata);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReExportCtAndPreserveAttributeGuid()
     {
-        var cts = LoadAllTypes(DataFolder);
+        var cts = new LoaderHelper(DataFolder, Log).LoadAllTypes(loaderRaw, Log);
         var author = cts.First(ct => ct.Name.Equals(CtAuthor));
 
         VerifyNormalFullName(author);
@@ -65,22 +64,24 @@ public class FileLoaderCtAttrGuid : FileLoaderCtBase
         VerifySpecialKeyInherited(author);
 
         // Re-json the author and check
-        var ser = SerializerOfApp(Constants.PresetAppId);
+        var ser = jsonTestHelper.SerializerOfApp(Constants.PresetAppId);
         var json = ser.ToJson(author);
         var jsonFullName = json.Attributes.First(a => a.Name.Equals(FFullName));
-        IsNull(jsonFullName.Guid);
+        Null(jsonFullName.Guid);
 
         var jsonKey = json.Attributes.First(a => a.Name.Equals(FKey));
-        IsNotNull(jsonKey.Guid);
-        AreEqual(SourceKeyGuid, jsonKey.Guid);
-        IsTrue(jsonKey.SysSettings.Share);
+        NotNull(jsonKey.Guid);
+        Equal(SourceKeyGuid, jsonKey.Guid);
+        True(jsonKey.SysSettings.Share);
 
         var jsonKeyInherited = json.Attributes.First(a => a.Name.Equals(FKeyInherited));
-        IsNotNull(jsonKeyInherited.Guid);
-        //AreEqual(0, jsonKeyInherited.SysSettings.ShareLevel);
-        AreEqual(SourceKeyGuid.ToString(), jsonKeyInherited.SysSettings.InheritMetadataOf);
-        IsTrue(jsonKeyInherited.SysSettings.InheritMetadata);
-        IsFalse(jsonKeyInherited.SysSettings.InheritName);
+        NotNull(jsonKeyInherited.Guid);
+        //Equal(0, jsonKeyInherited.SysSettings.ShareLevel);
+        Equal(SourceKeyGuid.ToString(), jsonKeyInherited.SysSettings.InheritMetadataOf);
+
+        True(jsonKeyInherited.SysSettings.InheritMetadata);
+
+        False(jsonKeyInherited.SysSettings.InheritName);
 
         // Re-content-type
         var author2 = ser.DeserializeContentType(ser.Serialize(author));

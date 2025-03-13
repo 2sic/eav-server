@@ -246,7 +246,7 @@ public class XmlExport_Test
 //        #endregion
 
 
-    //[TestMethod]
+    //[Fact]
     //[Ignore]
     //public void XmlExport_TryToExport20ContentItems()
     //{
@@ -254,10 +254,10 @@ public class XmlExport_Test
     //    var dataSerializer = new XmlExport();
 
     //    var serializedBasic = dataSerializer.CreateXml(ZoneId, AppId, 13, "", "", new List<string>(), LanguageReferenceExport.Link, ResourceReferenceExport.Link);
-    //    Assert.AreEqual(XmlImport_Test.FullExportOfSimpleContentAll, serializedBasic);
+    //    Assert.Equal(XmlImport_Test.FullExportOfSimpleContentAll, serializedBasic);
     //}
 
-    //[TestMethod]
+    //[Fact]
     //[Ignore]
         
     //public void XmlExport_ExportSimpleReImportTemplate()
@@ -266,9 +266,9 @@ public class XmlExport_Test
     //    var dataSerializer = new XmlExport();
     //    var serializedRetinaType = dataSerializer.CreateBlankXml(ZoneId, AppId, 17, "BlankExportHelp");
 
-    //    Assert.AreEqual(ExpectedBlankTemplateRetinaEffects, serializedRetinaType);
+    //    Assert.Equal(ExpectedBlankTemplateRetinaEffects, serializedRetinaType);
 
     //    var serializedBasic = dataSerializer.CreateBlankXml(ZoneId, AppId, 13, "BlankExportHelp");
-    //    Assert.AreEqual(ExpectedBlankTemplateSimpleContent, serializedBasic);
+    //    Assert.Equal(ExpectedBlankTemplateSimpleContent, serializedBasic);
     //}
 }

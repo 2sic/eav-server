@@ -228,7 +228,7 @@ On all your devices.</PreviewContent>
 
 
 
-    //[TestMethod]
+    //[Fact]
     //[Ignore]
     //public void XmlImport_ImportOneCorrectly()
     //{
@@ -243,7 +243,7 @@ On all your devices.</PreviewContent>
     //    var db = EavDataController.Instance(ZoneId, AppId);
     //    var dbEntity = db.Entities.GetEntitiesByGuid(SingleItemGuid).First();
 
-    //    // Assert.AreEqual(5, dbEntity.Values.Count);
+    //    // Assert.Equal(5, dbEntity.Values.Count);
 
     //    var importer = new XmlImport(ZoneId, AppId, ContentTypeSimpleContent,
     //        GenerateStreamFromString(FullExportOfSimpleContentOne), new List<string>(), "", EntityClearImport.None,
@@ -252,9 +252,9 @@ On all your devices.</PreviewContent>
     //    var entity31d9 = importer.Entities.First(e => e.EntityGuid == SingleItemGuid);
     //    var previewContent = entity31d9.Values["PreviewContent"][0];
 
-    //    Assert.AreEqual(5, entity31d9.Values.Count);
+    //    Assert.Equal(5, entity31d9.Values.Count);
 
-    //    Assert.AreEqual("Easy and immediate separation of concerns.", previewContent.StringValueForTesting);
+    //    Assert.Equal("Easy and immediate separation of concerns.", previewContent.StringValueForTesting);
 
             
     //    // importer.PersistImportToRepository(UserNameOfTestingScript);
@@ -282,7 +282,7 @@ On all your devices.</PreviewContent>
 
     //    var entity31d9 = fileImport.ImportEntities.First(e => e.EntityGuid == new Guid("31d93b03-cfb3-483b-8134-e08bbee9cd2c"));
     //    var previewContent = entity31d9.Attributes["PreviewContent"][0];
-    //    Assert.AreEqual("Easy and immediate separation of concerns.", (previewContent as Interfaces.IValue).ToString());
+    //    Assert.Equal("Easy and immediate separation of concerns.", (previewContent as Interfaces.IValue).ToString());
 
     //    throw new Exception("Cant finish testing import yet - there is still a large bug creating much too much data!");
     //    //var fileImported = fileImport.PersistImportToRepository(UserNameOfTestingScript);

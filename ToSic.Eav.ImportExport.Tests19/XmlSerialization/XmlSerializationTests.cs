@@ -23,7 +23,7 @@ public class XmlSerializationTests(XmlSerializer xmlSerializer, IRepositoryLoade
         var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
         True(xmlEnt.Length > 200, "should get a long xml string");
         output.WriteLine(xmlEnt);
-        //Assert.AreEqual(xmlstring, xmlEnt, "xml strings should be identical");
+        //Assert.Equal(xmlstring, xmlEnt, "xml strings should be identical");
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class XmlSerializationTests(XmlSerializer xmlSerializer, IRepositoryLoade
                 //var xml = xmlbuilder.XmlEntity(appEntity.EntityId);
                 //var xmlstring = xml.ToString();
                 var xmlEnt = exBuilder.Serialize(appEntity.EntityId);
-                //Assert.AreEqual(xmlstring, xmlEnt,
+                //Assert.Equal(xmlstring, xmlEnt,
                 //    $"xml of item {count} strings should be identical - but was not on xmlEnt {appEntity.EntityId}");
 
                 // stop if we ran enough tests

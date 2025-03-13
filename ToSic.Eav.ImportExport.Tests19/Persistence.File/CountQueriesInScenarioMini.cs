@@ -8,7 +8,8 @@ public class CountQueriesInScenarioMini(ITestOutputHelper output, FileSystemLoad
     [Fact]
     public void FLoader_LoadQueriesAndCount()
     {
-        var cts = LoadQueryEntitiesHelper.LoadAllQueryEntities(loaderRaw, output, Log);
+        var cts = new LoaderHelper(PersistenceTestConstants.ScenarioMiniDeep, Log)
+            .LoadAllQueryEntities(loaderRaw, output);
         Equal(ScenarioMini.Has3Queries, cts.Count);//, "test case has 3 content-types to deserialize");
     }
 }

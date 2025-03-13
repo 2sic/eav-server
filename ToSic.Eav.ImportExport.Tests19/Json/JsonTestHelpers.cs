@@ -19,7 +19,7 @@ public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoader loader, Genera
         return jsonSerializerGenerator.New().SetApp(app);
     }
 
-    internal string GetJsonOfEntity(int appId, int eId, JsonSerializer ser = null)
+    internal string GetJsonOfEntity(int appId, int eId, JsonSerializer? ser = null)
     {
         var exBuilder = ser ?? SerializerOfApp(appId);
         var xmlEnt = exBuilder.Serialize(eId);
@@ -29,6 +29,7 @@ public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoader loader, Genera
     internal static string JsonOfContentType(JsonSerializer ser, IContentType type)
         => ser.Serialize(type, new()
         {
+            // TODO: THESE settings probably don't affect the tests, should disable
             CtWithEntities = true,
             CtAttributeIncludeInheritedMetadata = true,
         });
