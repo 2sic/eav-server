@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Tests;
+﻿namespace ToSic.Eav.Apps.Tests.ListPairs;
 
 public partial class ListPairTests
 {

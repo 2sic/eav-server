@@ -2,12 +2,13 @@
 using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Integration;
+using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.StartUp;
 using ToSic.Lib;
 
 #pragma warning disable CA1822
 
-namespace ToSic.Eav.Repository.Efc.Tests19;
+namespace ToSic.Eav.Apps.Tests;
 
 // NOTE: QUITE A FEW DUPLICATES OF THIS - may want to consolidate
 

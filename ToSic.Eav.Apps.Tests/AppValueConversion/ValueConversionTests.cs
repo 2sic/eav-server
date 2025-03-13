@@ -6,7 +6,7 @@ using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.StartUp;
 using ToSic.Lib;
 
-namespace ToSic.Eav.Apps.Tests19.AppValueConversion;
+namespace ToSic.Eav.Apps.Tests.AppValueConversion;
 
 public class ValueConversionTests(ExportImportValueConversion exportListXml)
 {

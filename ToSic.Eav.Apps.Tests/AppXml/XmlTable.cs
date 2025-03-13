@@ -2,7 +2,7 @@
 using ToSic.Eav.Repositories;
 using ToSic.Lib.Logging;
 
-namespace ToSic.Eav.Apps.Tests19.AppXml;
+namespace ToSic.Eav.Apps.Tests.AppXml;
 
 public class XmlTable(IRepositoryLoader loader, ExportListXml exportListXml)
 {
