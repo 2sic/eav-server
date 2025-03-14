@@ -8,7 +8,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.MergeEntities;
 
 // TODO: THIS IS A VERY long test class - consider splitting it up into multiple classes
 
-[Startup(typeof(StartupTestFullWithDbAndImport))]
+[Startup(typeof(StartupTestsApps))]
 public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 

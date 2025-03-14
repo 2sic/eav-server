@@ -9,18 +9,17 @@ using ToSic.Lib;
 
 #pragma warning disable CA1822
 
-namespace ToSic.Eav.Persistence.Efc.Tests;
-
-// NOTE: QUITE A FEW DUPLICATES OF THIS - may want to consolidate
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav;
 
 /// <summary>
-/// A Startup helper for tests which need Dependency-Injection setup for EAV Core.
+/// A Startup helper for tests which need Dependency-Injection setup for EAV Core, DB and Apps.
 /// </summary>
 /// <remarks>
 /// Use by adding this kind of attribute to your test class:
-/// `[Startup(typeof(TestStartupEavCore))]`
+/// `[Startup(typeof(StartupTestsApps))]`
 /// </remarks>
-public class StartupTestFullWithDb
+public class StartupTestsApps
 {
     /// <summary>
     /// Startup helper

@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.DataSource.Internal.Catalog;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSource.Catalog;
 
@@ -8,7 +7,7 @@ namespace ToSic.Eav.DataSource.Catalog;
 /// Could maybe be updated to be useful though, so we didn't delete it.
 /// </summary>
 /// <param name="dsCatalog"></param>
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class CheckVisualQueryAttribute(DataSourceCatalog dsCatalog)
 {
     [Fact]

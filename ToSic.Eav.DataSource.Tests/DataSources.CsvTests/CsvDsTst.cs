@@ -3,12 +3,11 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.LookUp;
-using ToSic.Eav.StartupTests;
 using ToSic.Eav.Testing;
 
 namespace ToSic.Eav.DataSources.CsvTests;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 // ReSharper disable once InconsistentNaming
 public class CsvDsTst_RerunIfFailed(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {

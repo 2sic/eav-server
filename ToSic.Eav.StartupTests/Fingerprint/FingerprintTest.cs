@@ -4,7 +4,7 @@ using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.Fingerprint;
 
-[Startup(typeof(StartupTestFullWithDb))]
+[Startup(typeof(StartupTestsApps))]
 public class FingerprintTest(SystemFingerprint fingerprintSvc, SystemFingerprint fingerprintSvc2) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     [Fact]

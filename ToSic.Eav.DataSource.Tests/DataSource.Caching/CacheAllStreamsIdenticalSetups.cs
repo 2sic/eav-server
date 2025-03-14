@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSourceTests;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSource.Caching;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class CacheAllStreamsIdenticalSetups(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
 #if NETCOREAPP

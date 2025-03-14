@@ -4,20 +4,17 @@ using ToSic.Eav.StartUp;
 using ToSic.Eav.TestData;
 using ToSic.Eav.Testing;
 using ToSic.Lib;
-using ToSic.Testing.Shared;
 
-#pragma warning disable CA1822
-
-namespace ToSic.Eav.StartupTests;
+namespace ToSic.Eav;
 
 /// <summary>
 /// A Startup helper for tests which need Dependency-Injection setup for EAV Core.
 /// </summary>
 /// <remarks>
 /// Use by adding this kind of attribute to your test class:
-/// `[Startup(typeof(TestStartupEavCore))]`
+/// `[Startup(typeof(StartupCoreDataSourcesAndTestData))]`
 /// </remarks>
-public class StartupTestsEavCoreAndDataSources
+public class StartupCoreDataSourcesAndTestData
 {
     /// <summary>
     /// Startup helper

@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Apps.TestsHelpers\ToSic.Eav.Apps.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSource.TestHelpers\ToSic.Eav.DataSource.TestHelpers.csproj" />
@@ -36,9 +37,6 @@
 
   <ItemGroup>
     <!-- Copy ScenarioData to bin folder for reviewing during tests -->
-    <None
-      Include="ScenarioData\**"
-      CopyToOutputDirectory="PreserveNewest"
-      LinkBase="ScenarioData\" />
+    <None Include="ScenarioData\**" CopyToOutputDirectory="PreserveNewest" LinkBase="ScenarioData\" />
   </ItemGroup>
 </Project>

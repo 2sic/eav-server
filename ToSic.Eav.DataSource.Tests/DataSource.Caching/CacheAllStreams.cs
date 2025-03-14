@@ -1,16 +1,14 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSourceTests;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSource.Caching;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class CacheAllStreamsTest(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
 #if NETCOREAPP
-    [field: AllowNull, MaybeNull]
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
 #endif
     private CacheStreamsTestBuilder CacheStreamsTestBuilder => field ??= new(dsSvc, listCache, personTable);
 

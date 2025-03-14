@@ -1,11 +1,10 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSourceTests;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSource.Caching;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class QuickCachesTest(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
     [Fact]

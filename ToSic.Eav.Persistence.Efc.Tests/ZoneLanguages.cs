@@ -7,7 +7,7 @@ using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.Persistence.Efc.Tests;
 
-[Startup(typeof(StartupTestFullWithDb))]
+[Startup(typeof(StartupTestsApps))]
 public class ZoneLanguages(EavDbContext db, EfcAppLoader loader) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private const int MinZones = 4;

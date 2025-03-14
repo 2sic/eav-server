@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.TreeMapperTests;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class DataFactoryTest(IDataFactory dataFactory)
 {
     [Fact]

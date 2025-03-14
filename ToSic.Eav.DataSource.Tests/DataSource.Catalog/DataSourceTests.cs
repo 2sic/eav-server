@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.DataSource.Internal.Catalog;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSource.Catalog;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class DataSourceTests(DataSourceCatalog dsCatalog)
 {
     public const int EavInstalledDsCount = 40; // with 2sxc it's ca. 48;

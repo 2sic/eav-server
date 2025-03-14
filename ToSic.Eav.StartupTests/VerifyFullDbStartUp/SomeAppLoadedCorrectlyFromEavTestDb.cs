@@ -6,7 +6,7 @@ using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.VerifyFullDbStartUp;
 
-[Startup(typeof(StartupTestFullWithDb))]
+[Startup(typeof(StartupTestsApps))]
 public class SomeAppLoadedCorrectlyFromEavTestDb(IAppReaderFactory appReaders) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     /// <summary>

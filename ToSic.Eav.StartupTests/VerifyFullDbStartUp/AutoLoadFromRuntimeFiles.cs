@@ -4,7 +4,7 @@ using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.VerifyFullDbStartUp;
 
-[Startup(typeof(StartupTestFullWithDb))]
+[Startup(typeof(StartupTestsApps))]
 public class AutoLoadFromRuntimeFiles(IAppReaderFactory appReaderFactory) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     // status 2021-11-04 is 77 files

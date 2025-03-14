@@ -9,7 +9,7 @@ using Xunit.DependencyInjection;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Versioning;
 
-[Startup(typeof(StartupTestFullWithDbAndImport))]
+[Startup(typeof(StartupTestsApps))]
 public class VersioningTests(Generator<DbDataController> dbDataGenerator, GenWorkDb<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {

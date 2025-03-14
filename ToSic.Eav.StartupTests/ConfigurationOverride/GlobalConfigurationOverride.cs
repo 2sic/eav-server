@@ -8,7 +8,7 @@ namespace ToSic.Eav.ConfigurationOverride;
 // It appears that there should be some override settings which should be used as well, which are not applied here
 // Needs some time to restore functionality
 
-[Startup(typeof(StartupTestFullWithDb))]
+[Startup(typeof(StartupTestsApps))]
 public class GlobalConfigurationOverride(IAppReaderFactory appReaderFactory)
     // the fixture will also load the resources
     : IClassFixture<DoFixtureStartup<ScenarioOverrideFancybox3>>

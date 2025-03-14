@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 
-public class Startup : StartupTestFullWithDb
+public class Startup : StartupTestsApps
 {
     public override void ConfigureServices(IServiceCollection services) =>
         base.ConfigureServices(services

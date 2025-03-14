@@ -4,7 +4,7 @@ using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.VerifyFullDbStartUp;
 
-[Startup(typeof(StartupTestFullWithDb))]
+[Startup(typeof(StartupTestsApps))]
 public class VerifyFullDbFixture(IDbConfiguration dbConfiguration) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     [Fact]

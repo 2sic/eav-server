@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.DataSource.Internal.Configuration;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSource.Configuration;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class ConfigMaskAuto(DataSourcesTstBuilder dsSvc, ConfigurationDataLoader findConfigs)
 {
     [Fact]

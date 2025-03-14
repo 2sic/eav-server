@@ -6,7 +6,7 @@ using Xunit.DependencyInjection;
 
 namespace ToSic.Eav.Repository.Efc.Tests.ExportXml;
 
-[Startup(typeof(StartupTestFullWithDbAndImport))]
+[Startup(typeof(StartupTestsApps))]
 public class ExportImportDataTest(XmlExporter xmlExporter, IAppReaderFactory appReaderFactory) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 

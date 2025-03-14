@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class StreamPickTst(IDataSourcesService dsBuild, Generator<DataTablePerson> personTableGenerator)
 {
     private const int DefaultStreamSize = 10;

@@ -9,7 +9,7 @@ namespace ToSic.Eav.FeatureTests;
 
 public class IFeaturesInternalTests(IEavFeaturesService featuresInternal) : IClassFixture<DoFixtureStartup<ScenarioFullPatrons>>
 {
-    public class Startup : StartupTestFullWithDb
+    public class Startup : StartupTestsApps
     {
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.DataSourceTests;
 using ToSic.Eav.Services;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSources.Various;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class ItemFilterDuplicatesTest(DataSourcesTstBuilder dsSvc, Generator<DataTablePerson> personTableGenerator, IDataSourcesService dataSourcesService)
 {
     [Fact]

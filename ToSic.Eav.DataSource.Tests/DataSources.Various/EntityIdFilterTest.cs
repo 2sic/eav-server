@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.DataSourceTests;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSources.Various;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class EntityIdFilterTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
 {
     [Fact]

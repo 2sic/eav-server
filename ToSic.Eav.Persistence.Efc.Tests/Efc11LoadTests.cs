@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
@@ -9,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace ToSic.Eav.Persistence.Efc.Tests;
 
-[Startup(typeof(StartupTestFullWithDb))]
+[Startup(typeof(StartupTestsApps))]
 public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGenerator, ITestOutputHelper output)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
@@ -20,7 +19,7 @@ public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGener
     private const int ExpectedContentTypesOnBlog = 7;
 
 #if NETCOREAPP
-    [field: AllowNull, MaybeNull]
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
 #endif
     private EfcAppLoader Loader => field ??= loaderGenerator.New().UseExistingDb(db);
 

@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
 {
     private const int ItemsToGenerate = 100;

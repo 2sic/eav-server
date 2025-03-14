@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSourceTests;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSource.Caching;
 
@@ -11,7 +10,7 @@ namespace ToSic.Eav.DataSource.Caching;
 /// <param name="dsSvc"></param>
 /// <param name="listCache"></param>
 /// <param name="personTable"></param>
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class CacheAllStreamsFirstEmptyThenCached(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
 #if NETCOREAPP

@@ -5,7 +5,7 @@ using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.Configuration;
 
-[Startup(typeof(StartupTestFullWithDb))]
+[Startup(typeof(StartupTestsApps))]
 public class LicenseCheckTest(ILicenseService licenseService)
     // the fixture will also load the licenses and stuff
     : IClassFixture<DoFixtureStartup<ScenarioFullPatrons>>

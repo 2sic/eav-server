@@ -5,9 +5,6 @@ using Xunit.DependencyInjection;
 
 namespace ToSic.Eav.Repository.Efc.Tests.ImportApps;
 
-// TODO: NOT PARALLEL!
-
-[Startup(typeof(StartupTestFullWithDbAndImport))]
 public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneManager zoneManager)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {

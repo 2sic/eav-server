@@ -1,10 +1,9 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSourceTests;
-using ToSic.Eav.StartupTests;
 
 namespace ToSic.Eav.DataSources.DataTable;
 
-[Startup(typeof(StartupTestsEavCoreAndDataSources))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {
 
