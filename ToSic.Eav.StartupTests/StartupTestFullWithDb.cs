@@ -16,7 +16,7 @@ namespace ToSic.Eav;
 /// </summary>
 /// <remarks>
 /// Use by adding this kind of attribute to your test class:
-/// `[Startup(typeof(TestStartupEavCore))]`
+/// `[Startup(typeof(StartupTestFullWithDb))]`
 /// </remarks>
 public class StartupTestFullWithDb
 {
@@ -25,8 +25,7 @@ public class StartupTestFullWithDb
     /// </summary>
     public virtual void ConfigureServices(IServiceCollection services) =>
         services
-            .AddTransient<FullDbFixtureHelper>()
-            //.AddTransient<DataSourcesTstBuilder>()
+            .AddFixtureHelpers()
             // Apps
             .AddEavApps()
             .AddAppFallbackServices()

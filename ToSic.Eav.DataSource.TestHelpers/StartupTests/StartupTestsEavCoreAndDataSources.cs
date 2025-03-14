@@ -2,6 +2,7 @@
 using ToSic.Eav.DataSources;
 using ToSic.Eav.StartUp;
 using ToSic.Eav.TestData;
+using ToSic.Eav.Testing;
 using ToSic.Lib;
 using ToSic.Testing.Shared;
 
@@ -23,7 +24,7 @@ public class StartupTestsEavCoreAndDataSources
     /// </summary>
     public virtual void ConfigureServices(IServiceCollection services) =>
         services
-            .AddTransient<DataSourcesTstBuilder>()
+            .AddDataSourceTestHelpers()
             .AddTransient<DataTableTrivial>()
             .AddTransient<DataTablePerson>()
             .AddDataSources()

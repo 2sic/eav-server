@@ -27,11 +27,9 @@ public class StartupTestFullWithDbAndImport
     /// </summary>
     public virtual void ConfigureServices(IServiceCollection services) =>
         services
-            .AddTransient<FullDbFixtureHelper>()
+            .AddFixtureHelpers()
             // not sure if this is needed or used here...probably not
             .AddTransient<IImportExportEnvironment, ImportExportEnvironmentMock>()
-            //.AddTransient<DoFixtureStartup<ScenarioBasic>>()
-            //.AddTransient<DataSourcesTstBuilder>()
             // Apps
             .AddEavApps()
             .AddAppFallbackServices()
