@@ -1,7 +1,12 @@
 ﻿namespace ToSic.Lib.Memory;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public record SizeEstimate(int Known = 0, int Estimated = 0, bool Unknown = false, bool Error = false)
+public record SizeEstimate(
+    int Known = 0,
+    int Estimated = 0,
+    bool Unknown = false,
+    bool Error = false
+)
 {
     public int Total => Known + Estimated;
 
