@@ -10,19 +10,19 @@ public static class BuildTestAccessors
         int appId,
         IContentType contentType,
         NoParamOrder noParamOrder = default,
-        Dictionary<string, object> values = default,
-        Dictionary<string, IAttribute> typedValues = default,
+        Dictionary<string, object>? values = default,
+        Dictionary<string, IAttribute>? typedValues = default,
         int entityId = default,
         int repositoryId = Constants.NullId,
         Guid guid = default,
-        string titleField = default,
+        string? titleField = default,
         DateTime? created = default,
         DateTime? modified = default,
-        string owner = default,
+        string? owner = default,
         int version = default,
         bool isPublished = true,
-        ITarget metadataFor = default,
-        EntityPartsBuilder partsBuilder = default
+        ITarget? metadataFor = default,
+        EntityPartsBuilder? partsBuilder = default
     )
     {
         return dataBuilder.Entity.Create(appId: appId,
