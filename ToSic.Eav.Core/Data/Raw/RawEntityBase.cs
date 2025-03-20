@@ -14,10 +14,47 @@
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
 {
-    public virtual int Id { get; init; }
-    public virtual Guid Guid { get; init; } = Guid.Empty;
-    public virtual DateTime Created { get; init; } = DateTime.Now;
-    public virtual DateTime Modified { get; init; } = DateTime.Now;
+    public virtual int Id
+    {
+        get;
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
+        set;
+#else
+        init;
+#endif
+    }
+
+    public virtual Guid Guid
+    {
+        get;
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
+        set;
+#else
+        init;
+#endif
+    } = Guid.Empty;
+
+    public virtual DateTime Created
+    {
+        get;
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
+        set;
+#else
+        init;
+#endif
+    } = DateTime.Now;
+
+    public virtual DateTime Modified
+    {
+        get;
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
+        set;
+#else
+        init;
+#endif
+    } = DateTime.Now;
+
     public abstract IDictionary<string, object> Attributes(RawConvertOptions options);
+
     public virtual IEnumerable<object> RelationshipKeys(RawConvertOptions options) => new List<object>();
 }

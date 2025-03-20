@@ -9,7 +9,8 @@ using ToSic.Eav.Repository.Efc;
 namespace ToSic.Eav.ImportExport.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles.MyServices>
+public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
+    : ServiceBase<XmlImportWithFiles.MyServices>(services, "Xml.ImpFil")
 {
     public class MyServices(
         LazySvc<ImportService> importerLazy,
@@ -54,17 +55,10 @@ public abstract partial class XmlImportWithFiles: ServiceBase<XmlImportWithFiles
     private bool AllowUpdateOnSharedTypes { get; set; }
 
     #region Constructor / DI
-    /// <summary>
-    /// constructor, not DI
-    /// </summary>
-    protected XmlImportWithFiles(MyServices services, string logName = null) : base(services, logName ?? "Xml.ImpFil")
-    {
-    }
 
     /// <summary>
     /// Create a new xmlImport instance
     /// </summary>
-    /// <param name="parentLog"></param>
     /// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
     /// <param name="allowUpdateOnSharedTypes">Specify if the import should be able to change system-wide things like shared attributesets</param>
     public XmlImportWithFiles Init(string defaultLanguage, bool allowUpdateOnSharedTypes)

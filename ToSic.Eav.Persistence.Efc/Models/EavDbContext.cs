@@ -40,11 +40,23 @@ public partial class EavDbContext : DbContext
 #if NETFRAMEWORK
         optionsBuilder.UseSqlServer(connectionString);
 #else
-        // https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries
+        
         optionsBuilder
-            .UseSqlServer(connectionString, options => 
-                options.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)
-                    .CommandTimeout(180) // Timeout in seconds
+            .UseSqlServer(
+                connectionString,
+                options => options
+                    // https://learn.microsoft.com/en-gb/ef/core/querying/single-split-queries
+                    .UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)
+
+                    // Timeout in seconds
+                    .CommandTimeout(180)
+
+                    // Bug: 2025-03-10 2dm v19.03-03 problem with ContentTypeLoader.cs
+                    // Entity Framework converts certain Where-In queries to FROM OPENJSON(@__sharedAttribIds_0) WITH ([value] int ''$'') AS [s]
+                    // https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/breaking-changes#contains-in-linq-queries-may-stop-working-on-older-sql-server-versions
+                    // The following line should disable that conversion
+                    //.TranslateParameterizedCollectionsToConstants()
+                    // Note: we didn't apply it, as we just updated the compatibility level of the DB to 130 (SQL Server 2016)
             )
             .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
 #endif

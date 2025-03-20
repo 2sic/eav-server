@@ -35,11 +35,24 @@ partial class JsonSerializer
         {
             // check all metadata of these attributes - get possible sub-entities attached
             var attribMds = contentType.Attributes
-                .SelectMany(a => GetMetadataOrSkip(a, settings) ?? Array.Empty<IEntity>() as IEnumerable<IEntity>)
+                .SelectMany(a =>
+                    (GetMetadataOrSkip(a, settings) ?? Array.Empty<IEntity>() as IEnumerable<IEntity>)
+                    .Select(e => new
+                    {
+                        // Add these for better debugging
+                        a.Name,
+                        a.Type,
+                        // This is the only one we really need
+                        Entity = e,
+                    })
+                )
                 .ToArray();
 
             var attribMdsOfEntity = attribMds
-                .SelectMany(m => m.Attributes.Where(a => a.Value.Type == ValueTypes.Entity))
+                .SelectMany(set => set.Entity.Attributes
+                    .Where(a => a.Value.Type == ValueTypes.Entity)
+                    .Select(a => new { set.Name, a.Key, a.Value })
+                )
                 .ToArray();
 
             var mdParts =
@@ -122,7 +135,7 @@ partial class JsonSerializer
         attribs.Where(a => a.Metadata != null)
             .SelectMany(a => a.Metadata)
             .ToList()
-            .ForEach(e => e.For = null);
+            .ForEach(jsonEntity => jsonEntity.For = null);
 
         var ancestorDecorator = contentType.GetDecorator<IAncestor>();
         var isSharedNew = ancestorDecorator is { Id: not Constants.PresetContentTypeFakeParent };

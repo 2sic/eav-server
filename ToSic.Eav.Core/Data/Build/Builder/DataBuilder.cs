@@ -20,8 +20,6 @@ public class DataBuilder(
         ])
 {
     private bool _allowUnknownValueTypes;
-    private AttributeBuilder _attribute;
-    private ValueBuilder _value;
 
     public DataBuilder New(bool allowUnknownValueTypes = false)
     {
@@ -33,9 +31,9 @@ public class DataBuilder(
     public ContentTypeBuilder ContentType => contentTypeBuilder.Value;
     public EntityBuilder Entity => entityBuilder.Value;
 
-    public AttributeBuilder Attribute => _attribute ??= attributeBuilder.Value.Setup(_allowUnknownValueTypes);
+    public AttributeBuilder Attribute => field ??= attributeBuilder.Value.Setup(_allowUnknownValueTypes);
 
-    public ValueBuilder Value => _value ??= valueBuilder.Value.Setup(_allowUnknownValueTypes);
+    public ValueBuilder Value => field ??= valueBuilder.Value.Setup(_allowUnknownValueTypes);
 
     public ContentTypeAttributeBuilder TypeAttributeBuilder => typeAttributeBuilder.Value;
 

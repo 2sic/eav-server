@@ -136,6 +136,7 @@ internal class ContentTypeLoader(
             ? contentTypes
                 .Where(c => c.SharedDefinitionId.HasValue)
                 .Select(c => c.SharedDefinitionId.Value)
+                .Distinct()
                 .ToList()
             : contentTypes
                 .Select(c => c.SharedDefinitionId ?? -1)

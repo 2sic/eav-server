@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ToSic.Eav.Data.PropertyLookup;
+﻿using ToSic.Eav.Data.PropertyLookup;
 
 namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack;
 
@@ -15,23 +13,23 @@ internal class TestData
 
     #region Sub-Data - must be created before the objects which will reference them
 
-    public static TestPropLookupData ChildJb1 = new TestPropLookupData("Person-Child1", "Child Jungleboy 1")
+    public static TestPropLookupData ChildJb1 = new("Person-Child1", "Child Jungleboy 1")
     {
-        Birthday = new DateTime(2020, 1, 1),
+        Birthday = new(2020, 1, 1),
     };
 
-    public static TestPropLookupData GrandchildJb = new TestPropLookupData("Person-Child2-1", "Grandchild Jungleboy 2")
+    public static TestPropLookupData GrandchildJb = new("Person-Child2-1", "Grandchild Jungleboy 2")
     {
-        Birthday = new DateTime(2020, 2, 2),
+        Birthday = new(2020, 2, 2),
         Dog = "Samantha",
     };
 
 
-    public static TestPropLookupData ChildJb2 = new TestPropLookupData("Person-Child2", "Child Jungleboy 2")
+    public static TestPropLookupData ChildJb2 = new("Person-Child2", "Child Jungleboy 2")
     {
-        Birthday = new DateTime(2020, 2, 2),
+        Birthday = new(2020, 2, 2),
         Dog = "Bello",
-        Children = new List<PropertyLookupDictionary>()
+        Children = new List<PropertyLookupDictionary>
         {
             GrandchildJb.Lookup
         }
@@ -39,9 +37,9 @@ internal class TestData
 
     #endregion
 
-    public static TestPropLookupData Jungleboy = new TestPropLookupData("Person-Jungleboy", "iJungleboy")
+    public static TestPropLookupData Jungleboy = new("Person-Jungleboy", "iJungleboy")
     {
-        Birthday = new DateTime(2012, 11, 10),
+        Birthday = new(2012, 11, 10),
         //Children = new List<IPropertyLookup>
         Children = new List<PropertyLookupDictionary>
         {
@@ -50,25 +48,25 @@ internal class TestData
         }
     };
 
-    public static TestPropLookupData JohnDoe = new TestPropLookupData("Person-JohnDoe", "JohnDoe")
+    public static TestPropLookupData JohnDoe = new("Person-JohnDoe", "JohnDoe")
     {
-        Birthday = new DateTime(1987, 1, 2),
+        Birthday = new(1987, 1, 2),
         Dog = "Streak",
     };
 
-    public static TestPropLookupData ChildOfJaneDoe = new TestPropLookupData("Person-ChildOfJaneDoe", "ChildOfJaneDoe")
+    public static TestPropLookupData ChildOfJaneDoe = new("Person-ChildOfJaneDoe", "ChildOfJaneDoe")
     {
         Name = "Child of John Doe 1",
-        Birthday = new DateTime(2021, 3, 3),
+        Birthday = new(2021, 3, 3),
         Cat = "Eowyn"
     };
 
 
-    public static TestPropLookupData JaneDoeWithChildren = new TestPropLookupData("Person-JaneDoe", "JaneDoe")
+    public static TestPropLookupData JaneDoeWithChildren = new("Person-JaneDoe", "JaneDoe")
     {
-        Birthday = new DateTime(1987, 1, 2),
+        Birthday = new(1987, 1, 2),
         Dog = "Strike",
-        Children = new List<PropertyLookupDictionary>()
+        Children = new List<PropertyLookupDictionary>
         {
             ChildOfJaneDoe.Lookup
         }

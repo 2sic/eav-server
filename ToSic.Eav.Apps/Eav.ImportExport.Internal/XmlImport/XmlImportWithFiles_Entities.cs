@@ -18,13 +18,16 @@ partial class XmlImportWithFiles
     /// <param name="entities"></param>
     /// <param name="assignmentObjectTypeId"></param>
     /// <returns></returns>
-    private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId
-    ) => Log.Func($"for {entities?.Count}; type {assignmentObjectTypeId}", () =>
+    private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId) 
     {
-        if (entities == null) return ([], "empty");
-        var result = entities.Select(e => BuildEntity(e, assignmentObjectTypeId)).ToList();
-        return (result, $"found {result.Count}");
-    });
+        var l = Log.Fn<List<IEntity>>($"for {entities?.Count}; type {assignmentObjectTypeId}");
+        if (entities == null)
+            return l.Return([], "empty");
+        var result = entities
+            .Select(e => BuildEntity(e, assignmentObjectTypeId))
+            .ToList();
+        return l.Return(result, $"found {result.Count}");
+    }
 
 
     /// <summary>
@@ -35,7 +38,7 @@ partial class XmlImportWithFiles
     /// <returns></returns>
     private IEntity BuildEntity(XElement entityNode, int targetType)
     {
-        var wrap = Log.Fn<IEntity>($"assignment-type: {targetType}");
+        var l = Log.Fn<IEntity>($"assignment-type: {targetType}");
 
         #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
 
@@ -122,11 +125,11 @@ partial class XmlImportWithFiles
 
         var metadata = new Target(targetType: targetType, identifier: null, keyString: keyString, keyGuid: keyGuid, keyNumber: keyNumber);
 
-        Log.A($"Metadata ({metadata.IsMetadata}) - type:{metadata.TargetType}, #:{metadata.KeyNumber} guid:{metadata.KeyGuid}, $:{metadata.KeyString}");
+        l.A($"Metadata ({metadata.IsMetadata}) - type:{metadata.TargetType}, #:{metadata.KeyNumber} guid:{metadata.KeyGuid}, $:{metadata.KeyString}");
 
         var importEntity = _xmlBuilder.BuildEntityFromXml(entityNode, metadata);
 
-        return wrap.Return(importEntity, "got it");
+        return l.Return(importEntity, "got it");
     }
 
     /// <summary>
@@ -146,8 +149,8 @@ partial class XmlImportWithFiles
         {
             var originalId = int.Parse(a.Groups["Id"].Value);
 
-            if (_fileIdCorrectionList.ContainsKey(originalId))
-                return fileRegex.Replace(sourceValueString, "file:" + _fileIdCorrectionList[originalId]);
+            if (_fileIdCorrectionList.TryGetValue(originalId, out var value))
+                return fileRegex.Replace(sourceValueString, "file:" + value);
         }
 
         // folder
@@ -159,8 +162,8 @@ partial class XmlImportWithFiles
         {
             var originalId = int.Parse(f.Groups["Id"].Value);
 
-            if (_folderIdCorrectionList.ContainsKey(originalId))
-                return folderRegEx.Replace(sourceValueString, "folder:" + _folderIdCorrectionList[originalId]);
+            if (_folderIdCorrectionList.TryGetValue(originalId, out var value))
+                return folderRegEx.Replace(sourceValueString, "folder:" + value);
         }
 
         return null;

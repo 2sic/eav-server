@@ -10,11 +10,11 @@ namespace ToSic.Eav.ImportExport.Internal;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ExportImportValueConversion(IValueConverter valueConverter) : ServiceBase("App.EXValC")
 {
-    #region Dependency Injection
+    //#region Dependency Injection
 
-    public IValueConverter ValueConverter { get; } = valueConverter;
+    //public IValueConverter ValueConverter { get; } = valueConverter;
 
-    #endregion
+    //#endregion
 
 
 
@@ -121,7 +121,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
     internal string ResolveHyperlinksFromSite(Guid itemGuid, string value, ValueTypes attrType)
         => attrType != ValueTypes.Hyperlink
             ? value
-            : ValueConverter.ToValue(value, itemGuid);
+            : valueConverter.ToValue(value, itemGuid);
 
     #endregion
 

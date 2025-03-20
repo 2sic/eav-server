@@ -1,0 +1,42 @@
+﻿namespace ToSic.Eav.Data.PropertyLookup;
+
+public class PropertyRequestSpecsTests
+{
+    [Fact]
+    public void DimensionsBlankAutoExpand()
+    {
+        var specs = new PropReqSpecs("TestField");
+        Assert.Equal(new string[] { null }, specs.Dimensions);
+    }
+
+    [Theory]
+    [InlineData(new[] { (string)null }, new[] { (string)null }, "null, Auto Expand")]
+    [InlineData(new[] { (string)null }, new[] { (string)null }, "null, Auto Expand")]
+    [InlineData(new[] { (string)null }, new[] { (string)null }, "empty, Auto Expand")]
+    [InlineData(new[] { "a", null }, new[] { "a" }, "Auto Expand")]
+    [InlineData(new[] { "a", "b", null }, new[] { "a", "b" }, "Auto Expand")]
+    [InlineData(new[] { "a", "b", null }, new[] { "a", "b", null }, "Keep, don't add second null")]
+    [InlineData(new[] { "a", null, "b", null }, new[] { "a", null, "b" }, "weird, shouldn't happen, but ...")]
+    public void Dimensions1AutoExpand(string[] expected, string[] input, string displayName)
+    {
+        var specs = new PropReqSpecs("TestField", input, false);
+        Assert.Equal(expected, specs.Dimensions);
+    }
+
+    [Theory]
+    [InlineData(new string[] { }, new string[] { }, "nothing, Auto Expand")]
+    [InlineData(new[] { "a" }, new[] { "a" }, "a, no Auto Expand")]
+    public void DimensionsNoModUntouched(string[] expected, string[] input, string displayName)
+    {
+        var specs = new PropReqSpecs("TestField", input, DimsAreFinal: true);
+        Assert.Equal(expected, specs.Dimensions);
+    }
+
+
+    [Fact]
+    public void DimensionsWithNullUntouched()
+    {
+        var specs = new PropReqSpecs("TestField", ["a", null], true);
+        Assert.Equal(new[] { "a", null }, specs.Dimensions);
+    }
+}

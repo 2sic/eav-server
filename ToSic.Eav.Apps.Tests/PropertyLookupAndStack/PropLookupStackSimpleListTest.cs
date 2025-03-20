@@ -1,25 +1,21 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data.PropertyLookup;
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+﻿using ToSic.Eav.Data.PropertyLookup;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
 
 namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack;
 
-[TestClass]
+
 public class PropLookupStackSimpleListTest: PropLookupStackBase
 {
     #region Basic Values both with Find as well as with Path
 
-    [TestMethod] public void JungleboyFirstName() => AreEqual(Jungleboy.Name, FindInJbJd(FieldName));
-    [TestMethod] public void JungleboyFirstNamePath() => AreEqual(Jungleboy.Name, FindInJungleFirstPath(FieldName));
-    [TestMethod] public void JungleboyFirstBirthday() => AreEqual(Jungleboy.Birthday, FindInJbJd(FieldBirthday));
-    [TestMethod] public void JungleboyFirstBirthdayPath() => AreEqual(Jungleboy.Birthday, FindInJungleFirstPath(FieldBirthday));
-    [TestMethod] public void JungleboyFirstDog() => AreEqual(JohnDoe.Dog, FindInJbJd(FieldDog));
-    [TestMethod] public void JungleboyFirstDogPath() => AreEqual(JohnDoe.Dog, FindInJungleFirstPath(FieldDog));
-    [TestMethod] public void JungleboyFirstUnusedField() => IsNull(FindInJbJd(UnusedField));
-    [TestMethod] public void JungleboyFirstUnusedFieldPath() => IsNull(FindInJungleFirstPath(UnusedField));
+    [Fact] public void JungleboyFirstName() => Equal(Jungleboy.Name, FindInJbJd(FieldName));
+    [Fact] public void JungleboyFirstNamePath() => Equal(Jungleboy.Name, FindInJungleFirstPath(FieldName));
+    [Fact] public void JungleboyFirstBirthday() => Equal(Jungleboy.Birthday, FindInJbJd(FieldBirthday));
+    [Fact] public void JungleboyFirstBirthdayPath() => Equal(Jungleboy.Birthday, FindInJungleFirstPath(FieldBirthday));
+    [Fact] public void JungleboyFirstDog() => Equal(JohnDoe.Dog, FindInJbJd(FieldDog));
+    [Fact] public void JungleboyFirstDogPath() => Equal(JohnDoe.Dog, FindInJungleFirstPath(FieldDog));
+    [Fact] public void JungleboyFirstUnusedField() => Null(FindInJbJd(UnusedField));
+    [Fact] public void JungleboyFirstUnusedFieldPath() => Null(FindInJungleFirstPath(UnusedField));
 
     #endregion
 
@@ -28,66 +24,77 @@ public class PropLookupStackSimpleListTest: PropLookupStackBase
     // These tests will check if the prefix is ignored correctly
     // Reason is that if we have a settings stack, people could often use Settings.Get("Settings.GoogleApi") because they copy the key from certain sources
 
-    [TestMethod] public void IgnorePrefixInPath_Basic() => AreEqual(Jungleboy.Name, FindInJungleFirstPath($"{StackName}.{FieldName}"));
-    [TestMethod] public void IgnorePrefixInPath_ChildName() => AreEqual(ChildJb1.Name, FindInJungleFirstPath($"{StackName}.{FieldChildren}.{FieldName}"));
-    [TestMethod] public void IgnorePrefixInPath_ChildDog() => AreEqual(ChildJb2.Dog, FindInJungleFirstPath($"{StackName}.{FieldChildren}.{FieldDog}"));
-    [TestMethod] public void IgnorePrefixInPath_ChildCat() => AreEqual(ChildOfJaneDoe.Cat, FindInJungleFirstPath($"{StackName}.{FieldChildren}.{FieldCat}"));
+    [Fact] public void IgnorePrefixInPath_Basic() => Equal(Jungleboy.Name, FindInJungleFirstPath($"{StackName}.{FieldName}"));
+    [Fact] public void IgnorePrefixInPath_ChildName() => Equal(ChildJb1.Name, FindInJungleFirstPath($"{StackName}.{FieldChildren}.{FieldName}"));
+    [Fact] public void IgnorePrefixInPath_ChildDog() => Equal(ChildJb2.Dog, FindInJungleFirstPath($"{StackName}.{FieldChildren}.{FieldDog}"));
+    [Fact] public void IgnorePrefixInPath_ChildCat() => Equal(ChildOfJaneDoe.Cat, FindInJungleFirstPath($"{StackName}.{FieldChildren}.{FieldCat}"));
 
-    [TestMethod] public void IgnorePrefixInPath_GrandChildName() => AreEqual(GrandchildJb.Name, FindInJungleFirstPath($"{StackName}.{FieldChildren}.{FieldChildren}.{FieldName}"));
+    [Fact] public void IgnorePrefixInPath_GrandChildName() => Equal(GrandchildJb.Name, FindInJungleFirstPath($"{StackName}.{FieldChildren}.{FieldChildren}.{FieldName}"));
 
 
     #endregion
 
-    [TestMethod] public void JungleboyChildrenIsListOfPropL() => IsInstanceOfType(FindInJbJd(FieldChildren), typeof(IEnumerable<IPropertyLookup>));
-    [TestMethod] public void JungleboyChildrenPathIsListOfPropL() => IsInstanceOfType(FindInJungleFirstPath(FieldChildren), typeof(IEnumerable<IPropertyLookup>));
-    [TestMethod] public void JungleboyChildrenIsStackNav() => IsInstanceOfType(FindInJbJd(FieldChildren), typeof(IEnumerable<PropertyLookupWithStackNavigation>));
+    [Fact]
+    public void JungleboyChildrenIsListOfPropL() =>
+        IsAssignableFrom<IEnumerable<IPropertyLookup>>(FindInJbJd(FieldChildren));
 
-    [TestMethod] public void JungleboyFirst_ChildName() => AreEqual(ChildJb1.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldName}"));
-    [TestMethod] public void JungleboyFirst_ChildDog() => AreEqual(ChildJb2.Dog, FindInJungleFirstPath($"{FieldChildren}.{FieldDog}"));
-    [TestMethod] public void JungleboyFirst_ChildCat() => AreEqual(ChildOfJaneDoe.Cat, FindInJungleFirstPath($"{FieldChildren}.{FieldCat}"));
+    [Fact]
+    public void JungleboyChildrenPathIsListOfPropL() =>
+        IsAssignableFrom<IEnumerable<IPropertyLookup>>(FindInJungleFirstPath(FieldChildren));
 
-    [TestMethod] public void JungleboyFirst_GrandChildName() => AreEqual(GrandchildJb.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldChildren}.{FieldName}"));
+    [Fact] public void JungleboyChildrenIsStackNav() =>
+        IsAssignableFrom<IEnumerable<PropertyLookupWithStackNavigation>>(FindInJbJd(FieldChildren));
+
+    [Fact] public void JungleboyFirst_ChildName() => 
+        Equal(ChildJb1.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldName}"));
+    [Fact] public void JungleboyFirst_ChildDog() =>
+        Equal(ChildJb2.Dog, FindInJungleFirstPath($"{FieldChildren}.{FieldDog}"));
+    [Fact] public void JungleboyFirst_ChildCat() =>
+        Equal(ChildOfJaneDoe.Cat, FindInJungleFirstPath($"{FieldChildren}.{FieldCat}"));
+
+    [Fact] public void JungleboyFirst_GrandChildName() =>
+        Equal(GrandchildJb.Name, FindInJungleFirstPath($"{FieldChildren}.{FieldChildren}.{FieldName}"));
 
 
-    [TestMethod]
+    [Fact]
     public void JungleboyChildName()
     {
         var result = GetJungleboyChildrenStack(FieldChildren);
-        AreEqual(ChildJb1.Name, GetResult(result.Substack, FieldName, result.path));
+        Equal(ChildJb1.Name, GetResult(result.Substack, FieldName, result.path));
     }
 
-    [TestMethod]
+    [Fact]
     public void JungleboyChildDogOfSecondChild()
     {
         var result = GetJungleboyChildrenStack(FieldChildren);
-        AreEqual(ChildJb2.Dog, GetResult(result.Substack, FieldDog, result.path));
+        Equal(ChildJb2.Dog, GetResult(result.Substack, FieldDog, result.path));
     }
 
-    [TestMethod]
+    [Fact]
     public void JungleboyChildCatOfJanesKids()
     {
         var initialResult = GetJungleboyChildrenStack(FieldChildren);
         var result = GetRequest(initialResult.Substack, FieldCat, initialResult.path);
-        AreEqual(ChildOfJaneDoe.Cat, result.Result);
+        Equal(ChildOfJaneDoe.Cat, result.Result);
     }
 
     private (IPropertyLookup Substack, PropertyLookupPath path) GetJungleboyChildrenStack(string fieldName)
     {
         var path = new PropertyLookupPath();
         var requestResult = GetRequest(FirstJungleboy, fieldName, path);
-        IsNotNull(requestResult);
+        NotNull(requestResult);
         var result = requestResult.Result as IEnumerable<IPropertyLookup>;
-        IsNotNull(result);
+        NotNull(result);
 
-        IsTrue(result.Any());
+        True(result.Any());
         requestResult.Result = result.First();
         return (result.First(), requestResult.Path);
     }
 
-    [TestMethod] public void TestJohnFirstName() => AreEqual(JohnDoe.Name, FindInJohnDoe(FieldName));
-    [TestMethod] public void TestJohnFirstBirthday() => AreEqual(JohnDoe.Birthday, FindInJohnDoe(FieldBirthday));
-    [TestMethod] public void TestJohnFirstDog() => AreEqual(JohnDoe.Dog, FindInJohnDoe(FieldDog));
-    [TestMethod] public void TestJohnFirstUnusedField() => IsNull(FindInJohnDoe(UnusedField));
-    [TestMethod] public void TestJohnChildrenOfJungleboy() => IsNotNull(FindInJohnDoe(FieldChildren));
+    [Fact] public void TestJohnFirstName() => Equal(JohnDoe.Name, FindInJohnDoe(FieldName));
+    [Fact] public void TestJohnFirstBirthday() => Equal(JohnDoe.Birthday, FindInJohnDoe(FieldBirthday));
+    [Fact] public void TestJohnFirstDog() => Equal(JohnDoe.Dog, FindInJohnDoe(FieldDog));
+    [Fact] public void TestJohnFirstUnusedField() => Null(FindInJohnDoe(UnusedField));
+    [Fact] public void TestJohnChildrenOfJungleboy() => NotNull(FindInJohnDoe(FieldChildren));
 
 }

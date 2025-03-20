@@ -41,6 +41,7 @@ public static class StartupDataSources
 
         services.TryAddTransient<QueryBuilder>();
         services.TryAddTransient<QueryDefinitionBuilder>();
+        services.TryAddTransient<QueryManager>();
 
         services.TryAddTransient<ValueLanguages>();
 

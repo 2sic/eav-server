@@ -185,7 +185,10 @@ public class Sql : CustomDataSourceAdvanced
         var tokenizer = TokenReplace.Tokenizer;
 
         // Before we process the Select-Command, we must get it (by default it's just a token!)
-        var selectSql = SelectCommand;
+        // It's important that we use the Configuration.Values and ensure that we have a valid string, to prevent null-errors - ask @iJungleboy about this
+        var selectSql = Configuration.Values.TryGetValue(nameof(SelectCommand), out var sc)
+            ? sc
+            : string.Empty;
         if (selectSql.StartsWith("[" + DataSourceConstants.MyConfigurationSourceName, InvariantCultureIgnoreCase))
         {
             var tempList = Configuration.LookUpEngine.LookUp(

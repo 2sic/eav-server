@@ -1,27 +1,18 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Metadata;
+using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.Persistence.Efc.Tests
+namespace ToSic.Eav.Persistence.Efc.Tests;
+
+
+[Startup(typeof(StartupTestsApps))]
+public class MetadataTargetTypesTests(ITargetTypes targetTypes) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-    [TestClass]
-    public class MetadataTargetTypesTests : Efc11TestBase
-    {
-        private readonly ITargetTypes _targetTypes;
-        public MetadataTargetTypesTests()
-        {
-            _targetTypes = GetService<ITargetTypes>();
-        }
-        
-        [TestMethod]
-        public void TestMetadataTargetTypes()
-        {
-            var types = _targetTypes.TargetTypes;
+    [Fact]
+    public void HasExactly100TargetTypes() =>
+        Equal(100, targetTypes.TargetTypes.Count);
 
-            Assert.AreEqual(100, types.Count);
-            Assert.IsTrue(types[(int)TargetTypes.None] == "Default");
-        }
-        
-        
-    }
+    [Fact]
+    public void FirstTargetTypeIsDefault() =>
+        Equal("Default", targetTypes.TargetTypes[(int)TargetTypes.None]);
 }

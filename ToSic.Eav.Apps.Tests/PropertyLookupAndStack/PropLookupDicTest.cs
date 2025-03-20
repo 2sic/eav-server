@@ -1,34 +1,57 @@
-﻿using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Data.PropertyLookup;
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+﻿using ToSic.Eav.Data.PropertyLookup;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
 
 namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack;
 
-[TestClass]
+
 public class PropLookupDicTest: PropertyLookupTestBase
 {
-    private object LookupJungleboy(string fieldName) => GetResult(Jungleboy.Lookup, fieldName);
-    private object LookupJohnDoe(string fieldName) => GetResult(JohnDoe.Lookup, fieldName);
+    private object LookupJungleboy(string fieldName) =>
+        GetResult(Jungleboy.Lookup, fieldName);
 
-    [TestMethod] public void JungleboyName() => AreEqual(Jungleboy.Name, LookupJungleboy(FieldName));
-    [TestMethod] public void JungleboyNameCaseInsensitive() => AreEqual(Jungleboy.Name, LookupJungleboy(FieldName.ToUpper()));
-    [TestMethod] public void JungleboyBirthday() => AreEqual(Jungleboy.Birthday, LookupJungleboy(FieldBirthday));
-    [TestMethod] public void JungleboyDog() => IsNull(LookupJungleboy(FieldDog));
-    [TestMethod] public void JungleboyUnknownProp() => IsNull(LookupJungleboy(UnusedField));
+    private object LookupJohnDoe(string fieldName) =>
+        GetResult(JohnDoe.Lookup, fieldName);
 
-    [TestMethod] public void JungleboyChildren() => IsNotNull(LookupJungleboy(FieldChildren));
-    [TestMethod] public void JungleboyChildrenIsListOfPropL() => IsInstanceOfType(LookupJungleboy(FieldChildren), typeof(IEnumerable<IPropertyLookup>));
+    [Fact] public void JungleboyName() =>
+        Equal(Jungleboy.Name, LookupJungleboy(FieldName));
+
+    [Fact] public void JungleboyNameCaseInsensitive() =>
+        Equal(Jungleboy.Name, LookupJungleboy(FieldName.ToUpper()));
+
+    [Fact] public void JungleboyBirthday() =>
+        Equal(Jungleboy.Birthday, LookupJungleboy(FieldBirthday));
+
+    [Fact] public void JungleboyDog() =>
+        Null(LookupJungleboy(FieldDog));
+
+    [Fact] public void JungleboyUnknownProp() =>
+        Null(LookupJungleboy(UnusedField));
+
+    [Fact]
+    public void JungleboyChildren() =>
+        NotNull(LookupJungleboy(FieldChildren));
+
+    [Fact]
+    public void JungleboyChildrenIsListOfPropL() =>
+        IsAssignableFrom<IEnumerable<IPropertyLookup>>(LookupJungleboy(FieldChildren));
 
 
 
-    [TestMethod] public void JohnDoeName() => AreEqual(JohnDoe.Name, LookupJohnDoe(FieldName));
-    [TestMethod] public void JohnDoeNameCaseInsensitive() => AreEqual(JohnDoe.Name, LookupJohnDoe(FieldName.ToUpper()));
-    [TestMethod] public void JohnDoeBirthday() => AreEqual(JohnDoe.Birthday, LookupJohnDoe(FieldBirthday));
-    [TestMethod] public void JohnDoeDog() => AreEqual(JohnDoe.Dog, LookupJohnDoe(FieldDog));
-    [TestMethod] public void JohnDoeUnknownProp() => IsNull(LookupJohnDoe(UnusedField));
+    [Fact] public void JohnDoeName() =>
+        Equal(JohnDoe.Name, LookupJohnDoe(FieldName));
 
-    [TestMethod] public void JohnDoeChildren() => IsNull(LookupJohnDoe(FieldChildren));
+    [Fact] public void JohnDoeNameCaseInsensitive() =>
+        Equal(JohnDoe.Name, LookupJohnDoe(FieldName.ToUpper()));
+
+    [Fact] public void JohnDoeBirthday() =>
+        Equal(JohnDoe.Birthday, LookupJohnDoe(FieldBirthday));
+
+    [Fact] public void JohnDoeDog() =>
+        Equal(JohnDoe.Dog, LookupJohnDoe(FieldDog));
+    [Fact] public void JohnDoeUnknownProp() =>
+        Null(LookupJohnDoe(UnusedField));
+
+    [Fact] public void JohnDoeChildren() =>
+        Null(LookupJohnDoe(FieldChildren));
 
 }

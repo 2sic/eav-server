@@ -1,39 +1,34 @@
 ﻿using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.ImportExport.Tests.Persistence.File;
+using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Repository.Efc.Tests;
-using ToSic.Testing.Shared;
+using Xunit.Abstractions;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Persistence.File.Tests
+namespace ToSic.Eav.ImportExport.Tests.Persistence.File;
+
+
+public class TypeExporter(ITestOutputHelper output, IRepositoryLoader loaderRaw, FileSystemLoader fsLoader) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
-    [TestClass]
-    public class TypeExporter: PersistenceTestsBase
+    [Fact]
+    public void TypeExp_AllSharedFromInstallation()
     {
+        var test = new SpecsTestExportSerialize();
 
-        [TestMethod]
-        public void TypeExp_AllSharedFromInstallation()
-        {
-            var test = new SpecsTestExportSerialize();
+        //var loader = GetService<IRepositoryLoader>();
+        var app = loaderRaw.AppStateReaderRawTac(test.AppId);
 
-            var loader = GetService<IRepositoryLoader>();
-            var app = loader.AppStateReaderRawTA(test.AppId);
+        var cts = app.ContentTypes;
+        var sharedCts = cts/*.Where(ct => ct.AlwaysShareConfiguration)*/.ToList();
+        var exportStorageRoot =
+            TestFiles.GetTestPath($"{PersistenceTestConstants.ScenarioRoot}{PersistenceTestConstants.TestingPath3}");// PersistenceTestConstants.ExportStorageRoot(TestContext);
+        var fileSysLoader = fsLoader.Init(Constants.PresetAppId, exportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null);
 
+        var time = Stopwatch.StartNew();
+        sharedCts.ForEach(fileSysLoader.SaveContentType);
+        time.Stop();
 
-            var cts = app.ContentTypes;
-            var sharedCts = cts.Where(ct => ct.AlwaysShareConfiguration).ToList();
-            var fileSysLoader = GetService<FileSystemLoader>().Init(Constants.PresetAppId, ExportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null);
-
-            var time = Stopwatch.StartNew();
-            sharedCts.ForEach(ct => fileSysLoader.SaveContentType(ct));
-            time.Stop();
-
-            Trace.WriteLine("created " + sharedCts.Count + "items and put into " + ExportStorageRoot);
-            Trace.WriteLine("elapsed: " + time.Elapsed);
-        }
-
-
+        output.WriteLine($"created {sharedCts.Count} items and put into {exportStorageRoot}");
+        output.WriteLine($"elapsed: {time.Elapsed}");
     }
+
+
 }
