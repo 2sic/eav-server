@@ -138,7 +138,8 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
 
             // Init EavSqlStore once
             var loader = tools.RepositoryLoader(null);
-            if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
+            if (primaryLanguage != null)
+                loader.PrimaryLanguage = primaryLanguage;
             appState = loader.AppStateInitialized(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}; DateTime: {DateTime.Now:O}; 2sxc Version: {EavSystemInfo.VersionString}"));
             Set(cacheKey, appState);
         }

@@ -32,13 +32,13 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
             .Where(s => s.StaticName == name)
             .ToList();
         if (byStaticName.Any() || !alsoCheckNiceName)
-            return byStaticName;
+            return l.Return(byStaticName);
 
         var byNiceName = GetDbContentTypeCoreQuery(appId)
             .Where(s => s.Name == name)
             .ToList();
 
-        return byNiceName;
+        return l.Return(byNiceName);
     }
 
 
@@ -76,7 +76,8 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
             if (found.Count != 1)
                 throw new($"{preparedError} Found {found.Count}");
 
-            return found.First().AttributeSetId;
+            var firstId = found.First().AttributeSetId;
+            return l.Return(firstId);
         }
         catch (InvalidOperationException ex)
         {
