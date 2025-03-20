@@ -4,7 +4,7 @@ using System.Text;
 namespace ToSic.Eav.Security.Encryption;
 
 /// <remarks>
-/// In v19.03-03 we changed `new AesCryptoServiceProvider()` to be `Aes.Create()` because of obsolete warnings
+/// In v19.03.03 we changed `new AesCryptoServiceProvider()` to be `Aes.Create()` because of obsolete warnings
 /// </remarks>
 public class AesHybridCryptographyService(RsaCryptographyService rsa)
 {

@@ -10,7 +10,7 @@ namespace ToSic.Eav.Security.Encryption;
 /// Important: Must NOT use AesManaged from .net, because it's not FIPS compliant
 /// </summary>
 /// <remarks>
-/// In v19.03-03 we changed `new AesCryptoServiceProvider()` to be `Aes.Create()` because of obsolete warnings
+/// In v19.03.03 we changed `new AesCryptoServiceProvider()` to be `Aes.Create()` because of obsolete warnings
 /// </remarks>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AesCryptographyService(Rfc2898Generator keyGen) : ServiceBase("Eav.EncAes"), ICanDebug

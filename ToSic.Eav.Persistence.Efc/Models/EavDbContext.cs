@@ -51,7 +51,7 @@ public partial class EavDbContext : DbContext
                     // Timeout in seconds
                     .CommandTimeout(180)
 
-                    // Bug: 2025-03-10 2dm v19.03-03 problem with ContentTypeLoader.cs
+                    // Bug: 2025-03-10 2dm v19.03.03 problem with ContentTypeLoader.cs
                     // Entity Framework converts certain Where-In queries to FROM OPENJSON(@__sharedAttribIds_0) WITH ([value] int ''$'') AS [s]
                     // https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/breaking-changes#contains-in-linq-queries-may-stop-working-on-older-sql-server-versions
                     // The following line should disable that conversion

@@ -15,7 +15,7 @@ public class Sha256
     /// <returns></returns>
     /// <remarks>
     /// * In v15.01 we changed this to use the CryptoServiceProvider which is FIPS compliant
-    /// * In v19.03-03 we changed `new SHA256CryptoServiceProvider()` to be `SHA256.Create()` because of obsolete warnings
+    /// * In v19.03.03 we changed `new SHA256CryptoServiceProvider()` to be `SHA256.Create()` because of obsolete warnings
     /// </remarks>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string Hash(string value) 
