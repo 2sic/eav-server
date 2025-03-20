@@ -54,7 +54,7 @@ public record DataFactoryOptions
     public string TitleField
     {
         get => field.UseFallbackIfNoValue(Attributes.TitleNiceName);
-#if NETFRAMEWORK
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
         set => field = value;
 #else
         init => field = value;
@@ -67,7 +67,7 @@ public record DataFactoryOptions
     public bool AutoId
     {
         get;
-#if NETFRAMEWORK
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
         set;
 #else
         init;
@@ -82,7 +82,7 @@ public record DataFactoryOptions
     public int IdSeed
     {
         get;
-#if NETFRAMEWORK
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
         set;
 #else
         init;
@@ -92,7 +92,7 @@ public record DataFactoryOptions
     public bool AllowUnknownValueTypes
     {
         get;
-#if NETFRAMEWORK
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
         set;
 #else
         init;
@@ -102,7 +102,7 @@ public record DataFactoryOptions
     public bool WithMetadata
     {
         get;
-#if NETFRAMEWORK
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
         set;
 #else
         init;
@@ -112,7 +112,7 @@ public record DataFactoryOptions
     public Type Type
     {
         get;
-#if NETFRAMEWORK
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
         set;
 #else
         init;
