@@ -124,7 +124,8 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
 
         IAppStateCache appState = null;
         if (Has(cacheKey)) appState = Get(cacheKey);
-        if (appState != null) return appState;
+        if (appState != null)
+            return appState;
 
         // create lock to prevent parallel initialization
         var lockKey = LoadLocks.Get(cacheKey);
@@ -132,12 +133,13 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
         {
             // now that lock is free, it could have been initialized, so re-check
             if (Has(cacheKey)) appState = Get(cacheKey);
-            if (appState != null) return appState;
+            if (appState != null)
+                return appState;
 
             // Init EavSqlStore once
             var loader = tools.RepositoryLoader(null);
             if (primaryLanguage != null) loader.PrimaryLanguage = primaryLanguage;
-            appState = loader.AppStateInitialized(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}"));
+            appState = loader.AppStateInitialized(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}; DateTime: {DateTime.Now:O}; 2sxc Version: {EavSystemInfo.VersionString}"));
             Set(cacheKey, appState);
         }
 
