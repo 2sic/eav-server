@@ -156,6 +156,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     /// Most properties like icon etc. are not important, so ATM it only does:
     /// - Description
     /// </summary>
+    #nullable enable   // Enables nullable annotations and warnings
     private IEntity ContentTypeAttributeDetails(string? description, string? inputType)
     {
         var l = Log.Fn<IEntity>();
@@ -175,5 +176,6 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         var entity = entityBuilder.Create(NoAppId, ctBuilder.Transient(NoAppId, AttributeMetadata.TypeGeneral, AttributeMetadata.TypeGeneral), attributes: attributes);
         return l.Return(entity, "created");
     }
+    #nullable restore  // Restores the project-level nullable setting
 
 }
