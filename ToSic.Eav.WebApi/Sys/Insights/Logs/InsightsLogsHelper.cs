@@ -245,25 +245,33 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
             {
                 // Go up one level
                 lg.AppendLine("</ol></li>");
-                if (breadcrumb.Count > 0) breadcrumb.Pop();
-                if (times.Count > 0) times.Pop();
+                if (breadcrumb.Count > 0)
+                    breadcrumb.Pop();
+                if (times.Count > 0)
+                    times.Pop();
             }
             else
             {
                 // Create an entry
                 lg.AppendLine("<li>");
-                var prevBreadcrumb = breadcrumb.Count > 0 ? breadcrumb.Peek() : "";
-                lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0 ? times.Peek() : default, maxTimeSpan, startCreated));
+                var prevBreadcrumb = breadcrumb.Count > 0
+                    ? breadcrumb.Peek()
+                    : "";
+                lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0
+                    ? times.Peek()
+                    : default, maxTimeSpan, startCreated));
                 // 
                 if (e.WrapOpen)
                 {
                     // Go down one level
-                    if (!e.WrapOpenWasClosed) lg.AppendLine("LOGGER WARNING: This logger was never closed");
+                    if (!e.WrapOpenWasClosed)
+                        lg.AppendLine("🪵⚠️ LOGGER WARNING: This logger was never closed");
                     breadcrumb.Push(e.ShortSource);
                     times.Push(e.Elapsed);
                     lg.AppendLine("<ol>");
                 }
-                else lg.AppendLine("</li>");
+                else
+                    lg.AppendLine("</li>");
             }
         }
 
@@ -274,7 +282,8 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
 
     private static TimeSpan FullTimespan(Log log)
     {
-        if (log.Entries.Count == 0) return default;
+        if (log.Entries.Count == 0)
+            return default;
         var startTime = log.Created;
 
         var last = log.Entries.Last();
@@ -336,7 +345,8 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         #endregion
 
         var message = HtmlEncode(e.Message.NeverNull());
-        if (e.Options?.ShowNewLines == true) message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
+        if (e.Options?.ShowNewLines == true)
+            message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
         return Span(
                 HoverLabel(HtmlEncode(label), logChainPath, "logIds")
                 + " - "
