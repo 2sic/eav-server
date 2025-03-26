@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using ToSic.Eav.Metadata;
 
 
@@ -14,12 +13,14 @@ namespace ToSic.Eav.Data;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class EntityBasedType : IEntityBasedType
 {
-    /// <inheritdoc />
+    /// <inheritdoc cref="IEntityWrapper.Entity" />
     public IEntity Entity { get; protected set; }
 
-    [PrivateApi] public IEntity RootContentsForEqualityCheck => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
-    public IEnumerable<IDecorator<IEntity>> Decorators => _decorators ??= (Entity as IEntityWrapper)?.Decorators ?? [];
-    private IEnumerable<IDecorator<IEntity>> _decorators;
+    [PrivateApi] public IEntity RootContentsForEqualityCheck
+        => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
+
+    public IEnumerable<IDecorator<IEntity>> Decorators
+        => field ??= (Entity as IEntityWrapper)?.Decorators ?? [];
 
     /// <summary>
     /// Create a EntityBasedType and wrap the entity provided
@@ -34,8 +35,7 @@ public abstract class EntityBasedType : IEntityBasedType
         => LookupLanguages = languageCode != null ? [languageCode] : [];
 
     /// <inheritdoc />
-    public virtual string Title => _title ??= Entity?.GetBestTitle() ?? "";
-    private string _title;
+    public virtual string Title => field ??= Entity?.GetBestTitle() ?? "";
 
     /// <inheritdoc />
     public int Id => Entity?.EntityId ?? 0;
