@@ -20,7 +20,7 @@ partial class PermissionCheckBase
             // check general permissions
             var condition = permission.Condition;
             var identity = permission.Identity;
-            Log.A($"condition:{condition}, identity:{identity}");
+            l.A($"condition:{condition}, identity:{identity}");
 
             // check custom permission based on the user Guid or owner
             if (User.Guid != default)
@@ -32,7 +32,7 @@ partial class PermissionCheckBase
                 // check if an identity was provided
                 if (!string.IsNullOrWhiteSpace(identity))
                 {
-                    Log.A($"Check if user is user or group - identity: {identity}");
+                    l.A($"Check if user is user or group - identity: {identity}");
                     if (VerifyUserIsThisUser(identity, User))
                         return l.Return(IsGrantedBecause(Conditions.Owner), "is-this-user: true");
 
@@ -43,7 +43,7 @@ partial class PermissionCheckBase
 
             // this checks if the condition is a environment condition
             // for example, if it's a DNN code for "user may view something"
-            if (_environmentPermission.VerifyConditionOfEnvironment(condition))
+            if (services.EnvironmentPermission.VerifyConditionOfEnvironment(condition))
                 return l.Return(IsGrantedBecause(Conditions.EnvironmentInstance), "environment: true");
 
             return l.ReturnFalse("no-match: false");
@@ -67,7 +67,8 @@ partial class PermissionCheckBase
     /// </summary>
     private bool VerifyUserIsThisUser(string identity, IUser user)
     {
-        if (!Services.Features.IsEnabled(BuiltInFeatures.PermissionCheckUsers.Guid)) return false;
+        if (!Services.Features.IsEnabled(BuiltInFeatures.PermissionCheckUsers.Guid))
+            return false;
         return identity == user.Guid.ToString();
     }
 
@@ -80,9 +81,11 @@ partial class PermissionCheckBase
     /// <returns></returns>
     private bool VerifyUserIsInGroup(string identity, IUser user)
     {
-        if (!Services.Features.IsEnabled(BuiltInFeatures.PermissionCheckGroups.Guid)) return false;
+        if (!Services.Features.IsEnabled(BuiltInFeatures.PermissionCheckGroups.Guid))
+            return false;
 
-        if (string.IsNullOrWhiteSpace(identity)) return false;
+        if (string.IsNullOrWhiteSpace(identity))
+            return false;
 
         var groupIds = identity.CsvToArrayWithoutEmpty()
             .Select(g => int.TryParse(g, out var gid) ? gid : 0)

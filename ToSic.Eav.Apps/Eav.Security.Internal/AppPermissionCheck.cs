@@ -9,42 +9,40 @@ namespace ToSic.Eav.Security.Internal;
 /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppPermissionCheck: PermissionCheckBase
+public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBase.MyServices services)
+    : PermissionCheckBase(services, $"{AppConstants.LogName}.PrmChk", connect: [appReaders])
 {
     #region Constructor & DI
-    public AppPermissionCheck(IAppReaderFactory appReaders, MyServices services) : base(services, $"{AppConstants.LogName}.PrmChk")
+
+    private readonly EnvironmentPermission _environmentPermission = (EnvironmentPermission)services.EnvironmentPermission;
+
+    public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem)
     {
-        ConnectLogs([
-            _appReaders = appReaders,
-            _environmentPermission = (EnvironmentPermission)services.EnvironmentPermission
-        ]);
+        var l = Log.Fn<AppPermissionCheck>();
+        Init(ctx, appIdentity, targetItem?.Type, targetItem, includeApp: true);
+        return l.Return(this);
     }
-    private readonly IAppReaderFactory _appReaders;
-    private readonly EnvironmentPermission _environmentPermission;
 
-    public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem) => Log.Func(() =>
+    public AppPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType)
     {
-        Init(ctx, appIdentity, targetItem?.Type, targetItem);
-        return this;
-    });
-
-    public AppPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType) => Log.Func(() =>
-    {
+        var l = Log.Fn<AppPermissionCheck>();
         Init(ctx, appIdentity, targetType);
-        return this;
-    });
+        return l.Return(this);
+    }
 
-    public AppPermissionCheck ForAttribute(IContextOfSite ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute) => Log.Func(() =>
+    public AppPermissionCheck ForAttribute(IContextOfSite ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute)
     {
+        var l = Log.Fn<AppPermissionCheck>();
         Init(ctx, appIdentity, permissions: attribute.Permissions);
-        return this;
-    });
+        return l.Return(this);
+    }
 
-    public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions) => Log.Func(() =>
+    public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions)
     {
+        var l = Log.Fn<AppPermissionCheck>();
         Init(ctx, appIdentity, permissions: permissions);
-        return this;
-    });
+        return l.Return(this);
+    }
 
     /// <summary>
     /// Init the check for an app.
@@ -54,29 +52,17 @@ public class AppPermissionCheck: PermissionCheckBase
     /// <returns></returns>
     public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity)
     {
-        var l = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity}");
-        var permissions = FindPermissionsOfApp(appIdentity);
-        Init(ctx, appIdentity, permissions: permissions);
-        return l.Return(this, $"Permissions: {permissions?.Count}");
+        var l = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity?.Show()}");
+        Init(ctx, appIdentity, includeApp: true);
+        return l.Return(this);
     }
 
-    private List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
+    public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType targetType, IEntity targetItem)
     {
-        
-        var permissions = appIdentity == null
-            ? null
-            : (appIdentity as IApp)?.Metadata.Permissions.ToList()
-              //?? (appIdentity as AppState)?.Metadata.Permissions.ToList()
-              //?? (appIdentity as IAppState)?.Metadata.Permissions?.ToList()
-              ??  _appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();
-        return permissions;
+        var l = Log.Fn<AppPermissionCheck>($"ctx, app: {app.Show()}, type: {targetType?.NameId}, item: {targetItem?.EntityId}");
+        Init(ctx, app, targetType, targetItem, includeApp: true);
+        return l.Return(this);
     }
-
-    public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType targetType, IEntity targetItem) => Log.Func(() =>
-    {
-        Init(ctx, app, targetType, targetItem, FindPermissionsOfApp(app));
-        return this;
-    });
 
 
     /// <summary>
@@ -88,14 +74,41 @@ public class AppPermissionCheck: PermissionCheckBase
         IAppIdentity appIdentity,
         IContentType targetType = null, // optional type to check
         IEntity targetItem = null, // optional entity to check
-        IEnumerable<Permission> permissions = null)
+        IEnumerable<Permission> permissions = null,
+        bool includeApp = false)
     {
+        var l = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity?.Show()}, {nameof(includeApp)}: {includeApp}");
+
+        // New 2025-03-26 option to include App
+        // ATM all cases where App Permissions are included will not have permissions passed in
+        // This may change some day
+        permissions ??= includeApp
+            ? FindPermissionsOfApp(appIdentity)
+            : null;
+
         Init(targetType ?? targetItem?.Type, targetItem, permissions);
         _environmentPermission.Init(ctx, appIdentity);
-        Log.A($"..., {targetItem?.EntityId}, app: {appIdentity?.AppId}, ");
         Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
-
+        l.Done();
     }
+
+    /// <summary>
+    /// Retrieve the permissions of an App - in case the App has rules which allow all data to be read by certain users / groups.
+    /// </summary>
+    /// <param name="appIdentity"></param>
+    /// <returns></returns>
+    private List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
+    {
+        var l = Log.Fn<List<Permission>>();
+        var permissions = appIdentity == null
+            ? null
+            // If we already have the App, try to reuse it to be faster
+            : (appIdentity as IApp)?.Metadata.Permissions.ToList()
+              // Otherwise go the whole nine yards
+              ?? appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();
+        return l.Return(permissions, $"found: {permissions?.Count}");
+    }
+
 
     protected IContextOfSite Context { get; private set; }
 
