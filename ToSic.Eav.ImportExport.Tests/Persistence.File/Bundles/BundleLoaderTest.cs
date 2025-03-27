@@ -70,7 +70,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
     {
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
         output.WriteLine($"path:'{testStorageRoot}'");
-        var loader = loaderGenerator.New() // GetService<FileSystemLoader>()
+        var loader = loaderGenerator.New()
             .Init(Constants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
         var relationshipsSource = new ImmutableEntitiesSource();
         try
@@ -81,7 +81,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         {
             output.WriteLine(Log.Dump());
         }
-        return new List<IEntity>();
+        return [];
     }
         
 }

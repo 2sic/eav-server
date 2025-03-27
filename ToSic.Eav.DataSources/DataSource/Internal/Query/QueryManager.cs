@@ -1,9 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
-using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
@@ -80,16 +78,19 @@ public class QueryManager(
     {
         var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
         var appReader = appReaders.Value.GetOrKeep(appIdOrReader);
-        var result = appReader.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
+        var queries = appReader.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
+
         if (recurseParents <= 0)
-            return l.Return(result, "ok, no recursions");
+            return l.Return(queries, "ok, no recursions");
+
         l.A($"Try to recurse parents {recurseParents}");
         var parentAppState = appReader.GetParentCache();
         if (parentAppState == null)
-            return l.Return(result, "no more parents to recurse on");
-        var resultFromParents = AllQueryItems(parentAppState, recurseParents -1);
-        result = [.. result, .. resultFromParents];
-        return l.Return(result, "ok");
+            return l.Return(queries, "no more parents to recurse on");
+
+        var parentQueries = AllQueryItems(parentAppState, recurseParents -1);
+        queries = [.. queries, .. parentQueries];
+        return l.Return(queries, "ok");
     }
 
     public IQuery GetQuery(IAppIdentity appIdentity, string nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)

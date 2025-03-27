@@ -101,7 +101,7 @@ partial class DataSourceBase
 
         // If empty is preferred to an error, return this
         if (emptyIfNotFound)
-            return l.Return(new DataStream(Services.CacheService, this, name, () => new List<IEntity>()), "create empty");
+            return l.Return(new DataStream(Services.CacheService, this, name, () => []), "create empty");
 
         // Not found and no rule to handle it, throw error
         throw l.Done(new KeyNotFoundException(

@@ -17,7 +17,7 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         
         try
         {
-            return DirectEntitiesSource.Using(set => loader.Entities(FsDataConstants.QueriesFolder, 0, set.Source));
+            return DirectEntitiesSource.Using(set => loader.Entities(FsDataConstants.QueriesFolder, /*0,*/ set.Source));
         }
         finally
         {
@@ -26,16 +26,14 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         return [];
     }
 
-    internal IList<IContentType> LoadAllTypes(FileSystemLoader loaderRaw, ILog log) //, string? subfolderOnly = null)
+    internal IList<IContentType> LoadAllTypes(FileSystemLoader loaderRaw, ILog log)
     {
         // Log the root for debugging in case files are missing
-        var testRoot = TestFiles.GetTestPath(scenarioDeep); // PersistenceTestConstants.TestStorageRoot(TestContext);
-        //if (subfolderOnly.HasValue())
-        //    testRoot += subfolderOnly + '\\';
+        var testRoot = TestFiles.GetTestPath(scenarioDeep);
         Trace.WriteLine("Test folder: " + testRoot);
 
         var loader = loaderRaw
-            .Init(Constants.PresetAppId, testRoot, RepositoryTypes.TestingDoNotUse, /*subfolderOnly != null*/true, null);
+            .Init(Constants.PresetAppId, testRoot, RepositoryTypes.TestingDoNotUse, true, null);
         IList<IContentType> cts;
         try
         {
