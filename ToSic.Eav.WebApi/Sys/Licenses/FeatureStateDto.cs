@@ -5,6 +5,9 @@ namespace ToSic.Eav.WebApi.Sys.Licenses;
 
 public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
 {
+    // ReSharper disable once InconsistentNaming
+    private readonly FeatureState state = state;
+
     [JsonPropertyName("guid")]
     public Guid Guid => state.Aspect.Guid;
 

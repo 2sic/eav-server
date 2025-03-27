@@ -16,6 +16,9 @@ public abstract partial class PermissionCheckBase(
     object[] connect = default)
     : ServiceBase<PermissionCheckBase.MyServices>(services, logName, connect: connect), IPermissionCheck
 {
+    // ReSharper disable once InconsistentNaming
+    private readonly PermissionCheckBase.MyServices services = services;
+
     #region MyServices
 
     public class MyServices(IEavFeaturesService features, IEnvironmentPermission environmentPermission)
