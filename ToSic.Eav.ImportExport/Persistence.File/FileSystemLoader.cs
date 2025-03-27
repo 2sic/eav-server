@@ -79,14 +79,14 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
 
     #region Queries & Configuration
 
-    public IList<IEntity> Entities(string folder, int idSeed, DirectEntitiesSource relationships)
+    public IList<IEntity> Entities(string folder, /*int idSeed,*/ DirectEntitiesSource relationships)
     {
-        var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{idSeed}", timer: true);
+        var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{EntityIdSeed}", timer: true);
             
         // #1. check that folder exists
         var subPath = System.IO.Path.Combine(Path, folder);
         if (!CheckPathExists(Path) || !CheckPathExists(subPath))
-            return l.Return(new List<IEntity>(), "Path doesn't exist, return none");
+            return l.Return([], "Path doesn't exist, return none");
 
         // #2. WIP - Allow relationships between loaded items
         // If we are loading from a larger context, then we have a reference to a list
@@ -120,7 +120,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
         // #3.2 load entity-items from folder
         var jsonSerializer = Serializer;
         var entities = jsons
-            .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++idSeed, relationshipsSource))
+            .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++EntityIdSeed, relationshipsSource))
             .Where(entity => entity != null)
             .ToList();
         l.A("found " + entities.Count + " entities in " + folder + " folder");
