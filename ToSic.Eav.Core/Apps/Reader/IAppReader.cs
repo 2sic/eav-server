@@ -24,4 +24,14 @@ public interface IAppReader:
     /// Metadata Source to get Metadata of anything in the App.
     /// </summary>
     IMetadataSource Metadata { get; }
+
+    /// <summary>
+    /// WIP 2025-03-27 2dm / STV
+    /// </summary>
+    bool IsHealthy { get; }
+
+    /// <summary>
+    /// WIP 2025-03-27 2dm / STV
+    /// </summary>
+    string HealthMessage { get; }
 }

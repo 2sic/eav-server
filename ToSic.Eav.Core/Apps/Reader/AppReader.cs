@@ -33,6 +33,14 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     #endregion
 
+    #region Health Check
+
+    public bool IsHealthy => _appState.IsHealthy;
+
+    public string HealthMessage => _appState.HealthMessage;
+
+    #endregion
+
     #region Normal Data / Entities / List / Draft / Publish
 
     public IImmutableList<IEntity> List => _appState.List;
