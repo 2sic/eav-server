@@ -19,7 +19,14 @@ namespace ToSic.Eav.Apps.Internal;
 /// <param name="appPathsFactory"></param>
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class AppJsonService(LazySvc<IGlobalConfiguration> globalConfiguration, ISite site, IAppReaderFactory appReaders, IAppPathsMicroSvc appPathsFactory, MemoryCacheService memoryCacheService, Lazy<IJsonServiceInternal> json)
+public class AppJsonService(
+    LazySvc<IGlobalConfiguration> globalConfiguration,
+    ISite site,
+    IAppReaderFactory appReaders,
+    IAppPathsMicroSvc appPathsFactory,
+    MemoryCacheService memoryCacheService,
+    LazySvc<IJsonServiceInternal> json
+)
     : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appReaders, appPathsFactory, memoryCacheService, json]), IAppJsonService
 {
 
