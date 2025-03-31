@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
+using ToSic.Eav.Helpers.Interfaces;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -16,7 +17,7 @@ partial class AppState
     /// <summary>
     /// The builder must be a subclass of AppState, so it can access its private properties.
     /// </summary>
-    internal class AppStateBuilder(IAppReaderFactory appReaderFactory) : ServiceBase("App.SttBld"), IAppStateBuilder
+    internal class AppStateBuilder(IAppReaderFactory appReaderFactory, IRetryHelper retryHelper) : ServiceBase("App.SttBld", connect: [retryHelper]), IAppStateBuilder
     {
         #region Constructor / DI / Init (2 variants)
 
@@ -67,12 +68,16 @@ partial class AppState
                 lock (this)
                 {
                     var lInLock = l.Fn($"loading: {st.Loading} (app loading start in lock)");
-                        // only if loading is true will the AppState object accept changes
-                        st.Loading = true;
-                        loader.Invoke(st);
-                        st.CacheResetTimestamp("load complete");
-                        _ = EnsureNameAndFolderInitialized();
-                        if (!st.FirstLoadCompleted) st.FirstLoadCompleted = true;
+                    // only if loading is true will the AppState object accept changes
+                    st.Loading = true;
+
+                    // run the loader
+                    // loader.Invoke(st);
+                    retryHelper.ExecuteWithRetry(() => loader.Invoke(st));
+
+                    st.CacheResetTimestamp("load complete");
+                    _ = EnsureNameAndFolderInitialized();
+                    if (!st.FirstLoadCompleted) st.FirstLoadCompleted = true;
                     lInLock.Done($"done - dynamic load count: {st.DynamicUpdatesCount}");
                 }
             }
@@ -184,7 +189,7 @@ partial class AppState
             var draftId = draftEnt?.RepositoryId;
             if (draftId == null)
                 return l.ReturnFalse("remove obsolete draft - no draft, won't remove");
-            
+
             st.Index.Remove(draftId.Value);
             return l.ReturnTrue($"remove obsolete draft - found draft, will remove {draftId.Value}");
         }
@@ -331,9 +336,9 @@ partial class AppState
                 // situations which the static types shouldn't be used for, as they are json-typed
                 .Where(x => x.Id != 0 && x.Id < FsDataConstants.GlobalContentTypeMin)
                 .ToImmutableDictionary(x => x.Id, x => x.NameId);
-            
+
             st._appContentTypesFromRepository = RemoveAliasesForGlobalTypes(st, contentTypes);
-            
+
             // build types by name
             st._appTypesByName = BuildCacheForTypesByName(st._appContentTypesFromRepository, st.Log);
 

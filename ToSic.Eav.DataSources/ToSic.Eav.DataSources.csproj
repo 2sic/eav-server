@@ -47,6 +47,6 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" /><!-- from Oqtane.Server.csproj -->
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" /><!-- from Oqtane.Server.csproj -->
   </ItemGroup>
 </Project>

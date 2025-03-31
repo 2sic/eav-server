@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Persistence.Efc.Helpers;
+using IRetryHelper = ToSic.Eav.Helpers.Interfaces.IRetryHelper;
 
 namespace ToSic.Eav.Repository.Efc;
 
@@ -29,6 +31,8 @@ public static class StartupRepositoryEfc
         services.TryAddTransient<IRepositoryLoader, EfcRepositoryLoader>();
 
         services.TryAddTransient<DbDataController>();
+
+        services.TryAddTransient<IRetryHelper, RetryHelper>();
 
         return services;
     }

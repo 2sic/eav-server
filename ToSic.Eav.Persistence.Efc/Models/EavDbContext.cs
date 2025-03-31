@@ -38,9 +38,15 @@ public partial class EavDbContext : DbContext
         if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
             connectionString += ";MultipleActiveResultSets=True";
 #if NETFRAMEWORK
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder
+            .UseSqlServer(
+                connectionString,
+                options => options
+                    // Timeout in seconds
+                    .CommandTimeout(10) // TODO: @STV remove for production, since this just forcing a timeout for test
+            );
 #else
-        
+
         optionsBuilder
             .UseSqlServer(
                 connectionString,
