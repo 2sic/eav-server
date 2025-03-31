@@ -54,6 +54,6 @@ public interface IAppReaderFactory
     /// <returns></returns>
     IAppReader GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false);
 
-
-    //IAppReader ToReader(IAppStateCache state);
+    /// <see cref="IAppsCatalog.AppIdentity"/>
+    IAppIdentityPure AppIdentity(int appId);
 }

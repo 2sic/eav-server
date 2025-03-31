@@ -33,8 +33,10 @@ public interface IAppsCatalog
     IAppIdentityPure PrimaryAppIdentity(int zoneId);
 
     /// <summary>
-    /// Get the full identity of an App by its ID.
+    /// Get the full AppIdentity with Zone for the given appId.
     /// </summary>
+    /// <param name="appId"></param>
+    /// <returns></returns>
     IAppIdentityPure AppIdentity(int appId);
 
     /// <summary>

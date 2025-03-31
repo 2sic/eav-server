@@ -33,6 +33,8 @@ internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCach
         return Get(primaryAppId);
     }
 
+    public IAppIdentityPure AppIdentity(int appId) => appsCatalog.Value.AppIdentity(appId);
+
     public IAppReader GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false)
     {
         if (nullIfNotLoaded && !((AppStateCacheService)appStates).AppsCacheSwitch.Value.Has(PresetIdentity)) 
