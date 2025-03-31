@@ -38,13 +38,17 @@ public abstract class MultiPermissionsBase<TServices>(TServices services, string
     /// <returns>True if all pass, false if any one fails</returns>
     public bool EnsureAll(List<Grants> grants, out string error)
     {
-        var wrap = Log.Fn<bool>();
-        foreach (var set in PermissionCheckers)
+        var l = Log.Fn<bool>($"Doing {nameof(EnsureAll)} for {GetType().Name}");
+
+        var permCheckers = PermissionCheckers;
+        l.A($"{nameof(PermissionCheckers)}: {permCheckers.Count}");
+
+        foreach (var set in permCheckers)
             if (!set.Value.Ensure(grants, out error))
-                return wrap.ReturnFalse();
+                return l.ReturnFalse();
 
         error = null;
-        return wrap.ReturnTrue();
+        return l.ReturnTrue();
     }
 
     /// <summary>

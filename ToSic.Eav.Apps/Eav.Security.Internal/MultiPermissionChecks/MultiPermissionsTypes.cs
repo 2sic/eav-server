@@ -24,8 +24,10 @@ public class MultiPermissionsTypes: MultiPermissionsApp
 
     public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
     {
+        var l = Log.Fn<MultiPermissionsTypes>($"..., appId: {app.AppId}, contentType: '{contentType}'");
         Init(context, app);
-        return InitTypesAfterInit([contentType]);
+        InitTypesAfterInit([contentType]);
+        return l.Return(this);
     }
 
     /// <summary>

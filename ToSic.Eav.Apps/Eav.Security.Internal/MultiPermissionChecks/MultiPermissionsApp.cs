@@ -45,7 +45,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
             // todo: probably enhance with a Site.IsMultiZone check
             : Services.ZoneMapper.Value.SiteOfZone(App.ZoneId)
               ?? context.Site;
-        return l.Return(this, $"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
+        return l.Return(this, $"ready for app:{app.Show()} tenant/zone:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
     }
     /// <summary>
     /// The current app which will be used and can be re-used externally
