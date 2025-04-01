@@ -239,8 +239,7 @@ public partial class Serialization : DataSourceBase
     /// </summary>
     [PrivateApi]
     public Serialization(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SerCnf")
-    {
-    }
+    { }
 
     /// <summary>
     /// Get the list of all items with reduced attributes-list
@@ -255,22 +254,24 @@ public partial class Serialization : DataSourceBase
         return l.Return(enhanced, $"{enhanced.Count}");
     }
 
-    private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before) => Log.Func(() =>
+    private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before)
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         // Skip if no rules defined
         var noRules = string.IsNullOrWhiteSpace(string.Join("", Configuration));
-        if (noRules) return (before, "no rules, unmodified");
+        if (noRules)
+            return l.Return(before, "no rules, unmodified");
 
         var decorator = Decorator;
 
         var result = before
-            .Select(e => (IEntity)new EntityDecorator12<EntitySerializationDecorator>(e, decorator));
+            .Select(IEntity (e) => new EntityDecorator12<EntitySerializationDecorator>(e, decorator))
+            .ToImmutableList();
 
-        return (result.ToImmutableList(), "modified");
-    });
+        return l.Return(result, "modified");
+    }
 
-    private EntitySerializationDecorator Decorator => _decorator ??= CreateDecorator();
-    private EntitySerializationDecorator _decorator;
+    private EntitySerializationDecorator Decorator => field ??= CreateDecorator();
 
     private EntitySerializationDecorator CreateDecorator()
     {
@@ -354,14 +355,19 @@ public partial class Serialization : DataSourceBase
 
     private string GetOutputFormat()
     {
-        if (IncludeRelationshipsAsCsv.IsEmptyOrWs()) return null;
+        if (IncludeRelationshipsAsCsv.IsEmptyOrWs())
+            return null;
+
         var csvAsBool = TryParseIncludeRule(IncludeRelationshipsAsCsv);
-        if (csvAsBool == true) return "csv";
-        if (csvAsBool == false) return null;
-        return IncludeRelationshipsAsCsv; // could be "array"
+        return csvAsBool switch
+        {
+            true => "csv",
+            false => null,
+            _ => IncludeRelationshipsAsCsv, // could be "array"
+        };
     }
 
-    private bool? TryParseIncludeRule(string original)
-        => bool.TryParse(original, out var include) ? (bool?)include : null;
+    private static bool? TryParseIncludeRule(string original)
+        => bool.TryParse(original, out var include) ? include : null;
 
 }

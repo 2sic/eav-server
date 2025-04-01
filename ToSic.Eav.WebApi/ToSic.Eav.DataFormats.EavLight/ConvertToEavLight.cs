@@ -122,7 +122,14 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         var rules = new EntitySerializationDecorator(PresetFilters, attachedRules);
 
         // Figure out how to serialize relationships
-        var serRels = SubEntitySerialization.Stabilize(original: rules.SerializeRelationships, serialize: true, "object", id: true, guid: false, title: true);
+        var serRels = SubEntitySerialization.Stabilize(
+            original: rules.SerializeRelationships,
+            serialize: true,
+            format: "object",
+            id: true,
+            guid: false,
+            title: true
+        );
 
         var excludeAttributes = ExcludeAttributesOfType(entity);
 
@@ -133,7 +140,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
             .Where(d => excludeAttributes?.Contains(d.Name) != true)
             .ToList();
 
-        // experimental v17
+        // If we have filter fields from $select, apply that (new ca. v17)
         if (rules.FilterFieldsEnabled == true)
             attributes = attributes
                 .Where(a => rules.FilterFields.Any(ff => ff.EqualsInsensitive(a.Name)))
@@ -147,8 +154,8 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
                 return attribute.Type switch
                 {
                     // Special Case 1: Hyperlink Field which must be resolved
-                    ValueTypes.Hyperlink when rawValue is string stringValue &&
-                                              ValueConverterBase.CouldBeReference(stringValue)
+                    ValueTypes.Hyperlink when rawValue is string stringValue
+                                              && ValueConverterBase.CouldBeReference(stringValue)
                         => (LinksWithBothValues ? stringValue + "|" : "" ) // Optionally prefix with original value, but only in admin-mode new 17.02+
                            + Services.ValueConverter.ToValue(stringValue, entity.EntityGuid),
                     // Special Case 2: Entity-List
@@ -166,7 +173,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
         // New 12.05 - drop null values as specified in the configuration - use attached rules if they exist
         // don't use the final rules, as they don't affect these settings as of now
-        if(attachedRules != null)
+        if (attachedRules != null)
             OptimizeRemoveEmptyValues(attachedRules, entityValues);
 
         // Add Id, Guid, AppId - according to rules
@@ -181,10 +188,10 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         AddMetadataAndFor(entity, entityValues, rules);
 
         // Special edit infos - _Title (old, maybe not needed), Stats, EditInfo for read-only etc.
-        // 2024-03-05 2dm - basically when the $select is applied, don't add these any more
+        // 2024-03-05 2dm - basically when the $select is applied, don't add these anymore
         if (rules.FilterFieldsEnabled != true && WithEditInfos)
         {
-            // this internal _Title field is probably not used much any more, so there is no rule for it
+            // this internal _Title field is probably not used much anymore, so there is no rule for it
             // Probably remove at some time in near future, once verified it's not used in the admin-front-end
             try { entityValues.Add(InternalTitleField, entity.GetBestTitle(Languages)); }
             catch { /* ignore */ }

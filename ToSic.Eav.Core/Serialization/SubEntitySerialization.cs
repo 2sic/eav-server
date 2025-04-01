@@ -6,7 +6,7 @@ public class SubEntitySerialization: ISubEntitySerialization
     public bool? Serialize { get; init; }
 
     /// <summary>
-    /// WIP expected values "csv", "array", "object" (default)
+    /// Expected values "csv", "array", "object" (default)
     /// </summary>
     public string SerializeFormat { get; init; }
 
@@ -20,7 +20,12 @@ public class SubEntitySerialization: ISubEntitySerialization
         => Stabilize(null, false, "object", true, true, true);
 
     public static ISubEntitySerialization Stabilize(
-        ISubEntitySerialization original, bool serialize, string format, bool id, bool guid, bool title)
+        ISubEntitySerialization original,
+        bool serialize,
+        string format,
+        bool id,
+        bool guid,
+        bool title)
         => new SubEntitySerialization
         {
             Serialize = original?.Serialize ?? serialize,
@@ -31,10 +36,13 @@ public class SubEntitySerialization: ISubEntitySerialization
         };
 
     public static ISubEntitySerialization Stabilize(
-        ISubEntitySerialization original, 
-        ISubEntitySerialization addition = null, 
-        bool serialize = false, bool id = false, bool guid = false, bool title = false) =>
-        new SubEntitySerialization
+        ISubEntitySerialization original,
+        ISubEntitySerialization addition = null,
+        bool serialize = false,
+        bool id = false,
+        bool guid = false,
+        bool title = false)
+        => new SubEntitySerialization
         {
             Serialize = original?.Serialize ?? addition?.Serialize ?? serialize,
             SerializeId = original?.SerializeId ?? addition?.SerializeId ?? id,
