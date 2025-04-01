@@ -198,16 +198,20 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     public static EntitySerializationDecorator FromFieldList(List<string> selectFields, bool withGuid, ILog log)
     {
         var l = log.Fn<EntitySerializationDecorator>($"{nameof(selectFields)}: {selectFields}, {nameof(withGuid)}: {withGuid}");
-        // If nothing, exit.
+        
+        // If nothing, exit. Only specify SerializeGuid if it's true, otherwise null so it can use other defaults
         if (selectFields == null || !selectFields.Any())
-            return l.Return(new() { SerializeGuid = withGuid }, "no filters");
+            return l.Return(new() { SerializeGuid = withGuid ? true : null }, "no filters");
 
         // Force adding the title as it's a special case
         // First check for "EntityTitle" - as that would mean we should add it, but rename it
         var dropNames = SystemFields.Keys.ToList();
         bool forceAddTitle;
         string customTitleFieldName = null;
-        if (selectFields.Any(sf => sf.EqualsInsensitive(EntityFieldTitle)))
+        var fieldsAllLower = selectFields
+            .Select(f => f.ToLowerInvariant())
+            .ToList();
+        if (fieldsAllLower.Contains(EntityFieldTitle.ToLowerInvariant()))
         {
             l.A($"Found long title name {EntityFieldTitle}, will process replacement strategy");
             forceAddTitle = true;
@@ -220,17 +224,19 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         }
         else
         {
-            forceAddTitle = selectFields.Any(sf => sf.EqualsInsensitive(TitleNiceName));
+            forceAddTitle = fieldsAllLower.Contains(TitleNiceName.ToLowerInvariant());
         }
 
         // Simpler fields, these do not have a custom name feature, they are either added or not
-        var addId = selectFields.Any(sf => sf.EqualsInsensitive(IdNiceName));
-        var addGuid = selectFields.Any(sf => sf.EqualsInsensitive(GuidNiceName));
-        var addModified = selectFields.Any(sf => sf.EqualsInsensitive(ModifiedNiceName));
-        var addCreated = selectFields.Any(sf => sf.EqualsInsensitive(CreatedNiceName));
+        var addId = fieldsAllLower.Contains(IdNiceName.ToLowerInvariant());
+        var addGuid = fieldsAllLower.Contains(GuidNiceName.ToLowerInvariant());
+        var addModified = fieldsAllLower.Contains(ModifiedNiceName.ToLowerInvariant());
+        var addCreated = fieldsAllLower.Contains(CreatedNiceName.ToLowerInvariant());
 
         // drop all system fields
-        var filterFields = selectFields.Where(sf => dropNames.Any(key => !key.EqualsInsensitive(sf))).ToList();
+        var filterFields = selectFields
+            .Where(sf => dropNames.Any(key => !key.EqualsInsensitive(sf)))
+            .ToList();
 
         var result = new EntitySerializationDecorator
         {
