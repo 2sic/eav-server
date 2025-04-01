@@ -56,6 +56,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
         var typeMetadata = cType.Metadata;
 
         var mdReferences = (ser as ConvertToEavLight)?
+            .SubConverter
             .CreateListOfSubEntities(typeMetadata, SubEntitySerialization.NeverSerializeChildren());
 
         var permissionCount = typeMetadata.Permissions.Count();

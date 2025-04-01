@@ -58,9 +58,9 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     private bool WithEditInfos { get; set; }
 
     // WIP v17
-    public void AddSelectFields(List<string> fields) => _presetFilters = FromFieldList(fields, WithGuid, Log);
+    public void AddSelectFields(List<string> fields) => _presetFilters = new EntitySerializationDecoratorCreator(fields, WithGuid, Log).Generate();
 
-    protected EntitySerializationDecorator PresetFilters => _presetFilters ??= FromFieldList(null, WithGuid, Log);
+    protected EntitySerializationDecorator PresetFilters => _presetFilters ??= new EntitySerializationDecoratorCreator(null, WithGuid, Log).Generate();
     private EntitySerializationDecorator _presetFilters;
 
     /// <inheritdoc/>
@@ -85,14 +85,18 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
     public string[] Languages
     {
-        get => _languages ??= Services.ZoneCultureResolver.SafeLanguagePriorityCodes();
-        set => _languages = value;
+        get => field ??= Services.ZoneCultureResolver.SafeLanguagePriorityCodes();
+        set => field = value;
     }
+
+    /// <summary>
+    /// Separate helper to create lightweight sub entities
+    /// </summary>
+    internal ConvertToJsonBasicLightSubEntities SubConverter => field ??= new(Languages);
+
 
     [PrivateApi("not public ATM")]
     public TypeSerialization Type { get; set; } = new();
-
-    private string[] _languages;
 
     #endregion
 
@@ -161,7 +165,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
                     // Special Case 2: Entity-List
                     ValueTypes.Entity when rawValue is IEnumerable<IEntity> entities
                         => serRels.Serialize == true
-                            ? CreateListOrCsvOfSubEntities(entities, serRels)
+                            ? SubConverter.CreateListOrCsvOfSubEntities(entities, serRels)
                             : null,
                     _ => rawValue
                 };

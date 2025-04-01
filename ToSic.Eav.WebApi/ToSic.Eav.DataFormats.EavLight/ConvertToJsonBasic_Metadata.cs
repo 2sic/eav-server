@@ -18,7 +18,7 @@ partial class ConvertToEavLight
             
         if (itemMdRules.Serialize != true || !entity.Metadata.Any()) return;
 
-        entityValues.Add(Attributes.JsonKeyMetadata, CreateListOfSubEntities(entity.Metadata, itemMdRules));
+        entityValues.Add(Attributes.JsonKeyMetadata, SubConverter.CreateListOfSubEntities(entity.Metadata, itemMdRules));
     }
 
 
