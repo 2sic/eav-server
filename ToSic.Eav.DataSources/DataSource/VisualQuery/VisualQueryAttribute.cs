@@ -46,6 +46,22 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// <returns>True if this data source can also provide other named out-streams, false if it only has the defined list of out-streams.</returns>
     public bool DynamicOut { get; set; } = false;
 
+    public const string OutModeDynamic = "dynamic";
+    public const string OutModeFixed = "fixed";
+    public const string OutModeMirrorIn = "mirror-in";
+
+    /// <summary>
+    /// Provide more options for the Out-Mode, like "mirror-in" 
+    /// </summary>
+    /// <remarks>
+    /// Experimental ca. v19.04
+    /// </remarks>
+    public string OutMode
+    {
+        get => field ??= DynamicOut ? OutModeDynamic : OutModeFixed;
+        set => field = value;
+    }
+
     public bool DynamicIn
     {
         get => _dynamicIn;
