@@ -1,53 +1,28 @@
 ﻿using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
 
 namespace ToSic.Eav.WebApi.Dto;
 
 public class DataSourceDto
 {
-    public string TypeNameForUi { get; set; }
-
-    // old, try to deprecate and replace with Identifier
-    public string PartAssemblyAndType { get; set; }
-
-    public string Identifier { get; set; }
-
-    public ICollection<string> In { get; set; }
-    public ICollection<string> Out { get; set; }
-    public string ContentType { get; set; }
-    public string PrimaryType { get; set; }
-    public string Icon { get; set; }
-    public bool DynamicOut { get; set; }
-    public bool DynamicIn { get; set; }
-    public string HelpLink { get; set; }
-    public bool EnableConfig { get; set; }
-    public string Name { get; set; }
-    public string UiHint { get; set; }
-
-    // todo: deprecated, but probably still in use in Visual Query - should be replaced by Audience
-    public int Difficulty { get; set; }
-    public int Audience { get; set; }
-
-    public bool IsGlobal { get; }
-
-    public string Errors { get; }
-
-    private static readonly string[] StreamNamesIfError = [DataSourceConstants.StreamDefaultName];
-
     public DataSourceDto(DataSourceInfo dsInfo, ICollection<string> outNameList)
     {
         var noError = dsInfo.ErrorOrNull == null;
-        var dsAttribute = dsInfo.VisualQuery;
         Name = noError ? dsInfo.Type.Name : dsInfo.NameId; // will override further down if dsInfo is provided
         Identifier = dsInfo.NameId;
-        if (dsAttribute == null) return;
+
+        // If we don't have more information from the attribute, exit early
+        var dsAttribute = dsInfo.VisualQuery;
+        if (dsAttribute == null)
+            return;
+
         UiHint = dsAttribute.UiHint;
         PrimaryType = dsAttribute.Type.ToString();
         Icon = dsAttribute.Icon; // ?.Replace("_", "-"); // wip: rename "xxx_yyy" icons to "xxx-yyy" - must switch to base64 soon
         HelpLink = dsAttribute.HelpLink;
         In = noError ? dsAttribute.In ?? [] : StreamNamesIfError;
         DynamicOut = dsAttribute.DynamicOut;
+        OutMode = dsAttribute.OutMode;
         DynamicIn = dsAttribute.DynamicIn;
         EnableConfig = dsAttribute.EnableConfig;
         ContentType = dsAttribute.ConfigurationType;
@@ -65,4 +40,38 @@ public class DataSourceDto
         // WIP try to deprecate
         PartAssemblyAndType = dsInfo.NameId;
     }
+
+    public string TypeNameForUi { get; }
+
+    // old, try to deprecate and replace with Identifier
+    public string PartAssemblyAndType { get; }
+
+    public string Identifier { get; }
+
+    public ICollection<string> In { get; }
+    public ICollection<string> Out { get; }
+    public string ContentType { get; }
+    public string PrimaryType { get; }
+    public string Icon { get; }
+    public bool DynamicOut { get; }
+
+    public string OutMode { get; }
+
+    public bool DynamicIn { get; }
+    public string HelpLink { get; }
+    public bool EnableConfig { get; }
+    public string Name { get; }
+    public string UiHint { get; }
+
+    // todo: deprecated, but probably still in use in Visual Query - should be replaced by Audience
+    public int Difficulty { get; }
+    public int Audience { get; }
+
+    public bool IsGlobal { get; }
+
+    public string Errors { get; }
+
+    private static readonly string[] StreamNamesIfError = [DataSourceConstants.StreamDefaultName];
+
+
 }

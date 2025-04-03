@@ -47,7 +47,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     public bool DynamicOut { get; set; } = false;
 
     public const string OutModeDynamic = "dynamic";
-    public const string OutModeFixed = "fixed";
+    public const string OutModeStatic = "static";
     public const string OutModeMirrorIn = "mirror-in";
 
     /// <summary>
@@ -58,7 +58,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// </remarks>
     public string OutMode
     {
-        get => field ??= DynamicOut ? OutModeDynamic : OutModeFixed;
+        get => field ??= DynamicOut ? OutModeDynamic : OutModeStatic;
         set => field = value;
     }
 
