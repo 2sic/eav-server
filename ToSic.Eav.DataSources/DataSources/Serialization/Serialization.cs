@@ -1,5 +1,7 @@
-﻿using ToSic.Eav.Plumbing;
+﻿using System.Collections.ObjectModel;
+using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.Serialization;
+using ToSic.Lib.Helpers;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -9,9 +11,9 @@ namespace ToSic.Eav.DataSources;
 /// DataSource which changes how Streams will be serialized in the end.
 /// </summary>
 /// <remarks>
-/// * New in v11.20
-/// * Changed in v15.05 to use the [immutable convention](xref:NetCode.Conventions.Immutable)
-/// * Renamed to `SerializationConfiguration` from `SerializationConfiguration` in 15.05
+/// * v11.20 Created
+/// * v15.05 changed to use the [immutable convention](xref:NetCode.Conventions.Immutable)
+/// * v15.05 Renamed to `SerializationConfiguration` from `SerializationConfiguration`
 /// </remarks>
 [PublicApi]
 [VisualQuery(
@@ -21,6 +23,7 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Modify, 
     NameId = "2952e680-4aaa-4a12-adf7-325cb2854358",
     DynamicOut = true,
+    OutMode = VisualQueryAttribute.OutModeMirrorIn,
     In = [DataSourceConstants.StreamDefaultName],
     ConfigurationType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
     HelpLink = "https://go.2sxc.org/DsSerializationConfiguration")]
@@ -241,6 +244,28 @@ public partial class Serialization : DataSourceBase
     public Serialization(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SerCnf")
     { }
 
+    #region Dynamic Out
+
+    /// <inheritdoc/>
+    public override IReadOnlyDictionary<string, IDataStream> Out => _getOut.Get(() => new ReadOnlyDictionary<string, IDataStream>(CreateOutWithAllStreams()));
+
+    private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _getOut = new();
+
+    /// <summary>
+    /// Attach all missing streams, now that Out is used the first time.
+    /// </summary>
+    private IDictionary<string, IDataStream> CreateOutWithAllStreams()
+    {
+        var outDic = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);
+        foreach (var dataStream in In.Where(s => !outDic.ContainsKey(s.Key)))
+            outDic.Add(dataStream.Key, new DataStream(Services.CacheService, this, dataStream.Key, () => GetList(dataStream.Key)));
+        return outDic;
+    }
+
+    #endregion
+
+    #region Generate Lists with Serialization Decorators
+
     /// <summary>
     /// Get the list of all items with reduced attributes-list
     /// </summary>
@@ -262,7 +287,7 @@ public partial class Serialization : DataSourceBase
         if (noRules)
             return l.Return(before, "no rules, unmodified");
 
-        var decorator = Decorator;
+        var decorator = SerializationSourceToDecorator.Create(this);
 
         var result = before
             .Select(IEntity (e) => new EntityDecorator12<EntitySerializationDecorator>(e, decorator))
@@ -271,103 +296,6 @@ public partial class Serialization : DataSourceBase
         return l.Return(result, "modified");
     }
 
-    private EntitySerializationDecorator Decorator => field ??= CreateDecorator();
-
-    private EntitySerializationDecorator CreateDecorator()
-    {
-        var id = TryParseIncludeRule(IncludeId);
-        var title = TryParseIncludeRule(IncludeTitle);
-        var guid = TryParseIncludeRule(IncludeGuid);
-        var created = TryParseIncludeRule(IncludeCreated);
-        var modified = TryParseIncludeRule(IncludeModified);
-        var appId = TryParseIncludeRule(IncludeAppId);
-        var zoneId = TryParseIncludeRule(IncludeZoneId);
-
-        var dropNullValues = TryParseIncludeRule(RemoveNullValues) ?? false;
-        var dropZeroValues = TryParseIncludeRule(RemoveZeroValues) ?? false;
-        var dropEmptyStringValues = TryParseIncludeRule(RemoveEmptyStrings) ?? false;
-        var dropFalseValues = TryParseIncludeRule(DropFalseValues) ?? false;
-
-        var mdForSer = new MetadataForSerialization
-        {
-            Serialize = TryParseIncludeRule(IncludeMetadataFor),
-            SerializeKey = TryParseIncludeRule(IncludeMetadataForId),
-            SerializeType = TryParseIncludeRule(IncludeMetadataForType),
-        };
-
-        var mdSer = new SubEntitySerialization
-        {
-            Serialize = TryParseIncludeRule(IncludeMetadata),
-            SerializeId = TryParseIncludeRule(IncludeMetadataId),
-            SerializeGuid = TryParseIncludeRule(IncludeMetadataGuid),
-            SerializeTitle = TryParseIncludeRule(IncludeMetadataTitle)
-        };
-
-
-        var relSer = new SubEntitySerialization
-        {
-            Serialize = TryParseIncludeRule(IncludeRelationships),
-            // Serialize as CSV can be null, false, true, "array"
-            //SerializesAsCsv = TryParseIncludeRule(IncludeRelationshipsAsCsv) ?? IncludeRelationshipsAsCsv.HasValue(),
-            //SerializeListAsString = !IncludeRelationshipsAsCsv.EqualsInsensitive("array"),
-            SerializeFormat = GetOutputFormat(),
-
-            SerializeId = TryParseIncludeRule(IncludeRelationshipId),
-            SerializeGuid = TryParseIncludeRule(IncludeRelationshipGuid),
-            SerializeTitle = TryParseIncludeRule(IncludeRelationshipTitle)
-        };
-
-        var typeSer = new TypeSerialization
-        {
-            SerializeAs = IncludeTypeAs,
-            SerializeId = TryParseIncludeRule(IncludeTypeId),
-            SerializeName = TryParseIncludeRule(IncludeTypeName),
-            SerializeDescription = null,
-            PropertyNames = TypePropertyNames
-        };
-
-        var decorator = new EntitySerializationDecorator
-        {
-            RemoveNullValues = dropNullValues,
-            RemoveZeroValues = dropZeroValues,
-            RemoveEmptyStringValues = dropEmptyStringValues,
-            RemoveBoolFalseValues = dropFalseValues,
-
-            // Metadata & Relationships
-            SerializeMetadataFor = mdForSer,
-            SerializeMetadata = mdSer,
-            SerializeRelationships = relSer,
-            SerializeType = typeSer,
-
-            // id, title, guid
-            SerializeId = id,
-            SerializeTitle = title,
-            SerializeGuid = guid,
-            SerializeAppId = appId,
-            SerializeZoneId = zoneId,
-
-            // dates
-            SerializeCreated = created,
-            SerializeModified = modified
-        };
-        return decorator;
-    }
-
-    private string GetOutputFormat()
-    {
-        if (IncludeRelationshipsAsCsv.IsEmptyOrWs())
-            return null;
-
-        var csvAsBool = TryParseIncludeRule(IncludeRelationshipsAsCsv);
-        return csvAsBool switch
-        {
-            true => "csv",
-            false => null,
-            _ => IncludeRelationshipsAsCsv, // could be "array"
-        };
-    }
-
-    private static bool? TryParseIncludeRule(string original)
-        => bool.TryParse(original, out var include) ? include : null;
+    #endregion
 
 }
