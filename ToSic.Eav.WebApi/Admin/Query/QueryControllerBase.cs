@@ -23,8 +23,9 @@ namespace ToSic.Eav.WebApi.Admin.Query;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class QueryControllerBase<TImplementation>(
     QueryControllerBase<TImplementation>.MyServices services,
-    string logName)
-    : ServiceBase<QueryControllerBase<TImplementation>.MyServices>(services, logName)
+    string logName,
+    object[] connect = default)
+    : ServiceBase<QueryControllerBase<TImplementation>.MyServices>(services, logName, connect: connect)
     where TImplementation : QueryControllerBase<TImplementation>
 {
 
@@ -66,9 +67,6 @@ public abstract class QueryControllerBase<TImplementation>(
         public Generator<PassThrough> PassThrough { get; } = passThrough;
     }
 
-
-    private QueryBuilder QueryBuilder { get; } = services.QueryBuilder;
-
     #endregion
 
     /// <summary>
@@ -79,7 +77,8 @@ public abstract class QueryControllerBase<TImplementation>(
         var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
         var query = new QueryDefinitionDto();
 
-        if (!id.HasValue) return l.Return(query, "no id, empty");
+        if (!id.HasValue)
+            return l.Return(query, "no id, empty");
 
         var appState = Services.AppStates.New().Get(appId);
         var qDef = Services.QueryManager.Value.Get(appState, id.Value);
@@ -160,15 +159,12 @@ public abstract class QueryControllerBase<TImplementation>(
         IDataSource GetSubStream(QueryResult builtQuery)
         {
             // Find the DataSource
-            if (!builtQuery.DataSources.ContainsKey(from))
+            if (!builtQuery.DataSources.TryGetValue(from, out var source))
                 throw new($"Can't find source with name '{from}'");
 
-            var source = builtQuery.DataSources[from];
-            if (!source.Out.ContainsKey(streamName))
+            if (!source.Out.TryGetValue(streamName, out var resultStream))
                 throw new($"Can't find stream '{streamName}' on source '{from}'");
 
-            var resultStream = source.Out[streamName];
-                
             // Repackage as DataSource since that's expected / needed
             var passThroughDs = Services.PassThrough.New();
             passThroughDs.Attach(streamName, resultStream);
@@ -183,9 +179,10 @@ public abstract class QueryControllerBase<TImplementation>(
         Func<QueryResult, IDataSource> partLookup) 
     {
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
+
         // Get the query, run it and track how much time this took
-        var qDef = QueryBuilder.GetQueryDefinition(appId, id);
-        var builtQuery = QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
+        var qDef = services.QueryBuilder.GetQueryDefinition(appId, id);
+        var builtQuery = services.QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields
@@ -196,10 +193,13 @@ public abstract class QueryControllerBase<TImplementation>(
         var results = Log.Func(message: "Serialize", timer: true, func: () =>
         {
             var converter = Services.EntToDicLazy.Value;
-            converter.WithGuid = true;
+            //converter.WithGuid = true;
             converter.MaxItems = top;
             converter.AddSelectFields(extraParams.SelectFields);
-            var converted = converter.Convert(partLookup(builtQuery));
+
+            // Use passed in function to select the part to serialize
+            var part = partLookup(builtQuery);
+            var converted = converter.Convert(part);
             return (converted, "ok");
         });
         timer.Stop();
@@ -244,7 +244,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
             var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppReader);
             var ents = deser.Deserialize(args.GetContentString());
-            var qdef = QueryBuilder.Create(ents, args.AppId);
+            var qdef = services.QueryBuilder.Create(ents, args.AppId);
             workUnit.SaveCopy(qdef);
 
             return l.ReturnTrue();

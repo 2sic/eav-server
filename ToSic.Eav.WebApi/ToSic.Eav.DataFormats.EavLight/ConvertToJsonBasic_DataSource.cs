@@ -11,64 +11,51 @@ namespace ToSic.Eav.DataFormats.EavLight;
 [PrivateApi("Hide implementation")]
 partial class ConvertToEavLight
 {
-    ///// <summary>
-    ///// Important: this constructor is used both in inherited,
-    ///// but also in EAV-code which uses only this object (so no inherited)
-    ///// This is why it must be public, because otherwise it can't be constructed from eav?
-    ///// </summary>
-    ///// <param name="dependencies"></param>
-    //public ConvertToJsonBasic(Dependencies dependencies): base(dependencies, "Eav.CnvE2D") { }
 
     #region Many variations of the Prepare-Statement expecting various kinds of input
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IConvertDataSource{T}.Convert" />
     public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams = null)
         => Convert(source, streams, null);
         
     [PrivateApi("not public yet, as the signature is not final yet")]
-    public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids)
+    public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams, string[]? filterGuids)
     {
         var l = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>(timer: true);
-        string[] streamsList;
-        if (streams != null)
-        {
-            Log.A("Will use provided list of streams.");
-            streamsList = streams.ToArray();
-        }
-        else
-        {
-            Log.A("No streams specified, will create list with all names.");
-            streamsList = source.Out.Select(p => p.Key).ToArray();
-        }
 
-        Log.A("Streams: " + Join(",", streamsList));
+        var streamsList = streams?.ToArray()
+            ?? source.Out.Select(p => p.Key).ToArray();
 
-        // pre-process the guids list to ensure they are guids
-        var realGuids = Array.Empty<Guid>();
-        if (filterGuids?.Length > 0)
-            realGuids = filterGuids
-                .Select(g => Guid.TryParse(g, out var validGuid) ? validGuid as Guid? : null)
-                .Where(g => g != null)
-                .Cast<Guid>()
-                .ToArray();
+        var msg = streams != null
+            ? "Will use provided list of streams."
+            : "No streams specified, will create list with all names.";
+        l.A($"{msg} Streams: {Join(",", streamsList)}");
+
+        // Pre-process the guids list to ensure they are guids
+        var realGuids = filterGuids?
+                            .Select(str => Guid.TryParse(str, out var guid) ? guid : Guid.Empty)
+                            .Where(guid => guid != Guid.Empty)
+                            .ToArray()
+                        ?? [];
 
 
-        var y = streamsList
-            .Where(k => source.Out.ContainsKey(k))
+        var allStreams = streamsList
+            .Where(source.Out.ContainsKey)
             .ToDictionary(
                 k => k,
                 s =>
                 {
-                    var list = source.Out[s].List;
-                    if (realGuids.Length > 0)
-                        list = list.Where(e => realGuids.Contains(e.EntityGuid));
-                    return Convert(list);
+                    var list = source.Out[s].List.ToList();
+                    var filtered = realGuids.Any()
+                        ? list.Where(e => realGuids.Contains(e.EntityGuid))
+                        : list;
+                    return Convert(filtered);
                 });
 
-        return l.ReturnAsOk(y);
+        return l.ReturnAsOk(allStreams);
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IConvertDataSource{T}.Convert" />
     public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, string streams)
         => Convert(source, streams?.Split(','));
 
