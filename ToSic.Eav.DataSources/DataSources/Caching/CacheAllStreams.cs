@@ -21,8 +21,9 @@ namespace ToSic.Eav.DataSources.Caching;
     Icon = DataSourceIcons.HistoryOff,
     Type = DataSourceType.Cache, 
     NameId = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
-    DynamicOut = true,
     DynamicIn = true,
+    DynamicOut = true,
+    OutMode = VisualQueryAttribute.OutModeMirrorIn, // New v20 - improved visual query
     ConfigurationType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
     NameIds =
     [

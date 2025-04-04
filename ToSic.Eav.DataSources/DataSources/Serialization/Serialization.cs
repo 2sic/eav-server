@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Modify, 
     NameId = "2952e680-4aaa-4a12-adf7-325cb2854358",
     DynamicOut = true,
-    OutMode = VisualQueryAttribute.OutModeMirrorIn,
+    OutMode = VisualQueryAttribute.OutModeMirrorIn, // New v20 - improved visual query
     In = [DataSourceConstants.StreamDefaultName],
     ConfigurationType = "5c84cd3f-f853-40b3-81cf-dee6a07dc411",
     HelpLink = "https://go.2sxc.org/DsSerializationConfiguration")]

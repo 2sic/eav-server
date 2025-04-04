@@ -14,8 +14,8 @@
     Audience = Audience.Advanced,
     NameId = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
     DynamicOut = true,
+    OutMode = VisualQueryAttribute.OutModeMirrorIn, // New v20 - improved visual query
     DynamicIn = true)]
-
 public class PassThrough : DataSourceBase
 {
     /// <inheritdoc />

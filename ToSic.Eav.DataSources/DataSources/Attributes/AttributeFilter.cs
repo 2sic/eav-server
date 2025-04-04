@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSources;
     NiceName = "Remove Attribute/Property",
     UiHint = "Remove attributes/properties to limit what is available",
     Icon = DataSourceIcons.Delete,
-    Type = DataSourceType.Modify, 
+    Type = DataSourceType.Modify,
     NameId = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
     DynamicOut = false,
     In = [InStreamDefaultRequired],

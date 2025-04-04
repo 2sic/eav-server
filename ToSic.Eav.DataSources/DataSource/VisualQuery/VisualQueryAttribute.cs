@@ -54,7 +54,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// Provide more options for the Out-Mode, like "mirror-in" 
     /// </summary>
     /// <remarks>
-    /// Experimental ca. v19.04
+    /// Experimental ca. v20
     /// </remarks>
     public string OutMode
     {
