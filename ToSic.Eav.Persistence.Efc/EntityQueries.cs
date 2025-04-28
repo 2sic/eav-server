@@ -2,7 +2,7 @@
 
 internal class EntityQueries(EavDbContext context, ILog parentLog) : HelperBase(parentLog, "Efc.EntQry")
 {
-    public IQueryable<ToSicEavEntities> AppEntities(int appId, int[] entityIds, string filterType = null)
+    internal IQueryable<ToSicEavEntities> EntitiesOfAppQuery(int appId, int[] entityIds, string filterType = null)
     {
         var filterIds = entityIds.Length > 0;
         var filterByType = filterType != null;
