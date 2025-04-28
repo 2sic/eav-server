@@ -1,32 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps.Internal.Work;
+﻿using ToSic.Eav.Apps.Internal.Work;
 
-namespace ToSic.Eav.Apps.Tests;
+namespace ToSic.Eav.Apps.Tests.ListPairs;
 
-[TestClass]
+
 public partial class ListPairTests
 {
     public const string PName = "Primary";
     public const string CName = "Coupled";
 
-    [TestMethod]
+    [Fact]
     public void UnmatchedPairsAutoFixShort()
     {
         var pair = new CoupledIdLists(
-            new Dictionary<string, List<int?>> {
-                {PName, new List<int?> {1, 2, null, 3} },
-                {CName, new List<int?> {null, null} }
+            new()
+            {
+                {PName, [1, 2, null, 3] },
+                {CName, [null, null] }
             }, null);
         AssertLength(pair, 4);
     }
 
-    [TestMethod]
+    [Fact]
     public void UnmatchedPairsAutoFixLong()
     {
-        var pair = CoupledIdLists(new List<int?> {1, 2, null, 3},
-            new List<int?> {null, null, null, null, null, null},
+        var pair = CoupledIdLists([1, 2, null, 3],
+            [null, null, null, null, null, null],
             PName,CName);
         AssertLength(pair, 4);
     }
@@ -34,8 +32,9 @@ public partial class ListPairTests
     private static CoupledIdLists CoupledIdLists(List<int?> primary, List<int?> coupled,
         string primaryField, string coupledField)
     {
-        return new CoupledIdLists(
-            new Dictionary<string, List<int?>> {
+        return new(
+            new()
+            {
                 {primaryField, primary},
                 {coupledField, coupled }
             }, null);
@@ -44,18 +43,16 @@ public partial class ListPairTests
     private void AssertLength(CoupledIdLists pair, int expectedLength)
     {
         var itemsNotWithLength = pair.Lists.Values.Where(list => list.Count != expectedLength);
-        Assert.AreEqual(0, itemsNotWithLength.Count(), "lengths should now match");
-        //Assert.AreEqual(expectedLength, pair.CoupledIds.Count, $"length was expected to be {expectedLength}");
+        Equal(0, itemsNotWithLength.Count());//, "lengths should now match");
+        //Assert.Equal(expectedLength, pair.CoupledIds.Count, $"length was expected to be {expectedLength}");
     }
 
     private void AssertPositions(CoupledIdLists pair, int position, int? primary, int? coupled)
     {
         var found = pair.Lists.Values.First()[position];
-        Assert.AreEqual(primary, found, 
-            $"Primary at {position} expected to be {primary} but was {found}");
+        Equal(primary, found);//, $"Primary at {position} expected to be {primary} but was {found}");
         found = pair.Lists.Values.Skip(1).First()[position];
-        Assert.AreEqual(coupled, found, 
-            $"Primary at {position} expected to be {primary} but was {found}");
+        Equal(coupled, found);//, $"Primary at {position} expected to be {primary} but was {found}");
     }
 
     private void AssertSequence(CoupledIdLists pair, int startIndex)

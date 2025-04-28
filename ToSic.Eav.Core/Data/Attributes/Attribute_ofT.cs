@@ -125,7 +125,7 @@ internal record Attribute<T> : AttributeBase, IAttribute<T>
                 return valueHavingSpecifiedLanguages as IValue<T>;
             //}
             //catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
-            break;
+            //break;
         }
 
         // Fallback to use Default

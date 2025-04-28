@@ -111,9 +111,14 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         bool HasKey(string k) => set.Any(s => s.Specs?.ContainsKey(k) == true);
 
         // Helper to get the correct value depending of if it should fill the column, or it's found...
-        string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => !use 
-            ? null 
-            : specs?.TryGetValue(k, out var value) == true
+        //string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => !use 
+        //    ? null 
+        //    : specs?.TryGetValue(k, out var value) == true
+        //        ? value
+        //        : "";
+
+        string GetVal(IDictionary<string, string> specs, string k) => 
+            specs?.TryGetValue(k, out var value) == true
                 ? value
                 : "";
 
@@ -168,17 +173,25 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
 
                     var bestTitle = (bundle.Title ?? firstIfExists?.Message).NeverNull();
 
+                    // Trim title if too long.
+                    // Do NOT use .Ellipsis(...) because it tries to keep words together which will cut off too much of paths making it less useful.
+                    var trimmedTitle = bestTitle.Length <= 150
+                        ? bestTitle
+                        : bestTitle.Substring(0, 150) + "…";
+
+                    // Create the rows; note that any null values will be ignored and not create a cell
                     return RowFields(
                         $"{i + 1}",
                         Linker.LinkTo(timestamp, InsightsLogs.Link, key: key, more: $"position={i + 1}"),
-                        SpecialField.Right(GetValOrAlt(hasApp, specs, nameof(IAppIdentity.AppId)), tooltip: GetValOrAlt(hasApp, specs, "AppName") ),
-                        SpecialField.Right(GetValOrAlt(hasSite, specs, "SiteId")),
-                        SpecialField.Right(GetValOrAlt(hasPage, specs, "PageId")),
-                        SpecialField.Right(GetValOrAlt(hasMod, specs, "ModuleId")),
-                        SpecialField.Right(GetValOrAlt(hasUsr, specs, "UserId")),
+                        !hasApp ? null : SpecialField.Right(GetVal(specs, nameof(IAppIdentity.AppId)), tooltip: GetVal(specs, "AppName") ),
+                        !hasSite ? null : SpecialField.Right(GetVal(specs, "SiteId")),
+                        !hasPage ? null : SpecialField.Right(GetVal(specs, "PageId")),
+                        !hasMod ? null : SpecialField.Right(GetVal(specs, "ModuleId")),
+                        !hasUsr ? null : SpecialField.Right(GetVal(specs, "UserId")),
                         SpecialField.Right($"{realLog?.Entries.Count:##,###}"),
                         SpecialField.Right(sizeInfo != null ? $"{sizeInfo.Kb:N} KB" : "-"),
-                        SpecialField.Left(HtmlEncode(bestTitle.Ellipsis(150, "…")), tooltip: bestTitle),
+                        // WIP must find a slightly better way to truncate the title
+                        SpecialField.Left(HtmlEncode(trimmedTitle), tooltip: bestTitle),
                         HtmlEncode(firstIfExists?.Result),
                         SpecialField.Right(new InsightsTime().ShowTime(realLog))
                     );
@@ -232,25 +245,33 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
             {
                 // Go up one level
                 lg.AppendLine("</ol></li>");
-                if (breadcrumb.Count > 0) breadcrumb.Pop();
-                if (times.Count > 0) times.Pop();
+                if (breadcrumb.Count > 0)
+                    breadcrumb.Pop();
+                if (times.Count > 0)
+                    times.Pop();
             }
             else
             {
                 // Create an entry
                 lg.AppendLine("<li>");
-                var prevBreadcrumb = breadcrumb.Count > 0 ? breadcrumb.Peek() : "";
-                lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0 ? times.Peek() : default, maxTimeSpan, startCreated));
+                var prevBreadcrumb = breadcrumb.Count > 0
+                    ? breadcrumb.Peek()
+                    : "";
+                lg.AppendLine(TreeDumpOneLine(e, prevBreadcrumb, times.Count > 0
+                    ? times.Peek()
+                    : default, maxTimeSpan, startCreated));
                 // 
                 if (e.WrapOpen)
                 {
                     // Go down one level
-                    if (!e.WrapOpenWasClosed) lg.AppendLine("LOGGER WARNING: This logger was never closed");
+                    if (!e.WrapOpenWasClosed)
+                        lg.AppendLine("🪵⚠️ LOGGER WARNING: This logger was never closed");
                     breadcrumb.Push(e.ShortSource);
                     times.Push(e.Elapsed);
                     lg.AppendLine("<ol>");
                 }
-                else lg.AppendLine("</li>");
+                else
+                    lg.AppendLine("</li>");
             }
         }
 
@@ -261,7 +282,8 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
 
     private static TimeSpan FullTimespan(Log log)
     {
-        if (log.Entries.Count == 0) return default;
+        if (log.Entries.Count == 0)
+            return default;
         var startTime = log.Created;
 
         var last = log.Entries.Last();
@@ -323,7 +345,8 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         #endregion
 
         var message = HtmlEncode(e.Message.NeverNull());
-        if (e.Options?.ShowNewLines == true) message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
+        if (e.Options?.ShowNewLines == true)
+            message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
         return Span(
                 HoverLabel(HtmlEncode(label), logChainPath, "logIds")
                 + " - "

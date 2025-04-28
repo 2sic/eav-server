@@ -1,16 +1,13 @@
-﻿using ToSic.Lib.Logging;
+﻿namespace ToSic.Lib.Core.Tests.LoggingTests;
 
-namespace ToSic.Lib.Core.Tests.LoggingTests
+
+public class LogTests
 {
-    [TestClass]
-    public class LogTests
+    [Fact]
+    public void LogTest()
     {
-        [TestMethod]
-        public void LogTest()
-        {
-            var log = new Lib.Logging.Log("test");
-            log.A("test-add");
-            Assert.AreEqual(1, log.Entries.Count, "should have one entry");
-        }
+        var log = new Log("test");
+        log.A("test-add");
+        Single(log.Entries); //, "should have one entry");
     }
 }

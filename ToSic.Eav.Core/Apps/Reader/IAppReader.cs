@@ -1,9 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Apps.Internal.Specs;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Caching;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.PiggyBack;
+﻿using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps;
@@ -29,4 +24,14 @@ public interface IAppReader:
     /// Metadata Source to get Metadata of anything in the App.
     /// </summary>
     IMetadataSource Metadata { get; }
+
+    /// <summary>
+    /// WIP 2025-03-27 2dm / STV
+    /// </summary>
+    bool IsHealthy { get; }
+
+    /// <summary>
+    /// WIP 2025-03-27 2dm / STV
+    /// </summary>
+    string HealthMessage { get; }
 }

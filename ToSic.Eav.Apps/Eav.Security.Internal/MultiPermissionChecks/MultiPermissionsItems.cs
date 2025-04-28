@@ -12,9 +12,10 @@ public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
 
     public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
     {
+        var l = Log.Fn<MultiPermissionsItems>($"..., appId: {app.AppId}, entityId: {item?.EntityId}");
         Init(context, app);
         _items = [item];
-        return this;
+        return l.Return(this);
     }
     private List<IEntity> _items;
 

@@ -104,6 +104,7 @@ internal class EntityLoader(EfcAppLoader appLoader, Generator<IDataDeserializer>
     {
         var l = Log.Fn<List<TempEntity>>(timer: true);
 
+        // TODO: @STV - THIS FAILS IN THE unit test .net 9 but not in .net 472 - why? Same EF .net 9.0.1 problem?
         var rawEntities = query
             .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
             .Select(e => new TempEntity

@@ -71,7 +71,7 @@ partial class AppLoader
         foreach (var loader in Loaders)
         {
             loader.ResetSerializer(appReader);
-            entities.AddRange(loader.Entities(groupIdentifier, loader.EntityIdSeed, relationshipSource));
+            entities.AddRange(loader.Entities(groupIdentifier, /*loader.EntityIdSeed,*/ relationshipSource));
         }
 
         return l.Return(entities, $"{entities.Count} items of type {groupIdentifier}");

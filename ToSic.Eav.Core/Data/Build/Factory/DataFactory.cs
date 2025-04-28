@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Source;
 using ToSic.Lib.Coding;
+using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFactoryLazy) : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
+internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFactoryLazy) : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
 {
     #region Properties to configure Builder / Defaults
 
@@ -59,7 +60,7 @@ internal class DataFactory(DataBuilder builder, Lazy<ContentTypeFactory> ctFacto
     /// </summary>
     private DataFactory(
         DataBuilder builder,
-        Lazy<ContentTypeFactory> ctFactoryLazy,
+        LazySvc<ContentTypeFactory> ctFactoryLazy,
         NoParamOrder noParamOrder = default,
         DataFactoryOptions options = default,
         ILookup<object, IEntity> relationships = default,

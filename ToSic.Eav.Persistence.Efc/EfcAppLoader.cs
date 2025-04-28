@@ -37,7 +37,7 @@ public class EfcAppLoader(
     
     public EfcAppLoader UseExistingDb(EavDbContext dbContext)
     {
-        context = dbContext;
+        Context = dbContext;
         return this;
     }
 
@@ -45,7 +45,7 @@ public class EfcAppLoader(
 
     internal void AddSqlTime(TimeSpan sqlTime) => _sqlTotalTime = _sqlTotalTime.Add(sqlTime);
 
-    internal EavDbContext Context => context;
+    internal EavDbContext Context { get; private set; } = context;
 
     /// <summary>
     /// The current primary language - mainly for ordering values with primary language first
@@ -105,7 +105,7 @@ public class EfcAppLoader(
 
         var l = Log.Fn<IAppStateCache>($"{appId}", timer: true);
 
-        var loader = (IRepositoryLoader)this;
+        IRepositoryLoader loader = this;
         var builder = loader.AppStateBuilderRaw(appId, codeRefTrail.WithHere().AddMessage("First Build"));
 
         if (builder.Reader.Specs.IsContentApp())
@@ -227,7 +227,7 @@ public class EfcAppLoader(
     {
         var l = Log.Fn<int>($"{nameof(appId)}:{appId}");
         // Prefetch this App (new in v13 for ancestor apps)
-        var appInDb = context.ToSicEavApps.FirstOrDefault(a => a.AppId == appId);
+        var appInDb = Context.ToSicEavApps.FirstOrDefault(a => a.AppId == appId);
         var appSysSettings = appInDb?.SysSettings;
         if (string.IsNullOrWhiteSpace(appSysSettings))
             return l.Return(0, "none found");

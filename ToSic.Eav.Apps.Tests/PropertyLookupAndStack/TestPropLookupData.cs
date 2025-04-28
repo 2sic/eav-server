@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Helpers;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
 
 namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack;
 
-internal class TestPropLookupData
+internal class TestPropLookupData(string sourceId, string name)
 {
-    public string SourceId { get; }
-    public string Name;
+    public string SourceId { get; } = sourceId;
+    public string Name = name;
     public DateTime Birthday;
     public string Dog;
     public string Cat;
@@ -17,12 +16,6 @@ internal class TestPropLookupData
 
     //public IEnumerable<IPropertyLookup> Children;
     public IEnumerable<PropertyLookupDictionary> Children;
-
-    public TestPropLookupData(string sourceId, string name)
-    {
-        SourceId = sourceId;
-        Name = name;
-    }
 
     private Dictionary<string, object> Data()
     {
@@ -37,13 +30,12 @@ internal class TestPropLookupData
         return values;
     }
 
-    public PropertyLookupDictionary Lookup => _lookup.Get(() => new PropertyLookupDictionary(SourceId, Data()));
+    public PropertyLookupDictionary Lookup => _lookup.Get(() => new(SourceId, Data()));
     private readonly GetOnce<PropertyLookupDictionary> _lookup = new();
 
     public KeyValuePair<string, IPropertyLookup> StackPart =>
-        _stackPart.Get(() => new KeyValuePair<string, IPropertyLookup>(Lookup.NameId, Lookup));
+        _stackPart.Get(() => new(Lookup.NameId, Lookup));
 
-    private readonly GetOnce<KeyValuePair<string, IPropertyLookup>> _stackPart =
-        new GetOnce<KeyValuePair<string, IPropertyLookup>>();
+    private readonly GetOnce<KeyValuePair<string, IPropertyLookup>> _stackPart = new();
 
 }

@@ -23,14 +23,21 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
     internal IAppStateCache AppState => _appState;
 
     /// <inheritdoc />
-    public IAppSpecs Specs => _specs ??= new AppSpecs(_appState);
-    private IAppSpecs _specs;
+    public IAppSpecs Specs => field ??= new AppSpecs(_appState);
 
     #region Identity
 
     public int ZoneId => _appState.ZoneId;
 
     public int AppId => _appState.AppId;
+
+    #endregion
+
+    #region Health Check
+
+    public bool IsHealthy => _appState.IsHealthy;
+
+    public string HealthMessage => _appState.HealthMessage;
 
     #endregion
 

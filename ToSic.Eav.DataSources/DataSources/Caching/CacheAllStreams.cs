@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Lib.Helpers;
 using static System.StringComparer;
@@ -39,19 +38,19 @@ public class CacheAllStreams : DataSourceBase
     /// How long to keep these streams in the cache.
     /// Default is `0` - meaning fall back to 1 day
     /// </summary>
-    [Configuration(Fallback = 0)]
+    [Configuration(Fallback = 0, CacheRelevant = false)]
     public int CacheDurationInSeconds => Configuration.GetThis(0);
 
     /// <summary>
     /// If a source-refresh should trigger a cache rebuild
     /// </summary>
-    [Configuration(Fallback = true)]
+    [Configuration(Fallback = true, CacheRelevant = false)]
     public bool RefreshOnSourceRefresh => Configuration.GetThis(true);
 
     /// <summary>
     /// Perform a cache rebuild async. 
     /// </summary>
-    [Configuration(Fallback = false)]
+    [Configuration(Fallback = false, CacheRelevant = false)]
     public bool ReturnCacheWhileRefreshing => Configuration.GetThis(false);
 
     #endregion

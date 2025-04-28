@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Security;
@@ -54,7 +53,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     public void ResetApp(IAppIdentity appIdentity)
     {
-        var l = Log.Fn();
+        var l = Log.Fn(appIdentity.Show());
         if (AppIdentity == null || AppIdentity.AppId != appIdentity.AppId)
             AppIdentity = appIdentity;
         l.Done();
@@ -62,10 +61,10 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     protected virtual IAppIdentity AppIdentity
     {
-        get => _appIdentity;
+        get => field;
         set
         {
-            _appIdentity = value;
+            field = value;
             _appStateInternal.Reset();
             _appSettingsStack.Reset();
             _settings.Reset();
@@ -73,7 +72,6 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
             _userMayEditGet.Reset();
         }
     }
-    private IAppIdentity _appIdentity;
 
     #region User Permissions / May Edit
 

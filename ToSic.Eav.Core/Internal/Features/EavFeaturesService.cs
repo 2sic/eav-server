@@ -17,6 +17,8 @@ namespace ToSic.Eav.Internal.Features;
 /// REASON is probably cache connection, since it should notify the system to release caches as settings change?
 ///
 /// 2024-05-31 changing to non-singleton, must monitor if all is ok...
+/// 2025-03-11 updated the `CacheTimestamp` property to use a backing field `_staticCacheTimestamp`, 
+///            so WebFarmCache is working when feature is enabled https://github.com/2sic/2sxc/issues/3597
 /// </remarks>
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -33,7 +35,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
             .SelectMany(f => new[] { f.NameId, f.Aspect.Guid.ToString() })
             .Distinct(InvariantCultureIgnoreCase),
         InvariantCultureIgnoreCase);
-    private HashSet<string> _enabledFeatures; // had to step back from GetOnce, because of "Error Unable to marshal host object to interpreter space"
+    private HashSet<string> _enabledFeatures; // Do not use GetOnce, because of "Error Unable to marshal host object to interpreter space"
 
     public IEnumerable<FeatureState> UiFeaturesForEditors
         => All.Where(f => f.IsEnabled && f.IsForEditUi);
@@ -102,7 +104,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         _staticSysFeatures = sysFeatures;
         AllStaticCache.Reset();
         _enabledFeatures = null;
-        CacheTimestamp = DateTime.Now.Ticks;
+        _staticCacheTimestamp = DateTime.Now.Ticks;
 
         // Notify the cache that the features have changed
         MemoryCacheService.Notify(this);
@@ -179,9 +181,9 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         return final;
     }
 
-
     [PrivateApi]
-    public long CacheTimestamp { get; private set; }
+    public long CacheTimestamp => _staticCacheTimestamp; // fix https://github.com/2sic/2sxc/issues/3597
+    private static long _staticCacheTimestamp; // need static to preserve value across transient instances
 
     public bool CacheChanged(long dependentTimeStamp)
         => CacheTimestamp != dependentTimeStamp;

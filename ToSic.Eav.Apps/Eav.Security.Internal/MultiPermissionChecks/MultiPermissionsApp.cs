@@ -43,8 +43,9 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
             ? context.Site 
             // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
             // todo: probably enhance with a Site.IsMultiZone check
-            : Services.ZoneMapper.Value.SiteOfZone(App.ZoneId) ?? context.Site;
-        return l.Return(this, $"ready for z/a:{app.Show()} t/z:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
+            : Services.ZoneMapper.Value.SiteOfZone(App.ZoneId)
+              ?? context.Site;
+        return l.Return(this, $"ready for app:{app.Show()} tenant/zone:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
     }
     /// <summary>
     /// The current app which will be used and can be re-used externally
@@ -78,12 +79,14 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
     /// <returns></returns>
     protected IPermissionCheck BuildPermissionChecker(IContentType type = null, IEntity item = null)
     {
-        Log.A($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
+        var l = Log.Fn<IPermissionCheck>($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
         // user has edit permissions on this app, and it's the same app as the user is coming from
         var modifiedContext = Context.Clone(Log);
         modifiedContext.Site = SiteForSecurityCheck;
-        return Services.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item);
+        var result = Services.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item);
+
+        return l.Return(result, $"for {App.Show()} in {SiteForSecurityCheck?.Id}");
     }
 
 }

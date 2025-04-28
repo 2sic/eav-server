@@ -11,5 +11,6 @@ public static class StartUp
     public static IServiceCollection AddLibCore(this IServiceCollection services) =>
         services
             .AddLibLogging()
-            .AddLibDI();
+            .AddLibDiServiceSwitchers()
+            .AddLibDiBasics();
 }

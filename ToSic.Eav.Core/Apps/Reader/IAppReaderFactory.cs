@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-using ToSic.Lib.Coding;
+﻿using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Apps;
 
@@ -55,6 +54,6 @@ public interface IAppReaderFactory
     /// <returns></returns>
     IAppReader GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false);
 
-
-    //IAppReader ToReader(IAppStateCache state);
+    /// <see cref="IAppsCatalog.AppIdentity"/>
+    IAppIdentityPure AppIdentity(int appId);
 }

@@ -14,8 +14,9 @@ public static class SecurityHelpers
 
     private static void ThrowIfNot(bool isTrue, string name, ILog log)
     {
-        log.Fn($"{name}: {isTrue}");
+        var l = log.Fn($"{name}: {isTrue}");
         if (!isTrue)
             throw new AuthenticationException($"Needs {name} permissions to do this");
+        l.Done();
     }
 }

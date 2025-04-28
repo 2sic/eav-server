@@ -6,49 +6,20 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security;
 
+/// <summary>
+/// Basic constructor, you must always call Init afterward
+/// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckBase.MyServices>, IPermissionCheck
+public abstract partial class PermissionCheckBase(
+    PermissionCheckBase.MyServices services,
+    string logName,
+    object[] connect = default)
+    : ServiceBase<PermissionCheckBase.MyServices>(services, logName, connect: connect), IPermissionCheck
 {
+    // ReSharper disable once InconsistentNaming
+    private readonly PermissionCheckBase.MyServices services = services;
 
-    #region Permission Targets and resulting list of metadata to control
-    private IContentType TargetType { get; set; }
-
-    private IEntity TargetItem { get; set; }
-
-    protected IEnumerable<Permission> PermissionList
-    {
-        get
-        {
-            // already constructed, use that
-            if (_permissionList != null) return _permissionList;
-            var logWrap = Log.Fn<IEnumerable<Permission>>();
-            var partsToConsider = new[]
-            {
-                TargetItem?.Metadata.Permissions,
-                TargetType?.Metadata.Permissions,
-                _additionalMetadata
-            };
-            // bundle all permission metadata items
-            _permissionList = partsToConsider
-                .Where(permList => permList != null)
-                .Aggregate(_permissionList = new List<Permission>(), (current, permList)
-                    => current.Concat(permList))
-                .ToList();
-
-            return logWrap.Return(_permissionList, $"found {PermissionList.Count()} items");
-        }
-    }
-
-    private IEnumerable<Permission> _permissionList;
-
-    private IEnumerable<Permission> _additionalMetadata;
-
-    public bool HasPermissions => PermissionList.Any();
-
-    #endregion
-
-
-    #region constructors
+    #region MyServices
 
     public class MyServices(IEavFeaturesService features, IEnvironmentPermission environmentPermission)
         : MyServicesBase(connect: [features, environmentPermission])
@@ -57,14 +28,39 @@ public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckB
         public IEnvironmentPermission EnvironmentPermission { get; } = environmentPermission;
     }
 
-    /// <summary>
-    /// Basic constructor, you must always call Init afterwards
-    /// </summary>
-    protected PermissionCheckBase(MyServices services, string logName): base(services, logName)
+    #endregion
+
+    #region Permission Targets and resulting list of metadata to control
+
+    private IContentType TargetType { get; set; }
+
+    private IEntity TargetItem { get; set; }
+
+    protected List<Permission> PermissionList => field ??= BuildPermissionList();
+
+    private List<Permission> BuildPermissionList()
     {
-        _environmentPermission = services.EnvironmentPermission;
+        var l = Log.Fn<List<Permission>>();
+
+        List<Permission> list =
+        [
+            ..TargetItem?.Metadata.Permissions ?? [],
+            ..TargetType?.Metadata.Permissions ?? [],
+            .._additionalPermissions
+        ];
+
+        return l.Return(list, $"permissions: {list.Count}");
     }
-    private readonly IEnvironmentPermission _environmentPermission;
+
+
+    private List<Permission> _additionalPermissions;
+
+    public bool HasPermissions => PermissionList.Any();
+
+    #endregion
+
+
+
 
     /// <summary>
     /// Initialize this object so it can then give information regarding the permissions of an entity.
@@ -73,43 +69,34 @@ public abstract partial class PermissionCheckBase : ServiceBase<PermissionCheckB
     protected void Init(
         IContentType targetType = default, // optional type to check
         IEntity targetItem = default,      // optional entity to check
-        IEnumerable<Permission> permissions1 = default,
-        IEnumerable<Permission> permissions2 = default
+        IEnumerable<Permission> permissions1 = default
     ) 
     {
-        var permList2 = permissions2 as IList<Permission> ?? permissions2?.ToList();
+        _additionalPermissions = permissions1?.ToList() ?? [];
 
-        Log.Do($"type:{targetType?.NameId}, " +
-               $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
-               $"permList1: {permissions1?.Count()}, " +
-               $"permList2: {permList2?.Count}",
-            action: () =>
-            {
+        var l = Log.Fn($"type:{targetType?.NameId}, " +
+                       $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
+                       $"permList1: {_additionalPermissions.Count}, ");
 
-                TargetType = targetType;
-                TargetItem = targetItem;
+        TargetType = targetType;
+        TargetItem = targetItem;
 
-                _additionalMetadata = permissions1 ?? new List<Permission>();
-                if (permList2 != null)
-                    _additionalMetadata = _additionalMetadata.Concat(permList2);
-
-                GrantedBecause = Conditions.Undefined;
-            });
+        GrantedBecause = Conditions.Undefined;
+        l.Done();
     }
 
-    #endregion
 
     public Conditions GrantedBecause
     {
-        get => _environmentPermission.GrantedBecause;
-        protected set => _environmentPermission.GrantedBecause = value;
+        get => services.EnvironmentPermission.GrantedBecause;
+        protected set => services.EnvironmentPermission.GrantedBecause = value;
     }
 
     public bool UserMay(List<Grants> grants)
     {
         var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
         GrantedBecause = Conditions.Undefined;
-        var result = _environmentPermission.EnvironmentAllows(grants) || PermissionsAllow(grants);
+        var result = services.EnvironmentPermission.EnvironmentAllows(grants) || PermissionsAllow(grants);
         return l.Return(result, $"{result} ({GrantedBecause})");
     }
 

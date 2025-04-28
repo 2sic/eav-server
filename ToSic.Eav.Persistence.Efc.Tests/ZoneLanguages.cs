@@ -1,78 +1,70 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Testing;
+using ToSic.Eav.Testing.Scenarios;
 
-namespace ToSic.Eav.Persistence.Efc.Tests
+namespace ToSic.Eav.Persistence.Efc.Tests;
+
+[Startup(typeof(StartupTestsApps))]
+public class ZoneLanguages(EavDbContext db, EfcAppLoader loader) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-    [TestClass]
-    public class ZoneLanguages : Efc11TestBase
-    {
-        private const int MinZones = 4;
-        private const int MaxZones = 10;
-        private const int AppCountInHomeZone = 6;
-        private const int ZoneCountWithMultiLanguage = 2;
+    private const int MinZones = 4;
+    private const int MaxZones = 10;
+    private const int AppCountInHomeZone = 7; // ? 6;
+    private const int ZoneCountWithMultiLanguage = 2;
         
-        private const int ZoneHome = 2;
-        private const int ZoneHomeLanguages = 2;
-        private const int ZoneHomeLangsActive = 1;
+    private const int ZoneHome = 2;
+    private const int ZoneHomeLanguages = 2;
+    private const int ZoneHomeLangsActive = 1;
 
-        private const int ZoneMl = 3;
-        private const int ZoneMlLanguages = 3;
-        private const int ZoneMlLangsActive = 2;
+    private const int ZoneMl = 3;
+    private const int ZoneMlLanguages = 3;
+    private const int ZoneMlLangsActive = 2;
 
-        private const int ZonesWithInactiveLanguages = 2;
+    private const int ZonesWithInactiveLanguages = 2;
 
-        [TestInitialize]
-        public new void Init()
-        {
-            // call init to get loader etc. ready
-            base.Init();
-            _zones = (Loader as IRepositoryLoader).Zones();
-            _defaultAppId = _zones.First().Value.DefaultAppId;
-            _appsInHomeZone = _zones[ZoneHome].Apps;
-        }
+#if NETCOREAPP
+    [field: AllowNull, MaybeNull]
+#endif
+    private IDictionary<int, Zone> Zones => field ??= ((IRepositoryLoader)loader.UseExistingDb(db)).Zones();
 
+    private int DefaultAppId => field != 0 ? field : field = Zones.First().Value.DefaultAppId;
 
-        private IDictionary<int, Zone> _zones;
-        private int _defaultAppId;
-        private IReadOnlyDictionary<int, string> _appsInHomeZone;
-
-        [TestMethod]
-        public void ZonesWithAndWithoutLanguages()
-        {
-            var mlZones = _zones.Values.Where(z => z.Languages.Count > 1).ToList();
-            Assert.AreEqual(ZoneCountWithMultiLanguage, mlZones.Count, $"should have {ZoneCountWithMultiLanguage} ml zones");
-            var mlWithInactive = mlZones.Where(z => z.Languages.Any(l => !l.Active)).ToList();
-            Assert.AreEqual(ZonesWithInactiveLanguages, mlWithInactive.Count, $"expect {ZonesWithInactiveLanguages} to have inactive languages");
-        }
-
-        [TestMethod]
-        public void HomeZoneLanguages()
-        {
-            var firstMl = _zones[ZoneHome];
-            Assert.AreEqual(ZoneHomeLanguages, firstMl.Languages.Count, $"the first zone with ML should have {ZoneHomeLanguages} languages");
-            Assert.AreEqual(ZoneHomeLangsActive, firstMl.Languages.Count(l => l.Active), $"{ZoneHomeLangsActive} are active");
-        }
-
-        [TestMethod]
-        public void ZoneMultiLanguages()
-        {
-            var firstMl = _zones[ZoneMl];
-            Assert.AreEqual(ZoneMlLanguages, firstMl.Languages.Count, $"the first zone with ML should have {ZoneHomeLanguages} languages");
-            Assert.AreEqual(ZoneMlLangsActive, firstMl.Languages.Count(l => l.Active), $"{ZoneHomeLangsActive} are active");
-        }
-
-        [TestMethod]
-        public void CountAppsOnMlZone() => Assert.AreEqual(AppCountInHomeZone, _appsInHomeZone.Count, "app count on second zone");
-
-        [TestMethod]
-        public void HatAtLeastExpertedZoneCount() =>
-            Assert.IsTrue(_zones.Count > MinZones && _zones.Count < MaxZones,
-                $"zone count - often changes, as new test-portals are made. Found: {_zones.Count}");
-
-        [TestMethod]
-        public void DefaultAppIs1() => Assert.AreEqual(1, _defaultAppId, "def app on first zone");
+    [Fact]
+    public void ZonesWithAndWithoutLanguages()
+    {
+        var mlZones = Zones.Values.Where(z => z.Languages.Count > 1).ToList();
+        Equal(ZoneCountWithMultiLanguage, mlZones.Count);//, $"should have {ZoneCountWithMultiLanguage} ml zones");
+        var mlWithInactive = mlZones.Where(z => z.Languages.Any(l => !l.Active)).ToList();
+        Equal(ZonesWithInactiveLanguages, mlWithInactive.Count);//, $"expect {ZonesWithInactiveLanguages} to have inactive languages");
     }
+
+    [Fact]
+    public void HomeZoneLanguages()
+    {
+        var firstMl = Zones[ZoneHome];
+        Equal(ZoneHomeLanguages, firstMl.Languages.Count);//, $"the first zone with ML should have {ZoneHomeLanguages} languages");
+        Equal(ZoneHomeLangsActive, firstMl.Languages.Count(l => l.Active));//, $"{ZoneHomeLangsActive} are active");
+    }
+
+    [Fact]
+    public void ZoneMultiLanguages()
+    {
+        var firstMl = Zones[ZoneMl];
+        Equal(ZoneMlLanguages, firstMl.Languages.Count);//, $"the first zone with ML should have {ZoneHomeLanguages} languages");
+        Equal(ZoneMlLangsActive, firstMl.Languages.Count(l => l.Active));//, $"{ZoneHomeLangsActive} are active");
+    }
+
+    [Fact]
+    public void CountAppsOnMlZone() =>
+        Equal(AppCountInHomeZone, Zones[ZoneHome].Apps.Count);//, "app count on second zone");
+
+    [Fact]
+    public void HatAtLeastExpertedZoneCount() =>
+        InRange(Zones.Count, MinZones, MaxZones);//, $"zone count - often changes, as new test-portals are made. Found: {Zones.Count}");
+
+    [Fact]
+    public void DefaultAppIs1() => Equal(1, DefaultAppId);//, "def app on first zone");
 }

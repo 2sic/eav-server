@@ -74,6 +74,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
             SharedDefId = ancestorDecorator?.Id,
             Items = itemCount,
             Fields = cType.Attributes.Count(),
+            TitleField = cType.TitleFieldName,
             Metadata = mdReferences,
             Properties = properties,
             Permissions = new() { Count = permissionCount },

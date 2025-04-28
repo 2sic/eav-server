@@ -22,8 +22,16 @@ public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) :
         if (CheckIfAllPartsExist(appReader, codeRefTrail, out _, out _, out _, log))
             return l.ReturnFalse("ok");
 
-        // something is missing, so we must build them
-        appInitGenerator.New().InitializeApp(appReader, appName, codeRefTrail.WithHere().AddMessage("Add Requested"));
+        l.A($"Some parts are missing. IsHealthy:{appReader.IsHealthy}");
+        if (appReader.IsHealthy)
+        {
+            l.A("the app is healthy, build missing parts");
+            appInitGenerator.New().InitializeApp(appReader, appName, codeRefTrail.WithHere().AddMessage("Add Requested"));
+        }
+        else
+        {
+            l.A($"the app is not healthy, so we can't add missing parts, HealthMessage:'{appReader.HealthMessage}'");
+        }
 
         return l.ReturnTrue();
     }

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ToSic.Eav.Apps.Internal.Work;
+﻿using ToSic.Eav.Apps.Internal.Work;
 
-namespace ToSic.Eav.Apps.Tests;
+namespace ToSic.Eav.Apps.Tests.ListPairs;
 
 public partial class ListPairTests
 {
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAt0Primary()
     {
         var pair = ReplaceAtX(0, false);
@@ -17,7 +14,7 @@ public partial class ListPairTests
         AssertPositions(pair,1, 2, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAt0Both()
     {
         var pair = ReplaceAtX(0, true);
@@ -26,7 +23,7 @@ public partial class ListPairTests
         AssertPositions(pair,1, 2, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAt1Primary()
     {
         var pair = ReplaceAtX(1, false);
@@ -36,7 +33,7 @@ public partial class ListPairTests
         AssertPositions(pair,2, null, 103);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAt1Both()
     {
         var pair = ReplaceAtX(1, true);
@@ -46,7 +43,7 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAtEndPrimary()
     {
         var pair = ReplaceAtX(3, false);
@@ -56,7 +53,7 @@ public partial class ListPairTests
         AssertPositions(pair, 3, 999, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAtEndBoth()
     {
         var pair = ReplaceAtX(3, true);
@@ -66,7 +63,7 @@ public partial class ListPairTests
         AssertPositions(pair, 3, 999, 777);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAfterEndPrimary()
     {
         var pair = ReplaceAtX(4, false);
@@ -77,7 +74,7 @@ public partial class ListPairTests
         AssertPositions(pair, 4, 999, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplaceAfterEndBoth()
     {
         var pair = ReplaceAtX(4, true);
@@ -88,7 +85,7 @@ public partial class ListPairTests
         AssertPositions(pair, 4, 999, 777);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplacePastEndPrimary()
     {
         var pair = ReplaceAtX(9, false);
@@ -100,7 +97,7 @@ public partial class ListPairTests
         AssertPositions(pair, 9, 999, null);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReplacePastEndBoth()
     {
         var pair = ReplaceAtX(9, true);
@@ -115,14 +112,13 @@ public partial class ListPairTests
 
     private static CoupledIdLists ReplaceAtX(int index, bool updatePair)
     {
-        var pair = CoupledIdLists(new List<int?> { 1, 2, null, 44 },
-            new List<int?> { 101, null, 103, null, null, null },
+        var pair = CoupledIdLists([1, 2, null, 44],
+            [101, null, 103, null, null, null],
             PName, CName);
-        pair.Replace(index, new[]
-        {
+        pair.Replace(index, [
             (true, 999 as int?), 
-            (updatePair, 777 as int?), 
-        });
+            (updatePair, 777 as int?)
+        ]);
         return pair;
     }
 

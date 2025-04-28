@@ -136,7 +136,8 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                 var attrIsTitle = specs?.IsTitle ?? false;
 
                 // Must be null if no metadata
-                var attrMetadata = ContentTypeAttributeDetails(specs?.Description)?.ToListOfOne();
+                var attrMetadata = ContentTypeAttributeDetails(specs?.Description, specs?.InputTypeWIP)
+                    ?.ToListOfOne();
 
                 return ctAttributeBuilder.Create(
                     NoAppId,
@@ -155,19 +156,26 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     /// Most properties like icon etc. are not important, so ATM it only does:
     /// - Description
     /// </summary>
-    private IEntity ContentTypeAttributeDetails(string description)
+    #nullable enable   // Enables nullable annotations and warnings
+    private IEntity ContentTypeAttributeDetails(string? description, string? inputType)
     {
         var l = Log.Fn<IEntity>();
-        if (description == null)
+        if (description == null && inputType == null)
             return l.ReturnNull("no description");
 
         // All props
-        var dic = new Dictionary<string, object> { { AttributeMetadata.DescriptionField, description } };
+        var dic = new Dictionary<string, object>();
+        if (description != null)
+            dic.Add(AttributeMetadata.DescriptionField, description);
+        if (inputType != null)
+            dic.Add(AttributeMetadata.GeneralFieldInputType, inputType);
+
         var attributes = attributeBuilder.Create(dic);
 
         // Create a Description entity
         var entity = entityBuilder.Create(NoAppId, ctBuilder.Transient(NoAppId, AttributeMetadata.TypeGeneral, AttributeMetadata.TypeGeneral), attributes: attributes);
         return l.Return(entity, "created");
     }
+    #nullable restore  // Restores the project-level nullable setting
 
 }
