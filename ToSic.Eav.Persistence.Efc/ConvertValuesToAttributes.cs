@@ -45,7 +45,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //}
 
 
-    internal Dictionary<int, List<TempAttributeWithValues>> EavValuesToTempAttributesBeta(List<LoadingValue> values)
+    internal Dictionary<int, List<TempAttributeWithValues>> EavValuesToTempAttributesBeta(List<LoadingValue> allValues)
     {
         var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>(timer: true);
 
@@ -53,7 +53,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
 
         // Convert to dictionary
         // Research 2024-08 PC 2dm shows that this is superfast - ca. 10-15ms for 1700 attributes (Tutorial App)
-        var attributes = values
+        var attributes = allValues
             .GroupBy(e => e.EntityId)
             .ToDictionary(
                 e => e.Key,
@@ -61,16 +61,11 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
                     .GroupBy(v => v.AttributeId)
                     .Select(valueGroup =>
                     {
-                        var attributeValues = valueGroup
+                        var values = valueGroup
                             .Select(v => new
                             {
                                 v.Value,
-                                Languages = v.ToSicEavValuesDimensions
-                                    .Select(ILanguage (lng) => new Language(
-                                        lng.Dimension.EnvironmentKey,
-                                        lng.ReadOnly,
-                                        lng.DimensionId))
-                                    .ToImmutableList(),
+                                v.Languages,
                                 v.ChangeLogCreated
                             })
                             // The order of values is significant because the 2sxc system uses the first value as fallback
@@ -87,7 +82,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
                         return new TempAttributeWithValues
                         {
                             Name = valueGroup.First().StaticName,
-                            Values = attributeValues,
+                            Values = values,
                         };
                     })
                     .ToList()

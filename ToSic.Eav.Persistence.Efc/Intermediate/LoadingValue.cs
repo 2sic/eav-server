@@ -6,8 +6,5 @@ internal record LoadingValue(
     string StaticName,
     string Value,
     int ChangeLogCreated,
-    ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions
-    //List<ILanguage> Dimensions
+    ImmutableList<ILanguage> Languages
 );
-
-internal record LoadingLanguage(string EnvKey, bool ReadOnly, int DimensionId);

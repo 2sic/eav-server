@@ -35,9 +35,6 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
         var l = Log.Fn<IQueryable<ToSicEavValues>>(timer: true);
 
         var query = context.ToSicEavValues
-            // Dimensions are needed for language assignment for each value
-            .Include(v => v.ToSicEavValuesDimensions)
-            .ThenInclude(d => d.Dimension)
             // Skip values which have been flagged as deleted
             .Where(v => !v.ChangeLogDeleted.HasValue);
 
