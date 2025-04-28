@@ -2,8 +2,7 @@
 
 internal class PublishingHelper(EfcAppLoader parent): HelperBase(parent.Log, "Efc.PubHlp")
 {
-    internal EntityQueries EntityQueries => _entityQueries ??= new(parent.Context, Log);
-    private EntityQueries _entityQueries;
+    internal EntityQueries EntityQueries => field ??= new(parent.Context, Log);
 
     public int[] AddEntityIdOfPartnerEntities(int[] publishedIds)
     {

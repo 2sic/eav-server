@@ -54,14 +54,13 @@ public class EfcAppLoader(
     {
         get
         {
-            if (_primaryLanguage != null) return _primaryLanguage;
+            if (field != null) return field;
             var l = Log.Fn<string>();
-            _primaryLanguage = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
-            return l.ReturnAndLog(_primaryLanguage, $"Primary language from Env (for value sorting): {_primaryLanguage}");
+            field = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
+            return l.ReturnAndLog(field, $"Primary language from Env (for value sorting): {field}");
         }
-        set => _primaryLanguage = value;
+        set;
     }
-    private string _primaryLanguage;
 
     #endregion
 

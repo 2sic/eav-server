@@ -11,8 +11,7 @@ internal class EntityLoader(EfcAppLoader appLoader, Generator<IDataDeserializer>
 
     internal int AddLogCount;
 
-    internal EntityQueries EntityQueries => _entityQueries ??= new(appLoader.Context, Log);
-    private EntityQueries _entityQueries;
+    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, Log);
 
 
     internal TimeSpan LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds = null)

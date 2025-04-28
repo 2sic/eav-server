@@ -4,8 +4,7 @@ namespace ToSic.Eav.Persistence.Efc;
 
 internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs): HelperBase(appLoader.Log, "Efc.ValLdr")
 {
-    internal ValueQueries ValueQueries => _valueQueries ??= new(appLoader.Context, Log);
-    private ValueQueries _valueQueries;
+    internal ValueQueries ValueQueries => field ??= new(appLoader.Context, Log);
 
 
     public Dictionary<int, IEnumerable<TempAttributeWithValues>> LoadValues()

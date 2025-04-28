@@ -12,7 +12,7 @@ internal class EntityDetailsLoadSpecs(int appId, List<TempEntity> entities, IEav
     {
         get
         {
-            if (_entityIds != null) return _entityIds;
+            if (field != null) return field;
 
             var l = Log.Fn<List<int>>(timer: true);
             // Get the EntityIDs to load the relationships / values for these entities
@@ -21,27 +21,23 @@ internal class EntityDetailsLoadSpecs(int appId, List<TempEntity> entities, IEav
             var entityIdSource = features.IsEnabled(BuiltInFeatures.SqlLoadPerformance)
                 ? entities.Where(e => e.Json == null)
                 : entities;
-            _entityIds = entityIdSource
+            field = entityIdSource
                 .Where(e => e.Json == null)
                 .Select(e => e.EntityId)
                 .ToList();
 
-            return l.Return(_entityIds, $"Total entities: {entities.Count}; final IDs: {_entityIds.Count}");
+            return l.Return(field, $"Total entities: {entities.Count}; final IDs: {field.Count}");
         }
     }
-    private List<int> _entityIds;
 
     public List<List<int>> IdsToLoadChunks
     {
         get
         {
-            if (_entityIdsChunks != null) return _entityIdsChunks;
+            if (field != null) return field;
             var l = Log.Fn<List<List<int>>>(timer: true);
-            _entityIdsChunks = IdsToLoad.ChunkBy(EntityLoader.IdChunkSize);
-            return l.Return(_entityIdsChunks, $"Chunked into {_entityIdsChunks.Count} chunks");
+            field = IdsToLoad.ChunkBy(EntityLoader.IdChunkSize);
+            return l.Return(field, $"Chunked into {field.Count} chunks");
         }
     }
-
-    private List<List<int>> _entityIdsChunks;
-
 }
