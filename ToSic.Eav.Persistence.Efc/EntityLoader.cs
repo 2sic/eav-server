@@ -79,8 +79,6 @@ internal class EntityLoader(EfcAppLoader appLoader, Generator<IDataDeserializer>
 
         #endregion
 
-        //_sqlTotalTime = _sqlTotalTime.Add(sqlTime.Elapsed);
-        //l.Done();
         return l.Return(sqlTime.Elapsed);
     }
 
@@ -89,7 +87,6 @@ internal class EntityLoader(EfcAppLoader appLoader, Generator<IDataDeserializer>
         var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterType)}: '{filterType}'", timer: true);
 
         var entitiesQuery = EntityQueries.EntitiesOfAppQuery(appId, entityIds, filterType);
-        //var rawEntities = GetRawEntities(entitiesQuery);
 
         // TODO: @STV - THIS FAILS IN THE unit test .net 9 but not in .net 472 - why? Same EF .net 9.0.1 problem?
         var rawEntities = entitiesQuery
@@ -113,37 +110,5 @@ internal class EntityLoader(EfcAppLoader appLoader, Generator<IDataDeserializer>
 
         return l.Return(rawEntities, $"found: {rawEntities.Count}");
     }
-
-    ///// <summary>
-    ///// Load raw / intermediate entities from the database, without attributes/values.
-    ///// </summary>
-    ///// <param name="entitiesQuery"></param>
-    ///// <returns></returns>
-    //public List<TempEntity> GetRawEntities(IQueryable<ToSicEavEntities> entitiesQuery)
-    //{
-    //    var l = Log.Fn<List<TempEntity>>(timer: true);
-
-    //    // TODO: @STV - THIS FAILS IN THE unit test .net 9 but not in .net 472 - why? Same EF .net 9.0.1 problem?
-    //    var rawEntities = entitiesQuery
-    //        .OrderBy(e => e.EntityId) // order to ensure drafts are processed after draft-parents
-    //        .Select(e => new TempEntity
-    //        {
-    //            EntityId = e.EntityId,
-    //            EntityGuid = e.EntityGuid,
-    //            Version = e.Version,
-    //            AttributeSetId = e.AttributeSetId,
-    //            MetadataFor = new(e.AssignmentObjectTypeId, null, e.KeyString, e.KeyNumber, e.KeyGuid),
-    //            IsPublished = e.IsPublished,
-    //            PublishedEntityId = e.PublishedEntityId,
-    //            Owner = e.Owner,
-    //            Created = e.ChangeLogCreatedNavigation.Timestamp,
-    //            Modified = e.ChangeLogModifiedNavigation.Timestamp,
-    //            Json = e.Json,
-    //        })
-    //        .ToList();
-    //    l.A($"Query executed and converted to {nameof(TempEntity)}");
-
-    //    return l.Return(rawEntities, $"found: {rawEntities.Count}");
-    //}
 
 }

@@ -12,7 +12,8 @@ internal class EntityDetailsLoadSpecs(int appId, List<TempEntity> entities, IEav
     {
         get
         {
-            if (field != null) return field;
+            if (field != null)
+                return field;
 
             var l = Log.Fn<List<int>>(timer: true);
             // Get the EntityIDs to load the relationships / values for these entities
@@ -34,7 +35,9 @@ internal class EntityDetailsLoadSpecs(int appId, List<TempEntity> entities, IEav
     {
         get
         {
-            if (field != null) return field;
+            if (field != null)
+                return field;
+
             var l = Log.Fn<List<List<int>>>(timer: true);
             field = IdsToLoad.ChunkBy(EntityLoader.IdChunkSize);
             return l.Return(field, $"Chunked into {field.Count} chunks");
