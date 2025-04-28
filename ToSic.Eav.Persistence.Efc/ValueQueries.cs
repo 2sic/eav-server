@@ -35,10 +35,6 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
         var l = Log.Fn<IQueryable<ToSicEavValues>>(timer: true);
 
         var query = context.ToSicEavValues
-            // Note 2025-04-28 2dm: the .Attribute seems to only be used to get the StaticName
-            // should probably be optimized to not get the Attribute definition for each item (lots of data)
-            // but instead just get the StaticName
-            //.Include(v => v.Attribute)
             // Dimensions are needed for language assignment for each value
             .Include(v => v.ToSicEavValuesDimensions)
             .ThenInclude(d => d.Dimension)

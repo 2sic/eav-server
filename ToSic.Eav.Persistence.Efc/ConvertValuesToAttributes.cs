@@ -45,40 +45,52 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //}
 
 
-    public Dictionary<int, IEnumerable<TempAttributeWithValues>> EavValuesToTempAttributesBeta(List<LoadingValue> values)
+    internal Dictionary<int, List<TempAttributeWithValues>> EavValuesToTempAttributesBeta(List<LoadingValue> values)
     {
-        var l = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(timer: true);
+        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>(timer: true);
+
+        var primaryLower = primaryLanguage.ToLowerInvariant();
 
         // Convert to dictionary
-        // Research 2024-08 PC 2dm shows that this is superfast - less than 1ms for 1700 attributes (Tutorial App)
+        // Research 2024-08 PC 2dm shows that this is superfast - ca. 10-15ms for 1700 attributes (Tutorial App)
         var attributes = values
             .GroupBy(e => e.EntityId)
             .ToDictionary(
                 e => e.Key,
                 e => e
                     .GroupBy(v => v.AttributeId)
-                    .Select(valueGroup => new TempAttributeWithValues
+                    .Select(valueGroup =>
                     {
-                        Name = valueGroup.First().StaticName,
-                        Values = valueGroup
+                        var attributeValues = valueGroup
+                            .Select(v => new
+                            {
+                                v.Value,
+                                Languages = v.ToSicEavValuesDimensions
+                                    .Select(ILanguage (lng) => new Language(
+                                        lng.Dimension.EnvironmentKey,
+                                        lng.ReadOnly,
+                                        lng.DimensionId))
+                                    .ToImmutableList(),
+                                v.ChangeLogCreated
+                            })
                             // The order of values is significant because the 2sxc system uses the first value as fallback
                             // Because we can't ensure order of values when saving, order values: prioritize values without
                             // any dimensions, then values with primary language
-                            .OrderByDescending(v2 => !v2.ToSicEavValuesDimensions.Any())
-                            .ThenByDescending(v2 => v2.ToSicEavValuesDimensions
-                                .Any(lng => string.Equals(lng.Dimension.EnvironmentKey, primaryLanguage,
-                                    StringComparison.InvariantCultureIgnoreCase))
-                            )
+                            .OrderByDescending(v2 => !v2.Languages.Any())
+                            .ThenByDescending(v2 => v2.Languages.Any(lng => lng.Key == primaryLower))
                             .ThenBy(v2 => v2.ChangeLogCreated)
-                            .Select(v2 => new TempValueWithLanguage
-                            {
-                                Value = v2.Value,
-                                Languages = v2.ToSicEavValuesDimensions
-                                    .Select(ILanguage (lng) => new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly,
-                                        lng.DimensionId))
-                                    .ToImmutableList(),
-                            })
+                            .Select(v => new TempValueWithLanguage { Value = v.Value, Languages = v.Languages })
+                            .ToList();
+
+
+
+                        return new TempAttributeWithValues
+                        {
+                            Name = valueGroup.First().StaticName,
+                            Values = attributeValues,
+                        };
                     })
+                    .ToList()
             );
 
         return l.Return(attributes);

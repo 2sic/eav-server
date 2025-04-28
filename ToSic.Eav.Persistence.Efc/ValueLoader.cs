@@ -7,9 +7,9 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
     internal ValueQueries ValueQueries => field ??= new(appLoader.Context, Log);
 
 
-    public Dictionary<int, IEnumerable<TempAttributeWithValues>> LoadValues()
+    public Dictionary<int, List<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>(timer: true);
+        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>(timer: true);
 
         var sqlTime = Stopwatch.StartNew();
         var chunkedAttributes = specs.IdsToLoadChunks
@@ -25,9 +25,9 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
         return l.Return(attributes, $"Found {attributes.Count} attributes");
     }
 
-    private Dictionary<int, IEnumerable<TempAttributeWithValues>> GetValuesOfEntityChunk(List<int> entityIdsFound)
+    private Dictionary<int, List<TempAttributeWithValues>> GetValuesOfEntityChunk(List<int> entityIdsFound)
     {
-        var l = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
+        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
 
         var attributesRaw = GetSqlValues(entityIdsFound);
 
