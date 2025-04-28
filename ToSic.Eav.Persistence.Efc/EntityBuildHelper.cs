@@ -13,7 +13,7 @@ internal class EntityBuildHelper
         IAppReader appReader,
         TempEntity e,
         IDataDeserializer serializer,
-        Dictionary<int, IEnumerable<TempRelationshipList>> relatedEntities,
+        Dictionary<int, List<TempRelationshipList>> relatedEntities,
         Dictionary<int, List<TempAttributeWithValues>> attributes,
         string primaryLanguage)
     {
