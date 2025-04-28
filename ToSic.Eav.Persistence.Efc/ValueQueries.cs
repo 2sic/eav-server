@@ -2,46 +2,53 @@
 
 internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(parentLog, "Efc.ValQry")
 {
-    /// <summary>
-    /// Get the attributes of the entities we're loading.
-    /// </summary>
-    private IQueryable<ToSicEavValues> AllWithDimensions()
+    // 2025-04-28: this is the old version, which was slower - remove ca. 2025-Q3 #EfcSpeedUpValueLoading
+    ///// <remarks>
+    ///// Research 2024-08 PC 2dm shows that this is fairly slow, between 100 and 400ms for 1700 attributes (Tutorial App)
+    ///// </remarks>
+    //internal IQueryable<ToSicEavValues> ValuesOfIdsQuery(List<int> entityIds)
+    //{
+    //    var l = Log.Fn<IQueryable<ToSicEavValues>>(timer: true);
+
+    //    var query = context.ToSicEavValues
+    //        // Note 2025-04-28 2dm: the .Attribute seems to only be used to get the StaticName
+    //        // should probably be optimized to not get the Attribute definition for each item (lots of data)
+    //        // but instead just get the StaticName
+    //        .Include(v => v.Attribute)
+    //        // Dimensions are needed for language assignment for each value
+    //        .Include(v => v.ToSicEavValuesDimensions)
+    //        .ThenInclude(d => d.Dimension)
+    //        // Skip values which have been flagged as deleted
+    //        .Where(v => !v.ChangeLogDeleted.HasValue);
+
+    //    var queryOfEntityIds = query
+    //        .Where(r => entityIds.Contains(r.EntityId));
+
+    //    return l.Return(queryOfEntityIds);
+    //}
+
+    /// <remarks>
+    /// Improved 2025-04-28 for v20 to really just get the values we need, seems to be ca. 50% faster.
+    /// </remarks>
+    internal IQueryable<ToSicEavValues> ValuesOfIdsQueryOptimized(List<int> entityIds)
     {
         var l = Log.Fn<IQueryable<ToSicEavValues>>(timer: true);
 
         var query = context.ToSicEavValues
-            .Include(v => v.Attribute)
+            // Note 2025-04-28 2dm: the .Attribute seems to only be used to get the StaticName
+            // should probably be optimized to not get the Attribute definition for each item (lots of data)
+            // but instead just get the StaticName
+            //.Include(v => v.Attribute)
+            // Dimensions are needed for language assignment for each value
             .Include(v => v.ToSicEavValuesDimensions)
             .ThenInclude(d => d.Dimension)
+            // Skip values which have been flagged as deleted
             .Where(v => !v.ChangeLogDeleted.HasValue);
 
-        return l.Return(query);
-    }
-
-    /// <remarks>
-    /// Research 2024-08 PC 2dm shows that this is fairly slow, between 100 and 400ms for 1700 attributes (Tutorial App)
-    /// </remarks>
-    public IQueryable<ToSicEavValues> ValuesOfIds(List<int> entityIds)
-    {
-        var l = Log.Fn<IQueryable<ToSicEavValues>>(timer: true);
-
-        var query = AllWithDimensions()
+        var queryOfEntityIds = query
             .Where(r => entityIds.Contains(r.EntityId));
 
-        return l.Return(query);
+        return l.Return(queryOfEntityIds);
     }
-
-    ///// <remarks>
-    ///// NOT tested / proved to be usefull
-    ///// </remarks>
-    //public IQueryable<ToSicEavValues> ValuesOfInnerSelect(IQueryable<int> innerSelect)
-    //{
-    //    var l = Log.Fn<IQueryable<ToSicEavValues>>(timer: true);
-
-    //    var query = AllWithDimensions()
-    //        .Where(r => innerSelect.Contains(r.EntityId));
-
-    //    return l.Return(query);
-    //}
 
 }

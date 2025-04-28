@@ -29,13 +29,33 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
     {
         var l = Log.Fn<Dictionary<int, IEnumerable<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
 
-        var attributesRaw = GetSqlValuesRaw(entityIdsFound);
+        var attributesRaw = GetSqlValues(entityIdsFound);
 
         var cnv = new ConvertValuesToAttributes(appLoader.PrimaryLanguage, Log);
-        var attributes = cnv.EavValuesToTempAttributes(attributesRaw);
+        var attributes = cnv.EavValuesToTempAttributesBeta(attributesRaw);
 
         return l.ReturnAsOk(attributes);
     }
+
+    // 2025-04-28: this is the old version, which was slower - remove ca. 2025-Q3 #EfcSpeedUpValueLoading
+    ///// <summary>
+    ///// Get the attributes of the entities we're loading.
+    ///// </summary>
+    ///// <param name="entityIdsFound"></param>
+    ///// <returns></returns>
+    ///// <remarks>
+    ///// Research 2024-08 PC 2dm shows that this is fairly slow, between 100 and 400ms for 1700 attributes (Tutorial App)
+    ///// </remarks>
+    //private List<ToSicEavValues> GetSqlValuesRaw(List<int> entityIdsFound)
+    //{
+    //    var l = Log.Fn<List<ToSicEavValues>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
+
+    //    var attributesRaw = ValueQueries
+    //        .ValuesOfIdsQuery(entityIdsFound)
+    //        .ToList();
+
+    //    return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
+    //}
 
     /// <summary>
     /// Get the attributes of the entities we're loading.
@@ -43,42 +63,29 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
     /// <param name="entityIdsFound"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Research 2024-08 PC 2dm shows that this is fairly slow, between 100 and 400ms for 1700 attributes (Tutorial App)
+    /// Updated 2025-04-28 for v20 to really just get the values we need, seems to be ca. 50% faster.
     /// </remarks>
-    private List<ToSicEavValues> GetSqlValuesRaw(List<int> entityIdsFound)
+    private List<LoadingValue> GetSqlValues(List<int> entityIdsFound)
     {
-        var lSql = Log.Fn($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
+        var l = Log.Fn<List<LoadingValue>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
 
         var attributesRaw = ValueQueries
-            .ValuesOfIds(entityIdsFound)
+            .ValuesOfIdsQueryOptimized(entityIdsFound)
+            .Select(v => new LoadingValue(
+                    v.EntityId,
+                    v.AttributeId,
+                    v.Attribute.StaticName,
+                    v.Value,
+                    v.ChangeLogCreated,
+                    v.ToSicEavValuesDimensions
+                    //null
+                    //v.ToSicEavValuesDimensions
+                    //    .Select(lng => new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId) as ILanguage)
+                    //    .ToList()
+                )
+            )
             .ToList();
 
-        lSql.Done($"found {attributesRaw.Capacity} attributes");
-        return attributesRaw;
+        return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
     }
-
-    ///// <summary>
-    ///// Get the attributes of the entities we're loading.
-    ///// Experimental, probably shouldn't be used yet.
-    /////
-    ///// Would only make sense to use in certain conditions, e.g. when loading all entities of an app.
-    /////
-    ///// DO NOT USE YET - it has not been proven to work or be faster
-    ///// </summary>
-    //private List<ToSicEavValues> GetSqlValuesRawInnerSelect()
-    //{
-    //    var lSql = Log.Fn($"Attributes SQL for entities", timer: true);
-
-    //    var attributesRaw = parent.ValueQueries
-    //        .ValuesOfInnerSelect(
-    //            parent.EntityQueries.AppEntities(specs.AppId, [])
-    //                .Select(e => e.EntityId)
-    //        )
-    //        .ToList();
-
-    //    lSql.Done($"found {attributesRaw.Capacity} attributes");
-    //    return attributesRaw;
-    //}
-
-
 }
