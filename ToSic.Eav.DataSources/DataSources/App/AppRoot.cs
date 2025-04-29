@@ -43,8 +43,7 @@ public class AppRoot : DataSourceBase, IAppRoot
     /// <summary>
     /// Get the <see cref="AppReader"/> of this app from the cache.
     /// </summary>
-    private IAppReader AppReader => _appReader ??= _appReaders.Get(this);
-    private IAppReader _appReader;
+    private IAppReader AppReader => field ??= _appReaders.Get(this);
 
     #region Cache-Chain
 

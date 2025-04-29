@@ -20,8 +20,7 @@ internal class LanguageMap
     public bool HasLanguages;
     public LanguageToField[] Fields;
 
-    public List<string> FieldNames => _fieldNames ??= Fields.Select(f => f.OriginalField).ToList();
-    private List<string> _fieldNames;
+    public List<string> FieldNames => field ??= Fields.Select(f => f.OriginalField).ToList();
 
     public string LoadLine(string original)
     {

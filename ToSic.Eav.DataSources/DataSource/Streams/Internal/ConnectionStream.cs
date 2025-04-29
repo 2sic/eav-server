@@ -34,9 +34,9 @@ internal class ConnectionStream(
         }
         else
         {
-            if (!ds.Out.ContainsKey(name))
+            if (!ds.Out.TryGetValue(name, out var value))
                 return CreateErrorStream("Source doesn't have Stream", $"LoadStream(): Source '{ds.Label}' doesn't have stream '{name}'", ds);
-            stream = ds.Out[name];
+            stream = value;
             if (stream == null)
                 return CreateErrorStream("Source Stream is Null", $"Source '{ds.Label}' has stream '{name}' but it's null", ds);
         }

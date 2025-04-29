@@ -11,8 +11,7 @@ partial class DataSourceBase
     #region Connections
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    internal DataSourceConnections Connections => _connections ??= new(this);
-    private DataSourceConnections _connections;
+    internal DataSourceConnections Connections => field ??= new(this);
 
     #endregion
 

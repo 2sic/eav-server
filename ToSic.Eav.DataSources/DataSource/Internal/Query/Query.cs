@@ -23,11 +23,10 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
     private StreamDictionary OutWritable
     {
-        get => _outWritable ??= new(Services.CacheService);
-        set => _outWritable = value;
+        get => field ??= new(Services.CacheService);
+        set;
     }
 
-    private StreamDictionary _outWritable;
     private bool _requiresRebuildOfOut = true;
 
     /// <summary>
@@ -68,11 +67,9 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
     /// <inheritdoc />
     [PrivateApi]
-    public Query(MyServices services, LazySvc<QueryBuilder> queryBuilder) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Query")
+    public Query(MyServices services, LazySvc<QueryBuilder> queryBuilder) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Query", connect: [queryBuilder])
     {
-        ConnectLogs([
-            _queryBuilderLazy = queryBuilder
-        ]);
+        _queryBuilderLazy = queryBuilder;
     }
     private readonly LazySvc<QueryBuilder> _queryBuilderLazy;
 
@@ -97,8 +94,9 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     }
 
     [PublicApi]
-    public override IReadOnlyDictionary<string, IDataStream> In => _inSource?.In ?? _in;
-    private readonly IReadOnlyDictionary<string, IDataStream> _in = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+    public override IReadOnlyDictionary<string, IDataStream> In
+        => _inSource?.In ?? (field ??= new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase));
+
     private IDataSource _inSource;
 
 

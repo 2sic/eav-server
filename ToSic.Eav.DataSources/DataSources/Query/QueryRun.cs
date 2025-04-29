@@ -67,8 +67,8 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// The inner query object. Will be initialized the first time it's accessed.
     /// </summary>
     [PrivateApi("not sure if showing this has any value - probably not")]
-    internal Query Query => _query ??= BuildQuery();
-    private Query _query;
+    internal Query Query => field ??= BuildQuery();
+
     #endregion
 
     private Query BuildQuery() => Log.Func(() =>

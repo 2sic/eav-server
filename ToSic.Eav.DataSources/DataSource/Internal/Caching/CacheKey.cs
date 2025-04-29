@@ -33,7 +33,7 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
-    public virtual string CacheFullKey => _fullKey ??= string.Join(">", SubKeys.Distinct());
+    public virtual string CacheFullKey => field ??= string.Join(">", SubKeys.Distinct());
 
 
     /// <summary>
@@ -42,7 +42,8 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
     /// <returns></returns>
     private List<IDataSource> UniqueSources()
     {
-        if (DataSource == null) return [];
+        if (DataSource == null)
+            return [];
 
         if (DataSource.In == null || DataSource.In.Count == 0)
             return [];
@@ -60,18 +61,14 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
     {
         get
         {
-            if (_dependentPartials != null) return _dependentPartials;
-
+            if (field != null)
+                return field;
             var keys = UniqueSources()
                 .SelectMany(inStream => inStream.CacheKey.SubKeys)
                 .ToList();
             keys.Add(CachePartialKey);
-            _dependentPartials = [.. keys];
-            return _dependentPartials;
+            field = [.. keys];
+            return field;
         }
     }
-
-    private string[] _dependentPartials = null;
-
-    private string _fullKey;
 }

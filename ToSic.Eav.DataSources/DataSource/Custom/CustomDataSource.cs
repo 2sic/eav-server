@@ -50,11 +50,9 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
     private DataFactoryOptions Options
     {
-            
-        get => _options ??= new() { TypeName = "Custom" };
-        set => _options = value;
+        get => field ??= new() { TypeName = "Custom" };
+        set => field = value;
     }
-    private DataFactoryOptions _options;
 
     protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 

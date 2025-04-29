@@ -77,10 +77,7 @@ public class DataStream(
     /// <summary>
     /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it
     /// </summary>
-    public virtual DataStreamCacheStatus Caching => _cachingInternal ??= new(Source, Source, Name);
-
-    private DataStreamCacheStatus _cachingInternal;
-
+    public virtual DataStreamCacheStatus Caching => field ??= new(Source, Source, Name);
 
     #endregion
 

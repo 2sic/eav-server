@@ -112,14 +112,13 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
                     // Loop through each source field to add the value to the new attribute
                     foreach (var entry in map.Fields)
                     {
-                        if (!attributes.ContainsKey(entry.OriginalField))
+                        if (!attributes.TryGetValue(entry.OriginalField, out var currentAttribute))
                         {
                             // do not create values for fields which do not exist
                             l.A($"Field mapping ignored for # {entity.EntityId} / language {entry.Language}; source attribute {entry.OriginalField} does not exist.");
                             continue;
                         }
 
-                        var currentAttribute = attributes[entry.OriginalField];
                         var value = currentAttribute.Values.FirstOrDefault()?.ObjectContents;
                         // Remove first, in case the new name replaces an old one
                         newAttribute = atBld.CreateOrUpdate(originalOrNull: newAttribute, name: newName, value: value, type: newAttribute.Type, language: entry.Language);
@@ -130,14 +129,13 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
                 }
                 else // simple re-mapping / renaming
                 {
-                    if (!attributes.ContainsKey(map.Source))
+                    if (!attributes.TryGetValue(map.Source, out var sourceAttr))
                     {
                         l.A($"Field mapping not possible for #{entity.EntityId}; source attribute {map.Source} does not exist.");
                         continue;
                     }
 
                     // Make a copy to make sure the Name property of the attribute is set correctly
-                    var sourceAttr = attributes[map.Source];
                     var newAttribute = atBld.Create(newName, sourceAttr.Type, sourceAttr.Values.ToList());
                     // Remove first, in case the new name replaces an old one
                     // #immutableTodo

@@ -48,8 +48,7 @@ public partial class QueryDefinition: EntityBasedWithLog
     /// <summary>
     /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
     /// </summary>
-    public IList<Connection> Connections => _connections ??= Internal.Query.Connections.Deserialize(ConnectionsRaw);
-    private IList<Connection> _connections;
+    public IList<Connection> Connections => field ??= Internal.Query.Connections.Deserialize(ConnectionsRaw);
 
     /// <summary>
     /// The connections as they are serialized in the Entity

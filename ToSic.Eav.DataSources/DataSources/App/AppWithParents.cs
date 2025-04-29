@@ -10,14 +10,14 @@ internal class AppWithParents: DataSourceBase
 
     public override int AppId
     {
-        get => _appId == 0 ? base.AppId : _appId;
-        protected set => _appId = value;
+        get => field == 0 ? base.AppId : field;
+        protected set => field = value;
     }
 
     public override int ZoneId
     {
-        get => _zoneId == 0 ? base.ZoneId : _zoneId;
-        protected set => _zoneId = value;
+        get => field == 0 ? base.ZoneId : field;
+        protected set => field = value;
     }
 
     ///// <summary>
@@ -33,8 +33,6 @@ internal class AppWithParents: DataSourceBase
 
     private readonly IAppReaderFactory _appReaders;
     private readonly IDataSourcesService _dataSourceFactory;
-    private int _appId;
-    private int _zoneId;
 
     public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
     {
