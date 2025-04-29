@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSources;
+﻿using System.Threading;
+
+namespace ToSic.Eav.DataSources;
 
 /// <summary>
 /// Internal DataSource to generate an error on purpose.
@@ -27,7 +29,14 @@ public class Error: DataSourceBase
     /// The error message. Defaults to "Demo message of the Error DataSource"
     /// </summary>
     public string Message { get; set; } = "Demo message of the Error DataSource";
-        
+
+    /// <summary>
+    /// Delay the result by this many seconds.
+    /// Meant for testing scenarios where the error needs time - like waiting for a connection timeout.
+    /// </summary>
+    [Configuration(Fallback = 0, CacheRelevant = false)]
+    public int DelaySeconds => Configuration.GetThis(0);
+
     /// <summary>
     /// Constructor to tell the system what out-streams we have.
     /// In this case it's just the "Default" containing a fake exception.
@@ -41,6 +50,14 @@ public class Error: DataSourceBase
         l.A("This is a fake Error / Exception");
         l.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
         var errToReturn = Error.Create(title: Title, message: Message);
+
+        if (DelaySeconds <= 0)
+            return l.Return(errToReturn, "fake error");
+
+        // Delay the result by this many seconds.
+        l.A($"Delaying result by {DelaySeconds} seconds");
+        Thread.Sleep(DelaySeconds * 1000);
+
         return l.Return(errToReturn, "fake error");
     }
 }

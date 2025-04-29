@@ -32,7 +32,7 @@ public interface IListCacheSvc
     /// <param name="builderFunc">a function which is only called if building is required</param>
     /// <param name="durationInSeconds">The cache validity duration in seconds. If 0 or omitted, default value will be used. </param>
     /// <returns>The ListCacheItem - either from cache, or just created</returns>
-    ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc, int durationInSeconds = 0);
+    ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc, int durationInSeconds, int errorInSeconds);
 
     /// <summary>
     /// Add an item to the list-cache

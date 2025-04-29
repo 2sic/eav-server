@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Caching;
+﻿using System.Diagnostics;
+using ToSic.Eav.Caching;
+using ToSic.Eav.DataSource.Internal.Errors;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
@@ -19,6 +21,8 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     /// Is used in all Set commands where the default duration is needed.
     /// </summary>
     internal const int DefaultDuration = 60 * 60;
+
+    internal const int CacheErrorDelayMultipleOfGenerationTime = 3;
 
     #region Static Cache Checks
 
@@ -58,7 +62,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     }
 
     /// <inheritdoc />
-    public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc, int durationInSeconds = 0)
+    public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc, int durationInSeconds, int errorInSeconds)
     {
         var l = Log.Fn<ListCacheItem>();
         var key = CacheKey(stream);
@@ -82,11 +86,34 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
                 return l.Return(cacheItem, "still valid, use cache");
 
             l.A($"Re-Building cache of data stream {stream.Name}");
+            // Measure how long it takes to do this
+            var watch = Stopwatch.StartNew();
             var entities = builderFunc();
+            watch.Stop();
+
+            // Check if it's an error data, in which case caching off or special
+            if ((entities?.FirstOrDefault()).IsError())
+            {
+                if (errorInSeconds < 0 || (errorInSeconds == 0 && watch.ElapsedMilliseconds < 1000))
+                {
+                    cacheItem = new(entities, 0, false);
+                    return l.Return(cacheItem, "error, will not cache");
+                }
+
+                var cacheErrorTime = errorInSeconds > 0
+                    ? errorInSeconds
+                    // If 0 (default), then cache for 3 times the time it took to generate the source data
+                    : (int)(watch.ElapsedMilliseconds / 1000) * CacheErrorDelayMultipleOfGenerationTime;
+
+                Set(key, entities, stream.Caching.CacheTimestamp, false, cacheErrorTime, false);
+                return l.Return(Get(key), $"generated with error, cached for {cacheErrorTime} seconds");
+            }
+
+            // If we listen to the source for updates, then use sliding expiration
             var useSlidingExpiration = stream.CacheRefreshOnSourceRefresh;
             Set(key, entities, stream.Caching.CacheTimestamp, stream.CacheRefreshOnSourceRefresh, durationInSeconds, useSlidingExpiration);
 
-            return l.Return(Get(key), "generated and placed in cache");
+            return l.Return(Get(key), $"generated and cached for {durationInSeconds} seconds");
         }
     }
 
@@ -100,6 +127,18 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
 
     public bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
 
+    /// <summary>
+    /// Internal remove to clean up after a test
+    /// </summary>
+    internal ListCacheItem Remove(IDataStream stream)
+    {
+        var key = CacheKey(stream);
+        var hasStream = HasStream(stream);
+        var l = Log.Fn<ListCacheItem>($"key: {key}; has: {hasStream}");
+        var old = memoryCacheService.Remove(key) as ListCacheItem;
+        return l.Return(old);
+    }
+
     #endregion
 
     #region set/add list
@@ -108,7 +147,9 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, bool refreshOnSourceRefresh, int durationInSeconds = 0, bool slidingExpiration = true)
     {
         var l = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
-        var duration = durationInSeconds > 0 ? durationInSeconds : DefaultDuration;
+        var duration = durationInSeconds > 0
+            ? durationInSeconds
+            : DefaultDuration;
         memoryCacheService.Set(key, value: new ListCacheItem(list, sourceTimestamp, refreshOnSourceRefresh), p => slidingExpiration
             ? p.SetSlidingExpiration(duration)
             : p.SetAbsoluteExpiration(DateTime.Now.AddSeconds(duration)));

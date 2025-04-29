@@ -24,7 +24,7 @@ public class DataStream(
     ) : IDataStream
 {
 
-    #region Constructor
+    #region Alternate Constructor using IEnumerable<IEntity> instead of IImmutableList<IEntity>
 
     /// <summary>
     /// Constructs a new DataStream
@@ -71,6 +71,16 @@ public class DataStream(
     /// </summary>
     public bool CacheRefreshOnSourceRefresh { get; set; } = true;
 
+    /// <summary>
+    /// Special cache duration for streams returning an error.
+    /// Default to `0`. Possible values:
+    /// 
+    /// * `0` cache for 3 times as-long-as-it-takes to generate source data (delay retry on slow source)
+    /// * `-1` don't cache at all and retry immediately
+    /// * any other number: cache longer, e.g. if the source needs long to generate.
+    /// </summary>
+    public int CacheErrorDurationInSeconds { get; set; } = 0;
+
     /// <inheritdoc />
     public string Scope { get; protected internal set; } = scope ?? Scopes.Default;
 
@@ -89,9 +99,10 @@ public class DataStream(
     public IEnumerable<IEntity> List => _list.GetM(Log, parameters: $"{nameof(Name)}:{Name}", timer: true, generator: _ =>
     {
         // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
-        if (!AutoCaching) return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
+        if (!AutoCaching)
+            return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
 
-        var cacheItem = cache.Value.ListCache.GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds);
+        var cacheItem = cache.Value.ListCache.GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds, CacheErrorDurationInSeconds);
         return (cacheItem.List, $"with {nameof(AutoCaching)}");
     });
 

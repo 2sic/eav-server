@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.DataSource.Internal.Caching;
+﻿using ToSic.Eav.DataSource.Internal.Caching;
 
 namespace ToSic.Eav.DataSource.Caching;
 
@@ -7,7 +6,7 @@ namespace ToSic.Eav.DataSource.Caching;
 public class CacheAllStreamsIdenticalSetups(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
 #if NETCOREAPP
-    [field: AllowNull, MaybeNull]
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
 #endif
     private CacheStreamsTestBuilder CacheStreamsTestBuilder => field ??= new(dsSvc, listCache, personTable);
 
@@ -20,7 +19,7 @@ public class CacheAllStreamsIdenticalSetups(DataSourcesTstBuilder dsSvc, IListCa
     [Fact]
     public void Check2InWithIdenticalNewSetup()
     {
-        var (filtered, cacheDs1) = CacheStreamsTestBuilder.CreateFilterAndCache(100, FilterIdForManyTests);
+        var (_, cacheDs1) = CacheStreamsTestBuilder.CreateFilterAndCache(100, FilterIdForManyTests);
 
         // check if in cache - shouldn't be yet
         False(listCache.HasStreamTac(cacheDs1.Out[DataSourceConstants.StreamDefaultName]),

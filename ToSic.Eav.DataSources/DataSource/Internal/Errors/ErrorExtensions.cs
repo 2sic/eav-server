@@ -4,8 +4,8 @@
 public static class ErrorExtensions
 {
     public static bool IsError(this IDataSource ds)
-    {
-        var firstItem = ds.List?.FirstOrDefault();
-        return firstItem?.Type?.Name == DataConstants.ErrorTypeName;
-    }
+        => (ds.List?.FirstOrDefault()).IsError();
+
+    public static bool IsError(this IEntity entity)
+        => entity?.Type?.Name == DataConstants.ErrorTypeName;
 }

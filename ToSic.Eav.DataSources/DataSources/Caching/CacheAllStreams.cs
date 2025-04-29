@@ -48,11 +48,16 @@ public class CacheAllStreams : DataSourceBase
     [Configuration(Fallback = true, CacheRelevant = false)]
     public bool RefreshOnSourceRefresh => Configuration.GetThis(true);
 
-    /// <summary>
-    /// Perform a cache rebuild async. 
-    /// </summary>
-    [Configuration(Fallback = false, CacheRelevant = false)]
-    public bool ReturnCacheWhileRefreshing => Configuration.GetThis(false);
+    ///// <summary>
+    ///// Perform a cache rebuild async.
+    ///// NOT IMPLEMENTED YET - AND UNCLEAR IF WE CAN IMPLEMENT THIS
+    ///// </summary>
+    //[Configuration(Fallback = false, CacheRelevant = false)]
+    //public bool ReturnCacheWhileRefreshing => Configuration.GetThis(false);
+
+    /// <inheritdoc cref="DataStream.CacheErrorDurationInSeconds"/>
+    [Configuration(Fallback = 0, CacheRelevant = false)]
+    public int CacheErrorDurationInSeconds => Configuration.GetThis(0);
 
     #endregion
 
@@ -82,7 +87,8 @@ public class CacheAllStreams : DataSourceBase
     [PrivateApi]
     public CacheAllStreams(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.CachAl")
     {
-        // this one is unusual, so don't pre-attach a default data stream
+        // This one is unusual, so don't pre-attach a default data stream
+        // All streams, incl. Default, will be attached in the dynamic Out.
     }
 
     private IDataStream StreamWithCaching(string name)
@@ -92,6 +98,8 @@ public class CacheAllStreams : DataSourceBase
         // only set if a value other than 0 (= default) was given
         if (CacheDurationInSeconds != 0)
             outStream.CacheDurationInSeconds = CacheDurationInSeconds;
+        if (CacheErrorDurationInSeconds != 0)
+            outStream.CacheErrorDurationInSeconds = CacheErrorDurationInSeconds;
         outStream.CacheRefreshOnSourceRefresh = RefreshOnSourceRefresh;
         return outStream;
     }

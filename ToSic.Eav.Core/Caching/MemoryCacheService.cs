@@ -82,6 +82,10 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         }
     }
 
+    #endregion
+
+    #region Use CacheKey for Expiration Monitoring
+
     /// <summary>
     /// Used to create cache item dependency on other cache items
     /// with CacheEntryChangeMonitor in cache policy.
@@ -91,10 +95,6 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     internal static CacheEntryChangeMonitor CreateCacheEntryChangeMonitor(IEnumerable<string> keys)
         => Cache.CreateCacheEntryChangeMonitor(keys);
 
-    #endregion
-
-
-    #region Experimental - communicate through cachekey
 
     // Idea is that any large objects which should communicate expiry would leave a key in the cache with a permanent expiry
     // This way if something changes - like the features service, it can notify the cache, and everything dependant will be invalidated
