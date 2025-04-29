@@ -23,7 +23,7 @@ public class CacheAllStreamsFirstEmptyThenCached(DataSourcesTstBuilder dsSvc, IL
     /// </summary>
     private const string FilterIdForThisTestOnly = "1042";
 
-    private string ExpectedCacheId = "DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=" + FilterIdForThisTestOnly;
+    private const string ExpectedCacheId = "DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=" + FilterIdForThisTestOnly;
 
     [Fact]
     public void CheckNotInBeforeAndInAfterwards()

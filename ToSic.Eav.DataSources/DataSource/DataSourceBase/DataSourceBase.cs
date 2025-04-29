@@ -98,7 +98,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     #region Error Handling
 
     [PublicApi]
-    public DataSourceErrorHelper Error => _errorHandler.Get(() => Services.ErrorHandler.Value.Link(this));
+    public DataSourceErrorHelper Error => _errorHandler.Get(() => Services.ErrorHandler.Value.ConnectToParent(this));
     private readonly GetOnce<DataSourceErrorHelper> _errorHandler = new();
 
     #endregion

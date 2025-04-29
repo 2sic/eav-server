@@ -1,6 +1,8 @@
-﻿namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSource.DbTests;
 
-// NOTE: ALREADY COPIED TO THE NEW TEST PROJECT!
+// NOTE: This exists in 2 copies on 2 test projects
+// This is because the shared testing project does not currently reference
+// the Assert.... objects of XUnit, so it can't be moved there ATM.
 
 public static class DataSourceErrors
 {

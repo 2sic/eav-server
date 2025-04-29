@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSource;
 public class DataSourceErrorHelper(DataBuilder builder)
 {
     [PrivateApi]
-    internal DataSourceErrorHelper Link(IDataSource source)
+    internal DataSourceErrorHelper ConnectToParent(IDataSource source)
     {
         _source = source;
         return this;
@@ -82,10 +82,9 @@ public class DataSourceErrorHelper(DataBuilder builder)
         source = source ?? _source;
         var inOrOut = inStreams ? source.In : source.Out;
         var partName = inStreams ? "In" : "Out";
-        if (!inOrOut.ContainsKey(streamName))
+        if (!inOrOut.TryGetValue(streamName, out var stream))
             return Create(source: source, title: $"Stream '{streamName}' not found",
                 message: $"This DataSource needs the stream '{streamName}' on the {partName} to work, but it couldn't find it.");
-        var stream = inOrOut[streamName];
         if (stream == null)
             return Create(source: source, title: $"Stream '{streamName}' is Null", message: $"The Stream '{streamName}' was found on {partName}, but it's null");
         var list = stream.List?.ToImmutableList();

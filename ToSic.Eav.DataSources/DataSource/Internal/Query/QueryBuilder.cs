@@ -129,7 +129,7 @@ public class QueryBuilder(
                     errDs.Message = err.Message;
                 }
             }
-            catch { }
+            catch { /* ignore */ }
 
 
             var partGuidStr = dataQueryPart.Guid.ToString();

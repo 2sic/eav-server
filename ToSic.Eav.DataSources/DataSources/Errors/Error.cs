@@ -35,10 +35,12 @@ public class Error: DataSourceBase
     public Error(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Error")
         => ProvideOut(GenerateExceptionStream);
 
-    private IImmutableList<IEntity> GenerateExceptionStream() => Log.Func(l =>
+    private IImmutableList<IEntity> GenerateExceptionStream()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         l.A("This is a fake Error / Exception");
         l.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
-        return (Error.Create(title: Title, message: Message), "fake error");
-    });
+        var errToReturn = Error.Create(title: Title, message: Message);
+        return l.Return(errToReturn, "fake error");
+    }
 }

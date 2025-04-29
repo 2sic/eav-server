@@ -18,7 +18,7 @@ public static class BreachExtensions
         string logName = null)
     {
         var ds = new CustomDataSource(services, logName);
-        ds.Error.Link(wrapper);
+        ds.Error.ConnectToParent(wrapper);
         ds.AutoLoadAllConfigMasks(wrapper.GetType());
         return ds;
     }
