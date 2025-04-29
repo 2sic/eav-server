@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal.Caching;
+﻿using ToSic.Eav.DataSource.Internal.Caching;
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSource;
 
 public static class ListCacheSvcTestAccessors
 {

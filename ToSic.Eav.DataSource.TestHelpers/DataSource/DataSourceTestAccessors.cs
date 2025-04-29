@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data;
-using ToSic.Eav.DataSource;
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSource;
 
 /// <summary>
 /// These extensions will access the normal List/Stream properties, but by making all tests use this, we have a cleaner use count in the Code.

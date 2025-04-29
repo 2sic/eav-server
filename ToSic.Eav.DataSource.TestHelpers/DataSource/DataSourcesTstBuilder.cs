@@ -1,10 +1,9 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
 using ToSic.Lib.Services;
 
-namespace ToSic.Testing.Shared;
+namespace ToSic.Eav.DataSource;
 
 public class DataSourcesTstBuilder(IDataSourcesService dataSourcesService): ServiceBase("Tst.DsFHlp", connect: [dataSourcesService])
 {

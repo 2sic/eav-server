@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.Code;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSourceTests;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.TestData;

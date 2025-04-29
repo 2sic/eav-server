@@ -1,10 +1,9 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Services;
 using ToSic.Lib.Coding;
 
-namespace ToSic.Testing.Shared;
+namespace ToSic.Eav.DataSource;
 
 public static class DataSourcesServiceTestAccessors
 {
