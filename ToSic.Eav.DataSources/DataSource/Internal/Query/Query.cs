@@ -24,7 +24,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     private StreamDictionary OutWritable
     {
         get => field ??= new(Services.CacheService);
-        set;
+        set => field = value;
     }
 
     private bool _requiresRebuildOfOut = true;

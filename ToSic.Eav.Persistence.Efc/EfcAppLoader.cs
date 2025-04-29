@@ -54,12 +54,13 @@ public class EfcAppLoader(
     {
         get
         {
-            if (field != null) return field;
+            if (field != null)
+                return field;
             var l = Log.Fn<string>();
             field = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
             return l.ReturnAndLog(field, $"Primary language from Env (for value sorting): {field}");
         }
-        set;
+        set => field = value;
     }
 
     #endregion
