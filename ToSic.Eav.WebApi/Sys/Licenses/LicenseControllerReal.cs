@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Text.Json;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Features;
@@ -132,17 +132,12 @@ public class LicenseControllerReal(
         l.A($"retrieve license from url:{url}");
 
         string content;
-
-        using (var client = new WebClient())
+        using (var httpClient = new HttpClient())
         {
-            var initialProtocol = ServicePointManager.SecurityProtocol;
             try
             {
-                l.A("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-
                 l.A($"try to download:{url}");
-                content = client.DownloadString(url);
+                content = httpClient.GetStringAsync(url).Result;
 
                 // verify it's json etc.
                 if (!Json.IsValidJson(content))
@@ -150,17 +145,13 @@ public class LicenseControllerReal(
 
                 // check for error
                 var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.UnsafeJsonWithoutEncodingHtml);
-                if (!licenseFileResultDto.Success) 
+                if (!licenseFileResultDto.Success)
                     return l.ReturnAndLog(licenseFileResultDto, licenseFileResultDto.Message);
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
-                Log.Ex(e);
-                throw new("Could not download license file from '" + url + "'.", e);
-            }
-            finally
-            {
-                ServicePointManager.SecurityProtocol = initialProtocol;
+                l.Ex(e);
+                throw new($"Could not download license file from '{url}'.", e);
             }
         }
 
@@ -169,7 +160,7 @@ public class LicenseControllerReal(
         // reload license and features
         systemLoaderLazy.Value.LoadLicenseAndFeatures();
 
-        return l.ReturnAndLog(new() { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed."}, "ok");
+        return l.ReturnAndLog(new() { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed." }, "ok");
     }
 
     private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);

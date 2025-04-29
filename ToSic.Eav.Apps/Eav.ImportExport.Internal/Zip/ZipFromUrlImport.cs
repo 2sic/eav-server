@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using System.Net;
+using System.Net.Http;
 using ToSic.Eav.Identity;
 using ToSic.Eav.Internal.Configuration;
 
@@ -40,30 +40,24 @@ public class ZipFromUrlImport: ZipImport
 
         var destinationPath = Path.Combine(tempDirectory.FullName, Path.GetRandomFileName() + ".zip");
 
-        using (var client = new WebClient())
+        using (var httpClient = new HttpClient())
         {
-            var initialProtocol = ServicePointManager.SecurityProtocol;
             try
             {
-                Log.A("Will upgrade TLS connection so we can connect with TLS 1.1 or 1.2");
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-
-
                 Log.A($"try to download:{packageUrl} to:{destinationPath}");
-                client.DownloadFile(packageUrl, destinationPath);
+                var response = httpClient.GetAsync(packageUrl).Result; 
+                response.EnsureSuccessStatusCode();
+
+                using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
+                response.Content.CopyToAsync(fileStream).Wait();
             }
-            catch (WebException e)
+            catch (HttpRequestException e)
             {
-                throw new("Could not download app package from '" + packageUrl + "'.", e);
+                Log.Ex(e);
+                throw new($"Could not download app package from '{packageUrl}'.", e);
             }
-            finally
-            {
-                ServicePointManager.SecurityProtocol = initialProtocol;
-            }
-                
         }
         bool success;
-
 
         var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
 

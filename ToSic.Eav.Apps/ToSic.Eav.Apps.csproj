@@ -48,6 +48,7 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />
   </ItemGroup>
 
