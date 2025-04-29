@@ -31,8 +31,9 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
     /// <summary>
     /// Update Relationships of an Entity
     /// </summary>
-    private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages) => Log.Do(timer: true, action: l => 
+    private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
     {
+        var l = Log.Fn(timer: true);
         packages.ForEach(p => l.A(l.Try(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]")));
         // remove existing Relationships that are not in new list
         var existingRelationships = packages.SelectMany(p => p.Entity.RelationshipsWithThisAsParent
@@ -62,7 +63,9 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                         ParentEntityId = p.Entity.EntityId
                     });
             }));
-    });
+
+        l.Done();
+    }
 
     /// <summary>
     /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
@@ -97,8 +100,9 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
     /// <summary>
     /// Import Entity Relationships Queue (Populated by UpdateEntityRelationships) and Clear Queue afterward.
     /// </summary>
-    private void ImportRelationshipQueueAndSave() => Log.Do(timer: true, action: l =>
+    private void ImportRelationshipQueueAndSave()
     {
+        var l = Log.Fn(timer: true);
         // if SaveOptions determines it, clear all existing relationships first
         var fullFlush = _saveQueue
             .Where(r => r.FlushAllEntityRelationships)
@@ -158,7 +162,8 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
         );
 
         _saveQueue.Clear();
-    });
+        l.Done("done");
+    }
 
     private class RelationshipUpdatePackage(ToSicEavEntities entity, int attributeId, List<int?> relationships)
     {
@@ -167,13 +172,16 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
         public readonly ToSicEavEntities Entity = entity;
     }
 
-    internal void FlushChildrenRelationships(List<int> parentIds
-    ) => Log.Do($"{parentIds?.Count} items", message: "will do full-flush", timer: true, action: l =>
+    internal void FlushChildrenRelationships(List<int> parentIds)
     {
+        var l = Log.Fn($"will do full-flush for {parentIds?.Count} items", timer: true);
         // Delete all existing relationships - but not the target, just the relationship
         // note: can't use .Clear(), as that will try to actually delete the children
         if (parentIds is not { Count: > 0 })
+        {
+            l.Done("no parent IDs");
             return;
+        }
 
         foreach (var id in parentIds)
         {
@@ -184,7 +192,8 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
         // intermediate save (important) so that EF state tracking works
         DbContext.SqlDb.SaveChanges();
-    });
+        l.Done();
+    }
 
 
     #region Internal Helper Classes
@@ -203,9 +212,9 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
     #endregion
 
-    internal void ChangeRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so
-    ) => Log.Do(timer: true, action: l =>
+    internal void ChangeRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
     {
+        var l = Log.Fn(timer: true);
         // some initial error checking
         if (dbEntity.EntityId <= 0)
             throw new("can't work on relationships if entity doesn't have a repository id yet");
@@ -252,5 +261,6 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                 }
             }
         });
-    });
+        l.Done();
+    }
 }
