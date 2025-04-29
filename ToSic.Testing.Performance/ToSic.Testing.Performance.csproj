@@ -17,7 +17,7 @@
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc.Tests\ToSic.Eav.Persistence.Efc.Tests.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
-    <ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj" />
+    <!--<ProjectReference Include="..\ToSic.Testing.Shared\ToSic.Testing.Shared.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>
