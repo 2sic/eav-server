@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Persistence.Efc;
 
-internal class EntityQueries(EavDbContext context, ILog parentLog) : HelperBase(parentLog, "Efc.EntQry")
+internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(parentLog, "Efc.EntQry")
 {
     internal IQueryable<ToSicEavEntities> EntitiesOfAppQuery(int appId, int[] entityIds, string filterType = null)
     {
@@ -10,8 +10,7 @@ internal class EntityQueries(EavDbContext context, ILog parentLog) : HelperBase(
             $"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterType)}: '{filterType}'",
             timer: true);
 
-        var query = context.ToSicEavEntities
-            .Include(e => e.AttributeSet)
+        var query = db.ToSicEavEntities
             .Where(e => e.AppId == appId)
             .Where(e => e.ChangeLogDeleted == null && e.AttributeSet.ChangeLogDeleted == null);
 
@@ -33,7 +32,7 @@ internal class EntityQueries(EavDbContext context, ILog parentLog) : HelperBase(
     {
         var l = Log.Fn<IQueryable<ToSicEavEntities>>(timer: true);
 
-        var relatedIds = context.ToSicEavEntities
+        var relatedIds = db.ToSicEavEntities
             .Where(e =>
                 e.PublishedEntityId.HasValue
                 && !e.IsPublished

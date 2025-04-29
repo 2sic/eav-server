@@ -23,7 +23,7 @@ partial class DbEntity
     /// Get a single Entity by EntityId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal ToSicEavEntities GetDbEntity(int entityId)
+    internal ToSicEavEntities GetDbEntityFull(int entityId)
     {
         var callLog = DbContext.Log.Fn<ToSicEavEntities>($"Get {entityId}");
         var found = EntityQuery.Single(e => e.EntityId == entityId);
@@ -34,12 +34,31 @@ partial class DbEntity
     /// Get a single Entity by EntityId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal ToSicEavEntities[] GetDbEntities(int[] repositoryIds)
+    internal ToSicEavEntities GetDbEntityStub(int entityId)
+    {
+        var callLog = DbContext.Log.Fn<ToSicEavEntities>($"Get {entityId}");
+        var found = DbContext.SqlDb.ToSicEavEntities.Single(e => e.EntityId == entityId);
+        return callLog.ReturnAsOk(found);
+    }
+
+    /// <summary>
+    /// Get a single Entity by EntityId
+    /// </summary>
+    /// <returns>Entity or throws InvalidOperationException</returns>
+    internal ToSicEavEntities[] GetDbEntitiesWithChildren(int[] repositoryIds)
     {
         var callLog = DbContext.Log.Fn<ToSicEavEntities[]>($"Get {repositoryIds.Length}", timer: true);
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
         // var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
-        var found = EntityQuery.Where(e => Enumerable.Contains(repositoryIds, e.EntityId)).ToArray();
+        //var found = EntityQuery
+        //    .Where(e => Enumerable.Contains(repositoryIds, e.EntityId))
+        //    .ToArray();
+
+        // var found = DbContext.SqlDb.ToSicEavEntities.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
+        var found = DbContext.SqlDb.ToSicEavEntities
+            .Include(e => e.RelationshipsWithThisAsParent)
+            .Where(e => Enumerable.Contains(repositoryIds, e.EntityId))
+            .ToArray();
         return callLog.Return(found, found.Length.ToString());
     }
 
@@ -62,21 +81,32 @@ partial class DbEntity
     /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal ToSicEavEntities GetMostCurrentDbEntity(Guid entityGuid)
+    internal ToSicEavEntities GetStandaloneDbEntityStub(Guid entityGuid)
         // GetEntity should never return a draft entity that has a published version
     {
-        var x = GetEntitiesByGuid(entityGuid);
+        var x = GetEntityStubsByGuid(entityGuid);
         return x.Single(e => !e.PublishedEntityId.HasValue);
     }
 
 
-    internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid)
-        => EntityQuery.Where(e => e.EntityGuid == entityGuid
-                                  && !e.ChangeLogDeleted.HasValue
-                                  && !e.AttributeSet.ChangeLogDeleted.HasValue
-                                    // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-                                    // && DbContext.AppIds.Contains(e.AppId));
-                                    && Enumerable.Contains(DbContext.AppIds, e.AppId));
+    //internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid)
+    //    => EntityQuery.Where(e => e.EntityGuid == entityGuid
+    //                              && !e.ChangeLogDeleted.HasValue
+    //                              && !e.AttributeSet.ChangeLogDeleted.HasValue
+    //                                // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+    //                                // && DbContext.AppIds.Contains(e.AppId));
+    //                                && Enumerable.Contains(DbContext.AppIds, e.AppId));
+
+    internal IQueryable<ToSicEavEntities> GetEntityStubsByGuid(Guid entityGuid)
+        //=> EntityQuery
+        => DbContext.SqlDb.ToSicEavEntities
+            .Where(e => e.EntityGuid == entityGuid
+                        && !e.ChangeLogDeleted.HasValue
+                        && !e.AttributeSet.ChangeLogDeleted.HasValue
+                        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+                        // && DbContext.AppIds.Contains(e.AppId));
+                        && Enumerable.Contains(DbContext.AppIds, e.AppId)
+            );
 
     /// <summary>
     /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
@@ -87,7 +117,7 @@ partial class DbEntity
         // GetEntity should never return a draft entity that has a published version
         var l = Log.Fn<Dictionary<Guid, int>>($"Guids: {entityGuids.Length}; [{string.Join(",", entityGuids)}]", timer: true);
 
-        var getEntityQuery = GetEntitiesByGuid(entityGuids);
+        var getEntityQuery = GetEntityStubsByGuid(entityGuids);
         var dbEntityList = getEntityQuery.ToList(); // necessary for EF 3 - before GroupBy so it's then done in memory and not in SQL
         l.A($"SQL found {dbEntityList.Count} entities with IDs: [{string.Join(",", dbEntityList.Select(e => e.EntityId))}]");
 
@@ -111,8 +141,9 @@ partial class DbEntity
     }
 
     // 2020-10-07 2dm experiment with fewer requests
-    internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid[] entityGuid)
-        => EntityQuery
+    private IQueryable<ToSicEavEntities> GetEntityStubsByGuid(Guid[] entityGuid)
+        //=> EntityQuery
+        => DbContext.SqlDb.ToSicEavEntities
             .Where(e =>
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // entityGuid.Contains(e.EntityGuid)
@@ -128,6 +159,6 @@ partial class DbEntity
     /// <summary>
     /// Test whether Entity exists on current App and is not deleted
     /// </summary>
-    internal bool EntityExists(Guid entityGuid) => GetEntitiesByGuid(entityGuid).Any();
+    internal bool EntityExists(Guid entityGuid) => GetEntityStubsByGuid(entityGuid).Any();
 
 }

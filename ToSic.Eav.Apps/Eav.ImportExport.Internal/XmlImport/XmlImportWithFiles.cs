@@ -72,13 +72,14 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
     #endregion
 
 
-    #region Helpers to keep architecture clean for now  - special for template-save in 2sxc
+    // 2025-04-29 2dm: seems unused, delete in a few days
+    //#region Helpers to keep architecture clean for now  - special for template-save in 2sxc
 
-    protected bool RepositoryHasEntity(Guid entityGuid)
-        => _eavContext.Entities.EntityExists(entityGuid);
+    //protected bool RepositoryHasEntity(Guid entityGuid)
+    //    => _eavContext.Entities.EntityExists(entityGuid);
 
-    protected int GetLatestRepositoryId(Guid entityGuid)
-        => _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
+    //protected int GetLatestRepositoryId(Guid entityGuid)
+    //    => _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
 
-    #endregion
+    //#endregion
 }

@@ -10,7 +10,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
     /// <returns>The published Entity</returns>
     internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson) => Log.Do($"{nameof(entityId)}:{entityId}", l =>
     {
-        var unpublishedDbEnt = DbContext.Entities.GetDbEntity(entityId);
+        var unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(entityId);
         if (!unpublishedDbEnt.IsPublished)
             l.A("found item is draft, will use this to publish");
         else
@@ -21,7 +21,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
             l.A($"found draft: {draftId}");
             if (!draftId.HasValue)
                 throw new EntityAlreadyPublishedException($"EntityId {entityId} is already published");
-            unpublishedDbEnt = DbContext.Entities.GetDbEntity(draftId.Value);
+            unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(draftId.Value);
         }
 
         // Publish Draft-Entity
@@ -36,7 +36,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
             var publishedId = unpublishedDbEnt.PublishedEntityId.Value;
             l.A(
                 "There is a published item, will update that with the draft-data and delete the draft afterwards");
-            var publishedEntity = DbContext.Entities.GetDbEntity(publishedId);
+            var publishedEntity = DbContext.Entities.GetDbEntityFull(publishedId);
             var json = unpublishedDbEnt.Json;
             var isJson = !string.IsNullOrEmpty(json);
             l.A($"this is a json:{isJson}");

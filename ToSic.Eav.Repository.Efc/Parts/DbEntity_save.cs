@@ -114,7 +114,7 @@ partial class DbEntity
 
                 // new: always change the draft if there is one! - it will then either get published, or not...
                 dbEnt = DbContext.Entities
-                    .GetDbEntity(newEnt.EntityId); // get the published one (entityId is always the published id)
+                    .GetDbEntityFull(newEnt.EntityId); // get the published one (entityId is always the published id)
 
                 var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
                 var paramsMsg =
@@ -189,7 +189,8 @@ partial class DbEntity
                 DbContext.Relationships.ChangeRelationships(newEnt, dbEnt, attributeDefs, so);
             }
             else if (isNew)
-                if (logDetails) l.A("won't save properties / relationships in db model as it's json");
+                if (logDetails)
+                    l.A("won't save properties / relationships in db model as it's json");
                 else
                     DropEavAttributesForJsonItem(newEnt);
 
@@ -268,7 +269,7 @@ partial class DbEntity
         if (logDetails)
             l.A($"Will look for original {newEnt.EntityId} to check if it's not published.");
         // check if the original is also not published, with must prevent a second branch!
-        var entityInDb = DbContext.Entities.GetDbEntity(newEnt.EntityId);
+        var entityInDb = DbContext.Entities.GetDbEntityStub(newEnt.EntityId);
         if (!entityInDb.IsPublished)
         {
             if (logDetails)

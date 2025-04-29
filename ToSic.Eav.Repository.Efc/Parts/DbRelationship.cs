@@ -34,13 +34,15 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
     private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
     {
         var l = Log.Fn(timer: true);
-        packages.ForEach(p => l.A(l.Try(() => $"i:{p.Entity.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]")));
+        packages.ForEach(p => l.A(l.Try(() => $"i:{p.EntityStubWithChildren.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]")));
         // remove existing Relationships that are not in new list
-        var existingRelationships = packages.SelectMany(p => p.Entity.RelationshipsWithThisAsParent
-                .Where(e => e.AttributeId == p.AttributeId))
+        var existingRelationships = packages
+            .SelectMany(p => p.EntityStubWithChildren.RelationshipsWithThisAsParent
+                .Where(e => e.AttributeId == p.AttributeId)
+            )
             .ToList();
 
-        // Delete all existing relationships (important, because the order, which is part of the key, is important afterwards)
+        // Delete all existing relationships (important, because the order, which is part of the key, is important afterward)
         if (existingRelationships.Count > 0)
         {
             l.A($"found existing rels⋮{existingRelationships.Count}");
@@ -60,7 +62,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                         AttributeId = p.AttributeId,
                         ChildEntityId = newEntityIds[i],
                         SortOrder = i,
-                        ParentEntityId = p.Entity.EntityId
+                        ParentEntityId = p.EntityStubWithChildren.EntityId
                     });
             }));
 
@@ -117,15 +119,20 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
                 l.A($"will add relationships⋮{_saveQueue.Count}");
 
-                var parentIds = _saveQueue.Select(rel => rel.ParentEntityId).ToArray();
+                var parentIds = _saveQueue
+                    .Select(rel => rel.ParentEntityId)
+                    .ToArray();
                 if (parentIds.Any(p => p <= 0))
                     throw new("some parent has no id provided, can't update relationships");
-                var parents = DbContext.Entities.GetDbEntities(parentIds);
+                var parents = DbContext.Entities.GetDbEntitiesWithChildren(parentIds);
                 l.A("Found parents to map:" + parents.Length);
 
                 var allTargets = _saveQueue
                     .Where(rel => rel.ChildEntityGuids != null)
-                    .SelectMany(rel => rel.ChildEntityGuids.Where(g => g.HasValue).Select(g => g.Value))
+                    .SelectMany(rel => rel.ChildEntityGuids
+                        .Where(g => g.HasValue)
+                        .Select(g => g.Value)
+                    )
                     .Distinct()
                     .ToArray();
                 l.A("Total target IDs: " + allTargets.Length);
@@ -135,7 +142,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                 var updates = new List<RelationshipUpdatePackage>();
                 foreach (var relationship in _saveQueue)
                 {
-                    var entity = parents.Single(e => e.EntityId == relationship.ParentEntityId);
+                    var entityWithChildren = parents.Single(e => e.EntityId == relationship.ParentEntityId);
 
                     // start with the ID list - or if it doesn't exist, a new list
                     var childEntityIds = relationship.ChildEntityIds ?? [];
@@ -154,7 +161,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                                 // ignore, may occur if the child entity doesn't exist / wasn't created successfully
                             }
 
-                    updates.Add(new(entity, relationship.AttributeId, childEntityIds));
+                    updates.Add(new(entityWithChildren, relationship.AttributeId, childEntityIds));
                 }
 
                 UpdateEntityRelationshipsAndSave(updates);
@@ -165,11 +172,15 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
         l.Done("done");
     }
 
-    private class RelationshipUpdatePackage(ToSicEavEntities entity, int attributeId, List<int?> relationships)
+    private class RelationshipUpdatePackage(ToSicEavEntities entityStubWithChildren, int attributeId, List<int?> relationships)
     {
         public readonly int AttributeId = attributeId;
         public readonly List<int?> Targets = relationships;
-        public readonly ToSicEavEntities Entity = entity;
+        /// <summary>
+        /// This is just a stub with EntityId, but also MUST have the `RelationshipsWithThisAsParent` filled
+        /// If future code needs it to be filled more, make sure it's constructed that way before.
+        /// </summary>
+        public readonly ToSicEavEntities EntityStubWithChildren = entityStubWithChildren;
     }
 
     internal void FlushChildrenRelationships(List<int> parentIds)
@@ -185,7 +196,11 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
         foreach (var id in parentIds)
         {
-            var ent = DbContext.Entities.GetDbEntity(id);
+            var ent = DbContext.SqlDb.ToSicEavEntities
+                .Include(e => e.RelationshipsWithThisAsParent)
+                .Single(e => e.EntityId == id);
+
+            //var ent = DbContext.Entities.GetDbEntity(id);
             foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
                 DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
         }
