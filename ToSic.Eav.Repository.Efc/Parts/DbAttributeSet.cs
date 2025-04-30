@@ -4,8 +4,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
 {
     private IQueryable<ToSicEavAttributeSets> GetDbContentTypeCoreQuery(int appId)
         => DbContext.SqlDb.ToSicEavAttributeSets
-            .Include(a => a.ToSicEavAttributesInSets)
-            .ThenInclude(a => a.Attribute)
+            .Include(a => a.ToSicEavAttributes)
             .Where(a => a.AppId == appId && !a.ChangeLogDeleted.HasValue);
 
     /// <summary>

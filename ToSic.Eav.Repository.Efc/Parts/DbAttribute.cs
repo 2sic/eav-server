@@ -10,13 +10,13 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     /// <summary>
     /// Set an Attribute as Title on an AttributeSet
     /// </summary>
-    public void SetTitleAttribute(int attributeId, int attributeSetId)
+    public void SetTitleAttribute(int attributeId, int contentTypeId)
     {
-        GetAttribute(attributeSetId, attributeId).IsTitle = true;
+        GetAttribute(contentTypeId, attributeId).IsTitle = true;
 
         // unset other Attributes with isTitle=true
-        var oldTitleAttributes = DbContext.SqlDb.ToSicEavAttributesInSets
-            .Where(s => s.AttributeSetId == attributeSetId && s.IsTitle);
+        var oldTitleAttributes = DbContext.SqlDb.ToSicEavAttributes
+            .Where(s => s.ContentTypeId == contentTypeId && s.IsTitle);
         foreach (var oldTitleAttribute in oldTitleAttributes)
             oldTitleAttribute.IsTitle = false;
 
@@ -40,38 +40,36 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     }
 
 
-    private ToSicEavAttributesInSets GetAttribute(int attributeSetId, int attributeId = 0, string name = null)
+    private ToSicEavAttributes GetAttribute(int contentTypeId, int attributeId = 0, string name = null)
     {
         try
         {
             return attributeId != 0
-                ? DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Single(a =>a.AttributeSetId == attributeSetId && a.AttributeId == attributeId)
-                : DbContext.SqlDb.ToSicEavAttributesInSets
-                    .Single(a => a.AttributeSetId == attributeSetId && a.Attribute.StaticName == name);
+                ? DbContext.SqlDb.ToSicEavAttributes
+                    .Single(a =>a.ContentTypeId == contentTypeId && a.AttributeId == attributeId)
+                : DbContext.SqlDb.ToSicEavAttributes
+                    .Single(a => a.ContentTypeId == contentTypeId && a.StaticName == name);
         }
         catch (Exception ex)
         {
-            throw new("error getting attribute - content-type/setid: " + attributeSetId + "; optional attributeId: " + attributeId + "; optional name: " + name, ex);
+            throw new("error getting attribute - content-type/setid: " + contentTypeId + "; optional attributeId: " + attributeId + "; optional name: " + name, ex);
         }
     }
 
 
-    private int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).Attribute.AttributeId;
+    private int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).AttributeId;
 
     /// <summary>
     /// Set an Attribute as Title on an AttributeSet
     /// </summary>
-    public void RenameAttribute(int attributeId, int attributeSetId, string newName)
+    public void RenameAttribute(int attributeId, int contentTypeId, string newName)
     {
         if(string.IsNullOrWhiteSpace(newName))
             throw new("can't rename to something empty");
 
         // ensure that it's in the set
-        var attr = DbContext.SqlDb.ToSicEavAttributesInSets
-            .Include(a => a.Attribute)
-            .Single(a => a.AttributeId == attributeId && a.AttributeSetId == attributeSetId)
-            .Attribute;
+        var attr = DbContext.SqlDb.ToSicEavAttributes
+            .Single(a => a.AttributeId == attributeId && a.ContentTypeId == contentTypeId);
         attr.StaticName = newName;
         DbContext.SqlDb.SaveChanges();
     }
@@ -79,14 +77,14 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     /// <summary>
     /// Append a new Attribute to an AttributeSet
     /// </summary>
-    private int AppendToEndAndSave(int attributeSetId, IContentTypeAttribute contentTypeAttribute)
+    private int AppendToEndAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute)
     {
-        var maxIndex = DbContext.SqlDb.ToSicEavAttributesInSets
-            .Where(a => a.AttributeSetId == attributeSetId)
+        var maxIndex = DbContext.SqlDb.ToSicEavAttributes
+            .Where(a => a.ContentTypeId == contentTypeId)
             .ToList() // important because it otherwise has problems with the next step...
             .Max(s => (int?) s.SortOrder);
 
-        return AddAttributeAndSave(attributeSetId, contentTypeAttribute, maxIndex + 1 ?? 0);
+        return AddAttributeAndSave(contentTypeId, contentTypeAttribute, maxIndex + 1 ?? 0);
     }
         
     /// <summary>
@@ -115,27 +113,22 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
             StaticName = staticName,
             ChangeLogCreated = DbContext.Versioning.GetChangeLogId(),
             Guid = contentTypeAttribute.Guid,
-            SysSettings = sysSettings
-        };
-        var setAssignment = new ToSicEavAttributesInSets
-        {
-            Attribute = newAttribute,
+            SysSettings = sysSettings,
             AttributeSet = attributeSet,
             SortOrder = sortOrder,
             // AttributeGroupId = 1,
             IsTitle = isTitle
         };
         DbContext.SqlDb.Add(newAttribute);
-        DbContext.SqlDb.Add(setAssignment);
 
         // Set Attribute as Title if there's no title field in this set
-        if (!attributeSet.ToSicEavAttributesInSets.Any(a => a.IsTitle))
-            setAssignment.IsTitle = true;
+        if (!attributeSet.ToSicEavAttributes.Any(a => a.IsTitle))
+            newAttribute.IsTitle = true;
 
         if (isTitle)
         {
             // unset old Title Fields
-            var oldTitleFields = attributeSet.ToSicEavAttributesInSets.Where(a => a.IsTitle && a.Attribute.StaticName != staticName).ToList();
+            var oldTitleFields = attributeSet.ToSicEavAttributes.Where(a => a.IsTitle && a.StaticName != staticName).ToList();
             foreach (var titleField in oldTitleFields)
                 titleField.IsTitle = false;
         }

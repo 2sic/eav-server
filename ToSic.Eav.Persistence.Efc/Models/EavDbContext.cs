@@ -21,8 +21,6 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
     public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
     public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
-
-    public virtual DbSet<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; }
     public virtual DbSet<ToSicEavChangeLog> ToSicEavChangeLog { get; set; }
     public virtual DbSet<ToSicEavDataTimeline> ToSicEavDataTimeline { get; set; }
     public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
@@ -154,6 +152,16 @@ public partial class EavDbContext : DbContext
             entity.Property(e => e.SysSettings)
                 .HasColumnName("SysSettings")
                 .HasColumnType("nvarchar(MAX)");
+
+            entity.Property(e => e.ContentTypeId);
+
+            entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
+
+            entity.HasOne(d => d.AttributeSet)
+                .WithMany(p => p.ToSicEavAttributes)
+                .HasForeignKey(d => d.ContentTypeId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_ToSIC_EAV_Attributes_ContentTypeId_ToSIC_EAV_AttributeSets");
         });
 
         modelBuilder.Entity<ToSicEavAttributeSets>(entity =>
@@ -212,31 +220,6 @@ public partial class EavDbContext : DbContext
             entity.ToTable("ToSIC_EAV_AttributeTypes");
 
             entity.Property(e => e.Type).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<ToSicEavAttributesInSets>(entity =>
-        {
-            entity.HasKey(e => new { e.AttributeId, e.AttributeSetId })
-                .HasName("PK_ToSIC_EAV_AttributesInSets");
-
-            entity.ToTable("ToSIC_EAV_AttributesInSets");
-
-            entity.Property(e => e.AttributeId).HasColumnName("AttributeID");
-
-            entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
-
-            entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
-
-            entity.HasOne(d => d.Attribute)
-                .WithMany(p => p.ToSicEavAttributesInSets)
-                .HasForeignKey(d => d.AttributeId)
-                .HasConstraintName("FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_Attributes");
-
-            entity.HasOne(d => d.AttributeSet)
-                .WithMany(p => p.ToSicEavAttributesInSets)
-                .HasForeignKey(d => d.AttributeSetId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_AttributesInSets_ToSIC_EAV_AttributeSets");
         });
 
         modelBuilder.Entity<ToSicEavChangeLog>(entity =>

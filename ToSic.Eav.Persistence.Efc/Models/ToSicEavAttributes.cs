@@ -17,15 +17,21 @@ public partial class ToSicEavAttributes
 
     public string SysSettings { get; set; }
 
+    public int ContentTypeId { get; set; }
+
+    public int SortOrder { get; set; }
+
+    public bool IsTitle { get; set; } = false;
+
     public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }
 
     public virtual ToSicEavChangeLog ChangeLogDeletedNavigation { get; set; }
-
-    public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; } = new HashSet<ToSicEavAttributesInSets>();
 
     public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; } = new HashSet<ToSicEavEntityRelationships>();
 
     public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; } = new HashSet<ToSicEavValues>();
 
     public virtual ToSicEavAttributeTypes TypeNavigation { get; set; }
+
+    public virtual ToSicEavAttributeSets AttributeSet { get; set; }
 }

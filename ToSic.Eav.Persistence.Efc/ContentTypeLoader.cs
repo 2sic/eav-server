@@ -85,8 +85,7 @@ internal class ContentTypeLoader(
             .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
 
         var contentTypesSql = query
-            .Include(set => set.ToSicEavAttributesInSets)
-            .ThenInclude(attrs => attrs.Attribute)
+            .Include(set => set.ToSicEavAttributes)
             .Include(set => set.App)
             .Include(set => set.UsesConfigurationOfAttributeSetNavigation)
             .ThenInclude(master => master.App)
@@ -104,20 +103,20 @@ internal class ContentTypeLoader(
                 set.Name,
                 set.StaticName,
                 set.Scope,
-                Attributes = set.ToSicEavAttributesInSets
-                    .Where(a => a.Attribute.ChangeLogDeleted == null) // only not-deleted attributes!
+                Attributes = set.ToSicEavAttributes
+                    .Where(a => a.ChangeLogDeleted == null) // only not-deleted attributes!
                     .Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
-                        name: a.Attribute.StaticName,
-                        type: ValueTypeHelpers.Get(a.Attribute.Type),
+                        name: a.StaticName,
+                        type: ValueTypeHelpers.Get(a.Type),
                         isTitle: a.IsTitle,
                         id: a.AttributeId,
                         sortOrder: a.SortOrder,
                         // #SharedFieldDefinition
                         // metadata: attrMetadata,
                         metaSourceFinder: () => source,
-                        guid: a.Attribute.Guid,
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings)
+                        guid: a.Guid,
+                        sysSettings: serializer.DeserializeAttributeSysSettings(a.SysSettings)
                     )),
                 IsGhost = set.UsesConfigurationOfAttributeSet,
                 SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
@@ -147,23 +146,22 @@ internal class ContentTypeLoader(
         var sharedAttribs = optimize && !sharedAttribIds.Any()
             ? new()
             : appLoader.Context.ToSicEavAttributeSets
-                .Include(s => s.ToSicEavAttributesInSets)
-                .ThenInclude(a => a.Attribute)
+                .Include(s => s.ToSicEavAttributes)
                 .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
                 .ToDictionary(
                     s => s.AttributeSetId,
-                    s => s.ToSicEavAttributesInSets.Select(a => dataBuilder.TypeAttributeBuilder.Create(
+                    s => s.ToSicEavAttributes.Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
-                        name: a.Attribute.StaticName,
-                        type: ValueTypeHelpers.Get(a.Attribute.Type),
+                        name: a.StaticName,
+                        type: ValueTypeHelpers.Get(a.Type),
                         isTitle: a.IsTitle,
                         id: a.AttributeId,
                         sortOrder: a.SortOrder,
                         // Must get own MetaSourceFinder since they come from other apps
                         metaSourceFinder: () => appStates.Get(s.AppId),
                         // #SharedFieldDefinition
-                        //guid: a.Attribute.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.Attribute.SysSettings))
+                        //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
+                        sysSettings: serializer.DeserializeAttributeSysSettings(a.SysSettings))
                     )
                 );
 

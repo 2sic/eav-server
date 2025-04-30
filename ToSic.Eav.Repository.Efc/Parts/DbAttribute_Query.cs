@@ -6,31 +6,30 @@ partial class DbAttribute
     /// <summary>
     /// Get Attributes of an AttributeSet
     /// </summary>
-    internal IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int attributeSetId)
+    internal IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int contentTypeId)
     {
-        if (attributeSetId <= 0)
-            throw new ArgumentOutOfRangeException(nameof(attributeSetId), "should never be 0 - this is a bug because of the new Immutable, report to iJungleboy");
+        if (contentTypeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(contentTypeId), "should never be 0 - this is a bug because of the new Immutable, report to iJungleboy");
 
-        attributeSetId = DbContext.ContentType.ResolvePotentialGhostAttributeSetId(attributeSetId);
+        contentTypeId = DbContext.ContentType.ResolvePotentialGhostAttributeSetId(contentTypeId);
 
-        return DbContext.SqlDb.ToSicEavAttributesInSets
-            .Where(ais => ais.AttributeSetId == attributeSetId)
-            .OrderBy(ais => ais.SortOrder)
-            .Select(ais => ais.Attribute);
+        return DbContext.SqlDb.ToSicEavAttributes
+            .Where(attributes => attributes.ContentTypeId == contentTypeId)
+            .OrderBy(attributes => attributes.SortOrder);
     }
 
 
     /// <summary>
     /// Check if a valid, undeleted attribute-set exists
     /// </summary>
-    /// <param name="attributeSetId"></param>
+    /// <param name="contentTypeId"></param>
     /// <param name="staticName"></param>
     /// <returns></returns>
-    private bool AttributeExistsInSet(int attributeSetId, string staticName)
-        => DbContext.SqlDb.ToSicEavAttributesInSets.Any(s =>
-            s.Attribute.StaticName == staticName
-            && !s.Attribute.ChangeLogDeleted.HasValue
-            && s.AttributeSetId == attributeSetId
+    private bool AttributeExistsInSet(int contentTypeId, string staticName)
+        => DbContext.SqlDb.ToSicEavAttributes.Any(s =>
+            s.StaticName == staticName
+            && !s.ChangeLogDeleted.HasValue
+            && s.ContentTypeId == contentTypeId
             && s.AttributeSet.AppId == DbContext.AppId);
 
 

@@ -33,7 +33,7 @@ public partial class ToSicEavAttributeSets
 
     public virtual ICollection<ToSicEavAttributeSets> InverseUsesConfigurationOfAttributeSetNavigation { get; set; } = new HashSet<ToSicEavAttributeSets>();
 
-    public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSets { get; set; } = new HashSet<ToSicEavAttributesInSets>();
+    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributes { get; set; } = new HashSet<ToSicEavAttributes>();
 
     public virtual ICollection<ToSicEavEntities> ToSicEavEntities { get; set; } = new HashSet<ToSicEavEntities>();
 

@@ -153,11 +153,10 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
         db.RemoveRange(appEntities);
 
         // Delete Attributes
-        var attributeSetMappings = db.ToSicEavAttributesInSets
-        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-                //.Where(aInS => contentTypeIds.Contains(aInS.AttributeSetId));
-                .Where(aInS => Enumerable.Contains(contentTypeIds, aInS.AttributeSetId));
-        var attributes = attributeSetMappings.Select(asm => asm.Attribute);
+        var attributes = db.ToSicEavAttributes
+                // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+                //.Where(a => contentTypeIds.Contains(a.ContentTypeId));
+                .Where(a => Enumerable.Contains(contentTypeIds, a.ContentTypeId));
         db.RemoveRange(attributes.ToList());
 
         //-- Delete Attributes not in use anywhere (Attribute not in any Set, no Values/Related Entities)
@@ -171,7 +170,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
         // note: we'll skip this for now, I don't think it's relevant...?
 
         // Delete Attribute-In-Sets
-        db.RemoveRange(attributeSetMappings);
+        db.RemoveRange(attributes);
 
         // Delete AttributeSets
         db.RemoveRange(appContentTypes);
