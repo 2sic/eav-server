@@ -10,11 +10,14 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Features;
 
-public class FeaturePersistenceService(
+public partial class FeaturePersistenceService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     LazySvc<SystemFingerprint> fingerprint)
     : ServiceBase("FeatCfgMng", connect: [globalConfiguration, fingerprint])
 {
+
+    #region File Operations
+
     /// <summary>
     /// Return content from 'features.json' file.
     /// Also return full path to 'features.json'.
@@ -30,88 +33,28 @@ public class FeaturePersistenceService(
 
         var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
 
-        return File.Exists(featureFilePath) ? (featureFilePath, File.ReadAllText(featureFilePath)) : (featureFilePath, null);
-    }
-
-
-    /// <summary>
-    /// Handle old 'features.json' format.
-    /// - detect old format
-    /// - backup old 'features.json'
-    /// - save 'features.json' in new format
-    /// - return features stored
-    /// </summary>
-    /// <param name="filePath"></param>
-    /// <param name="fileContent"></param>
-    /// <returns>features stored</returns>
-    internal FeatureStatesPersisted ConvertOldFeaturesFile(string filePath, string fileContent)
-    {
-        var fileJson = JsonNode.Parse(fileContent, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions).AsObject();
-
-        // check json format in "features.json" to find is it old version (v12)
-        if (fileJson["_"]?["V"] != null && (int)fileJson["_"]["V"] == 1) // detect old "features.json" format (v12)
-        {
-            // rename old file format "features.json" to "features.json.v12.bak"
-            var oldFeatureFilePathForBackup = $"{filePath}.v12.bak";
-            if (File.Exists(oldFeatureFilePathForBackup)) File.Delete(oldFeatureFilePathForBackup);
-            File.Move(filePath, oldFeatureFilePathForBackup);
-
-            // get stored features from old format
-            var stored = GetFeaturesFromOldFormat(fileJson);
-
-            // save features in new format
-            SaveFeaturesNew(stored);
-
-            return stored;
-        }
-        return null;
-    }
-
-
-    /// <summary>
-    /// Get features from json old format (v12)
-    /// </summary>
-    /// <param name="json"></param>
-    private FeatureStatesPersisted GetFeaturesFromOldFormat(JsonObject json)
-    {
-        var features = new FeatureStatesPersisted();
-
-        var fs = (string)json["Entity"]["Attributes"]["Custom"]["Features"]["*"];
-        var oldFeatures = JsonNode.Parse(fs, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions).AsObject();
-
-        // update finger print
-        //features.Fingerprint = (string)oldFeatures["fingerprint"];
-        features.Fingerprint = fingerprint.Value.GetFingerprint();
-
-        foreach (var f in oldFeatures["features"].AsArray())
-        {
-            features.Features.Add(new()
-            {
-                Id = (Guid)f["id"],
-                Enabled = (bool)f["enabled"],
-                Expires = (DateTime)f["expires"],
-            });
-        }
-
-        return features;
+        return File.Exists(featureFilePath)
+            ? (featureFilePath, File.ReadAllText(featureFilePath))
+            : (featureFilePath, null);
     }
 
 
     /// <summary>
     /// Save new features config in "features.json".
     /// </summary>
-    private bool SaveFeaturesNew(FeatureStatesPersisted features) => Log.Func(l =>
+    private bool SaveFeaturesFile(FeatureStatesPersisted features)
     {
+        var l = Log.Fn<bool>();
         try
         {
             // when null, prepare empty features
-            if (features == null) features = new();
+            features ??= new();
 
             // update to latest fingerprint
-            features.Fingerprint = fingerprint.Value.GetFingerprint();
+            features = features with { Fingerprint = fingerprint.Value.GetFingerprint() };
 
             // save new format (v13)
-            var fileContent = JsonSerializer.Serialize(features, JsonOptions.FeaturesJson);
+            var fileContent = FeatToJson(features);
 
             var configurationsPath = globalConfiguration.Value.ConfigFolder;
 
@@ -120,81 +63,107 @@ public class FeaturePersistenceService(
 
             var filePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
 
-            return (SaveFile(filePath, fileContent), "features new saved");
+            return l.Return(SaveFile(filePath, fileContent), "features new saved");
         }
         catch (Exception e)
         {
             l.Ex(e);
-            return (false, "save features failed:" + e.Message);
+            return l.ReturnFalse("save features failed:" + e.Message);
         }
-    });
-
+    }
 
     /// <summary>
     /// Update existing features config in "features.json". 
     /// </summary>
-    private bool SaveFile(string filePath, string fileContent) => Log.Func($"fp={filePath}", l =>
+    private bool SaveFile(string filePath, string fileContent)
     {
+        var l = Log.Fn<bool>($"fp={filePath}");
         try
         {
             File.WriteAllText(filePath, fileContent);
-            return (true, "ok, file saved");
+            return l.ReturnTrue("ok, file saved");
         }
         catch (Exception e)
         {
             l.Ex(e);
-            return (false, "save file failed:" + e.Message);
+            return l.ReturnFalse($"save file failed:{e.Message}");
         }
-    });
+    }
+
+    #endregion
+
+
+    #region JSON serialization
+
+    private static JsonObject JsonToObject(string json)
+        => JsonNode.Parse(json, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions)
+            .AsObject();
+
+    private static string FeatToJson(object obj)
+        => JsonSerializer.Serialize(obj, JsonOptions.FeaturesJson);
+
+    #endregion
+
+
+
 
 
     /// <summary>
     /// Update existing features config and save. 
     /// </summary>
-    internal bool SaveFeaturesUpdate(List<FeatureManagementChange> changes) => Log.Func($"c:{changes?.Count ?? -1}", l =>
+    internal bool SaveFeaturesUpdate(List<FeatureManagementChange> changes)
     {
+        var l = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
         try
         {
             var (filePath, fileContent) = LoadFeaturesFile();
                 
             // if features.json is missing, we still need empty list of stored features so we can create new one on save
-            if (fileContent == null)
-                fileContent = JsonSerializer.Serialize(new FeatureStatesPersisted(), JsonOptions.FeaturesJson);
+            fileContent ??= FeatToJson(new FeatureStatesPersisted());
 
             // handle old 'features.json' format
             var stored = ConvertOldFeaturesFile(filePath, fileContent);
             if (stored != null) // if old features are converted, load fileContent features in new format
                 (filePath, fileContent) = LoadFeaturesFile();
 
-            var fileJson = JsonNode.Parse(fileContent, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions).AsObject();
+            var fileJson = JsonToObject(fileContent);
+            var featureArray = fileJson["features"].AsArray();
             foreach (var change in changes)
             {
-                var feature = (fileJson["features"].AsArray()).FirstOrDefault(f => (Guid)f["id"] == change.FeatureGuid);
-                if (feature == null) // insert
+                var feature = featureArray.FirstOrDefault(f => (Guid)f["id"] == change.FeatureGuid);
+                // Insert (not yet configured)
+                if (feature == null)
                 {
-                    var featureConfig = JsonSerializer.Serialize(FeatureConfigBuilder(change), JsonOptions.FeaturesJson);
-                    (fileJson["features"].AsArray()).Add(JsonNode.Parse(featureConfig, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions).AsObject());
+                    var featObj = FeatureConfigBuilder(change);
+                    if (change.Configuration != null)
+                        featObj = featObj with { Configuration = change.Configuration };
+                    featureArray.Add(JsonToObject(FeatToJson(featObj)));
                 }
+                // Update (configured, and has an Enabled = true/false
+                else if (change.Enabled.HasValue)
+                {
+                    feature["enabled"] = change.Enabled.Value;
+                    if (change.Configuration != null)
+                        feature["configuration"] = JsonToObject(FeatToJson(change.Configuration));
+                }
+                // Delete
+                // TODO: in future if it has a configuration, probably better just null the "enabled" and not delete
                 else
-                {
-                    if (change.Enabled.HasValue) // update
-                        feature["enabled"] = change.Enabled.Value;
-                    else // delete
-                        fileJson["features"].AsArray().Remove(feature);
-                }
+                    featureArray.Remove(feature);
             }
 
             // update to latest fingerprint
             fileJson["fingerprint"] = fingerprint.Value.GetFingerprint();
 
-            return (SaveFile(filePath, fileJson.ToString()), "features saved");
+            var saved = SaveFile(filePath, fileJson.ToString());
+            return l.Return(saved, $"features saved: {saved}");
         }
         catch (Exception e)
         {
             l.Ex(e);
-            return (false, "save features failed:" + e.Message);
+            return l.ReturnFalse("save features failed:" + e.Message);
         }
-    });
+    }
 
 
     internal static FeatureStatePersisted FeatureConfigBuilder(FeatureState featureState) =>
