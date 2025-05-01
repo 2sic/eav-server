@@ -9,7 +9,7 @@ partial class DbEntity
         var dbEnt = new ToSicEavEntities
         {
             AppId = DbContext.AppId,
-            AssignmentObjectTypeId = newEnt.MetadataFor?.TargetType ?? (int)TargetTypes.None,
+            TargetTypeId = newEnt.MetadataFor?.TargetType ?? (int)TargetTypes.None,
             KeyNumber = newEnt.MetadataFor?.KeyNumber,
             KeyGuid = newEnt.MetadataFor?.KeyGuid,
             KeyString = newEnt.MetadataFor?.KeyString,

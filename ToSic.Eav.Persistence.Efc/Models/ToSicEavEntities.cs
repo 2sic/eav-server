@@ -12,7 +12,7 @@ public partial class ToSicEavEntities
     // 2017-06-20 2dm - never used
     //public int? ConfigurationSet { get; set; }
 
-    public int AssignmentObjectTypeId { get; set; }
+    public int TargetTypeId { get; set; }
 
     public int? KeyNumber { get; set; }
 
@@ -43,7 +43,7 @@ public partial class ToSicEavEntities
     // 2017-10-10 2dm new with entity > app mapping
     public virtual ToSicEavApps App { get; set; }
 
-    public virtual ToSicEavAssignmentObjectTypes AssignmentObjectType { get; set; }
+    public virtual TsDynDataTargetType TargetType { get; set; }
 
     public virtual ToSicEavAttributeSets AttributeSet { get; set; }
 

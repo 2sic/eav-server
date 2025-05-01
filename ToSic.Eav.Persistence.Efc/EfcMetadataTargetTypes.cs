@@ -38,10 +38,10 @@ public class EfcMetadataTargetTypes(LazySvc<EavDbContext> dbLazy) : ServiceBase(
         var l = Log.Fn<ImmutableDictionary<int, string>>(timer: true);
         var db = dbLazy.Value;
         l.A($"got db connection");
-        var targetTypes = db.ToSicEavAssignmentObjectTypes.ToList();
+        var targetTypes = db.TsDynDataTargetTypes.ToList();
         l.A($"got {targetTypes.Count} assignment object types");
         var dic = targetTypes
-            .ToImmutableDictionary(a => a.AssignmentObjectTypeId, a => a.Name);
+            .ToImmutableDictionary(a => a.TargetTypeId, a => a.Name);
         return l.Return(dic);
     }
 

@@ -24,7 +24,7 @@ public class MetadataControllerReal(
     public const string LogSuffix = "MetaDt";
 
     /// <summary>
-    /// Get Entities with specified AssignmentObjectTypeId and Key
+    /// Get Entities with specified TargetTypeId and Key
     /// </summary>
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
     {

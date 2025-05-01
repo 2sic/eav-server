@@ -17,7 +17,7 @@ public partial class EavDbContext : DbContext
     private readonly IDbConfiguration _dbConfig;
 
     public virtual DbSet<ToSicEavApps> ToSicEavApps { get; set; }
-    public virtual DbSet<ToSicEavAssignmentObjectTypes> ToSicEavAssignmentObjectTypes { get; set; }
+    public virtual DbSet<TsDynDataTargetType> TsDynDataTargetTypes { get; set; }
     public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
     public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
     public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
@@ -90,19 +90,19 @@ public partial class EavDbContext : DbContext
                 .HasConstraintName("FK_ToSIC_EAV_Apps_ToSIC_EAV_Zones");
         });
 
-        modelBuilder.Entity<ToSicEavAssignmentObjectTypes>(entity =>
+        modelBuilder.Entity<TsDynDataTargetType>(entity =>
         {
-            entity.HasKey(e => e.AssignmentObjectTypeId)
-                .HasName("PK_ToSIC_EAV_AssignmentObjectTypes");
+            entity.HasKey(e => e.TargetTypeId)
+                .HasName("PK_TsDynDataTargetType");
 
-            entity.ToTable("ToSIC_EAV_AssignmentObjectTypes");
+            entity.ToTable("TsDynDataTargetType");
 
 #pragma warning disable CS0618 // Type or member is obsolete
             entity.HasIndex(e => e.Name)
-                .HasName("IX_ToSIC_EAV_AssignmentObjectTypes");
+                .HasName("IX_TsDynDataTargetType_Name");
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            entity.Property(e => e.AssignmentObjectTypeId).HasColumnName("AssignmentObjectTypeID");
+            entity.Property(e => e.TargetTypeId);
 
             entity.Property(e => e.Description).IsRequired();
 
@@ -310,7 +310,7 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.EntityId).HasColumnName("EntityID");
 
-            entity.Property(e => e.AssignmentObjectTypeId).HasColumnName("AssignmentObjectTypeID");
+            entity.Property(e => e.TargetTypeId);
 
             entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
 
@@ -334,11 +334,11 @@ public partial class EavDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_Apps");
 
-            entity.HasOne(d => d.AssignmentObjectType)
+            entity.HasOne(d => d.TargetType)
                 .WithMany(p => p.ToSicEavEntities)
-                .HasForeignKey(d => d.AssignmentObjectTypeId)
+                .HasForeignKey(d => d.TargetTypeId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_AssignmentObjectTypes");
+                .HasConstraintName("FK_ToSIC_EAV_Entities_TsDynDataTargetType");
 
             entity.HasOne(d => d.AttributeSet)
                 .WithMany(p => p.ToSicEavEntities)

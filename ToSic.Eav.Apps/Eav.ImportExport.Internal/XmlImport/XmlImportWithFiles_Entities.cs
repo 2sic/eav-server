@@ -16,15 +16,15 @@ partial class XmlImportWithFiles
     /// Returns a collection of EAV import entities
     /// </summary>
     /// <param name="entities"></param>
-    /// <param name="assignmentObjectTypeId"></param>
+    /// <param name="targetTypeId"></param>
     /// <returns></returns>
-    private List<IEntity> BuildEntities(List<XElement> entities, int assignmentObjectTypeId) 
+    private List<IEntity> BuildEntities(List<XElement> entities, int targetTypeId) 
     {
-        var l = Log.Fn<List<IEntity>>($"for {entities?.Count}; type {assignmentObjectTypeId}");
+        var l = Log.Fn<List<IEntity>>($"for {entities?.Count}; type {targetTypeId}");
         if (entities == null)
             return l.Return([], "empty");
         var result = entities
-            .Select(e => BuildEntity(e, assignmentObjectTypeId))
+            .Select(e => BuildEntity(e, targetTypeId))
             .ToList();
         return l.Return(result, $"found {result.Count}");
     }
@@ -34,7 +34,7 @@ partial class XmlImportWithFiles
     /// Returns an EAV import entity
     /// </summary>
     /// <param name="entityNode">The xml-Element of the entity to import</param>
-    /// <param name="targetType">assignmentObjectTypeId</param>
+    /// <param name="targetType">targetTypeId</param>
     /// <returns></returns>
     private IEntity BuildEntity(XElement entityNode, int targetType)
     {
