@@ -7,13 +7,13 @@ namespace ToSic.Eav.SysData;
 /// </summary>
 [PrivateApi("no good reason to publish this")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class FeatureStatePersisted
+public record FeatureStatePersisted
 {
     /// <summary>
     /// Feature GUID
     /// </summary>
     [JsonPropertyName("id")]
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
     /// <summary>
     /// Feature is enabled and hasn't expired yet
@@ -23,13 +23,16 @@ public class FeatureStatePersisted
     public bool Enabled
     {
         get => field && Expires > DateTime.Now;
-        set => field = value;
+        init => field = value;
     }
 
     /// <summary>
     /// Expiry of this feature
     /// </summary>
     [JsonPropertyName("expires")]
-    public DateTime Expires { get; set; } = DateTime.MaxValue;
+    public DateTime Expires { get; init; } = DateTime.MaxValue;
 
+
+    [JsonPropertyName("configuration")]
+    public Dictionary<string, object> Configuration { get; init; }
 }

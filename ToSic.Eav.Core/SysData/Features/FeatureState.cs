@@ -20,12 +20,19 @@ public class FeatureState(
     string msgLong,
     bool allowedByLicense,
     bool enabledByDefault,
-    bool? enabledInConfiguration)
+    bool? enabledInConfiguration,
+    Dictionary<string, object> configuration)
     : AspectState<Feature>(aspect, enabled), IHasRawEntity<IRawEntity>, IHasIdentityNameId
 {
     public static FeatureState SysFeatureState(SysFeature definition, bool enabled)
-        => new(definition, BuiltInLicenses.UnlimitedExpiry, enabled,
-            "System Feature", "System Feature, managed by the system; can't be changed interactively.", true, true,
+        => new(definition, 
+            BuiltInLicenses.UnlimitedExpiry,
+            enabled,
+            "System Feature",
+            "System Feature, managed by the system; can't be changed interactively.",
+            true,
+            true,
+            null,
             null);
 
     public string NameId => Aspect.NameId;
@@ -85,6 +92,8 @@ public class FeatureState(
     /// If this feature is enabled by default (assuming the license requirements are met)
     /// </summary>
     public bool EnabledByDefault { get; } = enabledByDefault;
+
+    public Dictionary<string, object> Configuration => configuration;
 
     #region IHasNewEntity
 

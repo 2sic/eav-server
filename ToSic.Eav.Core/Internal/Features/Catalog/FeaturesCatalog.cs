@@ -22,6 +22,7 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             EditUiShowMetadataFor,
             WysiwygPasteFormatted,
             EditUiAllowDebugModeForEditors,
+            InsightsLoggingCustomConfiguration, // v20
 
             // Features for Patrons Basic
             PasteImageFromClipboard,

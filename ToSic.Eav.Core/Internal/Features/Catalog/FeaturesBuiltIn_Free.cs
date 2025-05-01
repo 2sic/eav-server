@@ -55,5 +55,18 @@ public partial class BuiltInFeatures
         LicenseRules = ForAllEnabled
     };
 
+    public static readonly Feature InsightsLoggingCustomConfiguration = new()
+    {
+        NameId = nameof(InsightsLoggingCustomConfiguration),
+        Guid = new("2a74b68e-0fd7-404a-9bcb-8fdab272fd48"),
+        Name = "Logging - Custom Configuration",
+        IsPublic = NotForPublic,
+        Ui = NotForUi,
+        Description = "Configure server logging - usually to take less memory.",
+        Security = new(1, "In some cases you won't see what happened previously."),
+        LicenseRules = ForAllEnabled,
+        // TODO: BETA - THIS IS THE guid of the CopyrightSettings
+        ConfigurationContentType = "aed871cf-220b-4330-b368-f1259981c9c8",
+    };
 
 }

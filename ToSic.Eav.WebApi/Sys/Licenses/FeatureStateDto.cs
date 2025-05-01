@@ -37,4 +37,12 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
 
     [JsonPropertyName("isConfigurable")]
     public bool IsConfigurable => state.Aspect.IsConfigurable;
+
+    [JsonPropertyName("configuration")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public Dictionary<string, object> Configuration => null;
+
+    [JsonPropertyName("configurationContentType")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string ConfigurationContentType => state.Aspect.ConfigurationContentType;
 }

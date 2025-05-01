@@ -1,12 +1,19 @@
-﻿namespace ToSic.Eav.Internal.Features;
+﻿using System.Text.Json.Serialization;
+
+namespace ToSic.Eav.Internal.Features;
 
 public class FeatureManagementChange
 {
+    [JsonPropertyName("featureGuid")]
     public Guid FeatureGuid { get; set; }
-        
+
     /// <summary>
     /// Feature can be enabled, disabled or null.
     /// Null feature are removed from features stored.
     /// </summary>
+    [JsonPropertyName("enabled")]
     public bool? Enabled { get; set; }
+
+    [JsonPropertyName("configuration")]
+    public Dictionary<string, object>? Configuration { get; set; }
 }

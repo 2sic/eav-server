@@ -8,7 +8,7 @@ namespace ToSic.Eav.SysData;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public record Feature: Aspect
 {
-    #region Constructors
+    #region Static Constructors
     
     private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules, string nameId, Guid guid)
     {
@@ -99,4 +99,6 @@ public record Feature: Aspect
     /// New v18.05... WIP
     /// </summary>
     public bool ScopedToModule { get; init; }
+
+    public string ConfigurationContentType { get; init; }
 }

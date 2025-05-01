@@ -2,7 +2,6 @@
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.SysData;
-using ToSic.Lib.Helpers;
 using static System.StringComparer;
 
 
@@ -24,8 +23,8 @@ namespace ToSic.Eav.Internal.Features;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesService
 {
-    public IEnumerable<FeatureState> All => AllStaticCache.Get(() => Merge(Stored, featuresCatalog.List, _staticSysFeatures));
-    private static readonly GetOnce<List<FeatureState>> AllStaticCache = new();
+    public IEnumerable<FeatureState> All => _allStaticCache ??= Merge(Stored, featuresCatalog.List, _staticSysFeatures);
+    private static List<FeatureState> _allStaticCache;
 
     /// <summary>
     /// List of all enabled features with their guids and nameIds
@@ -47,11 +46,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         => guids.All(IsEnabled);
 
     public bool IsEnabled(params string[] nameIds)
-    {
-        if (nameIds == null || nameIds.Length == 0)
-            return true;
-        return nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
-    }
+        => nameIds == null || nameIds.Length == 0 || nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
 
     public FeatureState Get(string nameId)
         => All.FirstOrDefault(f => f.Aspect.Name == nameId || f.NameId == nameId);
@@ -102,7 +97,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     {
         _staticStored = newList;
         _staticSysFeatures = sysFeatures;
-        AllStaticCache.Reset();
+        _allStaticCache = null;
         _enabledFeatures = null;
         _staticCacheTimestamp = DateTime.Now.Ticks;
 
@@ -118,7 +113,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         var licService = new LicenseService();
 
         var allFeats = featuresCat
-            .Select(f =>
+            .Select(featDef =>
             {
                 var enabled = false;
                 var licenseEnabled = false;
@@ -127,20 +122,19 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
                 var expiry = DateTime.MinValue;
 
                 // Check if the required license is active
-                var enabledRule = f.LicenseRulesList.FirstOrDefault(lr => licService.IsEnabled(lr.FeatureSet));
+                var enabledRule = featDef.LicenseRulesList.FirstOrDefault(lr => licService.IsEnabled(lr.FeatureSet));
                 if (enabledRule != null)
                 {
-                    licService.Enabled.TryGetValue(enabledRule.FeatureSet.Guid, out var licenseState);
-                    var specialExpiry = licenseState?.Expiration;
+                    licService.Enabled.TryGetValue(enabledRule.FeatureSet.Guid, out var licState);
+                    expiry = licState?.Expiration ?? BuiltInLicenses.UnlimitedExpiry;
                     enabled = enabledRule.EnableFeatureByDefault;
                     licenseEnabled = true; // The license is active, so it's allowed to enable this
                     msgShort = "license ok";
                     message = $" by default with license {enabledRule.FeatureSet.Name}";
-                    expiry = specialExpiry ?? BuiltInLicenses.UnlimitedExpiry;
                 }
 
                 // Check if the configuration would enable this feature
-                var inConfig = config?.Features.FirstOrDefault(cf => cf.Id == f.Guid);
+                var inConfig = config?.Features.FirstOrDefault(cf => cf.Id == featDef.Guid);
                 if (inConfig != null)
                 {
                     enabled = licenseEnabled && inConfig.Enabled;
@@ -150,9 +144,17 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
                     message = licenseEnabled ? " by configuration" : " - requires license";
                 }
 
-                return new FeatureState(f, expiry, enabled, msgShort, (enabled ? "Enabled" : "Disabled") + message,
-                    licenseEnabled, enabledByDefault: enabledRule?.EnableFeatureByDefault ?? false,
-                    enabledInConfiguration: inConfig?.Enabled);
+                return new FeatureState(
+                    featDef,
+                    expiry,
+                    enabled,
+                    msgShort,
+                    (enabled ? "Enabled" : "Disabled") + message,
+                    licenseEnabled,
+                    enabledByDefault: enabledRule?.EnableFeatureByDefault ?? false,
+                    enabledInConfiguration: inConfig?.Enabled,
+                    configuration: inConfig?.Configuration
+                );
             })
             .ToList();
 
@@ -167,7 +169,8 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
                     "Configured manually",
                     allowedByLicense: false,
                     enabledByDefault: false,
-                    enabledInConfiguration: f.Enabled
+                    enabledInConfiguration: f.Enabled,
+                    configuration: f.Configuration
                 )
             );
 
