@@ -16,8 +16,7 @@ internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Ca
 
     private const int ShowMax = 500;
 
-    private MemorySizeEstimator SizeEstimator => _sizeEstimator ??= new(Log);
-    private MemorySizeEstimator _sizeEstimator;
+    private MemorySizeEstimator SizeEstimator => field ??= new(Log);
 
     public override string HtmlBody()
     {

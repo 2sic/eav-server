@@ -10,8 +10,7 @@ internal class InsightsGlobalTypesLog(LazySvc<ILogStoreLive> logStore) : Insight
 
     public override string Title => "Global Types Log";
 
-    private InsightsLogsHelper LogHtml => _logHtml ??= new(logStore.Value);
-    private InsightsLogsHelper _logHtml;
+    private InsightsLogsHelper LogHtml => field ??= new(logStore.Value);
 
     public override string HtmlBody()
     {

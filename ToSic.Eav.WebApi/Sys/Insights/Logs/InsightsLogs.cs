@@ -10,8 +10,7 @@ internal class InsightsLogs : InsightsProvider
 
     public override string Title => "Insights into Logs";
 
-    private InsightsLogsHelper LogHtml => _logHtml ??= new(_logStore.Value);
-    private InsightsLogsHelper _logHtml;
+    private InsightsLogsHelper LogHtml => field ??= new(_logStore.Value);
     private readonly LazySvc<ILogStoreLive> _logStore;
 
     public InsightsLogs(LazySvc<ILogStoreLive> logStore) : base(Link, teaser: "Logs of Modules, APIs and more", helpCategory: "Logging", connect: [logStore])

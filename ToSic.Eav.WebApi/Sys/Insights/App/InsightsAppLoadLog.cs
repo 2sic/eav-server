@@ -5,8 +5,7 @@ namespace ToSic.Eav.WebApi.Sys.Insights;
 
 internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates, LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates, logStore])
 {
-    private InsightsLogsHelper LogHtml => _logHtml ??= new(logStore.Value);
-    private InsightsLogsHelper _logHtml;
+    private InsightsLogsHelper LogHtml => field ??= new(logStore.Value);
 
     public static string Link = "AppLoadLog";
 

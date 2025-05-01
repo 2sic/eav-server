@@ -12,11 +12,11 @@ public class FileUploadDto
     {
         get
         {
-            if (_contents != null) return _contents;
-            using (var fileStreamReader = new StreamReader(Stream)) _contents = fileStreamReader.ReadToEnd();
-            return _contents;
+            if (field != null)
+                return field;
+            using (var fileStreamReader = new StreamReader(Stream))
+                field = fileStreamReader.ReadToEnd();
+            return field;
         }
     }
-
-    private string _contents;
 }

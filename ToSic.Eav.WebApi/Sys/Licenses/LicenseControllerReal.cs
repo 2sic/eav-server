@@ -36,16 +36,16 @@ public class LicenseControllerReal(
     {
         get
         {
-            if (!string.IsNullOrEmpty(_configurationsPath)) return _configurationsPath;
-            _configurationsPath =globalConfiguration.Value.ConfigFolder;
+            if (!string.IsNullOrEmpty(field))
+                return field;
+            field =globalConfiguration.Value.ConfigFolder;
 
             // ensure that path to store files already exits
-            Directory.CreateDirectory(_configurationsPath);
+            Directory.CreateDirectory(field);
 
-            return _configurationsPath;
+            return field;
         }
     }
-    private string _configurationsPath;
 
 
     /// <inheritdoc />
