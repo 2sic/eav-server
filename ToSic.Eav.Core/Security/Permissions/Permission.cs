@@ -20,21 +20,18 @@ public class Permission(IEntity entity) : EntityBasedType(entity)
     /// The condition in this permission - like "this rule applies to admins"
     /// The condition is usually a text-code by the hosting CMS
     /// </summary>
-    public string Condition => _condition ??= Entity.Get<string>(FieldCondition);
-    private string _condition;
+    public string Condition => field ??= Entity.Get<string>(FieldCondition);
 
     /// <summary>
     /// The identity this rule should apply to 
     /// This is usually a user guid or group-id; exact specs vary based on the hosting CMS
     /// </summary>
-    public string Identity => _identity ??= Entity.Get<string>(FieldIdentity);
-    private string _identity;
+    public string Identity => field ??= Entity.Get<string>(FieldIdentity);
 
     /// <summary>
     /// The rights granted by this permission, usually a series of characters like r=read, u=update, etc.
     /// </summary>
-    public string Grant => _grant ??= Entity.Get<string>(FieldGrant);
-    private string _grant;
+    public string Grant => field ??= Entity.Get<string>(FieldGrant);
 
     [PrivateApi]
     public static bool IsPermission(IEntity entity) => entity.Type.Is(TypeName);

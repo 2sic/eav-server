@@ -17,18 +17,18 @@ partial class MetadataOf<T>
         {
             //_debugAllEntry++;
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-            _allCached = _loadAllInLock.Call(
-                    conditionToGenerate: () => _allCached == null || UpStreamChanged(),
+            field = _loadAllInLock.Call(
+                    conditionToGenerate: () => field == null || UpStreamChanged(),
                     generator: LoadAndResetInLock,
-                    cacheOrFallback: () => _allCached ?? []
+                    cacheOrFallback: () => field ?? []
                 )
                 .Result;
 
             //_debugAllReturn++;
-            return _allCached;
+            return field;
         }
     }
-    private List<IEntity> _allCached;
+
     private readonly TryLockTryDo _loadAllInLock = new();
         
     public long CacheTimestamp { get; private set; }

@@ -33,8 +33,7 @@ internal class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
     public IReadOnlyDictionary<int, string> Apps(int zoneId)
         => Zones[zoneId].Apps;
 
-    public IReadOnlyDictionary<int, Zone> Zones => _zones ??= AppsCacheSwitch.Value.Zones(AppsCacheSwitch.AppLoaderTools);
-    private IReadOnlyDictionary<int, Zone> _zones;
+    public IReadOnlyDictionary<int, Zone> Zones => field ??= AppsCacheSwitch.Value.Zones(AppsCacheSwitch.AppLoaderTools);
 
     public Zone Zone(int zoneId) => Zones.TryGetValue(zoneId, out var zone)
         ? zone

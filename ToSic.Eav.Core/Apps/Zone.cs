@@ -32,6 +32,5 @@ public class Zone(int zoneId, int primaryAppId, int contentAppId, IReadOnlyDicti
     /// </summary>
     public List<DimensionDefinition> Languages { get; } = languages;
 
-    public List<DimensionDefinition> LanguagesActive => _languagesActive ??= Languages.Where(l => l.Active).ToList();
-    private List<DimensionDefinition> _languagesActive;
+    public List<DimensionDefinition> LanguagesActive => field ??= Languages.Where(l => l.Active).ToList();
 }

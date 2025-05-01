@@ -14,7 +14,7 @@ public class FeatureStatePersisted
     /// </summary>
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
-        
+
     /// <summary>
     /// Feature is enabled and hasn't expired yet
     /// </summary>
@@ -22,10 +22,9 @@ public class FeatureStatePersisted
     [JsonPropertyName("enabled")]
     public bool Enabled
     {
-        get => _enabled && Expires > DateTime.Now;
-        set => _enabled = value;
+        get => field && Expires > DateTime.Now;
+        set => field = value;
     }
-    private bool _enabled;
 
     /// <summary>
     /// Expiry of this feature

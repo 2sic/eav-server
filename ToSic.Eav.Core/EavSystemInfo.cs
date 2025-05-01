@@ -5,8 +5,7 @@ namespace ToSic.Eav;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EavSystemInfo
 {
-    public static Version Version => _version ??= Assembly.GetExecutingAssembly().GetName().Version;
-    private static Version _version;
+    public static Version Version => field ??= Assembly.GetExecutingAssembly().GetName().Version;
 
     public static readonly string VersionString = VersionToNiceFormat(Version);
 

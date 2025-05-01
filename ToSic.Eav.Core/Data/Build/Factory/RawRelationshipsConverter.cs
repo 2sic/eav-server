@@ -7,8 +7,7 @@ namespace ToSic.Eav.Data.Build;
 
 internal class RawRelationshipsConverter(DataBuilder builder, ILog parentLog) : HelperBase(parentLog, "Eav.RawRel")
 {
-    private LogFilter RelationshipsToAttributesLogFilter => _relationshipsToAttributesLogFilter ??= new(Log, logFirstMax: 25, reLogIteration: 100);
-    private LogFilter _relationshipsToAttributesLogFilter;
+    private LogFilter RelationshipsToAttributesLogFilter => field ??= new(Log, logFirstMax: 25, reLogIteration: 100);
 
     internal Dictionary<string, object> RelationshipsToAttributes(IDictionary<string, object> values, ILookup<object, IEntity> relationships)
     {

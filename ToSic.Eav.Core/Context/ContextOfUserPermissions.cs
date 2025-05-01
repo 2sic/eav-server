@@ -8,8 +8,7 @@ namespace ToSic.Eav.Context;
 /// </summary>
 internal class ContextOfUserPermissions(IUser user) : ServiceBase("Eav.CtxSec"), IContextOfUserPermissions
 {
-    EffectivePermissions IContextOfUserPermissions.Permissions => _permissions ??= GetPermissions();
-    private EffectivePermissions _permissions;
+    EffectivePermissions IContextOfUserPermissions.Permissions => field ??= GetPermissions();
 
     private EffectivePermissions GetPermissions()
     {

@@ -3,13 +3,11 @@
 partial class AppState
 {
     [PrivateApi]
-    internal AppStateMetadata SettingsInApp => _settingsInApp ??= new(this, AppStackConstants.Settings);
-    private AppStateMetadata _settingsInApp;
+    internal AppStateMetadata SettingsInApp => field ??= new(this, AppStackConstants.Settings);
 
 
     [PrivateApi]
-    internal AppStateMetadata ResourcesInApp => _resourcesInApp ??= new(this, AppStackConstants.Resources);
-    private AppStateMetadata _resourcesInApp;
+    internal AppStateMetadata ResourcesInApp => field ??= new(this, AppStackConstants.Resources);
 
     [PrivateApi]
     AppStateMetadata IAppStateCache.ThingInApp(AppThingsToStack target) =>

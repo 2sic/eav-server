@@ -48,6 +48,5 @@ public record FeatureSet :  Aspect
 
     public bool FeatureLicense { get; init; }
 
-    public Requirement Requirement => _requirement ??= new(ConditionIsLicense, Guid.ToString());
-    private Requirement _requirement;
+    public Requirement Requirement => field ??= new(ConditionIsLicense, Guid.ToString());
 }

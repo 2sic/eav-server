@@ -43,8 +43,7 @@ partial class AppState
         public IAppStateCache AppState => _appState ?? throw new("Can't use before calling some init");
         private IAppStateCache _appState;
 
-        public IAppReader Reader => _reader ??= appReaderFactory.ToReader(AppState);
-        private IAppReader _reader;
+        public IAppReader Reader => field ??= appReaderFactory.ToReader(AppState);
 
         #endregion
 

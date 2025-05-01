@@ -27,8 +27,7 @@ public class ImmutableSmartList: IImmutableList<IEntity>
 
     #region Smart bits / performance
 
-    internal LazyFastAccess Fast => _lfa ??= new(Contents);
-    private LazyFastAccess _lfa;
+    internal LazyFastAccess Fast => field ??= new(Contents);
 
     #endregion
 

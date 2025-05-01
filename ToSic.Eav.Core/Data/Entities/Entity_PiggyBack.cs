@@ -5,6 +5,5 @@ namespace ToSic.Eav.Data;
 partial record Entity : IHasPiggyBack
 {
     [PrivateApi("WIP Piggyback")]
-    public PiggyBack.PiggyBack PiggyBack => _piggyBack ??= new();
-    private PiggyBack.PiggyBack _piggyBack;
+    public PiggyBack.PiggyBack PiggyBack => field ??= new();
 }

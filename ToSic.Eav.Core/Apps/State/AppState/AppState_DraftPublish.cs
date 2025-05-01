@@ -60,7 +60,7 @@ partial class AppState
     /// Get all Draft Entities in this App
     /// </summary>
     [PrivateApi("this is an optimization feature which shouldn't be used by others")]
-    private SynchronizedObject<ImmutableDictionary<int, IEntity>> ListDrafts => _listDrafts
+    private SynchronizedObject<ImmutableDictionary<int, IEntity>> ListDrafts => field
         ??= new(this, () =>
         {
             var unpublished = List.Where(e => e.IsPublished == false);
@@ -70,7 +70,4 @@ partial class AppState
             var lastOnly = unpublished.GroupBy(e => e.EntityId).Select(g => g.Last()).ToList();
             return lastOnly.ToImmutableDictionary(e => e.EntityId);
         });
-
-    private SynchronizedObject<ImmutableDictionary<int, IEntity>> _listDrafts;
-    
 }

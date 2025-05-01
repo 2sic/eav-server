@@ -29,8 +29,7 @@ public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inh
     /// <summary>
     /// The inherited content-types
     /// </summary>
-    public IEnumerable<IContentType> ContentTypes => _contentTypes ??= GetInheritedTypes();
-    private IEnumerable<IContentType> _contentTypes;
+    public IEnumerable<IContentType> ContentTypes => field ??= GetInheritedTypes();
 
     /// <summary>
     /// The inherited entities
