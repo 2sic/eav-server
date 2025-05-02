@@ -28,7 +28,7 @@ partial class DbAttribute
     private bool AttributeExistsInSet(int contentTypeId, string staticName)
         => DbContext.SqlDb.ToSicEavAttributes.Any(s =>
             s.StaticName == staticName
-            && !s.ChangeLogDeleted.HasValue
+            && !s.TransactionIdDeleted.HasValue
             && s.ContentTypeId == contentTypeId
             && s.AttributeSet.AppId == DbContext.AppId);
 

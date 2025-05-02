@@ -11,19 +11,19 @@ public partial class ToSicEavValues//: RepoValue
 
     public string Value { get; set; }
 
-    public int ChangeLogCreated { get; set; }
+    public int TransactionIdCreated { get; set; }
 
-    public int? ChangeLogDeleted { get; set; }
+    public int? TransactionIdDeleted { get; set; }
 
-    public int? ChangeLogModified { get; set; }
+    public int? TransactionIdModified { get; set; }
 
     public virtual ToSicEavAttributes Attribute { get; set; }
 
-    public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 
-    public virtual ToSicEavChangeLog ChangeLogDeletedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 
-    public virtual ToSicEavChangeLog ChangeLogModifiedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
 
     public virtual ToSicEavEntities Entity { get; set; }
 

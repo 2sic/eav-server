@@ -72,7 +72,7 @@ partial class DbEntity
 
         ToSicEavEntities dbEnt = null;
 
-        var changeLogId = DbContext.Versioning.GetChangeLogId();
+        var transactionId = DbContext.Versioning.GetTransactionId();
 
         DbContext.DoInTransaction(() =>
         {
@@ -89,7 +89,7 @@ partial class DbEntity
                             "can't create entity in DB with guid null - entities must be fully prepared before sending to save");
                     }
 
-                    dbEnt = CreateDbRecord(newEnt, changeLogId, contentTypeId);
+                    dbEnt = CreateDbRecord(newEnt, transactionId, contentTypeId);
                     // update the ID - for versioning and/or json persistence
                     newEnt = builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
                     //newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
@@ -142,8 +142,8 @@ partial class DbEntity
 
                     #endregion
 
-                    // update changelog modified for the DB record
-                    dbEnt.ChangeLogModified = changeLogId;
+                    // update transactionId modified for the DB record
+                    dbEnt.TransactionIdModified = transactionId;
 
                     // increase version
                     dbEnt.Version++;
@@ -185,7 +185,7 @@ partial class DbEntity
             if (!saveJson)
             {
                 // save all the values we just added
-                SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, changeLogId, logDetails);
+                SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, transactionId, logDetails);
                 DbContext.Relationships.ChangeRelationships(newEnt, dbEnt, attributeDefs, so);
             }
             else if (isNew)

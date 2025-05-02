@@ -48,7 +48,7 @@ public class DbDataController(
     private const string UserNameUnknown = "unresolved(eav)";
 
     /// <summary>
-    /// Current UserName. Used for ChangeLog
+    /// Current UserName. Used for TransactionId
     /// </summary>
     public string UserIdentityToken
     {
@@ -179,7 +179,7 @@ public class DbDataController(
 
     /// <summary>
     /// Persists all updates to the data source and optionally resets change tracking in the object context.
-    /// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
+    /// Also Creates an initial TransactionId (used by SQL Server for Auditing).
     /// If items were modified, Cache is purged on current Zone/App
     /// </summary>
     public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
@@ -187,7 +187,7 @@ public class DbDataController(
         if (_appId == Constants.AppIdEmpty)
             throw new("SaveChanges with AppId 0 not allowed.");
 
-        Versioning.GetChangeLogId();
+        Versioning.GetTransactionId();
 
         var modifiedCount = baseEvent(acceptAllChangesOnSuccess);
 

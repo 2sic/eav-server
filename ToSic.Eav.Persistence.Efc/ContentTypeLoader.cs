@@ -82,7 +82,7 @@ internal class ContentTypeLoader(
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
         var query = appLoader.Context.ToSicEavAttributeSets
-            .Where(set => set.AppId == appId && set.ChangeLogDeleted == null);
+            .Where(set => set.AppId == appId && set.TransactionIdDeleted == null);
 
         var contentTypesSql = query
             .Include(set => set.ToSicEavAttributes)
@@ -104,7 +104,7 @@ internal class ContentTypeLoader(
                 set.StaticName,
                 set.Scope,
                 Attributes = set.ToSicEavAttributes
-                    .Where(a => a.ChangeLogDeleted == null) // only not-deleted attributes!
+                    .Where(a => a.TransactionIdDeleted == null) // only not-deleted attributes!
                     .Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
                         name: a.StaticName,

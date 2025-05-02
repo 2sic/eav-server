@@ -5,7 +5,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
     private IQueryable<ToSicEavAttributeSets> GetDbContentTypeCoreQuery(int appId)
         => DbContext.SqlDb.ToSicEavAttributeSets
             .Include(a => a.ToSicEavAttributes)
-            .Where(a => a.AppId == appId && !a.ChangeLogDeleted.HasValue);
+            .Where(a => a.AppId == appId && !a.TransactionIdDeleted.HasValue);
 
     /// <summary>
     /// Get a single AttributeSet
@@ -110,7 +110,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
             Name = name,
             StaticName = nameId,
             Scope = scope,
-            ChangeLogCreated = DbContext.Versioning.GetChangeLogId(),
+            TransactionIdCreated = DbContext.Versioning.GetTransactionId(),
             AppId = targetAppId
         };
 

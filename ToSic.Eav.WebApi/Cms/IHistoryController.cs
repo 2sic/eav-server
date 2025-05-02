@@ -13,5 +13,5 @@ public interface IHistoryController
     /// <summary>
     /// Restore an item to a previous version in the history
     /// </summary>
-    bool Restore(int appId, int changeId, ItemIdentifier item);
+    bool Restore(int appId, int transactionId, ItemIdentifier item);
 }

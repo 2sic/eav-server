@@ -10,10 +10,10 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
         Log.A($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
         // Clear values on target (including Dimensions). Must be done in separate steps, would cause un-allowed null-Foreign-Keys
         var delCount = 0;
-        if (target.ToSicEavValues.Any(v => v.ChangeLogDeleted == null))
-            foreach (var eavValue in target.ToSicEavValues.Where(v => v.ChangeLogDeleted == null))
+        if (target.ToSicEavValues.Any(v => v.TransactionIdDeleted == null))
+            foreach (var eavValue in target.ToSicEavValues.Where(v => v.TransactionIdDeleted == null))
             {
-                eavValue.ChangeLogDeleted = DbContext.Versioning.GetChangeLogId();
+                eavValue.TransactionIdDeleted = DbContext.Versioning.GetTransactionId();
                 delCount++;
             }
 
@@ -25,7 +25,7 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
             {
                 AttributeId = eavValue.AttributeId,
                 Value = eavValue.Value,
-                ChangeLogCreated = DbContext.Versioning.GetChangeLogId()
+                TransactionIdCreated = DbContext.Versioning.GetTransactionId()
             };
 
             // copy Dimensions

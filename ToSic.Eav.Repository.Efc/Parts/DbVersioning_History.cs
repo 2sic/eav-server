@@ -51,7 +51,7 @@ partial class DbVersioning
 
         var entityVersions = rootQuery
             .OrderByDescending(t => t.SysCreatedDate)
-            .Join(DbContext.SqlDb.ToSicEavChangeLog, t => t.SysLogId, c => c.ChangeId, (history, log) => new { History = history, Log = log })
+            .Join(DbContext.SqlDb.TsDynDataTransaction, t => t.SysLogId, c => c.TransactionId, (history, log) => new { History = history, Log = log })
             .Select(d =>  new ItemHistory
             {
                 TimeStamp = d.History.SysCreatedDate,

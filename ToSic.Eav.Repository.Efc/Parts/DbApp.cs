@@ -51,7 +51,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
     /// <param name="fullDelete">If true, the entire App is removed. Otherwise just all the contents is cleared</param>
     internal void DeleteApp(int appId, bool fullDelete)
     {
-        DbContext.Versioning.GetChangeLogId();
+        DbContext.Versioning.GetTransactionId();
 
         // Delete app using StoredProcedure
         DbContext.DoInTransaction(() =>

@@ -21,7 +21,7 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
     public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
     public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
-    public virtual DbSet<ToSicEavChangeLog> ToSicEavChangeLog { get; set; }
+    public virtual DbSet<TsDynDataTransaction> TsDynDataTransaction { get; set; }
     public virtual DbSet<ToSicEavDataTimeline> ToSicEavDataTimeline { get; set; }
     public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
     public virtual DbSet<ToSicEavEntities> ToSicEavEntities { get; set; }
@@ -128,16 +128,16 @@ public partial class EavDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50);
 
-            entity.HasOne(d => d.ChangeLogCreatedNavigation)
-                .WithMany(p => p.ToSicEavAttributesChangeLogCreatedNavigation)
-                .HasForeignKey(d => d.ChangeLogCreated)
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.ToSicEavAttributesTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogCreated");
+                .HasConstraintName("FK_ToSIC_EAV_Attributes_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.ChangeLogDeletedNavigation)
-                .WithMany(p => p.ToSicEavAttributesChangeLogDeletedNavigation)
-                .HasForeignKey(d => d.ChangeLogDeleted)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_ChangeLogDeleted");
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.ToSicEavAttributesTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_ToSIC_EAV_Attributes_TsDynDataTransactionDeleted");
 
             entity.HasOne(d => d.TypeNavigation)
                 .WithMany(p => p.ToSicEavAttributes)
@@ -191,16 +191,16 @@ public partial class EavDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_Apps");
 
-            entity.HasOne(d => d.ChangeLogCreatedNavigation)
-                .WithMany(p => p.ToSicEavAttributeSetsChangeLogCreatedNavigation)
-                .HasForeignKey(d => d.ChangeLogCreated)
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.ToSicEavAttributeSetsTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogCreated");
+                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.ChangeLogDeletedNavigation)
-                .WithMany(p => p.ToSicEavAttributeSetsChangeLogDeletedNavigation)
-                .HasForeignKey(d => d.ChangeLogDeleted)
-                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_ChangeLogDeleted");
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.ToSicEavAttributeSetsTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_TsDynDataTransactionDeleted");
 
             entity.HasOne(d => d.UsesConfigurationOfAttributeSetNavigation)
                 .WithMany(p => p.InverseUsesConfigurationOfAttributeSetNavigation)
@@ -222,14 +222,14 @@ public partial class EavDbContext : DbContext
             entity.Property(e => e.Type).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<ToSicEavChangeLog>(entity =>
+        modelBuilder.Entity<TsDynDataTransaction>(entity =>
         {
-            entity.HasKey(e => e.ChangeId)
-                .HasName("PK_ToSIC_EAV_ChangeLog");
+            entity.HasKey(e => e.TransactionId)
+                .HasName("PK_TsDynDataTransaction");
 
-            entity.ToTable("ToSIC_EAV_ChangeLog");
+            entity.ToTable("TsDynDataTransaction");
 
-            entity.Property(e => e.ChangeId).HasColumnName("ChangeID");
+            entity.Property(e => e.TransactionId);
 
             entity.Property(e => e.Timestamp)
                 .HasColumnType("datetime")
@@ -346,22 +346,22 @@ public partial class EavDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets");
 
-            entity.HasOne(d => d.ChangeLogCreatedNavigation)
-                .WithMany(p => p.ToSicEavEntitiesChangeLogCreatedNavigation)
-                .HasForeignKey(d => d.ChangeLogCreated)
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.ToSicEavEntitiesTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogCreated");
+                .HasConstraintName("FK_ToSIC_EAV_Entities_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.ChangeLogDeletedNavigation)
-                .WithMany(p => p.ToSicEavEntitiesChangeLogDeletedNavigation)
-                .HasForeignKey(d => d.ChangeLogDeleted)
-                .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLogDeleted");
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.ToSicEavEntitiesTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_ToSIC_EAV_Entities_TsDynDataTransactionDeleted");
 
-            entity.HasOne(d => d.ChangeLogModifiedNavigation)
-                .WithMany(p => p.ToSicEavEntitiesChangeLogModifiedNavigation)
-                .HasForeignKey(d => d.ChangeLogModified)
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.ToSicEavEntitiesTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_ChangeLog_Modified");
+                .HasConstraintName("FK_ToSIC_EAV_Entities_TsDynDataTransactionModified");
 
             //entity.HasOne(d => d.ConfigurationSetNavigation)
             //    .WithMany(p => p.InverseConfigurationSetNavigation)
@@ -411,13 +411,13 @@ public partial class EavDbContext : DbContext
             entity.ToTable("ToSIC_EAV_Values");
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => new { e.AttributeId, e.EntityId, e.ChangeLogDeleted })
+            entity.HasIndex(e => new { e.AttributeId, e.EntityId, e.TransactionIdDeleted })
                 .HasName("IX_EAV_Values1");
 #pragma warning restore CS0618 // Type or member is obsolete
 
             // 2017-04-28 disabled e.Value in this index - on one hand it's useless, but it also seems to affect sql queries to 450 chars on that field!
 #pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => new { /*e.Value,*/ e.ChangeLogCreated, e.EntityId, e.ChangeLogDeleted, e.AttributeId, e.ValueId })
+            entity.HasIndex(e => new { /*e.Value,*/ e.TransactionIdCreated, e.EntityId, e.TransactionIdDeleted, e.AttributeId, e.ValueId })
                 .HasName("IX_EAV_Values2");
 #pragma warning restore CS0618 // Type or member is obsolete
 
@@ -436,21 +436,21 @@ public partial class EavDbContext : DbContext
                 .HasForeignKey(d => d.AttributeId)
                 .HasConstraintName("FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes");
 
-            entity.HasOne(d => d.ChangeLogCreatedNavigation)
-                .WithMany(p => p.ToSicEavValuesChangeLogCreatedNavigation)
-                .HasForeignKey(d => d.ChangeLogCreated)
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.ToSicEavValuesTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogCreated");
+                .HasConstraintName("FK_ToSIC_EAV_Values_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.ChangeLogDeletedNavigation)
-                .WithMany(p => p.ToSicEavValuesChangeLogDeletedNavigation)
-                .HasForeignKey(d => d.ChangeLogDeleted)
-                .HasConstraintName("FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogDeleted");
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.ToSicEavValuesTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_ToSIC_EAV_Values_TsDynDataTransactionDeleted");
 
-            entity.HasOne(d => d.ChangeLogModifiedNavigation)
-                .WithMany(p => p.ToSicEavValuesChangeLogModifiedNavigation)
-                .HasForeignKey(d => d.ChangeLogModified)
-                .HasConstraintName("FK_ToSIC_EAV_Values_ToSIC_EAV_ChangeLogModified");
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.ToSicEavValuesTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
+                .HasConstraintName("FK_ToSIC_EAV_Values_TsDynDataTransactionModified");
 
             entity.HasOne(d => d.Entity)
                 .WithMany(p => p.ToSicEavValues)

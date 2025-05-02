@@ -55,8 +55,8 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
             }
 
             publishedEntity.Json = json; // if it's using the new format
-            publishedEntity.ChangeLogModified =
-                unpublishedDbEnt.ChangeLogModified; // transfer last-modified date (not to today, but to last edit)
+            publishedEntity.TransactionIdModified =
+                unpublishedDbEnt.TransactionIdModified; // transfer last-modified date (not to today, but to last edit)
             DbContext.Values.CloneRelationshipsAndSave(unpublishedDbEnt,
                 publishedEntity); // relationships need special treatment and intermediate save!
             DbContext.Values.CloneEntitySimpleValues(unpublishedDbEnt, publishedEntity);
@@ -97,7 +97,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
     internal int? GetDraftBranchEntityId(int entityId)
     {
         var draftId = DbContext.SqlDb.ToSicEavEntities
-            .Where(e => e.PublishedEntityId == entityId && !e.ChangeLogDeleted.HasValue)
+            .Where(e => e.PublishedEntityId == entityId && !e.TransactionIdDeleted.HasValue)
             .Select(e => (int?) e.EntityId)
             .SingleOrDefault();
         Log.A($"GetDraftBranchEntityId({entityId}) found {draftId}");
@@ -113,7 +113,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
         var l = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
         var nullList = entityIds.Cast<int?>().ToList();
         var ids = DbContext.SqlDb.ToSicEavEntities
-            .Where(e => nullList.Contains(e.PublishedEntityId) && !e.ChangeLogDeleted.HasValue)
+            .Where(e => nullList.Contains(e.PublishedEntityId) && !e.TransactionIdDeleted.HasValue)
             .Select(e => new {e.EntityId, e.PublishedEntityId })
             .ToList();
         // note: distinct is necessary, because new entities all have 0 as the id

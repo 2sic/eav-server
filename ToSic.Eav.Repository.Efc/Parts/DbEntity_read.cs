@@ -91,8 +91,8 @@ partial class DbEntity
 
     //internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid)
     //    => EntityQuery.Where(e => e.EntityGuid == entityGuid
-    //                              && !e.ChangeLogDeleted.HasValue
-    //                              && !e.AttributeSet.ChangeLogDeleted.HasValue
+    //                              && !e.TransactionIdDeleted.HasValue
+    //                              && !e.AttributeSet.TransactionIdDeleted.HasValue
     //                                // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
     //                                // && DbContext.AppIds.Contains(e.AppId));
     //                                && Enumerable.Contains(DbContext.AppIds, e.AppId));
@@ -101,8 +101,8 @@ partial class DbEntity
         //=> EntityQuery
         => DbContext.SqlDb.ToSicEavEntities
             .Where(e => e.EntityGuid == entityGuid
-                        && !e.ChangeLogDeleted.HasValue
-                        && !e.AttributeSet.ChangeLogDeleted.HasValue
+                        && !e.TransactionIdDeleted.HasValue
+                        && !e.AttributeSet.TransactionIdDeleted.HasValue
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId));
                         && Enumerable.Contains(DbContext.AppIds, e.AppId)
@@ -148,8 +148,8 @@ partial class DbEntity
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // entityGuid.Contains(e.EntityGuid)
                         Enumerable.Contains(entityGuid, e.EntityGuid)
-                        && e.ChangeLogDeleted == null
-                        && e.AttributeSet.ChangeLogDeleted == null
+                        && e.TransactionIdDeleted == null
+                        && e.AttributeSet.TransactionIdDeleted == null
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId)
                         && Enumerable.Contains(DbContext.AppIds, e.AppId)

@@ -28,7 +28,7 @@ partial class DbEntity
         SaveOptions so,
         List<ToSicEavAttributes> dbAttributes,
         ToSicEavEntities dbEnt,
-        int changeId,
+        int transactionId,
         bool logDetails
     ) => Log.Do($"id:{newEnt.EntityId}", timer: true, action: () =>
     {
@@ -85,7 +85,7 @@ partial class DbEntity
                     {
                         AttributeId = attribDef.AttributeId,
                         Value = value.Serialized ?? "",
-                        ChangeLogCreated = changeId, // todo: remove some time later
+                        TransactionIdCreated = transactionId, // todo: remove some time later
                         ToSicEavValuesDimensions = toSicEavValuesDimensions,
                         EntityId = dbEnt.EntityId
                     };

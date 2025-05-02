@@ -14,7 +14,7 @@ partial class EavDbContext
     /// <inheritdoc />
     /// <summary>
     /// Persists all updates to the data source and optionally resets change tracking in the object context.
-    /// Also Creates an initial ChangeLog (used by SQL Server for Auditing).
+    /// Also Creates an initial TransactionId (used by SQL Server for Auditing).
     /// If items were modified, Cache is purged on current Zone/App
     /// </summary>
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

@@ -5,6 +5,6 @@ internal record LoadingValue(
     int AttributeId,
     string StaticName,
     string Value,
-    int ChangeLogCreated,
+    int TransactionIdCreated,
     ImmutableList<ILanguage> Languages
 );

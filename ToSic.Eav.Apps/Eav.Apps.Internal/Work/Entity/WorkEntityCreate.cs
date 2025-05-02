@@ -40,8 +40,8 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
             // 2025-04-29 2dm code changed a bit for 2sxc v20.0, but couldn't see how to test it / when this scenario pops up
             // remove this comment if everything is ok by 2026-04
             var existingEnt = AppWorkCtx.DataController.Entities.GetEntityStubsByGuid(newGuid).First();
-            if (existingEnt.ChangeLogDeleted != null)
-                existingEnt.ChangeLogDeleted = null;
+            if (existingEnt.TransactionIdDeleted != null)
+                existingEnt.TransactionIdDeleted = null;
 
             return existingEnt.EntityId;
         }
