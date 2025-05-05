@@ -89,7 +89,7 @@ public class EavFeaturesLoader(
     /// When old format is detected, it is converted to new format.
     /// </summary>
     /// <returns></returns>
-    private FeatureStatesPersisted LoadFeaturesStored()
+    internal FeatureStatesPersisted LoadFeaturesStored()
     {
         var l = Log.Fn<FeatureStatesPersisted>();
         try
@@ -105,6 +105,7 @@ public class EavFeaturesLoader(
 
             // return features stored
             var newState = JsonSerializer.Deserialize<FeatureStatesPersisted>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+
             return l.ReturnAndLog(newState, "ok, features loaded");
         }
         catch (Exception e)

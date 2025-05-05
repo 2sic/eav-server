@@ -28,10 +28,6 @@ partial class AppLoader
 
             var entitiesUnique = DeduplicateAndLogStats(entitySets);
 
-            // Detailed debug - log all IDs because we seem to have duplicate IDs (bug)
-            foreach (var e in entitiesUnique)
-                l.A($"Id: {e.EntityId} ({e.EntityGuid})");
-
             // Reset list of entities which will be used to find related entities
             relationships.List.Clear();
             relationships.List.AddRange(entitiesUnique);
@@ -57,12 +53,20 @@ partial class AppLoader
             .OrderBy(e => e.EntityId)
             .ToList();
 
-        // Log duplicates
-        var duplicates = entities.Count - entitiesUnique.Count;
-        l.A(
-            $"Found {duplicates} duplicate entities from {entities.Count} resulting with {entitiesUnique.Count}");
-        foreach (var dupl in entitiesGroupedByGuid.Where(g => g.Count() > 1))
-            l.A($"Removed a duplicate of: {dupl.Key}");
+        // Log duplicates if logging is active (Log != null)
+        if (l != null)
+        {
+            var duplicates = entities.Count - entitiesUnique.Count;
+
+            l.A($"Found {duplicates} duplicate entities from {entities.Count} resulting with {entitiesUnique.Count}");
+            foreach (var dupl in entitiesGroupedByGuid.Where(g => g.Count() > 1))
+                l.A($"Removed a duplicate of: {dupl.Key}");
+
+            // Detailed debug - log all IDs because we seem to have duplicate IDs (bug)
+            l.A("Showing unique IDs");
+            foreach (var e in entitiesUnique)
+                l.A($"Id: {e.EntityId} ({e.EntityGuid})");
+        }
 
         return l.Return(entitiesUnique, $"final: {entitiesUnique.Count}");
     }

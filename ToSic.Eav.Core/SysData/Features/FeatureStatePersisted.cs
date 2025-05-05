@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+// ReSharper disable RedundantAccessorBody
 
 namespace ToSic.Eav.SysData;
 
@@ -34,5 +35,11 @@ public record FeatureStatePersisted
 
 
     [JsonPropertyName("configuration")]
-    public Dictionary<string, object> Configuration { get; init; }
+    public Dictionary<string, object> Configuration
+    {
+        get => field;
+        init => field = value == null
+            ? null
+            : new(value, comparer: StringComparer.InvariantCultureIgnoreCase);
+    }
 }

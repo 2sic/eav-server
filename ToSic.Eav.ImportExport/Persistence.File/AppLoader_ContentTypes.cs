@@ -16,7 +16,7 @@ partial class AppLoader
 
         // 2. Create a delayed content type provider, which will
         //    later on give the generated sub-entities their content type (which may not exist during deserialization)
-        var delayedContentTypeProvider = new DeferredContentTypeProvider(Log);
+        var delayedContentTypeProvider = new DeferredContentTypeProvider(Log.IfDetails(LogSettings));
 
         // 3. Prepare settings to ensure CT-definitions and entities inside the content-types and their attributes
         //    can look up their correct content type, metadata and relationships

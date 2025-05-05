@@ -71,7 +71,8 @@ public partial class BuiltInFeatures
 
     public class InsightsLoggingCustomizedConfiguration
     {
-        public bool LogLoadingSystemData;
-        public bool LogLoadingSystemDataDetailed;
+        public bool LoadSystemData;
+        public bool LoadSystemDataDetailed;
+        public bool LoadSystemDataSummary;
     }
 }

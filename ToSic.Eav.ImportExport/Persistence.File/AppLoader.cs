@@ -13,12 +13,16 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     #region Constructor and DI
 
     public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
-        : base("Eav.RunTme", connect: [fslGenerator, stateBuilder])
+        : base("Eav.RunTme", connect: [/* sp (never) */ fslGenerator, stateBuilder])
     {
-        BootLog.Log.Fn("App Loader constructor", timer: true).Done();
-        _serviceProvider = sp;  // never add to connect, as it's not a service
+        _serviceProvider = sp;
         _fslGenerator = fslGenerator;
         _stateBuilder = stateBuilder;
+
+        // Mention constructor in logs
+        BootLog.Log.Fn("App Loader constructor", timer: true).Done();
+
+        // Add to global location so the insights can pick this ip.
         // Only add the first time it's really used
         InternalAppLoader.LoadLog ??= Log;
     }
@@ -32,56 +36,63 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     public RepositoryTypes Source => RepositoryTypes.Folder;
 
     // 1 - find the current path to the .data folder
-    public List<string> Paths
+    public List<string> Paths => field ??= GeneratePaths();
+
+    private List<string> GeneratePaths()
     {
-        get
-        {
-            if (field != null)
-                return field;
-            var l = Log.Fn<List<string>>(message: "start building path-list");
+        var l = Log.Fn<List<string>>(message: "start building path-list");
 
-            field = [];
-            // find all RepositoryInfoOfFolder and let them tell us what paths to use
-            var types = AssemblyHandling
-                .FindInherited(typeof(FolderBasedRepository), Log)
-                .ToList();
-            l.A($"found {types.Count} Path providers");
+        var all = new List<string>();
+        // find all RepositoryInfoOfFolder and let them tell us what paths to use
+        var types = AssemblyHandling
+            .FindInherited(typeof(FolderBasedRepository), Log)
+            .ToList();
+        l.A($"found {types.Count} Path providers");
 
-            foreach (var typ in types)
-                try
-                {
-                    l.A($"adding {typ.FullName}");
-                    var instance = (FolderBasedRepository) ActivatorUtilities.CreateInstance(_serviceProvider, typ, []);
-                    var paths = instance.RootPaths;
-                    if (paths != null)
-                        field.AddRange(paths);
-                }
-                catch(Exception e)
-                {
-                    l.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
-                    l.Ex(e);
-                }
-            l.A(l.Try(() => string.Join(",", field)));
-            return l.Return(field, $"{field.Count} paths");
-        }
+        foreach (var typ in types)
+            try
+            {
+                l.A($"adding {typ.FullName}");
+                var instance = (FolderBasedRepository)ActivatorUtilities.CreateInstance(_serviceProvider, typ, []);
+                var paths = instance.RootPaths;
+                if (paths != null)
+                    all.AddRange(paths);
+            }
+            catch (Exception e)
+            {
+                l.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
+                l.Ex(e);
+            }
+        l.A(l.Try(() => string.Join(",", all)));
+        return l.Return(all, $"{all.Count} paths");
     }
 
+    internal List<FileSystemLoader> Loaders => field ??= BuildLoaders(null, LogSettings);
+    private LogSettings LogSettings { get; set; }
 
-    internal List<FileSystemLoader> Loaders => field ??= BuildLoaders(null);
-
-    private List<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource)
+    private List<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource, LogSettings logSettings)
         => Paths
-            .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, entitiesSource))
+            .Select(path => _fslGenerator
+                .New()
+                .Init(Constants.PresetAppId, path, Source, true, entitiesSource, logSettings)
+            )
             .ToList();
 
 
-    public IAppStateBuilder LoadFullAppState()
+    public IAppStateBuilder LoadFullAppState(LogSettings logSettings)
     {
+        LogSettings = logSettings ?? new();
+
+        // Get BootLog to make sure it's part of that too
         var bl = BootLog.Log.Fn("Load Full AppState", timer: true);
-        var outerLog = Log.Fn<IAppStateBuilder>(timer: true);
+
+        // Do normal logging
+        var lMain = Log.Fn<IAppStateBuilder>(timer: true);
+        lMain.A($"🪵 Using LogSettings: {logSettings}");
 
         var builder = _stateBuilder.New().InitForPreset();
 
+        var logDetails = LogSettings.Enabled && LogSettings.Details;
         builder.Load("get app data package", appState =>
         {
             var l = Log.Fn("load app data package");
@@ -95,7 +106,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                 // Just attach all global content-types to this app, as they belong here
                 builder.InitContentTypes(types.ContentTypes);
                 foreach (var entity in types.Entities)
-                    builder.Add(entity as Entity, null, true);
+                    builder.Add(entity as Entity, null, logDetails);
                 return "types loaded";
             });
 
@@ -119,7 +130,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                 var entities = LoadGlobalEntities(builder.Reader);
                 l.A($"Load entity {entities.Count} items");
                 foreach (var entity in entities) 
-                    builder.Add(entity as Entity, null, true);
+                    builder.Add(entity as Entity, null, logDetails);
             }
             catch (Exception ex)
             {
@@ -131,7 +142,7 @@ internal partial class AppLoader : ServiceBase, IAppLoader
         });
 
         bl.Done();
-        return outerLog.ReturnAsOk(builder);
+        return lMain.ReturnAsOk(builder);
     }
 
 }

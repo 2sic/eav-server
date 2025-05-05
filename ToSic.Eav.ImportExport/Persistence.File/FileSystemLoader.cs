@@ -12,13 +12,13 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Persistence.File;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGenerator, DataBuilder dataBuilder)
-    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [jsonSerializerGenerator, dataBuilder]), IContentTypeLoader
+public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataBuilder dataBuilder)
+    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataBuilder]), IContentTypeLoader
 {
     public int AppId = -999;
 
 
-    public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource)
+    public FileSystemLoader Init(int appId, string path, RepositoryTypes repoType, bool ignoreMissing, IEntitiesSource entitiesSource, LogSettings logSettings = default)
     {
         var l = Log.Fn<FileSystemLoader>($"init with appId:{appId}, path:{path}, ignore:{ignoreMissing}");
         AppId = appId;
@@ -26,6 +26,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
         RepoType = repoType;
         IgnoreMissingStuff = ignoreMissing;
         EntitiesSource = entitiesSource;
+        LogSettings = logSettings ?? new LogSettings();
         return l.ReturnAsOk(this);
     }
 
@@ -37,13 +38,27 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
 
     protected IEntitiesSource EntitiesSource { get; set; }
 
+    private LogSettings LogSettings { get; set; }
+
     #region json serializer
-    public JsonSerializer Serializer => _ser ??= GenerateSerializer();
-    private JsonSerializer _ser;
+
+    public JsonSerializer Serializer
+    {
+        get => field ??= GenerateSerializer();
+        private set;
+    }
+
+    private JsonSerializer NewSerializer()
+    {
+        var ser = serializerGenerator
+            .New();
+        ser.ConfigureLogging(LogSettings);
+        return ser;
+    }
 
     private JsonSerializer GenerateSerializer()
     {
-        var ser = jsonSerializerGenerator.New();
+        var ser = NewSerializer();
 
         var entitySource = EntitiesSource;
         var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
@@ -64,15 +79,13 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
     }
 
     internal void ResetSerializer(IAppReader appReader)
-    {
-        var serializer = jsonSerializerGenerator.New().SetApp(appReader);
-        _ser = serializer;
-    }
+        => Serializer = NewSerializer().SetApp(appReader);
+
     internal void ResetSerializer(List<IContentType> types)
     {
-        var serializer = jsonSerializerGenerator.New();
+        var serializer = NewSerializer();
         serializer.Initialize(AppId, types, null);
-        _ser = serializer;
+        Serializer = serializer;
     }
 
     #endregion
@@ -100,7 +113,8 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
         if (folder == FsDataConstants.BundlesFolder)
         {
             // #3A.1 load entities from files in bundles folder
-            var entitiesInBundle = EntitiesInBundles(relationshipsSource).ToList();
+            var entitiesInBundle = EntitiesInBundles(relationshipsSource)
+                .ToList();
             l.A($"Found {entitiesInBundle.Count} Entities in Bundles");
 
             // #3A.2 put all found entities into the source
@@ -116,6 +130,9 @@ public partial class FileSystemLoader(Generator<JsonSerializer> jsonSerializerGe
             .GetFiles(subPath, $"*{Extension(Files.json)}")
             .OrderBy(f => f)
             .ToArray();
+
+        // TEMP: DEBUG SERIALIZER SETTINGS
+        l.A($"Serializer: '{Serializer.LogDsDetails}'");
 
         // #3.2 load entity-items from folder
         var jsonSerializer = Serializer;

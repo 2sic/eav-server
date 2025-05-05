@@ -1,6 +1,8 @@
 ﻿using ToSic.Eav.Caching;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.StartUp;
+using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Internal.Loaders;
@@ -30,15 +32,12 @@ public class EavSystemLoader(LazySvc<IAppLoader> appLoader, AppsCacheSwitch apps
         var l = Log.Fn(timer: true);
         AssemblyHandling.GetTypes(assemblyLoadLog);
 
-        // Do initial features loading, so that logging rules etc. are known
-        // TODO: continue here
-        // WIP - no licenses are loaded at this moment
-        featuresLoader.ReloadFeatures();
+        var logSettings = GetLogSettings();
 
         // Build the cache of all system-types. Must happen before everything else
         // This should use the lazy AppLoader, because the features should be loaded before it's created
         l.A("Try to load global app-state");
-        var presetApp = appLoader.Value.LoadFullAppState();
+        var presetApp = appLoader.Value.LoadFullAppState(logSettings);
         appsCache.Value.Add(presetApp.AppState);
 
         featuresLoader.LoadLicenseAndFeatures();
@@ -46,4 +45,20 @@ public class EavSystemLoader(LazySvc<IAppLoader> appLoader, AppsCacheSwitch apps
         l.Done("ok");
     }
 
+    private LogSettings GetLogSettings()
+    {
+        var settings = new LogSettings(Details: false);
+
+        var features = featuresLoader.LoadFeaturesStored();
+        var featLogging = features?.Features?
+            .FirstOrDefault(f => f.Id == BuiltInFeatures.InsightsLoggingCustomized.Guid);
+
+        if (featLogging?.Configuration == null)
+            return settings;
+
+        if (featLogging.Configuration.ConfigBool(nameof(BuiltInFeatures.InsightsLoggingCustomizedConfiguration.LoadSystemDataDetailed)))
+            settings = settings with { Details = true };
+
+        return settings;
+    }
 }
