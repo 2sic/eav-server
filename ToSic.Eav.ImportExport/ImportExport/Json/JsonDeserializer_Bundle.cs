@@ -9,14 +9,19 @@ namespace ToSic.Eav.ImportExport.Json;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public partial class JsonSerializer
 {
-    public string SerializeJsonBundle(JsonBundle bundleList, int indentation) =>
-        System.Text.Json.JsonSerializer.Serialize(new JsonFormat
-        {
-            Bundles = [bundleList]
-        }, new JsonSerializerOptions(JsonOptions.UnsafeJsonWithoutEncodingHtml)
-        {
-            WriteIndented = indentation != 0
-        });
+    public string SerializeJsonBundle(JsonBundle bundleList, int indentation)
+    {
+        return System.Text.Json.JsonSerializer.Serialize(
+            new JsonFormat
+            {
+                Bundles = [bundleList]
+            },
+            new JsonSerializerOptions(JsonOptions.UnsafeJsonWithoutEncodingHtml)
+            {
+                WriteIndented = indentation != 0
+            }
+        );
+    }
 
     public List<ContentTypeWithEntities> GetContentTypesFromBundles(JsonFormat package)
     {
@@ -42,18 +47,19 @@ public partial class JsonSerializer
     public List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null)
     {
         var l = Log.Fn<List<IEntity>>();
-        if (package.Bundles.SafeNone()) return l.Return([], "none found");
+        if (package.Bundles.SafeNone())
+            return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
         var bundlesWithEntities = package.Bundles
             .Where(b => b.Entities.SafeAny())
             .ToList();
-        var entities = bundlesWithEntities
+        var jsonEntities = bundlesWithEntities
             .SelectMany(b => b.Entities)
             .ToList();
-        l.A($"Bundles: {package.Bundles.Count}; with Entities {bundlesWithEntities.Count}; Entities: {entities.Count}");
+        l.A($"Bundles: {package.Bundles.Count}; with Entities {bundlesWithEntities.Count}; Entities: {jsonEntities.Count}");
 
-        var result = entities
+        var result = jsonEntities
             .Select(e => Deserialize(e, true, false, relationshipSource))
             .ToList();
 

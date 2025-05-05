@@ -1,6 +1,4 @@
 ﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
@@ -16,8 +14,8 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 {
     #region MyServices
 
-    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates)
-        : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates])
+    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates, object[] connect)
+        : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates, ..connect ?? []])
     {
         public DataBuilder DataBuilder { get; } = dataBuilder;
 
@@ -29,7 +27,6 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     #region Constructor / DI
 
-    //private readonly IAppReadContentTypes _globalAppOrNull = services.AppStates.GetPresetReaderIfAlreadyLoaded();
     private readonly IAppReadContentTypes _globalAppOrNull = services.AppStates.GetSystemPreset(nullIfNotLoaded: true);
 
     public ITargetTypes MetadataTargets { get; } = services.MetadataTargets;

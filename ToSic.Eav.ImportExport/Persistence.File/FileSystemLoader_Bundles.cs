@@ -139,7 +139,6 @@ partial class FileSystemLoader
                     return dataBuilder.Entity.CreateFrom(e, id: newId, repositoryId: newId);
                 })
                 .ToList();
-            //entities.ForEach(e => e.ResetEntityIdAll(++EntityIdSeed));
             return l.Return(entities, $"{entities.Count}");
         }
         catch (Exception e)

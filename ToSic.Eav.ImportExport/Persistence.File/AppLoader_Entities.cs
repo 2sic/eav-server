@@ -26,37 +26,45 @@ partial class AppLoader
 
             l.A($"Found {entitySets.Count} sets");
 
-            // Deduplicate entities 
-            var entities = entitySets
-                .SelectMany(es => es.Entities)
-                .ToList();
-            var entitiesGroupedByGuid = entities
-                .GroupBy(x => x.EntityGuid)
-                .ToList();
-            var entitiesDeduplicated = entitiesGroupedByGuid
-                .Select(g => g.Last())
-                // After Deduplicating we want to order them, in case we need to debug something
-                .OrderBy(e => e.EntityId)
-                .ToList();
-
-            // Log duplicates
-            var duplicates = entities.Count - entitiesDeduplicated.Count;
-            l.A(
-                $"Found {duplicates} duplicate entities from {entities.Count} resulting with {entitiesDeduplicated.Count}");
-            foreach (var dupl in entitiesGroupedByGuid.Where(g => g.Count() > 1))
-                l.A($"Removed a duplicate of: {dupl.Key}");
+            var entitiesUnique = DeduplicateAndLogStats(entitySets);
 
             // Detailed debug - log all IDs because we seem to have duplicate IDs (bug)
-            foreach (var e in entitiesDeduplicated)
+            foreach (var e in entitiesUnique)
                 l.A($"Id: {e.EntityId} ({e.EntityGuid})");
 
             // Reset list of entities which will be used to find related entities
             relationships.List.Clear();
-            relationships.List.AddRange(entitiesDeduplicated);
-            return entitiesDeduplicated;
+            relationships.List.AddRange(entitiesUnique);
+            return entitiesUnique;
         });
 
         return l.ReturnAsOk(final);
+    }
+
+    private List<IEntity> DeduplicateAndLogStats(List<EntitySetsToLoad> entitySets)
+    {
+        var l = Log.Fn<List<IEntity>>();
+        // Deduplicate entities 
+        var entities = entitySets
+            .SelectMany(es => es.Entities)
+            .ToList();
+        var entitiesGroupedByGuid = entities
+            .GroupBy(x => x.EntityGuid)
+            .ToList();
+        var entitiesUnique = entitiesGroupedByGuid
+            .Select(g => g.Last())
+            // After Deduplicating we want to order them, in case we need to debug something
+            .OrderBy(e => e.EntityId)
+            .ToList();
+
+        // Log duplicates
+        var duplicates = entities.Count - entitiesUnique.Count;
+        l.A(
+            $"Found {duplicates} duplicate entities from {entities.Count} resulting with {entitiesUnique.Count}");
+        foreach (var dupl in entitiesGroupedByGuid.Where(g => g.Count() > 1))
+            l.A($"Removed a duplicate of: {dupl.Key}");
+
+        return l.Return(entitiesUnique, $"final: {entitiesUnique.Count}");
     }
 
     private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
@@ -71,7 +79,8 @@ partial class AppLoader
         foreach (var loader in Loaders)
         {
             loader.ResetSerializer(appReader);
-            entities.AddRange(loader.Entities(groupIdentifier, /*loader.EntityIdSeed,*/ relationshipSource));
+            var newEntities = loader.Entities(groupIdentifier, relationshipSource);
+            entities.AddRange(newEntities);
         }
 
         return l.Return(entities, $"{entities.Count} items of type {groupIdentifier}");

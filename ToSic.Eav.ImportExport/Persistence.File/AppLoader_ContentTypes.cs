@@ -30,7 +30,8 @@ partial class AppLoader
         };
 
         // 4. Load all content types from all loaders, incl. any additional entities they may have
-        var newSets = Loaders.Select(ldr =>
+        var newSets = Loaders
+            .Select(ldr =>
             {
                 ldr.Serializer.DeserializationSettings = deSerializeSettings;
                 var ctWithEntities = ldr.ContentTypesWithEntities();
@@ -40,8 +41,12 @@ partial class AppLoader
             .ToList();
 
         // 5. Finalize all created entities to ensure they reference the newly created content-types
-        var newTypes = newSets.SelectMany(set => set.ContentTypes).ToList();
-        var newEntities = newSets.SelectMany(set => set.Entities).ToList();
+        var newTypes = newSets
+            .SelectMany(set => set.ContentTypes)
+            .ToList();
+        var newEntities = newSets
+            .SelectMany(set => set.Entities)
+            .ToList();
         delayedContentTypeProvider.AddTypes(newTypes);
         var types = delayedContentTypeProvider.SetTypesOfContentTypeParts();
         delayedContentTypeProvider.SetTypesOfOtherEntities(newEntities);

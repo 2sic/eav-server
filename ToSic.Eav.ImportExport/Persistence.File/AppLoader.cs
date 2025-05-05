@@ -36,12 +36,15 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     {
         get
         {
-            if (_paths != null) return _paths;
+            if (_paths != null)
+                return _paths;
             var l = Log.Fn<List<string>>(message: "start building path-list");
 
             _paths = [];
             // find all RepositoryInfoOfFolder and let them tell us what paths to use
-            var types = AssemblyHandling.FindInherited(typeof(FolderBasedRepository), Log).ToList();
+            var types = AssemblyHandling
+                .FindInherited(typeof(FolderBasedRepository), Log)
+                .ToList();
             l.A($"found {types.Count} Path providers");
 
             foreach (var typ in types)
@@ -50,7 +53,8 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                     l.A($"adding {typ.FullName}");
                     var instance = (FolderBasedRepository) ActivatorUtilities.CreateInstance(_serviceProvider, typ, []);
                     var paths = instance.RootPaths;
-                    if (paths != null) _paths.AddRange(paths);
+                    if (paths != null)
+                        _paths.AddRange(paths);
                 }
                 catch(Exception e)
                 {
@@ -67,9 +71,10 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     internal List<FileSystemLoader> Loaders => _loader ??= BuildLoaders(null);
     private List<FileSystemLoader> _loader;
 
-    private List<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource) => Paths
-        .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, entitiesSource))
-        .ToList();
+    private List<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource)
+        => Paths
+            .Select(path => _fslGenerator.New().Init(Constants.PresetAppId, path, Source, true, entitiesSource))
+            .ToList();
 
 
     public IAppStateBuilder LoadFullAppState()
