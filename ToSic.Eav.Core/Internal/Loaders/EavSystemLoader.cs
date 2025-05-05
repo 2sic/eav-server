@@ -1,8 +1,6 @@
 ﻿using ToSic.Eav.Caching;
-using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.StartUp;
-using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Internal.Loaders;
@@ -20,7 +18,7 @@ public class EavSystemLoader(LazySvc<IAppLoader> appLoader, AppsCacheSwitch apps
     public void StartUp()
     {
         var bl = BootLog.Log.Fn("Eav: StartUp", timer: true);
-        // Prevent multiple Inits
+        // Prevent multiple Initializations
         if (_startupAlreadyRan)
             throw new("Startup should never be called twice.");
         _startupAlreadyRan = true;
@@ -32,7 +30,7 @@ public class EavSystemLoader(LazySvc<IAppLoader> appLoader, AppsCacheSwitch apps
         var l = Log.Fn(timer: true);
         AssemblyHandling.GetTypes(assemblyLoadLog);
 
-        var logSettings = GetLogSettings();
+        var logSettings = new AppLoaderLoggingHelper(featuresLoader).GetLogSettings();
 
         // Build the cache of all system-types. Must happen before everything else
         // This should use the lazy AppLoader, because the features should be loaded before it's created
@@ -45,20 +43,4 @@ public class EavSystemLoader(LazySvc<IAppLoader> appLoader, AppsCacheSwitch apps
         l.Done("ok");
     }
 
-    private LogSettings GetLogSettings()
-    {
-        var settings = new LogSettings(Details: false);
-
-        var features = featuresLoader.LoadFeaturesStored();
-        var featLogging = features?.Features?
-            .FirstOrDefault(f => f.Id == BuiltInFeatures.InsightsLoggingCustomized.Guid);
-
-        if (featLogging?.Configuration == null)
-            return settings;
-
-        if (featLogging.Configuration.ConfigBool(nameof(BuiltInFeatures.InsightsLoggingCustomizedConfiguration.LoadSystemDataDetailed)))
-            settings = settings with { Details = true };
-
-        return settings;
-    }
 }

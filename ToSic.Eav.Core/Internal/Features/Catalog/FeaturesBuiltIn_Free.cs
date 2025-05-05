@@ -69,10 +69,18 @@ public partial class BuiltInFeatures
         ConfigurationContentType = "aed871cf-220b-4330-b368-f1259981c9c8",
     };
 
-    public class InsightsLoggingCustomizedConfiguration
+    /// <summary>
+    /// Dummy class to manage the keys we want to read of the configuration
+    /// </summary>
+    public class InsightsLoggingCustomConfig
     {
         public bool LoadSystemData;
         public bool LoadSystemDataDetailed;
         public bool LoadSystemDataSummary;
+
+        public bool LoadApp;
+        public bool LoadAppDetailed;
+        public bool LoadAppSummary;
+        public string LoadAppIdCsv;
     }
 }
