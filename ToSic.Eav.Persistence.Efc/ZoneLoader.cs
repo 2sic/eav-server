@@ -11,7 +11,7 @@ internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Ef
 
         // Build the tree of zones incl. their default(Content) and Primary apps
         var lSql = log.Fn("Zone SQL", timer: true);
-        var zonesSql = appLoader.Context.ToSicEavZones
+        var zonesSql = appLoader.Context.TsDynDataZone
             .Include(z => z.ToSicEavApps)
             .Include(z => z.ToSicEavDimensions)
             .ThenInclude(d => d.ParentNavigation)

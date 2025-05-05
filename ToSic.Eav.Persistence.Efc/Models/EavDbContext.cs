@@ -28,7 +28,7 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
     public virtual DbSet<ToSicEavValues> ToSicEavValues { get; set; }
     public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
-    public virtual DbSet<ToSicEavZones> ToSicEavZones { get; set; }
+    public virtual DbSet<TsDynDataZone> TsDynDataZone { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -500,18 +500,33 @@ public partial class EavDbContext : DbContext
                 .HasConstraintName("FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values");
         });
 
-        modelBuilder.Entity<ToSicEavZones>(entity =>
+        modelBuilder.Entity<TsDynDataZone>(entity =>
         {
             entity.HasKey(e => e.ZoneId)
-                .HasName("PK_ToSIC_EAV_Zones");
+                .HasName("PK_TsDynDataZone");
 
-            entity.ToTable("ToSIC_EAV_Zones");
+            entity.ToTable("TsDynDataZone");
 
-            entity.Property(e => e.ZoneId).HasColumnName("ZoneID");
+            entity.Property(e => e.ZoneId);
 
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(255);
+
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.TsDynDataZonesTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
+                .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionCreated");
+
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.TsDynDataZonesTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
+                .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionModified");
+
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.TsDynDataZonesTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionDeleted");
         });
 
         OnModelCreatingPartial(modelBuilder);

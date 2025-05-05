@@ -27,5 +27,5 @@ public partial class ToSicEavDimensions : Data.DimensionDefinition
     public virtual ToSicEavDimensions ParentNavigation { get; set; }
 
     public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; } = new HashSet<ToSicEavValuesDimensions>();
-    public virtual ToSicEavZones Zone { get; set; }
+    public virtual TsDynDataZone Zone { get; set; }
 }
