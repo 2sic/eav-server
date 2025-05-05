@@ -119,19 +119,22 @@ public class EfcAppLoader(
         if (builder.Reader.Specs.IsContentApp())
             return l.Return(builder.AppState, "default app, don't auto-init");
 
-        var result = initializedChecker.EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log)
-            ? loader.AppStateBuilderRaw(appId, codeRefTrail.WithHere()).AppState
-            : builder.AppState;
+        var needsReload = initializedChecker
+            .EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log);
 
-        return l.Return(result, "with init check");
+        if (!needsReload)
+            return l.Return(builder.AppState, "with init check, no reload needed");
+
+        var reloaded = loader.AppStateBuilderRaw(appId, codeRefTrail.WithHere()).AppState;
+        return l.Return(reloaded, "with init check; reloaded");
     }
 
 
     /// <summary>
     /// Load the full AppState from the backend - in an un-initialized state (without folder / name etc.).
-    /// This is mostly for internal operations where initialization would cause trouble or unexpected side-effects.
+    /// This is mostly for internal operations where initialization would cause trouble or unexpected side effects.
     /// </summary>
-    /// <param name="appId">AppId (can be different than the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
+    /// <param name="appId">AppId (can be different from the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
     /// <param name="codeRefTrail"></param>
     /// <returns>An object with everything which an app has, usually for caching</returns>
     private IAppStateBuilder LoadAppStateFromDb(int appId, CodeRefTrail codeRefTrail)

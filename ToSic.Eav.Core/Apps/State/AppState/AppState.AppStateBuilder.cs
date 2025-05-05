@@ -8,6 +8,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.StartUp;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Constants;
+// ReSharper disable RedundantAccessorBody
 
 namespace ToSic.Eav.Apps.State;
 
@@ -22,26 +23,29 @@ partial class AppState
 
         public IAppStateBuilder Init(IAppStateCache appState)
         {
-            _appState = appState;
+            AppState = appState;
             return this;
         }
 
         public IAppStateBuilder InitForPreset()
         {
-            _appState = new AppState(new(null, false, false), PresetIdentity, PresetName, Log);
-            MemoryCacheService.Notify(_appState);
+            AppState = new AppState(new(null, false, false), PresetIdentity, PresetName, Log);
+            MemoryCacheService.Notify(AppState);
             return this;
         }
 
         public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog)
         {
-            _appState = new AppState(parentApp, identity, nameId, parentLog);
-            MemoryCacheService.Notify(_appState);
+            AppState = new AppState(parentApp, identity, nameId, parentLog);
+            MemoryCacheService.Notify(AppState);
             return this;
         }
 
-        public IAppStateCache AppState => _appState ?? throw new("Can't use before calling some init");
-        private IAppStateCache _appState;
+        public IAppStateCache AppState
+        {
+            get => field ?? throw new("Can't use before calling some init");
+            private set => field = value;
+        }
 
         public IAppReader Reader => field ??= appReaderFactory.ToReader(AppState);
 
@@ -90,7 +94,8 @@ partial class AppState
 
             bl.Done();
             // only keep logging for the preset and first app, then stop.
-            if (st.AppId != PresetAppId) _loggedLoadToBootLog = true;
+            if (st.AppId != PresetAppId)
+                _loggedLoadToBootLog = true;
             l.Done();
         }
 
