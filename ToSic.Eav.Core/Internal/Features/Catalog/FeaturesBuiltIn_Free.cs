@@ -55,9 +55,9 @@ public partial class BuiltInFeatures
         LicenseRules = ForAllEnabled
     };
 
-    public static readonly Feature InsightsLoggingCustomConfiguration = new()
+    public static readonly Feature InsightsLoggingCustomized = new()
     {
-        NameId = nameof(InsightsLoggingCustomConfiguration),
+        NameId = nameof(InsightsLoggingCustomized),
         Guid = new("2a74b68e-0fd7-404a-9bcb-8fdab272fd48"),
         Name = "Logging - Custom Configuration",
         IsPublic = NotForPublic,
@@ -69,4 +69,9 @@ public partial class BuiltInFeatures
         ConfigurationContentType = "aed871cf-220b-4330-b368-f1259981c9c8",
     };
 
+    public class InsightsLoggingCustomizedConfiguration
+    {
+        public bool LogLoadingSystemData;
+        public bool LogLoadingSystemDataDetailed;
+    }
 }
