@@ -50,7 +50,7 @@ internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
     /// Add a new Dimension at the top of the dimension tree.
     /// This is used by the "create new zone" code
     /// </summary>
-    internal void AddRootCultureNode(string systemKey, string name, ToSicEavZones zone)
+    internal void AddRootCultureNode(string systemKey, string name, TsDynDataZone zone)
     {
         var newDimension = new ToSicEavDimensions
         {

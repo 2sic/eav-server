@@ -7,7 +7,7 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
     /// </summary>
     public int AddZone(string name)
     {
-        var newZone = new ToSicEavZones { Name = name };
+        var newZone = new TsDynDataZone { Name = name };
         DbContext.SqlDb.Add(newZone);
 
         DbContext.Dimensions.AddRootCultureNode(Constants.CultureSystemKey, "Culture Root", newZone);
@@ -26,7 +26,7 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
     {
         var l = Log.Fn<bool>();
 
-        var zonesWithoutPrimary = DbContext.SqlDb.ToSicEavZones
+        var zonesWithoutPrimary = DbContext.SqlDb.TsDynDataZone
             .Include(z => z.ToSicEavApps)
             .Include(z => z.ToSicEavDimensions)
             // Skip "default" zone as that is a single purpose technical zone

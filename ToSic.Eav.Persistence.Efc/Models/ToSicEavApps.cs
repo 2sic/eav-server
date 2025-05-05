@@ -15,5 +15,5 @@ public partial class ToSicEavApps
 
     public virtual ICollection<ToSicEavEntities> ToSicEavEntities { get; set; } = new HashSet<ToSicEavEntities>();
 
-    public virtual ToSicEavZones Zone { get; set; }
+    public virtual TsDynDataZone Zone { get; set; }
 }
