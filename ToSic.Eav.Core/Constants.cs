@@ -45,9 +45,9 @@ public partial class Constants
     public const string CultureSystemKey = "Culture";
 
     /// <summary>
-    /// DataTimeline Operation-Key for Entity-States (Entity-Versioning)
+    /// History Operation-Key for Entity-States (Entity-Versioning)
     /// </summary>
-    public const string DataTimelineEntityJson = "e";
+    public const string HistoryEntityJson = "e";
 
 
     [PrivateApi] public static readonly int PresetZoneId = -42;

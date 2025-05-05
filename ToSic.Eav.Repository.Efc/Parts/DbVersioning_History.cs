@@ -39,24 +39,24 @@ partial class DbVersioning
     /// </remarks>
     private List<ItemHistory> GetItemHistory(int entityId, int historyId, bool includeData)
     {
-        // get Versions from DataTimeline
-        var rootQuery = DbContext.SqlDb.ToSicEavDataTimeline
+        // get Versions from History
+        var rootQuery = DbContext.SqlDb.TsDynDataHistory
             .Where(t =>
                 t.SourceTable == EntitiesTableName
-                && t.Operation == Constants.DataTimelineEntityJson
+                && t.Operation == Constants.HistoryEntityJson
                 && t.SourceId == entityId
             );
         if (historyId > 0)
-            rootQuery = rootQuery.Where(t => t.SysLogId == historyId);
+            rootQuery = rootQuery.Where(t => t.TransactionId == historyId);
 
         var entityVersions = rootQuery
-            .OrderByDescending(t => t.SysCreatedDate)
-            .Join(DbContext.SqlDb.TsDynDataTransaction, t => t.SysLogId, c => c.TransactionId, (history, log) => new { History = history, Log = log })
+            .OrderByDescending(t => t.Timestamp)
+            .Join(DbContext.SqlDb.TsDynDataTransaction, t => t.TransactionId, c => c.TransactionId, (history, log) => new { History = history, Log = log })
             .Select(d =>  new ItemHistory
             {
-                TimeStamp = d.History.SysCreatedDate,
-                ChangeSetId = d.History.SysLogId.Value,
-                HistoryId = d.History.Id,
+                TimeStamp = d.History.Timestamp,
+                ChangeSetId = d.History.TransactionId.Value,
+                HistoryId = d.History.HistoryId,
                 User = d.Log.User,
                 Json = includeData ? (string.IsNullOrEmpty(d.History.Json) ? _compressor.Value.Decompress(d.History.CJson) : d.History.Json) : null
             })

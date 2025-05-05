@@ -55,24 +55,24 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     {
         //var deserializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log);
 
-        var str = GetFromTimelime(entityId, transactionId);
+        var str = GetFromHistory(entityId, transactionId);
         return _jsonSerializer.Value.Deserialize(str);
 
     }
 
-    private string GetFromTimelime(int entityId, int transactionId)
+    private string GetFromHistory(int entityId, int transactionId)
     {
         try
         {
             var timelineItem = AppWorkCtx.DataController.Versioning.GetItem(entityId, transactionId).Json;
             if (timelineItem != null) return timelineItem;
             throw new InvalidOperationException(
-                $"EntityId {entityId} with TransactionId {transactionId} not found in DataTimeline.");
+                $"EntityId {entityId} with TransactionId {transactionId} not found in History.");
         }
         catch (InvalidOperationException ex)
         {
             throw new InvalidOperationException(
-                $"Error getting EntityId {entityId} with TransactionId {transactionId} from DataTimeline. {ex.Message}");
+                $"Error getting EntityId {entityId} with TransactionId {transactionId} from History. {ex.Message}");
         }
     }
 

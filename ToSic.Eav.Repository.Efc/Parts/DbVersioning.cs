@@ -67,13 +67,13 @@ internal  partial class DbVersioning: DbPartBase
         => _queue.Add(new()
         {
             SourceTable = EntitiesTableName,
-            Operation = Constants.DataTimelineEntityJson,
+            Operation = Constants.HistoryEntityJson,
             Json = _compressor.Value.IsEnabled ? null : serialized,
             CJson = _compressor.Value.Compress(serialized),
             SourceGuid = entityGuid,
             SourceId = entityId,
-            SysLogId = GetTransactionId(),
-            SysCreatedDate = DateTime.Now
+            TransactionId = GetTransactionId(),
+            Timestamp = DateTime.Now
         });
 
     /// <summary>
@@ -82,10 +82,10 @@ internal  partial class DbVersioning: DbPartBase
     private void Save()
     {
         var l = Log.Fn(timer: true);
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue));
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.TsDynDataHistory.AddRange(_queue));
         _queue.Clear();
         l.Done();
     }
 
-    private readonly List<ToSicEavDataTimeline> _queue = [];
+    private readonly List<TsDynDataHistory> _queue = [];
 }

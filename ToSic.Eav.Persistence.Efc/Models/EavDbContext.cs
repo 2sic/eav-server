@@ -22,7 +22,7 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
     public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
     public virtual DbSet<TsDynDataTransaction> TsDynDataTransaction { get; set; }
-    public virtual DbSet<ToSicEavDataTimeline> ToSicEavDataTimeline { get; set; }
+    public virtual DbSet<TsDynDataHistory> TsDynDataHistory { get; set; }
     public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
     public virtual DbSet<ToSicEavEntities> ToSicEavEntities { get; set; }
     public virtual DbSet<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
@@ -238,11 +238,14 @@ public partial class EavDbContext : DbContext
             entity.Property(e => e.User).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<ToSicEavDataTimeline>(entity =>
+        modelBuilder.Entity<TsDynDataHistory>(entity =>
         {
-            entity.ToTable("ToSIC_EAV_DataTimeline");
+            entity.HasKey(e => e.HistoryId)
+                .HasName("PK_TsDynDataHistory");
 
-            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.ToTable("TsDynDataHistory");
+
+            entity.Property(e => e.HistoryId);
 
             entity.Property(e => e.Operation)
                 .IsRequired()
@@ -250,17 +253,28 @@ public partial class EavDbContext : DbContext
                 .IsFixedLength()
                 .HasDefaultValueSql("N'I'");
 
-            entity.Property(e => e.SourceId).HasColumnName("SourceID");
+            entity.Property(e => e.SourceId);
 
             entity.Property(e => e.SourceTable)
                 .IsRequired()
                 .HasMaxLength(250);
 
-            entity.Property(e => e.SourceTextKey).HasMaxLength(250);
+            entity.Property(e => e.Timestamp).HasColumnType("datetime");
 
-            entity.Property(e => e.SysCreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.TransactionId);
 
-            entity.Property(e => e.SysLogId).HasColumnName("SysLogID");
+#pragma warning disable CS0618 // Type or member is obsolete
+            entity.HasIndex(e => e.SourceId)
+                .HasName("IX_TsDynDataHistory_SourceId");
+
+            entity.HasIndex(e => e.SourceGuid)
+                .HasName("IX_TsDynDataHistory_SourceGuid");
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            entity.HasOne(d => d.Transaction)
+                .WithMany(p => p.TsDynDataHistories)
+                .HasForeignKey(d => d.TransactionId)
+                .HasConstraintName("FK_TsDynDataHistory_TsDynDataTransaction");
         });
 
         modelBuilder.Entity<ToSicEavDimensions>(entity =>
