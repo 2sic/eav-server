@@ -5,7 +5,7 @@ internal partial class DbContentType(DbDataController db) : DbPartBase(db, "Db.T
     private ToSicEavAttributeSets GetTypeByStaticName(string staticName)
     {
         return DbContext.SqlDb.ToSicEavAttributeSets.FirstOrDefault(a =>
-            a.AppId == DbContext.AppId && a.StaticName == staticName && a.ChangeLogDeleted == null
+            a.AppId == DbContext.AppId && a.StaticName == staticName && a.TransactionIdDeleted == null
         );
     }
         

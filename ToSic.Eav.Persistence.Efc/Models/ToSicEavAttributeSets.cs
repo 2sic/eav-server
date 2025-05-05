@@ -11,9 +11,9 @@ public partial class ToSicEavAttributeSets
 
     public string Scope { get; set; }
 
-    public int ChangeLogCreated { get; set; }
+    public int TransactionIdCreated { get; set; }
 
-    public int? ChangeLogDeleted { get; set; }
+    public int? TransactionIdDeleted { get; set; }
 
     public int AppId { get; set; }
 
@@ -27,9 +27,9 @@ public partial class ToSicEavAttributeSets
 
     public virtual ToSicEavApps App { get; set; }
 
-    public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 
-    public virtual ToSicEavChangeLog ChangeLogDeletedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 
     public virtual ICollection<ToSicEavAttributeSets> InverseUsesConfigurationOfAttributeSetNavigation { get; set; } = new HashSet<ToSicEavAttributeSets>();
 

@@ -29,7 +29,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //                            .Any(lng => string.Equals(lng.Dimension.EnvironmentKey, primaryLanguage,
     //                                StringComparison.InvariantCultureIgnoreCase))
     //                        )
-    //                        .ThenBy(v2 => v2.ChangeLogCreated)
+    //                        .ThenBy(v2 => v2.TransactionIdCreated)
     //                        .Select(v2 => new TempValueWithLanguage
     //                        {
     //                            Value = v2.Value,
@@ -66,14 +66,14 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
                             {
                                 v.Value,
                                 v.Languages,
-                                v.ChangeLogCreated
+                                v.TransactionIdCreated
                             })
                             // The order of values is significant because the 2sxc system uses the first value as fallback
                             // Because we can't ensure order of values when saving, order values: prioritize values without
                             // any dimensions, then values with primary language
                             .OrderByDescending(v2 => !v2.Languages.Any())
                             .ThenByDescending(v2 => v2.Languages.Any(lng => lng.Key == primaryLower))
-                            .ThenBy(v2 => v2.ChangeLogCreated)
+                            .ThenBy(v2 => v2.TransactionIdCreated)
                             .Select(v => new TempValueWithLanguage { Value = v.Value, Languages = v.Languages })
                             .ToList();
 
@@ -115,7 +115,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //                        .OrderByDescending(v2 => !v2.Dimensions.Any())
     //                        .ThenByDescending(v2 => v2.Dimensions.Any(lng => lng.Key == primaryLower)
     //                        )
-    //                        .ThenBy(v2 => v2.ChangeLogCreated)
+    //                        .ThenBy(v2 => v2.TransactionIdCreated)
     //                        .Select(v2 => new TempValueWithLanguage
     //                        {
     //                            Value = v2.Value,

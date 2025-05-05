@@ -12,7 +12,7 @@ internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(paren
 
         var query = db.ToSicEavEntities
             .Where(e => e.AppId == appId)
-            .Where(e => e.ChangeLogDeleted == null && e.AttributeSet.ChangeLogDeleted == null);
+            .Where(e => e.TransactionIdDeleted == null && e.AttributeSet.TransactionIdDeleted == null);
 
         l.A("initial query created");
 
@@ -38,7 +38,7 @@ internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(paren
                 && !e.IsPublished
                 && publishIds.Contains(e.EntityId)
                 && !publishIds.Contains(e.PublishedEntityId.Value)
-                && e.ChangeLogDeleted == null
+                && e.TransactionIdDeleted == null
             );
 
         return l.ReturnAsOk(relatedIds);

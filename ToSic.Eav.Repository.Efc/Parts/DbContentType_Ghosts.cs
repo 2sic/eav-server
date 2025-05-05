@@ -22,7 +22,7 @@ partial class DbContentType
     {
         var ghostAttributeSets = DbContext.SqlDb.ToSicEavAttributeSets.Where(
                 a => a.StaticName == contentTypeParentName
-                     && a.ChangeLogDeleted == null
+                     && a.TransactionIdDeleted == null
                      && a.UsesConfigurationOfAttributeSet == null).
             OrderBy(a => a.AttributeSetId)
             .ToList();
@@ -40,7 +40,7 @@ partial class DbContentType
         var attSets = DbContext.SqlDb.ToSicEavAttributeSets
             .Where(ats => ats.StaticName == staticName
                           && !ats.UsesConfigurationOfAttributeSet.HasValue    // never duplicate a clone/ghost
-                          && ats.ChangeLogDeleted == null                     // never duplicate a deleted
+                          && ats.TransactionIdDeleted == null                 // never duplicate a deleted
                           && ats.AlwaysShareConfiguration == false)           // never duplicate an always-share
             .OrderBy(ats => ats.AttributeSetId)
             .ToList();
@@ -60,7 +60,7 @@ partial class DbContentType
             Scope = attSet.Scope,
             UsesConfigurationOfAttributeSet = attSet.AttributeSetId,
             AlwaysShareConfiguration = false, // this is copy, never re-share
-            ChangeLogCreated = DbContext.Versioning.GetChangeLogId()
+            TransactionIdCreated = DbContext.Versioning.GetTransactionId()
         };
         DbContext.SqlDb.Add(newSet);
 

@@ -28,10 +28,10 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     /// <summary>
     /// Restore an Entity to the specified Version by creating a new Version using the Import
     /// </summary>
-    public void VersionRestore(int entityId, int changeId)
+    public void VersionRestore(int entityId, int transactionId)
     {
-        // Get Entity in specified Version/ChangeId
-        var newVersion = PrepareRestoreEntity(entityId, changeId);
+        // Get Entity in specified Version/TransactionId
+        var newVersion = PrepareRestoreEntity(entityId, transactionId);
 
         // Restore Entity
         _import.Value.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
@@ -49,30 +49,30 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     /// Get an Entity in the specified Version from DataTimeline using XmlImport
     /// </summary>
     /// <param name="entityId">EntityId</param>
-    /// <param name="changeId">ChangeId to retrieve</param>
+    /// <param name="transactionId">TransactionId to retrieve</param>
     ///// <param name="defaultCultureDimension">Default Language</param>
-    private IEntity PrepareRestoreEntity(int entityId, int changeId)
+    private IEntity PrepareRestoreEntity(int entityId, int transactionId)
     {
         //var deserializer = Parent.ServiceProvider.Build<JsonSerializer>().Init(Parent.AppState, Log);
 
-        var str = GetFromTimelime(entityId, changeId);
+        var str = GetFromHistory(entityId, transactionId);
         return _jsonSerializer.Value.Deserialize(str);
 
     }
 
-    private string GetFromTimelime(int entityId, int changeId)
+    private string GetFromHistory(int entityId, int transactionId)
     {
         try
         {
-            var timelineItem = AppWorkCtx.DataController.Versioning.GetItem(entityId, changeId).Json;
+            var timelineItem = AppWorkCtx.DataController.Versioning.GetItem(entityId, transactionId).Json;
             if (timelineItem != null) return timelineItem;
             throw new InvalidOperationException(
-                $"EntityId {entityId} with ChangeId {changeId} not found in DataTimeline.");
+                $"EntityId {entityId} with TransactionId {transactionId} not found in History.");
         }
         catch (InvalidOperationException ex)
         {
             throw new InvalidOperationException(
-                $"Error getting EntityId {entityId} with ChangeId {changeId} from DataTimeline. {ex.Message}");
+                $"Error getting EntityId {entityId} with TransactionId {transactionId} from History. {ex.Message}");
         }
     }
 

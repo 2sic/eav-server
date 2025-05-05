@@ -9,9 +9,9 @@ public partial class ToSicEavAttributes
 
     public string Type { get; set; }
 
-    public int ChangeLogCreated { get; set; }
+    public int TransactionIdCreated { get; set; }
 
-    public int? ChangeLogDeleted { get; set; }
+    public int? TransactionIdDeleted { get; set; }
 
     public Guid? Guid { get; set; }
 
@@ -23,9 +23,9 @@ public partial class ToSicEavAttributes
 
     public bool IsTitle { get; set; } = false;
 
-    public virtual ToSicEavChangeLog ChangeLogCreatedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 
-    public virtual ToSicEavChangeLog ChangeLogDeletedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 
     public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; } = new HashSet<ToSicEavEntityRelationships>();
 

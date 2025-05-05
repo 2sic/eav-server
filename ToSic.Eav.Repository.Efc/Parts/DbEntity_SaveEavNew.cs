@@ -3,7 +3,7 @@
 partial class DbEntity
 {
 
-    private ToSicEavEntities CreateDbRecord(IEntity newEnt, int changeId, int contentTypeId)
+    private ToSicEavEntities CreateDbRecord(IEntity newEnt, int transactionId, int contentTypeId)
     {
         var l = Log.Fn<ToSicEavEntities>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
         var dbEnt = new ToSicEavEntities
@@ -13,8 +13,8 @@ partial class DbEntity
             KeyNumber = newEnt.MetadataFor?.KeyNumber,
             KeyGuid = newEnt.MetadataFor?.KeyGuid,
             KeyString = newEnt.MetadataFor?.KeyString,
-            ChangeLogCreated = changeId,
-            ChangeLogModified = changeId,
+            TransactionIdCreated = transactionId,
+            TransactionIdModified = transactionId,
             EntityGuid = newEnt.EntityGuid != Guid.Empty ? newEnt.EntityGuid : Guid.NewGuid(),
             IsPublished = newEnt.IsPublished,
             PublishedEntityId = newEnt.IsPublished ? null : ((Entity)newEnt).GetInternalPublishedIdForSaving(),

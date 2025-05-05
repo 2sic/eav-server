@@ -20,22 +20,22 @@ internal  partial class DbVersioning: DbPartBase
     }
 
     #region Change-Log ID
-    private int _mainChangeLogId;
+    private int _mainTransactionId;
     /// <summary>
-    /// Creates a ChangeLog immediately
+    /// Creates a TransactionId immediately
     /// </summary>
-    /// <remarks>Also opens the SQL Connection to ensure this ChangeLog is used for Auditing on this SQL Connection</remarks>
-    internal int GetChangeLogId()
+    /// <remarks>Also opens the SQL Connection to ensure this TransactionId is used for Auditing on this SQL Connection</remarks>
+    internal int GetTransactionId()
     {
         var userName = DbContext.UserIdentityToken;
-        if (_mainChangeLogId != 0) return _mainChangeLogId;
+        if (_mainTransactionId != 0) return _mainTransactionId;
 
         var con = DbContext.SqlDb.Database.GetDbConnection();
         if (con.State != ConnectionState.Open)
             con.Open(); // make sure same connection is used later
 
-        // insert and get ChangeID in one trip – parameterised
-        const string sql = "INSERT INTO [dbo].[ToSIC_EAV_ChangeLog] ([Timestamp],[User]) OUTPUT inserted.ChangeID VALUES (GETDATE(), @userName);";
+        // insert and get TransactionId in one trip – parameterised
+        const string sql = "INSERT INTO [dbo].[TsDynDataTransaction] ([Timestamp],[User]) OUTPUT inserted.TransactionId VALUES (GETDATE(), @userName);";
 
         using var cmd = con.CreateCommand();
         cmd.CommandText = sql;
@@ -45,8 +45,8 @@ internal  partial class DbVersioning: DbPartBase
         var curTx = DbContext.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
         if (curTx != null) cmd.Transaction = curTx;
 
-        _mainChangeLogId = Convert.ToInt32(cmd.ExecuteScalar()); // returns the new ChangeID
-        return _mainChangeLogId;
+        _mainTransactionId = Convert.ToInt32(cmd.ExecuteScalar()); // returns the new TransactionId
+        return _mainTransactionId;
     }
 
     #endregion
@@ -67,13 +67,13 @@ internal  partial class DbVersioning: DbPartBase
         => _queue.Add(new()
         {
             SourceTable = EntitiesTableName,
-            Operation = Constants.DataTimelineEntityJson,
+            Operation = Constants.HistoryEntityJson,
             Json = _compressor.Value.IsEnabled ? null : serialized,
             CJson = _compressor.Value.Compress(serialized),
             SourceGuid = entityGuid,
             SourceId = entityId,
-            SysLogId = GetChangeLogId(),
-            SysCreatedDate = DateTime.Now
+            TransactionId = GetTransactionId(),
+            Timestamp = DateTime.Now
         });
 
     /// <summary>
@@ -82,10 +82,10 @@ internal  partial class DbVersioning: DbPartBase
     private void Save()
     {
         var l = Log.Fn(timer: true);
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavDataTimeline.AddRange(_queue));
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.TsDynDataHistory.AddRange(_queue));
         _queue.Clear();
         l.Done();
     }
 
-    private readonly List<ToSicEavDataTimeline> _queue = [];
+    private readonly List<TsDynDataHistory> _queue = [];
 }
