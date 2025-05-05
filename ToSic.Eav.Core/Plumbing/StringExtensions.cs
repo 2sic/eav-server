@@ -22,12 +22,12 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool HasValue(
-        // [NotNullWhen(true)] // can't use when not .net 8
-        this string value) => !string.IsNullOrWhiteSpace(value);
+    public static bool HasValue( /* [NotNullWhen(true)] // can't use when not .net 8 */ this string value)
+        => !string.IsNullOrWhiteSpace(value);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string UseFallbackIfNoValue(this string value, string fallback) => value.HasValue() ? value : fallback;
+    public static string UseFallbackIfNoValue(this string value, string fallback)
+        => !string.IsNullOrWhiteSpace(value) ? value : fallback;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string NullIfNoValue(this string value) => value.HasValue() ? value : null;

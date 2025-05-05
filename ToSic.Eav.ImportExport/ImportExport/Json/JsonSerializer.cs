@@ -4,7 +4,7 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Eav.ImportExport.Json;
 
-partial class JsonSerializer: SerializerBase, IDataDeserializer
+partial class JsonSerializer(JsonSerializer.MyServices services, string logName = "Jsn.Serlzr"): SerializerBase(services, logName), IDataDeserializer
 {
     public const string ReadOnlyMarker = "~";
     public const string NoLanguage = "*";
@@ -23,18 +23,11 @@ partial class JsonSerializer: SerializerBase, IDataDeserializer
 
     #endregion
 
-    /// <summary>
-    /// Constructor for DI
-    /// </summary>
-    public JsonSerializer(MyServices services) : this(services, "Jsn.Serlzr")
-    { }
-        
-
-    /// <summary>
-    /// Initialize with the correct logger name
-    /// </summary>
-    protected JsonSerializer(MyServices services, string logName): base(services, logName)
-    { }
+    ///// <summary>
+    ///// Initialize with the correct logger name
+    ///// </summary>
+    //public JsonSerializer(MyServices services, string logName = "Jsn.Serlzr") : base(services, logName)
+    //{ }
 
     /// <summary>
     /// WIP test API to ensure content-types serialized for UI resolve any hyperlinks.
@@ -44,9 +37,4 @@ partial class JsonSerializer: SerializerBase, IDataDeserializer
     /// </summary>
     [PrivateApi]
     public bool ValueConvertHyperlinks = false;
-}
-
-internal static class StringHelpers
-{
-    public static string EmptyFallback(this string s, string alternative) => string.IsNullOrEmpty(s) ? alternative : s;
 }

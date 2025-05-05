@@ -8,10 +8,11 @@ partial class JsonSerializer
 {
     public override string Serialize(IEntity entity) => Serialize(entity, 0);
 
-    public string Serialize(IEntity entity, int metadataDepth) => System.Text.Json.JsonSerializer.Serialize(new JsonFormat
-    {
-        Entity = ToJson(entity, metadataDepth)
-    }, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+    public string Serialize(IEntity entity, int metadataDepth)
+        => System.Text.Json.JsonSerializer.Serialize(
+            new JsonFormat { Entity = ToJson(entity, metadataDepth) },
+            JsonOptions.UnsafeJsonWithoutEncodingHtml
+        );
 
     public JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
     {
@@ -121,5 +122,5 @@ partial class JsonSerializer
                 .OrderBy(l => l.ReadOnly)
                 .Select(l => (l.ReadOnly ? ReadOnlyMarker : "") + l.Key)
                 .ToArray())
-            .EmptyFallback(NoLanguage);
+            .UseFallbackIfNoValue(NoLanguage);
 }
