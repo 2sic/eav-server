@@ -277,7 +277,8 @@ partial class AppState
             if (st.FirstLoadCompleted)
                 st.DynamicUpdatesCount++;
 
-            if (log) st.Log.A($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{st.DynamicUpdatesCount}");
+            if (log)
+                st.Log.A($"added entity {newEntity.EntityId} for published {publishedId}; dyn-update#{st.DynamicUpdatesCount}");
         }
 
         #endregion

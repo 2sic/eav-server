@@ -5,13 +5,8 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Loaders;
 
-internal class AppLoaderUnknown: ServiceBase, IAppLoader, IIsUnknown
+internal class AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _, Generator<IAppStateBuilder> stateBuilder): ServiceBase("Eav.BscRnt"), IAppLoader, IIsUnknown
 {
-    private readonly Generator<IAppStateBuilder> _stateBuilder;
-    public AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _, Generator<IAppStateBuilder> stateBuilder) : base("Eav.BscRnt")
-    {
-        _stateBuilder = stateBuilder;
-    }
-
-    public IAppStateBuilder LoadFullAppState() => _stateBuilder.New().InitForPreset(); 
+    public IAppStateBuilder LoadFullAppState(LogSettings logSettings)
+        => stateBuilder.New().InitForPreset(); 
 }
