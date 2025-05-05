@@ -13,7 +13,7 @@ public partial class TsDynDataZone//: RepoZone
 
     public int? TransactionIdDeleted { get; set; }
 
-    public virtual ICollection<ToSicEavApps> ToSicEavApps { get; set; } = new HashSet<ToSicEavApps>();
+    public virtual ICollection<TsDynDataApp> TsDynDataApps { get; set; } = new HashSet<TsDynDataApp>();
 
     public virtual ICollection<ToSicEavDimensions> ToSicEavDimensions { get; set; } =  new HashSet<ToSicEavDimensions>();
 

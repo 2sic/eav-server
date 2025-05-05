@@ -63,7 +63,7 @@ public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneMa
 
     private void DeleteAnApp(string appGuid)
     {
-        var appList = dbData.Init(ZoneId, null).SqlDb.ToSicEavApps
+        var appList = dbData.Init(ZoneId, null).SqlDb.TsDynDataApps
             .Where(a => a.ZoneId == ZoneId)
             .ToList();
         var appId = appList.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;

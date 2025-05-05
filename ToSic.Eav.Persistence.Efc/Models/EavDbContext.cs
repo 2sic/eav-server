@@ -16,19 +16,19 @@ public partial class EavDbContext : DbContext
     }
     private readonly IDbConfiguration _dbConfig;
 
-    public virtual DbSet<ToSicEavApps> ToSicEavApps { get; set; }
+    public virtual DbSet<TsDynDataApp> TsDynDataApps { get; set; }
     public virtual DbSet<TsDynDataTargetType> TsDynDataTargetTypes { get; set; }
     public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
     public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
     public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
-    public virtual DbSet<TsDynDataTransaction> TsDynDataTransaction { get; set; }
-    public virtual DbSet<TsDynDataHistory> TsDynDataHistory { get; set; }
+    public virtual DbSet<TsDynDataTransaction> TsDynDataTransactions { get; set; }
+    public virtual DbSet<TsDynDataHistory> TsDynDataHistories { get; set; }
     public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
     public virtual DbSet<ToSicEavEntities> ToSicEavEntities { get; set; }
     public virtual DbSet<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
     public virtual DbSet<ToSicEavValues> ToSicEavValues { get; set; }
     public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
-    public virtual DbSet<TsDynDataZone> TsDynDataZone { get; set; }
+    public virtual DbSet<TsDynDataZone> TsDynDataZones { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -62,32 +62,47 @@ public partial class EavDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ToSicEavApps>(entity =>
+        modelBuilder.Entity<TsDynDataApp>(entity =>
         {
             entity.HasKey(e => e.AppId)
-                .HasName("PK_ToSIC_EAV_Apps");
+                .HasName("PK_TsDynDataApp");
 
-            entity.ToTable("ToSIC_EAV_Apps");
+            entity.ToTable("TsDynDataApp");
 
 #pragma warning disable CS0618 // Type or member is obsolete
             entity.HasIndex(e => new { e.Name, e.ZoneId })
-                .HasName("ToSIC_EAV_Apps_PreventDuplicates")
+                .HasName("UQ_TsDynDataApp_Name_ZoneId")
                 .IsUnique();
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            entity.Property(e => e.AppId).HasColumnName("AppID");
+            entity.Property(e => e.AppId);
 
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(255);
 
-            entity.Property(e => e.ZoneId).HasColumnName("ZoneID");
+            entity.Property(e => e.ZoneId);
 
             entity.HasOne(d => d.Zone)
-                .WithMany(p => p.ToSicEavApps)
+                .WithMany(p => p.TsDynDataApps)
                 .HasForeignKey(d => d.ZoneId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Apps_ToSIC_EAV_Zones");
+                .HasConstraintName("FK_TsDynDataApp_TsDynDataZone");
+
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.TsDynDataAppsTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
+                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionCreated");
+
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.TsDynDataAppsTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
+                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionModified");
+
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.TsDynDataAppsTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionDeleted");
         });
 
         modelBuilder.Entity<TsDynDataTargetType>(entity =>
@@ -175,7 +190,7 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.AlwaysShareConfiguration)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
-            entity.Property(e => e.AppId).HasColumnName("AppID");
+            entity.Property(e => e.AppId);
 
             entity.Property(e => e.Name).HasMaxLength(150);
 
@@ -189,7 +204,7 @@ public partial class EavDbContext : DbContext
                 .WithMany(p => p.ToSicEavAttributeSets)
                 .HasForeignKey(d => d.AppId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_Apps");
+                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_TsDynDataApp");
 
             entity.HasOne(d => d.TransactionCreatedNavigation)
                 .WithMany(p => p.ToSicEavAttributeSetsTransactionCreatedNavigation)
@@ -346,7 +361,7 @@ public partial class EavDbContext : DbContext
                 .WithMany(p => p.ToSicEavEntities)
                 .HasForeignKey(d => d.AppId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_Apps");
+                .HasConstraintName("FK_ToSIC_EAV_Entities_TsDynDataApp");
 
             entity.HasOne(d => d.TargetType)
                 .WithMany(p => p.ToSicEavEntities)

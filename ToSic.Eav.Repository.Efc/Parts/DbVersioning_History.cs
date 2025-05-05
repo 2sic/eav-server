@@ -40,7 +40,7 @@ partial class DbVersioning
     private List<ItemHistory> GetItemHistory(int entityId, int historyId, bool includeData)
     {
         // get Versions from History
-        var rootQuery = DbContext.SqlDb.TsDynDataHistory
+        var rootQuery = DbContext.SqlDb.TsDynDataHistories
             .Where(t =>
                 t.SourceTable == EntitiesTableName
                 && t.Operation == Constants.HistoryEntityJson
@@ -51,7 +51,7 @@ partial class DbVersioning
 
         var entityVersions = rootQuery
             .OrderByDescending(t => t.Timestamp)
-            .Join(DbContext.SqlDb.TsDynDataTransaction, t => t.TransactionId, c => c.TransactionId, (history, log) => new { History = history, Log = log })
+            .Join(DbContext.SqlDb.TsDynDataTransactions, t => t.TransactionId, c => c.TransactionId, (history, log) => new { History = history, Log = log })
             .Select(d =>  new ItemHistory
             {
                 TimeStamp = d.History.Timestamp,

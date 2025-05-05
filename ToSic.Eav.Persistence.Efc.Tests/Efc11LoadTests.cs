@@ -26,7 +26,7 @@ public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGener
     [Fact]
     public void GetSomething()
     {
-        var results = db.TsDynDataZone.Single(z => z.ZoneId == 1);
+        var results = db.TsDynDataZones.Single(z => z.ZoneId == 1);
         True(results.ZoneId == 1, "zone doesn't fit - it is " + results.ZoneId);
     }
 

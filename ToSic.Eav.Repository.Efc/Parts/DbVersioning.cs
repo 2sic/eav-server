@@ -82,7 +82,7 @@ internal  partial class DbVersioning: DbPartBase
     private void Save()
     {
         var l = Log.Fn(timer: true);
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.TsDynDataHistory.AddRange(_queue));
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.TsDynDataHistories.AddRange(_queue));
         _queue.Clear();
         l.Done();
     }

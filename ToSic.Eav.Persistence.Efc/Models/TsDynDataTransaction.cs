@@ -36,4 +36,10 @@ public partial class TsDynDataTransaction
     public virtual ICollection<TsDynDataZone> TsDynDataZonesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataZone>();
 
     public virtual ICollection<TsDynDataZone> TsDynDataZonesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataZone>();
+
+    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataApp>();
+
+    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataApp>();
+
+    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataApp>();
 }

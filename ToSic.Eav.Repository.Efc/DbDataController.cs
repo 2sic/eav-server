@@ -148,7 +148,7 @@ public class DbDataController(
             // If only AppId is supplied, look up it's zone and use that
             else
             {
-                var zoneIdOfApp = SqlDb.ToSicEavApps.Where(a => a.AppId == appId.Value).Select(a => (int?)a.ZoneId)
+                var zoneIdOfApp = SqlDb.TsDynDataApps.Where(a => a.AppId == appId.Value).Select(a => (int?)a.ZoneId)
                     .SingleOrDefault();
                 if (!zoneIdOfApp.HasValue)
                     throw new ArgumentException($@"App with id {appId.Value} doesn't exist.", nameof(appId));
@@ -162,13 +162,13 @@ public class DbDataController(
 
         if (appId.HasValue)
         {
-            var foundApp = SqlDb.ToSicEavApps.FirstOrDefault(a => a.ZoneId == _zoneId && a.AppId == appId.Value);
+            var foundApp = SqlDb.TsDynDataApps.FirstOrDefault(a => a.ZoneId == _zoneId && a.AppId == appId.Value);
             if (foundApp == null)
                 throw new ArgumentException($@"App with id {appId.Value} doesn't exist.", nameof(appId));
             _appId = appId.Value;
         }
         else
-            _appId = SqlDb.ToSicEavApps.First(a => a.Name == Constants.DefaultAppGuid).AppId;
+            _appId = SqlDb.TsDynDataApps.First(a => a.Name == Constants.DefaultAppGuid).AppId;
 
         return this;
     }
@@ -340,17 +340,17 @@ public class DbDataController(
     #endregion
 
     public int? GetParentAppId(string parentAppGuid, int parentAppId)
-        => SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid) switch
+        => SqlDb.TsDynDataApps.Count(a => a.Name == parentAppGuid) switch
         {
             0 => throw new ArgumentException(
                 $"ParentApp missing. Can't find app:{parentAppGuid}. Import ParentApp first."),
-            1 => SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid).AppId,
+            1 => SqlDb.TsDynDataApps.Single(a => a.Name == parentAppGuid).AppId,
             // we have more apps with requested guid
-            _ => SqlDb.ToSicEavApps.Count(a => a.Name == parentAppGuid && a.AppId == parentAppId) switch
+            _ => SqlDb.TsDynDataApps.Count(a => a.Name == parentAppGuid && a.AppId == parentAppId) switch
             {
                 0 => throw new ArgumentException(
                     $"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} but neither has AppId:{parentAppId}. Can't import."),
-                1 => SqlDb.ToSicEavApps.Single(a => a.Name == parentAppGuid && a.AppId == parentAppId).AppId,
+                1 => SqlDb.TsDynDataApps.Single(a => a.Name == parentAppGuid && a.AppId == parentAppId).AppId,
                 _ => throw new ArgumentException(
                     $"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} and AppId:{parentAppId}. Can't import.")
             }

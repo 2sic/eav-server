@@ -25,7 +25,7 @@ public partial class ToSicEavAttributeSets
 
     public string SysSettings { get; set; }
 
-    public virtual ToSicEavApps App { get; set; }
+    public virtual TsDynDataApp App { get; set; }
 
     public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 

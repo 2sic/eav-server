@@ -10,12 +10,12 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
     /// <summary>
     /// Add a new App
     /// </summary>
-    internal ToSicEavApps AddApp(TsDynDataZone zone, string guidName, int? inheritAppId = null)
+    internal TsDynDataApp AddApp(TsDynDataZone zone, string guidName, int? inheritAppId = null)
     {
         // Use provided zone or if null, use the one which was pre-initialized for this DbApp Context
-        zone = zone ?? DbContext.SqlDb.TsDynDataZone.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);
+        zone = zone ?? DbContext.SqlDb.TsDynDataZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);
 
-        var newApp = new ToSicEavApps 
+        var newApp = new TsDynDataApp 
         {
             Name = guidName,
             Zone = zone
@@ -177,7 +177,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
 
         // Delete App
         if (alsoDeleteAppEntry)
-            db.ToSicEavApps.Remove(db.ToSicEavApps.First(a => a.AppId == appId));
+            db.TsDynDataApps.Remove(db.TsDynDataApps.First(a => a.AppId == appId));
     }
 
 }

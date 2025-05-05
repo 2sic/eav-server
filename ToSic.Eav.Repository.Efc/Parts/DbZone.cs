@@ -26,18 +26,18 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
     {
         var l = Log.Fn<bool>();
 
-        var zonesWithoutPrimary = DbContext.SqlDb.TsDynDataZone
-            .Include(z => z.ToSicEavApps)
+        var zonesWithoutPrimary = DbContext.SqlDb.TsDynDataZones
+            .Include(z => z.TsDynDataApps)
             .Include(z => z.ToSicEavDimensions)
             // Skip "default" zone as that is a single purpose technical zone
             .Where(z => z.ZoneId != Constants.DefaultZoneId)
-            .Where(z => z.ToSicEavApps.All(a => a.Name != Constants.PrimaryAppGuid))
+            .Where(z => z.TsDynDataApps.All(a => a.Name != Constants.PrimaryAppGuid))
             .ToList();
 
         if (!zonesWithoutPrimary.Any()) return l.ReturnFalse("no missing primary");
 
         var newZones = zonesWithoutPrimary
-            .Select(zone => new ToSicEavApps
+            .Select(zone => new TsDynDataApp
             {
                 Name = Constants.PrimaryAppGuid,
                 Zone = zone

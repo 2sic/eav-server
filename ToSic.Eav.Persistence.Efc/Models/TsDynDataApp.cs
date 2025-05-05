@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavApps
+public partial class TsDynDataApp
 {
     public int AppId { get; set; }
 
@@ -11,9 +11,21 @@ public partial class ToSicEavApps
 
     public string SysSettings { get; set; } = null;
 
+    public int? TransactionIdCreated { get; set; }
+
+    public int? TransactionIdModified { get; set; }
+
+    public int? TransactionIdDeleted { get; set; }
+
     public virtual ICollection<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; } = new HashSet<ToSicEavAttributeSets>();
 
     public virtual ICollection<ToSicEavEntities> ToSicEavEntities { get; set; } = new HashSet<ToSicEavEntities>();
 
     public virtual TsDynDataZone Zone { get; set; }
+
+    public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
+
+    public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
+
+    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 }

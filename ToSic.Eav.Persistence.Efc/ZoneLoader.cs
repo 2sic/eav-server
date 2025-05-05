@@ -11,8 +11,8 @@ internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Ef
 
         // Build the tree of zones incl. their default(Content) and Primary apps
         var lSql = log.Fn("Zone SQL", timer: true);
-        var zonesSql = appLoader.Context.TsDynDataZone
-            .Include(z => z.ToSicEavApps)
+        var zonesSql = appLoader.Context.TsDynDataZones
+            .Include(z => z.TsDynDataApps)
             .Include(z => z.ToSicEavDimensions)
             .ThenInclude(d => d.ParentNavigation)
             .ToList();
@@ -26,12 +26,12 @@ internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Ef
                     // On the default zone, the primary & default are the same
                     var primary = z.ZoneId == Constants.DefaultZoneId
                         ? Constants.MetaDataAppId
-                        : z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.PrimaryAppGuid)?.AppId ?? -1;
+                        : z.TsDynDataApps.FirstOrDefault(a => a.Name == Constants.PrimaryAppGuid)?.AppId ?? -1;
                     var content = z.ZoneId == Constants.DefaultZoneId
                         ? Constants.MetaDataAppId
-                        : z.ToSicEavApps.FirstOrDefault(a => a.Name == Constants.DefaultAppGuid)?.AppId ?? -1;
+                        : z.TsDynDataApps.FirstOrDefault(a => a.Name == Constants.DefaultAppGuid)?.AppId ?? -1;
 
-                    var appDictionary = z.ToSicEavApps.ToDictionary(a => a.AppId, a => a.Name);
+                    var appDictionary = z.TsDynDataApps.ToDictionary(a => a.AppId, a => a.Name);
 
                     var languages = z.ToSicEavDimensions
                         .Where(d => d.ParentNavigation?.Key == Constants.CultureSystemKey)

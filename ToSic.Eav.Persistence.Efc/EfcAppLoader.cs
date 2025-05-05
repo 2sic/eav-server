@@ -238,7 +238,7 @@ public class EfcAppLoader(
     {
         var l = Log.Fn<int>($"{nameof(appId)}:{appId}");
         // Prefetch this App (new in v13 for ancestor apps)
-        var appInDb = Context.ToSicEavApps.FirstOrDefault(a => a.AppId == appId);
+        var appInDb = Context.TsDynDataApps.FirstOrDefault(a => a.AppId == appId);
         var appSysSettings = appInDb?.SysSettings;
         if (string.IsNullOrWhiteSpace(appSysSettings))
             return l.Return(0, "none found");

@@ -41,7 +41,7 @@ public partial class ToSicEavEntities
     public string ContentType { get; set; }
 
     // 2017-10-10 2dm new with entity > app mapping
-    public virtual ToSicEavApps App { get; set; }
+    public virtual TsDynDataApp App { get; set; }
 
     public virtual TsDynDataTargetType TargetType { get; set; }
 
