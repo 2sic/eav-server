@@ -58,22 +58,30 @@ public class EfcAppLoader(
                 return field;
             var l = Log.Fn<string>();
             field = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
-            return l.ReturnAndLog(field, $"Primary language from Env (for value sorting): {field}");
+            return l.Return(field, $"Primary language from Env (for value sorting): {field}");
         }
         set => field = value;
     }
 
     #endregion
 
+    #region LogSettings
+
+
+    public LogSettings LogSettings => field
+        ??= new AppLoaderLogSettings(features).GetLogSettings();
+    
+    #endregion
 
     #region IRepositoryLoader Zones and ContentTypes
 
-    IDictionary<int, Zone> IRepositoryLoader.Zones() => new ZoneLoader(this).LoadZones(logStore);
+    IDictionary<int, Zone> IRepositoryLoader.Zones()
+        => new ZoneLoader(this).LoadZones(logStore);
 
     /// <inheritdoc />
     /// <summary>
     /// Get all ContentTypes for specified AppId. 
-    /// If uses temporary caching, so if called multiple times it loads from a private field.
+    /// It uses temporary caching, so if called multiple times it loads from a private field.
     /// </summary>
     IList<IContentType> IContentTypeLoader.ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
         => new ContentTypeLoader(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates)

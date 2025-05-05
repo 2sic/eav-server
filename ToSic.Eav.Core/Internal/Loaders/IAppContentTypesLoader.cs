@@ -13,8 +13,9 @@ public interface IAppContentTypesLoader
     /// Real constructor, after DI
     /// </summary>
     /// <param name="app"></param>
+    /// <param name="logSettings"></param>
     /// <returns></returns>
-    IAppContentTypesLoader Init(IAppReader app);
+    IAppContentTypesLoader Init(IAppReader app, LogSettings logSettings);
 
     /// <summary>
     /// Get all ContentTypes for specified AppId.

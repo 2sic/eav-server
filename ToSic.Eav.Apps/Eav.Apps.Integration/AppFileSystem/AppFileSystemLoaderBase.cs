@@ -30,14 +30,17 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
 
     #region Inits
 
-    public AppFileSystemLoaderBase Init(IAppReader appReader)
+    public AppFileSystemLoaderBase Init(IAppReader appReader, LogSettings logSettings)
     {
+        LogSettings = logSettings ?? new();
         var l = Log.Fn<AppFileSystemLoaderBase>($"{appReader.AppId}, {appReader.Specs.Folder}, ...");
         AppIdentity = appReader.PureIdentity();
         _appPaths = appPathsLazy.Value.Get(appReader, Site);
         InitPathAfterAppId();
         return l.Return(this);
     }
+    protected LogSettings LogSettings { get; private set; }
+
 
     /// <summary>
     /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this.

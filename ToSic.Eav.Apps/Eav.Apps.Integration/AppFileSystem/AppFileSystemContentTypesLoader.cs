@@ -12,8 +12,8 @@ namespace ToSic.Eav.Apps.Integration;
 public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppContentTypesLoader
 {
-    public new IAppContentTypesLoader Init(IAppReader app)
-        => base.Init(app) as IAppContentTypesLoader;
+    public new IAppContentTypesLoader Init(IAppReader app, LogSettings logSettings)
+        => base.Init(app, logSettings) as IAppContentTypesLoader;
 
     /// <inheritdoc />
     public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource)
@@ -21,7 +21,7 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
         var l = Log.Fn<IList<IContentType>>();
         try
         {
-            var extPaths = ExtensionPaths();
+            var extPaths = GetAllExtensionPaths();
             l.A($"Found {extPaths.Count} extensions with .data folder");
             var allTypes = extPaths
                 .SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
@@ -39,19 +39,19 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
 
     private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
     {
-        var l = Log.Fn<IEnumerable<IContentType>>(extensionPath);
-        var fsLoader = fslGenerator.New().Init(AppIdentity.AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource);
+        var l = Log.IfSummary(LogSettings).Fn<IEnumerable<IContentType>>(extensionPath);
+        var fsLoader = fslGenerator.New().Init(AppIdentity.AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource, LogSettings);
         var types = fsLoader.ContentTypes();
-        return l.Return(types);
+        return l.Return(types, $"found: {types.Count}");
     }
 
 
 
     #region Helpers
 
-    private List<string> ExtensionPaths()
+    private List<string> GetAllExtensionPaths()
     {
-        var l = Log.Fn<List<string>>();
+        var l = Log.IfSummary(LogSettings).Fn<List<string>>();
         var dir = new DirectoryInfo(Path);
         if (!dir.Exists) return l.Return([], $"directory do not exist: {dir}");
         var sub = dir.GetDirectories();

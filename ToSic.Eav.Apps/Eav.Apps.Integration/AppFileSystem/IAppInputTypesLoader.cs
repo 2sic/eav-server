@@ -8,9 +8,7 @@ public interface IAppInputTypesLoader: IHasLog
     /// <summary>
     /// Real constructor, after DI
     /// </summary>
-    /// <param name="app"></param>
-    /// <returns></returns>
-    IAppInputTypesLoader Init(IAppReader app);
+    IAppInputTypesLoader Init(IAppReader reader, LogSettings logSettings);
 
     /// <summary>
     /// Load all the input types for this app from the folder

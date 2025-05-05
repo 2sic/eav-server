@@ -30,7 +30,7 @@ public class EavSystemLoader(LazySvc<IAppLoader> appLoader, AppsCacheSwitch apps
         var l = Log.Fn(timer: true);
         AssemblyHandling.GetTypes(assemblyLoadLog);
 
-        var logSettings = new AppLoaderLoggingHelper(featuresLoader).GetLogSettings();
+        var logSettings = new EavSystemLoaderLogSettingsHelper(featuresLoader, Log).GetLogSettings();
 
         // Build the cache of all system-types. Must happen before everything else
         // This should use the lazy AppLoader, because the features should be loaded before it's created

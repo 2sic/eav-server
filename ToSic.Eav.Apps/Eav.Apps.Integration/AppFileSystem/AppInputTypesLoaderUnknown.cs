@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Integration;
 internal sealed class AppInputTypesLoaderUnknown(WarnUseOfUnknown<AppInputTypesLoaderUnknown> _) : ServiceBase(LogConstants.FullNameUnknown), IAppInputTypesLoader, IIsUnknown
 {
     // do nothing
-    public IAppInputTypesLoader Init(IAppReader app) => this;
+    public IAppInputTypesLoader Init(IAppReader reader, LogSettings logSettings) => this;
 
     public string Path { get; set; }
 

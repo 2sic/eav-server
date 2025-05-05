@@ -57,6 +57,9 @@ public interface IEavFeaturesService: ICacheExpiring, ICanBeCacheDependency
     [PrivateApi("Hide - was never public on this interface")]
     bool IsEnabled(params string[] nameIds);
 
+    /// <summary>
+    /// Get a feature state or return null if not found.
+    /// </summary>
     FeatureState Get(string nameId);
 
     [PrivateApi("New in 13.05, not public at all")]

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Persistence.File;
 
 partial class AppLoader
 {
-    public (List<IContentType> ContentTypes, List<IEntity> Entities) LoadGlobalContentTypes(IAppStateCache appState)
+    private (List<IContentType> ContentTypes, List<IEntity> Entities) LoadGlobalContentTypes(IAppStateCache appState)
     {
         var l = Log.Fn<(List<IContentType> ContentTypes, List<IEntity> Entities)>(timer: true);
 

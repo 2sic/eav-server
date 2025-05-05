@@ -72,6 +72,7 @@ public static class StartUpEavCore
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
         services.TryAddTransient<AppReader>();
         services.TryAddTransient<AppDataStackService>();
+        services.TryAddTransient<AppLoaderLogSettings>();   // new v20
 
         // v13 #SwitchableAppsCache
         services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
@@ -83,7 +84,7 @@ public static class StartUpEavCore
         services.TryAddTransient<ILicenseService, LicenseService>();
 
         // Fingerprinting: Because fo security, we are not injecting the interface
-        // As that would allow replacing the fingerprinter with something else
+        // As that would allow replacing the finger-printer with something else
         // We actually only use the direct object in DI
         //services.TryAddTransient<IFingerprint, Fingerprint>();
         services.TryAddTransient<SystemFingerprint>();

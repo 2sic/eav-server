@@ -7,12 +7,12 @@ using ToSic.Eav.Serialization;
 namespace ToSic.Eav.Persistence.Efc;
 
 internal class ContentTypeLoader(
-    EfcAppLoader appLoader,
+    EfcAppLoader efcAppLoader,
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
     Generator<IDataDeserializer> dataDeserializer,
     DataBuilder dataBuilder,
     IAppStateCacheService appStates)
-    : HelperBase(appLoader.Log, "Efc.CtLdr")
+    : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
     internal IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)
     {
@@ -55,7 +55,7 @@ internal class ContentTypeLoader(
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         // must create a new loader for each app
-        var loader = appFileContentTypesLoader.New().Init(appReader);
+        var loader = appFileContentTypesLoader.New().Init(appReader, efcAppLoader.LogSettings);
         var types = loader.ContentTypes(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
@@ -81,7 +81,7 @@ internal class ContentTypeLoader(
         var l = Log.Fn<ImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
-        var query = appLoader.Context.ToSicEavAttributeSets
+        var query = efcAppLoader.Context.ToSicEavAttributeSets
             .Where(set => set.AppId == appId && set.TransactionIdDeleted == null);
 
         var contentTypesSql = query
@@ -128,7 +128,7 @@ internal class ContentTypeLoader(
             })
             .ToList();
 
-        var optimize = appLoader.Features.IsEnabled(BuiltInFeatures.SqlLoadPerformance);
+        var optimize = efcAppLoader.Features.IsEnabled(BuiltInFeatures.SqlLoadPerformance);
 
         // Filter out Nulls, as they are not relevant and cause problems with Entity Framework 8.0.8
         var sharedAttribIds = optimize
@@ -145,7 +145,7 @@ internal class ContentTypeLoader(
 
         var sharedAttribs = optimize && !sharedAttribIds.Any()
             ? new()
-            : appLoader.Context.ToSicEavAttributeSets
+            : efcAppLoader.Context.ToSicEavAttributeSets
                 .Include(s => s.ToSicEavAttributes)
                 .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
                 .ToDictionary(
@@ -198,7 +198,7 @@ internal class ContentTypeLoader(
             );
         });
 
-        appLoader.AddSqlTime(sqlTime.Elapsed);
+        efcAppLoader.AddSqlTime(sqlTime.Elapsed);
         var final = newTypes.ToImmutableList();
 
         return l.Return(final, $"{final.Count}");

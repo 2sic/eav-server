@@ -11,8 +11,8 @@ namespace ToSic.Eav.Apps.Integration;
 public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppInputTypesLoader
 {
-    public new IAppInputTypesLoader Init(IAppReader app)
-        => base.Init(app) as IAppInputTypesLoader;
+    public new IAppInputTypesLoader Init(IAppReader reader, LogSettings logSettings)
+        => base.Init(reader, logSettings) as IAppInputTypesLoader;
 
     /// <inheritdoc />
     public List<InputTypeInfo> InputTypes()
