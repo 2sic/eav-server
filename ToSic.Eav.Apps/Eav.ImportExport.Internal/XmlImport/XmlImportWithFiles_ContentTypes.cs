@@ -65,7 +65,7 @@ partial class XmlImportWithFiles
                 Guid? guid = null;
                 if (Guid.TryParse(xmlField.Attribute(XmlConstants.Guid)?.Value, out var result))
                     guid = result;
-                var sysSettings = JsonDeserializeAttribute.SysSettings(xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
+                var sysSettings = JsonDeserializeAttribute.SysSettings(name, xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
 
                 var attribute = Services.MultiBuilder.Value.TypeAttributeBuilder.Create(
                     appId: AppId,

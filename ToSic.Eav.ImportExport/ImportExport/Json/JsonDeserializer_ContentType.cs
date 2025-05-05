@@ -123,6 +123,6 @@ partial class JsonSerializer
         return lMain.ReturnAsOk(contentTypeSet);
     }
 
-    public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized)
-        => JsonDeserializeAttribute.SysSettings(serialized, Log);
+    public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string name, string json)
+        => JsonDeserializeAttribute.SysSettings(name, json, Log);
 }

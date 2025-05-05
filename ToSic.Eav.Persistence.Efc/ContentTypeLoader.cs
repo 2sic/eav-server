@@ -116,7 +116,7 @@ internal class ContentTypeLoader(
                         // metadata: attrMetadata,
                         metaSourceFinder: () => source,
                         guid: a.Guid,
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.SysSettings)
+                        sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
                     )),
                 IsGhost = set.UsesConfigurationOfAttributeSet,
                 SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
@@ -161,7 +161,7 @@ internal class ContentTypeLoader(
                         metaSourceFinder: () => appStates.Get(s.AppId),
                         // #SharedFieldDefinition
                         //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.SysSettings))
+                        sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings))
                     )
                 );
 
