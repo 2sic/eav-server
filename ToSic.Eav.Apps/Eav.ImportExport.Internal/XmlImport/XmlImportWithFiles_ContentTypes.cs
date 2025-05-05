@@ -38,48 +38,40 @@ partial class XmlImportWithFiles
                 .Elements(XmlConstants.Attribute)
                 .Select(xmlField =>
                 {
-                    if (!bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value))
-                        return new
-                        {
-                            XmlElement = xmlField,
-                            IsTitle = false
-                        };
-
-                    l.A("set title on this attribute");
-                    return new
-                    {
-                        XmlElement = xmlField,
-                        IsTitle = true
-                    };
+                    var isTitle = bool.Parse(xmlField.Attribute(XmlConstants.IsTitle).Value);
+                    l.If(isTitle).A("set title on this attribute");
+                    return new { xmlField, isTitle };
                 })
                 .ToList();
 
             // If neither is the title, make sure the first one is
-            if (set.Any() && !set.Any(a => a.IsTitle))
+            if (set.Any() && !set.Any(a => a.isTitle))
                 set = set
-                    .Select((s, i) => i == 0 ? new { s.XmlElement, IsTitle = true } : s)
+                    .Select((s, i) => i == 0 ? s with { isTitle = true } : s)
                     .ToList();
 
 
             foreach (var s in set)
             {
-                var xmlField = s.XmlElement;
+                var xmlField = s.xmlField;
                 var name = xmlField.Attribute(XmlConstants.Static).Value;
                 var fieldTypeName = xmlField.Attribute(XmlConstants.EntityTypeAttribute).Value;
 
-                var xmlMetadata = xmlField.Elements(XmlConstants.Entity).ToList();
+                var xmlMetadata = xmlField.Elements(XmlConstants.Entity)
+                    .ToList();
                 var attributeMetadata = BuildEntities(xmlMetadata, (int)TargetTypes.Attribute);
 
                 // #SharedFieldDefinition
                 Guid? guid = null;
-                if (Guid.TryParse(xmlField.Attribute(XmlConstants.Guid)?.Value, out var result)) guid = result;
-                var sysSettings = JsonSerializer.DeserializeAttributeSysSettings(xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
+                if (Guid.TryParse(xmlField.Attribute(XmlConstants.Guid)?.Value, out var result))
+                    guid = result;
+                var sysSettings = JsonDeserializeAttribute.SysSettings(xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
 
                 var attribute = Services.MultiBuilder.Value.TypeAttributeBuilder.Create(
                     appId: AppId,
                     name: name,
                     type: ValueTypeHelpers.Get(fieldTypeName),
-                    isTitle: s.IsTitle,
+                    isTitle: s.isTitle,
                     metadataItems: attributeMetadata,
                     guid: guid,
                     sysSettings: sysSettings

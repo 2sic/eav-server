@@ -111,7 +111,8 @@ partial class JsonSerializer
                 );
 
                 // new in 1.2 2sxc v12 - build relation relationships manager
-                return l.Return(new ContentTypeWithEntities { ContentType = type, Entities= relationships.List ?? []}, $"converted {type.Name} with {attribs.Count} attributes and {relationships.List?.Count} Relationships");
+                return l.Return(new() { ContentType = type, Entities = relationships.List ?? [] },
+                    $"converted {type.Name} with {attribs.Count} attributes and {relationships.List?.Count} Relationships");
             }
             catch (Exception e)
             {
@@ -122,21 +123,6 @@ partial class JsonSerializer
         return lMain.ReturnAsOk(contentTypeSet);
     }
 
-    public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized) => DeserializeAttributeSysSettings(serialized, Log);
-
-    internal static ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized, ILog log)
-    {
-        var l = log.Fn<ContentTypeAttributeSysSettings>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...");
-        if (serialized.IsEmpty()) return l.Return(null, "empty serialized");
-        try
-        {
-            var json = System.Text.Json.JsonSerializer.Deserialize<JsonAttributeSysSettings>(serialized, JsonOptions.UnsafeJsonWithoutEncodingHtml);
-            return l.Return(json.ToSysSettings(), $"deserialized sysSettings");
-        }
-        catch (Exception e)
-        {
-            l.Done(e);
-            throw;
-        }
-    }
+    public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string serialized)
+        => JsonDeserializeAttribute.SysSettings(serialized, Log);
 }
