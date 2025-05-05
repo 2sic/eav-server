@@ -36,11 +36,11 @@ internal partial class AppLoader : ServiceBase, IAppLoader
     {
         get
         {
-            if (_paths != null)
-                return _paths;
+            if (field != null)
+                return field;
             var l = Log.Fn<List<string>>(message: "start building path-list");
 
-            _paths = [];
+            field = [];
             // find all RepositoryInfoOfFolder and let them tell us what paths to use
             var types = AssemblyHandling
                 .FindInherited(typeof(FolderBasedRepository), Log)
@@ -54,22 +54,20 @@ internal partial class AppLoader : ServiceBase, IAppLoader
                     var instance = (FolderBasedRepository) ActivatorUtilities.CreateInstance(_serviceProvider, typ, []);
                     var paths = instance.RootPaths;
                     if (paths != null)
-                        _paths.AddRange(paths);
+                        field.AddRange(paths);
                 }
                 catch(Exception e)
                 {
                     l.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
                     l.Ex(e);
                 }
-            l.A(l.Try(() => string.Join(",", _paths)));
-            return l.Return(_paths, $"{_paths.Count} paths");
+            l.A(l.Try(() => string.Join(",", field)));
+            return l.Return(field, $"{field.Count} paths");
         }
     }
-    private List<string> _paths;
 
 
-    internal List<FileSystemLoader> Loaders => _loader ??= BuildLoaders(null);
-    private List<FileSystemLoader> _loader;
+    internal List<FileSystemLoader> Loaders => field ??= BuildLoaders(null);
 
     private List<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource)
         => Paths

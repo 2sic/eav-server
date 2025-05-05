@@ -26,8 +26,8 @@ public static class ILogIfExtensions
             ? log
             : null;
 
-    public static ILog IfStats(this ILog log, LogSettings settings)
-        => settings is { Enabled: true, Statistics: true }
+    public static ILog IfSummary(this ILog log, LogSettings settings)
+        => settings is { Enabled: true, Summary: true }
             ? log
             : null;
 

@@ -31,14 +31,14 @@ public class LogIfTests
         => Null(new Log("").IfDetails(new(Enabled: enabled, Details: details)));
 
     [Fact]
-    public void LogIfStatsEnabled()
-        => NotNull(new Log("").IfStats(new(Enabled: true, Statistics: true)));
+    public void LogIfSummaryEnabled()
+        => NotNull(new Log("").IfSummary(new(Enabled: true, Summary: true)));
 
     [Theory]
     [InlineData(true, false)]
     [InlineData(false, true)]
     [InlineData(false, false)]
-    public void LogIfStatsFalse(bool enabled, bool stats)
-        => Null(new Log("").IfStats(new(Enabled: enabled, Statistics: stats)));
+    public void LogIfSummaryFalse(bool enabled, bool stats)
+        => Null(new Log("").IfSummary(new(Enabled: enabled, Summary: stats)));
 
 }
