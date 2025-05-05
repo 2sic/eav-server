@@ -7,7 +7,7 @@ namespace ToSic.Eav.Internal.Loaders;
 
 internal class EavSystemLoaderLogSettingsHelper(EavFeaturesLoader featuresLoader, ILog parentLog): HelperBase(parentLog, "Ldr.LogSet")
 {
-    private const string NameDetailed = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadSystemDataDetailed);
+    private const string NameDetailed = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadSystemDataDetails);
     private const string NameSummary = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadSystemDataSummary);
 
     internal LogSettings GetLogSettings()

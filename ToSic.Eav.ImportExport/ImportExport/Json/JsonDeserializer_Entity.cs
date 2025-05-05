@@ -25,7 +25,7 @@ partial class JsonSerializer
 
     public JsonFormat UnpackAndTestGenericJsonV1(string serialized)
     {
-        var l = Log.Fn<JsonFormat>();
+        var l = LogDsDetails.Fn<JsonFormat>();
         JsonFormat jsonObj;
         try
         {
@@ -33,11 +33,12 @@ partial class JsonSerializer
         }
         catch (Exception ex)
         {
-            throw l.Done(new FormatException("cannot deserialize json - bad format", ex));
+            // In case of an error, do make sure that we do actually log it.
+            throw (l ?? Log.Fn<JsonFormat>()).Done(new FormatException("cannot deserialize json - bad format", ex));
         }
 
         if (jsonObj._.V != 1)
-            throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
+            throw new ArgumentOutOfRangeException(nameof(serialized), $"unexpected format version: '{jsonObj._.V}'");
         return l.Return(jsonObj);
     }
 

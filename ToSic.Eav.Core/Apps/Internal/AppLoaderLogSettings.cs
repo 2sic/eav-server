@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Internal;
 
 public class AppLoaderLogSettings(IEavFeaturesService featuresSvc): ServiceBase("Ldr.LogSet")
 {
-    private const string NameDetailed = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadAppDetailed);
+    private const string NameDetailed = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadAppDetails);
     private const string NameSummary = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadAppSummary);
 
     internal LogSettings GetLogSettings()

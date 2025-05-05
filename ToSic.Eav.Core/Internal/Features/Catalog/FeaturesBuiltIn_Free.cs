@@ -75,11 +75,11 @@ public partial class BuiltInFeatures
     public class InsightsLoggingCustomConfig
     {
         public bool LoadSystemData;
-        public bool LoadSystemDataDetailed;
+        public bool LoadSystemDataDetails;
         public bool LoadSystemDataSummary;
 
         public bool LoadApp;
-        public bool LoadAppDetailed;
+        public bool LoadAppDetails;
         public bool LoadAppSummary;
         public string LoadAppIdCsv;
     }

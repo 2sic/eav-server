@@ -22,6 +22,7 @@ internal class ContentTypeLoader(
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
                 return l.Return(dbTypes, "no path");
 
+            l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
             var fileTypes = LoadContentTypesFromFileSystem(appReader);
             if (fileTypes == null || fileTypes.Count == 0)
                 return l.Return(dbTypes, "no app file types");

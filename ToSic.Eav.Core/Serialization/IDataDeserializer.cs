@@ -20,6 +20,9 @@ public interface IDataDeserializer: IHasLog
 
     void Initialize(IAppReader appState);
 
+    public void ConfigureLogging(LogSettings settings);
+
+
     /// <summary>
     /// Initialize with the app. One of two possible initializers. <br/>
     /// This special initialization is important for deserialization scenarios where the full app-state doesn't exist.
