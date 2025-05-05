@@ -25,7 +25,7 @@ public partial class JsonSerializer
 
     public List<ContentTypeWithEntities> GetContentTypesFromBundles(JsonFormat package)
     {
-        var l = Log.Fn<List<ContentTypeWithEntities>>();
+        var l = LogDsSummary.Fn<List<ContentTypeWithEntities>>();
         if (package.Bundles.SafeNone()) return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
@@ -46,7 +46,7 @@ public partial class JsonSerializer
 
     public List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null)
     {
-        var l = Log.Fn<List<IEntity>>();
+        var l = LogDsDetails.Fn<List<IEntity>>();
         if (package.Bundles.SafeNone())
             return l.Return([], "none found");
 

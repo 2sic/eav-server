@@ -38,7 +38,7 @@ partial class JsonSerializer
 
         if (jsonObj._.V != 1)
             throw new ArgumentOutOfRangeException(nameof(serialized), "unexpected format version");
-        return l.ReturnAsOk(jsonObj);
+        return l.Return(jsonObj);
     }
 
     public IEntity Deserialize(JsonEntity jEnt,
@@ -46,7 +46,7 @@ partial class JsonSerializer
         bool skipUnknownType,
         IEntitiesSource dynRelationshipsSource = default)
     {
-        var l = Log.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", timer: true);
+        var l = LogDsDetails.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", timer: true);
         // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
         var contentType = GetContentType(jEnt.Type.Id)
                           ?? (allowDynamic || skipUnknownType
@@ -93,8 +93,6 @@ partial class JsonSerializer
             metadataFor: target,
             contentType: contentType,
             isPublished: true,
-            //source: AppOrNull,
-            //metadataItems: mdItems,
             partsBuilder: partsBuilder,
             created: DateTime.MinValue,
             modified: DateTime.Now,
@@ -107,7 +105,7 @@ partial class JsonSerializer
 
     private Target DeserializeEntityTarget(JsonEntity jEnt)
     {
-        var l = Log.Fn<Target>(timer: true);
+        var l = LogDsDetails.Fn<Target>(timer: true);
         if (jEnt.For == null)
             return l.Return(new(), "no for found");
 
@@ -127,7 +125,7 @@ partial class JsonSerializer
 
     private IImmutableDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
     {
-        var l = Log.Fn<IImmutableDictionary<string, IAttribute>>(timer: true);
+        var l = LogDsDetails.Fn<IImmutableDictionary<string, IAttribute>>(timer: true);
         var bld = Services.DataBuilder.Value;
         var attribs = new[]
         {
@@ -170,7 +168,7 @@ partial class JsonSerializer
 
     private IImmutableDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource relationshipsSource = null)
     {
-        var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
+        var l = LogDsDetails.Fn<IImmutableDictionary<string, IAttribute>>();
         return l.ReturnAsOk(contentType.Attributes.ToImmutableDictionary(
             a => a.Name,
             a =>
@@ -215,33 +213,21 @@ partial class JsonSerializer
     {
         if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
         return list[attrDef.Name]
-            //.Select(v => Services.DataBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
-            .Select(v => Services.DataBuilder.Value.Create(v.Value, RecreateLanguageList(v.Key)) as IValue)
+            .Select(IValue (v) => Services.DataBuilder.Value.Create(v.Value, RecreateLanguageList(v.Key)))
             .ToList();
     }
-
-    //private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef, IAttribute target)
-    //{
-    //    if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
-    //    return target.Values = list[attrDef.Name]
-    //        .Select(v => Services.DataBuilder.Value.Build(attrDef.Type, v.Value, RecreateLanguageList(v.Key)))
-    //        .ToList();
-
-    //}
 
     private static IImmutableList<ILanguage> RecreateLanguageList(string languages) 
         => languages == NoLanguage
             ? DimensionBuilder.NoLanguages
             : languages.Split(',')
-                // 2023-02-24 2dm #immutable
-                //.Select(a => new Language { Key = a.Replace(ReadOnlyMarker, ""), ReadOnly = a.StartsWith(ReadOnlyMarker) } as ILanguage)
                 .Select(a => new Language(a.Replace(ReadOnlyMarker, ""), a.StartsWith(ReadOnlyMarker)) as ILanguage)
                 .ToImmutableList();
 
 
     private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid)
     {
-        var l = Log.Fn<Dictionary<string, Dictionary<string, string>>>();
+        var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, string>>>();
         try
         {
             var converter = ((MyServices)Services).ValueConverter.Value;
@@ -264,7 +250,7 @@ partial class JsonSerializer
 
     private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs)
     {
-        var l = Log.Fn<Dictionary<string, Dictionary<string, T>>>();
+        var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, T>>>();
         var result = new Dictionary<string, Dictionary<string, T>>();
         attribs.Cast<IAttribute<T>>().ToList().ForEach(a =>
         {

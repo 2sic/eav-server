@@ -49,6 +49,30 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     #endregion
 
+    #region Special Loggers
+
+    public void ConfigureLogging(LogSettings settings)
+    {
+        var l = Log.Fn(settings.ToString());
+        _disableLogDetails = Log.IfDetails(settings) == null;
+        _disableLogSummary = Log.IfSummary(settings) == null;
+        l.Done();
+    }
+
+    public new ILog Log => base.Log;
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog LogDsDetails => _disableLogDetails ? null : Log;
+    private bool _disableLogDetails = false;
+
+    internal ILog LogDsSummary => _disableLogSummary ? null : Log;
+    private bool _disableLogSummary = false;
+
+    #endregion
+
     public IAppReader AppReaderOrError => AppReaderOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
     protected IAppReader AppReaderOrNull { get; private set; }
 
@@ -56,8 +80,8 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     protected IContentType GetContentType(string staticName)
     {
-        var l = Log.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", timer: true);
-        // There is a complex lookup we must protocol, to better detect issues, which is why we assemble a message
+        var l = LogDsDetails.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", timer: true);
+        // There is a complex lookup we must protocol to better detect issues, which is why we assemble a message
         var msg = "";
 
         // If local type is preferred, use the App accessor,

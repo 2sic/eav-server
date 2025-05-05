@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Serialization.Internal;
 using ToSic.Lib.DI;
+// ReSharper disable RedundantAccessorBody
 
 namespace ToSic.Eav.ImportExport.Json;
 
@@ -9,7 +10,7 @@ partial class JsonSerializer(JsonSerializer.MyServices services, string logName 
     public const string ReadOnlyMarker = "~";
     public const string NoLanguage = "*";
 
-    #region Serializer Dependencies
+    #region Serializer Dependencies / MyServices
 
     public new class MyServices(
         ITargetTypes metadataTargets,
@@ -23,12 +24,6 @@ partial class JsonSerializer(JsonSerializer.MyServices services, string logName 
 
     #endregion
 
-    ///// <summary>
-    ///// Initialize with the correct logger name
-    ///// </summary>
-    //public JsonSerializer(MyServices services, string logName = "Jsn.Serlzr") : base(services, logName)
-    //{ }
-
     /// <summary>
     /// WIP test API to ensure content-types serialized for UI resolve any hyperlinks.
     /// This is ATM only relevant to ensure that file-references in the WYSIWYG CSS work
@@ -37,4 +32,5 @@ partial class JsonSerializer(JsonSerializer.MyServices services, string logName 
     /// </summary>
     [PrivateApi]
     public bool ValueConvertHyperlinks = false;
+
 }

@@ -49,7 +49,9 @@ partial class JsonSerializer
                     break;
                 case ValueTypes.Hyperlink:
                     var links = ToTypedDictionary<string>(gList);
-                    attribs.Hyperlink = ValueConvertHyperlinks ? ConvertReferences(links, entity.EntityGuid) : links;
+                    attribs.Hyperlink = ValueConvertHyperlinks
+                        ? ConvertReferences(links, entity.EntityGuid)
+                        : links;
                     break;
                 case ValueTypes.Custom:
                     attribs.Custom = ToTypedDictionary<string>(gList);

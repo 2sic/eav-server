@@ -12,7 +12,7 @@ partial class JsonSerializer
 
     public IContentType DeserializeContentType(string serialized)
     {
-        var l = Log.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...", timer: true);
+        var l = LogDsSummary.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...", timer: true);
         try
         {
             var jsonPackage = UnpackAndTestGenericJsonV1(serialized);
@@ -30,7 +30,7 @@ partial class JsonSerializer
 
     public ContentTypeWithEntities ConvertContentType(JsonContentTypeSet json)
     {
-        var lMain = Log.Fn<ContentTypeWithEntities>(timer: true);
+        var lMain = LogDsDetails.Fn<ContentTypeWithEntities>(timer: true);
         var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
             var preferredSource = AppReaderOrNull?.GetCache() as IEntitiesSource;
@@ -42,7 +42,7 @@ partial class JsonSerializer
 
             IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
 
-            var l = Log.Fn<ContentTypeWithEntities>();
+            var l = LogDsDetails.Fn<ContentTypeWithEntities>();
             try
             {
                 var directEntities = json.Entities?.Select(ConvertPart).ToList() ?? [];
@@ -124,5 +124,5 @@ partial class JsonSerializer
     }
 
     public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string name, string json)
-        => JsonDeserializeAttribute.SysSettings(name, json, Log);
+        => JsonDeserializeAttribute.SysSettings(name, json, LogDsDetails);
 }
