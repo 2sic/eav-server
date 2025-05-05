@@ -65,8 +65,7 @@ public partial class BuiltInFeatures
         Description = "Configure server logging - usually to take less memory.",
         Security = new(1, "In some cases you won't see what happened previously."),
         LicenseRules = ForAllEnabled,
-        // TODO: BETA - THIS IS THE guid of the CopyrightSettings
-        ConfigurationContentType = "aed871cf-220b-4330-b368-f1259981c9c8",
+        ConfigurationContentType = "5d70d9f6-3c03-4c09-8413-1a0c2e8dbf8f",
     };
 
     /// <summary>
