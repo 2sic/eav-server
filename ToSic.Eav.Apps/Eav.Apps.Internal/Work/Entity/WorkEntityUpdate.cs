@@ -63,23 +63,10 @@ public class WorkEntityUpdate(
         {
             PreserveUntouchedAttributes = true,
             PreserveUnknownLanguages = true,
-            // #WipDraftShouldBranch
             DraftShouldBranch = publishing?.ShouldBranchDrafts ?? false,
         };
 
         var saveEnt = entitySaverLazy.Value.CreateMergedForSaving(orig, partialEntity, saveOptions);
-
-        // #WipDraftShouldBranch
-        // 2025-01-05 2dm deactivated this.
-        // 1. IsPublished should already have been set by all known code paths
-        // 2. PlaceDraftInBranch is moved to the SaveOptions
-        // if changes should be draft, ensure it works
-        //if (publishing != null && saveEnt is Entity withPublishing)
-        //{
-        //    withPublishing.IsPublished = publishing.ShouldPublish;
-        //    // #WipDraftShouldBranch
-        //    //withPublishing.PlaceDraftInBranch = publishing.ShouldBranchDrafts;
-        //}
 
         entSaver.Save(saveEnt, saveOptions);
         return l.ReturnTrue("ok");

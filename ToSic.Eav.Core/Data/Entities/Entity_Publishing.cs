@@ -9,15 +9,9 @@ partial record Entity
     #region Save/Update settings - needed when passing this object to the save-layer
 
     /// <inheritdoc />
-    // #WipDraftShouldBranch
-    public required bool IsPublished { get; /*set;*/ init; } = true;
+    public required bool IsPublished { get; init; } = true;
 
     internal int? PublishedEntityId { get; init; }
-
-    // #WipDraftShouldBranch
-    //// TODO: should move the set-info to a save-options object
-    //[PrivateApi]
-    //public bool PlaceDraftInBranch { get; set; }
 
     #endregion
 

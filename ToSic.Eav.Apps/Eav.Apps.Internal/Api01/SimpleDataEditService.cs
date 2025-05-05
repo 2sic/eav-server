@@ -166,11 +166,7 @@ public partial class SimpleDataEditService(
             attributes: builder.Attribute.Create(attributes),
             owner: owner,
             metadataFor: targetOrNull,
-            // #WipDraftShouldBranch
-            isPublished: publishing.ShouldPublish
-            // #WipDraftShouldBranch
-            //publishing: publishing
-        );
+            isPublished: publishing.ShouldPublish);
         if (targetOrNull != null)
             l.A("FYI: Set metadata target which was provided.");
 

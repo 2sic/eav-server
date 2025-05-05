@@ -17,11 +17,10 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
         var saveOptions = saver.SaveOptions();
 
         var entitiesToImport = itemsToImport
-            .Select(bundle => entityBuilder.CreateFrom(bundle.Entity,
-                guid: bundle.Header.Guid,
-                isPublished: enforceDraft ? false : null
-                // #WipDraftShouldBranch
-                //placeDraftInBranch: enforceDraft ? true : null
+            .Select(bundle => entityBuilder.CreateFrom(
+                    bundle.Entity,
+                    guid: bundle.Header.Guid,
+                    isPublished: enforceDraft ? false : null
                 )
             )
             .Select(e => new EntityPair<SaveOptions>(e, saveOptions with { DraftShouldBranch = enforceDraft }))
