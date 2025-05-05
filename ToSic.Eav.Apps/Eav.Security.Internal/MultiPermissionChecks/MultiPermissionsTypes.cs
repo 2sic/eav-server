@@ -19,8 +19,7 @@ public class MultiPermissionsTypes: MultiPermissionsApp
     private readonly LazySvc<IAppReaderFactory> _appStates;
 
     // Note: AppState must be public, as we have some extension methods that need it
-    public IAppReader AppState => _appState ??= _appStates.Value.GetOrKeep(App);
-    private IAppReader _appState;
+    public IAppReader AppState => field ??= _appStates.Value.GetOrKeep(App);
 
     public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
     {

@@ -46,8 +46,8 @@ public class ImportXmlReader: HelperBase
     internal bool IsAppImport;
 
     #region AppConfig
-    private XElement _appConfig;
-    internal XElement AppConfig => _appConfig ??= GetAppConfig();
+
+    internal XElement AppConfig => field ??= GetAppConfig();
 
     private XElement GetAppConfig()
     {
@@ -67,8 +67,7 @@ public class ImportXmlReader: HelperBase
 
     #region AppFolder
 
-    private string _appFolder;
-    public string AppFolder => _appFolder ??= GetKeyValueOrThrowOnNull("Folder");
+    public string AppFolder => field ??= GetKeyValueOrThrowOnNull("Folder");
 
     #endregion
 

@@ -15,8 +15,7 @@ public class ZoneManager(LazySvc<DbDataController> dbLazy, LazySvc<AppCachePurge
         return this;
     }
 
-    internal DbDataController DataController => _db ??= dbLazy.Value.Init(ZoneId, null);
-    private DbDataController _db;
+    internal DbDataController DataController => field ??= dbLazy.Value.Init(ZoneId, null);
 
 
     #region App management

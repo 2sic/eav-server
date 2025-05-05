@@ -29,8 +29,7 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     : ServiceBase($"{EavLogs.Eav}.AppPth", connect: [serverPaths, config]), IAppPaths
 {
     private const bool Debug = true;
-    private ISite Site => _finalSite ??= siteOrNull ?? siteLazy.Value;
-    private ISite _finalSite;
+    private ISite Site => field ??= siteOrNull ?? siteLazy.Value;
     private readonly IAppSpecs _appSpecs = appReader.Specs;
 
     /// <summary>

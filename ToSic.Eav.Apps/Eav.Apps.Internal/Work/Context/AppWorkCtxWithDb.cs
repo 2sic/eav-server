@@ -6,7 +6,6 @@ namespace ToSic.Eav.Apps.Internal.Work;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AppWorkCtxWithDb : AppWorkCtx, IAppWorkCtxWithDb
 {
-    private readonly DbDataController _db;
     private readonly LazySvc<DbDataController> _dbLazy;
 
     //public AppWorkCtxWithDb(LazySvc<DbDataController> dbLazy, AppState appState) : base(appState)
@@ -23,8 +22,8 @@ public class AppWorkCtxWithDb : AppWorkCtx, IAppWorkCtxWithDb
     //}
     public AppWorkCtxWithDb(DbDataController db, IAppReader appState) : base(appState)
     {
-        _db = db;
+        DataController = db;
     }
 
-    public DbDataController DataController => _db ?? _dbLazy.Value;
+    public DbDataController DataController => field ?? _dbLazy.Value;
 }

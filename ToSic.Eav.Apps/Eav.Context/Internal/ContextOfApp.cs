@@ -75,8 +75,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     #region User Permissions / May Edit
 
-    EffectivePermissions IContextOfUserPermissions.Permissions => _permissions ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
-    private EffectivePermissions _permissions;
+    EffectivePermissions IContextOfUserPermissions.Permissions => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
 
     private bool UserMayEdit => _userMayEditGet.Get(() => Log.GetterM(() =>
     {

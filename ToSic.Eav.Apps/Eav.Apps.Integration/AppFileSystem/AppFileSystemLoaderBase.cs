@@ -22,8 +22,7 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     /// since in some cases (e.g. DNN Search) the initial site is not available.
     /// So in that case it overrides the implementation to get the real site just-in-time.
     /// </summary>
-    protected ISite Site => _site ??= zoneMapper.SiteOfAppIfSiteInvalid(siteDraft, AppIdentity.AppId);
-    private ISite _site;
+    protected ISite Site => field ??= zoneMapper.SiteOfAppIfSiteInvalid(siteDraft, AppIdentity.AppId);
 
     protected IAppIdentity AppIdentity { get; private set; }
     private IAppPaths _appPaths;

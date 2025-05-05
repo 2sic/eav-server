@@ -13,8 +13,7 @@ public abstract class MultiPermissionsBase<TServices>(TServices services, string
     /// All the permission checks that will be used
     /// </summary>
     public Dictionary<string, IPermissionCheck> PermissionCheckers
-        => _permissionCheckers ??= InitializePermissionChecks();
-    private Dictionary<string, IPermissionCheck> _permissionCheckers;
+        => field ??= InitializePermissionChecks();
 
     #region abstract methods
 

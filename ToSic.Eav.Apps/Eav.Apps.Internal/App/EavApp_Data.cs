@@ -30,8 +30,7 @@ partial class EavApp
 
 
     /// <inheritdoc />
-    public IAppData Data => _data ??= BuildData<AppDataWithCrud, IAppData>();
-    private IAppData _data;
+    public IAppData Data => field ??= BuildData<AppDataWithCrud, IAppData>();
 
     [PrivateApi]
     protected TResult BuildData<TDataSource, TResult>() where TDataSource : TResult where TResult : class, IDataSource

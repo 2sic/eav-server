@@ -55,13 +55,12 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     private bool IsContentAdmin => User?.IsContentAdmin ?? false;
     private bool IsContentEditor => User?.IsContentEditor ?? false;
 
-    EffectivePermissions IContextOfUserPermissions.Permissions => _permissions
+    EffectivePermissions IContextOfUserPermissions.Permissions => field
         ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(
             isSiteAdmin: mayAdmin,
             isContentAdmin: mayAdmin || IsContentAdmin,
             isContentEditor: mayAdmin || IsContentEditor,
             showDrafts: mayAdmin || IsContentAdmin || IsContentEditor));
-    private EffectivePermissions _permissions;
 
     /// <inheritdoc />
     public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);

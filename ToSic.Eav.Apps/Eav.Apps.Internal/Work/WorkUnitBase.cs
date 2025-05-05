@@ -1,4 +1,5 @@
-﻿namespace ToSic.Eav.Apps.Internal.Work;
+﻿// ReSharper disable RedundantAccessorBody
+namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Base class for all app-work helpers.
@@ -13,10 +14,9 @@ public abstract class WorkUnitBase<TContext>(string logName, object[] connect = 
     /// </summary>
     public TContext AppWorkCtx
     {
-        get => _appWorkCtx ?? throw new($"Can't use this before {nameof(AppWorkCtx)} is set - pls use a Work-Generator.");
-        private set => _appWorkCtx = value;
+        get => field ?? throw new($"Can't use this before {nameof(AppWorkCtx)} is set - pls use a Work-Generator.");
+        private set => field = value;
     }
-    private TContext _appWorkCtx;
 
     /// <summary>
     /// Internal init, should only ever be called by the GenWork... generators
