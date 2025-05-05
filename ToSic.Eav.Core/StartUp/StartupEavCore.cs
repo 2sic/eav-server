@@ -50,6 +50,7 @@ public static class StartUpEavCore
         services.TryAddTransient<GlobalPaths>();
         services.TryAddTransient<SystemLoader>();
         services.TryAddTransient<EavSystemLoader>();
+        services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
         services.TryAddTransient<FeaturePersistenceService>();
 
         // Make sure that IFeaturesInternal and IFeatures use the same singleton!

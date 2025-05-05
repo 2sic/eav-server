@@ -6,25 +6,22 @@ namespace ToSic.Eav.WebApi.Admin.Features;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FeatureControllerReal(
-    LazySvc<EavSystemLoader> systemLoaderLazy,
+    // Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
+    LazySvc<EavFeaturesLoader> systemLoaderLazy,
     LazySvc<IEavFeaturesService> featuresLazy)
     : ServiceBase("Bck.Feats", connect: [systemLoaderLazy, featuresLazy]), IFeatureController
 {
-    /// <summary>
-    /// Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
-    /// </summary>
-    private readonly LazySvc<EavSystemLoader> _systemLoaderLazy = systemLoaderLazy;
-
     public const string LogSuffix = "Feats";
 
     public bool SaveNew(List<FeatureManagementChange> changes)
     {
         var l = Log.Fn<bool>($"{changes.Count} changes");
         // validity check 
-        if (changes == null || changes.Count == 0)
+        if (changes.Count == 0)
             return l.ReturnFalse("no features changes");
 
-        return l.ReturnAsOk(_systemLoaderLazy.Value.UpdateFeatures(changes));
+        var status = systemLoaderLazy.Value.UpdateFeatures(changes);
+        return l.ReturnAsOk(status);
     }
 
     public FeatureStateDto Details(string nameId)

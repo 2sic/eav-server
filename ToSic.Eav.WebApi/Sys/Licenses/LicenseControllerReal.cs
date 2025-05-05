@@ -22,11 +22,12 @@ public class LicenseControllerReal(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     LazySvc<EavSystemLoader> systemLoaderLazy,
     LazySvc<LicenseCatalog> licenseCatalog,
-    SystemFingerprint fingerprint)
+    SystemFingerprint fingerprint,
+    LazySvc<EavFeaturesLoader> featuresLoader)
     : ServiceBase("Bck.Lics",
         connect:
         [
-            licenseServiceLazy, featuresLazy, globalConfiguration, licenseCatalog, systemLoaderLazy, fingerprint
+            licenseServiceLazy, featuresLazy, globalConfiguration, licenseCatalog, systemLoaderLazy, fingerprint, featuresLoader
         ]), ILicenseController
 {
     // auto-download license file
@@ -116,7 +117,7 @@ public class LicenseControllerReal(
         foreach (var file in files) SaveLicenseFile(file);
 
         // reload license and features
-        systemLoaderLazy.Value.LoadLicenseAndFeatures();
+        featuresLoader.Value.LoadLicenseAndFeatures();
 
         return l.ReturnAndLog(new() { Success = true, Message = "ok" }, "ok");
     }
@@ -158,7 +159,7 @@ public class LicenseControllerReal(
         var success = SaveLicenseFile(DefaultLicenseFileName, content);
 
         // reload license and features
-        systemLoaderLazy.Value.LoadLicenseAndFeatures();
+        featuresLoader.Value.LoadLicenseAndFeatures();
 
         return l.ReturnAndLog(new() { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed." }, "ok");
     }
