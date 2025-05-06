@@ -133,6 +133,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Lib.Code\ToSic.Lib.Code.csproj" />
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
     <ProjectReference Include="..\ToSic.Lib.Utils\ToSic.Lib.Utils.csproj" />
   </ItemGroup>

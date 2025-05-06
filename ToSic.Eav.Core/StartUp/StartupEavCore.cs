@@ -6,7 +6,6 @@ using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Code.InfoSystem;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
@@ -23,7 +22,8 @@ using ToSic.Eav.Persistence;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
-using CodeInfoService = ToSic.Eav.Code.InfoSystem.CodeInfoService;
+using ToSic.Lib.Code.InfoSystem;
+using CodeInfoService = ToSic.Lib.Code.InfoSystem.CodeInfoService;
 
 namespace ToSic.Eav.StartUp;
 

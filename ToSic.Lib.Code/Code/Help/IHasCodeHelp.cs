@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Code.Help;
+﻿namespace ToSic.Lib.Code.Help;
 
 /// <summary>
 /// TODO: This actually doesn't really work as expected.

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Code.Infos;
+﻿namespace ToSic.Lib.Code.Infos;
 
 /// <summary>
 /// Information about the current code - such as obsolete-message or important notification

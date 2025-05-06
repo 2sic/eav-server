@@ -1,11 +1,11 @@
-﻿using ToSic.Eav.Code.Infos;
+﻿using ToSic.Lib.Code.Infos;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Code.InfoSystem;
+namespace ToSic.Lib.Code.InfoSystem;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class CodeInfoService(LazySvc<CodeInfosInScope> scope) : ServiceBase(EavLogs.Eav + ".CodeCh")
+public partial class CodeInfoService(LazySvc<CodeInfosInScope> scope) : ServiceBase("Lib.CodeCh")
 {
     public void Warn(CodeUse use)
     {

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Code.InfoSystem;
+﻿namespace ToSic.Lib.Code.InfoSystem;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class CodeInfoConstants

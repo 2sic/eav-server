@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Properties;
+﻿namespace ToSic.Lib;
 
 /// <summary>
 /// Contains information for all assemblies to use

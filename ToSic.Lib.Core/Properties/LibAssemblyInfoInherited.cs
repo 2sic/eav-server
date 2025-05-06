@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using static ToSic.Lib.Properties.LibAssemblyInfo;
+using static ToSic.Lib.LibAssemblyInfo;
 
 // Use the globally defined assembly version information in all projects
 // This file lies in the ToSic.Eav.Core project and is used as linked in other EAV projects

@@ -25,13 +25,9 @@
     <Compile Include="..\ToSic.Lib.Core\Properties\LibAssemblyInfoInherited.cs" Link="Properties\LibAssemblyInfoInherited.cs" />
   </ItemGroup>
 
-  
-  <ItemGroup>
-    <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Lib.Utils\ToSic.Lib.Utils.csproj" />
   </ItemGroup>
 
 </Project>

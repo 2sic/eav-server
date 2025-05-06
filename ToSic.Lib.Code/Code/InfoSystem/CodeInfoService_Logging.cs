@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Code.Infos;
-using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Plumbing;
+using ToSic.Lib.Code.Infos;
 
-namespace ToSic.Eav.Code.InfoSystem;
+namespace ToSic.Lib.Code.InfoSystem;
 
 partial class CodeInfoService
 {

@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
-using static ToSic.Eav.Code.InfoSystem.CodeInfoConstants;
+using static ToSic.Lib.Code.InfoSystem.CodeInfoConstants;
 
-namespace ToSic.Eav.Code.InfoSystem;
+namespace ToSic.Lib.Code.InfoSystem;
 
 partial class CodeInfoService
 {

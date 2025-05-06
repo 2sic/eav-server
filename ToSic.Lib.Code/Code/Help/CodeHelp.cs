@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Code.Help;
+namespace ToSic.Lib.Code.Help;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeHelp(

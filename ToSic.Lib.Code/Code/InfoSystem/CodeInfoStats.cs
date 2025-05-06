@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.Code.InfoSystem;
+namespace ToSic.Lib.Code.InfoSystem;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeInfoStats
