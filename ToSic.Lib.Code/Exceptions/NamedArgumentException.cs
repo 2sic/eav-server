@@ -2,7 +2,7 @@
 using ToSic.Lib.Code.Help;
 using ToSic.Lib.Coding;
 
-namespace ToSic.Eav;
+namespace ToSic.Lib;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class NamedArgumentException : ArgumentException, IExceptionWithHelp

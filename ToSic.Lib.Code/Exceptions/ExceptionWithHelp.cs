@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Code.Help;
 
-namespace ToSic.Eav;
+namespace ToSic.Lib;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class ExceptionWithHelp : Exception, IExceptionWithHelp
