@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Security.Encryption;
 
-internal class Sha512
+public class Sha512
 {
     /// <remarks>
     /// * In v19.03.03 we changed `new SHA512CryptoServiceProvider()` to be `SHA512.Create()` because of obsolete warnings
