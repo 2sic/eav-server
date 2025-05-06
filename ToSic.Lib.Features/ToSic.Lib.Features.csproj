@@ -28,10 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FeatSys\Licenses\" />
+    <ProjectReference Include="..\ToSic.Lib.Utils\ToSic.Lib.Utils.csproj" />
   </ItemGroup>
 
 </Project>

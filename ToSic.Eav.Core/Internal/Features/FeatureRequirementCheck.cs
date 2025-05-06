@@ -6,11 +6,9 @@ namespace ToSic.Eav.Internal.Features;
 
 public class FeatureRequirementCheck(LazySvc<IEavFeaturesService> features) : RequirementCheckBase
 {
-    public const string ConditionIsFeature = "feature";
-
     private LazySvc<IEavFeaturesService> Features { get; } = features;
 
-    public override string NameId => ConditionIsFeature;
+    public override string NameId => FeatureConstants.ConditionIsFeature;
 
     public override bool IsOk(Requirement requirement) => Features.Value.IsEnabled(requirement.NameId);
 

@@ -51,7 +51,7 @@ public class LicenseService : ILicenseService
     public static long CacheTimestamp;
 
 
-    internal static void Update(List<FeatureSetState> licenses)
+    public static void Update(List<FeatureSetState> licenses)
     {
         AllCache = licenses;
         EnabledCache = licenses

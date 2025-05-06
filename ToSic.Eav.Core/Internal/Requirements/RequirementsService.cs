@@ -8,7 +8,7 @@ namespace ToSic.Eav.Internal.Requirements;
 /// Internal service to check if a requirement has been met
 /// </summary>
 public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> checkers)
-    : ServiceBase(EavLogs.Eav + "ReqSvc", connect: [checkers])
+    : ServiceBase("Lib.ReqSvc", connect: [checkers])
 {
     protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; } = checkers;
 

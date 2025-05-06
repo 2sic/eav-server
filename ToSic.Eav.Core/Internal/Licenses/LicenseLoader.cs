@@ -154,8 +154,8 @@ public sealed class LicenseLoader(
                 {
                     licDef = new()
                     {
-                        NameId = BuiltInLicenses.LicenseCustom,
-                        Priority = BuiltInLicenses.FeatureLicensesBaseId + index,
+                        NameId = LicenseConstants.LicenseCustom,
+                        Priority = LicenseConstants.FeatureLicensesBaseId + index,
                         Name = storedDetails.Comments ?? "Feature (unknown)",
                         Guid = Guid.TryParse(storedDetails.Id, out var guidId) ? guidId : Guid.Empty,
                         Description = $"Feature: {storedDetails.Comments} ({storedDetails.Id})",

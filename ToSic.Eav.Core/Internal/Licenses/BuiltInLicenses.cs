@@ -16,18 +16,12 @@
  */
 
 using ToSic.Eav.SysData;
+using static ToSic.Eav.Internal.Licenses.LicenseConstants;
 
 namespace ToSic.Eav.Internal.Licenses;
 
 public class BuiltInLicenses
 {
-    public const int TestLicensesBaseId = 9000;
-    public const int FeatureLicensesBaseId = 9900;
-    public const string LicensePrefix = "License-";
-    public const string LicenseCustom = LicensePrefix + "Custom";
-    public const string FeatureSetSystem = "System";   // Feature Set "System"
-    public const string FeatureSetExtension = "Extension";
-
     // IMPORTANT
     // The guids of these licenses must match the ones in the 2sxc.org license management list
     // So always create the definition there first, then use the GUID of that definition here

@@ -11,7 +11,7 @@ public class FeatureConstants
     public const string FeaturesJson = "features.json";
 
     [PrivateApi("no good reason to publish this")]
-    internal const string FeaturesValidationSignature2Sxc930 =
+    public const string FeaturesValidationSignature2Sxc930 =
         "MIIDxjCCAq6gAwIBAgIQOlgW44m37ohELal3ruEqjTANBgkqhkiG9w0BAQsFADBnMQ4wDAYDVQQHDAVCdWNoczERMA8GA1UECAwI" +
         "U3RHYWxsZW4xCzAJBgNVBAYTAkNIMRQwEgYDVQQLDAtEZXZlbG9wbWVudDENMAsGA1UECgwEMnNpYzEQMA4GA1UEAwwHMnN4YyBD" +
         "QTAeFw0xODA0MjQwNjU2NTlaFw0yMDEyMzEyMjAwMDBaMGcxDjAMBgNVBAcMBUJ1Y2hzMREwDwYDVQQIDAhTdEdhbGxlbjELMAkG" +
@@ -26,4 +26,5 @@ public class FeatureConstants
         "cURfVQ064UicolDoAed3JfZ1XbIpYpUPK0uDDwOmsnNkwVJb1fm1z+MKTRNORnZDZCPfwVlXu32xwG1/YzJqDNnqOd0zY8H4Mj/x" +
         "V+pokOjj/fBOjNiSfpI+7KkolNM43ZhLSw8TYStDZuf0WsSrU4vF0ROMyiynNhyebpPX21d/MB0PEfZ82uNXBrXTrBPFog==";
 
+    public const string ConditionIsFeature = "feature";
 }

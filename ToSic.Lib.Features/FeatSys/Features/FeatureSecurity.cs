@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.SysData;
+﻿using ToSic.Lib;
+
+namespace ToSic.Eav.SysData;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class FeatureSecurity(int impact, string message = "")
@@ -10,5 +12,5 @@ public class FeatureSecurity(int impact, string message = "")
     /// <summary>
     /// For fallback in null-cases, probably not used ATM
     /// </summary>
-    public static FeatureSecurity Unknown = new(0, Constants.NullNameId);
+    public static FeatureSecurity Unknown = new(0, LibConstants.Unknown);
 }

@@ -6,10 +6,10 @@ namespace ToSic.Eav.SysData;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EnterpriseFingerprint
 {
-    public int Id { get; internal set; }
-    public Guid Guid { get; internal set; }
-    public string Title { get; internal set; }
-    public string Fingerprint { get; internal set; }
+    public int Id { get; init; }
+    public Guid Guid { get; init; }
+    public string Title { get; init; }
+    public string Fingerprint { get; init; }
     public bool Valid => ValidityInternal.Valid;
     public string ValidityMessage => ValidityInternal.Message;
 

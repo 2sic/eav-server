@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
-using static ToSic.Eav.Internal.Features.FeatureRequirementCheck;
 
 namespace ToSic.Eav.SysData;
 
@@ -16,7 +15,7 @@ public record Feature: Aspect
         // Create virtual license rule, so it can be enabled by its own GUID
         var ownLicenseDefinition = new FeatureSet
         {
-            NameId = BuiltInLicenses.LicenseCustom,
+            NameId = LicenseConstants.LicenseCustom,
             Priority = 0,
             Name = $"Feature = {nameId}",
             Guid = guid,
@@ -32,7 +31,7 @@ public record Feature: Aspect
     /// Constructor for unknown feature - which only has a GUID to identify it
     /// </summary>
     /// <param name="unknownFeatureGuid"></param>
-    internal static Feature UnknownFeature(Guid unknownFeatureGuid) =>
+    public static Feature UnknownFeature(Guid unknownFeatureGuid) =>
         new()
         {
             NameId = unknownFeatureGuid.ToString(),
@@ -87,9 +86,9 @@ public record Feature: Aspect
 
     public required IEnumerable<FeatureLicenseRule> LicenseRules { get; init; }
 
-    internal IReadOnlyList<FeatureLicenseRule> LicenseRulesList => field ??= CreateLicenseRules(LicenseRules, NameId, Guid);
+    public IReadOnlyList<FeatureLicenseRule> LicenseRulesList => field ??= CreateLicenseRules(LicenseRules, NameId, Guid);
 
-    public Requirement Requirement => field ??= new(ConditionIsFeature, NameId);
+    public Requirement Requirement => field ??= new(FeatureConstants.ConditionIsFeature, NameId);
 
     public bool EnableForSystemTypes { get; init; }
 
