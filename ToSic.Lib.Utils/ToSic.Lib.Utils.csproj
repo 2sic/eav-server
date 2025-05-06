@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net9.0;</TargetFrameworks>
+    <Deterministic>true</Deterministic>
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+    <!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <AssemblyVersion>0.0.1</AssemblyVersion>
+    <FileVersion>0.0.1</FileVersion>
+    <RootNamespace>ToSic.Lib</RootNamespace>
+    <!-- end: Don't generate... -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ToSic.Lib.Core\Properties\LibAssemblyInfo.cs" Link="Properties\LibAssemblyInfo.cs" />
+    <Compile Include="..\ToSic.Lib.Core\Properties\LibAssemblyInfoInherited.cs" Link="Properties\LibAssemblyInfoInherited.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Generics\" />
+    <Folder Include="Utils\" />
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
+  </ItemGroup>
+
+</Project>
