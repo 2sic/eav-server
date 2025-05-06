@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Internal.Generics;
+using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.DataSource;
@@ -48,7 +49,7 @@ internal class DataSourceLink(IDataSourceLink original,
     {
         var list = Enumerable.Empty<IDataSourceLink>();
         if (recursion > 10) return [];
-        list = list.Concat(new[] { this });
+        list = list.Concat([this]);
         if (More.SafeAny()) list = list.Concat(More.SelectMany(m => m.Flatten(recursion + 1)));
         return list;
     }

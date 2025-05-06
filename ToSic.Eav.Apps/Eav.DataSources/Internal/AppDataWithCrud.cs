@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.Generics;
+using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.DataSources.Internal;

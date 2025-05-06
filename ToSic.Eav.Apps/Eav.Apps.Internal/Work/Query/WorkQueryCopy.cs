@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.Generics;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Serialization.Internal;
@@ -63,7 +63,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         {
             _builder.Value.Value.String(newWiring)
         };
-        var queryAttributes = query.Entity.Attributes.ToEditable();
+        var queryAttributes = query.Entity.Attributes.ToEditableInIgnoreCase();
         var newWiringAttribute =
             _builder.Value.Attribute.CreateFrom(queryAttributes[QueryConstants.QueryStreamWiringAttributeName],
                 newWiringValues.ToImmutableList());

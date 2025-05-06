@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Generics;
+using ToSic.Eav.Internal.Generics;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Build;
@@ -15,7 +15,7 @@ partial class AttributeBuilder
     }
 
     public IImmutableDictionary<string, IAttribute> Empty() => EmptyList;
-    public static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableInvariant();
+    public static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableInvIgnoreCase();
     
     public IImmutableDictionary<string, IAttribute> Create(IContentType contentType, ILookup<string, IValue> preparedValues)
     {
@@ -36,10 +36,10 @@ partial class AttributeBuilder
 
 
     public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, IAttribute> attributes)
-        => attributes?.ToImmutableInvariant() ?? Empty();
+        => attributes?.ToImmutableInvIgnoreCase() ?? Empty();
 
     public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, object> attributes, IImmutableList<ILanguage> languages = null) => 
-        attributes == null ? Empty() : CreateInternal(attributes, languages).ToImmutableInvariant();
+        attributes == null ? Empty() : CreateInternal(attributes, languages).ToImmutableInvIgnoreCase();
 
 
     /// <summary>

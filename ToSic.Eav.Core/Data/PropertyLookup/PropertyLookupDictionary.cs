@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.Debug;
-using ToSic.Eav.Generics;
+using ToSic.Eav.Internal.Generics;
 using ToSic.Lib.Data;
 
 namespace ToSic.Eav.Data.PropertyLookup;

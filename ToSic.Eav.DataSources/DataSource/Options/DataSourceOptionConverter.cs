@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using ToSic.Eav.Generics;
+using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
 using static System.StringComparer;
@@ -91,7 +91,7 @@ public class DataSourceOptionConverter
     }
 
     public IImmutableDictionary<string, string> ValuesFromDictionary(IDictionary<string, string> original)
-        => original?.ToImmutableInvariant();
+        => original?.ToImmutableInvIgnoreCase();
 
     public IImmutableDictionary<string, string> ValuesFromDictionary(IDictionary<string, object> original)
         => original?.ToImmutableDictionary(pair => pair.Key, pair => pair.Value?.ToString(),

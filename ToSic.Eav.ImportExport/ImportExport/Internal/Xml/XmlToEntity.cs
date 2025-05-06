@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Xml.Linq;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Generics;
+using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.ImportExport.Internal.Xml;
@@ -206,7 +206,7 @@ public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
             guid: guid,
             contentType: typeForEntity,
             isPublished: isPublished != "False",
-            attributes: finalAttributes.ToImmutableInvariant(),
+            attributes: finalAttributes.ToImmutableInvIgnoreCase(),
             metadataFor: metadataForFor
         );
 

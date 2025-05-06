@@ -2,8 +2,8 @@
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Generics;
 using ToSic.Eav.Integration;
+using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Plumbing;
@@ -130,7 +130,7 @@ public partial class SimpleDataEditService(
             ($"{type.Name}, {values?.Count}, target: {targetOrNull != null}; {existingIsPublished}");
         // We're going to make changes to the dictionary, so we MUST copy it first, so we don't affect upstream code
         // also ensure its case-insensitive...
-        values = values.ToInvariantCopy();
+        values = values.ToInvIgnoreCaseCopy();
 
         if (!values.ContainsKey(Attributes.EntityFieldGuid))
         {

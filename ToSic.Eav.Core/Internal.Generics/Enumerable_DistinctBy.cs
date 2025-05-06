@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Plumbing;
+﻿namespace ToSic.Eav.Internal.Generics;
 
 /// <summary>
 /// Taken from https://github.com/morelinq/MoreLINQ/blob/master/MoreLinq/DistinctBy.cs

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Generics;
+﻿using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Metadata;
 using static System.StringComparer;
 

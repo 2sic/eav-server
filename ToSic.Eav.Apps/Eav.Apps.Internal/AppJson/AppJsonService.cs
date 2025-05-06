@@ -3,9 +3,9 @@ using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
-using ToSic.Eav.Generics;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Generics;
 
 namespace ToSic.Eav.Apps.Internal;
 

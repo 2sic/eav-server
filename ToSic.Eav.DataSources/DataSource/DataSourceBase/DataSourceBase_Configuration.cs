@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Generics;
+using ToSic.Eav.Internal.Generics;
 using ToSic.Lib.Helpers;
 using static System.StringComparison;
 
@@ -60,7 +60,7 @@ partial class DataSourceBase
             l.A("Add lookups");
             dsConfig.LookUpEngine = lookUp;
             var configValues = options?.Values;
-            if (configValues != null) dsConfig.AddMany(configValues.ToEditable());
+            if (configValues != null) dsConfig.AddMany(configValues.ToEditableInIgnoreCase());
         }
         l.Done();
     }
