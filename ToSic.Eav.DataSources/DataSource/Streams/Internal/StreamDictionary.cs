@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.Generics;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSource.Streams.Internal;
@@ -12,7 +11,7 @@ public class StreamDictionary
     private readonly LazySvc<IDataSourceCacheService> _cache;
     internal IDataSource Source;
 
-    private readonly DictionaryInvariant<IDataStream> _inner = [];
+    private readonly Dictionary<string, IDataStream> _inner = new(StringComparer.InvariantCultureIgnoreCase);
 
     public StreamDictionary(LazySvc<IDataSourceCacheService> cache)
     {
