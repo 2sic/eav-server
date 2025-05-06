@@ -115,7 +115,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
             return l.ReturnAsError(runErr);
         }
         if (funcResult is null)
-            l.Return([], "null, no data returned");
+            return l.Return([], "null, no data returned");
 
         // Make a list out of the result
         List<object> data;
@@ -134,7 +134,8 @@ public class CustomDataSource: CustomDataSourceAdvanced
         }
 
         // Handle empty list
-        if (data.SafeNone()) l.Return([], "no items returned");
+        if (data.SafeNone())
+            return l.Return([], "no items returned");
 
         // Handle all is already converted to IEntity
         if (data.All(i => i is IEntity))
