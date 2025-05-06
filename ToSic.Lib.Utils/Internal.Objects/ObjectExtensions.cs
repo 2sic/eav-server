@@ -12,12 +12,15 @@ public static partial class ObjectExtensions
     {
         // deal with normal scenarios
         // todo: check if == is ok, or if we should use "is"
-        if (argument == null) return true;
-        if (object.Equals(argument, default(TObject))) return true;
+        if (argument == null)
+            return true;
+        if (object.Equals(argument, default(TObject)))
+            return true;
 
         // deal with non-null nullables
         var methodType = typeof(TObject);
-        if (Nullable.GetUnderlyingType(methodType) != null) return false;
+        if (Nullable.GetUnderlyingType(methodType) != null)
+            return false;
 
         // 2dm: Treat boolean false as a valid value, not as default
         if (boolIsNeverDefault && argument is bool) 
@@ -45,13 +48,14 @@ public static partial class ObjectExtensions
     /// </remarks>
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static T ConvertOrDefault<T>(this object value, bool numeric = false, bool truthy = false) 
+    public static T? ConvertOrDefault<T>(this object value, bool numeric = false, bool truthy = false) 
         => value.TryConvert<T>(numeric: numeric, truthy: truthy).Value;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static (bool Success, T Value) TryConvert<T>(this object value, bool numeric = false, bool truthy = false)
+    public static (bool Success, T? Value) TryConvert<T>(this object? value, bool numeric = false, bool truthy = false)
     {
-        if (value is null) return (false, default);
+        if (value is null)
+            return (false, default);
         // 2023-08-18 2dm: Added minor optimization; remove comment by EOY if no problems
         if (value is T alreadyTyped) return (true, alreadyTyped);
 
@@ -101,15 +105,18 @@ public static partial class ObjectExtensions
 
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static T ConvertOrFallback<T>(this object value, T fallback, bool numeric = false, bool truthy = false, bool fallbackOnDefault = false)
+    public static T ConvertOrFallback<T>(this object? value, T fallback, bool numeric = false, bool truthy = false, bool fallbackOnDefault = false)
     {
-        if (value is null) return fallback;
+        if (value is null)
+            return fallback;
         try
         {
             var result = value.TryConvert<T>(numeric: numeric, truthy: truthy);
             // Null should always fallback, default not always
-            if (!result.Success || result.Value == null) return fallback;
-            if (fallbackOnDefault && IsNullOrDefault(result)) return fallback;
+            if (!result.Success || result.Value == null)
+                return fallback;
+            if (fallbackOnDefault && IsNullOrDefault(result))
+                return fallback;
             return result.Value;
         }
         catch
@@ -119,7 +126,10 @@ public static partial class ObjectExtensions
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool IsDefault<T>(this T value) => EqualityComparer<T>.Default.Equals(value, default);
+    public static bool IsDefault<T>(this T? value)
+        => EqualityComparer<T>.Default.Equals(value, default);
+
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool IsNotDefault<T>(this T value) => !EqualityComparer<T>.Default.Equals(value, default);
+    public static bool IsNotDefault<T>(this T? value)
+        => !EqualityComparer<T>.Default.Equals(value, default);
 }
