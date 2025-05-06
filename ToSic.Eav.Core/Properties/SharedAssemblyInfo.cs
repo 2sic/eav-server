@@ -12,5 +12,5 @@ public static class SharedAssemblyInfo
     public const string AssemblyVersion = "19.99.00";
     public const string Company = "2sic internet solutions GmbH, Switzerland";
     public const string EavProduct = "2sic EAV System";
-    public const string EavCopyright = "Copyright AGPL © 2sic 2024";
+    public const string EavCopyright = "Copyright AGPL © 2sic 2025";
 }
