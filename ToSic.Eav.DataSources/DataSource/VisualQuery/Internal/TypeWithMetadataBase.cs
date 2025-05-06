@@ -1,6 +1,7 @@
-﻿using ToSic.Lib.Data;
+﻿using ToSic.Eav.Plumbing;
+using ToSic.Lib.Data;
 
-namespace ToSic.Eav.Plumbing;
+namespace ToSic.Eav.DataSource.VisualQuery.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class TypeWithMetadataBase<T> : IHasIdentityNameId

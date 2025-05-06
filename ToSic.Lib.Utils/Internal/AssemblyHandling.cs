@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using ToSic.Eav.StartUp;
+using ToSic.Lib.Logging;
 using static System.StringComparison;
 
 namespace ToSic.Eav.Plumbing;
@@ -11,7 +12,7 @@ public class AssemblyHandling
     /// Get all Installed DataSources
     /// </summary>
     /// <remarks>Objects that implement IDataSource</remarks>
-    public static IEnumerable<Type> FindInherited(Type type, ILog log = null)
+    public static IEnumerable<Type> FindInherited(Type type, ILog? log = null)
     {
         log.A($"FindInherited of type {type.FullName}");
         return GetTypes(log).Where(t => type.IsAssignableFrom(t) && (!t.IsAbstract || t.IsInterface) && t != type);
@@ -23,7 +24,7 @@ public class AssemblyHandling
     /// <param name="typeFullName"></param>
     /// <param name="log"></param>
     /// <returns></returns>
-    public static bool HasType(string typeFullName, ILog log = null)
+    public static bool HasType(string typeFullName, ILog? log = null)
     {
         var l = log.Fn<bool>(message: $"HasType {typeFullName}");
         return l.ReturnAsOk(GetTypes(log).Any(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
@@ -35,15 +36,16 @@ public class AssemblyHandling
     /// <param name="typeFullName"></param>
     /// <param name="log"></param>
     /// <returns></returns>
-    public static Type GetTypeOrNull(string typeFullName, ILog log = null)
+    public static Type GetTypeOrNull(string typeFullName, ILog? log = null)
     {
         var l = log.Fn<Type>(message: $"HasType {typeFullName}");
         return l.ReturnAsOk(GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
     }
 
-    internal static List<Type> GetTypes(ILog log = null)
+    public static List<Type> GetTypes(ILog? log = null)
     {
-        if (_typeCache != null) return _typeCache;
+        if (_typeCache != null)
+            return _typeCache;
 
         var bl = BootLog.Log.Fn("Creating list of Types", timer: true);
 
@@ -57,7 +59,7 @@ public class AssemblyHandling
         return l.Return(_typeCache, $"{_typeCache.Count}");
     }
 
-    private static List<Type> _typeCache;
+    private static List<Type>? _typeCache;
 
     /// <summary>
     /// Get Loadable Types from an assembly
@@ -66,7 +68,7 @@ public class AssemblyHandling
     /// Does special try/catch to prevent bugs when assemblies are missing
     /// Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes 
     /// </remarks>
-    private static IEnumerable<Type> GetLoadableTypes(Assembly assembly, ILog log = null)
+    private static IEnumerable<Type> GetLoadableTypes(Assembly assembly, ILog? log = null)
     {
         // try to log
         try
@@ -89,7 +91,7 @@ public class AssemblyHandling
         {
             log.A($"None of the types from assembly '{assembly?.FullName}' could be loaded.");
             log.Ex(ex);
-            return Enumerable.Empty<Type>();
+            return [];
         }
     }
 }
