@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Lib.GetByName;
 
 /// <summary>
 /// General property to get any kind of value by name only.
@@ -9,5 +9,5 @@
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public interface ICanGetByName
 {
-    object Get(string name);
+    object? Get(string name);
 }

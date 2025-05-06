@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ToSic.Eav.Plumbing;
+namespace ToSic.Lib.Helpers;
 
 /// <summary>
 /// Execute something if a condition is met, but do it within a lock to avoid duplicate runs

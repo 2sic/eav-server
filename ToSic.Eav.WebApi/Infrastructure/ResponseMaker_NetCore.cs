@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using ToSic.Eav.Internal;
 
 namespace ToSic.Eav.WebApi.Infrastructure;
 
@@ -53,7 +54,7 @@ internal class ResponseMaker: IResponseMaker
     public IActionResult File(string fileContent, string fileName)
     {
         new FileExtensionContentTypeProvider().TryGetContentType(fileName, out var contentType);
-        return File(fileContent, fileName, contentType ?? MimeHelper.FallbackType);
+        return File(fileContent, fileName, contentType ?? MimeTypeConstants.FallbackType);
     }
 }
 

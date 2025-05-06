@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using ToSic.Eav.Internal;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 
@@ -40,7 +41,7 @@ internal class ResponseMaker: IResponseMaker
     public HttpResponseMessage Json(object json)
     {
         var responseMessage = ApiController.Request.CreateResponse(HttpStatusCode.OK);
-        responseMessage.Content = new StringContent(JsonSerializer.Serialize(json, JsonOptions.SafeJsonForHtmlAttributes), Encoding.UTF8, MimeHelper.Json);
+        responseMessage.Content = new StringContent(JsonSerializer.Serialize(json, JsonOptions.SafeJsonForHtmlAttributes), Encoding.UTF8, MimeTypeConstants.Json);
         return responseMessage;
     }
 
@@ -74,9 +75,9 @@ internal class ResponseMaker: IResponseMaker
             FileName = fileName
         };
         if (fileName.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
-            response.Content.Headers.ContentType = new(MimeHelper.Json);
+            response.Content.Headers.ContentType = new(MimeTypeConstants.Json);
         else if (fileName.EndsWith(".xml", StringComparison.InvariantCultureIgnoreCase))
-            response.Content.Headers.ContentType = new(MimeHelper.Xml);
+            response.Content.Headers.ContentType = new(MimeTypeConstants.Xml);
 
         return response;
     }

@@ -11,6 +11,7 @@ using ToSic.Eav.WebApi.Infrastructure;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Options;
 using ToSic.Eav.ImportExport.Internal.XmlList;
+using ToSic.Eav.Internal;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Security.Files;
 using ToSic.Eav.Serialization.Internal;
@@ -110,7 +111,7 @@ public class ContentExportApi(
             CtIncludeInherited = false,
             CtAttributeIncludeInheritedMetadata = false
         });
-        return l.ReturnAsOk(responseMaker.File(typeJson, fileName, MimeHelper.Json));
+        return l.ReturnAsOk(responseMaker.File(typeJson, fileName, MimeTypeConstants.Json));
     }
 
     [HttpGet]
@@ -138,7 +139,7 @@ public class ContentExportApi(
 
         var (export, fileContent) = CreateBundleExport(exportConfiguration, indentation);
 
-        return l.ReturnAsOk(responseMaker.File(fileContent, export.FileName, MimeHelper.Json));
+        return l.ReturnAsOk(responseMaker.File(fileContent, export.FileName, MimeTypeConstants.Json));
     }
 
     public bool BundleSave(IUser user, Guid exportConfiguration, int indentation)

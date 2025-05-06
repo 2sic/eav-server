@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Security.Encryption
 {
