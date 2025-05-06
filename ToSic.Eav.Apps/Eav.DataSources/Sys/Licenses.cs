@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Licenses;
+using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -23,10 +23,6 @@ namespace ToSic.Eav.DataSources.Sys;
 // ReSharper disable once UnusedMember.Global
 public sealed class Licenses : CustomDataSource
 {
-    #region Configuration-properties (no config)
-
-    #endregion
-
     /// <inheritdoc />
     /// <summary>
     /// Constructs a new Scopes DS
@@ -35,6 +31,11 @@ public sealed class Licenses : CustomDataSource
     public Licenses(MyServices services, ILicenseService licenseService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics")
     {
         ConnectLogs([licenseService]);
-        ProvideOutRaw(() => licenseService.All.OrderBy(l => l.Aspect?.Priority ?? 0), options: () => new() { TypeName = "License" });
+        ProvideOutRaw(
+            () => licenseService.All
+                .OrderBy(l => l.Aspect?.Priority ?? 0)
+                .Select(l => l.ToRawEntity()),
+            options: () => new() { TypeName = "License" }
+        );
     }
 }
