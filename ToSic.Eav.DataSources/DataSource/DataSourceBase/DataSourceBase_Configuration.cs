@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Internal.Generics;
 using static System.StringComparison;
 
 namespace ToSic.Eav.DataSource;

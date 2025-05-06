@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Internal.Generics;
+using ToSic.Lib.Internal.Generics;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Internal.Plumbing.Generics;

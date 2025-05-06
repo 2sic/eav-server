@@ -2,10 +2,10 @@
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Serialization.Internal;
+using ToSic.Lib.Internal.Generics;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
 

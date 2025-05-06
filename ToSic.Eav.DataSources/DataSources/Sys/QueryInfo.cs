@@ -1,10 +1,10 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources.Sys.Types;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Services;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Internal.Generics;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Internal.Generics;
 
 namespace ToSic.Eav.Data;
 

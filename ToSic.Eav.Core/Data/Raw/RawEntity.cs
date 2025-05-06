@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Internal.Generics;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Metadata;
+using ToSic.Lib.Internal.Generics;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Raw;

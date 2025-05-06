@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Internal.Generics;
+using ToSic.Lib.Internal.Generics;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json;

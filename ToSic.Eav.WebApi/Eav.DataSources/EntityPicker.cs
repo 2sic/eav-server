@@ -4,11 +4,11 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Security.Internal;
 using ToSic.Eav.Security.Permissions;
 using ToSic.Lib.Documentation;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.Internal.Generics;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 

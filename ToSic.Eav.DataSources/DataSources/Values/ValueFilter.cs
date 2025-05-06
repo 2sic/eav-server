@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSources.Internal;
-using ToSic.Eav.Internal.Generics;
+using ToSic.Lib.Internal.Generics;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 

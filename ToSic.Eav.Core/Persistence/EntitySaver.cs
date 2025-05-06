@@ -1,9 +1,9 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
+using ToSic.Lib.Internal.Generics;
 using ToSic.Lib.Services;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;

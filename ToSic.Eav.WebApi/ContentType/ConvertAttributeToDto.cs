@@ -2,8 +2,8 @@
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Metadata;
+using ToSic.Lib.Internal.Generics;
 using static ToSic.Eav.Data.AttributeMetadata;
 
 

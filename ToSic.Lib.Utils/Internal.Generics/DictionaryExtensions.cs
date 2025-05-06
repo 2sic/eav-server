@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Internal.Generics;
+namespace ToSic.Lib.Internal.Generics;
 
 // ReSharper disable once InconsistentNaming
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

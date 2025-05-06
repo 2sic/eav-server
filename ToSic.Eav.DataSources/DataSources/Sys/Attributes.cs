@@ -3,8 +3,8 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Internal;
 using ToSic.Eav.DataSources.Sys.Types;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Internal.Generics;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 

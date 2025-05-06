@@ -2,11 +2,11 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Lib.Internal.Generics;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 

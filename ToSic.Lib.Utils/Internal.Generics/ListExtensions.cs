@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Internal.Generics;
+﻿namespace ToSic.Lib.Internal.Generics;
 
 public static class ListExtensions
 {

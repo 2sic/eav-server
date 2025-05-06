@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Source;
-using ToSic.Eav.Internal.Generics;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Internal.Generics;
 
 namespace ToSic.Eav.Data.Build;
 

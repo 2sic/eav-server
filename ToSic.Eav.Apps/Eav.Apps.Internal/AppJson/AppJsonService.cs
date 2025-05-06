@@ -5,7 +5,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Internal.Configuration;
-using ToSic.Eav.Internal.Generics;
+using ToSic.Lib.Internal.Generics;
 
 namespace ToSic.Eav.Apps.Internal;
 
