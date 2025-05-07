@@ -14,7 +14,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 {
     #region MyServices
 
-    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates, object[] connect)
+    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates, object[] connect = default)
         : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates, ..connect ?? []])
     {
         public DataBuilder DataBuilder { get; } = dataBuilder;
