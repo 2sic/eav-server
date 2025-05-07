@@ -23,6 +23,7 @@
   <ItemGroup>
     <Compile Include="..\ToSic.Lib.Core\Properties\LibAssemblyInfo.cs" Link="Properties\LibAssemblyInfo.cs" />
     <Compile Include="..\ToSic.Lib.Core\Properties\LibAssemblyInfoInherited.cs" Link="Properties\LibAssemblyInfoInherited.cs" />
+    <Compile Include="..\ToSic.Lib.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
   </ItemGroup>
 
   
