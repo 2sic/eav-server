@@ -1,15 +1,15 @@
 ﻿using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Lib.Sys.Fingerprints.Internal;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EnterpriseFingerprint
 {
-    public int Id { get; init; }
-    public Guid Guid { get; init; }
-    public string Title { get; init; }
-    public string Fingerprint { get; init; }
+    public required int Id { get; init; }
+    public required Guid Guid { get; init; }
+    public required string Title { get; init; }
+    public required string Fingerprint { get; init; }
     public bool Valid => ValidityInternal.Valid;
     public string ValidityMessage => ValidityInternal.Message;
 

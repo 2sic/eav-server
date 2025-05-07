@@ -5,12 +5,12 @@ namespace ToSic.Lib.Code.Help;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeHelp(
     CodeHelp original,
-    string name = default,
-    string detect = default,
-    string linkCode = default,
+    string? name = default,
+    string? detect = default,
+    string? linkCode = default,
     bool? detectRegex = default,
-    string uiMessage = default,
-    string detailsHtml = default)
+    string? uiMessage = default,
+    string? detailsHtml = default)
 {
     public const string ErrHelpPre = "Error in your code. ";
     private const string ErrHelpLink = "https://go.2sxc.org/{0}";

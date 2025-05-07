@@ -26,6 +26,7 @@ using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
+using ToSic.Lib.Sys.Fingerprints.Internal;
 
 namespace ToSic.Eav.Internal.Licenses;
 
@@ -42,7 +43,7 @@ public sealed class LicenseLoader(
 {
     internal LicenseLoader Init(List<EnterpriseFingerprint> entFingerprints)
     {
-        fingerprint.LoadEnterpriseFingerprintsWIP(entFingerprints);
+        fingerprint.LoadEnterpriseFingerprints(entFingerprints);
         return this;
     }
 
@@ -56,7 +57,7 @@ public sealed class LicenseLoader(
         var fingerprint1 = fingerprint.GetFingerprint();
         l.A($"fingerprint:{fingerprint1?.Length}");
 
-        var validEntFps = fingerprint.EnterpriseFingerprintsWIP
+        var validEntFps = fingerprint.EnterpriseFingerprints
             .Where(e => e.Valid)
             .ToList();
         l.A($"validEntFps:{validEntFps.Count}");

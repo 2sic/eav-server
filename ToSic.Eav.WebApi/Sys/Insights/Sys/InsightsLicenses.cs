@@ -36,7 +36,7 @@ internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
                     $"Fingerprint: '{fingerprint.Value.GetFingerprint()}'")
             );
 
-            foreach (var entFp in fingerprint.Value.EnterpriseFingerprintsWIP)
+            foreach (var entFp in fingerprint.Value.EnterpriseFingerprints)
                 fingerprintList.Add(Li(
                     $"Enterprise License: for '{entFp.Title}' {EmojiTrueFalse(entFp.Valid)}",
                     Br(),

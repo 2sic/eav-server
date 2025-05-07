@@ -23,6 +23,7 @@ using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using ToSic.Lib.Sys.Fingerprints.Internal;
 
 namespace ToSic.Eav.Security.Fingerprint;
 
@@ -35,7 +36,8 @@ public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<I
 {
     public string GetFingerprint()
     {
-        if (_fingerprintCache != null) return _fingerprintCache;
+        if (_fingerprintCache != null)
+            return _fingerprintCache;
 
         var platform1 = platform.Value;
         var nameId = platform1.Name.ToLowerInvariant();          // usually "dnn" or "oqt"
@@ -64,9 +66,9 @@ public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<I
 
     internal static void ResetForTest() => _fingerprintCache = null;
 
-    public List<EnterpriseFingerprint> EnterpriseFingerprintsWIP => _enterpriseFingerprints;
+    public List<EnterpriseFingerprint> EnterpriseFingerprints => _enterpriseFingerprints;
     private static List<EnterpriseFingerprint> _enterpriseFingerprints = [];
 
-    internal void LoadEnterpriseFingerprintsWIP(List<EnterpriseFingerprint> enterpriseFingerprints) 
+    internal void LoadEnterpriseFingerprints(List<EnterpriseFingerprint> enterpriseFingerprints) 
         => _enterpriseFingerprints = enterpriseFingerprints;
 }

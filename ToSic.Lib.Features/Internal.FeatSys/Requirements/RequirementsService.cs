@@ -12,7 +12,7 @@ public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> che
 {
     protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; } = checkers;
 
-    public List<RequirementError> Check(IEnumerable<IHasRequirements> withRequirements)
+    public List<RequirementError> Check(IEnumerable<IHasRequirements>? withRequirements)
     {
         var l = Log.Fn<List<RequirementError>>();
         var result = withRequirements
@@ -22,19 +22,20 @@ public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> che
         return l.Return(result, $"{result.Count} requirements failed");
     }
 
-    public List<RequirementError> Check(IHasRequirements withRequirements) 
+    public List<RequirementError> Check(IHasRequirements? withRequirements) 
         => Check(withRequirements?.Requirements);
 
-    public List<RequirementError> Check(List<Requirement> requirements)
+    public List<RequirementError> Check(List<Requirement>? requirements)
     {
         if (requirements == null || requirements.Count == 0)
             return [];
+
         return requirements.Select(Check)
             .Where(c => c != null)
-            .ToList();
+            .ToList()!;
     }
 
-    public RequirementError Check(Requirement requirement)
+    public RequirementError? Check(Requirement? requirement)
     {
         if (requirement == null)
             return null;
