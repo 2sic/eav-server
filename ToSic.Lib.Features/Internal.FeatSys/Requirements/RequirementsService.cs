@@ -10,31 +10,55 @@ namespace ToSic.Eav.Internal.Requirements;
 public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> checkers)
     : ServiceBase("Lib.ReqSvc", connect: [checkers])
 {
-    protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; } = checkers;
+    /// <summary>
+    /// List of all checkers.
+    /// Internal so it can be unit tested.
+    /// </summary>
+    internal LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; } = checkers;
 
-    public List<RequirementError> Check(IEnumerable<IHasRequirements>? withRequirements)
+
+    public IEnumerable<RequirementError> Check(IEnumerable<IHasRequirements>? withRequirements)
     {
-        var l = Log.Fn<List<RequirementError>>();
-        var result = withRequirements
-                         ?.SelectMany(Check)
-                         .ToList()
-                     ?? [];
-        return l.Return(result, $"{result.Count} requirements failed");
+        var l = Log.Fn<IEnumerable<RequirementError>>();
+        var list = withRequirements
+                       ?.SelectMany(Check)
+                       .Distinct()
+                       .ToList()
+                   ?? [];
+        return l.Return(list, $"{list.Count} requirements failed");
     }
 
-    public List<RequirementError> Check(IHasRequirements? withRequirements) 
-        => Check(withRequirements?.Requirements);
+    /// <summary>
+    /// Check all requirements of an object implementing IHasRequirements
+    /// </summary>
+    /// <param name="hasRequirements"></param>
+    /// <returns></returns>
+    public IEnumerable<RequirementError> Check(IHasRequirements? hasRequirements) 
+        => Check(hasRequirements?.Requirements);
 
-    public List<RequirementError> Check(List<Requirement>? requirements)
+    /// <summary>
+    /// Check a list of requirements.
+    /// </summary>
+    /// <param name="requirements"></param>
+    /// <returns>A list of error objects or an empty list if all is ok</returns>
+    public IEnumerable<RequirementError> Check(IEnumerable<Requirement>? requirements)
     {
-        if (requirements == null || requirements.Count == 0)
+        var list = requirements?.ToList();
+        if (list == null || !list.Any())
             return [];
 
-        return requirements.Select(Check)
+        return list
+            .Select(Check)
             .Where(c => c != null)
+            .Distinct()
             .ToList()!;
     }
 
+    /// <summary>
+    /// Check a single requirement.
+    /// </summary>
+    /// <param name="requirement"></param>
+    /// <returns>An error object or `null`</returns>
     public RequirementError? Check(Requirement? requirement)
     {
         if (requirement == null)
