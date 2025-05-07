@@ -75,8 +75,6 @@ public static class StartUpEavCore
         // Permissions helper
         services.TryAddTransient<PermissionCheckBase.MyServices>();
 
-        services.TryAddTransient<ILicenseService, LicenseService>();
-
         // Fingerprinting: Because fo security, we are not injecting the interface
         // As that would allow replacing the finger-printer with something else
         // We actually only use the direct object in DI

@@ -25,6 +25,8 @@ public static class StartUp
         services.AddTransient<IRequirementCheck, FeatureRequirementCheck>();
         services.AddTransient<IRequirementCheck, SysFeatureRequirementCheck>();
 
+        services.TryAddTransient<ILicenseService, LicenseService>();
+
         return services;
     }
 
