@@ -25,7 +25,7 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<TsDynDataHistory> TsDynDataHistories { get; set; }
     public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
     public virtual DbSet<TsDynDataEntity> TsDynDataEntities { get; set; }
-    public virtual DbSet<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; }
+    public virtual DbSet<TsDynDataRelationship> TsDynDataRelationships { get; set; }
     public virtual DbSet<ToSicEavValues> ToSicEavValues { get; set; }
     public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
     public virtual DbSet<TsDynDataZone> TsDynDataZones { get; set; }
@@ -162,30 +162,30 @@ public partial class EavDbContext : DbContext
                 .HasConstraintName("FK_TsDynDataEntity_TsDynDataTransactionDeleted");
         });
 
-        modelBuilder.Entity<ToSicEavEntityRelationships>(entity =>
+        modelBuilder.Entity<TsDynDataRelationship>(entity =>
         {
             entity.HasKey(e => new { e.AttributeId, e.ParentEntityId, e.SortOrder })
-                .HasName("PK_ToSIC_EAV_EntityRelationships");
+                .HasName("PK_TsDynDataRelationship");
 
-            entity.ToTable("ToSIC_EAV_EntityRelationships");
+            entity.ToTable("TsDynDataRelationship");
 
             entity.Property(e => e.AttributeId);
 
-            entity.Property(e => e.ParentEntityId).HasColumnName("ParentEntityID");
+            entity.Property(e => e.ParentEntityId);
 
-            entity.Property(e => e.ChildEntityId).HasColumnName("ChildEntityID");
+            entity.Property(e => e.ChildEntityId);
 
             entity.HasOne(d => d.Attribute)
-                .WithMany(p => p.ToSicEavEntityRelationships)
+                .WithMany(p => p.TsDynDataRelationships)
                 .HasForeignKey(d => d.AttributeId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_TsDynDataAttribute");
+                .HasConstraintName("FK_TsDynDataRelationship_TsDynDataAttribute");
 
             entity.HasOne(d => d.ChildEntity)
                 .WithMany(p => p.RelationshipsWithThisAsChild)
                 .HasForeignKey(d => d.ChildEntityId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ChildEntities");
+                .HasConstraintName("FK_TsDynDataRelationship_TsDynDataEntityChild");
 
             entity.HasOne(d => d.ParentEntity)
                 .WithMany(p => p.RelationshipsWithThisAsParent)
@@ -193,7 +193,7 @@ public partial class EavDbContext : DbContext
                 // Commented for efcore 2.1.1 to fix DbUpdateConcurrencyException
                 // "Database operation expected to affect 1 row(s) but actually affected 0 row(s)."
                 //.OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_ParentEntities");
+                .HasConstraintName("FK_TsDynDataRelationship_TsDynDataEntityParent");
         });
 
         modelBuilder.Entity<ToSicEavValues>(entity =>

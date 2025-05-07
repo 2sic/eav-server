@@ -47,7 +47,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
         {
             l.A($"found existing rels⋮{existingRelationships.Count}");
             // this is necessary after remove, because otherwise EF state tracking gets messed up
-            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavEntityRelationships.RemoveRange(existingRelationships));
+            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.TsDynDataRelationships.RemoveRange(existingRelationships));
         }
 
         // now save the changed relationships
@@ -57,7 +57,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                 var newEntityIds = p.Targets.ToList();
                 // Create new relationships which didn't exist before
                 for (var i = 0; i < newEntityIds.Count; i++)
-                    DbContext.SqlDb.ToSicEavEntityRelationships.Add(new()
+                    DbContext.SqlDb.TsDynDataRelationships.Add(new()
                     {
                         AttributeId = p.AttributeId,
                         ChildEntityId = newEntityIds[i],
@@ -202,7 +202,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
             //var ent = DbContext.Entities.GetDbEntity(id);
             foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
-                DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
+                DbContext.SqlDb.TsDynDataRelationships.Remove(relationToDelete);
         }
 
         // intermediate save (important) so that EF state tracking works

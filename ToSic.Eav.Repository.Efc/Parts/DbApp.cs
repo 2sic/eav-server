@@ -77,7 +77,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
                 // note that actually there can only be relationships TO json entities, as all from will be in the json, 
                 // but just to be sure (maybe there's historic data that's off) we'll do both
 
-                var allJsonItemsToDelete = DbContext.SqlDb.ToSicEavEntityRelationships
+                var allJsonItemsToDelete = DbContext.SqlDb.TsDynDataRelationships
                     .Where(r => 
                         jsonEntitiesInApp.Any(e => e.EntityId == r.ChildEntityId || e.EntityId == r.ParentEntityId));
                 DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(allJsonItemsToDelete));
@@ -137,7 +137,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
 
 
         // Delete Parent-EntityRelationships & Child-EntityRelationships
-        var dbRelTable = db.ToSicEavEntityRelationships;
+        var dbRelTable = db.TsDynDataRelationships;
         var relationshipsWithAppParents = dbRelTable
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
             //.Where(rel => entityIds.Contains(rel.ParentEntityId));

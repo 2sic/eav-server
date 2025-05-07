@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavEntityRelationships
+public partial class TsDynDataRelationship
 {
     public int AttributeId { get; set; }
 

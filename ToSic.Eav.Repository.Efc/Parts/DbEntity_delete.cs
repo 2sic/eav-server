@@ -65,13 +65,13 @@ partial class DbEntity
         return true;
     }
 
-    private void DeleteRelationships(ICollection<ToSicEavEntityRelationships> relationships)
+    private void DeleteRelationships(ICollection<TsDynDataRelationship> relationships)
     {
         Log.A($"DeleteRelationships({relationships?.Count})");
         if ((relationships?.Count ?? 0) == 0)
             Log.A("No relationships to delete");
         else
-            relationships?.ToList().ForEach(r => DbContext.SqlDb.ToSicEavEntityRelationships.Remove(r));
+            relationships?.ToList().ForEach(r => DbContext.SqlDb.TsDynDataRelationships.Remove(r));
         Log.A("/DeleteRelationships(...)");
     }
         

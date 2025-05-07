@@ -50,9 +50,9 @@ public partial class TsDynDataEntity
 
     public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
 
-    public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsChild { get; set; } = new HashSet<ToSicEavEntityRelationships>();
+    public virtual ICollection<TsDynDataRelationship> RelationshipsWithThisAsChild { get; set; } = new HashSet<TsDynDataRelationship>();
 
-    public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsParent { get; set; } = new HashSet<ToSicEavEntityRelationships>();
+    public virtual ICollection<TsDynDataRelationship> RelationshipsWithThisAsParent { get; set; } = new HashSet<TsDynDataRelationship>();
 
     public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; } = new HashSet<ToSicEavValues>();
 }

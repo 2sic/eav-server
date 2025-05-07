@@ -53,7 +53,7 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
             // note: can't use .Clear(), as that will try to actually delete the children
             Log.A($"Flush relationships on {target.EntityId}");
             foreach (var relationToDelete in target.RelationshipsWithThisAsParent)
-                DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
+                DbContext.SqlDb.TsDynDataRelationships.Remove(relationToDelete);
             // intermediate save (important) so that EF state tracking works
             DbContext.SqlDb.SaveChanges();
 

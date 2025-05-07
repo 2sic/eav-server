@@ -35,7 +35,7 @@ public partial class TsDynDataAttribute
 
     public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 
-    public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; } = new HashSet<ToSicEavEntityRelationships>();
+    public virtual ICollection<TsDynDataRelationship> TsDynDataRelationships { get; set; } = new HashSet<TsDynDataRelationship>();
 
     public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; } = new HashSet<ToSicEavValues>();
 }

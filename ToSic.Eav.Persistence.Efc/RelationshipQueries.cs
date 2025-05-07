@@ -34,10 +34,10 @@ internal class RelationshipQueries(EavDbContext context, ILog parentLog): Helper
     /// <remarks>
     /// Optimized 2025-04-28 for v20 - not including Attributes any more by default.
     /// </remarks>
-    public IQueryable<ToSicEavEntityRelationships> RelationshipChunkQueryOptimized(int appId, List<int> entityIds)
+    public IQueryable<TsDynDataRelationship> RelationshipChunkQueryOptimized(int appId, List<int> entityIds)
     {
-        var l = Log.Fn<IQueryable<ToSicEavEntityRelationships>>($"app: {appId}, ids: {entityIds.Count}", timer: true);
-        var relationships = context.ToSicEavEntityRelationships
+        var l = Log.Fn<IQueryable<TsDynDataRelationship>>($"app: {appId}, ids: {entityIds.Count}", timer: true);
+        var relationships = context.TsDynDataRelationships
             .Where(rel => rel.ParentEntity.AppId == appId)
             .Where(r =>
                     !r.ChildEntityId.HasValue // child can be a null-reference

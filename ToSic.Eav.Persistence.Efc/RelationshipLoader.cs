@@ -124,12 +124,12 @@ internal class RelationshipLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs
 
 }
 
-internal record LoadingRelationship(ToSicEavEntityRelationships Rel, string StaticName);
+internal record LoadingRelationship(TsDynDataRelationship Rel, string StaticName);
 
 
-internal class RelationshipComparer : IEqualityComparer<ToSicEavEntityRelationships>
+internal class RelationshipComparer : IEqualityComparer<TsDynDataRelationship>
 {
-    public bool Equals(ToSicEavEntityRelationships x, ToSicEavEntityRelationships y)
+    public bool Equals(TsDynDataRelationship x, TsDynDataRelationship y)
     {
         if (x == null && y == null) return true;
         if (x == null) return false;
@@ -140,6 +140,6 @@ internal class RelationshipComparer : IEqualityComparer<ToSicEavEntityRelationsh
                && x.ChildEntityId == y.ChildEntityId;
     }
 
-    public int GetHashCode(ToSicEavEntityRelationships obj)
+    public int GetHashCode(TsDynDataRelationship obj)
         => obj.GetHashCode();
 }
