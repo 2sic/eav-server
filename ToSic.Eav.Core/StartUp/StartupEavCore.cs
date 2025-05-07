@@ -90,10 +90,6 @@ public static class StartUpEavCore
         //services.TryAddTransient<IFingerprint, Fingerprint>();
         services.TryAddTransient<SystemFingerprint>();
 
-        // V14 Requirements Checks - don't use try-add, as we'll add many
-        services.TryAddTransient<RequirementsService>();
-        services.AddTransient<IRequirementCheck, FeatureRequirementCheck>();
-
         services.TryAddTransient<LicenseLoader>();
 
         services.TryAddTransient<Compressor>();
