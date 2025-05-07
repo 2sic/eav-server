@@ -9,7 +9,7 @@ public record Feature: Aspect
 {
     #region Static Constructors
     
-    private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules, string nameId, Guid guid)
+    private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule>? licRules, string nameId, Guid guid)
     {
         var newRules = licRules?.ToList() ?? [];
         // Create virtual license rule, so it can be enabled by its own GUID
@@ -41,7 +41,7 @@ public record Feature: Aspect
             Ui = false,
             Description = "Unknown feature",
             Security = FeatureSecurity.Unknown,
-            LicenseRules = null
+            LicenseRules = null!
         };
 
     #endregion
@@ -53,7 +53,7 @@ public record Feature: Aspect
     /// <remarks>
     /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
     /// </remarks>
-    public bool Ui { get; init; } = false;
+    public bool Ui { get; init; }
 
     /// <summary>
     /// If true, this feature will be provided to the Ui
@@ -62,7 +62,7 @@ public record Feature: Aspect
     /// <remarks>
     /// This has to do with load-time and security. We don't want to broadcast every feature to the Ui.
     /// </remarks>
-    public bool IsPublic { get; init; } = false;
+    public bool IsPublic { get; init; }
 
 
     /// <summary>
@@ -71,13 +71,21 @@ public record Feature: Aspect
     /// </summary>
     public FeatureSecurity Security { get; init; } = FeatureSecurity.Unknown;
 
-
+    /// <summary>
+    /// Determine if this feature can be activated by the user.
+    /// TODO: naming not ideal, since it can be confused with the new configuration of v20
+    /// </summary>
     public virtual bool IsConfigurable => true;
+
+#pragma warning disable CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
 
     /// <summary>
     /// The link which will be used to show more details online.
     /// eg: https://patrons.2sxc.org/rf?ContentSecurityPolicy
     /// </summary>
+#if NETCOREAPP
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+#endif
     public virtual string Link
     {
         get => field ??= $"{PatronsUrl}/rf?{NameId}";
@@ -86,9 +94,17 @@ public record Feature: Aspect
 
     public required IEnumerable<FeatureLicenseRule> LicenseRules { get; init; }
 
+#if NETCOREAPP
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+#endif
     public IReadOnlyList<FeatureLicenseRule> LicenseRulesList => field ??= CreateLicenseRules(LicenseRules, NameId, Guid);
 
+#if NETCOREAPP
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+#endif
     public Requirement Requirement => field ??= new(FeatureConstants.ConditionIsFeature, NameId);
+
+#pragma warning restore CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
 
     public bool EnableForSystemTypes { get; init; }
 
@@ -99,5 +115,5 @@ public record Feature: Aspect
     /// </summary>
     public bool ScopedToModule { get; init; }
 
-    public string ConfigurationContentType { get; init; }
+    public string? ConfigurationContentType { get; init; }
 }

@@ -16,10 +16,7 @@ public class RequirementsServiceTests(RequirementsService requirementsService)
         Empty(result);
     }
 
-    /// <summary>
-    /// By default, it only has 1 feature checker
-    /// </summary>
     [Fact]
-    public void HasOneChecker()
-        => Single(requirementsService.Checkers.Value.AllServices);
+    public void HasExpectedDefaultCheckers()
+        => Equal(LibFeaturesTestsConstants.ExpectedCheckersInDefaultSetup, requirementsService.Checkers.Value.AllServices.Count);
 }

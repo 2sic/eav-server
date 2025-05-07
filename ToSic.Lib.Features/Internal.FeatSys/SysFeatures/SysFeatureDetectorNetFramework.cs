@@ -5,8 +5,13 @@ namespace ToSic.Eav.Internal.Features;
 
 public class SysFeatureDetectorNetFramework : SysFeatureDetector
 {
-
-    public static SysFeature DefStatic { get; } = new()
+    /// <summary>
+    /// The feature definition.
+    /// </summary>
+    /// <remarks>
+    /// Internal for unit testing
+    /// </remarks>
+    internal static SysFeature DefStatic { get; } = new()
     {
         NameId = "NetFramework",
         Guid = new("ebe6418e-1932-46bb-864c-80eb906dd2d3"),

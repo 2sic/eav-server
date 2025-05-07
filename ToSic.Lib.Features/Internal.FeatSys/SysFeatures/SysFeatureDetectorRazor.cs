@@ -3,6 +3,8 @@ using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Internal.Features;
 
+// TODO: probably move to the Sxc project or somewhere similar
+
 public class SysFeatureDetectorRazor() : SysFeatureDetector(DefStatic, true)
 {
 

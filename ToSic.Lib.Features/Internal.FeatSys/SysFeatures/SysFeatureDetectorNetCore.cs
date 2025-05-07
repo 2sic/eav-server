@@ -6,7 +6,13 @@ namespace ToSic.Eav.Internal.Features;
 public class SysFeatureDetectorNetCore : SysFeatureDetector
 {
 
-    private static readonly SysFeature DefStatic = new()
+    /// <summary>
+    /// The feature definition.
+    /// </summary>
+    /// <remarks>
+    /// Internal for unit testing
+    /// </remarks>
+    internal static readonly SysFeature DefStatic = new()
     {
         NameId = "NetCore",
         Guid = new("57c306d5-ec3f-47e2-ad3a-ae871eb96a41"),

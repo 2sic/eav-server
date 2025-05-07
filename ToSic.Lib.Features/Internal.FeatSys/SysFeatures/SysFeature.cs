@@ -12,9 +12,15 @@ public record SysFeature : Feature
     public override required string NameId
     {
         get => base.NameId;
-        init => base.NameId = EnsurePrefix(value);
+        init => base.NameId = EnsureNameIdPrefix(value);
     }
-    private static string EnsurePrefix(string original) 
+    
+    /// <summary>
+    /// Ensure that all these system features have a prefix; add if missing.
+    /// </summary>
+    /// <param name="original"></param>
+    /// <returns></returns>
+    private static string EnsureNameIdPrefix(string original) 
         => original.IsEmptyOrWs() ? Prefix + "-Error-No-Name" : original.StartsWith(Prefix) ? original : $"{Prefix}-{original}";
 
     public override string Link
@@ -24,22 +30,6 @@ public record SysFeature : Feature
     }
 
     public override bool IsConfigurable => false;
-
-    // 2025-05-06 2dm doesn't seem in use, disabled for now to move to central location
-    //public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
-    //{
-    //    Guid = Guid,
-    //    Values = new Dictionary<string, object>
-    //    {
-    //        {nameof(NameId), NameId},
-    //        {nameof(Name), Name},
-    //        {nameof(Description), Description},
-    //        {nameof(Link), Link},
-    //    }
-    //});
-
-    //private readonly GetOnce<IRawEntity> _newEntity = new();
-
 
     public override string ToString() => $"{Prefix}: {Name} ({NameId} / {Guid})";
 }

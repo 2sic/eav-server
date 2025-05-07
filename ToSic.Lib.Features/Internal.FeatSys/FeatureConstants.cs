@@ -27,4 +27,5 @@ public class FeatureConstants
         "V+pokOjj/fBOjNiSfpI+7KkolNM43ZhLSw8TYStDZuf0WsSrU4vF0ROMyiynNhyebpPX21d/MB0PEfZ82uNXBrXTrBPFog==";
 
     public const string ConditionIsFeature = "feature";
+    public const string ConditionIsSysFeature = "sysfeature";
 }

@@ -11,8 +11,8 @@ public class RequirementsServiceAnimals(RequirementsService requirementsService)
     static Requirement ZebraRequirement => new(Animal, "Zebra");
 
     [Fact]
-    public void HasTwoChecker()
-        => Equal(2, requirementsService.Checkers.Value.AllServices.Count);
+    public void HasOneMoreChecker()
+        => Equal(LibFeaturesTestsConstants.ExpectedCheckersInDefaultSetup + 1, requirementsService.Checkers.Value.AllServices.Count);
 
     [Fact]
     public void HasAnimalChecker()

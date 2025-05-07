@@ -8,8 +8,8 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        new RequirementsServiceTests.Startup().ConfigureServices(services);
         services
+            .StartupLibFeaturesTests()
             .AddTransient<IRequirementCheck, MockAnimalRequirementsCheck>();
     }
 }

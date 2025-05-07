@@ -17,21 +17,26 @@ public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap",
     private (List<SysFeature> Defs, List<FeatureState> States) LoadCapabilities()
     {
         var services = AssemblyHandling.FindInherited(typeof(ISysFeatureDetector));
+
         var featDetectors = services
             .Select(s => sp.Build<ISysFeatureDetector>(s))
             .ToList();
+
         var definitions = featDetectors
             .Select(fd => fd.Definition)
             .ToList();
+
         var states = featDetectors
             .Select(fd => fd.FeatState)
             .ToList();
+
         return (definitions, states);
     }
 
     public bool IsEnabled(string capabilityKey)
     {
-        var capability = States.FirstOrDefault(c => c.Aspect.NameId.EqualsInsensitive(capabilityKey));
+        var capability = States
+            .FirstOrDefault(c => c.Aspect.NameId.EqualsInsensitive(capabilityKey));
         return capability?.IsEnabled == true;
     }
 

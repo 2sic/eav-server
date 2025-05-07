@@ -3,6 +3,10 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Lib.Sys.Fingerprints.Internal;
 
+/// <summary>
+/// This is for fingerprints which are not auto-generated,
+/// but instead are provided by data - usually through license registration.
+/// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class EnterpriseFingerprint
 {
