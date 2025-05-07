@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Lib.Documentation;
+﻿namespace ToSic.Lib.Documentation;
 
 /// <summary>
 /// This attribute serves as metadata for other things to mark them as internal APIs.

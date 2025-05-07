@@ -1,7 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Raw;
-using ToSic.Eav.Internal.Licenses;
+﻿using ToSic.Eav.Internal.Licenses;
 using ToSic.Lib.Data;
 using ToSic.Lib.Helpers;
 
@@ -22,7 +19,7 @@ public class FeatureState(
     bool enabledByDefault,
     bool? enabledInConfiguration,
     Dictionary<string, object> configuration)
-    : AspectState<Feature>(aspect, enabled), IHasRawEntity<IRawEntity>, IHasIdentityNameId
+    : AspectState<Feature>(aspect, enabled), IHasIdentityNameId
 {
     public static FeatureState SysFeatureState(SysFeature definition, bool enabled)
         => new(definition, 
@@ -95,35 +92,4 @@ public class FeatureState(
 
     public Dictionary<string, object> Configuration => configuration;
 
-    #region IHasNewEntity
-
-    [JsonIgnore]
-    public IRawEntity RawEntity => _newEntity.Get(() => new RawEntity
-    {
-        Guid = Aspect.Guid,
-        Values = new Dictionary<string, object>
-        {
-            { nameof(NameId), NameId },
-            { Attributes.TitleNiceName, Aspect.Name },
-            { nameof(Aspect.Description), Aspect.Description },
-            { nameof(IsEnabled), IsEnabled },
-            { nameof(EnabledByDefault), EnabledByDefault },
-            // Not important, don't include
-            //{ "EnabledReason", EnabledReason },
-            //{ "EnabledReasonDetailed", EnabledReasonDetailed },
-            //{ "SecurityImpact", Security?.Impact },
-            //{ "SecurityMessage", Security?.Message },
-            { nameof(EnabledInConfiguration), EnabledInConfiguration },
-            { nameof(Expiration), Expiration },
-            { nameof(IsForEditUi), IsForEditUi },
-            { $"{nameof(License)}{nameof(License.Name)}", License?.Name ?? Constants.NullNameId },
-            { $"{nameof(License)}{nameof(License.Guid)}", License?.Guid ?? Guid.Empty },
-            { nameof(AllowedByLicense), AllowedByLicense },
-            { nameof(Aspect.Link), Aspect.Link },
-            { nameof(IsPublic), IsPublic },
-        }
-    });
-    private readonly GetOnce<IRawEntity> _newEntity = new();
-
-    #endregion
 }

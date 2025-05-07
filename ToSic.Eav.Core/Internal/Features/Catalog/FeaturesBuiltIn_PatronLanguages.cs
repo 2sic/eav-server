@@ -5,7 +5,7 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    internal static List<FeatureLicenseRule> ForPatronLanguages = BuildRule(BuiltInLicenses.PatronLanguages, true);
+    internal static List<FeatureLicenseRule> ForPatronLanguages = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronLanguages, true);
 
 
     public static readonly Feature EditUiTranslateWithGoogle = new()

@@ -22,7 +22,7 @@ namespace ToSic.Eav.Internal.Features;
 /// </remarks>
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesService
+public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesService, ILibFeaturesService
 {
     public IEnumerable<FeatureState> All => _allStaticCache ??= Merge(Stored, featuresCatalog.List, _staticSysFeatures);
     private static List<FeatureState> _allStaticCache;
@@ -199,6 +199,8 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     public bool CacheIsNotifyOnly => true;
 
     string ICanBeCacheDependency.CacheDependencyId => typeof(IEavFeaturesService).FullName;
+
+    bool ILibFeaturesService.IsEnabled(string nameIds) => IsEnabled([nameIds]);
 
     #endregion
 

@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Lib.Data;
+﻿namespace ToSic.Lib.Data;
 
 /// <summary>
 /// This is for any object which does something, but caries with it an original object which is the type

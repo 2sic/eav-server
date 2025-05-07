@@ -57,8 +57,9 @@ public static class StartUpEavCore
         services.AddSingleton<LicenseCatalog>();    // Must be singleton
         services.AddSingleton<FeaturesCatalog>();   // Must be singleton
 
-        // Features - 2024-05-31 changing to non-singleton, must monitor if all is ok...
+        // Features - 2024-05-31 changed to non-singleton
         services.TryAddTransient<IEavFeaturesService, EavFeaturesService>();    // this must come first!
+        services.TryAddTransient<ILibFeaturesService, EavFeaturesService>();    // v20
 
         // New SystemCapability
         services.TryAddTransient<SysFeaturesService>();
@@ -111,6 +112,9 @@ public static class StartUpEavCore
         // v18
         services.TryAddTransient<RsaCryptographyService>();
         services.TryAddTransient<AesHybridCryptographyService>();
+
+        // v20 Startup
+        services.AddTransient<IStartUpRegistrations, EavStartupRegistrations>();
 
         return services;
     }

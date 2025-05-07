@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Lib.Data;
+﻿namespace ToSic.Lib.Data;
 
 /// <summary>
 /// Helper base class for all wrappers

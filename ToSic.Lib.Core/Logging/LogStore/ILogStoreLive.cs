@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using ToSic.Lib.Documentation;
 using ToSic.Lib.Logging.Internals;
 
 namespace ToSic.Lib.Logging;

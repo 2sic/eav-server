@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Helpers;
-using ToSic.Lib.Logging;
+﻿using ToSic.Lib.Helpers;
 
 namespace ToSic.Lib.DI;
 

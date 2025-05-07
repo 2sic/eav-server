@@ -3,8 +3,36 @@ using ToSic.Eav.Data.Raw;
 
 namespace ToSic.Eav.SysData;
 
-public static class FeatureSetStateToRawEntity
+public static class FeaturesToRawEntity
 {
+
+    public static IRawEntity ToRawEntity(this FeatureState state)
+        => new RawEntity
+        {
+            Guid = state.Aspect.Guid,
+            Values = new Dictionary<string, object>
+            {
+                { nameof(state.NameId), state.NameId },
+                { Attributes.TitleNiceName, state.Aspect.Name },
+                { nameof(Aspect.Description), state.Aspect.Description },
+                { nameof(state.IsEnabled), state.IsEnabled },
+                { nameof(state.EnabledByDefault), state.EnabledByDefault },
+                // Not important, don't include
+                //{ "EnabledReason", EnabledReason },
+                //{ "EnabledReasonDetailed", EnabledReasonDetailed },
+                //{ "SecurityImpact", Security?.Impact },
+                //{ "SecurityMessage", Security?.Message },
+                { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
+                { nameof(state.Expiration), state.Expiration },
+                { nameof(state.IsForEditUi), state.IsForEditUi },
+                { $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? Constants.NullNameId },
+                { $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
+                { nameof(state.AllowedByLicense), state.AllowedByLicense },
+                { nameof(state.Aspect.Link), state.Aspect.Link },
+                { nameof(state.IsPublic), state.IsPublic },
+            }
+        };
+
     /// <summary>
     /// Important: We are creating an object which is basically the License.
     /// So even though we're creating an Entity from the LicenseState,

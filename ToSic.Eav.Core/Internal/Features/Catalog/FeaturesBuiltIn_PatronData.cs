@@ -5,7 +5,7 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    internal static List<FeatureLicenseRule> ForPatronDataAutoEnabled = BuildRule(BuiltInLicenses.PatronData, true);
+    internal static List<FeatureLicenseRule> ForPatronDataAutoEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronData, true);
 
 
     public static readonly Feature ContentTypeFieldsReuseDefinitions = new(){

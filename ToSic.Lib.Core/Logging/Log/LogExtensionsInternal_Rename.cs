@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Lib.Logging;
 
 partial class LogExtensionsInternal
 {

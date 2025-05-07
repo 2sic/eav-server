@@ -1,24 +1,28 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Lib.Data;
+﻿// 2025-05-07 2dm - disabled as it seems to not be in use.
+// My guess is that it was needed before to access internal APIs, but I can't see any use cases of it.
+// Commented out, #Remove ca. 2025-10
 
-namespace ToSic.Eav.Internal;
+//using ToSic.Eav.Data;
+//using ToSic.Lib.Data;
 
-public static class DataBreach
-{
-    public static int? GetPublishedEntityId(this IEntity entity) => entity.GetEntity()?.PublishedEntityId;
+//namespace ToSic.Eav.Internal;
 
-    private static Entity GetEntity(this IEntity entity)
-    {
-        if (entity is null) return null;
-        if (entity is Entity e) return e;
+//public static class DataBreach
+//{
+//    public static int? GetPublishedEntityId(this IEntity entity) => entity.GetEntity()?.PublishedEntityId;
 
-        if (entity is not IWrapper<IEntity> wrapped) return null;
+//    private static Entity GetEntity(this IEntity entity)
+//    {
+//        if (entity is null) return null;
+//        if (entity is Entity e) return e;
 
-        entity = wrapped.GetContents();
-        if (entity is Entity e2) return e2;
+//        if (entity is not IWrapper<IEntity> wrapped) return null;
 
-        if (entity is IWrapper<IEntity> rewrapped && rewrapped.GetContents() is Entity e3) return e3;
+//        entity = wrapped.GetContents();
+//        if (entity is Entity e2) return e2;
 
-        return null;
-    }
-}
+//        if (entity is IWrapper<IEntity> rewrapped && rewrapped.GetContents() is Entity e3) return e3;
+
+//        return null;
+//    }
+//}

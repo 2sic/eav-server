@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Lib.Coding;
+﻿namespace ToSic.Lib.Coding;
 
 /// <summary>
 /// Special placeholder to indicate that all parameters following this should be named.

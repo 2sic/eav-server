@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Internal.Unknown;
+﻿using System.Collections.Generic;
+
+namespace ToSic.Eav.Internal.Unknown;
 
 public class WarnUseOfUnknown<T>
 {
@@ -6,7 +8,9 @@ public class WarnUseOfUnknown<T>
     {
         var usingType = typeof(T);
 
-        if (AlreadyWarnedTypes.Contains(usingType)) return;
+        if (AlreadyWarnedTypes.Contains(usingType))
+            return;
+
         AlreadyWarnedTypes.Add(usingType);
 
         var log = new Log($"{LogScopes.NotImplemented}.Warn", message: $"Warning Mock Implementation of {usingType.FullName}");

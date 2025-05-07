@@ -5,8 +5,8 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    public static List<FeatureLicenseRule> ForForWebFarmCacheDisabled = BuildRule(BuiltInLicenses.WebFarmCache, false);
-    public static List<FeatureLicenseRule> ForForWebFarmCacheEnabled = BuildRule(BuiltInLicenses.WebFarmCache, true);
+    public static List<FeatureLicenseRule> ForForWebFarmCacheDisabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.WebFarmCache, false);
+    public static List<FeatureLicenseRule> ForForWebFarmCacheEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.WebFarmCache, true);
 
     public static readonly Feature WebFarmCache = new()
     {

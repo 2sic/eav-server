@@ -5,11 +5,6 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    public static List<FeatureLicenseRule> ForAllEnabled = BuildRule(BuiltInLicenses.CoreFree, true);
-    public static List<FeatureLicenseRule> ForAllDisabled = BuildRule(BuiltInLicenses.CoreFree, false);
-
-    public static List<FeatureLicenseRule> SystemEnabled = BuildRule(BuiltInLicenses.System, true);
-    public static List<FeatureLicenseRule> ExtensionEnabled = BuildRule(BuiltInLicenses.Extension, true);
 
     public const bool ForUi = true;
     public const bool NotForUi = false;
@@ -25,7 +20,7 @@ public partial class BuiltInFeatures
         Ui = ForUi,
         Description = "Paste formatted text into WYSIWYG TinyMCE",
         Security = new(2, "Should not affect security, unless a TinyMCE bug allows adding script tags or similar which could result in XSS."),
-        LicenseRules = ForAllEnabled
+        LicenseRules = BuiltInLicenseRules.ForAllEnabled
     };
 
 
@@ -40,7 +35,7 @@ public partial class BuiltInFeatures
         Ui = ForUi,
         Description = "",
         Security = FeaturesCatalogRules.Security0Neutral,
-        LicenseRules = ForAllEnabled
+        LicenseRules = BuiltInLicenseRules.ForAllEnabled
     };
 
     public static readonly Feature EditUiShowMetadataFor = new()
@@ -52,7 +47,7 @@ public partial class BuiltInFeatures
         Ui = ForUi,
         Description = "",
         Security = FeaturesCatalogRules.Security0Neutral,
-        LicenseRules = ForAllEnabled
+        LicenseRules = BuiltInLicenseRules.ForAllEnabled
     };
 
     public static readonly Feature InsightsLoggingCustomized = new()
@@ -64,7 +59,7 @@ public partial class BuiltInFeatures
         Ui = NotForUi,
         Description = "Configure server logging - usually to take less memory.",
         Security = new(1, "In some cases you won't see what happened previously."),
-        LicenseRules = ForAllEnabled,
+        LicenseRules = BuiltInLicenseRules.ForAllEnabled,
         ConfigurationContentType = "5d70d9f6-3c03-4c09-8413-1a0c2e8dbf8f",
     };
 

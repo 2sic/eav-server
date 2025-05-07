@@ -5,7 +5,7 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    internal static List<FeatureLicenseRule> ForPatronAdvancedCmsAutoEnabled = BuildRule(BuiltInLicenses.PatronAdvancedCms, true);
+    internal static List<FeatureLicenseRule> ForPatronAdvancedCmsAutoEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronAdvancedCms, true);
 
     public static readonly Feature CopyrightManagement = new()
     {

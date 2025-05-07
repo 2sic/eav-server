@@ -8,10 +8,10 @@ namespace ToSic.Eav.Internal.Features;
 public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap", connect: [/* never! sp*/ ])
 {
     public List<SysFeature> Definitions => _list ??= LoadCapabilities().Defs;
-    private static List<SysFeature> _list;
+    private static List<SysFeature>? _list;
 
     public List<FeatureState> States => _listState ??= LoadCapabilities().States;
-    private static List<FeatureState> _listState;
+    private static List<FeatureState>? _listState;
 
 
     private (List<SysFeature> Defs, List<FeatureState> States) LoadCapabilities()
@@ -35,6 +35,6 @@ public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap",
         return capability?.IsEnabled == true;
     }
 
-    public SysFeature GetDef(string capabilityKey) 
+    public SysFeature? GetDef(string capabilityKey) 
         => Definitions.FirstOrDefault(c => c.NameId.EqualsInsensitive(capabilityKey));
 }

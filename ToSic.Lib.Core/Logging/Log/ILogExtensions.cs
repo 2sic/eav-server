@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Lib.Logging;
 
 /// <summary>
 /// Various extensions for <see cref="ILog"/> objects to add logs.

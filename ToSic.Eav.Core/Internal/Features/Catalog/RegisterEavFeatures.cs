@@ -1,15 +1,10 @@
-﻿using ToSic.Eav.Internal.Catalogs;
-using ToSic.Eav.SysData;
+﻿using ToSic.Eav.Internal.Features;
 using static ToSic.Eav.Internal.Features.BuiltInFeatures;
 
-namespace ToSic.Eav.Internal.Features;
-
-[PrivateApi]
-public class FeaturesCatalog: GlobalCatalogBase<Feature>
+internal class RegisterEavFeatures
 {
-    public FeaturesCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.FeatCt", new())
-    {
-        Register(
+    public static void Register(FeaturesCatalog cat)
+        => cat.Register(
             // Released features since the dawn of features
             PublicEditForm,
             PublicUploadFiles,
@@ -27,12 +22,12 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             // Features for Patrons Basic
             PasteImageFromClipboard,
             NoSponsoredByToSic,
-            EditUiGpsCustomDefaults,    // new v15
+            EditUiGpsCustomDefaults, // new v15
 
             // Features for Patrons Advanced CMS
-            EditUiTranslateWithGoogle,  // v15
-            LanguagesAdvancedFallback,  // v16.04
-            CopyrightManagement,        // v16.08 / v17
+            EditUiTranslateWithGoogle, // v15
+            LanguagesAdvancedFallback, // v16.04
+            CopyrightManagement, // v16.08 / v17
             ContentTypeFieldsReuseDefinitions, // v16.08
             SharedAppCode, // v18.03
 
@@ -45,14 +40,14 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             PickerUiMoreInfo,
 
             // Patron SuperAdmin
-            AppSyncWithSiteFiles,           // v15
-            AppAutoInstallerConfigurable,   // v15
-            DataExportImportBundles,        // v15.01
-            AppExportAssetsAdvanced,        // v18
+            AppSyncWithSiteFiles, // v15
+            AppAutoInstallerConfigurable, // v15
+            DataExportImportBundles, // v15.01
+            AppExportAssetsAdvanced, // v18
 
             // Patron Infrastructure
             SqlCompressDataTimeline, // v15
-            SqlLoadPerformance,      // v18
+            SqlLoadPerformance, // v18
 
             // 2sxc 10.24+
             WebFarmCache,
@@ -72,11 +67,10 @@ public class FeaturesCatalog: GlobalCatalogBase<Feature>
             TestingFeature001
 #endif
         );
-    }
 
     // TODO: MAYBE SUB-FEATURES FOR global apps
     // - Inherit views - auto-on if global on
     // - Inherit data - auto-on if global on
     // - Inherit queries
-        
+
 }

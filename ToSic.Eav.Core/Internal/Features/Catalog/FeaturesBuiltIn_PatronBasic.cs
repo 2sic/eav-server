@@ -5,7 +5,7 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    public static List<FeatureLicenseRule> ForPatronBasicEnabled = BuildRule(BuiltInLicenses.PatronBasic, true);
+    public static List<FeatureLicenseRule> ForPatronBasicEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronBasic, true);
 
     public static readonly Feature PasteImageFromClipboard = new()
     {

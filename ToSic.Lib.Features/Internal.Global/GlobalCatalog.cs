@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using ToSic.Lib.Data;
-using ToSic.Lib.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Catalogs;
@@ -13,41 +12,60 @@ namespace ToSic.Eav.Internal.Catalogs;
 /// <typeparam name="T"></typeparam>
 public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect where T : IHasIdentityNameId
 {
+#pragma warning disable CS8618, CS9264
     protected GlobalCatalogBase(ILogStore logStore, string logName, CodeRef code) : base(logName)
+#pragma warning restore CS8618, CS9264
     {
         logStore.Add(LogNames.LogStoreStartUp, Log);
+        // ReSharper disable ExplicitCallerInfoArgument
         Log.A($"Catalog Created for {typeof(T).Name}", code.Path, code.Name, code.Line);
+        // ReSharper restore ExplicitCallerInfoArgument
     }
 
     /// <summary>
     /// The dictionary containing all the items.
-    /// Case insensitive.
+    /// Case-insensitive.
     /// </summary>
-    public IReadOnlyDictionary<string, T> Dictionary { get; private set; }
+#if NETCOREAPP
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+#endif
+    public IReadOnlyDictionary<string, T> Dictionary
+    {
+        get => field ??= new ReadOnlyDictionary<string, T>(_master);
+        private set => field = value;
+    }
 
-    public IReadOnlyCollection<T> List { get; private set; }
+#if NETCOREAPP
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+#endif
+    public IReadOnlyCollection<T> List
+    {
+        get => field ??= new ReadOnlyCollection<T>(_master.Values.ToList());
+        private set => field = value;
+    }
 
-    public virtual T TryGet(string name) => Dictionary.TryGetValue(name, out var value) ? value : default;
+    public virtual T? TryGet(string name)
+        => Dictionary.TryGetValue(name, out var value) ? value : default;
 
     /// <summary>
     /// Add things to the registry
     /// </summary>
     /// <param name="items"></param>
-    public void Register(params T[] items)
+    public void Register(params T?[] items)
     {
         var l = Log.Fn($"Will add {items.Length} items");
         // add all features if it doesn't yet exist, otherwise update
         foreach (var f in items)
             if (f != null)
             {
-                Log.A($"Adding {f.NameId}");
-                _master.AddOrUpdate(f.NameId, f, (key, existing) => f);
+                l.A($"Adding {f.NameId}");
+                _master.AddOrUpdate(f.NameId, f, (_, _) => f);
             }
 
         // Reset the read-only dictionary
-        Dictionary = new ReadOnlyDictionary<string, T>(_master);
-        List = new ReadOnlyCollection<T>(_master.Values.ToList());
-        l.Done($"now contains {List.Count} items");
+        Dictionary = null!; // new ReadOnlyDictionary<string, T>(_master);
+        List = null!; //new ReadOnlyCollection<T>(_master.Values.ToList());
+        l.Done($"now contains {_master.Count} items");
     }
 
     private readonly ConcurrentDictionary<string, T> _master = new(StringComparer.InvariantCultureIgnoreCase);

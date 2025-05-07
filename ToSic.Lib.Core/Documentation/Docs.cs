@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Lib.Documentation;
+﻿namespace ToSic.Lib.Documentation;
 
 /// <summary>
 /// This attribute adds special documentation to the code, which is still available in the DLL.

@@ -5,8 +5,8 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    public static List<FeatureLicenseRule> ForCorePlusEnabled = BuildRule(licDef: BuiltInLicenses.CorePlus, featureEnabled: true);
-    public static List<FeatureLicenseRule> ForCorePlusDisabled = BuildRule(licDef: BuiltInLicenses.CorePlus, featureEnabled: false);
+    public static List<FeatureLicenseRule> ForCorePlusEnabled = BuiltInLicenseRules.BuildRule(licDef: BuiltInLicenses.CorePlus, featureEnabled: true);
+    public static List<FeatureLicenseRule> ForCorePlusDisabled = BuiltInLicenseRules.BuildRule(licDef: BuiltInLicenses.CorePlus, featureEnabled: false);
 
 
     public static readonly Feature PublicEditForm = new() {

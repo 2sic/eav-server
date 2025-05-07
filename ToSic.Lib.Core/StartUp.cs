@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Lib.DI;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Lib;
 

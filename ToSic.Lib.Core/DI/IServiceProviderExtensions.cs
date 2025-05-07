@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using ToSic.Lib.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace ToSic.Lib.DI;
 

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    public static List<FeatureLicenseRule> ForTestingDisabled = BuildRule(BuiltInLicenses.CoreTesting, false);
+    public static List<FeatureLicenseRule> ForTestingDisabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.CoreTesting, false);
 
     public static readonly Feature TestingFeature001 = new()
     {

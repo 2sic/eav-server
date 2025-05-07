@@ -15,7 +15,7 @@ public static class SysFeatureSuggestions
         Name = "CSharp v6",
         Description = CsDescription + "6",
         Link = LinkDnnCs8,
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 
     public static SysFeature CSharp07 { get; } = new()
@@ -25,7 +25,7 @@ public static class SysFeatureSuggestions
         Name = "CSharp v7 (7.3)",
         Description = CsDescription + "7",
         Link = LinkDnnCs8,
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 
     public static SysFeature CSharp08 { get; } = new()
@@ -35,7 +35,7 @@ public static class SysFeatureSuggestions
         Name = "CSharp v8",
         Description = CsDescription + "8",
         Link = LinkDnnCs8,
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
         
     public static SysFeature CSharp09 { get; } = new()
@@ -44,7 +44,7 @@ public static class SysFeatureSuggestions
         Guid = new("bf218ed5-40bf-4726-b49a-a483b2d233ba"),
         Name = "CSharp v9",
         Description = CsDescription + "9",
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 
     public static SysFeature CSharp10 { get; } = new()
@@ -53,7 +53,7 @@ public static class SysFeatureSuggestions
         Guid = new("2bd937a2-8e8e-4867-ac66-2b1749df6743"),
         Name = "CSharp v10",
         Description = CsDescription + "10",
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 
     public static SysFeature CSharp11 { get; } = new()
@@ -62,7 +62,7 @@ public static class SysFeatureSuggestions
         Guid = new("d973e815-2489-480c-8a82-19f72cf3aeea"),
         Name = "CSharp v11",
         Description = CsDescription + "11",
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 
     public static SysFeature CSharp12 { get; } = new()
@@ -71,7 +71,7 @@ public static class SysFeatureSuggestions
         Guid = new("721648d1-0c2e-4795-899c-357a00fddc8a"),
         Name = "CSharp v12",
         Description = CsDescription + "12",
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 
     public static SysFeature Blazor { get; } = new()
@@ -80,7 +80,7 @@ public static class SysFeatureSuggestions
         Guid = new("9880cb15-ea2a-4b85-8eb8-7e9ccd390651"),
         Name = "Blazor",
         Description = "Blazor is a framework for building interactive client-side web UI with .NET",
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 
 }

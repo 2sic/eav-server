@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text;
-using ToSic.Lib.Documentation;
+﻿using System.Text;
 
 namespace ToSic.Lib.Logging;
 

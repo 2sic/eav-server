@@ -12,24 +12,32 @@ public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> che
 {
     protected LazySvc<ServiceSwitcher<IRequirementCheck>> Checkers { get; } = checkers;
 
-    public List<RequirementError> Check(IEnumerable<IHasRequirements> withRequirements) => Log.Func(timer: true, func: () =>
+    public List<RequirementError> Check(IEnumerable<IHasRequirements> withRequirements)
     {
-        var result = withRequirements?.SelectMany(Check).ToList() ?? [];
-        return (result, $"{result.Count} requirements failed");
-    });
+        var l = Log.Fn<List<RequirementError>>();
+        var result = withRequirements
+                         ?.SelectMany(Check)
+                         .ToList()
+                     ?? [];
+        return l.Return(result, $"{result.Count} requirements failed");
+    }
 
     public List<RequirementError> Check(IHasRequirements withRequirements) 
         => Check(withRequirements?.Requirements);
 
     public List<RequirementError> Check(List<Requirement> requirements)
     {
-        if (requirements == null || requirements.Count == 0) return [];
-        return requirements.Select(Check).Where(c => c != null).ToList();
+        if (requirements == null || requirements.Count == 0)
+            return [];
+        return requirements.Select(Check)
+            .Where(c => c != null)
+            .ToList();
     }
 
     public RequirementError Check(Requirement requirement)
     {
-        if (requirement == null) return null;
+        if (requirement == null)
+            return null;
 
         var checker = Checkers.Value.ByNameId(requirement.Type);
 
@@ -37,9 +45,11 @@ public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> che
         // Must wait till we implement all checkers, ATM just feature
         // Once other checkers like LicenseChecker are implemented
         // We may refactor the license to just be a requirement
-        if (checker == null) return null;
+        if (checker == null)
+            return null;
 
-        if (checker.IsOk(requirement)) return null;
+        if (checker.IsOk(requirement))
+            return null;
 
         return new(requirement,
             $"Condition '{requirement.Type}.{requirement.NameId}' is not met. " + checker.InfoIfNotOk(requirement));

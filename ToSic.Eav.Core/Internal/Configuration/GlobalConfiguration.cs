@@ -4,7 +4,7 @@ using ToSic.Eav.Internal.Loaders;
 
 namespace ToSic.Eav.Internal.Configuration;
 
-public class GlobalConfiguration : IGlobalConfiguration
+internal class GlobalConfiguration : IGlobalConfiguration
 {
     /// <inheritdoc />
     public string DataFolder

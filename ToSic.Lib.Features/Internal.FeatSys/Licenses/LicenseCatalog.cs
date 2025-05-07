@@ -17,41 +17,18 @@
 
 using ToSic.Eav.Internal.Catalogs;
 using ToSic.Eav.SysData;
-using static ToSic.Eav.Internal.Licenses.BuiltInLicenses;
 
 namespace ToSic.Eav.Internal.Licenses;
 
-public class LicenseCatalog: GlobalCatalogBase<FeatureSet>
+public class LicenseCatalog(ILogStore logStore)
+    : GlobalCatalogBase<FeatureSet>(logStore, $"Lib.LicCat", new())
 {
-    public LicenseCatalog(ILogStore logStore): base(logStore, $"{EavLogs.Eav}.LicCat", new())
-    {
-        Register(
-            CoreFree,
-            CorePlus,
-            CoreBeta,
-            PatronBasic,
-            PatronLanguages,
-            PatronData,
-            PatronAdvancedCms,
-            PatronPerfectionist,
-            PatronSentinel,
-            PatronSuperAdmin,
-            PatronInfrastructure,
-            WebFarmCache,
-            EnterpriseCms,
-
-            BuiltInLicenses.System,
-            Extension
-
-#if DEBUG
-            // disable in production
-            ,
-            CoreTesting
-#endif
-        );
-    }
-
-    public override FeatureSet TryGet(string name) =>
+    /// <summary>
+    /// Replace the TryGet to use both the name as well as the guid
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public override FeatureSet? TryGet(string? name) =>
         name == null
             ? null
             : base.TryGet(name)

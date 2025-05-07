@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ToSic.Lib.Documentation;
+﻿namespace ToSic.Lib.Documentation;
 
 /// <summary>
 /// This attribute marks classes, methods, etc. as private APIs

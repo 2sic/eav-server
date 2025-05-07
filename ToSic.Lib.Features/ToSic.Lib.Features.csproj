@@ -31,4 +31,8 @@
     <ProjectReference Include="..\ToSic.Lib.Utils\ToSic.Lib.Utils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Internal.Startup\" />
+  </ItemGroup>
+
 </Project>

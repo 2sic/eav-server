@@ -3,6 +3,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Features;
+using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -32,7 +33,9 @@ public sealed class Features : CustomDataSource
     {
         ConnectLogs([featuresService]);
         ProvideOutRaw(
-            () => featuresService.All.OrderBy(f => f.NameId),
+            () => featuresService.All
+                .OrderBy(f => f.NameId)
+                .Select(f => f.ToRawEntity()),
             options: () => new() { TypeName = "Feature" }
         );
     }

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.SysData;
+﻿
+using ToSic.Eav.SysData;
 
 namespace ToSic.Eav.Internal.Features;
 
@@ -10,6 +11,6 @@ public class SysFeatureDetectorRazor() : SysFeatureDetector(DefStatic, true)
         NameId = "Razor",
         Guid = new("1301aa40-45e0-4349-8a23-2f05ed4120da"),
         Name = "Razor",
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 }

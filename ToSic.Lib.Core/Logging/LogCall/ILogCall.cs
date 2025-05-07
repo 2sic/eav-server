@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging;
 

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.SysData;
 
-internal static class FeatureStateConfigurationHelpers
+public static class FeatureStateConfigurationHelpers
 {
 
     public static bool ConfigBool(this IDictionary<string, object> dic, string key, bool fallback = false) =>

@@ -5,8 +5,8 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    public static List<FeatureLicenseRule> ForBeta = BuildRule(BuiltInLicenses.CoreBeta, false);
-    public static List<FeatureLicenseRule> ForBetaEnabled = BuildRule(BuiltInLicenses.CoreBeta, true);
+    public static List<FeatureLicenseRule> ForBeta = BuiltInLicenseRules.BuildRule(BuiltInLicenses.CoreBeta, false);
+    public static List<FeatureLicenseRule> ForBetaEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.CoreBeta, true);
 
     // ATM only used in azing, so still easy to change
 

@@ -11,7 +11,7 @@ public class SysFeatureDetectorNetFramework : SysFeatureDetector
         NameId = "NetFramework",
         Guid = new("ebe6418e-1932-46bb-864c-80eb906dd2d3"),
         Name = "Dot Net Framework",
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 #if NETFRAMEWORK
     public SysFeatureDetectorNetFramework() : base(DefStatic, true) { }

@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Lib.Data;
+﻿namespace ToSic.Lib.Data;
 
 /// <summary>
 /// Special interface to ensure consistency across the code base.

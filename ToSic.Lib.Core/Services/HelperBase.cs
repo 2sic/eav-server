@@ -1,7 +1,5 @@
 ﻿using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using ToSic.Lib.Documentation;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Lib.Services;
 

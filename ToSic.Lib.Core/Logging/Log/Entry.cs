@@ -1,5 +1,4 @@
-﻿using System;
-using ToSic.Lib.Memory;
+﻿using ToSic.Lib.Memory;
 
 namespace ToSic.Lib.Logging;
 

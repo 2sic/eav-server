@@ -5,8 +5,8 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    internal static List<FeatureLicenseRule> ForEnterpriseCms = BuildRule(BuiltInLicenses.EnterpriseCms, true);
-    internal static List<FeatureLicenseRule> ForEnterpriseCmsDisabled = BuildRule(BuiltInLicenses.EnterpriseCms, false);
+    internal static List<FeatureLicenseRule> ForEnterpriseCms = BuiltInLicenseRules.BuildRule(BuiltInLicenses.EnterpriseCms, true);
+    internal static List<FeatureLicenseRule> ForEnterpriseCmsDisabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.EnterpriseCms, false);
 
     // WIP / Beta in v13
     public static readonly Feature SharedApps = new() {

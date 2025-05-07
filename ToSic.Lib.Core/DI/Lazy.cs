@@ -1,7 +1,4 @@
-﻿using System;
-using ToSic.Lib.Documentation;
-
-namespace ToSic.Lib.DI;
+﻿namespace ToSic.Lib.DI;
 
 /// <summary>
 /// Enables lazy requesting of objects - won't be available until needed.

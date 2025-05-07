@@ -11,7 +11,7 @@ public class SysFeatureDetectorNetCore : SysFeatureDetector
         NameId = "NetCore",
         Guid = new("57c306d5-ec3f-47e2-ad3a-ae871eb96a41"),
         Name = "Net Core",
-        LicenseRules = BuiltInFeatures.SystemEnabled,
+        LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
 
 #if NETFRAMEWORK

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using ToSic.Lib.Documentation;
+﻿using System.Runtime.CompilerServices;
 
 namespace ToSic.Lib.Logging;
 

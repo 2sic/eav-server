@@ -1,5 +1,4 @@
 ﻿using ToSic.Lib.DI;
-using ToSic.Lib.Documentation;
 
 namespace ToSic.Lib.Logging;
 

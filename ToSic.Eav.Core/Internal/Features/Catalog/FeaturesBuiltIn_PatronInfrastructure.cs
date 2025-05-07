@@ -5,7 +5,7 @@ namespace ToSic.Eav.Internal.Features;
 
 public partial class BuiltInFeatures
 {
-    internal static List<FeatureLicenseRule> ForPatronInfrastructureAutoEnabled = BuildRule(BuiltInLicenses.PatronInfrastructure, true);
+    internal static List<FeatureLicenseRule> ForPatronInfrastructureAutoEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronInfrastructure, true);
 
 
     public static readonly Feature SqlCompressDataTimeline = new()
