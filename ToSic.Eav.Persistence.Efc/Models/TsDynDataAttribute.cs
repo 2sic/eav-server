@@ -25,7 +25,7 @@ public partial class TsDynDataAttribute
 
     public int? TransactionIdDeleted { get; set; }
 
-    public virtual ToSicEavAttributeTypes TypeNavigation { get; set; }
+    public virtual TsDynDataAttributeType TypeNavigation { get; set; }
 
     public virtual TsDynDataContentType ContentType { get; set; }
 

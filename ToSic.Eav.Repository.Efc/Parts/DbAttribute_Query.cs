@@ -35,7 +35,7 @@ partial class DbAttribute
 
     // new parts
     public string[] DataTypeNames()
-        => DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type)
+        => DbContext.SqlDb.TsDynDataAttributeTypes.OrderBy(a => a.Type)
             .Select(a => a.Type)
             .ToArray();
 

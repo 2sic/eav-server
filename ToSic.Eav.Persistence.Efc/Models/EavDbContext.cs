@@ -20,7 +20,7 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<TsDynDataTargetType> TsDynDataTargetTypes { get; set; }
     public virtual DbSet<TsDynDataAttribute> TsDynDataAttributes { get; set; }
     public virtual DbSet<TsDynDataContentType> TsDynDataContentTypes { get; set; }
-    public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
+    public virtual DbSet<TsDynDataAttributeType> TsDynDataAttributeTypes { get; set; }
     public virtual DbSet<TsDynDataTransaction> TsDynDataTransactions { get; set; }
     public virtual DbSet<TsDynDataHistory> TsDynDataHistories { get; set; }
     public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
@@ -62,245 +62,6 @@ public partial class EavDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TsDynDataApp>(entity =>
-        {
-            entity.HasKey(e => e.AppId)
-                .HasName("PK_TsDynDataApp");
-
-            entity.ToTable("TsDynDataApp");
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => new { e.Name, e.ZoneId })
-                .HasName("UQ_TsDynDataApp_Name_ZoneId")
-                .IsUnique();
-#pragma warning restore CS0618 // Type or member is obsolete
-
-            entity.Property(e => e.AppId);
-
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(255);
-
-            entity.Property(e => e.ZoneId);
-
-            entity.HasOne(d => d.Zone)
-                .WithMany(p => p.TsDynDataApps)
-                .HasForeignKey(d => d.ZoneId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_TsDynDataApp_TsDynDataZone");
-
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.TsDynDataAppsTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
-                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionCreated");
-
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.TsDynDataAppsTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
-                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionModified");
-
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.TsDynDataAppsTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
-                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionDeleted");
-        });
-
-        modelBuilder.Entity<TsDynDataTargetType>(entity =>
-        {
-            entity.HasKey(e => e.TargetTypeId)
-                .HasName("PK_TsDynDataTargetType");
-
-            entity.ToTable("TsDynDataTargetType");
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => e.Name)
-                .HasName("IX_TsDynDataTargetType_Name");
-#pragma warning restore CS0618 // Type or member is obsolete
-
-            entity.Property(e => e.TargetTypeId);
-
-            entity.Property(e => e.Description).IsRequired();
-
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<TsDynDataAttribute>(entity =>
-        {
-            entity.HasKey(e => e.AttributeId)
-                .HasName("PK_TsDynDataAttribute");
-
-            entity.ToTable("TsDynDataAttribute");
-
-            entity.Property(e => e.AttributeId);
-
-            entity.Property(e => e.StaticName)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.Property(e => e.Type)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            entity.Property(e => e.Guid)
-                .HasColumnType("uniqueidentifier");
-
-            entity.Property(e => e.SysSettings)
-                .HasColumnType("nvarchar(MAX)");
-
-            entity.Property(e => e.ContentTypeId);
-
-            entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
-
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.TsDynDataAttributesTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionCreated");
-
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.TsDynDataAttributesTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
-                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionModified");
-
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.TsDynDataAttributesTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
-                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionDeleted");
-
-            entity.HasOne(d => d.TypeNavigation)
-                .WithMany(p => p.TsDynDataAttributes)
-                .HasForeignKey(d => d.Type)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_TsDynDataAttribute_ToSIC_EAV_AttributeTypes");
-
-            entity.HasOne(d => d.ContentType)
-                .WithMany(p => p.TsDynDataAttributes)
-                .HasForeignKey(d => d.ContentTypeId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataContentType");
-        });
-
-        modelBuilder.Entity<TsDynDataContentType>(entity =>
-        {
-            entity.HasKey(e => e.ContentTypeId)
-                .HasName("PK_TsDynDataContentType");
-
-            entity.ToTable("TsDynDataContentType");
-
-            entity.Property(e => e.ContentTypeId);
-
-            entity.Property(e => e.IsGlobal)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
-
-            entity.Property(e => e.AppId);
-
-            entity.Property(e => e.Name).HasMaxLength(150);
-
-            entity.Property(e => e.Scope).HasMaxLength(50);
-
-            entity.Property(e => e.StaticName)
-                .HasMaxLength(150)
-                .HasDefaultValueSql("newid()");
-
-            entity.HasOne(d => d.App)
-                .WithMany(p => p.TsDynDataContentTypes)
-                .HasForeignKey(d => d.AppId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_TsDynDataContentType_TsDynDataApp");
-
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.TsDynDataContentTypesTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionCreated");
-
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.TsDynDataContentTypesTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionModified");
-
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.TsDynDataContentTypesTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
-                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionDeleted");
-
-            entity.HasOne(d => d.InheritContentTypeNavigation)
-                .WithMany(p => p.InverseInheritContentTypesNavigation)
-                .HasForeignKey(d => d.InheritContentTypeId)
-                .HasConstraintName("FK_TsDynDataContentType_TsDynDataContentType");
-
-            //entity.Property(e => e.SysSettings)
-            //    .HasColumnName("SysSettings")
-            //    .HasColumnType("nvarchar(MAX)");
-        });
-
-        modelBuilder.Entity<ToSicEavAttributeTypes>(entity =>
-        {
-            entity.HasKey(e => e.Type)
-                .HasName("PK_ToSIC_EAV_AttributeTypes");
-
-            entity.ToTable("ToSIC_EAV_AttributeTypes");
-
-            entity.Property(e => e.Type).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<TsDynDataTransaction>(entity =>
-        {
-            entity.HasKey(e => e.TransactionId)
-                .HasName("PK_TsDynDataTransaction");
-
-            entity.ToTable("TsDynDataTransaction");
-
-            entity.Property(e => e.TransactionId);
-
-            entity.Property(e => e.Timestamp)
-                .HasColumnType("datetime")
-                .HasDefaultValueSql("getdate()");
-
-            entity.Property(e => e.User).HasMaxLength(255);
-        });
-
-        modelBuilder.Entity<TsDynDataHistory>(entity =>
-        {
-            entity.HasKey(e => e.HistoryId)
-                .HasName("PK_TsDynDataHistory");
-
-            entity.ToTable("TsDynDataHistory");
-
-            entity.Property(e => e.HistoryId);
-
-            entity.Property(e => e.Operation)
-                .IsRequired()
-                .HasMaxLength(1)
-                .IsFixedLength()
-                .HasDefaultValueSql("N'I'");
-
-            entity.Property(e => e.SourceId);
-
-            entity.Property(e => e.SourceTable)
-                .IsRequired()
-                .HasMaxLength(250);
-
-            entity.Property(e => e.Timestamp).HasColumnType("datetime");
-
-            entity.Property(e => e.TransactionId);
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => e.SourceId)
-                .HasName("IX_TsDynDataHistory_SourceId");
-
-            entity.HasIndex(e => e.SourceGuid)
-                .HasName("IX_TsDynDataHistory_SourceGuid");
-#pragma warning restore CS0618 // Type or member is obsolete
-
-            entity.HasOne(d => d.Transaction)
-                .WithMany(p => p.TsDynDataHistories)
-                .HasForeignKey(d => d.TransactionId)
-                .HasConstraintName("FK_TsDynDataHistory_TsDynDataTransaction");
-        });
-
         modelBuilder.Entity<ToSicEavDimensions>(entity =>
         {
             entity.HasKey(e => e.DimensionId)
@@ -522,6 +283,245 @@ public partial class EavDbContext : DbContext
                 .HasForeignKey(d => d.ValueId)
                 .OnDelete(DeleteBehavior.Cascade)// DeleteBehavior.Restrict)
                 .HasConstraintName("FK_ToSIC_EAV_ValuesDimensions_ToSIC_EAV_Values");
+        });
+
+        modelBuilder.Entity<TsDynDataApp>(entity =>
+        {
+            entity.HasKey(e => e.AppId)
+                .HasName("PK_TsDynDataApp");
+
+            entity.ToTable("TsDynDataApp");
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            entity.HasIndex(e => new { e.Name, e.ZoneId })
+                .HasName("UQ_TsDynDataApp_Name_ZoneId")
+                .IsUnique();
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            entity.Property(e => e.AppId);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            entity.Property(e => e.ZoneId);
+
+            entity.HasOne(d => d.Zone)
+                .WithMany(p => p.TsDynDataApps)
+                .HasForeignKey(d => d.ZoneId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataApp_TsDynDataZone");
+
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.TsDynDataAppsTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
+                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionCreated");
+
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.TsDynDataAppsTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
+                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionModified");
+
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.TsDynDataAppsTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionDeleted");
+        });
+
+        modelBuilder.Entity<TsDynDataAttribute>(entity =>
+        {
+            entity.HasKey(e => e.AttributeId)
+                .HasName("PK_TsDynDataAttribute");
+
+            entity.ToTable("TsDynDataAttribute");
+
+            entity.Property(e => e.AttributeId);
+
+            entity.Property(e => e.StaticName)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Type)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Guid)
+                .HasColumnType("uniqueidentifier");
+
+            entity.Property(e => e.SysSettings)
+                .HasColumnType("nvarchar(MAX)");
+
+            entity.Property(e => e.ContentTypeId);
+
+            entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
+
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.TsDynDataAttributesTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionCreated");
+
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.TsDynDataAttributesTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionModified");
+
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.TsDynDataAttributesTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionDeleted");
+
+            entity.HasOne(d => d.TypeNavigation)
+                .WithMany(p => p.TsDynDataAttributes)
+                .HasForeignKey(d => d.Type)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataAttributeType");
+
+            entity.HasOne(d => d.ContentType)
+                .WithMany(p => p.TsDynDataAttributes)
+                .HasForeignKey(d => d.ContentTypeId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataContentType");
+        });
+
+        modelBuilder.Entity<TsDynDataAttributeType>(entity =>
+        {
+            entity.HasKey(e => e.Type)
+                .HasName("PK_TsDynDataAttributeType");
+
+            entity.ToTable("TsDynDataAttributeType");
+
+            entity.Property(e => e.Type).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<TsDynDataContentType>(entity =>
+        {
+            entity.HasKey(e => e.ContentTypeId)
+                .HasName("PK_TsDynDataContentType");
+
+            entity.ToTable("TsDynDataContentType");
+
+            entity.Property(e => e.ContentTypeId);
+
+            entity.Property(e => e.IsGlobal)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
+
+            entity.Property(e => e.AppId);
+
+            entity.Property(e => e.Name).HasMaxLength(150);
+
+            entity.Property(e => e.Scope).HasMaxLength(50);
+
+            entity.Property(e => e.StaticName)
+                .HasMaxLength(150)
+                .HasDefaultValueSql("newid()");
+
+            entity.HasOne(d => d.App)
+                .WithMany(p => p.TsDynDataContentTypes)
+                .HasForeignKey(d => d.AppId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataApp");
+
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.TsDynDataContentTypesTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionCreated");
+
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.TsDynDataContentTypesTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionModified");
+
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.TsDynDataContentTypesTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionDeleted");
+
+            entity.HasOne(d => d.InheritContentTypeNavigation)
+                .WithMany(p => p.InverseInheritContentTypesNavigation)
+                .HasForeignKey(d => d.InheritContentTypeId)
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataContentType");
+
+            //entity.Property(e => e.SysSettings)
+            //    .HasColumnName("SysSettings")
+            //    .HasColumnType("nvarchar(MAX)");
+        });
+
+        modelBuilder.Entity<TsDynDataHistory>(entity =>
+        {
+            entity.HasKey(e => e.HistoryId)
+                .HasName("PK_TsDynDataHistory");
+
+            entity.ToTable("TsDynDataHistory");
+
+            entity.Property(e => e.HistoryId);
+
+            entity.Property(e => e.Operation)
+                .IsRequired()
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasDefaultValueSql("N'I'");
+
+            entity.Property(e => e.SourceId);
+
+            entity.Property(e => e.SourceTable)
+                .IsRequired()
+                .HasMaxLength(250);
+
+            entity.Property(e => e.Timestamp).HasColumnType("datetime");
+
+            entity.Property(e => e.TransactionId);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            entity.HasIndex(e => e.SourceId)
+                .HasName("IX_TsDynDataHistory_SourceId");
+
+            entity.HasIndex(e => e.SourceGuid)
+                .HasName("IX_TsDynDataHistory_SourceGuid");
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            entity.HasOne(d => d.Transaction)
+                .WithMany(p => p.TsDynDataHistories)
+                .HasForeignKey(d => d.TransactionId)
+                .HasConstraintName("FK_TsDynDataHistory_TsDynDataTransaction");
+        });
+
+        modelBuilder.Entity<TsDynDataTargetType>(entity =>
+        {
+            entity.HasKey(e => e.TargetTypeId)
+                .HasName("PK_TsDynDataTargetType");
+
+            entity.ToTable("TsDynDataTargetType");
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            entity.HasIndex(e => e.Name)
+                .HasName("IX_TsDynDataTargetType_Name");
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            entity.Property(e => e.TargetTypeId);
+
+            entity.Property(e => e.Description).IsRequired();
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<TsDynDataTransaction>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId)
+                .HasName("PK_TsDynDataTransaction");
+
+            entity.ToTable("TsDynDataTransaction");
+
+            entity.Property(e => e.TransactionId);
+
+            entity.Property(e => e.Timestamp)
+                .HasColumnType("datetime")
+                .HasDefaultValueSql("getdate()");
+
+            entity.Property(e => e.User).HasMaxLength(255);
         });
 
         modelBuilder.Entity<TsDynDataZone>(entity =>
