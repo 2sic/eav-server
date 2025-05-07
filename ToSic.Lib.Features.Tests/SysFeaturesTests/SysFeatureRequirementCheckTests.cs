@@ -15,7 +15,7 @@ public class SysFeatureRequirementChecks(RequirementsService requirementsService
 #endif
     public void TestDotNetCore(bool expectsIsNull)
     {
-        var ok = requirementsService.CheckTac(new Requirement(FeatureConstants.ConditionIsSysFeature, SysFeatureDetectorNetCore.DefStatic.NameId));
+        var ok = requirementsService.CheckTac(new Requirement(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetCore.DefStatic.NameId));
         Equal(expectsIsNull, ok == null);
     }
 
@@ -27,7 +27,7 @@ public class SysFeatureRequirementChecks(RequirementsService requirementsService
 #endif
     public void TestDotNetFramework(bool expectsIsNull)
     {
-        var ok = requirementsService.CheckTac(new Requirement(FeatureConstants.ConditionIsSysFeature, SysFeatureDetectorNetFramework.DefStatic.NameId));
+        var ok = requirementsService.CheckTac(new Requirement(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetFramework.DefStatic.NameId));
         Equal(expectsIsNull, ok == null);
     }
 

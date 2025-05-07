@@ -17,4 +17,14 @@ public abstract class RequirementCheckBase: IRequirementCheck
     public abstract bool IsOk(Requirement requirement);
 
     public abstract string InfoIfNotOk(Requirement requirement);
+
+    protected abstract Aspect GetAspect(Requirement requirement);
+
+    public virtual RequirementStatus Status(Requirement requirement)
+    {
+        var ok = IsOk(requirement);
+        var aspect = GetAspect(requirement);
+        var message = ok ? null : InfoIfNotOk(requirement);
+        return new(ok, aspect, message);
+    }
 }

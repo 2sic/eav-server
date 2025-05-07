@@ -102,7 +102,7 @@ public record Feature: Aspect
 #if NETCOREAPP
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
 #endif
-    public Requirement Requirement => field ??= new(FeatureConstants.ConditionIsFeature, NameId);
+    public Requirement Requirement => field ??= new(FeatureConstants.RequirementFeature, NameId);
 
 #pragma warning restore CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
 

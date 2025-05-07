@@ -14,4 +14,8 @@ internal class MockAnimalRequirementsCheck : RequirementCheckBase, IRequirementC
 
     public override string InfoIfNotOk(Requirement requirement)
         => $"The feature '{requirement.NameId}' is not enabled.";
+
+    protected override Aspect GetAspect(Requirement requirement)
+        => Aspect.Custom(requirement.NameId, Guid.Empty);
+
 }

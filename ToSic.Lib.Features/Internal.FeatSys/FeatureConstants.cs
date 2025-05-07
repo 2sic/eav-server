@@ -26,6 +26,15 @@ public class FeatureConstants
         "cURfVQ064UicolDoAed3JfZ1XbIpYpUPK0uDDwOmsnNkwVJb1fm1z+MKTRNORnZDZCPfwVlXu32xwG1/YzJqDNnqOd0zY8H4Mj/x" +
         "V+pokOjj/fBOjNiSfpI+7KkolNM43ZhLSw8TYStDZuf0WsSrU4vF0ROMyiynNhyebpPX21d/MB0PEfZ82uNXBrXTrBPFog==";
 
-    public const string ConditionIsFeature = "feature";
-    public const string ConditionIsSysFeature = "sysfeature";
+
+    // IMPORTANT: ATM these constants also exist in RequirementDecorator
+    // They should not be needed any more once the RequirementsService properly handles all use cases
+
+    public const string RequirementFeature = "feature";
+    public const string RequirementSysCapability = "systemcapability";
+
+    // not yet implemented
+    public const string ReqLicense = "license";
+    public const string ReqPlatform = "platform";
+
 }
