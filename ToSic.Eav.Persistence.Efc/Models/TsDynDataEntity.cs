@@ -54,5 +54,5 @@ public partial class TsDynDataEntity
 
     public virtual ICollection<TsDynDataRelationship> RelationshipsWithThisAsParent { get; set; } = new HashSet<TsDynDataRelationship>();
 
-    public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; } = new HashSet<ToSicEavValues>();
+    public virtual ICollection<TsDynDataValue> TsDynDataValues { get; set; } = new HashSet<TsDynDataValue>();
 }

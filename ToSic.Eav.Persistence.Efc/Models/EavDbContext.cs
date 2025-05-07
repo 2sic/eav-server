@@ -26,7 +26,7 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
     public virtual DbSet<TsDynDataEntity> TsDynDataEntities { get; set; }
     public virtual DbSet<TsDynDataRelationship> TsDynDataRelationships { get; set; }
-    public virtual DbSet<ToSicEavValues> ToSicEavValues { get; set; }
+    public virtual DbSet<TsDynDataValue> TsDynDataValues { get; set; }
     public virtual DbSet<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; }
     public virtual DbSet<TsDynDataZone> TsDynDataZones { get; set; }
 
@@ -196,25 +196,14 @@ public partial class EavDbContext : DbContext
                 .HasConstraintName("FK_TsDynDataRelationship_TsDynDataEntityParent");
         });
 
-        modelBuilder.Entity<ToSicEavValues>(entity =>
+        modelBuilder.Entity<TsDynDataValue>(entity =>
         {
             entity.HasKey(e => e.ValueId)
-                .HasName("PK_ToSIC_EAV_Values");
+                .HasName("PK_TsDynDataValue");
 
-            entity.ToTable("ToSIC_EAV_Values");
+            entity.ToTable("TsDynDataValue");
 
-#pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => new { e.AttributeId, e.EntityId, e.TransactionIdDeleted })
-                .HasName("IX_EAV_Values1");
-#pragma warning restore CS0618 // Type or member is obsolete
-
-            // 2017-04-28 disabled e.Value in this index - on one hand it's useless, but it also seems to affect sql queries to 450 chars on that field!
-#pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => new { /*e.Value,*/ e.TransactionIdCreated, e.EntityId, e.TransactionIdDeleted, e.AttributeId, e.ValueId })
-                .HasName("IX_EAV_Values2");
-#pragma warning restore CS0618 // Type or member is obsolete
-
-            entity.Property(e => e.ValueId).HasColumnName("ValueID");
+            entity.Property(e => e.ValueId);
 
             entity.Property(e => e.AttributeId);
 
@@ -225,32 +214,16 @@ public partial class EavDbContext : DbContext
                 .HasColumnType("nvarchar(max)");
 
             entity.HasOne(d => d.Attribute)
-                .WithMany(p => p.ToSicEavValues)
+                .WithMany(p => p.TsDynDataValues)
                 .HasForeignKey(d => d.AttributeId)
-                .HasConstraintName("FK_ToSIC_EAV_Values_TsDynDataAttribute");
-
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.ToSicEavValuesTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Values_TsDynDataTransactionCreated");
-
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.ToSicEavValuesTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
-                .HasConstraintName("FK_ToSIC_EAV_Values_TsDynDataTransactionDeleted");
-
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.ToSicEavValuesTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
-                .HasConstraintName("FK_ToSIC_EAV_Values_TsDynDataTransactionModified");
+                .HasConstraintName("FK_TsDynDataValue_TsDynDataAttribute");
 
             entity.HasOne(d => d.Entity)
-                .WithMany(p => p.ToSicEavValues)
+                .WithMany(p => p.TsDynDataValues)
                 .HasForeignKey(d => d.EntityId)
                 //.OnDelete(DeleteBehavior.Restrict)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_ToSIC_EAV_Values_ToSIC_EAV_Entities");
+                .HasConstraintName("FK_TsDynDataValue_TsDynDataEntity");
         });
 
         modelBuilder.Entity<ToSicEavValuesDimensions>(entity =>

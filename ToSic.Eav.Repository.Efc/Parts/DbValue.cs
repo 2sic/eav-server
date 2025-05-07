@@ -10,22 +10,16 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
         Log.A($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
         // Clear values on target (including Dimensions). Must be done in separate steps, would cause un-allowed null-Foreign-Keys
         var delCount = 0;
-        if (target.ToSicEavValues.Any(v => v.TransactionIdDeleted == null))
-            foreach (var eavValue in target.ToSicEavValues.Where(v => v.TransactionIdDeleted == null))
-            {
-                eavValue.TransactionIdDeleted = DbContext.Versioning.GetTransactionId();
-                delCount++;
-            }
+        if (target.TsDynDataValues.Any()) delCount += target.TsDynDataValues.Count();
 
         // Add all Values with Dimensions
         var cloneCount = 0;
-        foreach (var eavValue in source.ToSicEavValues.ToList())
+        foreach (var eavValue in source.TsDynDataValues.ToList())
         {
-            var value = new ToSicEavValues
+            var value = new TsDynDataValue
             {
                 AttributeId = eavValue.AttributeId,
-                Value = eavValue.Value,
-                TransactionIdCreated = DbContext.Versioning.GetTransactionId()
+                Value = eavValue.Value
             };
 
             // copy Dimensions
@@ -36,7 +30,7 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
                     ReadOnly = valuesDimension.ReadOnly
                 });
 
-            target.ToSicEavValues.Add(value);
+            target.TsDynDataValues.Add(value);
             cloneCount++;
         }
         Log.A($"DelCount: {delCount}, cloneCount:{cloneCount} (note: should be 0 if json)");

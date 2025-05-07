@@ -21,11 +21,11 @@ partial class DbEntity
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)
         // Delete all Value-Dimensions
-        var valueDimensions = entities.SelectMany(e => e.ToSicEavValues.SelectMany(v => v.ToSicEavValuesDimensions)).ToList();
+        var valueDimensions = entities.SelectMany(e => e.TsDynDataValues.SelectMany(v => v.ToSicEavValuesDimensions)).ToList();
         DbContext.SqlDb.RemoveRange(valueDimensions);
 
         // Delete all Values
-        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.ToSicEavValues).ToList());
+        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.TsDynDataValues).ToList());
 
         // Delete all Parent-Relationships
         DeleteRelationships(entities.SelectMany(e => e.RelationshipsWithThisAsParent).ToList());

@@ -11,5 +11,5 @@ public partial class ToSicEavValuesDimensions
 
     public virtual ToSicEavDimensions Dimension { get; set; }
 
-    public virtual ToSicEavValues Value { get; set; }
+    public virtual TsDynDataValue Value { get; set; }
 }

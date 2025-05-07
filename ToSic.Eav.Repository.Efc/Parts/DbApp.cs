@@ -121,7 +121,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
         var entityIds = appEntities.Select(e => e.EntityId).ToArray();
 
         // Delete Value-Dimensions
-        var appValues = db.ToSicEavValues
+        var appValues = db.TsDynDataValues
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
             //.Where(v => entityIds.Contains(v.EntityId));
             .Where(v => Enumerable.Contains(entityIds, v.EntityId));

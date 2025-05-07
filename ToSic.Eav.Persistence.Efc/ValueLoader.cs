@@ -76,7 +76,6 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
                     v.AttributeId,
                     v.Attribute.StaticName,
                     v.Value,
-                    v.TransactionIdCreated,
 
                     v.ToSicEavValuesDimensions
                         .Select(lng =>

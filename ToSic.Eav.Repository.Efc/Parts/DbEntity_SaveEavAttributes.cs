@@ -11,7 +11,7 @@ partial class DbEntity
     private bool ClearAttributesInDbModel(int entityId)
     {
         var callLog = Log.Fn<bool>(timer: true);
-        var val = DbContext.SqlDb.ToSicEavValues
+        var val = DbContext.SqlDb.TsDynDataValues
             .Include(v => v.ToSicEavValuesDimensions)
             .Where(v => v.EntityId == entityId)
             .ToList();
@@ -81,15 +81,14 @@ partial class DbEntity
                         Log.A(Log.Try(() =>
                             $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count()}, dim⋮{toSicEavValuesDimensions?.Count}"));
 
-                    var newVal = new ToSicEavValues
+                    var newVal = new TsDynDataValue
                     {
                         AttributeId = attribDef.AttributeId,
                         Value = value.Serialized ?? "",
-                        TransactionIdCreated = transactionId, // todo: remove some time later
                         ToSicEavValuesDimensions = toSicEavValuesDimensions,
                         EntityId = dbEnt.EntityId
                     };
-                    AttributeQueueAdd(() => DbContext.SqlDb.ToSicEavValues.Add(newVal));
+                    AttributeQueueAdd(() => DbContext.SqlDb.TsDynDataValues.Add(newVal));
                 }
 
                 return "ok";

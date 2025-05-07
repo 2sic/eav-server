@@ -27,12 +27,6 @@ public partial class TsDynDataTransaction
 
     public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataEntity>();
 
-    public virtual ICollection<ToSicEavValues> ToSicEavValuesTransactionCreatedNavigation { get; set; } = new HashSet<ToSicEavValues>();
-
-    public virtual ICollection<ToSicEavValues> ToSicEavValuesTransactionDeletedNavigation { get; set; } = new HashSet<ToSicEavValues>();
-
-    public virtual ICollection<ToSicEavValues> ToSicEavValuesTransactionModifiedNavigation { get; set; } = new HashSet<ToSicEavValues>();
-
     public virtual ICollection<TsDynDataHistory> TsDynDataHistories { get; set; } = new HashSet<TsDynDataHistory>();
 
     public virtual ICollection<TsDynDataZone> TsDynDataZonesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataZone>();

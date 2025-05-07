@@ -13,7 +13,7 @@ partial class DbEntity
             return DbContext.SqlDb.TsDynDataEntities
                 .Include(e => e.RelationshipsWithThisAsParent)
                 .Include(e => e.RelationshipsWithThisAsChild)
-                .Include(e => e.ToSicEavValues)
+                .Include(e => e.TsDynDataValues)
                 .ThenInclude(v => v.ToSicEavValuesDimensions)
                 .ThenInclude(d => d.Dimension);
         }
