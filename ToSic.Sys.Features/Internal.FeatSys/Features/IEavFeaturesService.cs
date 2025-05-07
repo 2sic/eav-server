@@ -41,7 +41,7 @@ public interface IEavFeaturesService: ICacheExpiring, ICanBeCacheDependency
 
 
     [PrivateApi]
-    bool IsEnabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception);
+    bool IsEnabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException? exception);
 
     [PrivateApi]
     string MsgMissingSome(params Guid[] ids);

@@ -24,7 +24,7 @@ namespace ToSic.Eav.Internal.Features;
 public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesService, ILibFeaturesService
 {
     public IEnumerable<FeatureState> All => _allStaticCache ??= Merge(Stored, featuresCatalog.List, _staticSysFeatures);
-    private static List<FeatureState> _allStaticCache;
+    private static List<FeatureState>? _allStaticCache;
 
     /// <summary>
     /// List of all enabled features with their guids and nameIds
@@ -34,7 +34,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
             .SelectMany(f => new[] { f.NameId, f.Aspect.Guid.ToString() })
             .Distinct(InvariantCultureIgnoreCase),
         InvariantCultureIgnoreCase);
-    private HashSet<string> _enabledFeatures; // Do not use GetOnce, because of "Error Unable to marshal host object to interpreter space"
+    private HashSet<string>? _enabledFeatures; // Do not use GetOnce, because of "Error Unable to marshal host object to interpreter space"
 
     public IEnumerable<FeatureState> UiFeaturesForEditors
         => All.Where(f => f.IsEnabled && f.IsForEditUi);
@@ -45,7 +45,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     public bool IsEnabled(IEnumerable<Guid> guids)
         => guids.All(IsEnabled);
 
-    public bool IsEnabled(params string[] nameIds)
+    public bool IsEnabled(params string[]? nameIds)
         => nameIds == null || nameIds.Length == 0 || nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
 
     public FeatureState? Get(string nameId)
@@ -57,7 +57,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     public bool Valid => ValidInternal;
     public static bool ValidInternal; // ATM always false; is used by a static class - not sure why this even exists as I don't think it's set anywhere
         
-    public bool IsEnabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException exception)
+    public bool IsEnabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException? exception)
     {
         // ReSharper disable PossibleMultipleEnumeration
         var enabled = IsEnabled(features);
