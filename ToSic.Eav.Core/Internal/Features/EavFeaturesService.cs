@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Caching;
 using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.SysData;
 using ToSic.Lib.Internal.Generics;
 using static System.StringComparer;
@@ -49,7 +48,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     public bool IsEnabled(params string[] nameIds)
         => nameIds == null || nameIds.Length == 0 || nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
 
-    public FeatureState Get(string nameId)
+    public FeatureState? Get(string nameId)
         => All.FirstOrDefault(f => f.Aspect.Name == nameId || f.NameId == nameId);
 
     public bool IsEnabled(params Feature[] features) 

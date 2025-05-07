@@ -6,9 +6,21 @@
 partial class EnumerableExtensions
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool SafeAny<TSource>(this IEnumerable<TSource> source) => source?.Any() == true;
+    public static bool SafeAny<TSource>(
+#if !NETFRAMEWORK
+        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
+#endif
+        this IEnumerable<TSource> source
+    )
+        => source?.Any() == true;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool SafeNone<TSource>(this IEnumerable<TSource> source) => source?.Any() != true;
+    public static bool SafeNone<TSource>(
+#if !NETFRAMEWORK
+        [System.Diagnostics.CodeAnalysis.NotNullWhen(false)]
+#endif
+        this IEnumerable<TSource>? source
+    )
+        => source?.Any() != true;
 
 }

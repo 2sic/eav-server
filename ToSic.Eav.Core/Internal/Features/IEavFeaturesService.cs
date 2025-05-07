@@ -60,7 +60,7 @@ public interface IEavFeaturesService: ICacheExpiring, ICanBeCacheDependency
     /// <summary>
     /// Get a feature state or return null if not found.
     /// </summary>
-    FeatureState Get(string nameId);
+    FeatureState? Get(string nameId);
 
     [PrivateApi("New in 13.05, not public at all")]
     bool IsEnabled(params Feature[] features);

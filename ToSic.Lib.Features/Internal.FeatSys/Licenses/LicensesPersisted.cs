@@ -90,14 +90,21 @@ public class LicensesPersisted
     /// Internal property to work with the data, shouldn't end up in the json
     /// </summary>
     [JsonIgnore]
-    public string[] FingerprintsArray => Fingerprints?.Select(fp => fp.Id).ToArray().TrimmedAndWithoutEmpty() ?? [];
+    public string[] FingerprintsArray => Fingerprints
+                                             ?.Select(fp => fp.Id)
+                                             .ToArray()
+                                             .TrimmedAndWithoutEmpty()
+                                         ?? [];
 
     public string GenerateIdentity()
     {
         const string dateFormat = "yyyy-MM-dd";
 
         var licenseList = Licenses ?? [];
-        var licenses = licenseList.Select(l => l.Id).ToArray().TrimmedAndWithoutEmpty();
+        var licenses = licenseList
+            .Select(l => l.Id)
+            .ToArray()
+            .TrimmedAndWithoutEmpty();
 
         // License expiry must be built in a way
         // where it's an empty string (no additions)
