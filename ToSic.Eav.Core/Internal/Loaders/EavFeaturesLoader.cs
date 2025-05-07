@@ -98,11 +98,6 @@ public class EavFeaturesLoader(
             if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
                 return l.ReturnNull("ok, but 'features.json' is missing");
 
-            // handle old 'features.json' format
-            var oldState = featurePersistenceService.ConvertOldFeaturesFile(filePath, fileContent);
-            if (oldState != null) 
-                return l.ReturnAndLog(oldState, "converted to new features.json");
-
             // return features stored
             var newState = JsonSerializer.Deserialize<FeatureStatesPersisted>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml);
 

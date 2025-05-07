@@ -10,7 +10,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Features;
 
-public partial class FeaturePersistenceService(
+public class FeaturePersistenceService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     LazySvc<SystemFingerprint> fingerprint)
     : ServiceBase("FeatCfgMng", connect: [globalConfiguration, fingerprint])
@@ -38,40 +38,6 @@ public partial class FeaturePersistenceService(
             : (featureFilePath, null);
     }
 
-
-    /// <summary>
-    /// Save new features config in "features.json".
-    /// </summary>
-    private bool SaveFeaturesFile(FeatureStatesPersisted features)
-    {
-        var l = Log.Fn<bool>();
-        try
-        {
-            // when null, prepare empty features
-            features ??= new();
-
-            // update to latest fingerprint
-            features = features with { Fingerprint = fingerprint.Value.GetFingerprint() };
-
-            // save new format (v13)
-            var fileContent = FeatToJson(features);
-
-            var configurationsPath = globalConfiguration.Value.ConfigFolder;
-
-            // ensure that path to store files already exits
-            Directory.CreateDirectory(configurationsPath);
-
-            var filePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
-
-            return l.Return(SaveFile(filePath, fileContent), "features new saved");
-        }
-        catch (Exception e)
-        {
-            l.Ex(e);
-            return l.ReturnFalse("save features failed:" + e.Message);
-        }
-    }
-
     /// <summary>
     /// Update existing features config in "features.json". 
     /// </summary>
@@ -96,7 +62,7 @@ public partial class FeaturePersistenceService(
     #region JSON serialization
 
     private static JsonObject JsonToObject(string json)
-        => JsonNode.Parse(json, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions)
+        => JsonNode.Parse(json ?? "{}", JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions)
             .AsObject();
 
     private static string FeatToJson(object obj)
@@ -113,21 +79,18 @@ public partial class FeaturePersistenceService(
     /// </summary>
     internal bool SaveFeaturesUpdate(List<FeatureManagementChange> changes)
     {
-        var l = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
+        var changeCount = changes?.Count ?? -1;
+        var l = Log.Fn<bool>($"c:{changeCount}");
+        if (changes == null || changeCount <= 0)
+            return l.ReturnTrue("no changes");
+
         try
         {
             var (filePath, fileContent) = LoadFeaturesFile();
-                
-            // if features.json is missing, we still need empty list of stored features so we can create new one on save
-            fileContent ??= FeatToJson(new FeatureStatesPersisted());
-
-            // handle old 'features.json' format
-            var stored = ConvertOldFeaturesFile(filePath, fileContent);
-            if (stored != null) // if old features are converted, load fileContent features in new format
-                (filePath, fileContent) = LoadFeaturesFile();
-
             var fileJson = JsonToObject(fileContent);
-            var featureArray = fileJson["features"].AsArray();
+
+            var featureArray = fileJson["features"]
+                .AsArray();
             foreach (var change in changes)
             {
                 var feature = featureArray.FirstOrDefault(f => (Guid)f["id"] == change.FeatureGuid);
@@ -139,10 +102,14 @@ public partial class FeaturePersistenceService(
                         featObj = featObj with { Configuration = change.Configuration };
                     featureArray.Add(JsonToObject(FeatToJson(featObj)));
                 }
-                // Update (configured, and has an Enabled = true/false
-                else if (change.Enabled.HasValue)
+                // Update existing config, but only if:
+                // - there is a true/false config
+                // - it already had a config (which should be preserved)
+                // - it has a new config, despite not being enabled
+                else if (change.Enabled.HasValue || feature["configuration"] != null || change.Configuration != null)
                 {
-                    feature["enabled"] = change.Enabled.Value;
+                    // Note: as of v20 this can also result in a null, when having to preserve the underlying configuration
+                    feature["enabled"] = change.Enabled;
                     if (change.Configuration != null)
                         feature["configuration"] = JsonToObject(FeatToJson(change.Configuration));
                 }

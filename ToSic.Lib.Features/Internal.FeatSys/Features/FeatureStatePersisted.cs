@@ -35,7 +35,7 @@ public record FeatureStatePersisted
 
 
     [JsonPropertyName("configuration")]
-    public Dictionary<string, object> Configuration
+    public Dictionary<string, object>? Configuration
     {
         get => field;
         init => field = value == null
