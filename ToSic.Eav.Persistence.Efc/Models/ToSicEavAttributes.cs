@@ -33,5 +33,5 @@ public partial class ToSicEavAttributes
 
     public virtual ToSicEavAttributeTypes TypeNavigation { get; set; }
 
-    public virtual ToSicEavAttributeSets AttributeSet { get; set; }
+    public virtual TsDynDataContentType AttributeSet { get; set; }
 }

@@ -36,7 +36,7 @@ public abstract class XmlExporter(
     public List<TenantFileItem> ReferencedFiles = [];
     private bool _isAppExport;
 
-    public string[] AttributeSetNamesOrIds;
+    public string[] ContentTypeNamesOrIds;
     public string[] EntityIDs;
     public List<Message> Messages = [];
 
@@ -70,7 +70,7 @@ public abstract class XmlExporter(
 
         _appStaticName = appStaticName;
         _isAppExport = appExport;
-        AttributeSetNamesOrIds = typeNamesOrIds;
+        ContentTypeNamesOrIds = typeNamesOrIds;
         EntityIDs = entityIds;
     }
 
@@ -175,14 +175,14 @@ public abstract class XmlExporter(
 
         #region Attribute Sets
 
-        var attributeSets = new XElement(XmlConstants.AttributeSets);
+        var contentTypes = new XElement(XmlConstants.AttributeSets);
 
-        // Go through each AttributeSetID
-        foreach (var attributeSetId in AttributeSetNamesOrIds)
+        // Go through each ContentTypeId
+        foreach (var contentTypeId in ContentTypeNamesOrIds)
         {
-            var set = int.TryParse(attributeSetId, out var id)
+            var set = int.TryParse(contentTypeId, out var id)
                 ? AppReader.GetContentType(id)
-                : AppReader.GetContentType(attributeSetId);  // in case it's the name, not the number
+                : AppReader.GetContentType(contentTypeId);  // in case it's the name, not the number
 
             // skip system/code-types
             if (set.HasPresetAncestor()) continue;
@@ -224,7 +224,7 @@ public abstract class XmlExporter(
                 attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
             }
 
-            attributeSets.Add(attributeSet);
+            contentTypes.Add(attributeSet);
         }
 
         #endregion
@@ -257,7 +257,7 @@ public abstract class XmlExporter(
             new XAttribute(XmlConstants.MinModVersion, moduleVersion),
             new XAttribute(XmlConstants.ExportDate, DateTime.Now),
             header,
-            attributeSets,
+            contentTypes,
             entities,
             GetFilesXElements(),
             GetFoldersXElements()));

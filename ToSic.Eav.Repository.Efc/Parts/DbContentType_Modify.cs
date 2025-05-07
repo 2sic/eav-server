@@ -17,15 +17,15 @@ partial class DbContentType
         DbContext.SqlDb.SaveChanges();
     }
 
-    private ToSicEavAttributeSets Create(string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
+    private TsDynDataContentType Create(string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
     {
-        var ct = new ToSicEavAttributeSets
+        var ct = new TsDynDataContentType
         {
             AppId = DbContext.AppId,
             StaticName = Guid.NewGuid().ToString(),
             Scope = scope == "" ? null : scope,
-            UsesConfigurationOfAttributeSet = usesConfigurationOfOtherSet,
-            AlwaysShareConfiguration = alwaysShareConfig
+            InheritContentTypeId = usesConfigurationOfOtherSet,
+            IsGlobal = alwaysShareConfig
         };
         DbContext.SqlDb.Add(ct);
         return ct;
@@ -52,7 +52,7 @@ partial class DbContentType
         else
         {
             DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information, $"AttributeSet already exists{contentType.NameId}|{contentType.Name}"));
-            if (destinationSet.UsesConfigurationOfAttributeSet.HasValue)
+            if (destinationSet.InheritContentTypeId.HasValue)
             {
                 DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.NameId));
                 return null;
@@ -64,13 +64,13 @@ partial class DbContentType
         {
             var ghostParentId = FindGhostParentIdOrLogWarnings(contentType.OnSaveUseParentStaticName);
             if (ghostParentId == 0) return null;
-            destinationSet.UsesConfigurationOfAttributeSet = ghostParentId;
+            destinationSet.InheritContentTypeId = ghostParentId;
         }
 
-        destinationSet.AlwaysShareConfiguration = contentType.AlwaysShareConfiguration;
+        destinationSet.IsGlobal = contentType.AlwaysShareConfiguration;
         DbContext.SqlDb.SaveChanges();
 
-        return destinationSet.AttributeSetId;
+        return destinationSet.ContentTypeId;
     }
 
 

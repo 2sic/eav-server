@@ -13,9 +13,11 @@ public partial class TsDynDataTransaction
 
     public virtual ICollection<ToSicEavAttributes> ToSicEavAttributesTransactionDeletedNavigation { get; set; } = new HashSet<ToSicEavAttributes>();
 
-    public virtual ICollection<ToSicEavAttributeSets> ToSicEavAttributeSetsTransactionCreatedNavigation { get; set; } = new HashSet<ToSicEavAttributeSets>();
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<ToSicEavAttributeSets> ToSicEavAttributeSetsTransactionDeletedNavigation { get; set; } = new HashSet<ToSicEavAttributeSets>();
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
+
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
 
     public virtual ICollection<ToSicEavEntities> ToSicEavEntitiesTransactionCreatedNavigation { get; set; } = new HashSet<ToSicEavEntities>();
 

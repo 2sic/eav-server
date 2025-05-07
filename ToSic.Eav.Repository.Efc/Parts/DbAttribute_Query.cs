@@ -11,7 +11,7 @@ partial class DbAttribute
         if (contentTypeId <= 0)
             throw new ArgumentOutOfRangeException(nameof(contentTypeId), "should never be 0 - this is a bug because of the new Immutable, report to iJungleboy");
 
-        contentTypeId = DbContext.ContentType.ResolvePotentialGhostAttributeSetId(contentTypeId);
+        contentTypeId = DbContext.ContentType.ResolvePotentialGhostContentTypeId(contentTypeId);
 
         return DbContext.SqlDb.ToSicEavAttributes
             .Where(attributes => attributes.ContentTypeId == contentTypeId)

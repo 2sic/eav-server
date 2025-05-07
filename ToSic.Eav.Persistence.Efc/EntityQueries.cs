@@ -12,7 +12,7 @@ internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(paren
 
         var query = db.ToSicEavEntities
             .Where(e => e.AppId == appId)
-            .Where(e => e.TransactionIdDeleted == null && e.AttributeSet.TransactionIdDeleted == null);
+            .Where(e => e.TransactionIdDeleted == null && e.ContentTypeNavigation.TransactionIdDeleted == null);
 
         l.A("initial query created");
 

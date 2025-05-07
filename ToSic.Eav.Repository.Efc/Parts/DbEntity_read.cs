@@ -102,7 +102,7 @@ partial class DbEntity
         => DbContext.SqlDb.ToSicEavEntities
             .Where(e => e.EntityGuid == entityGuid
                         && !e.TransactionIdDeleted.HasValue
-                        && !e.AttributeSet.TransactionIdDeleted.HasValue
+                        && !e.ContentTypeNavigation.TransactionIdDeleted.HasValue
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId));
                         && Enumerable.Contains(DbContext.AppIds, e.AppId)
@@ -149,7 +149,7 @@ partial class DbEntity
                         // entityGuid.Contains(e.EntityGuid)
                         Enumerable.Contains(entityGuid, e.EntityGuid)
                         && e.TransactionIdDeleted == null
-                        && e.AttributeSet.TransactionIdDeleted == null
+                        && e.ContentTypeNavigation.TransactionIdDeleted == null
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId)
                         && Enumerable.Contains(DbContext.AppIds, e.AppId)

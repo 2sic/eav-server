@@ -19,7 +19,7 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<TsDynDataApp> TsDynDataApps { get; set; }
     public virtual DbSet<TsDynDataTargetType> TsDynDataTargetTypes { get; set; }
     public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
-    public virtual DbSet<ToSicEavAttributeSets> ToSicEavAttributeSets { get; set; }
+    public virtual DbSet<TsDynDataContentType> TsDynDataContentTypes { get; set; }
     public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
     public virtual DbSet<TsDynDataTransaction> TsDynDataTransactions { get; set; }
     public virtual DbSet<TsDynDataHistory> TsDynDataHistories { get; set; }
@@ -176,19 +176,19 @@ public partial class EavDbContext : DbContext
                 .WithMany(p => p.ToSicEavAttributes)
                 .HasForeignKey(d => d.ContentTypeId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_ContentTypeId_ToSIC_EAV_AttributeSets");
+                .HasConstraintName("FK_ToSIC_EAV_Attributes_TsDynDataContentType");
         });
 
-        modelBuilder.Entity<ToSicEavAttributeSets>(entity =>
+        modelBuilder.Entity<TsDynDataContentType>(entity =>
         {
-            entity.HasKey(e => e.AttributeSetId)
-                .HasName("PK_ToSIC_EAV_AttributeSets");
+            entity.HasKey(e => e.ContentTypeId)
+                .HasName("PK_TsDynDataContentType");
 
-            entity.ToTable("ToSIC_EAV_AttributeSets");
+            entity.ToTable("TsDynDataContentType");
 
-            entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
+            entity.Property(e => e.ContentTypeId);
 
-            entity.Property(e => e.AlwaysShareConfiguration)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
+            entity.Property(e => e.IsGlobal)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
             entity.Property(e => e.AppId);
 
@@ -201,26 +201,32 @@ public partial class EavDbContext : DbContext
                 .HasDefaultValueSql("newid()");
 
             entity.HasOne(d => d.App)
-                .WithMany(p => p.ToSicEavAttributeSets)
+                .WithMany(p => p.TsDynDataContentTypes)
                 .HasForeignKey(d => d.AppId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_TsDynDataApp");
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataApp");
 
             entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.ToSicEavAttributeSetsTransactionCreatedNavigation)
+                .WithMany(p => p.TsDynDataContentTypesTransactionCreatedNavigation)
                 .HasForeignKey(d => d.TransactionIdCreated)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_TsDynDataTransactionCreated");
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionCreated");
+
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.TsDynDataContentTypesTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionModified");
 
             entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.ToSicEavAttributeSetsTransactionDeletedNavigation)
+                .WithMany(p => p.TsDynDataContentTypesTransactionDeletedNavigation)
                 .HasForeignKey(d => d.TransactionIdDeleted)
-                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_TsDynDataTransactionDeleted");
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionDeleted");
 
-            entity.HasOne(d => d.UsesConfigurationOfAttributeSetNavigation)
-                .WithMany(p => p.InverseUsesConfigurationOfAttributeSetNavigation)
-                .HasForeignKey(d => d.UsesConfigurationOfAttributeSet)
-                .HasConstraintName("FK_ToSIC_EAV_AttributeSets_ToSIC_EAV_AttributeSets");
+            entity.HasOne(d => d.InheritContentTypeNavigation)
+                .WithMany(p => p.InverseInheritContentTypesNavigation)
+                .HasForeignKey(d => d.InheritContentTypeId)
+                .HasConstraintName("FK_TsDynDataContentType_TsDynDataContentType");
 
             //entity.Property(e => e.SysSettings)
             //    .HasColumnName("SysSettings")
@@ -341,7 +347,7 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.TargetTypeId);
 
-            entity.Property(e => e.AttributeSetId).HasColumnName("AttributeSetID");
+            entity.Property(e => e.ContentTypeId);
 
             entity.Property(e => e.ContentType).HasMaxLength(250);
 
@@ -369,11 +375,11 @@ public partial class EavDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_ToSIC_EAV_Entities_TsDynDataTargetType");
 
-            entity.HasOne(d => d.AttributeSet)
+            entity.HasOne(d => d.ContentTypeNavigation)
                 .WithMany(p => p.ToSicEavEntities)
-                .HasForeignKey(d => d.AttributeSetId)
+                .HasForeignKey(d => d.ContentTypeId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Entities_ToSIC_EAV_AttributeSets");
+                .HasConstraintName("FK_ToSIC_EAV_Entities_TsDynDataContentType");
 
             entity.HasOne(d => d.TransactionCreatedNavigation)
                 .WithMany(p => p.ToSicEavEntitiesTransactionCreatedNavigation)

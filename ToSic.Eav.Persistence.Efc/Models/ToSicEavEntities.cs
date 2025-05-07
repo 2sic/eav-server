@@ -7,7 +7,7 @@ public partial class ToSicEavEntities
 
     public Guid EntityGuid { get; set; }
 
-    public int AttributeSetId { get; set; }
+    public int ContentTypeId { get; set; }
 
     // 2017-06-20 2dm - never used
     //public int? ConfigurationSet { get; set; }
@@ -20,15 +20,9 @@ public partial class ToSicEavEntities
 
     public string KeyString { get; set; }
 
-    public int TransactionIdCreated { get; set; }
-
-    public int? TransactionIdDeleted { get; set; }
-
     public bool IsPublished { get; set; }
 
     public int? PublishedEntityId { get; set; }
-
-    public int TransactionIdModified { get; set; }
 
     public string Owner { get; set; }
 
@@ -40,12 +34,18 @@ public partial class ToSicEavEntities
 
     public string ContentType { get; set; }
 
+    public int TransactionIdCreated { get; set; }
+
+    public int TransactionIdModified { get; set; }
+
+    public int? TransactionIdDeleted { get; set; }
+
     // 2017-10-10 2dm new with entity > app mapping
     public virtual TsDynDataApp App { get; set; }
 
     public virtual TsDynDataTargetType TargetType { get; set; }
 
-    public virtual ToSicEavAttributeSets AttributeSet { get; set; }
+    public virtual TsDynDataContentType ContentTypeNavigation { get; set; }
 
     public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 

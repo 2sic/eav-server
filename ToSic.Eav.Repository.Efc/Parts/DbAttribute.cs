@@ -90,7 +90,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     /// <summary>
     /// Append a new Attribute to an AttributeSet
     /// </summary>
-    public int AddAttributeAndSave(int attributeSetId, IContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
+    public int AddAttributeAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
     {
         var staticName = contentTypeAttribute.Name;
         var type = contentTypeAttribute.Type.ToString();
@@ -98,13 +98,13 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
         var sysSettings = Serializer.Serialize(contentTypeAttribute.SysSettings);
 
-        var attributeSet = DbContext.AttribSet.GetDbContentType(DbContext.AppId, attributeSetId);
+        var contentType = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentTypeId);
 
         if (!Attributes.StaticNameValidation.IsMatch(staticName))
             throw new("Attribute static name \"" + staticName + "\" is invalid. " + Attributes.StaticNameErrorMessage);
 
         // Prevent Duplicate Name
-        if (AttributeExistsInSet(attributeSet.AttributeSetId, staticName))
+        if (AttributeExistsInSet(contentType.ContentTypeId, staticName))
             throw new ArgumentException($@"An Attribute with the static name {staticName} already exists", nameof(staticName));
 
         var newAttribute = new ToSicEavAttributes
@@ -114,7 +114,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
             TransactionIdCreated = DbContext.Versioning.GetTransactionId(),
             Guid = contentTypeAttribute.Guid,
             SysSettings = sysSettings,
-            AttributeSet = attributeSet,
+            AttributeSet = contentType,
             SortOrder = sortOrder,
             // AttributeGroupId = 1,
             IsTitle = isTitle
@@ -122,13 +122,13 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         DbContext.SqlDb.Add(newAttribute);
 
         // Set Attribute as Title if there's no title field in this set
-        if (!attributeSet.ToSicEavAttributes.Any(a => a.IsTitle))
+        if (!contentType.ToSicEavAttributes.Any(a => a.IsTitle))
             newAttribute.IsTitle = true;
 
         if (isTitle)
         {
             // unset old Title Fields
-            var oldTitleFields = attributeSet.ToSicEavAttributes.Where(a => a.IsTitle && a.StaticName != staticName).ToList();
+            var oldTitleFields = contentType.ToSicEavAttributes.Where(a => a.IsTitle && a.StaticName != staticName).ToList();
             foreach (var titleField in oldTitleFields)
                 titleField.IsTitle = false;
         }
