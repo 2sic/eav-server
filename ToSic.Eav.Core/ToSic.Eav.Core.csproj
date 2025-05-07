@@ -133,11 +133,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ToSic.Lib.Caching\ToSic.Lib.Caching.csproj" />
-    <ProjectReference Include="..\ToSic.Lib.Code\ToSic.Lib.Code.csproj" />
-    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
-    <ProjectReference Include="..\ToSic.Lib.Features\ToSic.Lib.Features.csproj" />
-    <ProjectReference Include="..\ToSic.Lib.Utils\ToSic.Lib.Utils.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Caching\ToSic.Sys.Caching.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Code\ToSic.Sys.Code.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Features\ToSic.Sys.Features.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
     <DefineConstants>NETSTANDARD</DefineConstants>

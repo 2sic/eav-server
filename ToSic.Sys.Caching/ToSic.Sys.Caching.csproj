@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+
   <PropertyGroup>
     <TargetFrameworks>net472;net9.0;</TargetFrameworks>
     <Deterministic>true</Deterministic>
@@ -21,18 +22,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\ToSic.Lib.Core\Properties\LibAssemblyInfo.cs" Link="Properties\LibAssemblyInfo.cs" />
-    <Compile Include="..\ToSic.Lib.Core\Properties\LibAssemblyInfoInherited.cs" Link="Properties\LibAssemblyInfoInherited.cs" />
-    <Compile Include="..\ToSic.Lib.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+    <Compile Include="..\ToSic.Sys.Core\Properties\LibAssemblyInfo.cs" Link="Properties\LibAssemblyInfo.cs" />
+    <Compile Include="..\ToSic.Sys.Core\Properties\LibAssemblyInfoInherited.cs" Link="Properties\LibAssemblyInfoInherited.cs" />
+    <Compile Include="..\ToSic.Sys.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
   </ItemGroup>
 
-  
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+
 
 </Project>
