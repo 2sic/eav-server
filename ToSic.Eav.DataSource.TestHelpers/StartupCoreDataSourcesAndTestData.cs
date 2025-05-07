@@ -4,6 +4,7 @@ using ToSic.Eav.StartUp;
 using ToSic.Eav.TestData;
 using ToSic.Eav.Testing;
 using ToSic.Lib;
+using ToSic.Lib.Internal.FeatSys;
 
 namespace ToSic.Eav;
 
@@ -27,5 +28,6 @@ public class StartupCoreDataSourcesAndTestData
             .AddDataSources()
             .AddEavCore()
             .AddEavCoreFallbackServices()
-            .AddLibCore();
+            .AddLibCore()
+            .AddLibFeatSys();
 }

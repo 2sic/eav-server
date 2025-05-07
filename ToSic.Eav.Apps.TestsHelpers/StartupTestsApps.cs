@@ -6,6 +6,7 @@ using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.StartUp;
 using ToSic.Eav.Testing;
 using ToSic.Lib;
+using ToSic.Lib.Internal.FeatSys;
 
 #pragma warning disable CA1822
 
@@ -41,5 +42,6 @@ public class StartupTestsApps
             .AddEavCore()
             .AddEavCoreFallbackServices()
             // Library
-            .AddLibCore();
+            .AddLibCore()
+            .AddLibFeatSys();
 }
