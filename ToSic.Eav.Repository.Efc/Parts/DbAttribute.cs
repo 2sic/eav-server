@@ -15,7 +15,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         GetAttribute(contentTypeId, attributeId).IsTitle = true;
 
         // unset other Attributes with isTitle=true
-        var oldTitleAttributes = DbContext.SqlDb.ToSicEavAttributes
+        var oldTitleAttributes = DbContext.SqlDb.TsDynDataAttributes
             .Where(s => s.ContentTypeId == contentTypeId && s.IsTitle);
         foreach (var oldTitleAttribute in oldTitleAttributes)
             oldTitleAttribute.IsTitle = false;
@@ -40,14 +40,14 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     }
 
 
-    private ToSicEavAttributes GetAttribute(int contentTypeId, int attributeId = 0, string name = null)
+    private TsDynDataAttribute GetAttribute(int contentTypeId, int attributeId = 0, string name = null)
     {
         try
         {
             return attributeId != 0
-                ? DbContext.SqlDb.ToSicEavAttributes
+                ? DbContext.SqlDb.TsDynDataAttributes
                     .Single(a =>a.ContentTypeId == contentTypeId && a.AttributeId == attributeId)
-                : DbContext.SqlDb.ToSicEavAttributes
+                : DbContext.SqlDb.TsDynDataAttributes
                     .Single(a => a.ContentTypeId == contentTypeId && a.StaticName == name);
         }
         catch (Exception ex)
@@ -68,7 +68,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
             throw new("can't rename to something empty");
 
         // ensure that it's in the set
-        var attr = DbContext.SqlDb.ToSicEavAttributes
+        var attr = DbContext.SqlDb.TsDynDataAttributes
             .Single(a => a.AttributeId == attributeId && a.ContentTypeId == contentTypeId);
         attr.StaticName = newName;
         DbContext.SqlDb.SaveChanges();
@@ -79,7 +79,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     /// </summary>
     private int AppendToEndAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute)
     {
-        var maxIndex = DbContext.SqlDb.ToSicEavAttributes
+        var maxIndex = DbContext.SqlDb.TsDynDataAttributes
             .Where(a => a.ContentTypeId == contentTypeId)
             .ToList() // important because it otherwise has problems with the next step...
             .Max(s => (int?) s.SortOrder);
@@ -107,14 +107,14 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         if (AttributeExistsInSet(contentType.ContentTypeId, staticName))
             throw new ArgumentException($@"An Attribute with the static name {staticName} already exists", nameof(staticName));
 
-        var newAttribute = new ToSicEavAttributes
+        var newAttribute = new TsDynDataAttribute
         {
             Type = type,
             StaticName = staticName,
             TransactionIdCreated = DbContext.Versioning.GetTransactionId(),
             Guid = contentTypeAttribute.Guid,
             SysSettings = sysSettings,
-            AttributeSet = contentType,
+            ContentType = contentType,
             SortOrder = sortOrder,
             // AttributeGroupId = 1,
             IsTitle = isTitle
@@ -122,13 +122,13 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         DbContext.SqlDb.Add(newAttribute);
 
         // Set Attribute as Title if there's no title field in this set
-        if (!contentType.ToSicEavAttributes.Any(a => a.IsTitle))
+        if (!contentType.TsDynDataAttributes.Any(a => a.IsTitle))
             newAttribute.IsTitle = true;
 
         if (isTitle)
         {
             // unset old Title Fields
-            var oldTitleFields = contentType.ToSicEavAttributes.Where(a => a.IsTitle && a.StaticName != staticName).ToList();
+            var oldTitleFields = contentType.TsDynDataAttributes.Where(a => a.IsTitle && a.StaticName != staticName).ToList();
             foreach (var titleField in oldTitleFields)
                 titleField.IsTitle = false;
         }
@@ -155,10 +155,10 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
             });
             DbContext.SqlDb.SaveChanges();
 
-            var attr = DbContext.SqlDb.ToSicEavAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
+            var attr = DbContext.SqlDb.TsDynDataAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
 
             if (attr != null)
-                DbContext.SqlDb.ToSicEavAttributes.Remove(attr);
+                DbContext.SqlDb.TsDynDataAttributes.Remove(attr);
 
             DbContext.SqlDb.SaveChanges();
         });

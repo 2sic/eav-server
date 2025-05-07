@@ -1,17 +1,13 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavAttributes
+public partial class TsDynDataAttribute
 {
     public int AttributeId { get; set; }
 
     public string StaticName { get; set; }
 
     public string Type { get; set; }
-
-    public int TransactionIdCreated { get; set; }
-
-    public int? TransactionIdDeleted { get; set; }
 
     public Guid? Guid { get; set; }
 
@@ -23,15 +19,23 @@ public partial class ToSicEavAttributes
 
     public bool IsTitle { get; set; } = false;
 
+    public int TransactionIdCreated { get; set; }
+
+    public int? TransactionIdModified { get; set; }
+
+    public int? TransactionIdDeleted { get; set; }
+
+    public virtual ToSicEavAttributeTypes TypeNavigation { get; set; }
+
+    public virtual TsDynDataContentType ContentType { get; set; }
+
     public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
+
+    public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
 
     public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 
     public virtual ICollection<ToSicEavEntityRelationships> ToSicEavEntityRelationships { get; set; } = new HashSet<ToSicEavEntityRelationships>();
 
     public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; } = new HashSet<ToSicEavValues>();
-
-    public virtual ToSicEavAttributeTypes TypeNavigation { get; set; }
-
-    public virtual TsDynDataContentType AttributeSet { get; set; }
 }

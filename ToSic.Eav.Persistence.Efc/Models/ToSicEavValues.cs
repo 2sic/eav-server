@@ -13,19 +13,19 @@ public partial class ToSicEavValues//: RepoValue
 
     public int TransactionIdCreated { get; set; }
 
-    public int? TransactionIdDeleted { get; set; }
-
     public int? TransactionIdModified { get; set; }
 
-    public virtual ToSicEavAttributes Attribute { get; set; }
+    public int? TransactionIdDeleted { get; set; }
+
+    public virtual TsDynDataAttribute Attribute { get; set; }
+
+    public virtual ToSicEavEntities Entity { get; set; }
 
     public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 
-    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
-
     public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
 
-    public virtual ToSicEavEntities Entity { get; set; }
+    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 
     public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; } = new HashSet<ToSicEavValuesDimensions>();
 }

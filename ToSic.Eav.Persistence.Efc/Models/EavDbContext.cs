@@ -18,7 +18,7 @@ public partial class EavDbContext : DbContext
 
     public virtual DbSet<TsDynDataApp> TsDynDataApps { get; set; }
     public virtual DbSet<TsDynDataTargetType> TsDynDataTargetTypes { get; set; }
-    public virtual DbSet<ToSicEavAttributes> ToSicEavAttributes { get; set; }
+    public virtual DbSet<TsDynDataAttribute> TsDynDataAttributes { get; set; }
     public virtual DbSet<TsDynDataContentType> TsDynDataContentTypes { get; set; }
     public virtual DbSet<ToSicEavAttributeTypes> ToSicEavAttributeTypes { get; set; }
     public virtual DbSet<TsDynDataTransaction> TsDynDataTransactions { get; set; }
@@ -126,14 +126,14 @@ public partial class EavDbContext : DbContext
                 .HasMaxLength(50);
         });
 
-        modelBuilder.Entity<ToSicEavAttributes>(entity =>
+        modelBuilder.Entity<TsDynDataAttribute>(entity =>
         {
             entity.HasKey(e => e.AttributeId)
-                .HasName("PK_ToSIC_EAV_Attributes");
+                .HasName("PK_TsDynDataAttribute");
 
-            entity.ToTable("ToSIC_EAV_Attributes");
+            entity.ToTable("TsDynDataAttribute");
 
-            entity.Property(e => e.AttributeId).HasColumnName("AttributeID");
+            entity.Property(e => e.AttributeId);
 
             entity.Property(e => e.StaticName)
                 .IsRequired()
@@ -143,40 +143,43 @@ public partial class EavDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50);
 
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.ToSicEavAttributesTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_TsDynDataTransactionCreated");
-
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.ToSicEavAttributesTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_TsDynDataTransactionDeleted");
-
-            entity.HasOne(d => d.TypeNavigation)
-                .WithMany(p => p.ToSicEavAttributes)
-                .HasForeignKey(d => d.Type)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_ToSIC_EAV_Types");
-
             entity.Property(e => e.Guid)
-                .HasColumnName("Guid")
                 .HasColumnType("uniqueidentifier");
 
             entity.Property(e => e.SysSettings)
-                .HasColumnName("SysSettings")
                 .HasColumnType("nvarchar(MAX)");
 
             entity.Property(e => e.ContentTypeId);
 
             entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
-            entity.HasOne(d => d.AttributeSet)
-                .WithMany(p => p.ToSicEavAttributes)
+            entity.HasOne(d => d.TransactionCreatedNavigation)
+                .WithMany(p => p.TsDynDataAttributesTransactionCreatedNavigation)
+                .HasForeignKey(d => d.TransactionIdCreated)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionCreated");
+
+            entity.HasOne(d => d.TransactionModifiedNavigation)
+                .WithMany(p => p.TsDynDataAttributesTransactionModifiedNavigation)
+                .HasForeignKey(d => d.TransactionIdModified)
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionModified");
+
+            entity.HasOne(d => d.TransactionDeletedNavigation)
+                .WithMany(p => p.TsDynDataAttributesTransactionDeletedNavigation)
+                .HasForeignKey(d => d.TransactionIdDeleted)
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionDeleted");
+
+            entity.HasOne(d => d.TypeNavigation)
+                .WithMany(p => p.TsDynDataAttributes)
+                .HasForeignKey(d => d.Type)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_TsDynDataAttribute_ToSIC_EAV_AttributeTypes");
+
+            entity.HasOne(d => d.ContentType)
+                .WithMany(p => p.TsDynDataAttributes)
                 .HasForeignKey(d => d.ContentTypeId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Attributes_TsDynDataContentType");
+                .HasConstraintName("FK_TsDynDataAttribute_TsDynDataContentType");
         });
 
         modelBuilder.Entity<TsDynDataContentType>(entity =>
@@ -411,7 +414,7 @@ public partial class EavDbContext : DbContext
 
             entity.ToTable("ToSIC_EAV_EntityRelationships");
 
-            entity.Property(e => e.AttributeId).HasColumnName("AttributeID");
+            entity.Property(e => e.AttributeId);
 
             entity.Property(e => e.ParentEntityId).HasColumnName("ParentEntityID");
 
@@ -421,7 +424,7 @@ public partial class EavDbContext : DbContext
                 .WithMany(p => p.ToSicEavEntityRelationships)
                 .HasForeignKey(d => d.AttributeId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_ToSIC_EAV_Attributes");
+                .HasConstraintName("FK_ToSIC_EAV_EntityRelationships_TsDynDataAttribute");
 
             entity.HasOne(d => d.ChildEntity)
                 .WithMany(p => p.RelationshipsWithThisAsChild)
@@ -458,7 +461,7 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.ValueId).HasColumnName("ValueID");
 
-            entity.Property(e => e.AttributeId).HasColumnName("AttributeID");
+            entity.Property(e => e.AttributeId);
 
             entity.Property(e => e.EntityId).HasColumnName("EntityID");
 
@@ -469,7 +472,7 @@ public partial class EavDbContext : DbContext
             entity.HasOne(d => d.Attribute)
                 .WithMany(p => p.ToSicEavValues)
                 .HasForeignKey(d => d.AttributeId)
-                .HasConstraintName("FK_ToSIC_EAV_Values_ToSIC_EAV_Attributes");
+                .HasConstraintName("FK_ToSIC_EAV_Values_TsDynDataAttribute");
 
             entity.HasOne(d => d.TransactionCreatedNavigation)
                 .WithMany(p => p.ToSicEavValuesTransactionCreatedNavigation)

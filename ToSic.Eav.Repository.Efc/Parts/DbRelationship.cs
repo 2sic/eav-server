@@ -227,7 +227,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
     #endregion
 
-    internal void ChangeRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
+    internal void ChangeRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
     {
         var l = Log.Fn(timer: true);
         // some initial error checking

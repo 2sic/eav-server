@@ -11,7 +11,7 @@ public partial class ToSicEavEntityRelationships
 
     public int SortOrder { get; set; }
 
-    public virtual ToSicEavAttributes Attribute { get; set; }
+    public virtual TsDynDataAttribute Attribute { get; set; }
 
     public virtual ToSicEavEntities ChildEntity { get; set; }
 

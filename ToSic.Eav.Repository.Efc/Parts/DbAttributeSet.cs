@@ -4,7 +4,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
 {
     private IQueryable<TsDynDataContentType> GetDbContentTypeCoreQuery(int appId)
         => DbContext.SqlDb.TsDynDataContentTypes
-            .Include(a => a.ToSicEavAttributes)
+            .Include(a => a.TsDynDataAttributes)
             .Where(a => a.AppId == appId && !a.TransactionIdDeleted.HasValue);
 
     /// <summary>

@@ -5,5 +5,5 @@ public partial class ToSicEavAttributeTypes
 {
     public string Type { get; set; }
 
-    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributes { get; set; } = new HashSet<ToSicEavAttributes>();
+    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributes { get; set; } = new HashSet<TsDynDataAttribute>();
 }

@@ -86,7 +86,7 @@ internal class ContentTypeLoader(
             .Where(set => set.AppId == appId && set.TransactionIdDeleted == null);
 
         var contentTypesSql = query
-            .Include(set => set.ToSicEavAttributes)
+            .Include(set => set.TsDynDataAttributes)
             .Include(set => set.App)
             .Include(set => set.InheritContentTypeNavigation)
             .ThenInclude(master => master.App)
@@ -104,7 +104,7 @@ internal class ContentTypeLoader(
                 set.Name,
                 set.StaticName,
                 set.Scope,
-                Attributes = set.ToSicEavAttributes
+                Attributes = set.TsDynDataAttributes
                     .Where(a => a.TransactionIdDeleted == null) // only not-deleted attributes!
                     .Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
@@ -147,11 +147,11 @@ internal class ContentTypeLoader(
         var sharedAttribs = optimize && !sharedAttribIds.Any()
             ? new()
             : efcAppLoader.Context.TsDynDataContentTypes
-                .Include(s => s.ToSicEavAttributes)
+                .Include(s => s.TsDynDataAttributes)
                 .Where(s => sharedAttribIds.Contains(s.ContentTypeId))
                 .ToDictionary(
                     s => s.ContentTypeId,
-                    s => s.ToSicEavAttributes.Select(a => dataBuilder.TypeAttributeBuilder.Create(
+                    s => s.TsDynDataAttributes.Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
                         name: a.StaticName,
                         type: ValueTypeHelpers.Get(a.Type),

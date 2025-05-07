@@ -26,7 +26,7 @@ partial class DbEntity
 
     private void SaveAttributesAsEav(IEntity newEnt,
         SaveOptions so,
-        List<ToSicEavAttributes> dbAttributes,
+        List<TsDynDataAttribute> dbAttributes,
         ToSicEavEntities dbEnt,
         int transactionId,
         bool logDetails

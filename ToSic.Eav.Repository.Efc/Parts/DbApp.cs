@@ -153,7 +153,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
         db.RemoveRange(appEntities);
 
         // Delete Attributes
-        var attributes = db.ToSicEavAttributes
+        var attributes = db.TsDynDataAttributes
                 // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                 //.Where(a => contentTypeIds.Contains(a.ContentTypeId));
                 .Where(a => Enumerable.Contains(contentTypeIds, a.ContentTypeId));

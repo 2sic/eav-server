@@ -11,7 +11,7 @@ partial class DbContentType
     /// <param name="contentType"></param>
     private void SortAttributes(int contentTypeId, IContentType contentType)
     {
-        var attributeList = DbContext.SqlDb.ToSicEavAttributes
+        var attributeList = DbContext.SqlDb.TsDynDataAttributes
             .Where(a => a.ContentTypeId == contentTypeId)
             .ToList();
 
@@ -32,7 +32,7 @@ partial class DbContentType
     /// <param name="newOrder">Array of attribute ids which defines the new sort order</param>
     public void SortAttributes(int contentTypeId, List<int> newOrder)
     {
-        var attributeList = DbContext.SqlDb.ToSicEavAttributes
+        var attributeList = DbContext.SqlDb.TsDynDataAttributes
             .Where(a => a.ContentTypeId == contentTypeId)
             .ToList();
         attributeList = attributeList
@@ -42,7 +42,7 @@ partial class DbContentType
         PersistAttributeOrder(attributeList);
     }
 
-    private void PersistAttributeOrder(List<ToSicEavAttributes> attributeList)
+    private void PersistAttributeOrder(List<TsDynDataAttribute> attributeList)
     {
         var index = 0;
         DbContext.DoAndSave(() => attributeList.ForEach(a => a.SortOrder = index++));
