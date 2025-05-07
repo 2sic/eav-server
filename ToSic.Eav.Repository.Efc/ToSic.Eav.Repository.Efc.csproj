@@ -31,7 +31,7 @@
     <ProjectReference Include="..\ToSic.Eav.Data.Persistence\ToSic.Eav.Data.Persistence.csproj" />
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
-    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Lib.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>
 
 </Project>
