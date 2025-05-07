@@ -19,7 +19,7 @@ public partial class TsDynDataApp
 
     public virtual ICollection<TsDynDataContentType> TsDynDataContentTypes { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<ToSicEavEntities> ToSicEavEntities { get; set; } = new HashSet<ToSicEavEntities>();
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntities { get; set; } = new HashSet<TsDynDataEntity>();
 
     public virtual TsDynDataZone Zone { get; set; }
 

@@ -19,7 +19,7 @@ public partial class ToSicEavValues//: RepoValue
 
     public virtual TsDynDataAttribute Attribute { get; set; }
 
-    public virtual ToSicEavEntities Entity { get; set; }
+    public virtual TsDynDataEntity Entity { get; set; }
 
     public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 

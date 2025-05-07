@@ -1,16 +1,13 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavEntities
+public partial class TsDynDataEntity
 {
     public int EntityId { get; set; }
 
     public Guid EntityGuid { get; set; }
 
     public int ContentTypeId { get; set; }
-
-    // 2017-06-20 2dm - never used
-    //public int? ConfigurationSet { get; set; }
 
     public int TargetTypeId { get; set; }
 
@@ -52,10 +49,6 @@ public partial class ToSicEavEntities
     public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 
     public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
-
-    //public virtual ToSicEavEntities ConfigurationSetNavigation { get; set; }
-
-    //public virtual ICollection<ToSicEavEntities> InverseConfigurationSetNavigation { get; set; } = new HashSet<ToSicEavEntities>();
 
     public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsChild { get; set; } = new HashSet<ToSicEavEntityRelationships>();
 

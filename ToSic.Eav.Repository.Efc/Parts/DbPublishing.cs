@@ -76,7 +76,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
     /// <param name="newPublishedState"></param>
     /// <param name="publishedEntity"></param>
     /// <returns></returns>
-    internal ToSicEavEntities ClearDraftBranchAndSetPublishedState(ToSicEavEntities publishedEntity, int? draftId = null, bool newPublishedState = true)
+    internal TsDynDataEntity ClearDraftBranchAndSetPublishedState(TsDynDataEntity publishedEntity, int? draftId = null, bool newPublishedState = true)
     {
         Log.A($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
         var unpublishedEntityId = draftId ?? DbContext.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
@@ -96,7 +96,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
     /// <param name="entityId">EntityId of the Published Entity</param>
     internal int? GetDraftBranchEntityId(int entityId)
     {
-        var draftId = DbContext.SqlDb.ToSicEavEntities
+        var draftId = DbContext.SqlDb.TsDynDataEntities
             .Where(e => e.PublishedEntityId == entityId && !e.TransactionIdDeleted.HasValue)
             .Select(e => (int?) e.EntityId)
             .SingleOrDefault();
@@ -112,7 +112,7 @@ internal class DbPublishing(DbDataController db, DataBuilder builder) : DbPartBa
     {
         var l = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
         var nullList = entityIds.Cast<int?>().ToList();
-        var ids = DbContext.SqlDb.ToSicEavEntities
+        var ids = DbContext.SqlDb.TsDynDataEntities
             .Where(e => nullList.Contains(e.PublishedEntityId) && !e.TransactionIdDeleted.HasValue)
             .Select(e => new {e.EntityId, e.PublishedEntityId })
             .ToList();

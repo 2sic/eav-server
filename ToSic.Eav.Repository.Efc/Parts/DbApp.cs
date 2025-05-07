@@ -64,7 +64,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
                 // Between these steps, the command must be sent to the DB, so it actually allows doing the next step
 
                 // 0. Find all json-entities, as these are the ones we treat specially
-                var jsonEntitiesInApp = DbContext.SqlDb.ToSicEavEntities
+                var jsonEntitiesInApp = DbContext.SqlDb.TsDynDataEntities
                     .Where(e => e.ContentTypeId == DbEntity.RepoIdForJsonEntities
                                 && e.AppId == appId);
                     
@@ -115,8 +115,8 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
         var appEntities = useV12Method
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
             //? db.ToSicEavEntities.Where(e => appContentTypes.Contains(e.AttributeSet))
-            ? db.ToSicEavEntities.Where(e => Enumerable.Contains(appContentTypes, e.ContentTypeNavigation))
-            : db.ToSicEavEntities.Where(e => e.AppId == appId);
+            ? db.TsDynDataEntities.Where(e => Enumerable.Contains(appContentTypes, e.ContentTypeNavigation))
+            : db.TsDynDataEntities.Where(e => e.AppId == appId);
 
         var entityIds = appEntities.Select(e => e.EntityId).ToArray();
 

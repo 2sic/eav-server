@@ -9,5 +9,5 @@ public partial class TsDynDataTargetType
 
     public string Description { get; set; }
 
-    public virtual ICollection<ToSicEavEntities> ToSicEavEntities { get; set; } = new HashSet<ToSicEavEntities>();
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntities { get; set; } = new HashSet<TsDynDataEntity>();
 }

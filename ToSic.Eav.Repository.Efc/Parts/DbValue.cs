@@ -5,7 +5,7 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
     /// <summary>
     /// Copy all Values (including Related Entities) from teh Source Entity to the target entity
     /// </summary>
-    internal void CloneEntitySimpleValues(ToSicEavEntities source, ToSicEavEntities target)
+    internal void CloneEntitySimpleValues(TsDynDataEntity source, TsDynDataEntity target)
     {
         Log.A($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
         // Clear values on target (including Dimensions). Must be done in separate steps, would cause un-allowed null-Foreign-Keys
@@ -43,7 +43,7 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
         Log.A($"/CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
     }
 
-    internal void CloneRelationshipsAndSave(ToSicEavEntities source, ToSicEavEntities target)
+    internal void CloneRelationshipsAndSave(TsDynDataEntity source, TsDynDataEntity target)
     {
         Log.A($"CloneRelationshipsAndSave({source.EntityId}, {target.EntityId})");
         DbContext.DoInTransaction(() =>

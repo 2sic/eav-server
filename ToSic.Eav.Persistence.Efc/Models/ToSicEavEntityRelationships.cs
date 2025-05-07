@@ -13,7 +13,7 @@ public partial class ToSicEavEntityRelationships
 
     public virtual TsDynDataAttribute Attribute { get; set; }
 
-    public virtual ToSicEavEntities ChildEntity { get; set; }
+    public virtual TsDynDataEntity ChildEntity { get; set; }
 
-    public virtual ToSicEavEntities ParentEntity { get; set; }
+    public virtual TsDynDataEntity ParentEntity { get; set; }
 }

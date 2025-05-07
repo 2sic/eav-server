@@ -27,7 +27,7 @@ partial class DbEntity
     private void SaveAttributesAsEav(IEntity newEnt,
         SaveOptions so,
         List<TsDynDataAttribute> dbAttributes,
-        ToSicEavEntities dbEnt,
+        TsDynDataEntity dbEnt,
         int transactionId,
         bool logDetails
     ) => Log.Do($"id:{newEnt.EntityId}", timer: true, action: () =>

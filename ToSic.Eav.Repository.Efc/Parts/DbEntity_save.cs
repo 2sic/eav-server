@@ -70,7 +70,7 @@ partial class DbEntity
 
 
 
-        ToSicEavEntities dbEnt = null;
+        TsDynDataEntity dbEnt = null;
 
         var transactionId = DbContext.Versioning.GetTransactionId();
 
