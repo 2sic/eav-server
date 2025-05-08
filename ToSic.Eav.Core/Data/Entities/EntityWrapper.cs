@@ -118,7 +118,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public IMetadataOf Metadata => Entity.Metadata;
 
     /// <inheritdoc />
-    public IEnumerable<Permission> Permissions => Entity.Permissions;
+    public IEnumerable<IPermission> Permissions => Entity.Permissions;
 
     #endregion
 

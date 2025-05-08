@@ -21,7 +21,9 @@ internal class InsightsAttributePermissions(LazySvc<IAppReaderFactory> appReader
                   ?? throw HttpException.BadRequest($"can't find attribute {NameId}");
 
         var msg = H1($"Attribute Permissions for {typ.Name}.{NameId} in {AppId}\n").ToString();
-        var metadata = att.Metadata.Permissions.Select(p => p.Entity).ToList();
+        var metadata = att.Metadata.Permissions
+            .Select(p => ((ICanBeEntity)p).Entity)
+            .ToList();
 
         return MetadataHelper.MetadataTable(msg, AppId.Value, metadata, Linker);
     }

@@ -27,19 +27,19 @@ partial class MetadataOf<T>
     private List<IEntity> _metadataWithoutPermissions;
 
     /// <inheritdoc />
-    public IEnumerable<Permission> Permissions
+    public IEnumerable<IPermission> Permissions
     {
         get
         {
             if (_permissions == null || UpStreamChanged())
                 _permissions = AllWithHidden
                     .Where(Permission.IsPermission)
-                    .Select(e => new Permission(e))
+                    .Select(IPermission (e) => new Permission(e))
                     .ToImmutableList();
             return _permissions;
         }
     }
-    private ImmutableList<Permission> _permissions;
+    private ImmutableList<IPermission> _permissions;
 
 
 

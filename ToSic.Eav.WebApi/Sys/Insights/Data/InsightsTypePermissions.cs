@@ -19,7 +19,9 @@ internal class InsightsTypePermissions(LazySvc<IAppReaderFactory> appReaders) : 
         var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
 
         var msg = H1($"Permissions for {typ.Name} ({typ.NameId}) in {AppId}\n").ToString();
-        var metadata = typ.Metadata.Permissions.Select(p => p.Entity).ToList();
+        var metadata = typ.Metadata.Permissions
+            .Select(p => ((ICanBeEntity)p).Entity)
+            .ToList();
 
         return l.ReturnAsOk(MetadataHelper.MetadataTable(msg, AppId.Value, metadata, Linker));
     }

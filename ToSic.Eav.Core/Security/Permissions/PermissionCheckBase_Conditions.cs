@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Plumbing;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security;
 
@@ -12,7 +11,7 @@ partial class PermissionCheckBase
     /// Check if the current user fits the reason for this grant
     /// </summary>
     /// <returns></returns>
-    private bool VerifyConditionApplies(Permission permission)
+    private bool VerifyConditionApplies(IPermission permission)
     {
         var l = Log.Fn<bool>();
         try
@@ -26,7 +25,7 @@ partial class PermissionCheckBase
             if (User.Guid != default)
             {
                 // check owner conditions (only possible on target entities, not content-types)
-                if (VerifyUserIsItemOwner(condition, TargetItem, User))
+                if (VerifyUserIsItemOwner(condition, TargetItemOwner, User))
                     return l.Return(IsGrantedBecause(Conditions.Identity), "is-owner: true");
 
                 // check if an identity was provided
@@ -98,6 +97,6 @@ partial class PermissionCheckBase
     /// <summary>
     /// Verify that the permission is for owners, and the user is the item owner
     /// </summary>
-    private static bool VerifyUserIsItemOwner(string condition, IEntity item, IUser user)
-        => condition == Permission.FieldOwner && item?.Owner == user.IdentityToken;
+    private static bool VerifyUserIsItemOwner(string condition, string targetOwner, IUser user)
+        => condition == nameof(IPermission.Owner) && targetOwner == user.IdentityToken;
 }

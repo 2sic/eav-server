@@ -17,5 +17,5 @@ public interface IHasPermissions
     /// <remarks>
     /// Currently still a private API, because the type could change to be a typed permission object
     /// </remarks>
-    IEnumerable<Permission> Permissions { get; }
+    IEnumerable<IPermission> Permissions { get; }
 }

@@ -138,6 +138,7 @@
     <ProjectReference Include="..\ToSic.Sys.Code\ToSic.Sys.Code.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Features\ToSic.Sys.Features.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Security\ToSic.Sys.Security.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">

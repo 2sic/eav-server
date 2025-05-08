@@ -37,7 +37,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
         return l.Return(this);
     }
 
-    public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<Permission> permissions)
+    public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<IPermission> permissions)
     {
         var l = Log.Fn<AppPermissionCheck>();
         Init(ctx, appIdentity, permissions: permissions);
@@ -74,7 +74,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
         IAppIdentity appIdentity,
         IContentType targetType = null, // optional type to check
         IEntity targetItem = null, // optional entity to check
-        IEnumerable<Permission> permissions = null,
+        IEnumerable<IPermission> permissions = null,
         bool includeApp = false)
     {
         var l = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity?.Show()}, {nameof(includeApp)}: {includeApp}");
@@ -97,9 +97,9 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     /// </summary>
     /// <param name="appIdentity"></param>
     /// <returns></returns>
-    private List<Permission> FindPermissionsOfApp(IAppIdentity appIdentity)
+    private List<IPermission> FindPermissionsOfApp(IAppIdentity appIdentity)
     {
-        var l = Log.Fn<List<Permission>>();
+        var l = Log.Fn<List<IPermission>>();
         var permissions = appIdentity == null
             ? null
             // If we already have the App, try to reuse it to be faster

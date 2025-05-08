@@ -182,7 +182,7 @@ public class ImportService(
 
     private List<IEntity> MetadataWithResetIds(IMetadataOf metadata)
     {
-        return metadata.Concat(metadata.Permissions.Select(p => p.Entity))
+        return metadata.Concat(metadata.Permissions.Select(p => ((ICanBeEntity)p).Entity))
             .Select(e => dataBuilder.Entity.CreateFrom(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
             .ToList();
     }
@@ -229,7 +229,7 @@ public class ImportService(
                     .ToList();
 
                 if (newAttribute.Metadata.Permissions.Any())
-                    newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => p.Entity));
+                    newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => ((ICanBeEntity)p).Entity));
                 return dataBuilder.TypeAttributeBuilder.CreateFrom(newAttribute, metadataItems: newMetaList);
             })
             .ToList();
@@ -238,7 +238,9 @@ public class ImportService(
         var merged = contentType.Metadata
             .Select(impMd => MergeOneMd(appReader.Metadata, (int)TargetTypes.ContentType, contentType.NameId, impMd))
             .ToList();
-        merged.AddRange(contentType.Metadata.Permissions.Select(p => p.Entity));
+        merged.AddRange(contentType.Metadata.Permissions
+            .Select(p => ((ICanBeEntity)p).Entity)
+        );
 
         var newContentType = dataBuilder.ContentType.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
         // contentType.Metadata.Use(merged);

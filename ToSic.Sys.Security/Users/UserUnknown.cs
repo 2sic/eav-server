@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Internal.Unknown;
+using ToSic.Lib;
+
 #pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Eav.Context;
@@ -23,7 +25,7 @@ internal sealed class UserUnknown(WarnUseOfUnknown<UserUnknown> _) : IUser, IIsU
 
     public int Id => 0;
 
-    public string Username => Constants.NullNameId;
+    public string Username => LibConstants.Unknown;
 
     public string Name => Username;
 

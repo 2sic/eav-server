@@ -45,7 +45,7 @@ public record ContentTypeAttribute : AttributeBase, IContentTypeAttribute
 
     /// <inheritdoc />
     [PrivateApi("Not public yet, as it's not quite clear what the permissions affect and how to communicate this. Reason is that some affect file access, others have different purposes")]
-    public IEnumerable<Permission> Permissions => Metadata.Permissions;
+    public IEnumerable<IPermission> Permissions => Metadata.Permissions;
 
     #endregion
 

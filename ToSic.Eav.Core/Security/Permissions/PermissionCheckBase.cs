@@ -2,7 +2,6 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Services;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security;
 
@@ -17,7 +16,7 @@ public abstract partial class PermissionCheckBase(
     : ServiceBase<PermissionCheckBase.MyServices>(services, logName, connect: connect), IPermissionCheck
 {
     // ReSharper disable once InconsistentNaming
-    private readonly PermissionCheckBase.MyServices services = services;
+    private readonly MyServices services = services;
 
     #region MyServices
 
@@ -32,20 +31,23 @@ public abstract partial class PermissionCheckBase(
 
     #region Permission Targets and resulting list of metadata to control
 
-    private IContentType TargetType { get; set; }
+    //private IContentType TargetType { get; set; }
+    private IHasPermissions TargetTypePermissionsOrNull { get; set; }
 
-    private IEntity TargetItem { get; set; }
+    //private IEntity TargetItem { get; set; }
+    private IHasPermissions TargetItemPermissionsOrNull { get; set; }
+    private string TargetItemOwner { get; set; }
 
-    protected List<Permission> PermissionList => field ??= BuildPermissionList();
+    protected List<IPermission> PermissionList => field ??= BuildPermissionList();
 
-    private List<Permission> BuildPermissionList()
+    private List<IPermission> BuildPermissionList()
     {
-        var l = Log.Fn<List<Permission>>();
+        var l = Log.Fn<List<IPermission>>();
 
-        List<Permission> list =
+        List<IPermission> list =
         [
-            ..TargetItem?.Metadata.Permissions ?? [],
-            ..TargetType?.Metadata.Permissions ?? [],
+            ..TargetTypePermissionsOrNull?.Permissions ?? [],
+            ..TargetItemPermissionsOrNull?.Permissions ?? [],
             .._additionalPermissions
         ];
 
@@ -53,7 +55,7 @@ public abstract partial class PermissionCheckBase(
     }
 
 
-    private List<Permission> _additionalPermissions;
+    private List<IPermission> _additionalPermissions;
 
     public bool HasPermissions => PermissionList.Any();
 
@@ -69,17 +71,20 @@ public abstract partial class PermissionCheckBase(
     protected void Init(
         IContentType targetType = default, // optional type to check
         IEntity targetItem = default,      // optional entity to check
-        IEnumerable<Permission> permissions1 = default
+        IEnumerable<IPermission> permissions = default
     ) 
     {
-        _additionalPermissions = permissions1?.ToList() ?? [];
+        _additionalPermissions = permissions?.ToList() ?? [];
 
         var l = Log.Fn($"type:{targetType?.NameId}, " +
                        $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
                        $"permList1: {_additionalPermissions.Count}, ");
 
-        TargetType = targetType;
-        TargetItem = targetItem;
+        //TargetType = targetType;
+        TargetTypePermissionsOrNull = targetType?.Metadata;
+        //TargetItem = targetItem;
+        TargetItemPermissionsOrNull = targetItem?.Metadata;
+        TargetItemOwner = targetItem?.Owner ?? "unknown-random239s;o";
 
         GrantedBecause = Conditions.Undefined;
         l.Done();
@@ -121,7 +126,7 @@ public abstract partial class PermissionCheckBase(
     /// <param name="permissionEntity">The entity describing a permission</param>
     /// <param name="desiredActionCode">A key like r (for read), u (for update) etc. which is the level you want to check</param>
     /// <returns></returns>
-    private bool PermissionAllows(Permission permissionEntity, char[] desiredActionCode)
+    private bool PermissionAllows(IPermission permissionEntity, char[] desiredActionCode)
     {
         var l = Log.Fn<bool>($"{new string(desiredActionCode)}");
         // Check if it's a grant for the desired action - otherwise stop here

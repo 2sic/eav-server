@@ -11,5 +11,5 @@ partial record Entity
     private readonly GetOnce<IMetadataOf> _metadataOf = new();
 
     /// <inheritdoc />
-    public IEnumerable<Permission> Permissions => Metadata.Permissions;
+    public IEnumerable<IPermission> Permissions => Metadata.Permissions;
 }

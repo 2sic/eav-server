@@ -14,7 +14,7 @@ partial class EavApp: IHasPermissions, IAppWithInternal
     /// <summary>
     /// Permissions of this app
     /// </summary>
-    public IEnumerable<Permission> Permissions => Metadata.Permissions;
+    public IEnumerable<IPermission> Permissions => Metadata.Permissions;
 
     #endregion
 

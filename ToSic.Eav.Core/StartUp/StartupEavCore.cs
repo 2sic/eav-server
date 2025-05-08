@@ -22,6 +22,7 @@ using ToSic.Eav.Persistence;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
+using ToSic.Lib;
 using ToSic.Lib.Code.InfoSystem;
 using CodeInfoService = ToSic.Lib.Code.InfoSystem.CodeInfoService;
 
@@ -125,9 +126,10 @@ public static class StartUpEavCore
         //services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
         services.AddLibLookUp();
 
-        services.TryAddTransient<IUser, UserUnknown>();
-        services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
-        services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
+        services.AddSysSecurity();
+        //services.TryAddTransient<IUser, UserUnknown>();
+        //services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
+        //services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
         services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
