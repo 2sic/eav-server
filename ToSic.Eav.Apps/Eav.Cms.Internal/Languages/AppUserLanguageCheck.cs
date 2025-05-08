@@ -105,7 +105,7 @@ public class AppUserLanguageCheck(
                 var pChecker = checkGenerator.New();
                 var permissions = permissionEntities.Select(p => new Permission(p));
                 pChecker.ForCustom(ctx, readerSafe, permissions);
-                ok = pChecker.PermissionsAllow(GrantSets.WriteSomething);
+                ok = pChecker.PermissionsAllow(GrantSets.WriteSomething).Allowed;
             }
 
             return new

@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Lib.Security.Permissions;
+﻿using ToSic.Lib.Security.Permissions;
 
 namespace ToSic.Eav.Security;
 

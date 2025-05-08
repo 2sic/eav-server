@@ -1,11 +1,11 @@
-﻿namespace ToSic.Eav.Security;
+﻿using ToSic.Lib.Security.Permissions;
+
+namespace ToSic.Eav.Security;
 
 public interface IPermissionCheck: IHasLog
 {
     bool HasPermissions { get; }
 
-
-    bool UserMay(List<Grants> grants);
-
-    Conditions GrantedBecause { get; }
+    PermissionCheckInfo UserMay(List<Grants> grants);
+    
 }

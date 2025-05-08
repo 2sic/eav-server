@@ -59,22 +59,26 @@ partial class SimpleDataEditService
 
         // 1.1. app permissions 
         if (appPermissionCheckGenerator.New().ForAppInInstance(ctx, appStateReader)
-            .UserMay(GrantSets.WritePublished)) return l.ReturnAndLog((true, true), "App check - all ok");
+            .UserMay(GrantSets.WritePublished).Allowed)
+            return l.ReturnAndLog((true, true), "App check - all ok");
 
         // 1.2. type permissions
         if (appPermissionCheckGenerator.New().ForType(ctx, appStateReader, targetType)
-            .UserMay(GrantSets.WritePublished)) return l.ReturnAndLog((true, true), "Type check, all ok");
+            .UserMay(GrantSets.WritePublished).Allowed)
+            return l.ReturnAndLog((true, true), "Type check, all ok");
 
 
         // 2. Find if user may write DRAFT:
 
         // 2.1. app permissions 
         if (appPermissionCheckGenerator.New().ForAppInInstance(ctx, appStateReader)
-            .UserMay(GrantSets.WriteDraft)) return l.ReturnAndLog((false, true), "App check draft - f/t");
+            .UserMay(GrantSets.WriteDraft).Allowed)
+            return l.ReturnAndLog((false, true), "App check draft - f/t");
 
         // 2.2. type permissions
         if (appPermissionCheckGenerator.New().ForType(ctx, appStateReader, targetType)
-            .UserMay(GrantSets.WriteDraft)) return l.ReturnAndLog((false, true), "Type check draft - f/t");
+            .UserMay(GrantSets.WriteDraft).Allowed)
+            return l.ReturnAndLog((false, true), "Type check draft - f/t");
 
 
         // 3. User is not allowed to update published or draft entity.

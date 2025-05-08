@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Features;
+using ToSic.Lib.Security.Permissions;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Security;
@@ -91,29 +92,19 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices
         TargetItemPermissionsOrNull = itemPermissions;
         TargetItemOwner = targetOwner ?? "unknown-random239s;o";
 
-        GrantedBecause = Conditions.Undefined;
         l.Done($"permissions: {_additionalPermissions.Count}");
     }
 
-
-    public Conditions GrantedBecause
+    public PermissionCheckInfo UserMay(List<Grants> grants)
     {
-        get => _grantedBecause ??= Conditions.Undefined;
-        private set => _grantedBecause = value;
-    }
-    private Conditions? _grantedBecause;
-
-    public bool UserMay(List<Grants> grants)
-    {
-        var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
-        GrantedBecause = Conditions.Undefined;
+        var l = Log.Fn<PermissionCheckInfo>(Log.Try(() => $"[{string.Join(",", grants)}]"));
 
         var envPermissions = services.EnvironmentPermission.EnvironmentAllows(grants);
         if (envPermissions.Allowed)
-            return l.ReturnTrue($"{true} ({envPermissions.Condition})");
+            return l.ReturnAndLog(envPermissions);
 
-        var result = /*services.EnvironmentPermission.EnvironmentAllows(grants) ||*/ PermissionsAllow(grants);
-        return l.Return(result, $"{result} ({GrantedBecause})");
+        var result = PermissionsAllow(grants);
+        return l.Return(result, $"{result}");
     }
 
 
@@ -122,13 +113,21 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices
     /// </summary>
     /// <param name="grants">The desired action like c, r, u, d etc.</param>
     /// <returns></returns>
-    public bool PermissionsAllow(IReadOnlyCollection<Grants> grants)
+    public PermissionCheckInfo PermissionsAllow(IReadOnlyCollection<Grants> grants)
     {
-        var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(", ", grants)}]"), Log.Try(() => $"for {PermissionList.Count()} permission items"));
-        var result = PermissionList.Any(
-            perm => PermissionAllows(perm,
-                grants.Select(g => (char) g).ToArray()));
-        return l.ReturnAndLog(result);
+        var l = Log.Fn<PermissionCheckInfo>(Log.Try(() => $"[{string.Join(", ", grants)}]"), Log.Try(() => $"for {PermissionList.Count()} permission items"));
+
+        // Loop through permissions, and check if any of them allows the desired action
+        foreach (var permission in PermissionList)
+        {
+            var info = PermissionAllows(permission, grants.Select(g => (char)g).ToArray());
+            if (info.Allowed)
+                return l.ReturnAndLog(info);
+        }
+
+        //var result = PermissionList.FirstOrDefault(
+        //    perm => PermissionAllows(perm, grants.Select(g => (char) g).ToArray()));
+        return l.ReturnAndLog(new(false, Conditions.Undefined));
     }
 
     /// <summary>
@@ -137,15 +136,17 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices
     /// <param name="permissionEntity">The entity describing a permission</param>
     /// <param name="desiredActionCode">A key like r (for read), u (for update) etc. which is the level you want to check</param>
     /// <returns></returns>
-    private bool PermissionAllows(IPermission permissionEntity, char[] desiredActionCode)
+    private PermissionCheckInfo PermissionAllows(IPermission permissionEntity, char[] desiredActionCode)
     {
-        var l = Log.Fn<bool>($"{new string(desiredActionCode)}");
+        var l = Log.Fn<PermissionCheckInfo>($"{new string(desiredActionCode)}");
         // Check if it's a grant for the desired action - otherwise stop here
         var grant = permissionEntity.Grant;
         // If Grant doesn't contain desired action, stop here
+        if (grant.IndexOfAny(desiredActionCode) == -1)
+            return l.Return(new(false, Conditions.Undefined), "no grant-match");
+
         // otherwise check if it applies
-        var result = grant.IndexOfAny(desiredActionCode) != -1 
-                     && VerifyConditionApplies(permissionEntity);
+        var result = VerifyConditionApplies(permissionEntity);
         return l.ReturnAndLog(result);
     }
         

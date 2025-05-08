@@ -1,19 +1,23 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Security.Permissions;
 
 namespace ToSic.Eav.Security;
 
 partial class PermissionCheckBase
 {
+    // TODO: THIS IS CURRENTLY A MANUAL COPY OF THE VALUE
+    // This should not be the final state
+    private static Guid PermissionCheckUsersGuid = new("47c71ee9-ac7b-45bf-a08b-dfc8ce7c7775");
 
     /// <summary>
     /// Check if the current user fits the reason for this grant
     /// </summary>
     /// <returns></returns>
-    private bool VerifyConditionApplies(IPermission permission)
+    private PermissionCheckInfo VerifyConditionApplies(IPermission permission)
     {
-        var l = Log.Fn<bool>();
+        var l = Log.Fn<PermissionCheckInfo>();
         try
         {
             // check general permissions
@@ -26,38 +30,32 @@ partial class PermissionCheckBase
             {
                 // check owner conditions (only possible on target entities, not content-types)
                 if (VerifyUserIsItemOwner(condition, TargetItemOwner, User))
-                    return l.Return(IsGrantedBecause(Conditions.Identity), "is-owner: true");
+                    return l.Return(new(true, Conditions.Identity), "is-owner: true");
 
                 // check if an identity was provided
                 if (!string.IsNullOrWhiteSpace(identity))
                 {
                     l.A($"Check if user is user or group - identity: {identity}");
                     if (VerifyUserIsThisUser(identity, User))
-                        return l.Return(IsGrantedBecause(Conditions.Owner), "is-this-user: true");
+                        return l.Return(new(true, Conditions.Owner), "is-this-user: true");
 
                     if (VerifyUserIsInGroup(identity, User))
-                        return l.Return(IsGrantedBecause(Conditions.Group), "is-in-specified-group: true");
+                        return l.Return(new(true, Conditions.Group), "is-in-specified-group: true");
                 }
             }
 
             // this checks if the condition is a environment condition
             // for example, if it's a DNN code for "user may view something"
             if (services.EnvironmentPermission.VerifyConditionOfEnvironment(condition))
-                return l.Return(IsGrantedBecause(Conditions.EnvironmentInstance), "environment: true");
+                return l.Return(new(true, Conditions.EnvironmentInstance), "environment: true");
 
-            return l.ReturnFalse("no-match: false");
+            return l.Return(new (false, Conditions.Undefined), "no-match: false");
         }
         catch
         {
             // something happened, in this case we assume that this rule doesn't grant anything
-            return l.ReturnFalse("error: false");
+            return l.Return(new(false, Conditions.Undefined), "error: false");
         }
-    }
-
-    private bool IsGrantedBecause(Conditions reason)
-    {
-        GrantedBecause = reason;
-        return true;
     }
 
     /// <summary>
@@ -66,7 +64,7 @@ partial class PermissionCheckBase
     /// </summary>
     private bool VerifyUserIsThisUser(string identity, IUser user)
     {
-        if (!Services.Features.IsEnabled(BuiltInFeatures.PermissionCheckUsers.Guid))
+        if (!Services.Features.IsEnabled(PermissionCheckUsersGuid))
             return false;
         return identity == user.Guid.ToString();
     }
@@ -80,7 +78,7 @@ partial class PermissionCheckBase
     /// <returns></returns>
     private bool VerifyUserIsInGroup(string identity, IUser user)
     {
-        if (!Services.Features.IsEnabled(BuiltInFeatures.PermissionCheckGroups.Guid))
+        if (!Services.Features.IsEnabled(PermissionCheckUsersGuid))
             return false;
 
         if (string.IsNullOrWhiteSpace(identity))

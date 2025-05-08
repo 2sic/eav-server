@@ -12,7 +12,7 @@ public static class PermissionCheckWithEnsure
     {
         var log = permCheck.Log;
         var l = log.Fn<bool>(log.Try(() => $"[{string.Join(",", grants)}]"), log.Try(() => "or throw"));
-        var ok = permCheck.UserMay(grants);
+        var ok = permCheck.UserMay(grants).Allowed;
         error = ok ? null : "required permissions for this request are not given";
         return l.Return(ok, ok ? "ok" : "permissions not ok");
     }

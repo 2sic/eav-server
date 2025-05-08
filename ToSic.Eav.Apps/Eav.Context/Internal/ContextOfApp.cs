@@ -101,7 +101,8 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         // Case 3: From App
         var fromApp = Services.AppPermissionCheck.New()
             .ForAppInInstance(this, AppReader)
-            .UserMay(GrantSets.WriteSomething);
+            .UserMay(GrantSets.WriteSomething)
+            .Allowed;
 
         // Check if language permissions may alter / remove edit permissions
         if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
