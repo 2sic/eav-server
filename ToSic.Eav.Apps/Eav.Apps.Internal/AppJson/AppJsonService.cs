@@ -35,10 +35,11 @@ public class AppJsonService(
     /// </summary>
     public void MoveAppJsonTemplateFromOldToNewLocation()
     {
-        var appDataProtectedFolder = new DirectoryInfo(Path.Combine(globalConfiguration.Value.GlobalFolder, Constants.AppDataProtectedFolder));
-        Directory.CreateDirectory(globalConfiguration.Value.AppDataTemplateFolder);
+        var appDataProtectedFolder = new DirectoryInfo(Path.Combine(globalConfiguration.Value.GlobalFolder(), Constants.AppDataProtectedFolder));
+        var appDataTemplateFolder = globalConfiguration.Value.AppDataTemplateFolder();
+        Directory.CreateDirectory(appDataTemplateFolder);
         var oldAppJsonTemplateFilePath = Path.Combine(appDataProtectedFolder.FullName, Constants.AppJson);
-        var appJsonTemplateFilePath = Path.Combine(globalConfiguration.Value.AppDataTemplateFolder, Constants.AppJson);
+        var appJsonTemplateFilePath = Path.Combine(appDataTemplateFolder, Constants.AppJson);
         if (File.Exists(oldAppJsonTemplateFilePath) && !File.Exists(appJsonTemplateFilePath))
             File.Move(oldAppJsonTemplateFilePath, appJsonTemplateFilePath);
     }

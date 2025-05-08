@@ -37,7 +37,7 @@ public class ImportApp(
         try
         {
             zipImport.Init(zoneId, null, user.IsSystemAdmin);
-            var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder, Guid.NewGuid().GuidCompress().Substring(0, 8));
+            var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
             result.Success = zipImport.ImportZip(stream, temporaryDirectory, renameApp);
             result.Messages.AddRange(zipImport.Messages);
             return l.ReturnAsOk(result);
@@ -63,7 +63,7 @@ public class ImportApp(
         try
         {
             zipImport.Init(zoneId, null, user.IsSystemAdmin);
-            var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder, Guid.NewGuid().GuidCompress().Substring(0, 8));
+            var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
             result.Success = zipImport.ImportZip(zipPath, temporaryDirectory, renameApp, inheritAppId);
             result.Messages.AddRange(zipImport.Messages);
             return l.ReturnAsOk(result);

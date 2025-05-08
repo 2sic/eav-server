@@ -144,7 +144,7 @@ public class ZipExport(
         var messages = new List<Message>();
         var randomShortFolderName = Guid.NewGuid().ToString().Substring(0, 4);
 
-        var temporaryDirectoryPath = Path.Combine(globalConfiguration.TemporaryFolder, randomShortFolderName);
+        var temporaryDirectoryPath = Path.Combine(globalConfiguration.TemporaryFolder(), randomShortFolderName);
 
         Directory.CreateDirectory(temporaryDirectoryPath); // create temp dir unless exists
 
@@ -271,7 +271,7 @@ public class ZipExport(
     /// <param name="targetPath"></param>
     private void AddInstructionsToPackageFolder(string targetPath)
     {
-        var srcPath = globalConfiguration.InstructionsFolder;
+        var srcPath = globalConfiguration.InstructionsFolder();
 
         foreach (var file in Directory.GetFiles(srcPath))
             File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));

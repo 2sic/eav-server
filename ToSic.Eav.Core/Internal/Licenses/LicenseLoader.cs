@@ -89,7 +89,7 @@ public sealed class LicenseLoader(
     {
         var l = Log.Fn<List<LicensesPersisted>>();
         // ensure that path to store files already exits
-        var configFolder = globalConfiguration.Value.ConfigFolder;
+        var configFolder = globalConfiguration.Value.ConfigFolder();
         Directory.CreateDirectory(configFolder);
         l.A($"{nameof(configFolder)}: {configFolder}");
 

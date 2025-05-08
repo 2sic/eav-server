@@ -21,12 +21,13 @@ public class GlobalFolderRepository(IGlobalConfiguration config) : FolderBasedRe
     {
         get
         {
-            if (config.DataFolder == null) return [];
+            if (config.DataFolder() == null)
+                return [];
             var result = new List<string>
             {
-                config.DataFolder,
-                config.DataBetaFolder,
-                config.DataCustomFolder
+                config.DataFolder(),
+                config.DataBetaFolder(),
+                config.DataCustomFolder(),
             };
             return result;
         }

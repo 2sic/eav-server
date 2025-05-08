@@ -26,7 +26,7 @@ public class FeaturePersistenceService(
     internal (string filePath, string fileContent) LoadFeaturesFile()
     {
         // folder with "features.json"
-        var configurationsPath = globalConfiguration.Value.ConfigFolder;
+        var configurationsPath = globalConfiguration.Value.ConfigFolder();
 
         // ensure that path to store files already exits
         Directory.CreateDirectory(configurationsPath);

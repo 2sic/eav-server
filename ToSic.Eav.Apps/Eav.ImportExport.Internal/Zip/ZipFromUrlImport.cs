@@ -30,7 +30,7 @@ public class ZipFromUrlImport: ZipImport
     public bool ImportUrl(string packageUrl, bool isAppImport)
     {
         Log.A($"import zip from url:{packageUrl}, isApp:{isAppImport}");
-        var path = _globalConfiguration.TemporaryFolder;
+        var path = _globalConfiguration.TemporaryFolder();
         if (path == null)
             throw new NullReferenceException("path for temporary is null - this won't work");
 
@@ -59,7 +59,7 @@ public class ZipFromUrlImport: ZipImport
         }
         bool success;
 
-        var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder, Mapper.GuidCompress(Guid.NewGuid()).Substring(0, 8));
+        var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
 
         using (var file = File.OpenRead(destinationPath))
             success = ImportZip(file, temporaryDirectory);

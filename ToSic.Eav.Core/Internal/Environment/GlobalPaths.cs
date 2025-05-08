@@ -16,7 +16,7 @@ public class GlobalPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfi
     public string GlobalPathTo(string path, PathTypes pathType)
     {
         var l = Log.Fn<string>($"path:{path},pathType:{pathType}");
-        var assetPath = Combine(config.Value.AssetsVirtualUrl.Backslash(), path);
+        var assetPath = Combine(config.Value.AssetsVirtualUrl().Backslash(), path);
         var assetLocation = pathType switch
         {
             PathTypes.Link => assetPath.ToAbsolutePathForwardSlash(),

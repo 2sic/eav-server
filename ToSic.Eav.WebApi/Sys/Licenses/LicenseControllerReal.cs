@@ -39,7 +39,7 @@ public class LicenseControllerReal(
         {
             if (!string.IsNullOrEmpty(field))
                 return field;
-            field =globalConfiguration.Value.ConfigFolder;
+            field = globalConfiguration.Value.ConfigFolder();
 
             // ensure that path to store files already exits
             Directory.CreateDirectory(field);

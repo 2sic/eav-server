@@ -65,19 +65,19 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
             .ToAbsolutePathForwardSlash());
 
     public string PathShared => GetInternal(nameof(PathShared), 
-        () => Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)
+        () => Combine(config.Value.SharedAppsFolder(), _appSpecs.Folder)
             .ToAbsolutePathForwardSlash());
 
     public string PhysicalPath => GetInternal(nameof(PhysicalPath), 
         () => Combine(Site.AppsRootPhysicalFull, _appSpecs.Folder));
 
     public string PhysicalPathShared => GetInternal(nameof(PhysicalPathShared), 
-        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)));
+        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder(), _appSpecs.Folder)));
 
     public string RelativePath => GetInternal(nameof(RelativePath), 
         () => Combine(Site.AppsRootPhysical, _appSpecs.Folder).Backslash());
         
     public string RelativePathShared => GetInternal(nameof(RelativePathShared), 
-        () => Combine(config.Value.SharedAppsFolder, _appSpecs.Folder)
+        () => Combine(config.Value.SharedAppsFolder(), _appSpecs.Folder)
             .ToAbsolutePathForwardSlash());
 }

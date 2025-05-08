@@ -45,7 +45,7 @@ public static class StartUpEavCore
         services.TryAddTransient<ContentTypeFactory>();
 
         // Configuration objects
-        services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
+        //services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
         services.TryAddTransient<IDbConfiguration, DbConfiguration>();
         services.TryAddTransient<GlobalPaths>();
         services.TryAddTransient<SystemLoader>();

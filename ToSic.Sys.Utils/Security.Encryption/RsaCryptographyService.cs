@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Security.Cryptography;
 using ToSic.Eav.Internal.Configuration;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Security.Encryption
@@ -65,15 +64,15 @@ namespace ToSic.Eav.Security.Encryption
             using var rsa = new RSACng(DwKeySize);
 
             // create folder if not exist
-            Directory.CreateDirectory(globalConfiguration.CryptoFolder);
+            Directory.CreateDirectory(globalConfiguration.CryptoFolder());
 
             // save the RSA key pair to files in App_Data/2sxc.crypto folder
             ExportPublicKey(rsa);
             ExportPrivateKey(rsa);
         }
 
-        private string PublicKeyPath => Path.Combine(globalConfiguration.CryptoFolder, "public.key");
-        private string PrivateKeyPath => Path.Combine(globalConfiguration.CryptoFolder, "private.key");
+        private string PublicKeyPath => Path.Combine(globalConfiguration.CryptoFolder(), "public.key");
+        private string PrivateKeyPath => Path.Combine(globalConfiguration.CryptoFolder(), "private.key");
 
         #region ExportKeys
         private void ExportPrivateKey(RSACng rsa)

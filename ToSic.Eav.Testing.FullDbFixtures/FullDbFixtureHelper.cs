@@ -16,9 +16,9 @@ namespace ToSic.Eav.Testing
 
         public void StartupGlobalFoldersAndFingerprint(TestScenario testScenario)
         {
-            globalConfig.GlobalFolder = testScenario.GlobalFolder;
+            globalConfig.GlobalFolder(testScenario.GlobalFolder);
             if (Directory.Exists(testScenario.GlobalDataCustomFolder))
-                globalConfig.DataCustomFolder = testScenario.GlobalDataCustomFolder;
+                globalConfig.DataCustomFolder(testScenario.GlobalDataCustomFolder);
 
             // Try to reset some special static variables which may cary over through many tests
             SystemFingerprint.ResetForTest();
