@@ -10,12 +10,6 @@ namespace ToSic.Eav.Data.PiggyBack;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class IHasPiggyBackExtensions
 {
-
-    [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static TData GetPiggyBack<TData>(this IHasPiggyBack parent, string key, Func<TData> create) 
-        => parent.PiggyBack.GetOrGenerate(key, create);
-
     /// <summary>
     /// Use a property lookup to get a value, and if it's from a piggy-back source, use the pre-made rich object.
     /// Otherwise create and add to piggyback.
