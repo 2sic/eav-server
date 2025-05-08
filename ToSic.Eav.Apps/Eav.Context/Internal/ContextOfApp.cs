@@ -90,9 +90,10 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
                 return (true, "no app, use UserMayAdmin checks");
 
             // If user isn't allowed yet, it may be that the environment allows it
-            var fromEnv = AppServices.EnvironmentPermissions.New()
+            var enfPermissions = AppServices.EnvironmentPermissions.New();
+            var fromEnv = ((IEnvironmentPermissionSetup)enfPermissions)
                 .Init(this as IContextOfSite, null)
-                .EnvironmentAllows(GrantSets.WriteSomething);
+                .EnvironmentAllows(GrantSets.WriteSomething).Allowed;
 
             return (fromEnv, "no app, result from Env");
         }

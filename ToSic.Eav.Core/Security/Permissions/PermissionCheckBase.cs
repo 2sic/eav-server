@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Context;
-using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Services;
 
@@ -9,10 +8,7 @@ namespace ToSic.Eav.Security;
 /// Basic constructor, you must always call Init afterward
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public abstract partial class PermissionCheckBase(
-    PermissionCheckBase.MyServices services,
-    string logName,
-    object[] connect = default)
+public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices services, string logName, object[] connect = default)
     : ServiceBase<PermissionCheckBase.MyServices>(services, logName, connect: connect), IPermissionCheck
 {
     // ReSharper disable once InconsistentNaming
@@ -62,46 +58,61 @@ public abstract partial class PermissionCheckBase(
     #endregion
 
 
+    ///// <summary>
+    ///// Initialize this object so it can then give information regarding the permissions of an entity.
+    ///// Uses a GUID as identifier because that survives export/import. 
+    ///// </summary>
+    ///// <param name="targetType">optional type to check</param>
+    ///// <param name="targetItem">optional entity to check</param>
+    ///// <param name="permissions"></param>
+    ///// 
+    //protected void Init(IContentType targetType = default, IEntity targetItem = default, IEnumerable<IPermission> permissions = default) 
+    //{
+    //    _additionalPermissions = permissions?.ToList() ?? [];
 
+    //    var l = Log.Fn($"type:{targetType?.NameId}, " +
+    //                   $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
+    //                   $"permList1: {_additionalPermissions.Count}, ");
 
-    /// <summary>
-    /// Initialize this object so it can then give information regarding the permissions of an entity.
-    /// Uses a GUID as identifier because that survives export/import. 
-    /// </summary>
-    protected void Init(
-        IContentType targetType = default, // optional type to check
-        IEntity targetItem = default,      // optional entity to check
-        IEnumerable<IPermission> permissions = default
-    ) 
+    //    TargetTypePermissionsOrNull = targetType?.Metadata;
+    //    TargetItemPermissionsOrNull = targetItem?.Metadata;
+    //    TargetItemOwner = targetItem?.Owner ?? "unknown-random239s;o";
+
+    //    GrantedBecause = Conditions.Undefined;
+    //    l.Done();
+    //}
+    protected void InitTargets(IHasPermissions typePermissions = default, IHasPermissions itemPermissions = default, string targetOwner = default, IEnumerable<IPermission> permissions = default) 
     {
+        var l = Log.Fn();
+
         _additionalPermissions = permissions?.ToList() ?? [];
-
-        var l = Log.Fn($"type:{targetType?.NameId}, " +
-                       $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
-                       $"permList1: {_additionalPermissions.Count}, ");
-
-        //TargetType = targetType;
-        TargetTypePermissionsOrNull = targetType?.Metadata;
-        //TargetItem = targetItem;
-        TargetItemPermissionsOrNull = targetItem?.Metadata;
-        TargetItemOwner = targetItem?.Owner ?? "unknown-random239s;o";
+        
+        TargetTypePermissionsOrNull = typePermissions;
+        TargetItemPermissionsOrNull = itemPermissions;
+        TargetItemOwner = targetOwner ?? "unknown-random239s;o";
 
         GrantedBecause = Conditions.Undefined;
-        l.Done();
+        l.Done($"permissions: {_additionalPermissions.Count}");
     }
 
 
     public Conditions GrantedBecause
     {
-        get => services.EnvironmentPermission.GrantedBecause;
-        protected set => services.EnvironmentPermission.GrantedBecause = value;
+        get => _grantedBecause ??= Conditions.Undefined;
+        private set => _grantedBecause = value;
     }
+    private Conditions? _grantedBecause;
 
     public bool UserMay(List<Grants> grants)
     {
         var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
         GrantedBecause = Conditions.Undefined;
-        var result = services.EnvironmentPermission.EnvironmentAllows(grants) || PermissionsAllow(grants);
+
+        var envPermissions = services.EnvironmentPermission.EnvironmentAllows(grants);
+        if (envPermissions.Allowed)
+            return l.ReturnTrue($"{true} ({envPermissions.Condition})");
+
+        var result = /*services.EnvironmentPermission.EnvironmentAllows(grants) ||*/ PermissionsAllow(grants);
         return l.Return(result, $"{result} ({GrantedBecause})");
     }
 

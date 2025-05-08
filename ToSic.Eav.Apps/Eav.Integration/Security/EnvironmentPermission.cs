@@ -1,12 +1,13 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Security;
+using ToSic.Lib.Security.Permissions;
 
 namespace ToSic.Eav.Integration.Security;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class EnvironmentPermission(string logPrefix, object[] connect = default)
-    : ServiceBase($"{logPrefix}.EnvPrm", connect: connect), IEnvironmentPermission
+    : ServiceBase($"{logPrefix}.EnvPrm", connect: connect), IEnvironmentPermission, IEnvironmentPermissionSetup
 {
     // Constant keys for security, historic from Dnn
     protected const string SalPrefix = "SecurityAccessLevel";
@@ -21,12 +22,10 @@ public abstract class EnvironmentPermission(string logPrefix, object[] connect =
     {
         Context = context as IContextOfSite ?? throw new ArgumentException($"Must be an {nameof(IContextOfSite)}", nameof(context));
         AppIdentity = appIdentityOrNull;
-        GrantedBecause = Conditions.Undefined;
         return this;
     }
-    protected IContextOfSite Context { get; set; }
-    protected IAppIdentity AppIdentity { get; set; }
-    public Conditions GrantedBecause { get; set; }
+    protected IContextOfSite Context { get; private set; }
+    protected IAppIdentity AppIdentity { get; private set; }
 
     /// <summary>
     /// This should evaluate the grants and decide if the environment approves any of these grants.
@@ -35,17 +34,24 @@ public abstract class EnvironmentPermission(string logPrefix, object[] connect =
     /// </summary>
     /// <param name="grants"></param>
     /// <returns></returns>
-    public virtual bool EnvironmentAllows(List<Grants> grants) => Log.Func(Log.Try(() => $"[{string.Join(",", grants)}]"), () =>
+    protected virtual bool EnvironmentOk(List<Grants> grants)
     {
-        if (UserIsAnonymous()) return (false, "user anonymous");
+        var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
+        if (UserIsAnonymous())
+            return l.ReturnFalse("user anonymous");
         var ok = UserIsSystemAdmin(); // superusers are always ok
         if (!ok && CurrentZoneMatchesSiteZone())
             ok = UserIsContentAdmin()
                  || UserIsModuleAdmin()
                  || UserIsModuleEditor();
-        if (ok) GrantedBecause = Conditions.EnvironmentGlobal;
-        return (ok, $"{ok} because:{GrantedBecause}");
-    });
+        return l.ReturnAndLog(ok);
+    }
+
+    public PermissionCheckInfo EnvironmentAllows(List<Grants> grants)
+    {
+        var ok = EnvironmentOk(grants);
+        return new(ok, ok ? Conditions.EnvironmentGlobal : Conditions.Undefined);
+    }
 
     protected virtual bool UserIsModuleAdmin() => false;
     protected virtual bool UserIsModuleEditor() => false;

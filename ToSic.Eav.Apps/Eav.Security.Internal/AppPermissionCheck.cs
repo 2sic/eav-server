@@ -86,9 +86,26 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
             ? FindPermissionsOfApp(appIdentity)
             : null;
 
-        Init(targetType ?? targetItem?.Type, targetItem, permissions);
-        _environmentPermission.Init(ctx, appIdentity);
+        LoadTargets(targetType ?? targetItem?.Type, targetItem, permissions);
+        ((IEnvironmentPermissionSetup)_environmentPermission).Init(ctx, appIdentity);
         Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
+        l.Done();
+    }
+
+
+    /// <summary>
+    /// Initialize this object so it can then give information regarding the permissions of an entity.
+    /// Uses a GUID as identifier because that survives export/import. 
+    /// </summary>
+    /// <param name="targetType">optional type to check</param>
+    /// <param name="targetItem">optional entity to check</param>
+    /// <param name="permissions"></param>
+    /// 
+    private void LoadTargets(IContentType targetType = default, IEntity targetItem = default, IEnumerable<IPermission> permissions = default)
+    {
+        var l = Log.Fn($"type:{targetType?.NameId}, itm:{targetItem?.EntityGuid} ({targetItem?.EntityId})");
+
+        InitTargets(targetType?.Metadata, targetItem?.Metadata, targetItem?.Owner, permissions);
         l.Done();
     }
 
