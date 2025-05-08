@@ -38,7 +38,6 @@ public static class StartUpEavCore
         services.TryAddTransient<DimensionBuilder>();
         services.TryAddTransient<AttributeBuilder>();
         services.TryAddTransient<EntityBuilder>();
-        services.TryAddTransient<EntitySaver>();
         services.TryAddTransient<ValueBuilder>();
         services.TryAddTransient<ContentTypeBuilder>();
         services.TryAddTransient<ContentTypeAttributeBuilder>();

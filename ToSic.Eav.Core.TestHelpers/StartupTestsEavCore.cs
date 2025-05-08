@@ -19,6 +19,7 @@ public class StartupTestsEavCore
     /// </summary>
     public void ConfigureServices(IServiceCollection services) =>
         services
+            //.AddEavDataPersistence()
             .AddEavCore()
             .AddEavCoreFallbackServices()
             .AddLibCore();

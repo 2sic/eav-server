@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Mocks;
+using ToSic.Eav.Data.Startup;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.StartUp;
@@ -19,6 +20,7 @@ public class ValueConversionTests(ExportImportValueConversion exportListXml)
                 .AddTransient<ExportImportValueConversion>()
                 .AddTransient<IValueConverter, MockValueConverter>()
                 // EAV Core
+                //.AddEavDataPersistence()
                 .AddEavCore()
                 .AddEavCoreFallbackServices()
                 // Library

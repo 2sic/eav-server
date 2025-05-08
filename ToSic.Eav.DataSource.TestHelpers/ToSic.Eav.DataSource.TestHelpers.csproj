@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core.TestHelpers\ToSic.Eav.Core.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Data.Persistence\ToSic.Eav.Data.Persistence.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Features\ToSic.Sys.Features.csproj" />
   </ItemGroup>

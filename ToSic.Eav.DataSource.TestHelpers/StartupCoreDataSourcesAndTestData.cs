@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Data.Startup;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.StartUp;
 using ToSic.Eav.TestData;
@@ -26,6 +27,7 @@ public class StartupCoreDataSourcesAndTestData
             .AddTransient<DataTableTrivial>()
             .AddTransient<DataTablePerson>()
             .AddDataSources()
+            .AddEavDataPersistence()
             .AddEavCore()
             .AddEavCoreFallbackServices()
             .AddLibCore()
