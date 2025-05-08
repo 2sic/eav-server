@@ -5,7 +5,6 @@ namespace ToSic.Eav.SysData;
 
 public static class FeaturesToRawEntity
 {
-
     public static IRawEntity ToRawEntity(this FeatureState state)
         => new RawEntity
         {

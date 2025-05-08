@@ -4,7 +4,8 @@ using ToSic.Lib.Sys.Fingerprints.Internal;
 namespace ToSic.Eav.SysData;
 
 /// <summary>
-/// License entity - usually stored in the global / preset App
+/// License entity - usually stored in the global / preset App.
+/// Used by the FeaturesLoader to load the license information from inside JSON entities.
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 internal class LicenseEntity(IEntity entity) : EntityBasedType(entity)

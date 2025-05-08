@@ -13,26 +13,11 @@ public static class IZoneCultureResolverExtensions
     /// <param name="resolver"></param>
     /// <returns></returns>
     public static string SafeCurrentCultureCode(this IZoneCultureResolver resolver)
-        => (resolver?.CurrentCultureCode ?? ThreadCurrentCultureInfo.Name).ToLowerInvariant();
-
-    public static CultureInfo SafeCultureInfo(string[] dimensions)
-    {
-        try
-        {
-            if (dimensions == null || dimensions.Length == 0) return ThreadCurrentCultureInfo;
-            var d = dimensions.FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(d)) return CultureInfo.GetCultureInfo(d);
-        }
-        catch { /* ignore */}
-
-        return ThreadCurrentCultureInfo;
-    }
-
-    private static CultureInfo ThreadCurrentCultureInfo => CultureInfo.CurrentCulture;
+        => (resolver?.CurrentCultureCode ?? CultureInfo.CurrentCulture.Name).ToLowerInvariant();
 
     public static CultureInfo SafeCurrentCultureInfo(this IZoneCultureResolver resolver)
         => resolver == null 
-            ? ThreadCurrentCultureInfo 
+            ? CultureInfo.CurrentCulture
             : CultureInfo.GetCultureInfo(resolver.SafeCurrentCultureCode());
 
 

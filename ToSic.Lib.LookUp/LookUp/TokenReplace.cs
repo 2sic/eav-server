@@ -76,7 +76,7 @@ public class TokenReplace(ILookUpEngine lookupEngine)
     /// Replace all tokens in a string. 
     /// </summary>
     /// <returns></returns>
-    internal virtual string ReplaceTokens(string sourceText, int repeat = 0, TweakLookUp tweaker = default)
+    public virtual string ReplaceTokens(string sourceText, int repeat = 0, ITweakLookUp tweaker = default)
     {
         if (string.IsNullOrEmpty(sourceText))
             return string.Empty;

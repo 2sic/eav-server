@@ -29,7 +29,7 @@ public interface ILookUpEngine: IHasLog
         IDictionary<string, string> values,
         NoParamOrder noParamOrder = default,
         IEnumerable<ILookUp> overrides = null,
-        int depth = LookUpEngine.DefaultLookUpDepth,
+        int depth = LibLookUpConstants.DefaultLookUpDepth,
         Func<ITweakLookUp, ITweakLookUp> tweak = default);
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]

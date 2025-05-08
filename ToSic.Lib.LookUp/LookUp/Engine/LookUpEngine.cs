@@ -14,7 +14,6 @@ public class LookUpEngine : HelperBase, ILookUpEngine
 {
     #region Constants
 
-    [PrivateApi] public const int DefaultLookUpDepth = 4;
     [PrivateApi] protected bool LogDetailed = true;
     #endregion
 
@@ -78,7 +77,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
 
     public void Link(ILookUpEngine downstream) => Downstream = downstream;
         
-    internal DicString LookUpInternal(DicString values, int depth = 4, TweakLookUp tweaker = default)
+    internal DicString LookUpInternal(DicString values, int depth = 4, ITweakLookUp tweaker = default)
     {
         var l = Log.Fn<DicString>($"values: {values.Count}, depth: {depth}");
         // start by creating a copy of the dictionary
@@ -133,14 +132,6 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         var innerLookup = new LookUpEngine(this, Log, sources: [.. overridesList]);
         return l.ReturnAsOk(innerLookup.LookUpInternal(values, depth, tweaker));
     }
-
-    // 2024-05-06 2dm
-    ///// <inheritdoc />
-    //private void Add(ILookUp lookUp)
-    //{
-    //    Log.A(LogDetailed, $"Add/replace source: '{lookUp.Name}'");
-    //    Sources[lookUp.Name] = lookUp;
-    //}
 
     private void Add(IEnumerable<ILookUp> lookUps)
     {

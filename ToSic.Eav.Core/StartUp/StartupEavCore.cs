@@ -123,7 +123,9 @@ public static class StartUpEavCore
         // very basic stuff - normally overriden by the platform
         services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 
-        services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
+        //services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
+        services.AddLibLookUp();
+
         services.TryAddTransient<IUser, UserUnknown>();
         services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
         services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();

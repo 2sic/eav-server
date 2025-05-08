@@ -133,6 +133,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Lib.LookUp\ToSic.Lib.LookUp.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Caching\ToSic.Sys.Caching.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Code\ToSic.Sys.Code.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />

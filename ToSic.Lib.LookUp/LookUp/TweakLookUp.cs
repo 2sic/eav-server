@@ -5,9 +5,10 @@
 /// Important: not fully implemented yet, so not fully functional as most tweaks, currently a quick-hack
 /// to get Html Lookups working.
 /// </summary>
-internal class TweakLookUp: ITweakLookUp
+[PrivateApi]
+public class TweakLookUp: ITweakLookUp
 {
-    internal TweakLookUp()
+    public TweakLookUp()
     { }
 
     internal TweakLookUp(
@@ -29,7 +30,7 @@ internal class TweakLookUp: ITweakLookUp
     private readonly Func<string, string> _postProcess;
     private readonly Func<string, LookUpSpecs, string> _postProcessAdv;
 
-    internal string PostProcess(string template, LookUpSpecs specs)
+    public string PostProcess(string template, LookUpSpecs specs)
     {
         return _postProcess != null
             ? _postProcess(template)
