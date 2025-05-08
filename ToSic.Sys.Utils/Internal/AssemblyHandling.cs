@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using ToSic.Eav.StartUp;
-using ToSic.Lib.Logging;
 using static System.StringComparison;
 
 namespace ToSic.Eav.Plumbing;
