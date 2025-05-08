@@ -13,7 +13,7 @@ internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Ef
         var lSql = log.Fn("Zone SQL", timer: true);
         var zonesSql = appLoader.Context.TsDynDataZones
             .Include(z => z.TsDynDataApps)
-            .Include(z => z.ToSicEavDimensions)
+            .Include(z => z.TsDynDataDimensions)
             .ThenInclude(d => d.ParentNavigation)
             .ToList();
         lSql.Done($"Zones: {zonesSql.Count}");
@@ -33,7 +33,7 @@ internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Ef
 
                     var appDictionary = z.TsDynDataApps.ToDictionary(a => a.AppId, a => a.Name);
 
-                    var languages = z.ToSicEavDimensions
+                    var languages = z.TsDynDataDimensions
                         .Where(d => d.ParentNavigation?.Key == Constants.CultureSystemKey)
                         .Cast<DimensionDefinition>().ToList();
 

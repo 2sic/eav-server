@@ -23,7 +23,7 @@ public partial class EavDbContext : DbContext
     public virtual DbSet<TsDynDataAttributeType> TsDynDataAttributeTypes { get; set; }
     public virtual DbSet<TsDynDataTransaction> TsDynDataTransactions { get; set; }
     public virtual DbSet<TsDynDataHistory> TsDynDataHistories { get; set; }
-    public virtual DbSet<ToSicEavDimensions> ToSicEavDimensions { get; set; }
+    public virtual DbSet<TsDynDataDimension> TsDynDataDimensions { get; set; }
     public virtual DbSet<TsDynDataEntity> TsDynDataEntities { get; set; }
     public virtual DbSet<TsDynDataRelationship> TsDynDataRelationships { get; set; }
     public virtual DbSet<TsDynDataValue> TsDynDataValues { get; set; }
@@ -62,14 +62,14 @@ public partial class EavDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ToSicEavDimensions>(entity =>
+        modelBuilder.Entity<TsDynDataDimension>(entity =>
         {
             entity.HasKey(e => e.DimensionId)
-                .HasName("PK_ToSIC_EAV_Dimensions");
+                .HasName("PK_TsDynDataDimension");
 
-            entity.ToTable("ToSIC_EAV_Dimensions");
+            entity.ToTable("TsDynDataDimension");
 
-            entity.Property(e => e.DimensionId).HasColumnName("DimensionID");
+            entity.Property(e => e.DimensionId);
 
             entity.Property(e => e.Active)/*.HasDefaultValueSql("1")*/.ValueGeneratedNever();
 
@@ -81,18 +81,18 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.Key).HasColumnName("SystemKey").HasMaxLength(100);
 
-            entity.Property(e => e.ZoneId).HasColumnName("ZoneID");
+            entity.Property(e => e.ZoneId);
 
             entity.HasOne(d => d.ParentNavigation)
                 .WithMany(p => p.InverseParentNavigation)
                 .HasForeignKey(d => d.Parent)
-                .HasConstraintName("FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Dimensions1");
+                .HasConstraintName("FK_TsDynDataDimension_TsDynDataDimension");
 
             entity.HasOne(d => d.Zone)
-                .WithMany(p => p.ToSicEavDimensions)
+                .WithMany(p => p.TsDynDataDimensions)
                 .HasForeignKey(d => d.ZoneId)
                 .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_ToSIC_EAV_Dimensions_ToSIC_EAV_Zones");
+                .HasConstraintName("FK_TsDynDataDimension_TsDynDataZone");
         });
 
         modelBuilder.Entity<TsDynDataEntity>(entity =>

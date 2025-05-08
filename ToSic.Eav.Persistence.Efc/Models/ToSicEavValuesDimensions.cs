@@ -9,7 +9,7 @@ public partial class ToSicEavValuesDimensions
 
     public bool ReadOnly { get; set; } = false;
 
-    public virtual ToSicEavDimensions Dimension { get; set; }
+    public virtual TsDynDataDimension Dimension { get; set; }
 
     public virtual TsDynDataValue Value { get; set; }
 }
