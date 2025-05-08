@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavValuesDimensions
+public partial class TsDynDataValueDimension
 {
     public int ValueId { get; set; }
 

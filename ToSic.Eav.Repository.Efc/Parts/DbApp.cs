@@ -128,7 +128,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
         var appValueIds = appValues
             .Select(a => a.ValueId)
             .ToList();
-        var valDimensions = db.ToSicEavValuesDimensions
+        var valDimensions = db.TsDynDataValueDimensions
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
             //.Where(vd => appValueIds.Contains(vd.ValueId));
             .Where(vd => Enumerable.Contains(appValueIds, vd.ValueId));

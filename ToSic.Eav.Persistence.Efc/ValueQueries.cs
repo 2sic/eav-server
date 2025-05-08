@@ -16,7 +16,7 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
     //        // but instead just get the StaticName
     //        .Include(v => v.Attribute)
     //        // Dimensions are needed for language assignment for each value
-    //        .Include(v => v.ToSicEavValuesDimensions)
+    //        .Include(v => v.TsDynDataValueDimensions)
     //        .ThenInclude(d => d.Dimension)
     //        // Skip values which have been flagged as deleted
     //        .Where(v => !v.TransactionIdDeleted.HasValue);

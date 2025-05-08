@@ -14,7 +14,7 @@ partial class DbEntity
                 .Include(e => e.RelationshipsWithThisAsParent)
                 .Include(e => e.RelationshipsWithThisAsChild)
                 .Include(e => e.TsDynDataValues)
-                .ThenInclude(v => v.ToSicEavValuesDimensions)
+                .ThenInclude(v => v.TsDynDataValueDimensions)
                 .ThenInclude(d => d.Dimension);
         }
     }

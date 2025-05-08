@@ -145,12 +145,12 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         {
             // Remove values and valueDimensions of this attribute
             var values = DbContext.SqlDb.TsDynDataValues
-                .Include(v => v.ToSicEavValuesDimensions)
+                .Include(v => v.TsDynDataValueDimensions)
                 .Where(a => a.AttributeId == attributeId).ToList();
 
             values.ForEach(v =>
             {
-                v.ToSicEavValuesDimensions.ToList().ForEach(vd => DbContext.SqlDb.Remove(vd));
+                v.TsDynDataValueDimensions.ToList().ForEach(vd => DbContext.SqlDb.Remove(vd));
                 DbContext.SqlDb.TsDynDataValues.Remove(v);
             });
             DbContext.SqlDb.SaveChanges();

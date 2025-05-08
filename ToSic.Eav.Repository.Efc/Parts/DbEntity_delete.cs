@@ -16,12 +16,12 @@ partial class DbEntity
 
         // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
         // note that as this is a DB-entity, the EntityId is actually the repositoryId
-        var entities = DbContext.Entities.GetDbEntities(repositoryId, "ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions");
+        var entities = DbContext.Entities.GetDbEntities(repositoryId, "TsDynDataValue,TsDynDataValue.TsDynDataValueDimensions");
 
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)
         // Delete all Value-Dimensions
-        var valueDimensions = entities.SelectMany(e => e.TsDynDataValues.SelectMany(v => v.ToSicEavValuesDimensions)).ToList();
+        var valueDimensions = entities.SelectMany(e => e.TsDynDataValues.SelectMany(v => v.TsDynDataValueDimensions)).ToList();
         DbContext.SqlDb.RemoveRange(valueDimensions);
 
         // Delete all Values

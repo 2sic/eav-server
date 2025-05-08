@@ -16,5 +16,5 @@ public partial class TsDynDataValue//: RepoValue
     public virtual TsDynDataEntity Entity { get; set; }
 
 
-    public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; } = new HashSet<ToSicEavValuesDimensions>();
+    public virtual ICollection<TsDynDataValueDimension> TsDynDataValueDimensions { get; set; } = new HashSet<TsDynDataValueDimension>();
 }

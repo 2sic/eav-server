@@ -26,6 +26,6 @@ public partial class TsDynDataDimension : Data.DimensionDefinition
 
     public virtual TsDynDataDimension ParentNavigation { get; set; }
 
-    public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; } = new HashSet<ToSicEavValuesDimensions>();
+    public virtual ICollection<TsDynDataValueDimension> TsDynDataValueDimensions { get; set; } = new HashSet<TsDynDataValueDimension>();
     public virtual TsDynDataZone Zone { get; set; }
 }

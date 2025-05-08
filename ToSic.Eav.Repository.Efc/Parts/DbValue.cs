@@ -23,8 +23,8 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
             };
 
             // copy Dimensions
-            foreach (var valuesDimension in eavValue.ToSicEavValuesDimensions)
-                value.ToSicEavValuesDimensions.Add(new()
+            foreach (var valuesDimension in eavValue.TsDynDataValueDimensions)
+                value.TsDynDataValueDimensions.Add(new()
                 {
                     DimensionId = valuesDimension.DimensionId,
                     ReadOnly = valuesDimension.ReadOnly

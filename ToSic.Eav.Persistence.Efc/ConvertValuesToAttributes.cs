@@ -24,8 +24,8 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //                        // The order of values is significant because the 2sxc system uses the first value as fallback
     //                        // Because we can't ensure order of values when saving, order values: prioritize values without
     //                        // any dimensions, then values with primary language
-    //                        .OrderByDescending(v2 => !v2.ToSicEavValuesDimensions.Any())
-    //                        .ThenByDescending(v2 => v2.ToSicEavValuesDimensions
+    //                        .OrderByDescending(v2 => !v2.TsDynDataValueDimensions.Any())
+    //                        .ThenByDescending(v2 => v2.TsDynDataValueDimensions
     //                            .Any(lng => string.Equals(lng.Dimension.EnvironmentKey, primaryLanguage,
     //                                StringComparison.InvariantCultureIgnoreCase))
     //                        )
@@ -33,7 +33,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //                        .Select(v2 => new TempValueWithLanguage
     //                        {
     //                            Value = v2.Value,
-    //                            Languages = v2.ToSicEavValuesDimensions
+    //                            Languages = v2.TsDynDataValueDimensions
     //                                .Select(ILanguage (lng) => new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly,
     //                                    lng.DimensionId))
     //                                .ToImmutableList(),

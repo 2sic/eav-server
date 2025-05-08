@@ -12,13 +12,13 @@ partial class DbEntity
     {
         var callLog = Log.Fn<bool>(timer: true);
         var val = DbContext.SqlDb.TsDynDataValues
-            .Include(v => v.ToSicEavValuesDimensions)
+            .Include(v => v.TsDynDataValueDimensions)
             .Where(v => v.EntityId == entityId)
             .ToList();
 
         if (val.Count == 0) return callLog.ReturnFalse("no changes");
 
-        var dims = val.SelectMany(v => v.ToSicEavValuesDimensions);
+        var dims = val.SelectMany(v => v.TsDynDataValueDimensions);
         DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(dims));
         DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(val));
         return callLog.ReturnTrue("ok");
@@ -56,10 +56,10 @@ partial class DbEntity
                 {
                     #region prepare languages - has extensive error reporting, to help in case any db-data is bad
 
-                    List<ToSicEavValuesDimensions> toSicEavValuesDimensions;
+                    List<TsDynDataValueDimension> toSicEavValuesDimensions;
                     try
                     {
-                        toSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
+                        toSicEavValuesDimensions = value.Languages?.Select(l => new TsDynDataValueDimension
                         {
                             DimensionId = _zoneLangs.Single(ol => ol.Matches(l.Key)).DimensionId,
                             ReadOnly = l.ReadOnly
@@ -85,7 +85,7 @@ partial class DbEntity
                     {
                         AttributeId = attribDef.AttributeId,
                         Value = value.Serialized ?? "",
-                        ToSicEavValuesDimensions = toSicEavValuesDimensions,
+                        TsDynDataValueDimensions = toSicEavValuesDimensions,
                         EntityId = dbEnt.EntityId
                     };
                     AttributeQueueAdd(() => DbContext.SqlDb.TsDynDataValues.Add(newVal));
