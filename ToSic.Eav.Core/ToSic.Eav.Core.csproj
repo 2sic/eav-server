@@ -140,10 +140,6 @@
     <ProjectReference Include="..\ToSic.Sys.Features\ToSic.Sys.Features.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Security\Encryption\" />
-  </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
     <DefineConstants>NETSTANDARD</DefineConstants>
   </PropertyGroup>
