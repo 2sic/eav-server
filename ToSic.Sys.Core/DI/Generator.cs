@@ -3,24 +3,20 @@
 /// <summary>
 /// Lazy generator to create multiple new services/objects of a specific type.
 /// </summary>
+/// <remarks>
+/// Constructor should only be used in DI context and never be called directly.
+/// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class Generator<TService>: IHasLog, ILazyInitLog
+public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
 {
-    /// <summary>
-    /// Constructor should only be used in DI context and never be called directly.
-    /// </summary>
-    /// <param name="sp"></param>
-    public Generator(IServiceProvider sp) => _sp = sp;
-    private readonly IServiceProvider _sp;
-
     /// <summary>
     /// Factory method to generate a new service
     /// </summary>
     /// <returns></returns>
     public TService New()
     {
-        var service = _sp.Build<TService>(Log);
+        var service = sp.Build<TService>(Log);
         _initCall?.Invoke(service);
         return service;
     }
