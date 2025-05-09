@@ -11,11 +11,11 @@ public partial class TsDynDataApp
 
     public string SysSettings { get; set; } = null;
 
-    public int? TransactionIdCreated { get; set; }
+    public int? TransCreatedId { get; set; }
 
-    public int? TransactionIdModified { get; set; }
+    public int? TransModifiedId { get; set; }
 
-    public int? TransactionIdDeleted { get; set; }
+    public int? TransDeletedId { get; set; }
 
     public virtual ICollection<TsDynDataContentType> TsDynDataContentTypes { get; set; } = new HashSet<TsDynDataContentType>();
 
@@ -23,9 +23,9 @@ public partial class TsDynDataApp
 
     public virtual TsDynDataZone Zone { get; set; }
 
-    public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransCreated { get; set; }
 
-    public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransModified { get; set; }
 
-    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransDeleted { get; set; }
 }

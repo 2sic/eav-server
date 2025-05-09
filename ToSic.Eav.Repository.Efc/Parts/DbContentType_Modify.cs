@@ -11,7 +11,7 @@ partial class DbContentType
 
         ct.Name = name;
         ct.Scope = scope;
-        ct.TransactionIdCreated = DbContext.Versioning.GetTransactionId();
+        ct.TransCreatedId = DbContext.Versioning.GetTransactionId();
 
         // save first, to ensure it has an Id
         DbContext.SqlDb.SaveChanges();
@@ -35,7 +35,7 @@ partial class DbContentType
     public void Delete(string staticName)
     {
         var setToDelete = GetTypeByStaticName(staticName);
-        setToDelete.TransactionIdDeleted = DbContext.Versioning.GetTransactionId();
+        setToDelete.TransDeletedId = DbContext.Versioning.GetTransactionId();
         DbContext.SqlDb.SaveChanges();
     }
 

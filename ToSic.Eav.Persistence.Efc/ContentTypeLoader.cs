@@ -84,7 +84,7 @@ internal class ContentTypeLoader(
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
         var query = efcAppLoader.Context.TsDynDataContentTypes
-            .Where(set => set.AppId == appId && set.TransactionIdDeleted == null);
+            .Where(set => set.AppId == appId && set.TransDeletedId == null);
 
         var contentTypesSql = query
             .Include(set => set.TsDynDataAttributes)
@@ -106,7 +106,7 @@ internal class ContentTypeLoader(
                 set.StaticName,
                 set.Scope,
                 Attributes = set.TsDynDataAttributes
-                    .Where(a => a.TransactionIdDeleted == null) // only not-deleted attributes!
+                    .Where(a => a.TransDeletedId == null) // only not-deleted attributes!
                     .Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
                         name: a.StaticName,

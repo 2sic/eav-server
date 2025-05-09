@@ -11,11 +11,11 @@ public partial class TsDynDataContentType
 
     public string Scope { get; set; }
 
-    public int TransactionIdCreated { get; set; }
+    public int TransCreatedId { get; set; }
 
-    public int? TransactionIdModified { get; set; }
+    public int? TransModifiedId { get; set; }
 
-    public int? TransactionIdDeleted { get; set; }
+    public int? TransDeletedId { get; set; }
 
     public int AppId { get; set; }
 
@@ -29,11 +29,11 @@ public partial class TsDynDataContentType
 
     public virtual TsDynDataApp App { get; set; }
 
-    public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransCreated { get; set; }
 
-    public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransModified { get; set; }
 
-    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransDeleted { get; set; }
 
     public virtual TsDynDataContentType InheritContentTypeNavigation { get; set; }
 

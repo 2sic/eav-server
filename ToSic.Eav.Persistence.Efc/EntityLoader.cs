@@ -107,8 +107,8 @@ internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializ
                 IsPublished = e.IsPublished,
                 PublishedEntityId = e.PublishedEntityId,
                 Owner = e.Owner,
-                Created = e.TransactionCreatedNavigation.Timestamp,
-                Modified = e.TransactionModifiedNavigation.Timestamp,
+                Created = e.TransCreated.Timestamp,
+                Modified = e.TransModified.Timestamp,
                 Json = e.Json,
             })
             .ToList();

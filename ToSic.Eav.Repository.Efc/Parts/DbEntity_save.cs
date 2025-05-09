@@ -143,7 +143,7 @@ partial class DbEntity
                     #endregion
 
                     // update transactionId modified for the DB record
-                    dbEnt.TransactionIdModified = transactionId;
+                    dbEnt.TransModifiedId = transactionId;
 
                     // increase version
                     dbEnt.Version++;

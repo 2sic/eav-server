@@ -12,7 +12,7 @@ internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(paren
 
         var query = db.TsDynDataEntities
             .Where(e => e.AppId == appId)
-            .Where(e => e.TransactionIdDeleted == null && e.ContentTypeNavigation.TransactionIdDeleted == null);
+            .Where(e => e.TransDeletedId == null && e.ContentTypeNavigation.TransDeletedId == null);
 
         l.A("initial query created");
 
@@ -38,7 +38,7 @@ internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(paren
                 && !e.IsPublished
                 && publishIds.Contains(e.EntityId)
                 && !publishIds.Contains(e.PublishedEntityId.Value)
-                && e.TransactionIdDeleted == null
+                && e.TransDeletedId == null
             );
 
         return l.ReturnAsOk(relatedIds);

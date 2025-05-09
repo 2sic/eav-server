@@ -31,11 +31,11 @@ public partial class TsDynDataEntity
 
     public string ContentType { get; set; }
 
-    public int TransactionIdCreated { get; set; }
+    public int TransCreatedId { get; set; }
 
-    public int TransactionIdModified { get; set; }
+    public int TransModifiedId { get; set; }
 
-    public int? TransactionIdDeleted { get; set; }
+    public int? TransDeletedId { get; set; }
 
     // 2017-10-10 2dm new with entity > app mapping
     public virtual TsDynDataApp App { get; set; }
@@ -44,11 +44,11 @@ public partial class TsDynDataEntity
 
     public virtual TsDynDataContentType ContentTypeNavigation { get; set; }
 
-    public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransCreated { get; set; }
 
-    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransModified { get; set; }
 
-    public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransDeleted { get; set; }
 
     public virtual ICollection<TsDynDataRelationship> RelationshipsWithThisAsChild { get; set; } = new HashSet<TsDynDataRelationship>();
 

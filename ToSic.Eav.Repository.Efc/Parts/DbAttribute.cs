@@ -111,7 +111,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         {
             Type = type,
             StaticName = staticName,
-            TransactionIdCreated = DbContext.Versioning.GetTransactionId(),
+            TransCreatedId = DbContext.Versioning.GetTransactionId(),
             Guid = contentTypeAttribute.Guid,
             SysSettings = sysSettings,
             ContentType = contentType,
