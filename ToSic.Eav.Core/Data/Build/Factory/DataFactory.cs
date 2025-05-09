@@ -3,7 +3,6 @@ using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Source;
 using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
-using ToSic.Lib.Helpers;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
@@ -31,8 +30,8 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
     public ILookup<object, IEntity> Relationships => field ?? _lazyRelationships;
     private readonly LazyLookup<object, IEntity> _lazyRelationships = new();
 
-    private RawRelationshipsConverter RelsConverter => _relsConverter.Get(() => new(builder, Log));
-    private readonly GetOnce<RawRelationshipsConverter> _relsConverter = new();
+    private RawRelationshipsConvertHelper RelsConvertHelper => field ??= new(builder, Log);
+
     #endregion
 
 
@@ -105,7 +104,7 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
 
         // Pre-process relationship keys, so they are added to the lookup
         var list = rawList.ToList();
-        RelsConverter.AddRelationshipsToLookup(list, _lazyRelationships, RawConvertOptions);
+        RelsConvertHelper.AddRelationshipsToLookup(list, _lazyRelationships, RawConvertOptions);
 
         // Return entities as Immutable list
         return l.Return(list.Select(set => set.Entity).ToImmutableList());
@@ -171,7 +170,7 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
     {
         // pre-process RawRelationships
         values ??= new Dictionary<string, object>();
-        var valuesWithRelationships = RelsConverter.RelationshipsToAttributes(values, Relationships);
+        var valuesWithRelationships = RelsConvertHelper.RelationshipsToAttributes(values, Relationships);
 
         var entityId = id == 0 && Options.AutoId
             ? (IdCounter < 0 ? IdCounter-- : IdCounter++) // negative means we're counting down

@@ -10,7 +10,7 @@ partial class EnumerableExtensions
 #if !NETFRAMEWORK
         [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        this IEnumerable<TSource> source
+        this IEnumerable<TSource>? source
     )
         => source?.Any() == true;
 

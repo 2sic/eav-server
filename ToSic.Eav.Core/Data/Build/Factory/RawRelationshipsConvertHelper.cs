@@ -1,12 +1,11 @@
 ﻿using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Source;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Internal.Generics;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
 
-internal class RawRelationshipsConverter(DataBuilder builder, ILog parentLog) : HelperBase(parentLog, "Eav.RawRel")
+internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog) : HelperBase(parentLog, "Eav.RawRel")
 {
     private LogFilter RelationshipsToAttributesLogFilter => field ??= new(Log, logFirstMax: 25, reLogIteration: 100);
 
