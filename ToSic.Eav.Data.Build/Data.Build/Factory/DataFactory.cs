@@ -19,6 +19,9 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
     /// <inheritdoc />
     public IContentType ContentType { get; }
 
+#if NETCOREAPP
+    [field: AllowNull, MaybeNull]
+#endif
     public DataFactoryOptions Options => field ?? throw new($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
 
 
@@ -27,9 +30,15 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
 
     private RawConvertOptions RawConvertOptions { get; } = new();
 
+#if NETCOREAPP
+    [field: AllowNull, MaybeNull]
+#endif
     public ILookup<object, IEntity> Relationships => field ?? _lazyRelationships;
     private readonly LazyLookup<object, IEntity> _lazyRelationships = new();
 
+#if NETCOREAPP
+    [field: AllowNull, MaybeNull]
+#endif
     private RawRelationshipsConvertHelper RelsConvertHelper => field ??= new(builder, Log);
 
     #endregion
@@ -39,9 +48,9 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
 
     public IDataFactory New(
         NoParamOrder noParamOrder = default,
-        DataFactoryOptions options = default,
-        ILookup<object, IEntity> relationships = default,
-        RawConvertOptions rawConvertOptions = default
+        DataFactoryOptions? options = default,
+        ILookup<object, IEntity>? relationships = default,
+        RawConvertOptions? rawConvertOptions = default
     )
     {
         var clone = new DataFactory(builder.New(options?.AllowUnknownValueTypes ?? false),
@@ -61,9 +70,9 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
         DataBuilder builder,
         LazySvc<ContentTypeFactory> ctFactoryLazy,
         NoParamOrder noParamOrder = default,
-        DataFactoryOptions options = default,
-        ILookup<object, IEntity> relationships = default,
-        RawConvertOptions rawConvertOptions = default
+        DataFactoryOptions? options = default,
+        ILookup<object, IEntity>? relationships = default,
+        RawConvertOptions? rawConvertOptions = default
     ) :this (builder, ctFactoryLazy)
     {
         // Store settings
@@ -83,7 +92,7 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
         if (relationships is LazyLookup<object, IEntity> relationshipsAsLazy)
             _lazyRelationships = relationshipsAsLazy;
         else
-            Relationships = relationships;  // will be null or a real value
+            Relationships = relationships ?? new LazyLookup<object, IEntity>();  // will be null or a real value
     }
     #endregion
 
@@ -100,7 +109,7 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
     /// <inheritdoc />
     public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList)
     {
-        var l = this.Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<IImmutableList<IEntity>>();
 
         // Pre-process relationship keys, so they are added to the lookup
         var list = rawList.ToList();
@@ -136,7 +145,7 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
     {
         var all = list.Select(n =>
             {
-                IEntity newEntity = null;
+                IEntity? newEntity = null;
 
                 // Todo: improve this, so if anything fails, we have a clear info which item failed
                 try
@@ -160,13 +169,14 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
     #region Create basic Dictionary
 
     /// <inheritdoc />
-    public IEntity Create(IDictionary<string, object> values,
+    public IEntity Create(
+        IDictionary<string, object>? values,
         int id = 0,
         Guid guid = default,
         DateTime created = default,
         DateTime modified = default,
         // experimental
-        EntityPartsBuilder partsBuilder = default)
+        EntityPartsBuilder? partsBuilder = default)
     {
         // pre-process RawRelationships
         values ??= new Dictionary<string, object>();
@@ -199,7 +209,7 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
     public IEntity Create(IRawEntity rawEntity)
     {
         var partsBuilder = Options.WithMetadata
-            ? new EntityPartsBuilder(null, (guid, s) => (rawEntity as RawEntity)?.Metadata)
+            ? new EntityPartsBuilder(null, (_, _) => (rawEntity as RawEntity)?.Metadata)
             : null;
         return Create(
             rawEntity.Attributes(RawConvertOptions),

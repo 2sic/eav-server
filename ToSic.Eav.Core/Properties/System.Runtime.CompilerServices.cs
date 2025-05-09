@@ -1,6 +1,9 @@
 ﻿
 
 // ReSharper disable once CheckNamespace
+// ReSharper disable UnusedMember.Global
+
+#pragma warning disable CA1018
 namespace System.Runtime.CompilerServices
 {
 

@@ -36,7 +36,7 @@ public record DataFactoryOptions
     /// <summary>
     /// The type name to use for a generated Entity.
     /// </summary>
-    public string TypeName
+    public string? TypeName
     {
         get => field ?? DataConstants.DataFactoryDefaultTypeName;
 #if NETFRAMEWORK
@@ -51,6 +51,9 @@ public record DataFactoryOptions
     /// The field in the data which is the default title.
     /// Defaults to `Title` if not set.
     /// </summary>
+#if NETCOREAPP
+    [field: AllowNull, MaybeNull]
+#endif
     public string TitleField
     {
         get => field.UseFallbackIfNoValue(Attributes.TitleNiceName);
@@ -109,7 +112,7 @@ public record DataFactoryOptions
 #endif
     }
 
-    public Type Type
+    public Type? Type
     {
         get;
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init

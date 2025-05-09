@@ -1,5 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using static System.StringComparison;
+﻿using static System.StringComparison;
+
+#if NETCOREAPP
+using System.Diagnostics.CodeAnalysis;
+#endif
 
 namespace ToSic.Eav.Plumbing;
 
@@ -13,14 +16,14 @@ public static class StringExtensions
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsEmpty(
-#if !NETFRAMEWORK
-        [System.Diagnostics.CodeAnalysis.NotNullWhen(false)]
+#if NETCOREAPP
+        [NotNullWhen(false)]
 #endif
         this string? value) => string.IsNullOrEmpty(value);
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsEmptyOrWs(
-#if !NETFRAMEWORK
-        [System.Diagnostics.CodeAnalysis.NotNullWhen(false)]
+#if NETCOREAPP
+        [NotNullWhen(false)]
 #endif
         this string? value) => string.IsNullOrWhiteSpace(value);
 
@@ -32,20 +35,20 @@ public static class StringExtensions
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool HasValue(
 #if !NETFRAMEWORK
-        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
+        [NotNullWhen(true)]
 #endif
         this string? value)
         => !string.IsNullOrWhiteSpace(value);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string UseFallbackIfNoValue(this string value, string fallback)
+    public static string UseFallbackIfNoValue(this string? value, string fallback)
         => !string.IsNullOrWhiteSpace(value) ? value : fallback;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string NullIfNoValue(this string value) => value.HasValue() ? value : null;
+    public static string? NullIfNoValue(this string value) => value.HasValue() ? value : null;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string[] SplitNewLine(this string value) 
+    public static string[]? SplitNewLine(this string? value) 
         => value?.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
 
     /// <summary>
@@ -55,20 +58,22 @@ public static class StringExtensions
     /// <param name="original"></param>
     /// <returns></returns>
     // TODO: @2dm - changed a lot of places to use this 2024-01-23. If no errors appear, remove commented code in each location ca. 2024-Q2
-    public static string[] CsvToArrayWithoutEmpty(this string original) => original?.Split(',').TrimmedAndWithoutEmpty() ?? [];
+    public static string[] CsvToArrayWithoutEmpty(this string? original)
+        => original?.Split(',').TrimmedAndWithoutEmpty() ?? [];
 
-    public static string[] LinesToArrayWithoutEmpty(this string original) => original?.SplitNewLine().TrimmedAndWithoutEmpty() ?? [];
+    public static string[] LinesToArrayWithoutEmpty(this string? original)
+        => original?.SplitNewLine().TrimmedAndWithoutEmpty() ?? [];
 
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string[] TrimmedAndWithoutEmpty(this string[] value) 
+    public static string[]? TrimmedAndWithoutEmpty(this string[]? value) 
         => value?
             .Select(s => s.Trim())
             .Where(s => !string.IsNullOrWhiteSpace(s))
             .ToArray();
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string NeverNull(this string value) => value ?? "";
+    public static string NeverNull(this string? value) => value ?? "";
 
     /// <summary>
     /// Null-safe string-equals method. If both are null, it's equal.
@@ -77,7 +82,7 @@ public static class StringExtensions
     /// <param name="b">The compare string, can also be null</param>
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool EqualsInsensitive(this string a, string b)
+    public static bool EqualsInsensitive(this string? a, string? b)
     {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
@@ -85,7 +90,7 @@ public static class StringExtensions
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool ContainsInsensitive(this string a, string b)
+    public static bool ContainsInsensitive(this string? a, string? b)
     {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
@@ -93,7 +98,7 @@ public static class StringExtensions
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string Truncate(this string value, int maxLength)
+    public static string? Truncate(this string? value, int maxLength)
     {
         if (value == null) return null;
         if (maxLength == 0) return string.Empty;
@@ -107,7 +112,7 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string AsKey(this string value) 
+    public static string AsKey(this string? value) 
         => value ?? NullKey;
 
     private const string NullKey = "\0";
@@ -132,7 +137,6 @@ public static class StringExtensions
     /// </summary>
     /// <param name="s"></param>
     /// <param name="separators"></param>
-    /// <param name="newVal"></param>
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string RemoveAll(this string s, params char[] separators)
