@@ -19,21 +19,23 @@ public class DataBuilder(
             entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder, builderGen
         ])
 {
-    private bool _allowUnknownValueTypes;
-
-    public DataBuilder New(bool allowUnknownValueTypes = false)
+    /// <summary>
+    /// WIP, should replace the New below...
+    /// </summary>
+    public DataBuilderOptions Options
     {
-        var clone = builderGen.New();
-        clone._allowUnknownValueTypes = allowUnknownValueTypes;
-        return clone;
+        get => field ??= new();
+        set => field = field == null
+            ? value
+            : throw new InvalidOperationException("Options can only be set once, and only when the DataBuilder is created.");
     }
 
     public ContentTypeBuilder ContentType => contentTypeBuilder.Value;
     public EntityBuilder Entity => entityBuilder.Value;
 
-    public AttributeBuilder Attribute => field ??= attributeBuilder.Value.Setup(_allowUnknownValueTypes);
+    public AttributeBuilder Attribute => field ??= attributeBuilder.Value.Setup(Options.AllowUnknownValueTypes);
 
-    public ValueBuilder Value => field ??= valueBuilder.Value.Setup(_allowUnknownValueTypes);
+    public ValueBuilder Value => field ??= valueBuilder.Value.Setup(Options.AllowUnknownValueTypes);
 
     public ContentTypeAttributeBuilder TypeAttributeBuilder => typeAttributeBuilder.Value;
 

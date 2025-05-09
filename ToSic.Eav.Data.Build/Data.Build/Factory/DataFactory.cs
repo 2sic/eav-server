@@ -9,7 +9,8 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFactoryLazy) : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
+internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuilderGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
+    : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
 {
     #region Properties to configure Builder / Defaults
 
@@ -53,13 +54,20 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
         RawConvertOptions? rawConvertOptions = default
     )
     {
-        var clone = new DataFactory(builder.New(options?.AllowUnknownValueTypes ?? false),
+        var freshBuilder = dataBuilderGenerator.New();
+        freshBuilder.Options = new()
+        {
+            AllowUnknownValueTypes = options?.AllowUnknownValueTypes ?? false
+        };
+        var clone = new DataFactory(freshBuilder,
+            dataBuilderGenerator,
             ctFactoryLazy,
             options: options,
             relationships: relationships,
             rawConvertOptions: rawConvertOptions
         );
-        if ((Log as Log)?.Parent != null) clone.LinkLog(((Log)Log).Parent);
+        if ((Log as Log)?.Parent != null)
+            clone.LinkLog(((Log)Log).Parent);
         return clone;
     }
 
@@ -68,12 +76,13 @@ internal class DataFactory(DataBuilder builder, LazySvc<ContentTypeFactory> ctFa
     /// </summary>
     private DataFactory(
         DataBuilder builder,
+        Generator<DataBuilder> dataBuilderGenerator,
         LazySvc<ContentTypeFactory> ctFactoryLazy,
         NoParamOrder noParamOrder = default,
         DataFactoryOptions? options = default,
         ILookup<object, IEntity>? relationships = default,
         RawConvertOptions? rawConvertOptions = default
-    ) :this (builder, ctFactoryLazy)
+    ) :this (builder, dataBuilderGenerator, ctFactoryLazy)
     {
         // Store settings
         Options = options ?? new();
