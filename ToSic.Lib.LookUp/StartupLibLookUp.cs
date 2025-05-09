@@ -2,7 +2,8 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.StartUp;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Lib.LookUp;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class StartupLibLookUp

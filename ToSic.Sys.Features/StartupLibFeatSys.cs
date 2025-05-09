@@ -7,10 +7,8 @@ using ToSic.Lib.Internal.FeatSys.Features;
 
 namespace ToSic.Lib.Internal.FeatSys;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public static class StartUp
+public static class StartupLibFeatSys
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IServiceCollection AddLibFeatSys(this IServiceCollection services)
     {
         // Make sure that IFeaturesInternal and IFeatures use the same singleton!
