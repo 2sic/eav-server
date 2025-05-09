@@ -91,8 +91,8 @@ partial class DbEntity
 
     //internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid)
     //    => EntityQuery.Where(e => e.EntityGuid == entityGuid
-    //                              && !e.TransactionIdDeleted.HasValue
-    //                              && !e.AttributeSet.TransactionIdDeleted.HasValue
+    //                              && !e.TransDeletedId.HasValue
+    //                              && !e.AttributeSet.TransDeletedId.HasValue
     //                                // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
     //                                // && DbContext.AppIds.Contains(e.AppId));
     //                                && Enumerable.Contains(DbContext.AppIds, e.AppId));
@@ -101,8 +101,8 @@ partial class DbEntity
         //=> EntityQuery
         => DbContext.SqlDb.TsDynDataEntities
             .Where(e => e.EntityGuid == entityGuid
-                        && !e.TransactionIdDeleted.HasValue
-                        && !e.ContentTypeNavigation.TransactionIdDeleted.HasValue
+                        && !e.TransDeletedId.HasValue
+                        && !e.ContentTypeNavigation.TransDeletedId.HasValue
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId));
                         && Enumerable.Contains(DbContext.AppIds, e.AppId)
@@ -148,8 +148,8 @@ partial class DbEntity
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // entityGuid.Contains(e.EntityGuid)
                         Enumerable.Contains(entityGuid, e.EntityGuid)
-                        && e.TransactionIdDeleted == null
-                        && e.ContentTypeNavigation.TransactionIdDeleted == null
+                        && e.TransDeletedId == null
+                        && e.ContentTypeNavigation.TransDeletedId == null
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId)
                         && Enumerable.Contains(DbContext.AppIds, e.AppId)

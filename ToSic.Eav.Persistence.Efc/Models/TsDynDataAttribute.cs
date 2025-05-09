@@ -19,21 +19,21 @@ public partial class TsDynDataAttribute
 
     public bool IsTitle { get; set; } = false;
 
-    public int TransactionIdCreated { get; set; }
+    public int TransCreatedId { get; set; }
 
-    public int? TransactionIdModified { get; set; }
+    public int? TransModifiedId { get; set; }
 
-    public int? TransactionIdDeleted { get; set; }
+    public int? TransDeletedId { get; set; }
 
     public virtual TsDynDataAttributeType TypeNavigation { get; set; }
 
     public virtual TsDynDataContentType ContentType { get; set; }
 
-    public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransCreated { get; set; }
 
-    public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransModified { get; set; }
 
-    public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
+    public virtual TsDynDataTransaction TransDeleted { get; set; }
 
     public virtual ICollection<TsDynDataRelationship> TsDynDataRelationships { get; set; } = new HashSet<TsDynDataRelationship>();
 

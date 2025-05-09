@@ -42,7 +42,7 @@ partial class DbEntity
             if (entity.IsPublished)
             {
                 Log.A("was published, will mark as deleted");
-                entity.TransactionIdDeleted = DbContext.Versioning.GetTransactionId();
+                entity.TransDeletedId = DbContext.Versioning.GetTransactionId();
                 // Also delete the Draft (if any)
                 draftBranchMap.TryGetValue(entity.EntityId, out var draftEntityId);
                 //var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(entity.EntityId);

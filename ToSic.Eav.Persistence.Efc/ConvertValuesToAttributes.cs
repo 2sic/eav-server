@@ -29,7 +29,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //                            .Any(lng => string.Equals(lng.Dimension.EnvironmentKey, primaryLanguage,
     //                                StringComparison.InvariantCultureIgnoreCase))
     //                        )
-    //                        .ThenBy(v2 => v2.TransactionIdCreated)
+    //                        .ThenBy(v2 => v2.TransCreatedId)
     //                        .Select(v2 => new TempValueWithLanguage
     //                        {
     //                            Value = v2.Value,
@@ -113,7 +113,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //                        .OrderByDescending(v2 => !v2.Dimensions.Any())
     //                        .ThenByDescending(v2 => v2.Dimensions.Any(lng => lng.Key == primaryLower)
     //                        )
-    //                        .ThenBy(v2 => v2.TransactionIdCreated)
+    //                        .ThenBy(v2 => v2.TransCreatedId)
     //                        .Select(v2 => new TempValueWithLanguage
     //                        {
     //                            Value = v2.Value,

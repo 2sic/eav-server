@@ -28,7 +28,7 @@ partial class DbAttribute
     private bool AttributeExistsInSet(int contentTypeId, string staticName)
         => DbContext.SqlDb.TsDynDataAttributes.Any(s =>
             s.StaticName == staticName
-            && !s.TransactionIdDeleted.HasValue
+            && !s.TransDeletedId.HasValue
             && s.ContentTypeId == contentTypeId
             && s.ContentType.AppId == DbContext.AppId);
 

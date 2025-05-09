@@ -144,21 +144,21 @@ public partial class EavDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataEntity_TsDynDataContentType");
 
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.TsDynDataEntitiesTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
+            entity.HasOne(d => d.TransCreated)
+                .WithMany(p => p.TsDynDataEntitiesTransCreated)
+                .HasForeignKey(d => d.TransCreatedId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataEntity_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.TsDynDataEntitiesTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
+            entity.HasOne(d => d.TransModified)
+                .WithMany(p => p.TsDynDataEntitiesTransModified)
+                .HasForeignKey(d => d.TransModifiedId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataEntity_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.TsDynDataEntitiesTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
+            entity.HasOne(d => d.TransDeleted)
+                .WithMany(p => p.TsDynDataEntitiesTransDeleted)
+                .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataEntity_TsDynDataTransactionDeleted");
         });
 
@@ -279,19 +279,19 @@ public partial class EavDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataApp_TsDynDataZone");
 
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.TsDynDataAppsTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
+            entity.HasOne(d => d.TransCreated)
+                .WithMany(p => p.TsDynDataAppsTransCreated)
+                .HasForeignKey(d => d.TransCreatedId)
                 .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.TsDynDataAppsTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
+            entity.HasOne(d => d.TransModified)
+                .WithMany(p => p.TsDynDataAppsTransModified)
+                .HasForeignKey(d => d.TransModifiedId)
                 .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.TsDynDataAppsTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
+            entity.HasOne(d => d.TransDeleted)
+                .WithMany(p => p.TsDynDataAppsTransDeleted)
+                .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionDeleted");
         });
 
@@ -322,20 +322,20 @@ public partial class EavDbContext : DbContext
 
             entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.TsDynDataAttributesTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
+            entity.HasOne(d => d.TransCreated)
+                .WithMany(p => p.TsDynDataAttributesTransCreated)
+                .HasForeignKey(d => d.TransCreatedId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.TsDynDataAttributesTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
+            entity.HasOne(d => d.TransModified)
+                .WithMany(p => p.TsDynDataAttributesTransModified)
+                .HasForeignKey(d => d.TransModifiedId)
                 .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.TsDynDataAttributesTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
+            entity.HasOne(d => d.TransDeleted)
+                .WithMany(p => p.TsDynDataAttributesTransDeleted)
+                .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionDeleted");
 
             entity.HasOne(d => d.TypeNavigation)
@@ -388,21 +388,21 @@ public partial class EavDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataApp");
 
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.TsDynDataContentTypesTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
+            entity.HasOne(d => d.TransCreated)
+                .WithMany(p => p.TsDynDataContentTypesTransCreated)
+                .HasForeignKey(d => d.TransCreatedId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.TsDynDataContentTypesTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
+            entity.HasOne(d => d.TransModified)
+                .WithMany(p => p.TsDynDataContentTypesTransModified)
+                .HasForeignKey(d => d.TransModifiedId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.TsDynDataContentTypesTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
+            entity.HasOne(d => d.TransDeleted)
+                .WithMany(p => p.TsDynDataContentTypesTransDeleted)
+                .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionDeleted");
 
             entity.HasOne(d => d.InheritContentTypeNavigation)
@@ -504,19 +504,19 @@ public partial class EavDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(255);
 
-            entity.HasOne(d => d.TransactionCreatedNavigation)
-                .WithMany(p => p.TsDynDataZonesTransactionCreatedNavigation)
-                .HasForeignKey(d => d.TransactionIdCreated)
+            entity.HasOne(d => d.TransCreated)
+                .WithMany(p => p.TsDynDataZonesTransCreated)
+                .HasForeignKey(d => d.TransCreatedId)
                 .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransactionModifiedNavigation)
-                .WithMany(p => p.TsDynDataZonesTransactionModifiedNavigation)
-                .HasForeignKey(d => d.TransactionIdModified)
+            entity.HasOne(d => d.TransModified)
+                .WithMany(p => p.TsDynDataZonesTransModified)
+                .HasForeignKey(d => d.TransModifiedId)
                 .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransactionDeletedNavigation)
-                .WithMany(p => p.TsDynDataZonesTransactionDeletedNavigation)
-                .HasForeignKey(d => d.TransactionIdDeleted)
+            entity.HasOne(d => d.TransDeleted)
+                .WithMany(p => p.TsDynDataZonesTransDeleted)
+                .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionDeleted");
         });
 

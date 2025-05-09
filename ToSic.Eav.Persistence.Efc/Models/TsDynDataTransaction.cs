@@ -9,35 +9,35 @@ public partial class TsDynDataTransaction
 
     public string User { get; set; }
 
-    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataAttribute>();
+    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransCreated { get; set; } = new HashSet<TsDynDataAttribute>();
 
-    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataAttribute>();
+    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransModified { get; set; } = new HashSet<TsDynDataAttribute>();
 
-    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataAttribute>();
+    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransDeleted { get; set; } = new HashSet<TsDynDataAttribute>();
 
-    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransCreated { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransModified { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransDeleted { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataEntity>();
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransCreated { get; set; } = new HashSet<TsDynDataEntity>();
 
-    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataEntity>();
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransDeleted { get; set; } = new HashSet<TsDynDataEntity>();
 
-    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataEntity>();
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransModified { get; set; } = new HashSet<TsDynDataEntity>();
 
     public virtual ICollection<TsDynDataHistory> TsDynDataHistories { get; set; } = new HashSet<TsDynDataHistory>();
 
-    public virtual ICollection<TsDynDataZone> TsDynDataZonesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataZone>();
+    public virtual ICollection<TsDynDataZone> TsDynDataZonesTransCreated { get; set; } = new HashSet<TsDynDataZone>();
     
-    public virtual ICollection<TsDynDataZone> TsDynDataZonesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataZone>();
+    public virtual ICollection<TsDynDataZone> TsDynDataZonesTransModified { get; set; } = new HashSet<TsDynDataZone>();
 
-    public virtual ICollection<TsDynDataZone> TsDynDataZonesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataZone>();
+    public virtual ICollection<TsDynDataZone> TsDynDataZonesTransDeleted { get; set; } = new HashSet<TsDynDataZone>();
 
-    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataApp>();
+    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransCreated { get; set; } = new HashSet<TsDynDataApp>();
 
-    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataApp>();
+    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransModified { get; set; } = new HashSet<TsDynDataApp>();
 
-    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataApp>();
+    public virtual ICollection<TsDynDataApp> TsDynDataAppsTransDeleted { get; set; } = new HashSet<TsDynDataApp>();
 }

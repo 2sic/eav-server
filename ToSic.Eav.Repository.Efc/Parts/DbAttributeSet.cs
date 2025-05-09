@@ -5,7 +5,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
     private IQueryable<TsDynDataContentType> GetDbContentTypeCoreQuery(int appId)
         => DbContext.SqlDb.TsDynDataContentTypes
             .Include(a => a.TsDynDataAttributes)
-            .Where(a => a.AppId == appId && !a.TransactionIdDeleted.HasValue);
+            .Where(a => a.AppId == appId && !a.TransDeletedId.HasValue);
 
     /// <summary>
     /// Get a single ContentType
@@ -110,7 +110,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
             Name = name,
             StaticName = nameId,
             Scope = scope,
-            TransactionIdCreated = DbContext.Versioning.GetTransactionId(),
+            TransCreatedId = DbContext.Versioning.GetTransactionId(),
             AppId = targetAppId
         };
 

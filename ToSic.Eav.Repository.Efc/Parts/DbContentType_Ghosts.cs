@@ -22,7 +22,7 @@ partial class DbContentType
     {
         var ghostAttributeSets = DbContext.SqlDb.TsDynDataContentTypes.Where(
                 a => a.StaticName == contentTypeParentName
-                     && a.TransactionIdDeleted == null
+                     && a.TransDeletedId == null
                      && a.InheritContentTypeId == null).
             OrderBy(a => a.ContentTypeId)
             .ToList();
@@ -40,7 +40,7 @@ partial class DbContentType
         var attSets = DbContext.SqlDb.TsDynDataContentTypes
             .Where(ats => ats.StaticName == staticName
                           && !ats.InheritContentTypeId.HasValue    // never duplicate a clone/ghost
-                          && ats.TransactionIdDeleted == null                 // never duplicate a deleted
+                          && ats.TransDeletedId == null                 // never duplicate a deleted
                           && ats.IsGlobal == false)           // never duplicate an always-share
             .OrderBy(ats => ats.ContentTypeId)
             .ToList();
@@ -60,7 +60,7 @@ partial class DbContentType
             Scope = attSet.Scope,
             InheritContentTypeId = attSet.ContentTypeId,
             IsGlobal = false, // this is copy, never re-share
-            TransactionIdCreated = DbContext.Versioning.GetTransactionId()
+            TransCreatedId = DbContext.Versioning.GetTransactionId()
         };
         DbContext.SqlDb.Add(newSet);
 

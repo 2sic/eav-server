@@ -5,7 +5,7 @@ internal partial class DbContentType(DbDataController db) : DbPartBase(db, "Db.T
     private TsDynDataContentType GetTypeByStaticName(string staticName)
     {
         return DbContext.SqlDb.TsDynDataContentTypes.FirstOrDefault(a =>
-            a.AppId == DbContext.AppId && a.StaticName == staticName && a.TransactionIdDeleted == null
+            a.AppId == DbContext.AppId && a.StaticName == staticName && a.TransDeletedId == null
         );
     }
         

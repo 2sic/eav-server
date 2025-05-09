@@ -19,7 +19,7 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
     //        .Include(v => v.TsDynDataValueDimensions)
     //        .ThenInclude(d => d.Dimension)
     //        // Skip values which have been flagged as deleted
-    //        .Where(v => !v.TransactionIdDeleted.HasValue);
+    //        .Where(v => !v.TransDeletedId.HasValue);
 
     //    var queryOfEntityIds = query
     //        .Where(r => entityIds.Contains(r.EntityId));
@@ -36,7 +36,7 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
 
         var query = context.TsDynDataValues;
             // Skip values which have been flagged as deleted
-            //.Where(v => !v.TransactionIdDeleted.HasValue);
+            //.Where(v => !v.TransDeletedId.HasValue);
 
         var queryOfEntityIds = query
             .Where(r => entityIds.Contains(r.EntityId));
