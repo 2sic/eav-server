@@ -6,13 +6,12 @@ public class PropertyRequestSpecsTests
     public void DimensionsBlankAutoExpand()
     {
         var specs = new PropReqSpecs("TestField");
-        Assert.Equal(new string[] { null }, specs.Dimensions);
+        Assert.Equal(new string?[] { null }, specs.Dimensions);
     }
 
     [Theory]
-    [InlineData(new[] { (string)null }, new[] { (string)null }, "null, Auto Expand")]
-    [InlineData(new[] { (string)null }, new[] { (string)null }, "null, Auto Expand")]
-    [InlineData(new[] { (string)null }, new[] { (string)null }, "empty, Auto Expand")]
+    [InlineData(new[] { (string)null! }, new[] { (string)null! }, "null, Auto Expand")]
+    [InlineData(new[] { (string)null! }, new[] { (string)null! }, "empty, Auto Expand")]
     [InlineData(new[] { "a", null }, new[] { "a" }, "Auto Expand")]
     [InlineData(new[] { "a", "b", null }, new[] { "a", "b" }, "Auto Expand")]
     [InlineData(new[] { "a", "b", null }, new[] { "a", "b", null }, "Keep, don't add second null")]

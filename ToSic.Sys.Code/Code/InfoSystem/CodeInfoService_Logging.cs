@@ -26,7 +26,7 @@ partial class CodeInfoService
         var logWrapper = new Log("Cod.Obsolete", Log);
         var change = use.Change;
         var l = logWrapper.Fn<CodeInfoInLogStore>($"'{change.NameId}' will be removed {(change.To == null ? null : "v" + change.To)}");
-        CodeInfoInLogStore infoInLogStore = null;
+        CodeInfoInLogStore? infoInLogStore = null;
         try
         {
             var stackInfo = GetStackAndMainFile();

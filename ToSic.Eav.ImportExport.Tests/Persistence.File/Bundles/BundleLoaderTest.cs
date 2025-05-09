@@ -81,7 +81,6 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         {
             output.WriteLine(Log.Dump());
         }
-        return [];
     }
         
 }

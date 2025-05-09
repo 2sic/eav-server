@@ -6,8 +6,7 @@
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeInfo : ICodeInfo
 {
-    protected CodeInfo(CodeInfoTypes type, string nameId, Version from, Version to, string link = default,
-        string message = default)
+    protected CodeInfo(CodeInfoTypes type, string nameId, Version from, Version to, string? link = default, string? message = default)
     {
         NameId = nameId;
         Link = link;
@@ -17,8 +16,7 @@ public class CodeInfo : ICodeInfo
         Type = type;
     }
 
-    private CodeInfo(ICodeInfo original, string nameId = default, string link = default,
-        string message = default, CodeInfoTypes? type = default)
+    private CodeInfo(ICodeInfo original, string? nameId = default, string? link = default, string? message = default, CodeInfoTypes? type = default)
     {
         NameId = nameId ?? original.NameId;
         Link = link ?? original.Link;
@@ -35,9 +33,9 @@ public class CodeInfo : ICodeInfo
 
     public Version To { get; }
 
-    public string Link { get; }
+    public string? Link { get; }
 
-    public string Message { get; }
+    public string? Message { get; }
 
     public CodeInfoTypes Type { get; }
 
@@ -48,8 +46,8 @@ public class CodeInfo : ICodeInfo
     /// <returns></returns>
     public ICodeInfo Replace(params object[] replacements) => new CodeInfo(this,
         nameId: string.Format(NameId, replacements),
-        message: string.Format(Message, replacements));
+        message: string.Format(Message ?? "", replacements));
 
-    public CodeUse UsedAs(int appId = default, string specificId = default, string[] more = default) =>
+    public CodeUse UsedAs(int appId = default, string? specificId = default, string[]? more = default) =>
         new(this, appId: appId, specificId: specificId, more: more);
 }

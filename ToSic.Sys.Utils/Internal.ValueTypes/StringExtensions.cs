@@ -12,9 +12,17 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool IsEmpty(this string value) => string.IsNullOrEmpty(value);
+    public static bool IsEmpty(
+#if !NETFRAMEWORK
+        [System.Diagnostics.CodeAnalysis.NotNullWhen(false)]
+#endif
+        this string? value) => string.IsNullOrEmpty(value);
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool IsEmptyOrWs(this string value) => string.IsNullOrWhiteSpace(value);
+    public static bool IsEmptyOrWs(
+#if !NETFRAMEWORK
+        [System.Diagnostics.CodeAnalysis.NotNullWhen(false)]
+#endif
+        this string? value) => string.IsNullOrWhiteSpace(value);
 
     /// <summary>
     /// Has real value, so neither null, empty or white space.
@@ -22,7 +30,11 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool HasValue( /* [NotNullWhen(true)] // can't use when not .net 8 */ this string value)
+    public static bool HasValue(
+#if !NETFRAMEWORK
+        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
+#endif
+        this string? value)
         => !string.IsNullOrWhiteSpace(value);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

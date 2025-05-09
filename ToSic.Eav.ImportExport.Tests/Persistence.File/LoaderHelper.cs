@@ -23,7 +23,6 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         {
             output.WriteLine(Log.Dump());
         }
-        return [];
     }
 
     internal IList<IContentType> LoadAllTypes(FileSystemLoader loaderRaw, ILog log)
