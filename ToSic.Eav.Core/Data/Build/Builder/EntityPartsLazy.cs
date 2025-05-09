@@ -4,12 +4,12 @@ using ToSic.Eav.Metadata;
 namespace ToSic.Eav.Data.Build;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class EntityPartsBuilder
+public class EntityPartsLazy
 {
     internal readonly Func<IEntityLight, IEntityRelationships> GetRelationshipDelegate;
     internal readonly Func<Guid, string, IMetadataOf> GetMetadataOfDelegate;
 
-    public EntityPartsBuilder(
+    public EntityPartsLazy(
         Func<IEntityLight, IEntityRelationships> getRelationshipManager = default,
         Func<Guid, string, IMetadataOf> getMetadataOf = default)
     {
@@ -25,7 +25,7 @@ public class EntityPartsBuilder
     /// <param name="source"></param>
     /// <param name="metadata"></param>
     /// <returns></returns>
-    public static EntityPartsBuilder ForAppAndOptionalMetadata(IAppStateCache source = default, List<IEntity> metadata = default)
+    public static EntityPartsLazy ForAppAndOptionalMetadata(IAppStateCache source = default, List<IEntity> metadata = default)
         => new(
             entity => new EntityRelationships(entity, source),
             getMetadataOf: metadata != default

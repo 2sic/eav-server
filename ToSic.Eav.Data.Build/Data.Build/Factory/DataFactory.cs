@@ -18,7 +18,11 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
     public int IdCounter { get; private set; }
 
     /// <inheritdoc />
-    public IContentType ContentType { get; }
+    [field: AllowNull, MaybeNull]
+    public IContentType ContentType => field
+        ??= Options.Type != null
+            ? ctFactoryLazy.Value.Create(Options.Type)
+            : builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
 
     [field: AllowNull, MaybeNull]
     public DataFactoryOptions Options => field ?? throw new($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
@@ -72,21 +76,18 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
         DataBuilder builder,
         Generator<DataBuilder> dataBuilderGenerator,
         LazySvc<ContentTypeFactory> ctFactoryLazy,
-        NoParamOrder noParamOrder = default,
         DataFactoryOptions? options = default,
         ILookup<object, IEntity>? relationships = default,
         RawConvertOptions? rawConvertOptions = default
-    ) :this (builder, dataBuilderGenerator, ctFactoryLazy)
+    ): this (builder, dataBuilderGenerator, ctFactoryLazy)
     {
         // Store settings
         Options = options ?? new();
 
         IdCounter = Options.IdSeed;
-        ContentType = Options.Type != null
-            ? ctFactoryLazy.Value.Create(Options.Type)
-            : builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
 
-        if (rawConvertOptions != null) RawConvertOptions = rawConvertOptions;
+        if (rawConvertOptions != null)
+            RawConvertOptions = rawConvertOptions;
 
         // Determine what relationships source to use
         // If we got a lazy, use that and mark as lazy
@@ -179,7 +180,7 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
         DateTime created = default,
         DateTime modified = default,
         // experimental
-        EntityPartsBuilder? partsBuilder = default)
+        EntityPartsLazy? partsBuilder = default)
     {
         // pre-process RawRelationships
         values ??= new Dictionary<string, object>();
@@ -212,7 +213,7 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
     public IEntity Create(IRawEntity rawEntity)
     {
         var partsBuilder = Options.WithMetadata
-            ? new EntityPartsBuilder(null, (_, _) => (rawEntity as RawEntity)?.Metadata)
+            ? new EntityPartsLazy(null, (_, _) => (rawEntity as RawEntity)?.Metadata)
             : null;
         return Create(
             rawEntity.Attributes(RawConvertOptions),

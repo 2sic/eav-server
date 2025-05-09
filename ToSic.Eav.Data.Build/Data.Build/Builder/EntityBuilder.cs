@@ -28,7 +28,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         int version = default,
         bool isPublished = true,
         ITarget? metadataFor = default,
-        EntityPartsBuilder? partsBuilder = default,
+        EntityPartsLazy? partsBuilder = default,
         int publishedId = default)
     {
         return new()
@@ -45,7 +45,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             Owner = owner,
             MetadataFor = metadataFor,
             // Prepare the Parts-builder in case it wasn't provided
-            PartsBuilder = partsBuilder ?? new(),
+            PartsLazy = partsBuilder ?? new(),
 
             // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
             // Light Attributes would only be for Entity-Light, but ATM required by design
@@ -125,16 +125,16 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         return e;
     }
 
-    private static EntityPartsBuilder EntityPartsBuilder(IEntity original, int? newId, Guid? newGuid)
+    private static EntityPartsLazy EntityPartsBuilder(IEntity original, int? newId, Guid? newGuid)
     {
         var oldRelManager = (original as Entity)?.Relationships as EntityRelationships;
-        var entityPartsBuilder = new EntityPartsBuilder(
+        var entityPartsBuilder = new EntityPartsLazy(
             ent => EntityRelationships.ForClone(ent, oldRelManager),
             getMetadataOf: newId == default && newGuid == default
                 // If identifiers don't change, it will provide the identical metadata
-                ? Build.EntityPartsBuilder.ReUseMetadataFunc<Guid>(original.Metadata)
+                ? EntityPartsLazy.ReUseMetadataFunc<Guid>(original.Metadata)
                 // If they do change, we need to create a derived clone
-                : Build.EntityPartsBuilder.CloneMetadataFunc<Guid>(original.Metadata)
+                : EntityPartsLazy.CloneMetadataFunc<Guid>(original.Metadata)
         );
         return entityPartsBuilder;
     }

@@ -25,7 +25,7 @@ public interface IDataFactory
     /// The generated ContentType.
     /// This will only be generated once, for better performance.
     /// </summary>
-    IContentType ContentType { get; }
+    IContentType? ContentType { get; }
 
     /// <summary>
     /// TODO:
@@ -44,20 +44,15 @@ public interface IDataFactory
     /// <returns>Itself, to make call chaining easier</returns>
     IDataFactory New(
         NoParamOrder noParamOrder = default,
-        DataFactoryOptions options = default,
-        ILookup<object, IEntity> relationships = default,
-        RawConvertOptions rawConvertOptions = default);
+        DataFactoryOptions? options = default,
+        ILookup<object, IEntity>? relationships = default,
+        RawConvertOptions? rawConvertOptions = default);
 
     #region Simple Create
 
     /// <summary>
     /// Create a single entity based on values passed in.
     /// </summary>
-    /// <param name="values"></param>
-    /// <param name="id"></param>
-    /// <param name="guid"></param>
-    /// <param name="created"></param>
-    /// <param name="modified"></param>
     /// <returns></returns>
     IEntity Create(IDictionary<string, object> values,
         int id = default,
@@ -65,7 +60,7 @@ public interface IDataFactory
         DateTime created = default,
         DateTime modified = default,
         // experimental v18.02
-        EntityPartsBuilder partsBuilder = default);
+        EntityPartsLazy? partsLazy = default);
 
     /// <summary>
     /// Create an entity from a single <see cref="IRawEntity"/>

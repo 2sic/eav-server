@@ -84,7 +84,7 @@ partial class JsonSerializer
 
 
         l.A("build entity");
-        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: AppReaderOrNull?.GetCache(), metadata: mdItems);
+        var partsBuilder = EntityPartsLazy.ForAppAndOptionalMetadata(source: AppReaderOrNull?.GetCache(), metadata: mdItems);
         var newEntity = Services.DataBuilder.Entity.Create(
             appId: AppId,
             guid: jEnt.Guid,

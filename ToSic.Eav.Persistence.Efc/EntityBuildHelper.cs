@@ -70,7 +70,7 @@ internal class EntityBuildHelper
 
         // Get all Attributes of that Content-Type
         var newAttributes = dataBuilder.Attribute.Create(contentType, mergedValueLookups);
-        var partsBuilder = EntityPartsBuilder.ForAppAndOptionalMetadata(source: stateCache, metadata: null);
+        var partsBuilder = EntityPartsLazy.ForAppAndOptionalMetadata(source: stateCache, metadata: null);
         var newEntity = dataBuilder.Entity.Create(
             appId: appReader.AppId,
             guid: e.EntityGuid,

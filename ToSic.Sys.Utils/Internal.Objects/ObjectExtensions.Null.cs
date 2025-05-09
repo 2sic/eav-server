@@ -14,7 +14,7 @@ static partial class ObjectExtensions
     /// <returns></returns>
 
     // TODO: PROBABLY rename to NullOrMap
-    public static TResult NullOrGetWith<T, TResult>(this T obj, Func<T, TResult> func)
+    public static TResult? NullOrGetWith<T, TResult>(this T? obj, Func<T, TResult> func)
         where T : class
         where TResult : class
         => obj == null ? null : func(obj);
@@ -31,23 +31,25 @@ static partial class ObjectExtensions
     /// <param name="obj"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    public static TResult NullOrGet<T, TResult>(this T obj, Func<TResult> func)
+    public static TResult? NullOrGet<T, TResult>(this T? obj, Func<TResult> func)
         where T : class
         where TResult : class
         => obj == null ? null : func();
 
 
-    public static void DoIfNotNull<T>(this T obj, Action<T> func)
+    public static void DoIfNotNull<T>(this T? obj, Action<T> func)
         where T : class
     {
-        if (obj == null) return;
+        if (obj == null)
+            return;
         func(obj);
     }
 
-    public static void DoIfNotNull<T>(this T obj, Action func)
+    public static void DoIfNotNull<T>(this T? obj, Action func)
         where T : class
     {
-        if (obj == null) return;
+        if (obj == null)
+            return;
         func();
     }
 }

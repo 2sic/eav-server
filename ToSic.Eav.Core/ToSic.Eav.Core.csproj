@@ -21,7 +21,7 @@
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <!-- generate xml docs -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1701;1702;CS1570;CS1572;CS1573;CS1574;CS1587;CS1591;CS1710;CS1711</NoWarn>
+    <NoWarn>1701;1702;CS8632</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -147,5 +147,61 @@
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net472'">
     <DefineConstants>NETFULL</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='efc and WebApi|net472|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='efc and WebApi|net9.0|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='debug eav only|net472|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='debug eav only|net9.0|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Dbg Testing|net472|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Dbg Testing|net9.0|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Oqtane|net472|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Oqtane|net9.0|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugOqtane|net472|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugOqtane|net9.0|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugDnn|net472|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugDnn|net9.0|AnyCPU'">
+    <NoWarn>1701;1702;CS8632</NoWarn>
   </PropertyGroup>
 </Project>

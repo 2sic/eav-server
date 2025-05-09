@@ -67,11 +67,11 @@ public partial record EntityLight : IEntityLight
     /// <inheritdoc />
     public required DateTime Modified { get; init; }
 
-    public required EntityPartsBuilder PartsBuilder { get; init; }
+    public required EntityPartsLazy PartsLazy { get; init; }
 
     /// <inheritdoc />
     [JsonIgnore]
-    public IEntityRelationships Relationships => field ??= PartsBuilder.GetRelationshipDelegate(this);
+    public IEntityRelationships Relationships => field ??= PartsLazy.GetRelationshipDelegate(this);
 
 
     /// <inheritdoc />

@@ -19,19 +19,22 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     {
         if (Cache.TryGetValue(type, out var contentType))
             return contentType;
-        var created = Create(type, null, null, null);
+        var created = Create(type,  name: null, nameId: null, scope: null);
         Cache[type] = created;
         return created;
     }
 
     private static readonly Dictionary<Type, IContentType> Cache = new();
 
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     private IContentType Create(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
     {
         var l = Log.Fn<IContentType>(timer: true);
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
         var ctName = name ?? ctSpecs?.Name ?? type.Name;
-        var ctNameId = nameId ?? ctSpecs?.Guid.NullOrGetWith(g => Guid.TryParse(g, out var guid) ? guid.ToString() : null) ?? Guid.Empty.ToString();
+        var ctNameId = nameId
+                       ?? ctSpecs?.Guid.NullOrGetWith(g => Guid.TryParse(g, out var guid) ? guid.ToString() : null!)
+                       ?? Guid.Empty.ToString();
         var ctScope = scope ?? ctSpecs?.Scope ?? Scopes.Default;
 
         // Must be null if no metadata
@@ -78,9 +81,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         return l.Return(entity, "created");
     }
 
-    private (List<IContentTypeAttribute> attributes, List<IContentTypeAttribute> vAttributes) GenerateAttributes(Type type)
+    private (List<IContentTypeAttribute> attributes, List<IContentTypeAttribute>? vAttributes) GenerateAttributes(Type type)
     {
-        var l = Log.Fn<(List<IContentTypeAttribute> attributes, List<IContentTypeAttribute> vAttributes)>(timer: true);
+        var l = Log.Fn<(List<IContentTypeAttribute>, List<IContentTypeAttribute>?)>(timer: true);
         // Get all properties of the type
         var properties = type.GetProperties();
 
@@ -157,8 +160,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     /// Most properties like icon etc. are not important, so ATM it only does:
     /// - Description
     /// </summary>
-    #nullable enable   // Enables nullable annotations and warnings
-    private IEntity ContentTypeAttributeDetails(string? description, string? inputType)
+    private IEntity? ContentTypeAttributeDetails(string? description, string? inputType)
     {
         var l = Log.Fn<IEntity>();
         if (description == null && inputType == null)
@@ -174,9 +176,11 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         var attributes = attributeBuilder.Create(dic);
 
         // Create a Description entity
-        var entity = entityBuilder.Create(NoAppId, ctBuilder.Transient(NoAppId, AttributeMetadata.TypeGeneral, AttributeMetadata.TypeGeneral), attributes: attributes);
+        var entity = entityBuilder.Create(
+            NoAppId,
+            ctBuilder.Transient(NoAppId, AttributeMetadata.TypeGeneral, AttributeMetadata.TypeGeneral),
+            attributes: attributes);
         return l.Return(entity, "created");
     }
-    #nullable restore  // Restores the project-level nullable setting
 
 }

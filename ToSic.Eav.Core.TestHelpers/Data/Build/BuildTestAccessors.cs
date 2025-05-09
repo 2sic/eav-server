@@ -22,7 +22,7 @@ public static class BuildTestAccessors
         int version = default,
         bool isPublished = true,
         ITarget? metadataFor = default,
-        EntityPartsBuilder? partsBuilder = default
+        EntityPartsLazy? partsBuilder = default
     )
     {
         return dataBuilder.Entity.Create(appId: appId,

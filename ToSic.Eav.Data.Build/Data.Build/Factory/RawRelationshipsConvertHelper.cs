@@ -43,7 +43,7 @@ internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog
             .Where(x => x!=null)
             .ToList();
         var keyMap = itemsWithKeys
-            .SelectMany(pair => pair.Partner.Select(rk => new KeyValuePair<object, IEntity>(rk, pair.Entity)))
+            .SelectMany(pair => pair!.Partner.Select(rk => new KeyValuePair<object, IEntity>(rk, pair.Entity)))
             .ToList();
         if (keyMap.Any()) lazyRelationships.Add(keyMap);
 

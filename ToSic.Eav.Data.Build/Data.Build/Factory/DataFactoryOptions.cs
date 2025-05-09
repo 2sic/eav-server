@@ -120,42 +120,4 @@ public record DataFactoryOptions
 #endif
     }
 
-    //Important: Changed this to be a record in v19.01.
-
-    //Could be a breaking change, if this constructor below was used anywhere.Will assume that's not the case,
-
-    //but keep this comment in till 2024-07, then remove all this.
-    ///// <summary>
-    ///// Main Constructor to create such options.
-    ///// </summary>
-    ///// <param name="original">Optional initial object which would be used as a template when creating the new one.</param>
-    ///// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    ///// <param name="appId">Optional AppId to set on each generated Entity</param>
-    ///// <param name="typeName">Optional ContentTypeName to use instead of the default</param>
-    ///// <param name="titleField">Optional Title field to use instead of the default `Title`</param>
-    ///// <param name="autoId">Determines if items with ID 0 should get an automatic ID</param>
-    ///// <param name="idSeed">A root ID seed for numbering the items</param>
-    ///// <param name="withMetadata"></param>
-    ///// 
-    //public DataFactoryOptions(
-    //    DataFactoryOptions original = default,
-    //NoParamOrder noParamOrder = default,
-    //int? appId = default,
-    //string typeName = default,
-    //string titleField = default,
-    //bool? autoId = default,
-    //int? idSeed = default,
-    //bool? withMetadata = default,
-    //Type type = default
-    //) : this()
-    //{
-    //    AppId = appId ?? original?.AppId ?? 0;
-    //    TypeName = typeName ?? original?.TypeName ?? DataConstants.DataFactoryDefaultTypeName;
-    //    TitleField = titleField.UseFallbackIfNoValue(original?.TitleField).UseFallbackIfNoValue(Attributes.TitleNiceName);
-    //    AutoId = autoId ?? original?.AutoId ?? true;
-    //    IdSeed = idSeed ?? original?.IdSeed ?? 1;
-    //    AllowUnknownValueTypes = original?.AllowUnknownValueTypes ?? false;
-    //    WithMetadata = withMetadata ?? original?.WithMetadata ?? false;
-    //    Type = type;
-    //}
 }

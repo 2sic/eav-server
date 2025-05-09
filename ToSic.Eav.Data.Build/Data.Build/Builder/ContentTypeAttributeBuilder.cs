@@ -75,7 +75,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         name ??= original.Name;
         id ??= original.AttributeId;
         var realType = type ?? original.Type;
-        metadata ??= EntityPartsBuilder.CloneMetadataFunc<int>(original.Metadata, items: metadataItems,
+        metadata ??= EntityPartsLazy.CloneMetadataFunc<int>(original.Metadata, items: metadataItems,
             deferredSource: metaSourceFinder)(id.Value, $"{name} ({realType})");
 
         return Create(

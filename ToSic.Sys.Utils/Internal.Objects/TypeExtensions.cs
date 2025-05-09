@@ -15,12 +15,12 @@ public static class TypeExtensions
             : t;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool IsNumeric(this object o) => o is not null && o.GetType().IsNumeric();
+    public static bool IsNumeric(this object? o)
+        => o is not null && o.GetType().IsNumeric();
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool IsNumeric(this Type t)
-    {
-        return Type.GetTypeCode(t) switch
+        => Type.GetTypeCode(t) switch
         {
             TypeCode.Byte => true,
             TypeCode.SByte => true,
@@ -35,9 +35,8 @@ public static class TypeExtensions
             TypeCode.Single => true,
             _ => false
         };
-    }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static T GetDirectlyAttachedAttribute<T>(this Type type) where T : class
+    public static T? GetDirectlyAttachedAttribute<T>(this Type type) where T : class
         => type.GetCustomAttributes(typeof(T), false).FirstOrDefault() as T;
 }
