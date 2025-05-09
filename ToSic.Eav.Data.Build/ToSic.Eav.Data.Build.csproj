@@ -27,13 +27,20 @@
 
   <!-- Include assembly version info etc. -->
   <ItemGroup>
-    <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />
     <Compile Include="..\ToSic.Eav.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+  </ItemGroup>
+
+  <!-- Try to get Nullable to be ignored in .net Framework -->
+  <ItemGroup Condition="$(TargetFramework) == 'net472'">
+    <PackageReference Include="Nullable" Version="1.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 

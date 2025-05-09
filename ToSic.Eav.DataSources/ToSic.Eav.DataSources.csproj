@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />
+    <Compile Include="..\ToSic.Eav.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
   </ItemGroup>
 
   <ItemGroup>
