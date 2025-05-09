@@ -41,7 +41,7 @@ public class StartupTestsApps
             // DataSources
             .AddDataSources()
             // EAV Core
-            //.AddEavDataPersistence()
+            .AddEavDataPersistence()
             .AddEavDataBuild()
             .AddEavCore()
             .AddEavCoreFallbackServices()
