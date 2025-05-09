@@ -52,10 +52,12 @@ public static partial class EnumerableExtensions
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source,
-        Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer)
     {
-        if (source == null) throw new ArgumentNullException(nameof(source));
-        if (keySelector == null) throw new ArgumentNullException(nameof(keySelector));
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        if (keySelector == null)
+            throw new ArgumentNullException(nameof(keySelector));
 
         return _(); IEnumerable<TSource> _()
         {

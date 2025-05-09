@@ -22,7 +22,7 @@ public class AesConfiguration
     /// Salt to use with the Password
     /// </summary>
     public string Salt { get; set; }
-    public string Salt64 { get; set; }
+    public string? Salt64 { get; set; }
 
     public byte[] SaltBytes() => string.IsNullOrWhiteSpace(Salt64)
         ? Encoding.UTF8.GetBytes(Salt)
@@ -37,7 +37,9 @@ public class AesConfiguration
     public int KeySize { get; set; } = 256;
 
     public string InitializationVector { get; set; }
-    public string InitializationVector64 { get; set; }
+
+    public string? InitializationVector64 { get; set; }
+
     public byte[] InitializationVectorBytes() => string.IsNullOrWhiteSpace(InitializationVector64)
         ? Encoding.UTF8.GetBytes(InitializationVector)
         : Convert.FromBase64String(InitializationVector64);

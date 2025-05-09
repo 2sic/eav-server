@@ -8,7 +8,7 @@ public static class PathFixer
     public const string PathTraversalMayNotContainMessage = "may not contain '..' or '../' or similar path traversal.";
 
     // Check if a path contains a path traversal
-    public static bool ContainsPathTraversal(this string path)
+    public static bool ContainsPathTraversal(this string? path)
         => path?.Contains(PathTraversal) == true;
 
     /// <summary>
@@ -16,7 +16,7 @@ public static class PathFixer
     /// </summary>
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string Backslash(this string original)
+    public static string? Backslash(this string? original)
         => original?.Replace("/", "\\");
     // Additional replace too risky, breaks network paths like \\srv-xyz\
     // .Replace("\\\\", "\\");
@@ -26,35 +26,41 @@ public static class PathFixer
     /// Convert all "\" characters to "/" characters
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string ForwardSlash(this string original)
+    public static string? ForwardSlash(this string? original)
         => original?.Replace("\\", "/");
     // could break https:// links etc.
     // .Replace("//", "/").Replace("//", "/");
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string PrefixSlash(this string original)
+    public static string PrefixSlash(this string? original)
     {
-        if (original == null) return "/";
-        if (original.StartsWith("/")) return original;
-        if (original.StartsWith("\\")) original = original.TrimStart('\\');
+        if (original == null)
+            return "/";
+        if (original.StartsWith("/"))
+            return original;
+        if (original.StartsWith("\\"))
+            original = original.TrimStart('\\');
         return "/" + original;
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string SuffixSlash(this string original)
+    public static string SuffixSlash(this string? original)
     {
-        if (original == null) return "/";
-        if (original.EndsWith("/")) return original;
-        if (original.EndsWith("\\")) original = original.TrimEnd('\\');
+        if (original == null)
+            return "/";
+        if (original.EndsWith("/"))
+            return original;
+        if (original.EndsWith("\\"))
+            original = original.TrimEnd('\\');
         return original + "/";
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string TrimLastSlash(this string original)
+    public static string? TrimLastSlash(this string? original)
         => original?.TrimEnd('/').TrimEnd('\\');
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string TrimPrefixSlash(this string original)
+    public static string? TrimPrefixSlash(this string? original)
         => original?.TrimStart('/').TrimStart('\\');
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

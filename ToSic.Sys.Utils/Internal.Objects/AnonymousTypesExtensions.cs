@@ -42,7 +42,9 @@ public static class AnonymousTypesExtensions
         if (a is string) 
         {
             var d = new Dictionary<string, object>(caseInsensitive ? InvariantCultureIgnoreCase : null) { { "Value", a } };
-            return (mutable) ? d : d.ToImmutableDictionary(caseInsensitive ? InvariantCultureIgnoreCase : null);
+            return mutable
+                ? d
+                : d.ToImmutableDictionary(caseInsensitive ? InvariantCultureIgnoreCase : null);
         }
         
         var props = a.GetType().GetProperties();

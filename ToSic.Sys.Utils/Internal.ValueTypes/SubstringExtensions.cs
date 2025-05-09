@@ -24,7 +24,7 @@ public static class SubstringExtensions
     /// <param name="caseSensitive">Set to true if you need case-sensitive compare</param>
     /// <returns></returns>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string After(this string value, string key, bool caseSensitive = false)
+    public static string? After(this string value, string key, bool caseSensitive = false)
         => value.AfterInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase);
 
     // 2023-09-15 2dm removing, as it's now used from RazorBlade...
@@ -42,18 +42,24 @@ public static class SubstringExtensions
     //    => value.AfterInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase, true);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    private static string AfterInternal(this string value,
-        string key, 
+    private static string? AfterInternal(this string? value,
+        string? key, 
         StringComparison comparison,
         bool findLast = false, 
-        string fallback = null)
+        string? fallback = null)
     {
-        if (value == null || key == null) return fallback;
-        var posA = findLast ? value.LastIndexOf(key, comparison) : value.IndexOf(key, comparison);
-        if (posA == -1) return fallback;
+        if (value == null || key == null)
+            return fallback;
+        var posA = findLast
+            ? value.LastIndexOf(key, comparison)
+            : value.IndexOf(key, comparison);
+
+        if (posA == -1)
+            return fallback;
         var adjustedPosA = posA + key.Length;
         // If found but nothing left, return "" which is correct
-        if (adjustedPosA >= value.Length) return "";
+        if (adjustedPosA >= value.Length)
+            return "";
         return value.Substring(adjustedPosA);
     }
 
@@ -86,17 +92,21 @@ public static class SubstringExtensions
     //    => value.BeforeInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase, true);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    private static string BeforeInternal(this string value, string key, StringComparison comparison, bool findLast = false, string fallback = null)
+    private static string? BeforeInternal(this string? value, string? key, StringComparison comparison, bool findLast = false, string? fallback = null)
     {
-        if (value == null || key == null) return fallback;
-        var posA = findLast ? value.LastIndexOf(key, comparison) : value.IndexOf(key, comparison);
-        if (posA == -1) return fallback;
+        if (value == null || key == null)
+            return fallback;
+        var posA = findLast
+            ? value.LastIndexOf(key, comparison)
+            : value.IndexOf(key, comparison);
+        if (posA == -1)
+            return fallback;
         return value.Substring(0, posA);
     }
 
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string Between(this string value, string before, string after, bool goToEndIfEndNotFound = false, bool caseSensitive = false)
+    public static string? Between(this string value, string before, string after, bool goToEndIfEndNotFound = false, bool caseSensitive = false)
         => value.BetweenInternal(before, after, goToEndIfEndNotFound, null, caseSensitive ? Ordinal : InvariantCultureIgnoreCase);
 
 
@@ -104,21 +114,24 @@ public static class SubstringExtensions
     /// Get string value between [first] a and [last] b.
     /// </summary>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    private static string BetweenInternal(
-        this string value,
-        string before, 
-        string after,
+    private static string? BetweenInternal(
+        this string? value,
+        string? before, 
+        string? after,
         bool goToEndIfEndNotFound = false,
-        string fallback = null,
+        string? fallback = null,
         StringComparison comparison = InvariantCultureIgnoreCase
     )
     {
-        if (value == null || before == null || after == null) return fallback;
+        if (value == null || before == null || after == null)
+            return fallback;
 
         var trimStart = value.AfterInternal(before, comparison);
-        if (trimStart == null) return fallback;
+        if (trimStart == null)
+            return fallback;
         var result = trimStart.BeforeInternal(after, comparison);
-        if (result == null && goToEndIfEndNotFound) return trimStart;
+        if (result == null && goToEndIfEndNotFound)
+            return trimStart;
         return result;
     }
 }

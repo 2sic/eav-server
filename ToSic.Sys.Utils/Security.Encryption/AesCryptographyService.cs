@@ -14,10 +14,10 @@ namespace ToSic.Eav.Security.Encryption;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class AesCryptographyService(Rfc2898Generator keyGen) : ServiceBase("Eav.EncAes"), ICanDebug
 {
-    public EncryptionResult<string> EncryptToBase64(string value, AesConfiguration configuration = default)
+    public EncryptionResult<string> EncryptToBase64(string value, AesConfiguration? configuration = default)
         => Encrypt(value, configuration).ToBase64();
 
-    private EncryptionResult<byte[]> Encrypt(string value, AesConfiguration configuration = default)
+    private EncryptionResult<byte[]> Encrypt(string value, AesConfiguration? configuration = default)
     {
         var l = Log.Fn<EncryptionResult<byte[]>>(enabled: Debug);
         configuration ??= new(true);

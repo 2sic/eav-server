@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Lib.Helpers;
 
@@ -25,14 +24,14 @@ namespace ToSic.Eav.Security.Encryption
             return rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA256);
         }
 
-        public string PublicKey 
+        public string? PublicKey 
             => _genKeysInLock.Call(
                 conditionToGenerate: () => _publicKey == null,
                 generator: () => GetOrCreateKeys().publicKey,
                 cacheOrFallback: () => _publicKey
             ).Result;
 
-        private string PrivateKey
+        private string? PrivateKey
             => _genKeysInLock.Call(
                 conditionToGenerate: () => _privateKey == null,
                 generator: () => GetOrCreateKeys().privateKey,
@@ -54,8 +53,8 @@ namespace ToSic.Eav.Security.Encryption
 
             return (_publicKey, _privateKey);
         }
-        private string _publicKey;
-        private string _privateKey;
+        private string? _publicKey;
+        private string? _privateKey;
         private readonly TryLockTryDo _genKeysInLock = new();
 
         private void GenKeys()
@@ -121,8 +120,8 @@ namespace ToSic.Eav.Security.Encryption
             bitStringWriter.Write((byte)0x30); // SEQUENCE
             using var paramsStream = new MemoryStream();
             var paramsWriter = new BinaryWriter(paramsStream);
-            EncodeIntegerBigEndian(paramsWriter, parameters.Modulus); // Modulus
-            EncodeIntegerBigEndian(paramsWriter, parameters.Exponent); // Exponent
+            EncodeIntegerBigEndian(paramsWriter, parameters.Modulus!); // Modulus
+            EncodeIntegerBigEndian(paramsWriter, parameters.Exponent!); // Exponent
             var paramsLength = (int)paramsStream.Length;
             EncodeLength(bitStringWriter, paramsLength);
             bitStringWriter.Write(paramsStream.GetBuffer(), 0, paramsLength);

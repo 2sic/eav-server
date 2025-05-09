@@ -7,10 +7,9 @@ namespace ToSic.Eav.Data.Build;
 
 internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog) : HelperBase(parentLog, "Eav.RawRel")
 {
-#if NETCOREAPP
-    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
-#endif
-    private LogFilter RelationshipsToAttributesLogFilter => field ??= new(Log, logFirstMax: 25, reLogIteration: 100);
+    [field: AllowNull, MaybeNull]
+    private LogFilter RelationshipsToAttributesLogFilter => field
+        ??= new(Log, logFirstMax: 25, reLogIteration: 100);
 
     internal Dictionary<string, object> RelationshipsToAttributes(IDictionary<string, object> values, ILookup<object, IEntity> relationships)
     {
@@ -38,13 +37,17 @@ internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog
             {
                 var partner = pair.Partner as IHasRelationshipKeys;
                 var relKeys = partner?.RelationshipKeys(options)?.ToList();
-                return relKeys.SafeAny() ? new EntityPair<List<object>>(pair.Entity, relKeys) : null;
+                return relKeys.SafeAny()
+                    ? new EntityPair<List<object>>(pair.Entity, relKeys)
+                    : null;
             })
-            .Where(x => x!=null)
+            .Where(x => x != null)
             .ToList();
+
         var keyMap = itemsWithKeys
             .SelectMany(pair => pair!.Partner.Select(rk => new KeyValuePair<object, IEntity>(rk, pair.Entity)))
             .ToList();
+
         if (keyMap.Any()) lazyRelationships.Add(keyMap);
 
         l.Done($"Added {keyMap.Count}");

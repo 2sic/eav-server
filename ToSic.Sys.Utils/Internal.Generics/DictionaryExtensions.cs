@@ -62,11 +62,13 @@ public static class DictionaryExtensions
 
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool TryGetTyped<TResult, TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, out TResult result)
+    public static bool TryGetTyped<TResult, TKey, TValue>(this IDictionary<TKey, TValue>? source, TKey key, out TResult? result)
     {
         result = default;
-        if (source == null) return false;
-        if (!source.TryGetValue(key, out var innerResult)) return false;
+        if (source == null)
+            return false;
+        if (!source.TryGetValue(key, out var innerResult))
+            return false;
         //if (innerResult == null) return false;
         if (innerResult is not TResult typed) return false;
         result = typed;

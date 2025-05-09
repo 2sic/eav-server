@@ -174,7 +174,8 @@ public class WorkInputTypes(
                     // 2023-11-10 2dm - changed this to support new input-types based on guid-content-types
                     //it.NameId.TrimStart(FieldTypePrefix[0]),
                     md.GetBestValue<string>(nameof(InputTypes.Type), TypeForInputTypeDefinition)
-                        .UseFallbackIfNoValue(GetTypeName(it)).TrimStart(FieldTypePrefix[0]),
+                        .UseFallbackIfNoValue(GetTypeName(it))
+                        .TrimStart(FieldTypePrefix[0]),
                     md.GetBestValue<string>(nameof(InputTypes.Label), typesToCheckInThisOrder),
                     md.GetBestValue<string>(nameof(InputTypes.Description), typesToCheckInThisOrder),
                     md.GetBestValue<string>(nameof(InputTypes.Assets), TypeForInputTypeDefinition),
@@ -194,5 +195,8 @@ public class WorkInputTypes(
     private static List<InputTypeInfo> _presetInpTypeCache;
 
     public static string GetTypeName(IContentType t)
-        => (Guid.TryParse(t.NameId, out _) ? t.Name : t.NameId).TrimStart('@');
+        => (Guid.TryParse(t.NameId, out _)
+                ? t.Name
+                : t.NameId)
+            .TrimStart('@');
 }

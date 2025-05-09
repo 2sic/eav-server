@@ -35,9 +35,9 @@ public class AssemblyHandling
     /// <param name="typeFullName"></param>
     /// <param name="log"></param>
     /// <returns></returns>
-    public static Type GetTypeOrNull(string typeFullName, ILog? log = null)
+    public static Type? GetTypeOrNull(string typeFullName, ILog? log = null)
     {
-        var l = log.Fn<Type>(message: $"HasType {typeFullName}");
+        var l = log.Fn<Type?>(message: $"HasType {typeFullName}");
         return l.ReturnAsOk(GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
     }
 
@@ -84,11 +84,11 @@ public class AssemblyHandling
         {
             log.A($"had ReflectionTypeLoadException {e.Message} \n" +
                   "will continue with using Types.Where");
-            return e.Types.Where(t => t != null);
+            return e.Types.Where(t => t != null)!;
         }
         catch (Exception ex)
         {
-            log.A($"None of the types from assembly '{assembly?.FullName}' could be loaded.");
+            log.A($"None of the types from assembly '{assembly.FullName}' could be loaded.");
             log.Ex(ex);
             return [];
         }

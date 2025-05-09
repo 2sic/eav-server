@@ -6,6 +6,4 @@ public record EntitySavePublishing
     public bool ShouldPublish { get; init; } = true;
 
     public bool ShouldBranchDrafts { get; init; } = false;
-
-    public override string ToString() => $"ShouldPublish: {ShouldPublish}; ShouldBranchDrafts: {ShouldBranchDrafts}";
 }

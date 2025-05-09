@@ -1,9 +1,5 @@
 ﻿using static System.StringComparison;
 
-#if NETCOREAPP
-using System.Diagnostics.CodeAnalysis;
-#endif
-
 namespace ToSic.Eav.Plumbing;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -14,38 +10,27 @@ public static class StringExtensions
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool IsEmpty(
-#if NETCOREAPP
-        [NotNullWhen(false)]
-#endif
-        this string? value) => string.IsNullOrEmpty(value);
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool IsEmptyOrWs(
-#if NETCOREAPP
-        [NotNullWhen(false)]
-#endif
-        this string? value) => string.IsNullOrWhiteSpace(value);
+    public static bool IsEmpty([NotNullWhen(false)] this string? value)
+        => string.IsNullOrEmpty(value);
+    
+    public static bool IsEmptyOrWs([NotNullWhen(false)] this string? value)
+        => string.IsNullOrWhiteSpace(value);
 
     /// <summary>
     /// Has real value, so neither null, empty or white space.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static bool HasValue(
-#if !NETFRAMEWORK
-        [NotNullWhen(true)]
-#endif
-        this string? value)
+    public static bool HasValue([NotNullWhen(true)] this string? value)
         => !string.IsNullOrWhiteSpace(value);
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    // ReSharper disable once RedundantNullableFlowAttribute
+    [return: NotNullIfNotNull(nameof(fallback))]
     public static string UseFallbackIfNoValue(this string? value, string fallback)
         => !string.IsNullOrWhiteSpace(value) ? value : fallback;
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static string? NullIfNoValue(this string value) => value.HasValue() ? value : null;
+    public static string? NullIfNoValue(this string value)
+        => value.HasValue() ? value : null;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string[]? SplitNewLine(this string? value) 

@@ -7,18 +7,14 @@ partial class EnumerableExtensions
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool SafeAny<TSource>(
-#if !NETFRAMEWORK
-        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
-#endif
+        [NotNullWhen(true)]
         this IEnumerable<TSource>? source
     )
         => source?.Any() == true;
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static bool SafeNone<TSource>(
-#if !NETFRAMEWORK
-        [System.Diagnostics.CodeAnalysis.NotNullWhen(false)]
-#endif
+        [NotNullWhen(false)]
         this IEnumerable<TSource>? source
     )
         => source?.Any() != true;
