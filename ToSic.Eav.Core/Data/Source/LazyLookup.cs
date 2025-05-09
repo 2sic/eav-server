@@ -11,30 +11,19 @@ namespace ToSic.Eav.Data.Source;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class LazyLookup<TKey, TValue> : ILookup<TKey, TValue>
 {
-    public ILookup<TKey, TValue> Source => _source.Get(() => Raw.ToLookup(r => r.Key, r => r.Value));
-    private readonly GetOnce<ILookup<TKey, TValue>> _source = new();
+    public ILookup<TKey, TValue> Source
+    {
+        get => field ??= Raw.ToLookup(r => r.Key, r => r.Value);
+        private set => field = value;
+    }
 
     public List<KeyValuePair<TKey, TValue>> Raw = [];
-
-    public LazyLookup(/*ILookup<TKey, TValue> source = null*/)
-    {
-        //Source = /*source ??*/ Enumerable.Empty<TValue>().ToLookup(x => default(TKey), x => x);
-    }
-
-    //public void Update(ILookup<TKey, TValue> source) => Source = source;
-
-    public void Add(KeyValuePair<TKey, TValue> item)
-    {
-        Raw.Add(item);
-        _source.Reset();
-    }
 
     public void Add(IEnumerable<KeyValuePair<TKey, TValue>> values)
     {
         Raw.AddRange(values);
-        _source.Reset();
+        Source = null;
     }
-
 
     #region IEnumerable
     public IEnumerator<IGrouping<TKey, TValue>> GetEnumerator() => Source.GetEnumerator();
