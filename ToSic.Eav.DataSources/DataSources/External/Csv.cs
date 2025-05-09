@@ -182,7 +182,7 @@ public class Csv : CustomDataSourceAdvanced
 
             // Parse header - must happen after the first read
             parser.Read();
-            var headers = parser.Record;
+            var headers = parser.Record ?? [];
 
             // If we should find the Column...
             if (!string.IsNullOrEmpty(idColumnName))
@@ -225,7 +225,7 @@ public class Csv : CustomDataSourceAdvanced
             // Parse data
             while (parser.Read())
             {
-                var fields = parser.Record;
+                var fields = parser.Record ?? [];
 
                 int entityId;
                 // No ID column specified, so use the row number

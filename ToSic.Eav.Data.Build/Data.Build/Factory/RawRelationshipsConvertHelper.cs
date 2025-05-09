@@ -7,6 +7,9 @@ namespace ToSic.Eav.Data.Build;
 
 internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog) : HelperBase(parentLog, "Eav.RawRel")
 {
+#if NETCOREAPP
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+#endif
     private LogFilter RelationshipsToAttributesLogFilter => field ??= new(Log, logFirstMax: 25, reLogIteration: 100);
 
     internal Dictionary<string, object> RelationshipsToAttributes(IDictionary<string, object> values, ILookup<object, IEntity> relationships)

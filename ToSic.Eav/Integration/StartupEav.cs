@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.Integration;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Startup;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
@@ -42,6 +43,7 @@ public static class StartupEav
             .AddDataSources()
             // EAV Core
             .AddEavDataPersistence()
+            .AddEavDataBuild()
             .AddEavCore()
             .AddEavCoreFallbackServices()
             // Library

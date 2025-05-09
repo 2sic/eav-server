@@ -29,6 +29,7 @@
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
   </ItemGroup>
 
+  <!-- Include assembly version info etc. -->
   <ItemGroup>
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />

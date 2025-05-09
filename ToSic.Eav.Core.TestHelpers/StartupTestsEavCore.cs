@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.StartUp;
 using ToSic.Lib;
 #pragma warning disable CA1822
@@ -20,6 +21,7 @@ public class StartupTestsEavCore
     public void ConfigureServices(IServiceCollection services) =>
         services
             //.AddEavDataPersistence()
+            .AddEavDataBuild()
             .AddEavCore()
             .AddEavCoreFallbackServices()
             .AddLibCore();

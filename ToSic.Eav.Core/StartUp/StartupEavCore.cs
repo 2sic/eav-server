@@ -17,8 +17,6 @@ using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Internal.Unknown;
-using ToSic.Eav.LookUp;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
@@ -35,7 +33,7 @@ public static class StartUpEavCore
     public static IServiceCollection AddEavCore(this IServiceCollection services)
     {
         // Data Builder & Converters
-        services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
+        //services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
         services.TryAddTransient<DataBuilder>();
         services.TryAddTransient<DimensionBuilder>();
         services.TryAddTransient<AttributeBuilder>();
@@ -46,7 +44,6 @@ public static class StartUpEavCore
         services.TryAddTransient<ContentTypeFactory>();
 
         // Configuration objects
-        //services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
         services.TryAddTransient<IDbConfiguration, DbConfiguration>();
         services.TryAddTransient<GlobalPaths>();
         services.TryAddTransient<SystemLoader>();
