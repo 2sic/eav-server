@@ -51,10 +51,10 @@ partial class DbContentType
         // to use existing attribute Set, do some minimal conflict-checking
         else
         {
-            DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information, $"AttributeSet already exists{contentType.NameId}|{contentType.Name}"));
+            DbContext.ImportLogToBeRefactored.Add(new($"AttributeSet already exists{contentType.NameId}|{contentType.Name}", Message.MessageTypes.Information));
             if (destinationSet.InheritContentTypeId.HasValue)
             {
-                DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Error, "Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.NameId));
+                DbContext.ImportLogToBeRefactored.Add(new("Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.NameId, Message.MessageTypes.Error));
                 return null;
             }
         }

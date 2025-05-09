@@ -5,6 +5,7 @@ using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
+using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Lib.Internal.Generics;
 using Entity = ToSic.Eav.Data.Entity;
@@ -277,7 +278,7 @@ public class ImportService(
 
         if (contentType == null) // AttributeSet not Found
         {
-            Storage.ImportLogToBeRefactored.Add(new(EventLogEntryType.Error, $"ContentType not found for {update.Type.NameId}"));
+            Storage.ImportLogToBeRefactored.Add(new($"ContentType not found for {update.Type.NameId}", Message.MessageTypes.Error));
             return l.ReturnNull("error");
         }
 
@@ -297,8 +298,7 @@ public class ImportService(
         if (existingEntities == null || !existingEntities.Any())
             return l.Return(dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
-        Storage.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information,
-            $"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}"));
+        Storage.ImportLogToBeRefactored.Add(new($"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}", Message.MessageTypes.Information));
 
         // now update (main) entity id from existing - since it already exists
         var original = existingEntities.First();

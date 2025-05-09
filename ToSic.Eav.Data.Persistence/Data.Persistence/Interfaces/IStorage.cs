@@ -56,7 +56,7 @@ public interface IStorage: IHasLog
 
 
     #region Logging (old / import)
-    List<LogItem> ImportLogToBeRefactored { get; }
+    List<Message> ImportLogToBeRefactored { get; }
     #endregion
 
 

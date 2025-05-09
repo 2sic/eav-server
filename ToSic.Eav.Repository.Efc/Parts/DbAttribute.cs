@@ -33,7 +33,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
         }
         else
         {
-            DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Information, "Attribute already exists" + newAtt.Name));
+            DbContext.ImportLogToBeRefactored.Add(new("Attribute already exists" + newAtt.Name, Message.MessageTypes.Information) );
             destAttribId = AttributeId(contentTypeId, newAtt.Name);
         }
         return destAttribId;

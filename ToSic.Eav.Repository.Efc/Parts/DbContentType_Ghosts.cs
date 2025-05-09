@@ -83,10 +83,10 @@ partial class DbContentType
 
         // If multiple masters are found, use first and add a warning message
         if (ghostAttributeSets.Count > 1)
-            DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Warning, $"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}"));
+            DbContext.ImportLogToBeRefactored.Add(new($"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}", Message.MessageTypes.Warning));
 
         // nothing found - report error
-        DbContext.ImportLogToBeRefactored.Add(new(EventLogEntryType.Warning, $"AttributeSet not imported because master set not found: {contentTypeParentName}"));
+        DbContext.ImportLogToBeRefactored.Add(new($"AttributeSet not imported because master set not found: {contentTypeParentName}", Message.MessageTypes.Warning));
         return 0;
     }
 

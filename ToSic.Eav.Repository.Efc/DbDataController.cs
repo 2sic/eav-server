@@ -91,7 +91,7 @@ public class DbDataController(
     #endregion
 
 
-    public List<LogItem> ImportLogToBeRefactored { get; } = [];
+    public List<Message> ImportLogToBeRefactored { get; } = [];
 
 
     #region Constructor and Init

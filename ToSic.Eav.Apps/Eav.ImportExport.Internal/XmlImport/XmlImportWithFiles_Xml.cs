@@ -65,7 +65,7 @@ partial class XmlImportWithFiles
         l.A($"Purging {ZoneId}/{AppId}");
         Services.AppCachePurger.Purge(ZoneId, AppId);
 
-        Messages.AddRange(GetExportImportMessagesFromImportLog(import.Storage.ImportLogToBeRefactored));
+        Messages.AddRange(import.Storage.ImportLogToBeRefactored);
 
         return l.ReturnTrue("done");
     }

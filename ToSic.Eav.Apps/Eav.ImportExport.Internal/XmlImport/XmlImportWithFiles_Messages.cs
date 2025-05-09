@@ -17,20 +17,5 @@ partial class XmlImportWithFiles
         Messages.Add(new(message, Message.MessageTypes.Error));
         return "error";
     }
-
-    /// <summary>
-    /// Maps EAV import messages to 2sxc import messages
-    /// </summary>
-    /// <param name="importLog"></param>
-    /// <returns></returns>
-    private IEnumerable<Message> GetExportImportMessagesFromImportLog(List<LogItem> importLog)
-        => importLog.Select(l => new Message(l.Message,
-            l.EntryType == EventLogEntryType.Error
-                ? Message.MessageTypes.Error
-                : l.EntryType == EventLogEntryType.Information
-                    ? Message.MessageTypes.Information
-                    : Message.MessageTypes.Warning
-        ));
-		
-
+    
 }
