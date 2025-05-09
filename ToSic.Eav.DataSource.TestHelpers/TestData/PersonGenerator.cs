@@ -107,6 +107,6 @@ internal class PersonGenerator(DataBuilder dataBuilder)
             ? (object) original
             : dataBuilder.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
             {
-                dataBuilder.Value.BuildTac(type, original, DimensionBuilder.NoLanguages),
+                dataBuilder.Value.BuildTac(type, original, DataConstants.NoLanguages),
             });
 }

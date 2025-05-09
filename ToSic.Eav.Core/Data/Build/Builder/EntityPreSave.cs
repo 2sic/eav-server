@@ -7,15 +7,15 @@
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public static class EntityPreSave
 {
+    public static int? GetInternalPublishedIdForSaving(this Entity entity)
+        => entity.PublishedEntityId;
 
-
-    public static int? GetInternalPublishedIdForSaving(this Entity entity) => entity.PublishedEntityId;
-        
-    public static List<ILanguage> GetUsedLanguages(this IEntity entity) => entity.Attributes?.Values
-        .SelectMany(v => v.Values)
-        .SelectMany(vl => vl.Languages)
-        .GroupBy(l => l.Key)
-        .Select(g => g.First())
-        .ToList() ?? DataConstants.NoLanguages.ToList();
+    public static List<ILanguage> GetUsedLanguages(this IEntity entity)
+        => entity.Attributes?.Values
+            .SelectMany(v => v.Values)
+            .SelectMany(vl => vl.Languages)
+            .GroupBy(l => l.Key)
+            .Select(g => g.First())
+            .ToList() ?? DataConstants.NoLanguages.ToList();
 
 }

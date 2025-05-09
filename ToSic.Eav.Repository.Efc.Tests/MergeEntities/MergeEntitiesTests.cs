@@ -203,7 +203,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
                 new List<ILanguage> { langDeDe, langFr }),
             dataBuilder.Value.BuildTac(ValueTypes.String, "File FR", new List<ILanguage> {langFr }),
             // special test - empty language item
-            dataBuilder.Value.BuildTac(ValueTypes.String, "File without language!", DimensionBuilder.NoLanguages.ToList()),
+            dataBuilder.Value.BuildTac(ValueTypes.String, "File without language!", DataConstants.NoLanguages.ToList()),
             dataBuilder.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
         });
 

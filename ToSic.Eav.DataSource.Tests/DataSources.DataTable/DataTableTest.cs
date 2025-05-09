@@ -21,7 +21,7 @@ public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilde
             var x = ds["Something"];
             Fail("Access to another out should fail");
         }
-        catch { }
+        catch { /* ignore */ }
         True(defaultOut.ListTac().Count() == itemsToGenerate);
     }
 
@@ -32,6 +32,7 @@ public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilde
         var ds = dataTablePerson.Generate(itemsToGenerate);
 
         //var expKey = "DataTable:NoGuid&TitleField=FullName&EntityIdField=EntityId&ModifiedField=InternalModified&ContentType=Person";
+        // ReSharper disable once StringLiteralTypo
         var expKey = "DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName";
         Equal(expKey, ds.CachePartialKey);
         Equal(expKey, ds.CacheFullKey);
@@ -46,7 +47,7 @@ public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilde
         var ds = new DataTableTrivial(dsSvc, dataBuilder).Generate(itemsToGenerate);
 
         Equal(25, ds.ListTac().Count());
-        var first = ds.ListTac().FirstOrDefault();
+        var first = ds.ListTac().First();
         Equal("Daniel Mettler", first.GetBestTitle());
     }
 
