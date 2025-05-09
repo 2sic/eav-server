@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuilderGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
+internal class DataFactory(DataBuilder builder, Generator<DataBuilder, DataBuilderOptions> dataBuilderGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
     : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
 {
     #region Properties to configure Builder / Defaults
@@ -25,13 +25,15 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
             : builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
 
     [field: AllowNull, MaybeNull]
-    public DataFactoryOptions Options => field ?? throw new($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
+    public DataFactoryOptions Options
+    {
+        get => field ?? throw new($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
+        set => field = value;
+    }
 
 
     private DateTime Created { get; } = DateTime.Now;
     private DateTime Modified { get; } = DateTime.Now;
-
-    private RawConvertOptions RawConvertOptions { get; } = new();
 
     /// <summary>
     /// The relationships which will usually be filled after creating all entities.
@@ -51,21 +53,19 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
     public IDataFactory New(
         NoParamOrder noParamOrder = default,
         DataFactoryOptions? options = default,
-        ILookup<object, IEntity>? relationships = default,
-        RawConvertOptions? rawConvertOptions = default
+        ILookup<object, IEntity>? relationships = default
     )
     {
-        var freshBuilder = dataBuilderGenerator.New();
-        freshBuilder.Options = new()
+        var freshBuilder = dataBuilderGenerator.New(new()
         {
             AllowUnknownValueTypes = options?.AllowUnknownValueTypes ?? false
-        };
-        var clone = new DataFactory(freshBuilder,
+        });
+        var clone = new DataFactory(
+            freshBuilder,
             dataBuilderGenerator,
             ctFactoryLazy,
             options: options,
-            relationships: relationships,
-            rawConvertOptions: rawConvertOptions
+            relationships: relationships
         );
         if ((Log as Log)?.Parent != null)
             clone.LinkLog(((Log)Log).Parent);
@@ -77,20 +77,16 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
     /// </summary>
     private DataFactory(
         DataBuilder builder,
-        Generator<DataBuilder> dataBuilderGenerator,
+        Generator<DataBuilder, DataBuilderOptions> dataBuilderGenerator,
         LazySvc<ContentTypeFactory> ctFactoryLazy,
         DataFactoryOptions? options = default,
-        ILookup<object, IEntity>? relationships = default,
-        RawConvertOptions? rawConvertOptions = default
+        ILookup<object, IEntity>? relationships = default
     ): this (builder, dataBuilderGenerator, ctFactoryLazy)
     {
         // Store settings
         Options = options ?? new();
 
         IdCounter = Options.IdSeed;
-
-        if (rawConvertOptions != null)
-            RawConvertOptions = rawConvertOptions;
 
         // Determine what relationships source to use
         // If we got a lazy, use that and mark as lazy
@@ -121,7 +117,7 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
         // Pre-process relationship keys, so they are added to the lookup
         var list = rawList.ToList();
         if (Relationships is LazyLookup<object, IEntity> lazyRelationships)
-            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, RawConvertOptions);
+            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, Options.RawConvertOptions);
 
         // Return entities as Immutable list
         return l.Return(list.Select(set => set.Entity).ToImmutableList());
@@ -220,7 +216,7 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
             ? new EntityPartsLazy(null, (_, _) => (rawEntity as RawEntity)?.Metadata)
             : null;
         return Create(
-            rawEntity.Attributes(RawConvertOptions),
+            rawEntity.Attributes(Options.RawConvertOptions),
             id: rawEntity.Id,
             guid: rawEntity.Guid,
             created: rawEntity.Created,

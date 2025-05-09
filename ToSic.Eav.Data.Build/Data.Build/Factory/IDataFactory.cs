@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Raw;
 using ToSic.Lib.Coding;
+using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -12,7 +13,7 @@ namespace ToSic.Eav.Data.Build;
 /// * Added in v15 to replace the previous IDataBuilder
 /// </remarks>
 [PublicApi]
-public interface IDataFactory
+public interface IDataFactory: INeedsOptions<DataFactoryOptions>
 {
     /// <summary>
     /// A counter for the ID in case the data provided doesn't have an ID to use.
@@ -40,13 +41,11 @@ public interface IDataFactory
     /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="options">All the options which are relevant for the DataFactory</param>
     /// <param name="relationships"></param>
-    /// <param name="rawConvertOptions">Optional special options which create-raw might use</param>
     /// <returns>Itself, to make call chaining easier</returns>
     IDataFactory New(
         NoParamOrder noParamOrder = default,
         DataFactoryOptions? options = default,
-        ILookup<object, IEntity>? relationships = default,
-        RawConvertOptions? rawConvertOptions = default);
+        ILookup<object, IEntity>? relationships = default);
 
     #region Simple Create
 

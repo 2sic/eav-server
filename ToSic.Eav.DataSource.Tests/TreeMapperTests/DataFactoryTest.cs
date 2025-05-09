@@ -3,12 +3,12 @@
 namespace ToSic.Eav.TreeMapperTests;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
-public class DataFactoryTest(IDataFactory dataFactory)
+public class DataFactoryTest(IGenerator<IDataFactory, DataFactoryOptions> dataFactoryGenerator)
 {
     [Fact]
     public void ChildrenRelationships()
     {
-        var builder = dataFactory.New();
+        var builder = dataFactoryGenerator.New(new());
 
         var parentRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, [101, 102]);
 

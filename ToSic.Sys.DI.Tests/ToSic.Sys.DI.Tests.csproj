@@ -7,6 +7,15 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <RootNamespace>ToSic.Lib.DI</RootNamespace>
+
+    <!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <!-- end: don't generate -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,5 +39,12 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ToSic.Sys.Core\Properties\LibAssemblyInfo.cs" Link="Properties\LibAssemblyInfo.cs" />
+    <Compile Include="..\ToSic.Sys.Core\Properties\LibAssemblyInfoInherited.cs" Link="Properties\LibAssemblyInfoInherited.cs" />
+    <Compile Include="..\ToSic.Sys.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+  </ItemGroup>
+
 
 </Project>

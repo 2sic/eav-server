@@ -6,7 +6,7 @@ using ToSic.Lib.DI;
 namespace ToSic.Lib;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public static class StartUp
+public static class StartUpLibCore
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static IServiceCollection AddLibCore(this IServiceCollection services)

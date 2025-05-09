@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Plumbing;
+﻿using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -120,4 +121,17 @@ public record DataFactoryOptions
 #endif
     }
 
+    /// <summary>
+    /// Optional special options which create-raw might use.
+    /// </summary>
+    [field: AllowNull, MaybeNull]
+    public RawConvertOptions RawConvertOptions
+    {
+        get => field ??= new();
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
+        set => field = value;
+#else
+        init => field = value;
+#endif
+    }
 }

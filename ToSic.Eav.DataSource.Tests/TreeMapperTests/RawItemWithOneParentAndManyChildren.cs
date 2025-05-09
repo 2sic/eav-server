@@ -2,28 +2,19 @@
 
 namespace ToSic.Eav.TreeMapperTests;
 
-internal class RawItemWithOneParentAndManyChildren: IRawEntity, IHasRelationshipKeys
+internal class RawItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int>? childrenIds)
+    : IRawEntity, IHasRelationshipKeys
 {
-    public RawItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int> childrenIds)
-    {
-        Id = id;
-        Guid = guid;
-        Created = DateTime.Now;
-        Modified = DateTime.Now;
-        ParentId = parentId;
-        ChildrenIds = childrenIds;
-    }
-
-    public int Id { get;  }
-    public Guid Guid { get;  }
-    public DateTime Created { get; }
-    public DateTime Modified { get; }
+    public int Id { get;  } = id;
+    public Guid Guid { get;  } = guid;
+    public DateTime Created { get; } = DateTime.Now;
+    public DateTime Modified { get; } = DateTime.Now;
 
     public string Title => $"Auto-Title {Id} / {Guid}";
 
-    public int ParentId { get; }
+    public int ParentId { get; } = parentId;
 
-    public List<int> ChildrenIds { get; }
+    public List<int>? ChildrenIds { get; } = childrenIds;
 
     public IDictionary<string, object> Attributes(RawConvertOptions options) => new Dictionary<string, object>
     {

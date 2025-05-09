@@ -17,7 +17,8 @@ public class DataBuilder(
         connect:
         [
             entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder, builderGen
-        ])
+        ]),
+        INeedsOptions<DataBuilderOptions>
 {
     /// <summary>
     /// WIP, should replace the New below...
