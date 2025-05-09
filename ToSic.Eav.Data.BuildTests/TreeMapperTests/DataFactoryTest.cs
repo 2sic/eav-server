@@ -1,6 +1,8 @@
 ﻿using ToSic.Eav.Data.Build;
 
-namespace ToSic.Eav.TreeMapperTests;
+namespace ToSic.Eav.Data.BuildTests.TreeMapperTests;
+
+// TODO: CHANGE STARTUP TO NOT USE THE OTHER PROJECT WHICH IT PROBABLY DOESN'T NEED
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class DataFactoryTest(IGenerator<IDataFactory, DataFactoryOptions> dataFactoryGenerator)

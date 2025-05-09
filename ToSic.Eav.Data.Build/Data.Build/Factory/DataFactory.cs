@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class DataFactory(DataBuilder builder, Generator<DataBuilder, DataBuilderOptions> dataBuilderGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
+internal class DataFactory(DataBuilder builder, IGenerator<DataBuilder, DataBuilderOptions> dataBuilderGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
     : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
 {
     #region Properties to configure Builder / Defaults
@@ -77,7 +77,7 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder, DataBuild
     /// </summary>
     private DataFactory(
         DataBuilder builder,
-        Generator<DataBuilder, DataBuilderOptions> dataBuilderGenerator,
+        IGenerator<DataBuilder, DataBuilderOptions> dataBuilderGenerator,
         LazySvc<ContentTypeFactory> ctFactoryLazy,
         DataFactoryOptions? options = default,
         ILookup<object, IEntity>? relationships = default
