@@ -22,6 +22,7 @@ public class DataBuilder(
     /// <summary>
     /// WIP, should replace the New below...
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public DataBuilderOptions Options
     {
         get => field ??= new();

@@ -220,9 +220,9 @@ partial class JsonSerializer
 
     private static IImmutableList<ILanguage> RecreateLanguageList(string languages) 
         => languages == NoLanguage
-            ? DimensionBuilder.NoLanguages
+            ? DataConstants.NoLanguages
             : languages.Split(',')
-                .Select(a => new Language(a.Replace(ReadOnlyMarker, ""), a.StartsWith(ReadOnlyMarker)) as ILanguage)
+                .Select(ILanguage (a) => new Language(a.Replace(ReadOnlyMarker, ""), a.StartsWith(ReadOnlyMarker)))
                 .ToImmutableList();
 
 

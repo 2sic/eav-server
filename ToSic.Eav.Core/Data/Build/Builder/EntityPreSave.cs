@@ -16,6 +16,6 @@ public static class EntityPreSave
         .SelectMany(vl => vl.Languages)
         .GroupBy(l => l.Key)
         .Select(g => g.First())
-        .ToList() ?? DimensionBuilder.NoLanguages.ToList();
+        .ToList() ?? DataConstants.NoLanguages.ToList();
 
 }

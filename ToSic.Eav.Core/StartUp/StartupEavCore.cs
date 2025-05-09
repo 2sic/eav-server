@@ -34,14 +34,14 @@ public static class StartUpEavCore
     {
         // Data Builder & Converters
         //services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
-        services.TryAddTransient<DataBuilder>();
-        services.TryAddTransient<DimensionBuilder>();
-        services.TryAddTransient<AttributeBuilder>();
-        services.TryAddTransient<EntityBuilder>();
-        services.TryAddTransient<ValueBuilder>();
-        services.TryAddTransient<ContentTypeBuilder>();
-        services.TryAddTransient<ContentTypeAttributeBuilder>();
-        services.TryAddTransient<ContentTypeFactory>();
+        //services.TryAddTransient<DataBuilder>();
+        //services.TryAddTransient<DimensionBuilder>();
+        //services.TryAddTransient<AttributeBuilder>();
+        //services.TryAddTransient<EntityBuilder>();
+        //services.TryAddTransient<ValueBuilder>();
+        //services.TryAddTransient<ContentTypeBuilder>();
+        //services.TryAddTransient<ContentTypeAttributeBuilder>();
+        //services.TryAddTransient<ContentTypeFactory>();
 
         // Configuration objects
         services.TryAddTransient<IDbConfiguration, DbConfiguration>();

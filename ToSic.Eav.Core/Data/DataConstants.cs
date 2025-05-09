@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data;
+﻿using System.Collections.Immutable;
+
+namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Constants for general data creation, manipulation etc.
@@ -34,4 +36,9 @@ public class DataConstants
         "There should be more details in the insights logs, see https://go.2sxc.org/insights";
 
     #endregion
+
+    // Note: can't be a new ImmutableArray<ILanguage>() because that causes problems!
+    // Not sure why, but it complains that it can't tolist it
+    public static IImmutableList<ILanguage> NoLanguages = ImmutableList<ILanguage>.Empty;
+
 }

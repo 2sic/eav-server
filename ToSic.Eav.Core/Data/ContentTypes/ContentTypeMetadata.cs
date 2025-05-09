@@ -17,7 +17,7 @@ public class ContentTypeMetadata : MetadataOf<string>
     /// <param name="items"></param>
     /// <param name="deferredSource">remote / deferred metadata provider</param>
     /// <param name="title"></param>
-    internal ContentTypeMetadata(string typeId, List<IEntity> items, Func<IHasMetadataSourceAndExpiring> deferredSource, string title)
+    public ContentTypeMetadata(string typeId, List<IEntity> items, Func<IHasMetadataSourceAndExpiring> deferredSource, string title)
         : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, items: items, deferredSource: deferredSource)
     {
     }

@@ -20,7 +20,7 @@ public record Value<T> : IValue<T>
     internal Value(T typedContents, IImmutableList<ILanguage> languages = null)
     {
         TypedContents = typedContents;
-        LanguagesImmutable = languages ?? DimensionBuilder.NoLanguages;
+        LanguagesImmutable = languages ?? DataConstants.NoLanguages;
     }
 
     public T TypedContents { get; }
@@ -31,7 +31,7 @@ public record Value<T> : IValue<T>
 
     public IImmutableList<ILanguage> LanguagesImmutable
     {
-        get => field ??= DimensionBuilder.NoLanguages;
+        get => field ??= DataConstants.NoLanguages;
         init => field = value;
     }
 

@@ -8,11 +8,6 @@ public class DimensionBuilder
 {
     public Language CreateFrom(ILanguage orig, bool? readOnly) => new(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
 
-    // Note: can't be a new ImmutableArray<ILanguage>() because that causes problems!
-    // Not sure why, but it complains that it can't tolist it
-    public static IImmutableList<ILanguage> NoLanguages = ImmutableList<ILanguage>.Empty;
-
-
     public ImmutableList<ILanguage> Merge(IEnumerable<ILanguage> languages, List<ILanguage> updates)
     {
         languages = languages.ToList();

@@ -95,9 +95,9 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
     /// <returns>
     /// An IValue, which is actually an IValue{string}, IValue{decimal}, IValue{IEnumerable{IEntity}} etc.
     /// </returns>
-    public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage> languages = null)
+    public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage>? languages = null)
     {
-        var langs = languages ?? DimensionBuilder.NoLanguages;
+        var langs = languages ?? DataConstants.NoLanguages;
         var stringValue = value as string;
         try
         {

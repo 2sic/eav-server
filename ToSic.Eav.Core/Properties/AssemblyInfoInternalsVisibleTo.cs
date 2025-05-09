@@ -8,3 +8,7 @@
 [assembly: InternalsVisibleTo("ToSic.Sxc")]
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Testing.FullDbFixtures")]
+
+
+// The build API must be able to access some internal stuff
+[assembly: InternalsVisibleTo("ToSic.Eav.Data.Build")]
