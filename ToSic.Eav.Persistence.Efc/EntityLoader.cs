@@ -1,10 +1,12 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Persistence.Efc.Intermediate;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder) : HelperBase(efcAppLoader.Log, "Efc.EntLdr")
+internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, IEavFeaturesService featuresSvc)
+    : HelperBase(efcAppLoader.Log, "Efc.EntLdr")
 {
     public const int IdChunkSize = 5000;
     public const int MaxLogDetailsCount = 250;
@@ -46,7 +48,7 @@ internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializ
         var rawEntities = LoadRaw(appId, entityIds);
         sqlTime.Stop();
 
-        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, rawEntities, efcAppLoader.Features, Log);
+        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, rawEntities, featuresSvc, Log);
 
         var relLoader = new RelationshipLoader(efcAppLoader, detailsLoadSpecs);
         var relatedEntities = relLoader.LoadRelationships();

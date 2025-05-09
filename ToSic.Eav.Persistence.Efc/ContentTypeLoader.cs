@@ -11,7 +11,8 @@ internal class ContentTypeLoader(
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
     Generator<IDataDeserializer> dataDeserializer,
     DataBuilder dataBuilder,
-    IAppStateCacheService appStates)
+    IAppStateCacheService appStates,
+    IEavFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
     internal IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)
@@ -129,7 +130,7 @@ internal class ContentTypeLoader(
             })
             .ToList();
 
-        var optimize = efcAppLoader.Features.IsEnabled(BuiltInFeatures.SqlLoadPerformance);
+        var optimize = featuresSvc.IsEnabled(BuiltInFeatures.SqlLoadPerformance);
 
         // Filter out Nulls, as they are not relevant and cause problems with Entity Framework 8.0.8
         var sharedAttribIds = optimize
