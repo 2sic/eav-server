@@ -33,9 +33,12 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
 
     private RawConvertOptions RawConvertOptions { get; } = new();
 
+    /// <summary>
+    /// The relationships which will usually be filled after creating all entities.
+    /// They are either a list provided by outside, or a lazy list which will then be filled.
+    /// </summary>
     [field: AllowNull, MaybeNull]
-    public ILookup<object, IEntity> Relationships => field ?? _lazyRelationships;
-    private readonly LazyLookup<object, IEntity> _lazyRelationships = new();
+    public ILookup<object, IEntity> Relationships => field ??= new LazyLookup<object, IEntity>();
 
     [field: AllowNull, MaybeNull]
     private RawRelationshipsConvertHelper RelsConvertHelper => field ??= new(builder, Log);
@@ -94,7 +97,7 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
         // If we got a normal one, preserve it as it should be the master and not use the lazy ones
         // which must be created anyway to avoid errors in later code
         if (relationships is LazyLookup<object, IEntity> relationshipsAsLazy)
-            _lazyRelationships = relationshipsAsLazy;
+            Relationships = relationshipsAsLazy;
         else
             Relationships = relationships ?? new LazyLookup<object, IEntity>();  // will be null or a real value
     }
@@ -117,7 +120,8 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
 
         // Pre-process relationship keys, so they are added to the lookup
         var list = rawList.ToList();
-        RelsConvertHelper.AddRelationshipsToLookup(list, _lazyRelationships, RawConvertOptions);
+        if (Relationships is LazyLookup<object, IEntity> lazyRelationships)
+            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, RawConvertOptions);
 
         // Return entities as Immutable list
         return l.Return(list.Select(set => set.Entity).ToImmutableList());
