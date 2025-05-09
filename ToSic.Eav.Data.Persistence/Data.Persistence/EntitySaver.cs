@@ -137,7 +137,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
     private IAttribute CreateIsPublishedAttribute(bool isPublished)
     {
-        var values = new List<IValue> { dataBuilder.Value.Bool(isPublished) };
+        var values = new List<IValue> { dataBuilder.Value.Bool(isPublished, []) };
         var attribute = dataBuilder.Attribute.Create(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
         return attribute;
     }

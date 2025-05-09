@@ -22,16 +22,19 @@ partial class ValueBuilder
     public IValue Relationship(List<Guid?> guids, IEntitiesSource fullLookupList) => 
         new Value<IEnumerable<IEntity>>(new LazyEntitiesSource(fullLookupList, guids));
 
-    public IValue RelationshipWip(object value, IEntitiesSource fullEntityListForLookup)
+    public IValue RelationshipWip(object? value, IEntitiesSource? fullEntityListForLookup)
     {
         var rel = GetLazyEntitiesForRelationship(value, fullEntityListForLookup);
         return new Value<IEnumerable<IEntity>>(rel);
     }
 
-    private LazyEntitiesSource GetLazyEntitiesForRelationship(object value, IEntitiesSource fullLookupList)
+    private LazyEntitiesSource GetLazyEntitiesForRelationship(object? value, IEntitiesSource? fullLookupList)
     {
-        var entityIds = (value as IEnumerable<int?>)?.ToList()
-                        ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToList();
+        var entityIds = (value as IEnumerable<int?>)
+                        ?.ToList()
+                        ?? (value as IEnumerable<int>)
+                        ?.Select(x => (int?)x)
+                        .ToList();
         if (entityIds != null)
             return new(fullLookupList, entityIds);
         if (value is IRelatedEntitiesValue relList)
@@ -42,7 +45,7 @@ partial class ValueBuilder
     }
 
 
-    private static List<Guid?> GuidCsvToList(object value)
+    private static List<Guid?> GuidCsvToList(object? value)
     {
         var entityIdEnum = value as IEnumerable; // note: strings are also enum!
         if (value is string stringValue && stringValue.HasValue())

@@ -20,7 +20,7 @@ public class ContentTypeBuilder
         string scope,
 
         // Contents (1)
-        IList<IContentTypeAttribute> attributes = default,
+        IList<IContentTypeAttribute>? attributes = default,
 
         // Basic specs (2)
         bool isAlwaysShared = default,  // This is a shared type
@@ -31,18 +31,18 @@ public class ContentTypeBuilder
         int configZoneId = default,
         int configAppId = default,
         RepositoryTypes repositoryType = RepositoryTypes.Sql,
-        string repositoryAddress = default,
+        string? repositoryAddress = default,
 
 
         // Metadata (2)
-        ContentTypeMetadata metadata = default,                 // for clone
-        List<IEntity> metadataItems = default,
-        Func<IHasMetadataSourceAndExpiring> metaSourceFinder = default,    // for find-it-yourself
+        ContentTypeMetadata? metadata = default,                 // for clone
+        List<IEntity>? metadataItems = default,
+        Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = default,    // for find-it-yourself
 
         // Save Specs (2) Older stuff, should be removed some day
         bool? onSaveSortAttributes = default,
-        string onSaveUseParentStaticName = default,
-        List<IDecorator<IContentType>> decorators = default
+        string? onSaveUseParentStaticName = default,
+        List<IDecorator<IContentType>>? decorators = default
     )
     {
         // Prepare decorators (copy/new) - if it's inheriting, add that information
@@ -88,9 +88,9 @@ public class ContentTypeBuilder
         string name = default,
         string nameId = default,
         int? id = default,
-        string scope = default,
+        string? scope = default,
         // Contents (1)
-        IList<IContentTypeAttribute> attributes = default,
+        IList<IContentTypeAttribute>? attributes = default,
 
         // Basic specs (2)
         bool? isAlwaysShared = default,  // This is a shared type
@@ -98,14 +98,14 @@ public class ContentTypeBuilder
 
         // Where it's from
         RepositoryTypes? repoType = default,
-        string repoAddress = default,
+        string? repoAddress = default,
         int? parentTypeId = default,
         int? configZoneId = default,
         int? configAppId = default,
 
         // Metadata (2)
-        ContentTypeMetadata metadata = default,                 // for clone
-        List<IEntity> metadataItems = default
+        ContentTypeMetadata? metadata = default,                 // for clone
+        List<IEntity>? metadataItems = default
         //Func<IHasMetadataSource> metaSourceFinder = default
 
         // Save Specs (2) Older stuff, should be removed some day - ATM not supported
@@ -165,7 +165,7 @@ public class ContentTypeBuilder
     public IContentType Transient(string typeName)
         => Transient(Constants.TransientAppId, typeName, typeName);
 
-    public IContentType Transient(int appId, string typeName, string nameId, string scope = null)
+    public IContentType Transient(int appId, string typeName, string nameId, string? scope = null)
         => Create(appId: appId, name: typeName, nameId: nameId, id: DynTypeId,
             scope: scope ?? Scopes.System,
             attributes: new List<IContentTypeAttribute>(), isDynamic: true);

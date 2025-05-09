@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Source;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Internal.Generics;
 
 namespace ToSic.Eav.Data.Build;
@@ -13,8 +12,9 @@ partial class AttributeBuilder
     /// </summary>
     /// <returns><see cref="Attribute{ValueType}"/></returns>
     [PrivateApi("probably move to some attribute-builder or something")]
-    public IAttribute Create(string name, ValueTypes type, IList<IValue> values = null)
+    public IAttribute Create(string name, ValueTypes type, IList<IValue> values)
     {
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         var imValues = values?.ToImmutableList() ?? AttributeBase.EmptyValues;
         return type switch
         {
@@ -28,9 +28,12 @@ partial class AttributeBuilder
             {
                 Name = name,
                 Type = type,
-                ValuesImmutable = imValues.SafeAny() ? imValues : ValueBuilder.NewEmptyRelationshipValues
+                ValuesImmutable = imValues.SafeAny()
+                    ? imValues
+                    : ValueBuilder.NewEmptyRelationshipValues
             },
             ValueTypes.Object => new Attribute<object> { Name = name, Type = type, ValuesImmutable = imValues },
+            // ReSharper disable PatternIsRedundant
             ValueTypes.String or
                 ValueTypes.Hyperlink or
                 ValueTypes.Custom or
@@ -38,6 +41,7 @@ partial class AttributeBuilder
                 ValueTypes.Undefined or
                 ValueTypes.Empty or
                 _ => new Attribute<string> { Name = name, Type = type, ValuesImmutable = imValues }
+            // ReSharper restore PatternIsRedundant
         };
     }
 
@@ -47,27 +51,29 @@ partial class AttributeBuilder
     /// well as some language properties.
     /// </summary>
     public IAttribute CreateOrUpdate(
-        IAttribute originalOrNull,
+        IAttribute? originalOrNull,
         string name,
         object value,
         ValueTypes type,
-        IValue valueToReplace = default,
-        string language = default,
+        IValue? valueToReplace = default,
+        string? language = default,
         bool languageReadOnly = false
-    ) => Log.Func($"..., {name}, {value} ({type}), {language}, ...", l =>
+    )
     {
+        var l = Log.Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
         var valueLanguages = languageBuilder.GetBestValueLanguages(language, languageReadOnly);
 
-        var valueWithLanguages = ValueBuilder.Build(type, value, valueLanguages?.ToImmutableList());
+        var valueWithLanguages = ValueBuilder.Build(type, value, valueLanguages.ToImmutableList());
 
         // add or replace to the collection
-        if (originalOrNull == null) return Create(name, type, new List<IValue> { valueWithLanguages });
+        if (originalOrNull == null)
+            return l.Return(Create(name, type, new List<IValue> { valueWithLanguages }));
 
         // maybe: test if the new model has the same type as the attribute we're adding to
         // ca: if(attrib.ControlledType != valueModel.)
         var updatedValueList = ValueBuilder.Replace(originalOrNull.Values, valueToReplace, valueWithLanguages);
-        return originalOrNull.With(updatedValueList);
-    });
+        return l.Return(originalOrNull.With(updatedValueList));
+    }
 
 
 

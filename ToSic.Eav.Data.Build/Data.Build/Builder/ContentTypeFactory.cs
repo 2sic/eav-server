@@ -26,7 +26,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
 
     private static readonly Dictionary<Type, IContentType> Cache = new();
 
-    private IContentType Create(Type type, string name = default, string nameId = default, string scope = default, int appId = NoAppId)
+    private IContentType Create(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
     {
         var l = Log.Fn<IContentType>(timer: true);
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
@@ -63,7 +63,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     /// Most properties like icon etc. are not important, so ATM it only does:
     /// - Description
     /// </summary>
-    private IEntity ContentTypeDetails(string description)
+    private IEntity? ContentTypeDetails(string? description)
     {
         var l = Log.Fn<IEntity>();
         if (description == null)

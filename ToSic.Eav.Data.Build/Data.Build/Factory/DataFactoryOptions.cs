@@ -51,9 +51,7 @@ public record DataFactoryOptions
     /// The field in the data which is the default title.
     /// Defaults to `Title` if not set.
     /// </summary>
-#if NETCOREAPP
     [field: AllowNull, MaybeNull]
-#endif
     public string TitleField
     {
         get => field.UseFallbackIfNoValue(Attributes.TitleNiceName);

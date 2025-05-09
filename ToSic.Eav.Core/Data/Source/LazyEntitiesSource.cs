@@ -21,7 +21,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     /// <param name="allEntities">DataSource to retrieve child entities</param>
     /// <param name="identifiers">List of IDs to initialize with</param>
     [PrivateApi]
-    internal LazyEntitiesSource(IEntitiesSource allEntities, IList identifiers)
+    internal LazyEntitiesSource(IEntitiesSource? allEntities, IList identifiers)
     {
         _lookupList = allEntities;
         switch (identifiers)
@@ -47,7 +47,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     /// Blank value, just for marking the list as empty
     /// </summary>
     private static readonly List<int?> EntityIdsEmpty = [];
-    private readonly IEntitiesSource _lookupList;
+    private readonly IEntitiesSource? _lookupList;
     private readonly bool _preferGuid;
     private List<int?> _entityIds;
 

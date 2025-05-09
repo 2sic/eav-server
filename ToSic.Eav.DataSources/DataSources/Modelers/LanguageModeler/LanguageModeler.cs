@@ -107,7 +107,7 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
                         .FirstOrDefault();
 
                     // if there are no values, we'll assume it's a string field
-                    var newAttribute = atBld.Create(newName, firstExistingValue?.Type ?? ValueTypes.String); 
+                    var newAttribute = atBld.Create(newName, firstExistingValue?.Type ?? ValueTypes.String, []);
 
                     // Loop through each source field to add the value to the new attribute
                     foreach (var entry in map.Fields)

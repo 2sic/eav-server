@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using ToSic.Eav.Data.Build;
 
 namespace ToSic.Eav.Data;
 
@@ -17,7 +16,7 @@ public record Value<T> : IValue<T>
     /// <remarks>
     /// * completely #immutable since v15.04
     /// </remarks>
-    internal Value(T typedContents, IImmutableList<ILanguage> languages = null)
+    internal Value(T? typedContents, IImmutableList<ILanguage> languages = null)
     {
         TypedContents = typedContents;
         LanguagesImmutable = languages ?? DataConstants.NoLanguages;
@@ -67,7 +66,8 @@ public record Value<T> : IValue<T>
     }
 
     [PrivateApi]
-    public IValue With(IImmutableList<ILanguage> newLanguages) => this with { LanguagesImmutable = newLanguages };
+    public IValue With(IImmutableList<ILanguage> newLanguages)
+        => this with { LanguagesImmutable = newLanguages };
 
     [PrivateApi]
     public object ObjectContents => TypedContents;

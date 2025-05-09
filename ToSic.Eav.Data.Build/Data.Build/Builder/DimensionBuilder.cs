@@ -20,16 +20,17 @@ public class DimensionBuilder
     }
 
 
-    public List<ILanguage> GetBestValueLanguages(string language, bool languageReadOnly)
+    public List<ILanguage> GetBestValueLanguages(string? language, bool languageReadOnly)
     {
         // sometimes language is passed in as an empty string - this would have side effects, so it must be neutralized
-        if (string.IsNullOrWhiteSpace(language)) language = null;
+        if (string.IsNullOrWhiteSpace(language))
+            language = null;
 
         var valueLanguages = language == null
             ? null // must be null if no languages are specified, to cause proper fallback
             : new List<ILanguage> { new Language(language, languageReadOnly) };
 
-        return valueLanguages;
+        return valueLanguages ?? [];
     }
 
 }

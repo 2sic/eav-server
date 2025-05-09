@@ -20,9 +20,7 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
     /// <inheritdoc />
     public IContentType ContentType { get; }
 
-#if NETCOREAPP
     [field: AllowNull, MaybeNull]
-#endif
     public DataFactoryOptions Options => field ?? throw new($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
 
 
@@ -31,15 +29,11 @@ internal class DataFactory(DataBuilder builder, Generator<DataBuilder> dataBuild
 
     private RawConvertOptions RawConvertOptions { get; } = new();
 
-#if NETCOREAPP
     [field: AllowNull, MaybeNull]
-#endif
     public ILookup<object, IEntity> Relationships => field ?? _lazyRelationships;
     private readonly LazyLookup<object, IEntity> _lazyRelationships = new();
 
-#if NETCOREAPP
     [field: AllowNull, MaybeNull]
-#endif
     private RawRelationshipsConvertHelper RelsConvertHelper => field ??= new(builder, Log);
 
     #endregion

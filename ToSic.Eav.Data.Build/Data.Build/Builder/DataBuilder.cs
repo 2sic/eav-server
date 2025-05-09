@@ -34,8 +34,10 @@ public class DataBuilder(
     public ContentTypeBuilder ContentType => contentTypeBuilder.Value;
     public EntityBuilder Entity => entityBuilder.Value;
 
+    [field: AllowNull, MaybeNull]
     public AttributeBuilder Attribute => field ??= attributeBuilder.Value.Setup(Options.AllowUnknownValueTypes);
 
+    [field: AllowNull, MaybeNull]
     public ValueBuilder Value => field ??= valueBuilder.Value.Setup(Options.AllowUnknownValueTypes);
 
     public ContentTypeAttributeBuilder TypeAttributeBuilder => typeAttributeBuilder.Value;

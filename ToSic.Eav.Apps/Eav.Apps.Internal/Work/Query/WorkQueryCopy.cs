@@ -61,7 +61,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
         var newWiringValues = new List<IValue>
         {
-            _builder.Value.Value.String(newWiring)
+            _builder.Value.Value.String(newWiring, [])
         };
         var queryAttributes = query.Entity.Attributes.ToEditableInIgnoreCase();
         var newWiringAttribute =

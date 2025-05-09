@@ -32,37 +32,37 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
     /// Create/clone a value based on an original which will supply most of the values.
     /// </summary>
     /// <returns></returns>
-    public IValue CreateFrom(IValue original, NoParamOrder noParamOrder = default, IImmutableList<ILanguage> languages = null)
+    public IValue CreateFrom(IValue original, NoParamOrder noParamOrder = default, IImmutableList<ILanguage>? languages = null)
         => languages == null
             ? original
             : original.With(languages);
 
     #region Simple Values: Bool, DateTime, Number, String
 
-    public IValue<bool?> Bool(bool? value, IImmutableList<ILanguage> languages = null) => 
+    public IValue<bool?> Bool(bool? value, IImmutableList<ILanguage> languages) => 
         new Value<bool?>(value, languages);
 
-    public IValue<bool?> Bool(object value, IImmutableList<ILanguage> languages = null) => 
+    public IValue<bool?> Bool(object? value, IImmutableList<ILanguage> languages) => 
         Bool(value as bool? ?? (bool.TryParse(value as string, out var typed) ? typed : new bool?()), languages);
 
-    public IValue<DateTime?> DateTime(DateTime? value, IImmutableList<ILanguage> languages = null) =>
+    public IValue<DateTime?> DateTime(DateTime? value, IImmutableList<ILanguage> languages) =>
         new Value<DateTime?>(value, languages);
 
-    public IValue<DateTime?> DateTime(object value, IImmutableList<ILanguage> languages = null) =>
+    public IValue<DateTime?> DateTime(object? value, IImmutableList<ILanguage> languages) =>
         DateTime(value as DateTime? ?? (System.DateTime.TryParse(value as string, InvariantCulture, DateTimeStyles.None, out var typed) ? typed : new DateTime?()), languages);
 
-    public IValue<string> String(string value, IImmutableList<ILanguage> languages = null) =>
+    public IValue<string> String(string? value, IImmutableList<ILanguage> languages) =>
         new Value<string>(value, languages);
 
-    public IValue<string> String(object value, IImmutableList<ILanguage> languages = null) =>
+    public IValue<string> String(object? value, IImmutableList<ILanguage> languages) =>
         new Value<string>(value as string, languages);
 
-    public IValue<decimal?> Number(decimal? value, IImmutableList<ILanguage> languages = null)
+    public IValue<decimal?> Number(decimal? value, IImmutableList<ILanguage> languages)
         => new Value<decimal?>(value, languages);
     //public IValue<decimal?> Number(int? value, IImmutableList<ILanguage> languages = null)
     //    => new Value<decimal?>(value, languages);
 
-    public IValue<decimal?> Number(object value, IImmutableList<ILanguage> languages = null)
+    public IValue<decimal?> Number(object? value, IImmutableList<ILanguage> languages)
     {
         var newDec = value as decimal?;
         if (newDec != null || value is null || (value is string s && s.IsEmptyOrWs()))
@@ -79,12 +79,15 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
 
     #endregion
 
-    public IValue<T> Create<T>(T value, IImmutableList<ILanguage> languages = null)
+    public IValue<T> Create<T>(T value, IImmutableList<ILanguage> languages)
     {
         var type = typeof(T).UnboxIfNullable();
-        if (type == typeof(bool)) return (IValue<T>)Bool(value as bool?, languages);
-        if (type == typeof(DateTime)) return (IValue<T>)DateTime(value as DateTime?, languages);
-        if (type.IsNumeric()) return (IValue<T>)Number(value as decimal?, languages);
+        if (type == typeof(bool))
+            return (IValue<T>)Bool(value as bool?, languages);
+        if (type == typeof(DateTime))
+            return (IValue<T>)DateTime(value as DateTime?, languages);
+        if (type.IsNumeric())
+            return (IValue<T>)Number(value as decimal?, languages);
         // Note: Entities not supported in this build-call
         return (IValue<T>)String(value as string, languages);
     }
@@ -95,7 +98,7 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
     /// <returns>
     /// An IValue, which is actually an IValue{string}, IValue{decimal}, IValue{IEnumerable{IEntity}} etc.
     /// </returns>
-    public IValue Build(ValueTypes type, object value, IImmutableList<ILanguage>? languages = null)
+    public IValue Build(ValueTypes type, object? value, IImmutableList<ILanguage>? languages = null)
     {
         var langs = languages ?? DataConstants.NoLanguages;
         var stringValue = value as string;
@@ -139,16 +142,17 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
 
 
 
-    public object PreConvertReferences(object value, ValueTypes valueType, bool resolveHyperlink) => Log.Func(() =>
+    public object PreConvertReferences(object value, ValueTypes valueType, bool resolveHyperlink)
     {
+        var l = Log.Fn<object>();
         if (value is IAttribute)
             throw new ArgumentException($"Value must be a simple value but it's an {nameof(IAttribute)}");
         if (resolveHyperlink && valueType == ValueTypes.Hyperlink && value is string stringValue)
         {
             var converted = valueConverter.Value.ToReference(stringValue);
-            return (converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'");
+            return l.Return((converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'"));
         }
-        return (value, "unmodified");
-    });
+        return l.Return((value, "unmodified"));
+    }
 
 }
