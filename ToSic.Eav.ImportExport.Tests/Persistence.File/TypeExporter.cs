@@ -17,7 +17,7 @@ public class TypeExporter(ITestOutputHelper output, IRepositoryLoader loaderRaw,
         var app = loaderRaw.AppStateReaderRawTac(test.AppId);
 
         var cts = app.ContentTypes;
-        var sharedCts = cts/*.Where(ct => ct.AlwaysShareConfiguration)*/.ToList();
+        var sharedCts = cts/*.Where(ct => ct.IsGlobal)*/.ToList();
         var exportStorageRoot =
             TestFiles.GetTestPath($"{PersistenceTestConstants.ScenarioRoot}{PersistenceTestConstants.TestingPath3}");// PersistenceTestConstants.ExportStorageRoot(TestContext);
         var fileSysLoader = fsLoader.Init(Constants.PresetAppId, exportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null);

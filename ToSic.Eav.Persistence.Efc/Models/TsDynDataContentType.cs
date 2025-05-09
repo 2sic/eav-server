@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavAttributeSets
+public partial class TsDynDataContentType
 {
-    public int AttributeSetId { get; set; }
+    public int ContentTypeId { get; set; }
 
     public string StaticName { get; set; }
 
@@ -13,13 +13,15 @@ public partial class ToSicEavAttributeSets
 
     public int TransactionIdCreated { get; set; }
 
+    public int? TransactionIdModified { get; set; }
+
     public int? TransactionIdDeleted { get; set; }
 
     public int AppId { get; set; }
 
-    public int? UsesConfigurationOfAttributeSet { get; set; }
+    public int? InheritContentTypeId { get; set; }
 
-    public bool AlwaysShareConfiguration { get; set; } = false;
+    public bool IsGlobal { get; set; } = false;
 
     // public string Json { get; set; }
 
@@ -29,15 +31,19 @@ public partial class ToSicEavAttributeSets
 
     public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 
+    public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
+
     public virtual TsDynDataTransaction TransactionDeletedNavigation { get; set; }
 
-    public virtual ICollection<ToSicEavAttributeSets> InverseUsesConfigurationOfAttributeSetNavigation { get; set; } = new HashSet<ToSicEavAttributeSets>();
+    public virtual TsDynDataContentType InheritContentTypeNavigation { get; set; }
 
-    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributes { get; set; } = new HashSet<ToSicEavAttributes>();
+    public virtual ICollection<TsDynDataContentType> InverseInheritContentTypesNavigation { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<ToSicEavEntities> ToSicEavEntities { get; set; } = new HashSet<ToSicEavEntities>();
+    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributes { get; set; } = new HashSet<TsDynDataAttribute>();
 
-    public virtual ToSicEavAttributeSets UsesConfigurationOfAttributeSetNavigation { get; set; }
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntities { get; set; } = new HashSet<TsDynDataEntity>();
+
+
 
     // 2dm added
     //public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSharedSets { get; set; }

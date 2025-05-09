@@ -28,7 +28,7 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
 
         var zonesWithoutPrimary = DbContext.SqlDb.TsDynDataZones
             .Include(z => z.TsDynDataApps)
-            .Include(z => z.ToSicEavDimensions)
+            .Include(z => z.TsDynDataDimensions)
             // Skip "default" zone as that is a single purpose technical zone
             .Where(z => z.ZoneId != Constants.DefaultZoneId)
             .Where(z => z.TsDynDataApps.All(a => a.Name != Constants.PrimaryAppGuid))

@@ -9,25 +9,23 @@ public partial class TsDynDataTransaction
 
     public string User { get; set; }
 
-    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributesTransactionCreatedNavigation { get; set; } = new HashSet<ToSicEavAttributes>();
+    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataAttribute>();
 
-    public virtual ICollection<ToSicEavAttributes> ToSicEavAttributesTransactionDeletedNavigation { get; set; } = new HashSet<ToSicEavAttributes>();
+    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataAttribute>();
 
-    public virtual ICollection<ToSicEavAttributeSets> ToSicEavAttributeSetsTransactionCreatedNavigation { get; set; } = new HashSet<ToSicEavAttributeSets>();
+    public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataAttribute>();
 
-    public virtual ICollection<ToSicEavAttributeSets> ToSicEavAttributeSetsTransactionDeletedNavigation { get; set; } = new HashSet<ToSicEavAttributeSets>();
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<ToSicEavEntities> ToSicEavEntitiesTransactionCreatedNavigation { get; set; } = new HashSet<ToSicEavEntities>();
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<ToSicEavEntities> ToSicEavEntitiesTransactionDeletedNavigation { get; set; } = new HashSet<ToSicEavEntities>();
+    public virtual ICollection<TsDynDataContentType> TsDynDataContentTypesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataContentType>();
 
-    public virtual ICollection<ToSicEavEntities> ToSicEavEntitiesTransactionModifiedNavigation { get; set; } = new HashSet<ToSicEavEntities>();
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransactionCreatedNavigation { get; set; } = new HashSet<TsDynDataEntity>();
 
-    public virtual ICollection<ToSicEavValues> ToSicEavValuesTransactionCreatedNavigation { get; set; } = new HashSet<ToSicEavValues>();
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransactionDeletedNavigation { get; set; } = new HashSet<TsDynDataEntity>();
 
-    public virtual ICollection<ToSicEavValues> ToSicEavValuesTransactionDeletedNavigation { get; set; } = new HashSet<ToSicEavValues>();
-
-    public virtual ICollection<ToSicEavValues> ToSicEavValuesTransactionModifiedNavigation { get; set; } = new HashSet<ToSicEavValues>();
+    public virtual ICollection<TsDynDataEntity> TsDynDataEntitiesTransactionModifiedNavigation { get; set; } = new HashSet<TsDynDataEntity>();
 
     public virtual ICollection<TsDynDataHistory> TsDynDataHistories { get; set; } = new HashSet<TsDynDataHistory>();
 

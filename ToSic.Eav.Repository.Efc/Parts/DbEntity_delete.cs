@@ -16,16 +16,16 @@ partial class DbEntity
 
         // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
         // note that as this is a DB-entity, the EntityId is actually the repositoryId
-        var entities = DbContext.Entities.GetDbEntities(repositoryId, "ToSicEavValues,ToSicEavValues.ToSicEavValuesDimensions");
+        var entities = DbContext.Entities.GetDbEntities(repositoryId, "TsDynDataValue,TsDynDataValue.TsDynDataValueDimensions");
 
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)
         // Delete all Value-Dimensions
-        var valueDimensions = entities.SelectMany(e => e.ToSicEavValues.SelectMany(v => v.ToSicEavValuesDimensions)).ToList();
+        var valueDimensions = entities.SelectMany(e => e.TsDynDataValues.SelectMany(v => v.TsDynDataValueDimensions)).ToList();
         DbContext.SqlDb.RemoveRange(valueDimensions);
 
         // Delete all Values
-        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.ToSicEavValues).ToList());
+        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.TsDynDataValues).ToList());
 
         // Delete all Parent-Relationships
         DeleteRelationships(entities.SelectMany(e => e.RelationshipsWithThisAsParent).ToList());
@@ -65,13 +65,13 @@ partial class DbEntity
         return true;
     }
 
-    private void DeleteRelationships(ICollection<ToSicEavEntityRelationships> relationships)
+    private void DeleteRelationships(ICollection<TsDynDataRelationship> relationships)
     {
         Log.A($"DeleteRelationships({relationships?.Count})");
         if ((relationships?.Count ?? 0) == 0)
             Log.A("No relationships to delete");
         else
-            relationships?.ToList().ForEach(r => DbContext.SqlDb.ToSicEavEntityRelationships.Remove(r));
+            relationships?.ToList().ForEach(r => DbContext.SqlDb.TsDynDataRelationships.Remove(r));
         Log.A("/DeleteRelationships(...)");
     }
         

@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavEntityRelationships
+public partial class TsDynDataRelationship
 {
     public int AttributeId { get; set; }
 
@@ -11,9 +11,9 @@ public partial class ToSicEavEntityRelationships
 
     public int SortOrder { get; set; }
 
-    public virtual ToSicEavAttributes Attribute { get; set; }
+    public virtual TsDynDataAttribute Attribute { get; set; }
 
-    public virtual ToSicEavEntities ChildEntity { get; set; }
+    public virtual TsDynDataEntity ChildEntity { get; set; }
 
-    public virtual ToSicEavEntities ParentEntity { get; set; }
+    public virtual TsDynDataEntity ParentEntity { get; set; }
 }

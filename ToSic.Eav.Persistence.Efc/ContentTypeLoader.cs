@@ -82,13 +82,13 @@ internal class ContentTypeLoader(
         var l = Log.Fn<ImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
-        var query = efcAppLoader.Context.ToSicEavAttributeSets
+        var query = efcAppLoader.Context.TsDynDataContentTypes
             .Where(set => set.AppId == appId && set.TransactionIdDeleted == null);
 
         var contentTypesSql = query
-            .Include(set => set.ToSicEavAttributes)
+            .Include(set => set.TsDynDataAttributes)
             .Include(set => set.App)
-            .Include(set => set.UsesConfigurationOfAttributeSetNavigation)
+            .Include(set => set.InheritContentTypeNavigation)
             .ThenInclude(master => master.App)
             .ToList();
 
@@ -100,11 +100,11 @@ internal class ContentTypeLoader(
         var contentTypes = contentTypesSql
             .Select(set => new
             {
-                set.AttributeSetId,
+                set.ContentTypeId,
                 set.Name,
                 set.StaticName,
                 set.Scope,
-                Attributes = set.ToSicEavAttributes
+                Attributes = set.TsDynDataAttributes
                     .Where(a => a.TransactionIdDeleted == null) // only not-deleted attributes!
                     .Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
@@ -119,13 +119,13 @@ internal class ContentTypeLoader(
                         guid: a.Guid,
                         sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
                     )),
-                IsGhost = set.UsesConfigurationOfAttributeSet,
-                SharedDefinitionId = set.UsesConfigurationOfAttributeSet,
-                AppId = set.UsesConfigurationOfAttributeSetNavigation?.AppId ?? set.AppId,
-                ZoneId = set.UsesConfigurationOfAttributeSetNavigation?.App?.ZoneId ?? set.App.ZoneId,
+                IsGhost = set.InheritContentTypeId,
+                SharedDefinitionId = set.InheritContentTypeId,
+                AppId = set.InheritContentTypeNavigation?.AppId ?? set.AppId,
+                ZoneId = set.InheritContentTypeNavigation?.App?.ZoneId ?? set.App.ZoneId,
                 ConfigIsOmnipresent =
-                    set.UsesConfigurationOfAttributeSetNavigation?.AlwaysShareConfiguration ??
-                    set.AlwaysShareConfiguration,
+                    set.InheritContentTypeNavigation?.IsGlobal ??
+                    set.IsGlobal,
             })
             .ToList();
 
@@ -146,12 +146,12 @@ internal class ContentTypeLoader(
 
         var sharedAttribs = optimize && !sharedAttribIds.Any()
             ? new()
-            : efcAppLoader.Context.ToSicEavAttributeSets
-                .Include(s => s.ToSicEavAttributes)
-                .Where(s => sharedAttribIds.Contains(s.AttributeSetId))
+            : efcAppLoader.Context.TsDynDataContentTypes
+                .Include(s => s.TsDynDataAttributes)
+                .Where(s => sharedAttribIds.Contains(s.ContentTypeId))
                 .ToDictionary(
-                    s => s.AttributeSetId,
-                    s => s.ToSicEavAttributes.Select(a => dataBuilder.TypeAttributeBuilder.Create(
+                    s => s.ContentTypeId,
+                    s => s.TsDynDataAttributes.Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
                         name: a.StaticName,
                         type: ValueTypeHelpers.Get(a.Type),
@@ -184,7 +184,7 @@ internal class ContentTypeLoader(
                 appId: appId,
                 name: set.Name,
                 nameId: set.StaticName,
-                id: set.AttributeSetId,
+                id: set.ContentTypeId,
                 scope: set.Scope,
                 parentTypeId: set.IsGhost,
                 configZoneId: set.ZoneId,

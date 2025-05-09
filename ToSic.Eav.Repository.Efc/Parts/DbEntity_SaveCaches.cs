@@ -2,9 +2,9 @@
 
 partial class DbEntity
 {
-    private (int ContentTypeId, List<ToSicEavAttributes> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
+    private (int ContentTypeId, List<TsDynDataAttribute> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
     {
-        var l = Log.Fn<(int, List<ToSicEavAttributes>)>($"json: {saveJson}");
+        var l = Log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
         if (saveJson)
             return l.Return((RepoIdForJsonEntities, null), $"json - no attributes, CT: {RepoIdForJsonEntities}");
 
@@ -34,6 +34,6 @@ partial class DbEntity
     }
 
     private readonly Dictionary<string, int> _ctNameIdCache = new(StringComparer.InvariantCultureIgnoreCase);
-    private readonly Dictionary<int, List<ToSicEavAttributes>> _ctCache = new();
+    private readonly Dictionary<int, List<TsDynDataAttribute>> _ctCache = new();
     private void FlushTypeAttributesCache() => _ctCache.Clear();
 }

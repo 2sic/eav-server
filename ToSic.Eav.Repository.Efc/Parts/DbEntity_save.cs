@@ -70,7 +70,7 @@ partial class DbEntity
 
 
 
-        ToSicEavEntities dbEnt = null;
+        TsDynDataEntity dbEnt = null;
 
         var transactionId = DbContext.Versioning.GetTransactionId();
 
@@ -156,7 +156,7 @@ partial class DbEntity
                     if (saveJson)
                     {
                         dbEnt.Json = jsonExport;
-                        dbEnt.AttributeSetId = contentTypeId; // in case the previous entity wasn't json stored yet
+                        dbEnt.ContentTypeId = contentTypeId; // in case the previous entity wasn't json stored yet
                         dbEnt.ContentType = newEnt.Type.NameId; // in case the previous entity wasn't json stored yet
                     }
                     // super exotic case - maybe it was a json before, but isn't any more...
@@ -165,14 +165,14 @@ partial class DbEntity
                     // In this case we must reset this, otherwise the next load will still prefer the json
                     else
                     {
-                        if (dbEnt.AttributeSetId == RepoIdForJsonEntities) dbEnt.AttributeSetId = contentTypeId;
+                        if (dbEnt.ContentTypeId == RepoIdForJsonEntities) dbEnt.ContentTypeId = contentTypeId;
                         if (dbEnt.Json != null) dbEnt.Json = null;
                         if (dbEnt.ContentType != null) dbEnt.ContentType = null;
                     }
 
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
-                    DbContext.DoAndSave(() => dbEnt.ToSicEavValues.Clear(), "Flush values");
+                    DbContext.DoAndSave(() => dbEnt.TsDynDataValues.Clear(), "Flush values");
                 });
 
                 #endregion Step 3b

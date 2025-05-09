@@ -76,9 +76,8 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
                     v.AttributeId,
                     v.Attribute.StaticName,
                     v.Value,
-                    v.TransactionIdCreated,
 
-                    v.ToSicEavValuesDimensions
+                    v.TsDynDataValueDimensions
                         .Select(lng =>
                             new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId) as ILanguage)
                         .ToImmutableList()

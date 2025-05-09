@@ -15,7 +15,7 @@ public partial class TsDynDataZone//: RepoZone
 
     public virtual ICollection<TsDynDataApp> TsDynDataApps { get; set; } = new HashSet<TsDynDataApp>();
 
-    public virtual ICollection<ToSicEavDimensions> ToSicEavDimensions { get; set; } =  new HashSet<ToSicEavDimensions>();
+    public virtual ICollection<TsDynDataDimension> TsDynDataDimensions { get; set; } =  new HashSet<TsDynDataDimension>();
 
     public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 

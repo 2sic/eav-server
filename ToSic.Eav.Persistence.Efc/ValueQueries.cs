@@ -16,7 +16,7 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
     //        // but instead just get the StaticName
     //        .Include(v => v.Attribute)
     //        // Dimensions are needed for language assignment for each value
-    //        .Include(v => v.ToSicEavValuesDimensions)
+    //        .Include(v => v.TsDynDataValueDimensions)
     //        .ThenInclude(d => d.Dimension)
     //        // Skip values which have been flagged as deleted
     //        .Where(v => !v.TransactionIdDeleted.HasValue);
@@ -30,13 +30,13 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
     /// <remarks>
     /// Improved 2025-04-28 for v20 to really just get the values we need, seems to be ca. 50% faster.
     /// </remarks>
-    internal IQueryable<ToSicEavValues> ValuesOfIdsQueryOptimized(List<int> entityIds)
+    internal IQueryable<TsDynDataValue> ValuesOfIdsQueryOptimized(List<int> entityIds)
     {
-        var l = Log.Fn<IQueryable<ToSicEavValues>>(timer: true);
+        var l = Log.Fn<IQueryable<TsDynDataValue>>(timer: true);
 
-        var query = context.ToSicEavValues
+        var query = context.TsDynDataValues;
             // Skip values which have been flagged as deleted
-            .Where(v => !v.TransactionIdDeleted.HasValue);
+            //.Where(v => !v.TransactionIdDeleted.HasValue);
 
         var queryOfEntityIds = query
             .Where(r => entityIds.Contains(r.EntityId));

@@ -6,14 +6,14 @@ partial class DbAttribute
     /// <summary>
     /// Get Attributes of an AttributeSet
     /// </summary>
-    internal IQueryable<ToSicEavAttributes> GetAttributeDefinitions(int contentTypeId)
+    internal IQueryable<TsDynDataAttribute> GetAttributeDefinitions(int contentTypeId)
     {
         if (contentTypeId <= 0)
             throw new ArgumentOutOfRangeException(nameof(contentTypeId), "should never be 0 - this is a bug because of the new Immutable, report to iJungleboy");
 
-        contentTypeId = DbContext.ContentType.ResolvePotentialGhostAttributeSetId(contentTypeId);
+        contentTypeId = DbContext.ContentType.ResolvePotentialGhostContentTypeId(contentTypeId);
 
-        return DbContext.SqlDb.ToSicEavAttributes
+        return DbContext.SqlDb.TsDynDataAttributes
             .Where(attributes => attributes.ContentTypeId == contentTypeId)
             .OrderBy(attributes => attributes.SortOrder);
     }
@@ -26,19 +26,19 @@ partial class DbAttribute
     /// <param name="staticName"></param>
     /// <returns></returns>
     private bool AttributeExistsInSet(int contentTypeId, string staticName)
-        => DbContext.SqlDb.ToSicEavAttributes.Any(s =>
+        => DbContext.SqlDb.TsDynDataAttributes.Any(s =>
             s.StaticName == staticName
             && !s.TransactionIdDeleted.HasValue
             && s.ContentTypeId == contentTypeId
-            && s.AttributeSet.AppId == DbContext.AppId);
+            && s.ContentType.AppId == DbContext.AppId);
 
 
     // new parts
     public string[] DataTypeNames()
-        => DbContext.SqlDb.ToSicEavAttributeTypes.OrderBy(a => a.Type)
+        => DbContext.SqlDb.TsDynDataAttributeTypes.OrderBy(a => a.Type)
             .Select(a => a.Type)
             .ToArray();
 
-    public ToSicEavAttributes Get(int attributeId) 
-        => DbContext.SqlDb.ToSicEavAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
+    public TsDynDataAttribute Get(int attributeId) 
+        => DbContext.SqlDb.TsDynDataAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
 }

@@ -100,7 +100,7 @@ internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializ
                 EntityId = e.EntityId,
                 EntityGuid = e.EntityGuid,
                 Version = e.Version,
-                AttributeSetId = e.AttributeSetId,
+                ContentTypeId = e.ContentTypeId,
                 MetadataFor = new(e.TargetTypeId, null, e.KeyString, e.KeyNumber, e.KeyGuid),
                 IsPublished = e.IsPublished,
                 PublishedEntityId = e.PublishedEntityId,

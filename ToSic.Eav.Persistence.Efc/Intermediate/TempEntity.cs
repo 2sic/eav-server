@@ -6,7 +6,7 @@ internal class TempEntity
     public Guid EntityGuid;
     public int Version;
 
-    public int AttributeSetId;
+    public int ContentTypeId;
     public Target MetadataFor;
     public bool IsPublished;
     public int? PublishedEntityId;

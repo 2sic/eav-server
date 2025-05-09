@@ -45,13 +45,13 @@ public class WorkAttributesMod(
 
 
     /// <summary>
-    /// Append a new Attribute to an AttributeSet
+    /// Append a new Attribute to an ContentType
     /// Simple overload returning int, so it can be used from outside
     /// </summary>
-    private int AddField(int attributeSetId, IContentTypeAttribute attDef, string inputType)
+    private int AddField(int contentTypeId, IContentTypeAttribute attDef, string inputType)
     {
-        var l = Log.Fn<int>($"type:{attributeSetId}, input:{inputType}");
-        var newAttribute = AppWorkCtx.DataController.Attributes.AddAttributeAndSave(attributeSetId, attDef);
+        var l = Log.Fn<int>($"type:{contentTypeId}, input:{inputType}");
+        var newAttribute = AppWorkCtx.DataController.Attributes.AddAttributeAndSave(contentTypeId, attDef);
 
         // set the nice name and input type, important for newly created attributes
         InitializeNameAndInputType(attDef.Name, inputType, newAttribute);

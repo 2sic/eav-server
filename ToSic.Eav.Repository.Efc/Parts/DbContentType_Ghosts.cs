@@ -6,25 +6,25 @@ partial class DbContentType
 {
 
     /// <summary>
-    /// if AttributeSet refers another AttributeSet, get ID of the referred AttributeSet. Otherwise returns passed AttributeSetId.
+    /// if AttributeSet refers another AttributeSet, get ID of the referred AttributeSet. Otherwise returns passed ContentTypeId.
     /// </summary>
-    /// <param name="attributeSetId">AttributeSetId to resolve</param>
-    internal int ResolvePotentialGhostAttributeSetId(int attributeSetId)
+    /// <param name="contentTypeId">ContentTypeId to resolve</param>
+    internal int ResolvePotentialGhostContentTypeId(int contentTypeId)
     {
-        var usesConfigurationOfAttributeSet = DbContext.SqlDb.ToSicEavAttributeSets
-            .Where(a => a.AttributeSetId == attributeSetId)
-            .Select(a => a.UsesConfigurationOfAttributeSet)
+        var usesConfigurationOfContentType = DbContext.SqlDb.TsDynDataContentTypes
+            .Where(a => a.ContentTypeId == contentTypeId)
+            .Select(a => a.InheritContentTypeId)
             .Single();
-        return usesConfigurationOfAttributeSet ?? attributeSetId;
+        return usesConfigurationOfContentType ?? contentTypeId;
     }
 
-    private List<ToSicEavAttributeSets> FindPotentialGhostSources(string contentTypeParentName)
+    private List<TsDynDataContentType> FindPotentialGhostSources(string contentTypeParentName)
     {
-        var ghostAttributeSets = DbContext.SqlDb.ToSicEavAttributeSets.Where(
+        var ghostAttributeSets = DbContext.SqlDb.TsDynDataContentTypes.Where(
                 a => a.StaticName == contentTypeParentName
                      && a.TransactionIdDeleted == null
-                     && a.UsesConfigurationOfAttributeSet == null).
-            OrderBy(a => a.AttributeSetId)
+                     && a.InheritContentTypeId == null).
+            OrderBy(a => a.ContentTypeId)
             .ToList();
         return ghostAttributeSets;
     }
@@ -37,12 +37,12 @@ partial class DbContentType
             throw new("current App already has a content-type with this static name - cannot continue");
 
         // find the original
-        var attSets = DbContext.SqlDb.ToSicEavAttributeSets
+        var attSets = DbContext.SqlDb.TsDynDataContentTypes
             .Where(ats => ats.StaticName == staticName
-                          && !ats.UsesConfigurationOfAttributeSet.HasValue    // never duplicate a clone/ghost
+                          && !ats.InheritContentTypeId.HasValue    // never duplicate a clone/ghost
                           && ats.TransactionIdDeleted == null                 // never duplicate a deleted
-                          && ats.AlwaysShareConfiguration == false)           // never duplicate an always-share
-            .OrderBy(ats => ats.AttributeSetId)
+                          && ats.IsGlobal == false)           // never duplicate an always-share
+            .OrderBy(ats => ats.ContentTypeId)
             .ToList();
 
         if (!attSets.Any())
@@ -52,14 +52,14 @@ partial class DbContentType
             throw new("found " + attSets.Count + " (expected 1) original, non-ghost content-type with the static name '" + staticName + "' - so won't create ghost as it's not clear off which you would want to ghost.");
 
         var attSet = attSets.First();
-        var newSet = new ToSicEavAttributeSets
+        var newSet = new TsDynDataContentType
         {
             AppId = DbContext.AppId, // needs the new, current appid
             StaticName = attSet.StaticName,
             Name = attSet.Name,
             Scope = attSet.Scope,
-            UsesConfigurationOfAttributeSet = attSet.AttributeSetId,
-            AlwaysShareConfiguration = false, // this is copy, never re-share
+            InheritContentTypeId = attSet.ContentTypeId,
+            IsGlobal = false, // this is copy, never re-share
             TransactionIdCreated = DbContext.Versioning.GetTransactionId()
         };
         DbContext.SqlDb.Add(newSet);
@@ -79,7 +79,7 @@ partial class DbContentType
         var ghostAttributeSets = DbContext.ContentType.FindPotentialGhostSources(contentTypeParentName);
 
         if (ghostAttributeSets.Count == 1)
-            return ghostAttributeSets.First().AttributeSetId;
+            return ghostAttributeSets.First().ContentTypeId;
 
         // If multiple masters are found, use first and add a warning message
         if (ghostAttributeSets.Count > 1)

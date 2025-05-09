@@ -2,9 +2,9 @@
 
 internal partial class DbContentType(DbDataController db) : DbPartBase(db, "Db.Type")
 {
-    private ToSicEavAttributeSets GetTypeByStaticName(string staticName)
+    private TsDynDataContentType GetTypeByStaticName(string staticName)
     {
-        return DbContext.SqlDb.ToSicEavAttributeSets.FirstOrDefault(a =>
+        return DbContext.SqlDb.TsDynDataContentTypes.FirstOrDefault(a =>
             a.AppId == DbContext.AppId && a.StaticName == staticName && a.TransactionIdDeleted == null
         );
     }

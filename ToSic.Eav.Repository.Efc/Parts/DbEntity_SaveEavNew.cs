@@ -3,10 +3,10 @@
 partial class DbEntity
 {
 
-    private ToSicEavEntities CreateDbRecord(IEntity newEnt, int transactionId, int contentTypeId)
+    private TsDynDataEntity CreateDbRecord(IEntity newEnt, int transactionId, int contentTypeId)
     {
-        var l = Log.Fn<ToSicEavEntities>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
-        var dbEnt = new ToSicEavEntities
+        var l = Log.Fn<TsDynDataEntity>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
+        var dbEnt = new TsDynDataEntity
         {
             AppId = DbContext.AppId,
             TargetTypeId = newEnt.MetadataFor?.TargetType ?? (int)TargetTypes.None,
@@ -19,7 +19,7 @@ partial class DbEntity
             IsPublished = newEnt.IsPublished,
             PublishedEntityId = newEnt.IsPublished ? null : ((Entity)newEnt).GetInternalPublishedIdForSaving(),
             Owner = string.IsNullOrEmpty(newEnt.Owner) ? DbContext.UserIdentityToken : newEnt.Owner,
-            AttributeSetId = contentTypeId,
+            ContentTypeId = contentTypeId,
             Version = 1,
             Json = null // use null, as we must wait to serialize till we have the entityId
         };

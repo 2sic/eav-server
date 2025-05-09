@@ -47,7 +47,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
         {
             l.A($"found existing rels⋮{existingRelationships.Count}");
             // this is necessary after remove, because otherwise EF state tracking gets messed up
-            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.ToSicEavEntityRelationships.RemoveRange(existingRelationships));
+            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.TsDynDataRelationships.RemoveRange(existingRelationships));
         }
 
         // now save the changed relationships
@@ -57,7 +57,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
                 var newEntityIds = p.Targets.ToList();
                 // Create new relationships which didn't exist before
                 for (var i = 0; i < newEntityIds.Count; i++)
-                    DbContext.SqlDb.ToSicEavEntityRelationships.Add(new()
+                    DbContext.SqlDb.TsDynDataRelationships.Add(new()
                     {
                         AttributeId = p.AttributeId,
                         ChildEntityId = newEntityIds[i],
@@ -172,7 +172,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
         l.Done("done");
     }
 
-    private class RelationshipUpdatePackage(ToSicEavEntities entityStubWithChildren, int attributeId, List<int?> relationships)
+    private class RelationshipUpdatePackage(TsDynDataEntity entityStubWithChildren, int attributeId, List<int?> relationships)
     {
         public readonly int AttributeId = attributeId;
         public readonly List<int?> Targets = relationships;
@@ -180,7 +180,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
         /// This is just a stub with EntityId, but also MUST have the `RelationshipsWithThisAsParent` filled
         /// If future code needs it to be filled more, make sure it's constructed that way before.
         /// </summary>
-        public readonly ToSicEavEntities EntityStubWithChildren = entityStubWithChildren;
+        public readonly TsDynDataEntity EntityStubWithChildren = entityStubWithChildren;
     }
 
     internal void FlushChildrenRelationships(List<int> parentIds)
@@ -196,13 +196,13 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
         foreach (var id in parentIds)
         {
-            var ent = DbContext.SqlDb.ToSicEavEntities
+            var ent = DbContext.SqlDb.TsDynDataEntities
                 .Include(e => e.RelationshipsWithThisAsParent)
                 .Single(e => e.EntityId == id);
 
             //var ent = DbContext.Entities.GetDbEntity(id);
             foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
-                DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
+                DbContext.SqlDb.TsDynDataRelationships.Remove(relationToDelete);
         }
 
         // intermediate save (important) so that EF state tracking works
@@ -227,7 +227,7 @@ internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 
     #endregion
 
-    internal void ChangeRelationships(IEntity eToSave, ToSicEavEntities dbEntity, List<ToSicEavAttributes> attributeDefs, SaveOptions so)
+    internal void ChangeRelationships(IEntity eToSave, TsDynDataEntity dbEntity, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
     {
         var l = Log.Fn(timer: true);
         // some initial error checking

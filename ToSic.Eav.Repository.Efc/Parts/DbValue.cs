@@ -5,45 +5,39 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
     /// <summary>
     /// Copy all Values (including Related Entities) from teh Source Entity to the target entity
     /// </summary>
-    internal void CloneEntitySimpleValues(ToSicEavEntities source, ToSicEavEntities target)
+    internal void CloneEntitySimpleValues(TsDynDataEntity source, TsDynDataEntity target)
     {
         Log.A($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
         // Clear values on target (including Dimensions). Must be done in separate steps, would cause un-allowed null-Foreign-Keys
         var delCount = 0;
-        if (target.ToSicEavValues.Any(v => v.TransactionIdDeleted == null))
-            foreach (var eavValue in target.ToSicEavValues.Where(v => v.TransactionIdDeleted == null))
-            {
-                eavValue.TransactionIdDeleted = DbContext.Versioning.GetTransactionId();
-                delCount++;
-            }
+        if (target.TsDynDataValues.Any()) delCount += target.TsDynDataValues.Count();
 
         // Add all Values with Dimensions
         var cloneCount = 0;
-        foreach (var eavValue in source.ToSicEavValues.ToList())
+        foreach (var eavValue in source.TsDynDataValues.ToList())
         {
-            var value = new ToSicEavValues
+            var value = new TsDynDataValue
             {
                 AttributeId = eavValue.AttributeId,
-                Value = eavValue.Value,
-                TransactionIdCreated = DbContext.Versioning.GetTransactionId()
+                Value = eavValue.Value
             };
 
             // copy Dimensions
-            foreach (var valuesDimension in eavValue.ToSicEavValuesDimensions)
-                value.ToSicEavValuesDimensions.Add(new()
+            foreach (var valuesDimension in eavValue.TsDynDataValueDimensions)
+                value.TsDynDataValueDimensions.Add(new()
                 {
                     DimensionId = valuesDimension.DimensionId,
                     ReadOnly = valuesDimension.ReadOnly
                 });
 
-            target.ToSicEavValues.Add(value);
+            target.TsDynDataValues.Add(value);
             cloneCount++;
         }
         Log.A($"DelCount: {delCount}, cloneCount:{cloneCount} (note: should be 0 if json)");
         Log.A($"/CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
     }
 
-    internal void CloneRelationshipsAndSave(ToSicEavEntities source, ToSicEavEntities target)
+    internal void CloneRelationshipsAndSave(TsDynDataEntity source, TsDynDataEntity target)
     {
         Log.A($"CloneRelationshipsAndSave({source.EntityId}, {target.EntityId})");
         DbContext.DoInTransaction(() =>
@@ -53,7 +47,7 @@ internal class DbValue(DbDataController db) : DbPartBase(db, "Db.Values")
             // note: can't use .Clear(), as that will try to actually delete the children
             Log.A($"Flush relationships on {target.EntityId}");
             foreach (var relationToDelete in target.RelationshipsWithThisAsParent)
-                DbContext.SqlDb.ToSicEavEntityRelationships.Remove(relationToDelete);
+                DbContext.SqlDb.TsDynDataRelationships.Remove(relationToDelete);
             // intermediate save (important) so that EF state tracking works
             DbContext.SqlDb.SaveChanges();
 

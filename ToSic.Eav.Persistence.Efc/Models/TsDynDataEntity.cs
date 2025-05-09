@@ -1,16 +1,13 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavEntities
+public partial class TsDynDataEntity
 {
     public int EntityId { get; set; }
 
     public Guid EntityGuid { get; set; }
 
-    public int AttributeSetId { get; set; }
-
-    // 2017-06-20 2dm - never used
-    //public int? ConfigurationSet { get; set; }
+    public int ContentTypeId { get; set; }
 
     public int TargetTypeId { get; set; }
 
@@ -20,15 +17,9 @@ public partial class ToSicEavEntities
 
     public string KeyString { get; set; }
 
-    public int TransactionIdCreated { get; set; }
-
-    public int? TransactionIdDeleted { get; set; }
-
     public bool IsPublished { get; set; }
 
     public int? PublishedEntityId { get; set; }
-
-    public int TransactionIdModified { get; set; }
 
     public string Owner { get; set; }
 
@@ -40,12 +31,18 @@ public partial class ToSicEavEntities
 
     public string ContentType { get; set; }
 
+    public int TransactionIdCreated { get; set; }
+
+    public int TransactionIdModified { get; set; }
+
+    public int? TransactionIdDeleted { get; set; }
+
     // 2017-10-10 2dm new with entity > app mapping
     public virtual TsDynDataApp App { get; set; }
 
     public virtual TsDynDataTargetType TargetType { get; set; }
 
-    public virtual ToSicEavAttributeSets AttributeSet { get; set; }
+    public virtual TsDynDataContentType ContentTypeNavigation { get; set; }
 
     public virtual TsDynDataTransaction TransactionCreatedNavigation { get; set; }
 
@@ -53,13 +50,9 @@ public partial class ToSicEavEntities
 
     public virtual TsDynDataTransaction TransactionModifiedNavigation { get; set; }
 
-    //public virtual ToSicEavEntities ConfigurationSetNavigation { get; set; }
+    public virtual ICollection<TsDynDataRelationship> RelationshipsWithThisAsChild { get; set; } = new HashSet<TsDynDataRelationship>();
 
-    //public virtual ICollection<ToSicEavEntities> InverseConfigurationSetNavigation { get; set; } = new HashSet<ToSicEavEntities>();
+    public virtual ICollection<TsDynDataRelationship> RelationshipsWithThisAsParent { get; set; } = new HashSet<TsDynDataRelationship>();
 
-    public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsChild { get; set; } = new HashSet<ToSicEavEntityRelationships>();
-
-    public virtual ICollection<ToSicEavEntityRelationships> RelationshipsWithThisAsParent { get; set; } = new HashSet<ToSicEavEntityRelationships>();
-
-    public virtual ICollection<ToSicEavValues> ToSicEavValues { get; set; } = new HashSet<ToSicEavValues>();
+    public virtual ICollection<TsDynDataValue> TsDynDataValues { get; set; } = new HashSet<TsDynDataValue>();
 }

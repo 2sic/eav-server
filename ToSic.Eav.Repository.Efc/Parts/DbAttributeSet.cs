@@ -2,21 +2,21 @@
 
 internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
 {
-    private IQueryable<ToSicEavAttributeSets> GetDbContentTypeCoreQuery(int appId)
-        => DbContext.SqlDb.ToSicEavAttributeSets
-            .Include(a => a.ToSicEavAttributes)
+    private IQueryable<TsDynDataContentType> GetDbContentTypeCoreQuery(int appId)
+        => DbContext.SqlDb.TsDynDataContentTypes
+            .Include(a => a.TsDynDataAttributes)
             .Where(a => a.AppId == appId && !a.TransactionIdDeleted.HasValue);
 
     /// <summary>
-    /// Get a single AttributeSet
+    /// Get a single ContentType
     /// </summary>
-    internal ToSicEavAttributeSets GetDbContentType(int appId, int attributeSetId)
-        => GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.AttributeSetId == attributeSetId);
+    internal TsDynDataContentType GetDbContentType(int appId, int contentTypeId)
+        => GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.ContentTypeId == contentTypeId);
 
     /// <summary>
-    /// Get a single AttributeSet
+    /// Get a single ContentType
     /// </summary>
-    public ToSicEavAttributeSets GetDbContentType(int appId, string name, bool alsoCheckNiceName = false)
+    public TsDynDataContentType GetDbContentType(int appId, string name, bool alsoCheckNiceName = false)
     {
         var byStaticName = GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.StaticName == name);
         if (byStaticName != null || !alsoCheckNiceName)
@@ -24,9 +24,9 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
         return GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.Name == name);
     }
 
-    private List<ToSicEavAttributeSets> GetDbContentTypes(int appId, string name, bool alsoCheckNiceName = false)
+    private List<TsDynDataContentType> GetDbContentTypes(int appId, string name, bool alsoCheckNiceName = false)
     {
-        var l = Log.Fn<List<ToSicEavAttributeSets>>($"{nameof(appId)}: {appId}; {nameof(name)}: {name}; {nameof(alsoCheckNiceName)}: {alsoCheckNiceName}");
+        var l = Log.Fn<List<TsDynDataContentType>>($"{nameof(appId)}: {appId}; {nameof(name)}: {name}; {nameof(alsoCheckNiceName)}: {alsoCheckNiceName}");
         var byStaticName = GetDbContentTypeCoreQuery(appId)
             .Where(s => s.StaticName == name)
             .ToList();
@@ -75,7 +75,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
             if (found.Count != 1)
                 throw new($"{preparedError} Found {found.Count}");
 
-            var firstId = found.First().AttributeSetId;
+            var firstId = found.First().ContentTypeId;
             return l.Return(firstId);
         }
         catch (InvalidOperationException ex)
@@ -90,7 +90,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
     private bool DbAttribSetExists(int appId, string staticName)
         => GetDbContentTypeCoreQuery(appId).Any(a => a.StaticName == staticName);
 
-    internal ToSicEavAttributeSets PrepareDbAttribSet(string name, string nameId, string scope, bool skipExisting, int? appId)
+    internal TsDynDataContentType PrepareDbAttribSet(string name, string nameId, string scope, bool skipExisting, int? appId)
     {
         if (string.IsNullOrEmpty(nameId))
             nameId = Guid.NewGuid().ToString();
@@ -105,7 +105,7 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
             throw new("An AttributeSet with StaticName \"" + nameId + "\" already exists.");
         }
 
-        var newSet = new ToSicEavAttributeSets
+        var newSet = new TsDynDataContentType
         {
             Name = name,
             StaticName = nameId,

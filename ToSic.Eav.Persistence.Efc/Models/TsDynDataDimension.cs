@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public partial class ToSicEavDimensions : Data.DimensionDefinition
+public partial class TsDynDataDimension : Data.DimensionDefinition
 {
-    public ToSicEavDimensions()
+    public TsDynDataDimension()
     {
         Active = true;
     }
@@ -22,10 +22,10 @@ public partial class ToSicEavDimensions : Data.DimensionDefinition
 
     public int ZoneId { get; set; }
 
-    public virtual ICollection<ToSicEavDimensions> InverseParentNavigation { get; set; } = new HashSet<ToSicEavDimensions>();
+    public virtual ICollection<TsDynDataDimension> InverseParentNavigation { get; set; } = new HashSet<TsDynDataDimension>();
 
-    public virtual ToSicEavDimensions ParentNavigation { get; set; }
+    public virtual TsDynDataDimension ParentNavigation { get; set; }
 
-    public virtual ICollection<ToSicEavValuesDimensions> ToSicEavValuesDimensions { get; set; } = new HashSet<ToSicEavValuesDimensions>();
+    public virtual ICollection<TsDynDataValueDimension> TsDynDataValueDimensions { get; set; } = new HashSet<TsDynDataValueDimension>();
     public virtual TsDynDataZone Zone { get; set; }
 }

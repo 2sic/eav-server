@@ -11,14 +11,14 @@ partial class DbEntity
     private bool ClearAttributesInDbModel(int entityId)
     {
         var callLog = Log.Fn<bool>(timer: true);
-        var val = DbContext.SqlDb.ToSicEavValues
-            .Include(v => v.ToSicEavValuesDimensions)
+        var val = DbContext.SqlDb.TsDynDataValues
+            .Include(v => v.TsDynDataValueDimensions)
             .Where(v => v.EntityId == entityId)
             .ToList();
 
         if (val.Count == 0) return callLog.ReturnFalse("no changes");
 
-        var dims = val.SelectMany(v => v.ToSicEavValuesDimensions);
+        var dims = val.SelectMany(v => v.TsDynDataValueDimensions);
         DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(dims));
         DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(val));
         return callLog.ReturnTrue("ok");
@@ -26,8 +26,8 @@ partial class DbEntity
 
     private void SaveAttributesAsEav(IEntity newEnt,
         SaveOptions so,
-        List<ToSicEavAttributes> dbAttributes,
-        ToSicEavEntities dbEnt,
+        List<TsDynDataAttribute> dbAttributes,
+        TsDynDataEntity dbEnt,
         int transactionId,
         bool logDetails
     ) => Log.Do($"id:{newEnt.EntityId}", timer: true, action: () =>
@@ -56,10 +56,10 @@ partial class DbEntity
                 {
                     #region prepare languages - has extensive error reporting, to help in case any db-data is bad
 
-                    List<ToSicEavValuesDimensions> toSicEavValuesDimensions;
+                    List<TsDynDataValueDimension> toSicEavValuesDimensions;
                     try
                     {
-                        toSicEavValuesDimensions = value.Languages?.Select(l => new ToSicEavValuesDimensions
+                        toSicEavValuesDimensions = value.Languages?.Select(l => new TsDynDataValueDimension
                         {
                             DimensionId = _zoneLangs.Single(ol => ol.Matches(l.Key)).DimensionId,
                             ReadOnly = l.ReadOnly
@@ -81,15 +81,14 @@ partial class DbEntity
                         Log.A(Log.Try(() =>
                             $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count()}, dim⋮{toSicEavValuesDimensions?.Count}"));
 
-                    var newVal = new ToSicEavValues
+                    var newVal = new TsDynDataValue
                     {
                         AttributeId = attribDef.AttributeId,
                         Value = value.Serialized ?? "",
-                        TransactionIdCreated = transactionId, // todo: remove some time later
-                        ToSicEavValuesDimensions = toSicEavValuesDimensions,
+                        TsDynDataValueDimensions = toSicEavValuesDimensions,
                         EntityId = dbEnt.EntityId
                     };
-                    AttributeQueueAdd(() => DbContext.SqlDb.ToSicEavValues.Add(newVal));
+                    AttributeQueueAdd(() => DbContext.SqlDb.TsDynDataValues.Add(newVal));
                 }
 
                 return "ok";

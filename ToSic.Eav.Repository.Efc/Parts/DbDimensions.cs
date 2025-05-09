@@ -5,7 +5,7 @@ internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
     private int GetDimensionId(string systemKey, string externalKey)
     {
         // Because of changes in EF 3.x we had to split where part on server and client.
-        return DbContext.SqlDb.ToSicEavDimensions
+        return DbContext.SqlDb.TsDynDataDimensions
             .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
             .ToList().Where(d =>
                 d.Matches(externalKey)
@@ -19,7 +19,7 @@ internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
     /// </summary>
     private void UpdateDimension(int dimensionId, bool? active = null, string name = null)
     {
-        var dimension = DbContext.SqlDb.ToSicEavDimensions.Single(d => d.DimensionId == dimensionId);
+        var dimension = DbContext.SqlDb.TsDynDataDimensions.Single(d => d.DimensionId == dimensionId);
         if (active.HasValue)
             dimension.Active = active.Value;
         if (name != null)
@@ -52,7 +52,7 @@ internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
     /// </summary>
     internal void AddRootCultureNode(string systemKey, string name, TsDynDataZone zone)
     {
-        var newDimension = new ToSicEavDimensions
+        var newDimension = new TsDynDataDimension
         {
             Key = systemKey,
             Name = name,
@@ -70,7 +70,7 @@ internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
     /// </summary>
     private List<DimensionDefinition> GetLanguages(bool includeInactive = false)
     {
-        return DbContext.SqlDb.ToSicEavDimensions.ToList().Where(d =>
+        return DbContext.SqlDb.TsDynDataDimensions.ToList().Where(d =>
             d.Parent.HasValue
             && d.ParentNavigation.Key == Constants.CultureSystemKey
             && d.ZoneId == DbContext.ZoneId
@@ -83,7 +83,7 @@ internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
     /// </summary>
     private void AddLanguage(string name, string externalKey)
     {
-        var newLanguage = new ToSicEavDimensions
+        var newLanguage = new TsDynDataDimension
         {
             Name = name,
             EnvironmentKey = externalKey,
