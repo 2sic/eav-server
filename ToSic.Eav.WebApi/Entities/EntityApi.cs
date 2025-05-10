@@ -9,7 +9,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityApi(
     AppWorkContextService appWorkCtxSvc,
     GenWorkPlus<WorkEntities> workEntities,

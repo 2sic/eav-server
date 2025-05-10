@@ -14,7 +14,7 @@ using ToSic.Eav.Services;
 
 namespace ToSic.Eav.ImportExport.Internal.Zip;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipExport(
     IAppReaderFactory appReaders,
     IDataSourcesService dataSourceFactory,

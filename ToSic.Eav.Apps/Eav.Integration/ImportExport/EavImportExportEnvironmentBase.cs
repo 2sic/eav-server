@@ -6,7 +6,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.Apps.Integration;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class EavImportExportEnvironmentBase(ISite site, IAppsCatalog appsCatalog, string logName)
     : ServiceBase(logName), IImportExportEnvironment
 {

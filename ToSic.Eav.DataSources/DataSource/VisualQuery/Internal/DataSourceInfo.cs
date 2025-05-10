@@ -3,7 +3,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.DataSource.VisualQuery.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
 {
         

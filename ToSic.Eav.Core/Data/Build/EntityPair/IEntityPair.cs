@@ -9,7 +9,7 @@
 /// Added in 15.04
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IEntityPair<out TPartner>: ICanBeEntity
 {
     TPartner Partner { get; }

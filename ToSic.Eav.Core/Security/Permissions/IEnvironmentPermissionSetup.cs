@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Security;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IEnvironmentPermissionSetup : IEnvironmentPermission
 {
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Apps;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppLoadConstants
 {
     public const string

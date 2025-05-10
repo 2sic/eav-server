@@ -3,7 +3,7 @@
 namespace ToSic.Eav.DataSource.Internal;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceConnection(IDataSource source, string sourceStream, IDataSource target, string targetStream)
 {
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
@@ -38,7 +38,7 @@ public class DataSourceConnection(IDataSource source, string sourceStream, IData
     
     
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class QuickSourceInfo(IDataSource data, string streamName)
 {
     public string Label { get; } = data?.Label;

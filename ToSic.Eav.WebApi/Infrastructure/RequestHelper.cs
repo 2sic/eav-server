@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Infrastructure;
 /// Helper to get header, query string and route information from current request.
 /// Used as input to build current context.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class RequestHelper(IHttpContextAccessor httpContextAccessor)
 {
     public T GetTypedHeader<T>(string headerName, T fallback)

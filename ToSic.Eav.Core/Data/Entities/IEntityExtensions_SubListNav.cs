@@ -13,7 +13,7 @@ static partial class IEntityExtensions
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static PropReqResult TryToNavigateToEntityInList(this IEntity entity, PropReqSpecs specs,
         object parentDynEntity, PropertyLookupPath path
     ) => specs.LogOrNull.Func(specs.Field, l =>

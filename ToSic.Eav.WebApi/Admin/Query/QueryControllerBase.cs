@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi.Admin.Query;
 ///
 /// It's just a base controller, because some methods need to be added at the SXC level which don't exist in the EAV.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class QueryControllerBase<TImplementation>(
     QueryControllerBase<TImplementation>.MyServices services,
     string logName,

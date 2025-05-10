@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.PropertyLookup;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PropReqResultExtensions
 {
     public static IEntity GetFirstResultEntity(this PropReqResult resultSet)

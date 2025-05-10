@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneManager(LazySvc<DbDataController> dbLazy, LazySvc<AppCachePurger> appCachePurger)
     : ServiceBase("App.Zone", connect: [dbLazy, appCachePurger]), IZoneIdentity
 {

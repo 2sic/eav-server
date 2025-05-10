@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data;
 /// Moved here from Eav.Constants
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Attributes
 {
     #region Special Virtual-Attribute Names

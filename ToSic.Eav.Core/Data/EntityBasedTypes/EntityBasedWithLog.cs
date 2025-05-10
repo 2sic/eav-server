@@ -4,7 +4,7 @@
 /// A strongly typed object which gets its data from an entity, and also logs what it does.
 /// </summary>
 [PrivateApi("was public till 16.09")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class EntityBasedWithLog: EntityBasedType, IHasLog
 {
     /// <summary>

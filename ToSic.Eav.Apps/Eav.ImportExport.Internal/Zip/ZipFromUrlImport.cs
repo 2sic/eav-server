@@ -5,7 +5,7 @@ using ToSic.Eav.Internal.Configuration;
 
 namespace ToSic.Eav.ImportExport.Internal.Zip;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipFromUrlImport: ZipImport
 {
     #region DI Constructor

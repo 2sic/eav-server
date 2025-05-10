@@ -1,10 +1,10 @@
 ﻿namespace ToSic.Eav.Apps;
 
 // ReSharper disable once InconsistentNaming
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class IAppIdentityExtensions
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string Show(this IAppIdentity appId)
         => $"{appId.ZoneId}/{appId.AppId}";
 
@@ -13,7 +13,7 @@ public static class IAppIdentityExtensions
     /// </summary>
     /// <param name="appId"></param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IAppIdentityPure PureIdentity(this IAppIdentity appId)
         => new AppIdentityPure(appId.ZoneId, appId.AppId);
 }

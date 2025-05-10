@@ -6,7 +6,7 @@ using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Admin;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppInternalsControllerReal(
     LazySvc<IContextOfSite> context,
     LazySvc<ContentTypeDtoService> ctApiLazy,

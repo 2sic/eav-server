@@ -6,7 +6,7 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Eav.ImportExport.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(EavLogs.Eav + ".FileMn")
 {
     /// <summary>

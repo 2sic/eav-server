@@ -12,11 +12,11 @@ namespace ToSic.Eav.Data;
 /// </remarks>
 /// <typeparam name="T">Type of the Value</typeparam>
 [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal record Attribute<T> : AttributeBase, IAttribute<T>
 {
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public IAttribute With(IImmutableList<IValue> newValues)
         => this with { ValuesImmutable = newValues };
 
@@ -65,13 +65,13 @@ internal record Attribute<T> : AttributeBase, IAttribute<T>
 
     #region IAttribute Implementations
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     object IAttribute.this[string languageKey]
         => GetInternal([languageKey.ToLowerInvariant(), null], IsDefault, FindHavingDimensionsLowerCase, fallbackToAny: true);
 
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public (IValue ValueField, object Result) GetTypedValue(string[] languageKeys, bool fallbackToAny)
     {
         var iVal = GetInternalValue(languageKeys, IsDefault, FindHavingDimensionsLowerCase, fallbackToAny: fallbackToAny);
@@ -79,7 +79,7 @@ internal record Attribute<T> : AttributeBase, IAttribute<T>
     }
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     object IAttribute.this[int languageId]
         => GetInternal([languageId], IsDefault, FindHavingDimensions, fallbackToAny: true);
     #endregion

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavLogs
 {
     /// <summary>

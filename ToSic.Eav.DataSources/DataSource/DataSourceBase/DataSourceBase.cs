@@ -56,18 +56,18 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
 
     /// <inheritdoc />
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public string Name => GetType().Name;
 
     [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public string Label { get; private set; }
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public virtual bool Immutable { get; private set; }
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public void DoWhileOverrideImmutable(Action action)
     {
         _overrideImmutable = true;
@@ -78,7 +78,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     private bool _overrideImmutable;
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public void AddDebugInfo(Guid? guid, string label)
     {
         Guid = guid ?? Guid;

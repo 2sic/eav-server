@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Metadata;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Decorators
 {
     public static string MessageField = "Message";

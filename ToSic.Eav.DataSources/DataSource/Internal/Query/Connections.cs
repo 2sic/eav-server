@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 /// Helper for DataPipeline Wiring of DataSources
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class Connections
 {
     private static readonly Regex WireRegex = new("(?<From>.+):(?<Out>.+)>(?<To>.+):(?<In>.+)", RegexOptions.Compiled);

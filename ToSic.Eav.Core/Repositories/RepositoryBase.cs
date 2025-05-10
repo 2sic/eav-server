@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Repositories;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class RepositoryBase(bool global, bool readOnly, RepositoryTypes type) : ServiceBase("RP.Info")
 {
     public bool Global { get; } = global;

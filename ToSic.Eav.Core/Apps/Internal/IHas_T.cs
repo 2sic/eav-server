@@ -6,7 +6,7 @@
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHas<out T> where T : class
 {
     T Value { get; }

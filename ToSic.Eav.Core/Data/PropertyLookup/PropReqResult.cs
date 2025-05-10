@@ -5,7 +5,7 @@
 /// Will contain additional information for upstream processing
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class PropReqResult(object result, ValueTypesWithState valueType, PropertyLookupPath path)
 {
     /// <summary>

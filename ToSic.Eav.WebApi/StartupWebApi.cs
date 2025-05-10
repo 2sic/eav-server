@@ -21,7 +21,7 @@ using InsightsControllerReal = ToSic.Eav.WebApi.Sys.Insights.InsightsControllerR
 
 namespace ToSic.Eav.WebApi;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupWebApi
 {
     public static IServiceCollection AddEavWebApi(this IServiceCollection services)

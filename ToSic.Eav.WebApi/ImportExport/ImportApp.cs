@@ -13,7 +13,7 @@ using ISite = ToSic.Eav.Context.ISite;
 
 namespace ToSic.Eav.WebApi.ImportExport;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportApp(
     IEnvironmentLogger envLogger,
     ZipImport zipImport,

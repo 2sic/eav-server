@@ -4,7 +4,7 @@
 /// Extends the ValueTypes Enum with additional states such as virtual, notFound etc.
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public enum ValueTypesWithState
 {
     Undefined = ValueTypes.Undefined,

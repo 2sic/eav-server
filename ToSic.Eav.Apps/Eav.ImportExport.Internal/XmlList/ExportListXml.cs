@@ -10,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Internal.XmlList;
 /// <summary>
 /// For exporting a content-type into xml, either just the schema or with data
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportListXml(ExportImportValueConversion valueConverter)
     : ServiceBase("App.LstExp", connect: [valueConverter])
 {

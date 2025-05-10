@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSource.VisualQuery.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceInfoError(string title, string message)
 {
     public string Title { get; set; } = title;

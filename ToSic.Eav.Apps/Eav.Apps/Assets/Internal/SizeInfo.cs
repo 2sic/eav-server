@@ -4,7 +4,7 @@ namespace ToSic.Eav.Apps.Assets.Internal;
 
 /// <inheritdoc />
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public class SizeInfo(int bytes) : ISizeInfo
 {

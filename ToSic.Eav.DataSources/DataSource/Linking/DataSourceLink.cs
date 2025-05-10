@@ -5,7 +5,7 @@ using ToSic.Lib.Internal.Generics;
 namespace ToSic.Eav.DataSource;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal class DataSourceLink(IDataSourceLink original,
 #pragma warning disable CS9113 // Parameter is unread.
     NoParamOrder protect = default,

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Internal;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class JsonServiceInternalUnknown : IJsonServiceInternal
 {
     public JsonServiceInternalUnknown(WarnUseOfUnknown<JsonServiceInternalUnknown> _) { }

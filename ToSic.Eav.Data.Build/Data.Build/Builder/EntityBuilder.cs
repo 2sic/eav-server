@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Build;
 /// It's basically different kinds of constructors, just to keep the primary 
 /// Entity object lean and clean
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityBuilder(AttributeBuilder attributeBuilder)
 {
     public Entity Create(

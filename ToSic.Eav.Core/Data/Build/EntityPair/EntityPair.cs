@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data.Build;
 /// Added in 15.04
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record EntityPair<TPartner>(IEntity Entity, TPartner Partner) : IEntityPair<TPartner>
 {
     /// <summary>

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data;
 /// Note that even though you may expect constants, these are usually static variables.
 /// This is to ensure that they don't get compiled into other DLLs, but will always be retrieved from here.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataConstants
 {
     #region DataFactory Constants

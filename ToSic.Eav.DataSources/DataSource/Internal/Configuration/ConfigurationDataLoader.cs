@@ -3,7 +3,7 @@
 namespace ToSic.Eav.DataSource.Internal.Configuration;
 
 [PrivateApi("Internal helper")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ConfigurationDataLoader() : ServiceBase(EavLogs.Eav + "CnfLdr")
 {
 

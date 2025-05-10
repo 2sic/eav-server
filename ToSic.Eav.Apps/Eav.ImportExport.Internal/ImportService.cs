@@ -16,7 +16,7 @@ namespace ToSic.Eav.ImportExport.Internal;
 /// <summary>
 /// Import Content Types and/or Entities to the EAV SqlStore
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportService(
     Generator<DbDataController> genDbDataController,
     IImportExportEnvironment importExportEnvironment,

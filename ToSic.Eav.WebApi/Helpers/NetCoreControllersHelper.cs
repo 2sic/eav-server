@@ -8,7 +8,7 @@ using ToSic.Eav.Code;
 
 namespace ToSic.Eav.WebApi.Helpers;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class NetCoreControllersHelper(ControllerBase parent) : ICanGetService
 {
     public ControllerBase Parent { get; } = parent;

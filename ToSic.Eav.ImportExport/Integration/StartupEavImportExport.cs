@@ -10,7 +10,7 @@ using ToSic.Eav.Serialization.Internal;
 
 namespace ToSic.Eav.Integration;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavImportExport
 {
     public static IServiceCollection AddImportExport(this IServiceCollection services)

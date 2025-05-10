@@ -16,10 +16,10 @@ partial class App: IDataSourceReset
     private bool _requiresRebuildOfOut = true;
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     void IDataSourceReset.Reset() => _requiresRebuildOfOut = true;
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     protected void Reset() => _requiresRebuildOfOut = true;
 
     /// <inheritdoc/>

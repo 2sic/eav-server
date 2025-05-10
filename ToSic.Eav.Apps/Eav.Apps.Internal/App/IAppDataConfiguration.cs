@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Internal;
 /// The configuration of an app-data - usually relevant so the source will auto-filter out unpublished data for normal viewers.
 /// </summary>
 [PrivateApi("before v17 was InternalApi_DoNotUse_MayChangeWithoutNotice - this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppDataConfiguration
 {
     /// <summary>

@@ -4,7 +4,7 @@
 /// Constants used by Queries / VisualQuery
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryConstants
 {
     #region Params

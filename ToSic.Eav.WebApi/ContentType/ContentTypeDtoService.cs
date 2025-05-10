@@ -4,7 +4,7 @@
 /// <summary>
 /// Web API Controller for ContentTypes
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeDtoService(
     GenWorkPlus<WorkEntities> workEntities,
     GenWorkBasic<WorkAttributes> attributes,

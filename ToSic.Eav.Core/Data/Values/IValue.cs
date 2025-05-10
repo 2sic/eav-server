@@ -21,24 +21,24 @@ public interface IValue
     /// Should usually not be used, it's more for internal use.
     /// </summary>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     object ObjectContents { get; }
 
     /// <summary>
     /// Returns the inner value in a form that can be serialized, for JSON serialization etc.
     /// </summary>
     [PrivateApi("2dm - changed to private v15.04 - was public before")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     object SerializableObject { get; }
 
     /// <summary>
     /// Older way to serialize the value - used for the XML export/import and save to DB but shouldn't be used elsewhere.
     /// </summary>
     [PrivateApi("not sure why we have two serialization systems, probably will deprecate this some day")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     string Serialized { get; }
 
     [PrivateApi("WIP - not sure if it should be here - should ensure that we have a pure/functional object")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     IValue With(IImmutableList<ILanguage> newLanguages);
 }

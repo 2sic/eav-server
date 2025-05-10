@@ -6,7 +6,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Internal.Xml;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(services, "IEx.XmlSer")
 {
     private Dictionary<string, int> _dimensions;

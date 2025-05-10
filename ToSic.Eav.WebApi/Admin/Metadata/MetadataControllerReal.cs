@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata;
 /// Web API Controller for MetaData
 /// Metadata-entities (content-items) are additional information about some other object
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MetadataControllerReal(
     IConvertToEavLight converter,
     IAppReaderFactory appReaders,

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Security;
 /// Helper object for constants related to the permissions-type
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Permission(IEntity entity) : EntityBasedType(entity), IPermission
 {
     public const string TypeName = "PermissionConfiguration";

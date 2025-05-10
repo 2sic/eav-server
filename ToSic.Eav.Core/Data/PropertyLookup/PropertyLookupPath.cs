@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Data.PropertyLookup;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class PropertyLookupPath(List<string> original = null)
 {
     public List<string> Parts = original == null ? [] : [..original];
@@ -8,7 +8,7 @@ public class PropertyLookupPath(List<string> original = null)
 }
 
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PropertyLookupPathExtensions
 {
     public static PropertyLookupPath KeepOrNew(this PropertyLookupPath original) 

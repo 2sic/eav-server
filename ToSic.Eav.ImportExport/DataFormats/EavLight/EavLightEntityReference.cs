@@ -6,7 +6,7 @@
 /// Used in preparing Entities for Basic-JSON serialization.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("DTO objects are only publicly documented but can change with time. You usually will not need them in your code. ")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavLightEntityReference
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Id;

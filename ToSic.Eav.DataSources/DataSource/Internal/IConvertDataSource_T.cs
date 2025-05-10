@@ -8,7 +8,7 @@
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IConvertDataSource<T>
 {
     /// <summary>
@@ -27,7 +27,7 @@ public interface IConvertDataSource<T>
 
 
     [PrivateApi("not public yet, as the signature is not final yet")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     IDictionary<string, IEnumerable<T>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids);
 
 }

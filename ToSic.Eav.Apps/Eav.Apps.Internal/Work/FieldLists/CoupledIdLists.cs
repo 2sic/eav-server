@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// These are usually relationship-properties of an entity,
 /// like the Content items on a ContentBlock
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CoupledIdLists: HelperBase
 {
     public DicNameInt Lists = new(StringComparer.InvariantCultureIgnoreCase);

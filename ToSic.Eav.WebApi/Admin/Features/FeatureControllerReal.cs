@@ -4,7 +4,7 @@ using ToSic.Eav.WebApi.Sys.Licenses;
 
 namespace ToSic.Eav.WebApi.Admin.Features;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureControllerReal(
     // Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
     LazySvc<EavFeaturesLoader> systemLoaderLazy,

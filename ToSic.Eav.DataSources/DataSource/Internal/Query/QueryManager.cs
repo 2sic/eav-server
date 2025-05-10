@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 /// Helpers to work with Data Queries
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryManager(
     Generator<Query> queryGenerator,
     LazySvc<IAppReaderFactory> appReaders,

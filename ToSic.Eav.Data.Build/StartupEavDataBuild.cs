@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Data.Build;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavDataBuild
 {
     public static IServiceCollection AddEavDataBuild(this IServiceCollection services)

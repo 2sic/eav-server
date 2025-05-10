@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Cms.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public enum PublishingMode
 {
     DraftOptional,

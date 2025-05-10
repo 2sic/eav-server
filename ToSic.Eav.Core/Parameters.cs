@@ -5,7 +5,7 @@ using ToSic.Lib.Coding;
 namespace ToSic.Eav;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Parameters
 {
     [Obsolete("use the new NoParamOrder Struct instead")] 

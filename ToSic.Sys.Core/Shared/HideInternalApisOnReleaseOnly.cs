@@ -1,24 +1,35 @@
-﻿
-// This is a special helper file while developing
+﻿// This is a special helper file while developing
 // It disables the official EditorBrowsableAttribute
 // Because that is somehow broken ATM in Visual Studio
 // Causing trouble while we're developing
 
-// Fix issue with EditorBrowsableAttribute
+#if !DEBUG
 
-#if DEBUG
-global using ShowApiWhenReleased = FixEditorBrowsable.FakeEditorBrowsableAttribute;
-global using ShowApiMode = FixEditorBrowsable.FakeEditorBrowsableState;
-#else
+// Production situation, where we want the real attributes applied
+
 global using ShowApiWhenReleased = System.ComponentModel.EditorBrowsableAttribute;
 global using ShowApiMode = System.ComponentModel.EditorBrowsableState;
-#endif
 
+#else
 
+// Development situation, where we want to use our own attribute to prevent Visual Studio
+// from hiding APIs
+
+global using ShowApiWhenReleased = FixEditorBrowsable.FakeEditorBrowsableAttribute;
+global using ShowApiMode = FixEditorBrowsable.FakeEditorBrowsableState;
+
+// Note: We must include `using System;` in this file, as it may be reused in projects which don't have that
+// ReSharper disable once RedundantUsingDirective
+using System;
+
+// ReSharper disable UseSymbolAlias
 
 // ReSharper disable once CheckNamespace
 namespace FixEditorBrowsable;
 
+// We need to tell resharper to leave this as is, since it's sometimes turned off
+// in which case Resharper thinks it could be removed
+// ReSharper disable UnusedMember.Global
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Event | AttributeTargets.Delegate | AttributeTargets.Interface)]
 public sealed class FakeEditorBrowsableAttribute(FakeEditorBrowsableState state) : Attribute;
 
@@ -32,3 +43,5 @@ public enum FakeEditorBrowsableState
     /// <summary>The property or method is a feature that only advanced users should see. An editor can either show or hide such properties.</summary>
     Advanced,
 }
+#endif
+

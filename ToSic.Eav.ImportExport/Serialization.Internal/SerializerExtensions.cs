@@ -2,10 +2,10 @@
 
 namespace ToSic.Eav.Serialization.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SerializerExtensions
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static T SetApp<T>(this T serializer, IAppReader appReader) where T : SerializerBase
     {
         var l = serializer.Log.Fn<T>();

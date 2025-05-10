@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data.Build;
 /// <summary>
 /// Builder to create / clone <see cref="IContentTypeAttribute"/> definitions.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
 {
     /// <summary>

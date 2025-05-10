@@ -3,7 +3,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Apps.Assets.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
 {
     /// <inheritdoc />

@@ -16,7 +16,7 @@ namespace ToSic.Eav.Integration;
 /// <summary>
 /// Global Eav Configuration
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEav
 {
     /// <summary>

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.DataSource.Internal;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceConnections(DataSourceBase parent)
 {
     public List<DataSourceConnection> In = [];

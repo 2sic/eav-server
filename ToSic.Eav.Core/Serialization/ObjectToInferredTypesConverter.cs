@@ -37,7 +37,7 @@ namespace ToSic.Eav.Serialization;
 /// https://stackoverflow.com/questions/65972825/c-sharp-deserializing-nested-json-to-nested-dictionarystring-object/65974452#65974452
 /// https://stackoverflow.com/questions/68519985/how-do-i-get-system-text-json-to-deserialize-objects-into-their-original-type
 /// </remarks>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ObjectToInferredTypesConverter : JsonConverter<object>
 {
     public override object Read(

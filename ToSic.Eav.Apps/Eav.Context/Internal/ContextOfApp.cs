@@ -10,7 +10,7 @@ using static ToSic.Eav.Apps.AppStackConstants;
 
 namespace ToSic.Eav.Context.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContextOfApp: ContextOfSite, IContextOfApp
 {
     #region Constructor / DI

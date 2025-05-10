@@ -7,7 +7,7 @@ using ToSic.Lib.Internal.Generics;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class JsonSerializer
 {
     public string SerializeJsonBundle(JsonBundle bundleList, int indentation)

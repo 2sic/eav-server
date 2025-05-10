@@ -4,7 +4,7 @@ using ToSic.Eav.DataSource.Streams.Internal;
 
 namespace ToSic.Eav.DataSource.Internal.Inspect;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class InspectStream
 {
     public Guid Target;

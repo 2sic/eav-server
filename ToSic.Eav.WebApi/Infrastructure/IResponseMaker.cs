@@ -10,7 +10,7 @@ using TController = Microsoft.AspNetCore.Mvc.ControllerBase;
 namespace ToSic.Eav.WebApi.Infrastructure;
 
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IResponseMaker
 {
     void Init(TController controller);

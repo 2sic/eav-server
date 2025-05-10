@@ -12,7 +12,7 @@ using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 
 namespace ToSic.Eav.WebApi.Admin;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityControllerReal(
     LazySvc<IContextOfSite> context,
     LazySvc<IAppsCatalog> appsCatalog,

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportDecorator(IEntity entity) : EntityBasedType(entity)
 {
     public static string TypeNameId = "32698880-1c2e-41ab-bcfc-420091d3263f";

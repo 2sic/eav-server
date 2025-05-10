@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.ImportExport.Internal.Xml;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class BundleEntityWithAssets
 {
     public IEntity Entity;

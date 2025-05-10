@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 /// If this model works well, we'll probably reconsider how our xxxRead objects work
 /// </summary>
 /// <remarks>new in v13.02</remarks>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus<WorkInputTypes> inputTypes)
     : ServiceBase($"{AppConstants.LogName}.MdRead", connect: [requirements])
 {

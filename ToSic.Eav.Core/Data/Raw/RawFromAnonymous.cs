@@ -3,7 +3,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data.Raw;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class RawFromAnonymous: RawEntity
 {
     public RawFromAnonymous(object original, ILog log)

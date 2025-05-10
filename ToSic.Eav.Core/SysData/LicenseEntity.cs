@@ -7,7 +7,7 @@ namespace ToSic.Eav.SysData;
 /// License entity - usually stored in the global / preset App.
 /// Used by the FeaturesLoader to load the license information from inside JSON entities.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal class LicenseEntity(IEntity entity) : EntityBasedType(entity)
 {
     public static string TypeNameId = "57248ccb-24f1-44c6-9c6c-085e44ebb0cb";

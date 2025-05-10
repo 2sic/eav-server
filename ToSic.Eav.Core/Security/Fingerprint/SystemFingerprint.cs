@@ -29,7 +29,7 @@ namespace ToSic.Eav.Security.Fingerprint;
 /// <summary>
 /// Class responsible for generating the fingerprint
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IDbConfiguration> dbConfigLazy)
     : ServiceBase($"{EavLogs.Eav}SysFpr", connect: [platform, dbConfigLazy]), IFingerprint
 {

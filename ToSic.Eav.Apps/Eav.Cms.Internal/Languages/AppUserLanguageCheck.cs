@@ -12,7 +12,7 @@ using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.Cms.Internal.Languages;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppUserLanguageCheck(
     LazySvc<IZoneMapper> zoneMapperLazy,
     IContextOfSite ctx,

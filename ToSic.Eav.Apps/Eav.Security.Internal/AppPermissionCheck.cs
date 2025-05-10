@@ -8,7 +8,7 @@ namespace ToSic.Eav.Security.Internal;
 /// <summary>
 /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBase.MyServices services)
     : PermissionCheckBase(services, $"{AppConstants.LogName}.PrmChk", connect: [appReaders])
 {

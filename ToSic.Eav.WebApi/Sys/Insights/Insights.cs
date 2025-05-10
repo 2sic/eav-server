@@ -6,7 +6,7 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders)
     : ServiceBase("Api.SysIns", connect: [user, dsCache, insightsProviders])
 {

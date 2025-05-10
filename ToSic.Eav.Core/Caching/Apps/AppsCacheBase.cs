@@ -10,7 +10,7 @@ namespace ToSic.Eav.Caching;
 /// The real cache must implement this and also provide platform specific adjustments so that the caching is in sync with the Environment.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class AppsCacheBase : IAppsCacheSwitchable
 {
     #region Switchable

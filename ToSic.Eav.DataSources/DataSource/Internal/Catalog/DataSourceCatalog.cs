@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource.Internal.Catalog;
 /// A cache of all DataSource Types - initialized upon first access ever, then static cache.
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class DataSourceCatalog(
     IServiceProvider serviceProvider,
     LazySvc<IAppDataSourcesLoader> appDataSourcesLoader,

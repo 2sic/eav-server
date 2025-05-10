@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Serialization;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class JsonShortDateTimeConverter : JsonDateTimeConverter
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

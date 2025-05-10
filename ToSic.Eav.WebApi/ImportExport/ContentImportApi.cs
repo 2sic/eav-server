@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ToSic.Eav.WebApi.ImportExport;
 
 /// <inheritdoc />
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentImportApi(
     LazySvc<ImportListXml> importListXml,
     LazySvc<JsonSerializer> jsonSerializerLazy,

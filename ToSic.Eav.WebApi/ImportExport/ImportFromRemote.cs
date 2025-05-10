@@ -5,7 +5,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.WebApi.ImportExport;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportFromRemote(IEnvironmentLogger envLogger, ZipFromUrlImport zipImportFromUrl, IUser user)
     : ServiceBase("Bck.Export", connect: [envLogger, zipImportFromUrl, user])
 {

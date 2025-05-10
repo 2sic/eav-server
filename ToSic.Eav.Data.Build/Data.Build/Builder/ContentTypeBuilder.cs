@@ -6,7 +6,7 @@ using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Data.Build;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeBuilder
 {
     public const int DynTypeId = 1;

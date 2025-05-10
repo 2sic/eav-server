@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Internal;
 /// <param name="appReaders"></param>
 /// <param name="appPathsFactory"></param>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppJsonService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     ISite site,

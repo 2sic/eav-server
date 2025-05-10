@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Repositories;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IRepositorySaver
 {
     void SaveContentType(IContentType type);

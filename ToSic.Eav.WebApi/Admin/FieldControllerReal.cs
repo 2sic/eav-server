@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.WebApi.Admin;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FieldControllerReal(
     LazySvc<ContentTypeDtoService> ctApiLazy,
     GenWorkPlus<WorkInputTypes> inputTypes,

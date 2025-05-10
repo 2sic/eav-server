@@ -6,7 +6,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType, IHasDecorators<IContentType>, IMultiWrapper<IContentType>
 {
     public ContentTypeWrapper(IContentType contentType) : base((contentType as ContentTypeWrapper)?.GetContents() ?? contentType)

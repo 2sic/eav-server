@@ -5,7 +5,7 @@
 /// They should be managed here, so we know where to update things if necessary.
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceIcons
 {
     public const string Apps = "apps";

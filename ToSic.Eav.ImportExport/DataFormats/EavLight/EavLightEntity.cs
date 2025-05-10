@@ -13,5 +13,5 @@
 /// Introduced ca. 2sxc 4.0 just as a Dictionary, but for the documentation we created an own IJsonEntity type in 2sxc 12.05
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Internal DTO objects are documented for better understanding, but can change with time. You usually will not need them in your code. ")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavLightEntity() : Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);

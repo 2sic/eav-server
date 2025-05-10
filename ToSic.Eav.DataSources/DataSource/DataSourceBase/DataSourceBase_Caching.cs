@@ -9,23 +9,23 @@ partial class DataSourceBase
 
     /// <inheritdoc />
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public List<string> CacheRelevantConfigurations { get; } = [];
 
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public ICacheKeyManager CacheKey => _cacheKey ??= new(this);
     private CacheKey _cacheKey;
 
     /// <inheritdoc />
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public virtual string CachePartialKey => CacheKey.CachePartialKey;
 
     /// <inheritdoc />
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public virtual string CacheFullKey => CacheKey.CacheFullKey;
 
     /// <inheritdoc />

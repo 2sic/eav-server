@@ -8,7 +8,7 @@ namespace ToSic.Eav.Serialization;
 /// Marks objects that can serialize EAV data like Entities or Content-Types. <br/>
 /// </summary>
 [PrivateApi("not ready for publishing")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDataSerializer
 {
     void Initialize(IAppReader appReader);

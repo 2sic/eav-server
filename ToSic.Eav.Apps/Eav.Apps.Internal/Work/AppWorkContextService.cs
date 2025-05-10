@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// <summary>
 /// Helper to prepare the work context of any Unit of Work
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkContextService(
     LazySvc<IDataSourcesService> dataSourceSvc,
     LazySvc<IAppReaderFactory> appReaders,

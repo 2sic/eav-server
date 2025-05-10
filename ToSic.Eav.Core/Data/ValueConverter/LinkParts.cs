@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LinkParts
 {
     public LinkParts(string link)

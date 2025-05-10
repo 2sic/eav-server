@@ -21,7 +21,7 @@ using ToSic.Eav.Security.Internal;
 
 namespace ToSic.Eav.Apps.Integration;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavApps
 {
     public static IServiceCollection AddEavApps(this IServiceCollection services)

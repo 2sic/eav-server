@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 #endif
 namespace ToSic.Eav.Persistence.Efc.Models;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class EavDbContext : DbContext
 {
     //public bool DebugMode = false;

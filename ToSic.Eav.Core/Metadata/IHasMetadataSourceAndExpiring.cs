@@ -8,7 +8,7 @@ namespace ToSic.Eav.Metadata;
 /// This one also has expiry information.
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHasMetadataSourceAndExpiring: ICacheExpiring
 {
     /// <summary>

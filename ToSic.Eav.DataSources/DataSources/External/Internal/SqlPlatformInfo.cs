@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSources.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SqlPlatformInfo
 {
     public const string DefaultConnectionPlaceholder = "(default)";

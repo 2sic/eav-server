@@ -4,7 +4,7 @@ using ToSic.Eav.Persistence;
 
 namespace ToSic.Eav.Data.Startup;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavDataPersistence
 {
     public static IServiceCollection AddEavDataPersistence(this IServiceCollection services)

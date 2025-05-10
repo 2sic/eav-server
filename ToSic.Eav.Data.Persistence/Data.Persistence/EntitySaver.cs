@@ -10,7 +10,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", connect: [dataBuilder])
 {
     /// <summary>

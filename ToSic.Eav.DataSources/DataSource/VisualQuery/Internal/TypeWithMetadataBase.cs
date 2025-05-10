@@ -3,7 +3,7 @@ using ToSic.Lib.Data;
 
 namespace ToSic.Eav.DataSource.VisualQuery.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class TypeWithMetadataBase<T> : IHasIdentityNameId
     where T: class
 {

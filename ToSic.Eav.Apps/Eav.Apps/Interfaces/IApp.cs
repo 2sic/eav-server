@@ -30,7 +30,7 @@ public interface IApp : IAppIdentity, IHasMetadata
 
     [PrivateApi]
     [Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     string AppGuid { get; }
 
     /// <summary>
@@ -52,12 +52,12 @@ public interface IApp : IAppIdentity, IHasMetadata
     /// The tenant this app belongs to - for example, a DNN portal
     /// </summary>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     [Obsolete("Don't use any more, use NameId instead, will be removed ca. v17")]
     ISite Site { get; }
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     [Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
     // TODO: MARK as #Deprecated and log access
     ILookUpEngine ConfigurationProvider { get; }
@@ -68,7 +68,7 @@ public interface IApp : IAppIdentity, IHasMetadata
     ///// The stored / cached, read-only App State
     ///// </summary>
     //[PrivateApi("Was public till 14.7 but probably never communicated / used except internally. Made Private again in 15.06. Till then was AppState, not interface")]
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
     //[Obsolete("Don't use any more, use NameId instead, will be removed ca. v14")]
     //IAppState AppState { get; }
 

@@ -10,7 +10,7 @@
 /// * Re-published in 19.01
 /// </remarks>
 [PublicApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceConstants
 {
 

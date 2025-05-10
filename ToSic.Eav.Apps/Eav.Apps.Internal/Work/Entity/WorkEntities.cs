@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// <summary>
 /// WIP - meant as a replacement of EntityRuntime with clean architecture
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     : WorkUnitBase<IAppWorkCtxPlus>("ApS.EnRead", connect: [dataSourceFactory])
 {

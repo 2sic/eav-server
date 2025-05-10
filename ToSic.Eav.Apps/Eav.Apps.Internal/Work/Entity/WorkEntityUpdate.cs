@@ -4,7 +4,7 @@ using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityUpdate(
     DataBuilder builder,
     LazySvc<EntitySaver> entitySaverLazy,

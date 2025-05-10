@@ -5,7 +5,7 @@
 /// #SharedFieldDefinition
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeAttributeSysSettings
 {
     public ContentTypeAttributeSysSettings() { }

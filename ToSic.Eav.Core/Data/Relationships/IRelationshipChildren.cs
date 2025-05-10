@@ -4,7 +4,7 @@
 /// This manages child entities - so entities referenced in a field of an Entity
 /// </summary>
 [PrivateApi("this is for the Relationship.Children API, not recommended for others")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IRelationshipChildren
 {
     /// <summary>

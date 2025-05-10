@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataFormats.EavLight;
 /// A helper to serialize various combinations of entities, lists of entities etc
 /// </summary>
 [PrivateApi("Hide Implementation")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyServices>, IConvertToEavLight
 {
     #region Constructor / DI

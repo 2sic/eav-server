@@ -7,7 +7,7 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics;
 // this class helps debug in advanced scenarios
 // hasn't been used since ca. 2017, but keep in case we ever do deep work on the DB again
 // ReSharper disable once UnusedMember.Global
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EfCoreLoggerProvider : ILoggerProvider
 {
     public ILogger CreateLogger(string categoryName)

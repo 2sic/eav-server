@@ -13,7 +13,7 @@ namespace ToSic.Eav.Persistence.Efc;
 /// <summary>
 /// Loader of an App, it's ContentTypes, Entities etc. from SQL using Entity Framework Core.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EfcAppLoader(
     EavDbContext context,
     LazySvc<IZoneCultureResolver> environmentLazy,

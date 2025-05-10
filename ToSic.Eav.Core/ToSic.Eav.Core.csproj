@@ -117,6 +117,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\ToSic.Sys.Core\Shared\HideInternalApisOnReleaseOnly.cs" Link="HideInternalApisOnReleaseOnly.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="7.0.4" />
     <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" /><!-- from Oqtane.Shared.csproj -->
@@ -207,7 +211,7 @@
 
   <!-- Support Nullable in .net Framework -->
   <ItemGroup Condition="$(TargetFramework) == 'net472'">
-    <PackageReference Include="Nullable" Version="1.2.1">
+    <PackageReference Include="Nullable" Version="1.3.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

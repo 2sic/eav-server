@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps.Internal;
 /// <param name="services">All the dependencies of this app, managed by this app</param>
 /// <param name="logName">must be null by default, because of DI</param>
 [PrivateApi("Hide implementation - was PublicApi_Stable_ForUseInYourCode till 16.09")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract partial class EavApp(EavApp.MyServices services, string logName = default, object[] connect = default)
     : AppBase<EavApp.MyServices>(services, logName ?? "Eav.App", connect: connect), IApp
 {

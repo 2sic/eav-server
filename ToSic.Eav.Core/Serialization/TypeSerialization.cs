@@ -3,7 +3,7 @@
 /// <summary>
 /// Specs for serializing the type. ATM only used for Metadata!
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class TypeSerialization
 {
     /// <summary>

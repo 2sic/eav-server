@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Context.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IContextResolver: IHasLog, IContextResolverUserPermissions
 {
     /// <summary>

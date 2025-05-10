@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSources.Internal;
 /// including Create, Update and Delete
 /// </summary>
 [PrivateApi("May have been visible before v17, but probably not really, name was also different. Published through the IAppData interface.")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppDataWithCrud: Eav.DataSources.App, IAppData
 {
     private readonly LazySvc<IDataSourceCacheService> _dsCacheSvc;

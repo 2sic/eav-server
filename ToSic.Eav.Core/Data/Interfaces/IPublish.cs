@@ -5,7 +5,7 @@
 /// </remarks>
 /// <typeparam name="T"></typeparam>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IPublish
 {
     /// <summary>
@@ -14,7 +14,7 @@ public interface IPublish
     /// because when both a draft and published Entity exist, the have the same EntityId,
     /// but are stored with an own RepositoryId.
     /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
+    [ShowApiWhenReleased(ShowApiMode.Never)] 
     int RepositoryId { get; }
 
     /// <summary>

@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 /// The configuration / definition of a query part. The <see cref="QueryDefinition"/> uses a bunch of these together to build a query. 
 /// </summary>
 [PrivateApi("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryPartDefinition: EntityBasedWithLog
 {
     [PrivateApi]

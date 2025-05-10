@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Cms.Internal.Languages;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ISiteLanguageState
 {
     string Code { get;  }

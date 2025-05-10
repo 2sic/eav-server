@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.Source;
 /// <summary>
 /// An entities source which directly delivers the given entities
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DirectEntitiesSource : IEntitiesSource
 {
     public static TResult Using<TResult>(Func<(DirectEntitiesSource Source, List<IEntity> List), TResult> action)

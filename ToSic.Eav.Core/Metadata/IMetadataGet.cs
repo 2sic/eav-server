@@ -9,7 +9,7 @@ namespace ToSic.Eav.Metadata;
 /// Mainly used in the Store, Cache-Systems and Apps.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IMetadataGet
 {
     /// <summary>

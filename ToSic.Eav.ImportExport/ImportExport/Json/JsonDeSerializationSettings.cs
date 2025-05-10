@@ -7,7 +7,7 @@ namespace ToSic.Eav.ImportExport.Json;
 /// <summary>
 /// Controls how serialization should happen, as different scenarios require different parts to be included or not.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class JsonDeSerializationSettings
 {
     public IHasMetadataSourceAndExpiring MetadataSource { get; set; }

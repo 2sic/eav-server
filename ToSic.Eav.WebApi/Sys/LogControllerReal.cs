@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.WebApi.Sys;
 // Release routes
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LogControllerReal() : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl")
 {
     public const string LogSuffix = "Log";

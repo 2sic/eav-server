@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class TsDynDataZone//: RepoZone
 {
     public int ZoneId { get; set; }

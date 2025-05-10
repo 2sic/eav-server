@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Internal.Specs;
 /// The remaining parts are subclasses, so they don't appear in public namespaces
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppJson
 {
     public bool IsConfigured { get; set; }

@@ -3,7 +3,7 @@ using ToSic.Eav.Context;
 
 namespace ToSic.Eav.Security;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SecurityHelpers
 {
     public static void ThrowIfNotSiteAdmin(IUser user, ILog log)

@@ -7,7 +7,7 @@ using System.Text.Unicode;
 
 namespace ToSic.Eav.Serialization;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class JsonOptions
 {
     public const int DefaultMaxModelBindingRecursionDepth = 32;

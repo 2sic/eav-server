@@ -3,7 +3,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public class DataBuilder(
     LazySvc<EntityBuilder> entityBuilder,

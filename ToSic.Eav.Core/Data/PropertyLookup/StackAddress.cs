@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Data.PropertyLookup;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class StackAddress
 {
     internal StackAddress(IPropertyStackLookup source, string field, int index, StackAddress ancestor)

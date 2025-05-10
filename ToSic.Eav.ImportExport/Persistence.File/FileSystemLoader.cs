@@ -12,7 +12,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Persistence.File;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataBuilder dataBuilder)
     : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataBuilder]), IContentTypeLoader
 {

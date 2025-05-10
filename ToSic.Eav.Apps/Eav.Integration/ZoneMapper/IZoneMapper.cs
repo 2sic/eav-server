@@ -7,7 +7,7 @@ namespace ToSic.Eav.Integration;
 /// This helps find Zone information of a Site and the other way around. 
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IZoneMapper: IHasLog
 {
     /// <summary>

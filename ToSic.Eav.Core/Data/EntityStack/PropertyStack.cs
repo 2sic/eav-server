@@ -5,7 +5,7 @@ using ToSic.Lib.Data;
 namespace ToSic.Eav.Data;
 
 [PrivateApi("Hide implementation")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
 {
     public PropertyStack Init(string name, IEnumerable<IPropertyLookup> sources)

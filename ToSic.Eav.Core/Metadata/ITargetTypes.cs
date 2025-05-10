@@ -7,7 +7,7 @@ namespace ToSic.Eav.Metadata;
 /// It basically translates the <see cref="ToSic.Eav.Metadata.TargetTypes"/> to name and vica versa
 /// </summary>
 [PrivateApi("was internal till 16.09")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ITargetTypes
 {
     /// <summary>

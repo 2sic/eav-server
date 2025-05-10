@@ -16,7 +16,7 @@ namespace ToSic.Eav.ImportExport.Internal.XmlList;
 /// <summary>
 /// Import a virtual table of content-items
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class ImportListXml(
     LazySvc<ImportService> importerLazy,
     DataBuilder builder,

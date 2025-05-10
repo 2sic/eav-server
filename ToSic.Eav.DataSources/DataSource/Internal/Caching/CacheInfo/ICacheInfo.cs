@@ -6,5 +6,5 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// This marks an object that can provide everything necessary to
 /// provide information about caching
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICacheInfo: ICacheKey, ICacheExpiring;

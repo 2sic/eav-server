@@ -7,7 +7,7 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal class DataFactory(DataBuilder dataBuilderGenerator, Generator<IDataFactory> selfGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
     : ServiceWithOptionsBase<IDataFactory, DataFactoryOptions>("Ds.DatBld", selfGenerator, connect: [dataBuilderGenerator, ctFactoryLazy]), IDataFactory
 {

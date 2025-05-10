@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class AppConstants
 {
     public const string LogName = "App";

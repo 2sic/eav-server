@@ -15,7 +15,7 @@ namespace ToSic.Eav.Caching;
 /// <remarks>
 /// This class is transient, but it uses a static cache for the value, so the returned value behaves as a "safe" singleton.
 /// </remarks>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppsCacheSwitch(
     ILogStore logStore,
     IEavFeaturesService featuresService,

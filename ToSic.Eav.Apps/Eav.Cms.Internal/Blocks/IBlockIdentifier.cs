@@ -5,7 +5,7 @@ namespace ToSic.Eav.Cms.Internal;
 /// <summary>
 /// Identifies a content-block with all the parameters necessary to find it in the system
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IBlockIdentifier: IAppIdentity
 {
     /// <summary>

@@ -4,7 +4,7 @@
 /// Constants related to Input Types
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class InputTypes(IEntity entity) : EntityBasedType(entity)
 {
     /// <summary>

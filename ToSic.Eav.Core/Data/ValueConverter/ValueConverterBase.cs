@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data;
 /// Trivial value converter - doesn't convert anything.
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class ValueConverterBase(string logName) : ServiceBase(logName), IValueConverter
 {
     public const string PrefixPage = "page";

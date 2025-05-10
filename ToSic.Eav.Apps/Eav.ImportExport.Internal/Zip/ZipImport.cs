@@ -7,7 +7,7 @@ using ToSic.Eav.Persistence.Logging;
 
 namespace ToSic.Eav.ImportExport.Internal.Zip;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.MyServices>(services, "Zip.Imp")
 {
     private int? _initialAppId;

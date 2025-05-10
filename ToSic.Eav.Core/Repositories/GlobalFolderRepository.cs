@@ -14,7 +14,7 @@ namespace ToSic.Eav.Repositories;
 /// </remarks>
 // ReSharper disable once UnusedMember.Global
 // TODO: UNSURE IF NOT USED OR DISCOVERED BY REFLECTION?
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class GlobalFolderRepository(IGlobalConfiguration config) : FolderBasedRepository
 {
     public override List<string> RootPaths

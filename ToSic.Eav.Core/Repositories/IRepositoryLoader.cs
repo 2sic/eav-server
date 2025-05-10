@@ -4,7 +4,7 @@ using ToSic.Eav.Internal.Loaders;
 
 namespace ToSic.Eav.Repositories;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IRepositoryLoader: IHasLog, IContentTypeLoader
 {
     /// <summary>

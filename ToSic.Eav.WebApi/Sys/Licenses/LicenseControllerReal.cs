@@ -15,7 +15,7 @@ using ToSic.Lib.Documentation;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LicenseControllerReal(
     LazySvc<ILicenseService> licenseServiceLazy,
     LazySvc<IEavFeaturesService> featuresLazy,

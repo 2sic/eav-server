@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Internal.Insights;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IInsightsProvider
 {
     string HelpCategory { get; }

@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources;
 /// </summary>
 [PrivateApi]
 [Obsolete("Obsolete since v15.04 - will be removed ca. v17")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDataTarget
 {
     // Removed from IDataTarget in 15.06
@@ -22,7 +22,7 @@ public interface IDataTarget
     /// Attach a DataSource to In - replaces all existing in-streams.
     /// </summary>
     /// <param name="dataSource">DataSource to attach</param>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     void Attach(IDataSource dataSource);
 
     /// <summary>
@@ -31,7 +31,7 @@ public interface IDataTarget
     /// <param name="streamName">In-name of the stream</param>
     /// <param name="dataSource">The data source - will use it's default out</param>
     /// <param name="sourceName">The stream name on the source, will default to "Default"</param>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     void Attach(string streamName, IDataSource dataSource, string sourceName = DataSourceConstants.StreamDefaultName);
 
     /// <summary>
@@ -39,6 +39,6 @@ public interface IDataTarget
     /// </summary>
     /// <param name="streamName">In-name of the stream</param>
     /// <param name="dataStream">The data stream to attach</param>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     void Attach(string streamName, IDataStream dataStream);
 }

@@ -11,7 +11,7 @@
 /// Dimension list is final, doesn't need any further processing.
 /// This is to prevent unnecessary lower-casing and extending dimensions with the default null-entry, when it has already been done before.
 /// </param>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record PropReqSpecs(string Field, string[] dimensions, bool DimsAreFinal, ILog LogOrNull = null, bool TreatEmptyAsDefault = true)
     : ICanDump
 {

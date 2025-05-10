@@ -4,7 +4,7 @@
 /// Marks objects that can convert values - like "file:22" to "/images/logo.jpg" and back.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IValueConverter
 {
     /// <summary>

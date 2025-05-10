@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data;
 /// Note #2: Do not change this to be a `record`. I tried it 2025-01-05, and it resulted in a stack overflow
 /// which I wasn't able to track down, probably because of record specific equality checks.
 /// </remarks>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal class EntityRelationships(IEntityLight entity, IRelationshipSource app, IEnumerable<EntityRelationship> fallbackRels = null)
     : IEntityRelationships
 {

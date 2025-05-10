@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Persistence.File;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FileSystemLoaderConstants
 {
     public const int QueryMetadataDepth = 10;

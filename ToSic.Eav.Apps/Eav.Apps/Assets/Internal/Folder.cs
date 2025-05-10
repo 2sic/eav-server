@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Assets.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFileId>
 {
     /// <inheritdoc/>

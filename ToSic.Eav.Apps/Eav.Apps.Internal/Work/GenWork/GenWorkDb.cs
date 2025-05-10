@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// Primarily used to do one single operation such as a simple delete, publish etc.
 /// </summary>
 /// <typeparam name="TWork"></typeparam>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class GenWorkDb<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generator<TWork> gen)
     : ServiceBase("App.WorkUn", connect: [ctxSvc, gen])
     where TWork : WorkUnitBase<IAppWorkCtxWithDb>

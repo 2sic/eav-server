@@ -6,7 +6,7 @@
 /// <param name="code"></param>
 /// <param name="culture"></param>
 /// <param name="isEnabled"></param>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SiteLanguageState(string code, string culture, bool isEnabled) : ISiteLanguageState
 {
     public string Code { get;  } = code;

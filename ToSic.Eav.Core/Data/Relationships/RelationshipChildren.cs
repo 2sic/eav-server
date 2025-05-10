@@ -5,7 +5,7 @@
 /// Used on the <see cref="IEntity"/> Children property.
 /// </summary>
 [PrivateApi("this is for the Relationship.Children API, not recommended for others")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class RelationshipChildren : IRelationshipChildren
 {
     private readonly IReadOnlyDictionary<string, IAttribute> _attributes;

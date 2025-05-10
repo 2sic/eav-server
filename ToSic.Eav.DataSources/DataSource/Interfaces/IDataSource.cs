@@ -23,7 +23,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// </summary>
     /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     Guid Guid { get; }
 
     /// <summary>
@@ -31,18 +31,18 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// </summary>
     /// <returns>Name of this source.</returns>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     string Name { get; }
 
     /// <summary>
     /// internal use only - for labeling data sources in queries to show in debugging
     /// </summary>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     string Label { get; }
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     void AddDebugInfo(Guid? guid, string label);
 
     #endregion
@@ -101,7 +101,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     IDataSourceConfiguration Configuration { get; }
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     void Setup(IDataSourceOptions options, IDataSourceLinkable attach);
 
     #endregion
@@ -114,11 +114,11 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// It will be used when generating a unique ID for caching the data.
     /// </summary>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     List<string> CacheRelevantConfigurations { get; }
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     ICacheKeyManager CacheKey { get; }
 
     #endregion
@@ -149,6 +149,6 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     bool Immutable { get; }
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     void DoWhileOverrideImmutable(Action action);
 }

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Data.PropertyLookup;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IPropertyLookup
 {
     /// <summary>
@@ -18,7 +18,7 @@ public interface IPropertyLookup
 }
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHasPropLookup
 {
     [PrivateApi]

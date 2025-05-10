@@ -7,7 +7,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class InsightsDataSourceCache(
     LazySvc<IDataSourceCacheService> dsCacheSvc,
     IListCacheSvc listCacheSvc)

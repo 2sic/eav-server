@@ -7,6 +7,6 @@ namespace ToSic.Eav.Data.Source;
 /// This is almost identical wit the base class, but we should use in in code where possible, so we clearly see that
 /// this is an immutable list.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImmutableEntitiesSource(IImmutableList<IEntity> entities = null)
     : DirectEntitiesSource(entities ?? ImmutableList<IEntity>.Empty);

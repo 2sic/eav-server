@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.Source;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyLookup<TKey, TValue> : ILookup<TKey, TValue>
 {
     public ILookup<TKey, TValue> Source

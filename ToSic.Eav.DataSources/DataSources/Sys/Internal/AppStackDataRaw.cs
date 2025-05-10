@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSources.Sys.Internal;
 
 // Note: ATM serves as Raw and as DTO, but should change soon.
 // once we adjust the front end to use the query
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
 {
     public const string TypeName = "AppStack";

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data;
 /// Constants for data types
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataTypes
 {
     public const string Boolean = "Boolean";

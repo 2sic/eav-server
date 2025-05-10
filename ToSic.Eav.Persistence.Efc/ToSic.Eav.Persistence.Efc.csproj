@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />
     <Compile Include="..\ToSic.Eav.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+    <Compile Include="..\ToSic.Sys.Core\Shared\HideInternalApisOnReleaseOnly.cs" Link="HideInternalApisOnReleaseOnly.cs" />
   </ItemGroup>
   
   <ItemGroup>
@@ -70,7 +71,7 @@
 
   <!-- Support Nullable in .net Framework -->
   <ItemGroup Condition="$(TargetFramework) == 'net472'">
-    <PackageReference Include="Nullable" Version="1.2.1">
+    <PackageReference Include="Nullable" Version="1.3.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

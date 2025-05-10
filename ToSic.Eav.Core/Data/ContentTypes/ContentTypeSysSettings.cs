@@ -7,5 +7,5 @@
 /// ATM just an empty dummy class
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record ContentTypeSysSettings;

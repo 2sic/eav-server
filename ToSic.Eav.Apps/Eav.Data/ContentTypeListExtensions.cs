@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Data;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ContentTypeListExtensions
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IEnumerable<IContentType> OfScope(this IEnumerable<IContentType> list, string scope = null, bool includeAttributeTypes = false)
     {
         var set = list.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
@@ -25,7 +25,7 @@ public static class ContentTypeListExtensions
         return scopes.OrderBy(s => s).ToArray();
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IDictionary<string, string> GetAllScopesWithLabels(this IEnumerable<IContentType> list)
     {
         var scopes = list.GetAllScopesInclDefault();

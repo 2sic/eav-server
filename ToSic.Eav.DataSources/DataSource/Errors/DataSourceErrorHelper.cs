@@ -96,7 +96,7 @@ public class DataSourceErrorHelper(DataBuilder builder)
 
 
     [PrivateApi("usually not needed externally")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     private IEntity CreateErrorEntity(IDataSource source, string stream, string title, string message)
     {
         var values = new Dictionary<string, object>

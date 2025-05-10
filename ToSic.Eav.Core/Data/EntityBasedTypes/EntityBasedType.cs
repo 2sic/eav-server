@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data;
 /// but when programming they should use typed objects to not accidentally access invalid properties. 
 /// </summary>
 [PrivateApi("was public till 16.09")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class EntityBasedType : IEntityBasedType
 {
     /// <inheritdoc cref="IEntityWrapper.Entity" />

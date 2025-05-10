@@ -4,7 +4,7 @@ using ToSic.Eav.Services;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus
 {
     public AppWorkCtxPlus(IDataSourcesService dsf, IAppReader appState, bool? showDrafts, IDataSource data = default) : base(appState)

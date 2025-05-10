@@ -4,7 +4,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
     : MultiPermissionsApp(services, "Sec.MpItms")
 {

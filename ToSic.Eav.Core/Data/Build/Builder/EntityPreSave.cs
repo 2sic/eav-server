@@ -4,7 +4,7 @@
 /// Helper commands to build an entity
 /// Should only be used by internal system data handlers - not for "public" use
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class EntityPreSave
 {
     public static int? GetInternalPublishedIdForSaving(this Entity entity)

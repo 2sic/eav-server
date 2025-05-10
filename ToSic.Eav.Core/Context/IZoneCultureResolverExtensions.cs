@@ -4,7 +4,7 @@ namespace ToSic.Eav.Context;
 
 // ReSharper disable once InconsistentNaming
 [PrivateApi("this is all very internal, and names may still change")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class IZoneCultureResolverExtensions
 {
     /// <summary>

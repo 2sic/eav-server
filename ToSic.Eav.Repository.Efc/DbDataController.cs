@@ -10,7 +10,7 @@ using ToSic.Eav.StartUp;
 
 namespace ToSic.Eav.Repository.Efc;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DbDataController(
     EavDbContext dbContext,
     LazySvc<EfcAppLoader> efcLoaderLazy,

@@ -10,7 +10,7 @@ using DateTime = System.DateTime;
 namespace ToSic.Eav.Data.Build;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : ServiceBase("Eav.ValBld")
 {
     /// <summary>

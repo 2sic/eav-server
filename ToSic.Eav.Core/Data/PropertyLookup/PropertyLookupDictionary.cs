@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.PropertyLookup;
 /// Probably just use for tests ATM
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class PropertyLookupDictionary(string nameId, IDictionary<string, object> values)
     : IPropertyLookup, IHasIdentityNameId
 {

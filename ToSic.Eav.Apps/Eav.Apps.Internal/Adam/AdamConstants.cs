@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AdamConstants
 {
     public const string AdamRootFolder = "adam";

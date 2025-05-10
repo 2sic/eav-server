@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavSystemInfo
 {
     public static Version Version => field ??= Assembly.GetExecutingAssembly().GetName().Version;

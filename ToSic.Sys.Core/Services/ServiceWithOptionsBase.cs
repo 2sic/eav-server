@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Lib.Coding;
+﻿using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 // ReSharper disable RedundantAccessorBody
 

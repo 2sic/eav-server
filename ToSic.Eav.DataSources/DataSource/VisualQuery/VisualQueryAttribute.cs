@@ -74,7 +74,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
 
     // ReSharper disable once InconsistentNaming
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public bool _DynamicInWasSet;
     private bool _dynamicIn = false;
 
@@ -89,7 +89,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// </summary>
     /// <returns>True if we have a known configuration content-type</returns>
     [PrivateApi("not important to the public")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public bool EnableConfig => ConfigurationType.HasValue();
 
     /// <summary>

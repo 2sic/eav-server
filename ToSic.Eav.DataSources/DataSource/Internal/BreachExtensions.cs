@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSource.Internal;
 /// <summary>
 /// Special - very internal - helper to breach internal APIs in edge cases where they are needed outside.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class BreachExtensions
 {
     public static IDataSourceLink CreateEmptyLink(IDataSource ds) => new DataSourceLink(null, dataSource: ds);

@@ -7,7 +7,7 @@
 /// </summary>
 /// <param name="vAttributes"></param>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeVirtualAttributes(IDictionary<string, IContentTypeAttribute> vAttributes) : IDecorator<IContentType>
 {
     public IDictionary<string, IContentTypeAttribute> VirtualAttributes => vAttributes;

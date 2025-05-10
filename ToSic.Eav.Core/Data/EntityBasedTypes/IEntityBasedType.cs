@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data;
 /// otherwise you're IPerson would be missing the Title, Id, Guid
 /// </summary>
 [PrivateApi("was public till 16.09")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IEntityBasedType: IEntityWrapper
 {
     /// <summary>

@@ -3,7 +3,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Persistence.Logging;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportErrorLog(ILog parentLog) : HelperBase(parentLog, "Imp.ErrLog"), IEnumerable<ImportError>
 {
     public ImportError this[int index] => Errors[index];

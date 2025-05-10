@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Identity;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class Mapper
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string GuidCompress(this Guid newGuid)
     {
         var modifiedBase64 = Convert.ToBase64String(newGuid.ToByteArray())
@@ -12,7 +12,7 @@ public static class Mapper
         return modifiedBase64;
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static Guid GuidRestore(string shortGuid)
     {
         var base64 = shortGuid.Replace('-', '+').Replace('_', '/') + "==";

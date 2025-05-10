@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Serialization;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SubEntitySerialization: ISubEntitySerialization
 {
     public bool? Serialize { get; init; }

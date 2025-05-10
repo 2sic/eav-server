@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSource.Internal.Caching;
 /// Cache Item in the List-Cache. 
 /// </summary>
 [PrivateApi("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ListCacheItem: ICacheExpiring
 {
     /// <summary>

@@ -4,7 +4,7 @@
 /// A permission checker which is initialized with various items which must be checked
 /// Calling Ensure or similar will verify that all permission checks succeed
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class MultiPermissionsBase<TServices>(TServices services, string logName)
     : ServiceBase<TServices>(services, logName), IMultiPermissionCheck
     where TServices : MyServicesBase

@@ -4,7 +4,7 @@ using ToSic.Eav.Context;
 
 namespace ToSic.Eav.Security.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MultiPermissionsTypes: MultiPermissionsApp
 {
     private const string LogName = "Sec.MPTyps";

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Internal.Insights;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class InsightsProvider(string name,
 #pragma warning disable CS9113 // Parameter is unread.
     NoParamOrder protect = default,

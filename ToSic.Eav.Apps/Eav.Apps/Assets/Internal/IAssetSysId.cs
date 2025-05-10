@@ -5,7 +5,7 @@
 /// It enhances the existing int-based IDs for other use cases which don't use ints
 /// </summary>
 /// <typeparam name="TItemId"></typeparam>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAssetSysId<out TItemId>: IAsset
 {
     /// <summary>

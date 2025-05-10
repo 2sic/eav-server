@@ -14,7 +14,7 @@ namespace ToSic.Eav.Serialization;
 /// * Enhanced as a standalone decorator in 12.05
 /// </remarks>
 [PrivateApi("Just fyi, was previously published as internal till v14")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSerialization
 {
     public EntitySerializationDecorator(EntitySerializationDecorator priority, EntitySerializationDecorator mixin)

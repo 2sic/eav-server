@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Persistence;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record SaveOptions
 {
     public required List<DimensionDefinition> Languages { get; init; }

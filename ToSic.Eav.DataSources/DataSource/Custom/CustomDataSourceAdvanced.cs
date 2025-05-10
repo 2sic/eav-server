@@ -18,14 +18,14 @@ namespace ToSic.Eav.DataSource;
 public abstract class CustomDataSourceAdvanced: DataSourceBase
 {
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public new class MyServices: DataSourceBase.MyServices
     {
         [PrivateApi]
         public IDataFactory DataFactory { get; }
 
         [PrivateApi]
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ShowApiWhenReleased(ShowApiMode.Never)]
         public MyServices(
             IDataSourceConfiguration configuration,
             LazySvc<DataSourceErrorHelper> errorHandler,

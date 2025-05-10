@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// ATM it just transports the AppState.
 /// For advanced APIs you will need the <see cref="IAppWorkCtxPlus"/>
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppWorkCtx : IAppIdentity
 {
     IAppReader AppReader { get; }

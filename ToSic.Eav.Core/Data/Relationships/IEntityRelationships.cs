@@ -4,7 +4,7 @@
 /// Manages relationships of an entity - to its children and parents.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IEntityRelationships
 {
     /// <summary>

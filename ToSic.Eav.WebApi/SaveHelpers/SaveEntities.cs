@@ -5,7 +5,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.WebApi.SaveHelpers;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave> workEntSave)
     : ServiceBase("Eav.SavHlp", connect: [entityBuilder, workEntSave])
 {

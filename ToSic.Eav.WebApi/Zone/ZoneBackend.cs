@@ -6,7 +6,7 @@ using ToSic.Lib.Code.InfoSystem;
 
 namespace ToSic.Eav.WebApi.Zone;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneBackend(
     IAppsCatalog appsCatalog,
     SystemFingerprint fingerprint,

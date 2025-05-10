@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSource.Internal.Errors;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ErrorExtensions
 {
     public static bool IsError(this IDataSource ds)

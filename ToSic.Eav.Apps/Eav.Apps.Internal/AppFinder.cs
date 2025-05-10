@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : ServiceBase("App.ZoneRt")
 {
     /// <summary>

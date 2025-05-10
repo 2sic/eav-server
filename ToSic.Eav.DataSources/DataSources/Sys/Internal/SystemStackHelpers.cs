@@ -4,7 +4,7 @@ using static ToSic.Eav.Apps.AppStackConstants;
 
 namespace ToSic.Eav.DataSources.Sys.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SystemStackHelpers
 {
     public static string GetStackNameOrNull(string part)

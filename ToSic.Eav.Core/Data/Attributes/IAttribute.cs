@@ -24,7 +24,7 @@ public interface IAttribute : IAttributeBase
     /// </summary>
     /// <param name="languageId">the language id (number)</param>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     object this[int languageId] { get; }
 
     /// <summary>
@@ -32,7 +32,7 @@ public interface IAttribute : IAttributeBase
     /// </summary>
     /// <param name="languageKey">The language key (string) to look for</param>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     object this[string languageKey] { get; }
 
 
@@ -46,10 +46,10 @@ public interface IAttribute : IAttributeBase
     /// <param name="languageKeys"></param>
     /// <returns></returns>
     [PrivateApi("experimental in 12.05")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     (IValue ValueField, object Result) GetTypedValue(string[] languageKeys, bool fallbackToAny);
 
     [PrivateApi("internal only")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     IAttribute With(IImmutableList<IValue> values);
 }

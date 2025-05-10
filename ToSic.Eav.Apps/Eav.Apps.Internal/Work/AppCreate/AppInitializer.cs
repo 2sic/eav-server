@@ -15,7 +15,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// - App Settings
 /// It must be called from an AppManager, which has been created for this app
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppInitializer(
     LazySvc<DataBuilder> builder,
     Generator<IRepositoryLoader> repoLoader,

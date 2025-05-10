@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace ToSic.Eav.Security.Files;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FileNames
 {
     /// <summary>

@@ -9,7 +9,7 @@ using static ToSic.Eav.Apps.Internal.MetadataDecorators.RequirementDecorator;
 
 namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MdRequirements(
     LazySvc<ILicenseService> licenseService,
     LazySvc<IEavFeaturesService> featsService,

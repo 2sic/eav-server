@@ -8,7 +8,7 @@ namespace ToSic.Eav.ImportExport.Internal.Xml;
 /// imported line which appears to be the same item.
 /// Only when another line of the primary language is parsed, will it regenerate a fresh guid.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal class ImportItemGuidManager
 {
     private Guid _entityGuidLast = Guid.Empty;

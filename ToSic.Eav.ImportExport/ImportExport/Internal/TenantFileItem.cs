@@ -3,7 +3,7 @@
 /// <summary>
 /// Helper class to manage file references from the original Id
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class TenantFileItem
 {
     public int Id;

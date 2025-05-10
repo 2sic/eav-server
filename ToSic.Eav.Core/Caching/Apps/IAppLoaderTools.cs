@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Caching;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppLoaderTools
 {
     IRepositoryLoader RepositoryLoader(ILog parentLog);

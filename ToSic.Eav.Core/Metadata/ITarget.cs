@@ -8,7 +8,7 @@ namespace ToSic.Eav.Metadata;
 /// Basically it contains all the references necessary to identify what it belongs to.
 /// </summary>
 [PrivateApi("was public till 16.09")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ITarget
 {
     /// <summary>

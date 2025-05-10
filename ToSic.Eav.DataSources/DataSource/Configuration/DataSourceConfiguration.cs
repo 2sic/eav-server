@@ -7,7 +7,7 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 internal class DataSourceConfiguration(DataSourceConfiguration.MyServices services)
     : ServiceBase<DataSourceConfiguration.MyServices>(services, $"{DataSourceConstantsInternal.LogPrefix}.Config"),
@@ -15,7 +15,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
 {
     #region Dependencies - Must be in DI
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public class MyServices(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
         : MyServicesBase(connect: [zoneCultureResolverLazy])
     {

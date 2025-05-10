@@ -7,7 +7,7 @@ using BaseType = System.Exception;
 #endif
 namespace ToSic.Eav.WebApi.Errors;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class HttpExceptionAbstraction: BaseType
 {
     public HttpExceptionAbstraction(HttpStatusCode statusCode, string message, string title = null)

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data;
 /// Everything in the original is passed through invisibly. <br/>
 /// </summary>
 [PrivateApi("this decorator object is for internal use only, no value in publishing it")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class EntityWrapper : IEntity, IEntityWrapper
 {
     public IEntity Entity { get; }

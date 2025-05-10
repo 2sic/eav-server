@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSource;
 ///
 /// This is internal functionality
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record DataSourceOptions: IDataSourceOptions
 {
     public IImmutableDictionary<string, string> Values { get; init; }

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Shared;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class WrapperEquality
 {
     /// <summary>

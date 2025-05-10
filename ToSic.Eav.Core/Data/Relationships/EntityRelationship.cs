@@ -9,7 +9,7 @@
 /// <param name="parent">Parent Entity</param>
 /// <param name="child">Child Entity</param>
 [PrivateApi("2021-09-30 hidden now, previously PublicApi_Stable_ForUseInYourCode - should probably create an interface for this")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityRelationship(IEntity parent, IEntity child)
 {
     /// <summary>

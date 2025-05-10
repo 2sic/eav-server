@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Internal.Specs;
 /// The configuration of the app, as you can set it in the app-package definition.
 /// </summary>
 [PrivateApi("Note: was public till 16.08")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal class AppConfiguration : EntityBasedType, IAppConfiguration
 {
     // todo: probably move most to Eav.Apps.AppConstants

@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace ToSic.Eav.Data.Source;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LookUpEntitiesSource<TKey>(IEnumerable<TKey> keys, ILookup<TKey, IEntity> lookup)
     : IEntitiesSource, IEnumerable<IEntity>
 {

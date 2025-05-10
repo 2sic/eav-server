@@ -6,7 +6,7 @@ using ToSic.Eav.Security.Files;
 
 namespace ToSic.Eav.WebApi.Adam;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class HttpUploadedFile(HttpRequest request)
 {
     public HttpRequest Request { get; } = request;

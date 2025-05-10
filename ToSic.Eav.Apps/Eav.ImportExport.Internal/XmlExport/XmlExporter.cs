@@ -20,7 +20,7 @@ namespace ToSic.Eav.ImportExport.Internal;
 // this has a minimal risk of being different!
 // should all get it from cache only!
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class XmlExporter(
     XmlSerializer xmlSerializer,
     IAppsCatalog appsCatalog,

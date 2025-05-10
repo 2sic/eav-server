@@ -8,7 +8,7 @@ namespace ToSic.Eav.Metadata;
 /// Mainly used in the Store, Cache-Systems and Apps.
 /// </summary>
 [PrivateApi("Till v18 Was InternalApi_DoNotUse_MayChangeWithoutNotice, but the public one is now IMetadataGet")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IMetadataSource: 
     ICacheExpiring, 
     IAppIdentity,    // this is used for creating additional metadata on this source

@@ -3,7 +3,7 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave)
     : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntCre", connect: [workEntSave, builder])
 {

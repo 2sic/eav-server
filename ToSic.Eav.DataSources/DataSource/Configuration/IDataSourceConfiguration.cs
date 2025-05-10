@@ -63,7 +63,7 @@ public interface IDataSourceConfiguration
     /// The internal look up engine which manages value sources and will resolve the tokens
     /// </summary>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     ILookUpEngine LookUpEngine { get; }
 
     #region Getters - new v15.04
@@ -95,7 +95,7 @@ public interface IDataSourceConfiguration
 }
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class DataSourceConfigurationObsoleteExtensions
 {
     /// <summary>
@@ -110,7 +110,7 @@ public static class DataSourceConfigurationObsoleteExtensions
     /// <remarks>Added in v15.04</remarks>
 #pragma warning disable CS0618
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     internal static void SetThisObsolete<T>(this IDataSourceConfiguration config, T value, [CallerMemberName] string name = default)
         => ((DataSourceConfiguration)config).SetThisObsolete(value, name);
 #pragma warning restore CS0618

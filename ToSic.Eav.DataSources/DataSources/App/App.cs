@@ -70,7 +70,7 @@ public partial class App : DataSourceBase
     /// * Uses the[immutable convention](xref:NetCode.Conventions.Immutable).
     /// </remarks>
     [PrivateApi("WIP and not sure if this should ever become public")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     [Configuration(Fallback = false)]
     public bool WithAncestors => Configuration.GetThis(false);
 

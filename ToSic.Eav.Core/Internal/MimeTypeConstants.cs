@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MimeTypeConstants
 {
     public const string FallbackType = "application/octet-stream";

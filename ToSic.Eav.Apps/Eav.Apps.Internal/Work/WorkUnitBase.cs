@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// Base class for all app-work helpers.
 /// </summary>
 /// <typeparam name="TContext"></typeparam>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class WorkUnitBase<TContext>(string logName, object[] connect = default) : ServiceBase(logName, connect: connect ?? [])
     where TContext : class, IAppWorkCtx
 {

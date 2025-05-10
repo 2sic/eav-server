@@ -15,7 +15,7 @@ namespace ToSic.Eav.Data;
 // We should actually make it PrivateApi, but other code references this, so we need to change that to IContentType,
 // Otherwise docs won't generate cross-links as needed
 [PrivateApi("2021-09-30 hidden now, was internal_don't use Always use the interface, not this class")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [ContentTypeSpecs(
     Guid = "e405beb3-9097-4790-b7b0-0e6d37502bef",
     Name = "ContentType",

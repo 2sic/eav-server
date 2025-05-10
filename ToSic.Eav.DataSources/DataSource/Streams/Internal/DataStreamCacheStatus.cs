@@ -6,15 +6,15 @@ namespace ToSic.Eav.DataSource.Streams.Internal;
 /// <summary>
 /// Provides information of how to cache a stream.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataStreamCacheStatus(ICacheInfo cacheInfoProvider, IDataSource dataSource, string cacheSuffix)
     : CacheKey(dataSource), ICacheExpiring
 {
     public override string CacheFullKey => cacheInfoProvider.CacheFullKey + "&Stream=" + cacheSuffix;
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public long CacheTimestamp => cacheInfoProvider.CacheTimestamp;
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public bool CacheChanged(long dependentTimeStamp) => DataSource.CacheChanged(dependentTimeStamp);
 }

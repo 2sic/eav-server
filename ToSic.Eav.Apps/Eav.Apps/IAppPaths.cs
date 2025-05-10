@@ -4,7 +4,7 @@
 /// Internal interface to enable helpers to switch between paths on both the App and AppPaths
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppPaths
 {
     /// <summary>

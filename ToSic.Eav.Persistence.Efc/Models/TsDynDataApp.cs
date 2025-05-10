@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class TsDynDataApp
 {
     public int AppId { get; set; }

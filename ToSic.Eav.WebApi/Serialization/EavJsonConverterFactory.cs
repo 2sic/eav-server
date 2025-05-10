@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace ToSic.Eav.WebApi.Serialization;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavJsonConverterFactory(
     EavJsonConverter eavJsonConverter,
     EavCollectionJsonConverter eavCollectionJsonConverter)

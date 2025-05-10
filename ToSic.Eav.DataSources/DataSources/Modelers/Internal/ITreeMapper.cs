@@ -3,7 +3,7 @@
 namespace ToSic.Eav.DataSources.Internal;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ITreeMapper
 {
     IImmutableList<IEntity> AddParentChild(

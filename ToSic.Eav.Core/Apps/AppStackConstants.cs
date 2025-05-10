@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Apps;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppStackConstants
 {
     #region Part Names inside the Stack
@@ -54,14 +54,14 @@ public class AppStackConstants
     };
 }
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public enum AppThingsToStack
 {
     Resources,
     Settings
 }
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public struct AppThingsIdentifiers
 {
     public AppThingsToStack Target;

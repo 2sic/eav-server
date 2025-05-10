@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Admin;
 /// <summary>
 /// This one supplies portal-wide (or cross-portal) settings / configuration
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend, LazySvc<ZoneBackend> zoneBackend)
     : ServiceBase("Api.ZoneRl", connect: [languagesBackend, zoneBackend]), IZoneController
 {

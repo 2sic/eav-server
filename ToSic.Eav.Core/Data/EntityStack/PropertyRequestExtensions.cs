@@ -4,7 +4,7 @@ using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PropertyRequestExtensions
 {
     /// <summary>

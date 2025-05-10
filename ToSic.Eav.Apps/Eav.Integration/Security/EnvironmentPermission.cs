@@ -5,7 +5,7 @@ using ToSic.Lib.Security.Permissions;
 
 namespace ToSic.Eav.Integration.Security;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class EnvironmentPermission(string logPrefix, object[] connect = default)
     : ServiceBase($"{logPrefix}.EnvPrm", connect: connect), IEnvironmentPermission, IEnvironmentPermissionSetup
 {

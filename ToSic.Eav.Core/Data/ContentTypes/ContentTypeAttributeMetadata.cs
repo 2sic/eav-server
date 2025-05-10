@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data;
 /// #SharedFieldDefinition
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeAttributeMetadata(
     int key,
     string name,

@@ -8,7 +8,7 @@ using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.ImportExport.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
     : ServiceBase<XmlImportWithFiles.MyServices>(services, "Xml.ImpFil")
 {

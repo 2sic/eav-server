@@ -11,7 +11,7 @@ using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 {
 

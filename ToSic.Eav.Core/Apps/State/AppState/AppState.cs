@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.State;
 /// It also manages and caches relationships between entities of the same app.
 /// </summary>
 [PrivateApi("this is just fyi - was marked as internal till v16.09")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
 {
     private static bool _loggedToBootLog = false;

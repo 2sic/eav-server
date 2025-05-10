@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data;
 /// This is a special IEntity-wrapper which will return Stack-Navigation
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal class EntityWithStackNavigation(IEntity entity, StackAddress stackAddress)
     : EntityWrapper(entity), IPropertyStackLookup
 {

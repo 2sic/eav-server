@@ -6,7 +6,7 @@ using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Languages;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LanguagesBackend(
     LazySvc<IZoneMapper> zoneMapper,
     LazySvc<ZoneManager> zoneManager,

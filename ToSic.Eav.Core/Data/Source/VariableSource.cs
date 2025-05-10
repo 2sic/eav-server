@@ -4,7 +4,7 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.Data.Source;
 
 [PrivateApi("keep secret for now, only used in Metadata and it's not sure if we should re-use this")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class VariableSource<TSource>(
     DirectEntitiesSource sourceDirect = default,
     TSource sourceApp = default,

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Security.Internal;
 /// <summary>
 /// Do consolidate permission checks on a set of permissions
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MyServices>
 {
     #region Constructors and DI

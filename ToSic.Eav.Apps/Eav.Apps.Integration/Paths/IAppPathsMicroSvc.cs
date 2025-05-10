@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Integration;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppPathsMicroSvc
 {
     IAppPaths Get(IAppReader appReader, ISite site = default);

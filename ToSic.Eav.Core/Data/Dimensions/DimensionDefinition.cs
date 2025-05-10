@@ -4,7 +4,7 @@
 /// The definition of a dimension / language
 /// </summary>
 [PrivateApi("hidden 2021-09-30, previously visible as internal don't use")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DimensionDefinition
 {
     [PrivateApi("might be changed to just 'id' or something")]

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Persistence.Efc.Models;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class TsDynDataValue//: RepoValue
 {
     public int ValueId { get; set; }

@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 /// <summary>
 /// Important: also used as DTO, so don't just rename the parameters
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MetadataRecommendation: IEquatable<MetadataRecommendation>
 {
     public const int PrioMax = 100;

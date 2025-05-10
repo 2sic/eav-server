@@ -3,7 +3,7 @@ using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Context.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContextResolver(
     Generator<IContextOfSite> siteCtxGenerator,
     Generator<IContextOfApp> appCtxGenerator,

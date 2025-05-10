@@ -8,7 +8,7 @@ namespace ToSic.Eav.Caching;
 /// This is a very powerful system ensuring performance and more. 
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppsCache: ILogShouldNeverConnect
 {
     #region Get an App

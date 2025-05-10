@@ -4,7 +4,7 @@ using ToSic.Eav.Persistence.Efc;
 
 namespace ToSic.Eav.Repository.Efc;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupRepositoryEfc
 {
     public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services)

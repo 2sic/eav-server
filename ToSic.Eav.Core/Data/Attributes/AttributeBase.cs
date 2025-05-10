@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data;
 /// * Changed to be a record in v19.01
 /// </remarks>
 [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi. This is just fyi, use Interface IAttributeBase")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record AttributeBase : IAttributeBase
 {
     /// <inheritdoc />

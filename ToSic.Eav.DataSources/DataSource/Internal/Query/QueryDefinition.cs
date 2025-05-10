@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 /// This contains the structure / definition of a query, which was originally stored in an <see cref="IEntity"/>
 /// </summary>
 [PrivateApi("Till v17 was InternalApi_DoNotUse_MayChangeWithoutNotice - this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class QueryDefinition: EntityBasedWithLog
 {
     #region Constants / Field Names

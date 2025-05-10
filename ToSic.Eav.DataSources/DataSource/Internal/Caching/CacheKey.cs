@@ -2,15 +2,15 @@
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CacheKey(IDataSource dataSource) : ICacheKeyManager
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
+    [ShowApiWhenReleased(ShowApiMode.Never)] 
     public readonly IDataSource DataSource = dataSource;
 
 
     /// <inheritdoc />
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public virtual string CachePartialKey
     {
         get
@@ -32,7 +32,7 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
         }
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
+    [ShowApiWhenReleased(ShowApiMode.Never)] 
     public virtual string CacheFullKey => field ??= string.Join(">", SubKeys.Distinct());
 
 
@@ -56,7 +56,7 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
     }
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public string[] SubKeys
     {
         get

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Serialization.Internal;
 /// <summary>
 /// Constructor for inheriting classes
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class SerializerBase(SerializerBase.MyServices services, string logName) : ServiceBase<SerializerBase.MyServices>(services, logName), IDataSerializer
 {
     #region MyServices

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Internal;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Settings
 {
     public static string FileVersion = "07.00.00";

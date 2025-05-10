@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Cms.Internal;
 
 /// <inheritdoc />
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class BlockIdentifier(int zoneId, int appId, string appNameId, Guid guid, Guid viewOverride)
     : IBlockIdentifier
 {

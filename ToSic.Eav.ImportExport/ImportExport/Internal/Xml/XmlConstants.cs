@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Internal.Xml;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class XmlConstants
 {
     // nodes which are actually 2sxc-specific, and should be refactored some time

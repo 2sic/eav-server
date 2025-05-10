@@ -2,5 +2,5 @@
 
 namespace ToSic.Eav.Caching;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppsCacheSwitchable: IAppsCache, ISwitchableService;

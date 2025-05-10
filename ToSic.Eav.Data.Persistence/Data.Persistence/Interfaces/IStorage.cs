@@ -8,7 +8,7 @@ namespace ToSic.Eav.Persistence.Interfaces;
 /// <summary>
 /// This interface should ensure that storage layers can be swapped out as is necessary
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IStorage: IHasLog
 {
     #region Transaction Support

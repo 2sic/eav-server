@@ -5,7 +5,7 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.DataSource.Streams.Internal;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class StreamDictionary
 {
     private readonly LazySvc<IDataSourceCacheService> _cache;

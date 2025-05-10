@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 /// <summary>
 /// Factory to create a Data Query
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryBuilder(
     IDataSourcesService dataSourceFactory,
     IZoneCultureResolver cultureResolver,

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSource.Internal.Query;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryDefinitionDto
 {
     public Dictionary<string, object> Pipeline { get; set; }

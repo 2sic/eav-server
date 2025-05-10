@@ -6,7 +6,7 @@ using ToSic.Lib.Helpers;
 namespace ToSic.Eav.DataSource.Streams.Internal;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal class ConnectionStream(
     LazySvc<IDataSourceCacheService> cache,
     DataSourceConnection connection,

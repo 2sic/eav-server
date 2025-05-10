@@ -9,7 +9,7 @@ namespace ToSic.Eav.Metadata;
 /// but when importing data, the items should be accessed to store in the DB
 /// </summary>
 [PrivateApi("not sure yet how to publish this api, if at all")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IMetadataInternals
 {
     /// <summary>
@@ -25,6 +25,6 @@ public interface IMetadataInternals
     /// <returns></returns>
     IAppIdentity Context(string type);
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     (int TargetType, List<IEntity> list, IHasMetadataSourceAndExpiring appSource, Func<IHasMetadataSourceAndExpiring> deferredSource) GetCloneSpecs();
 }

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Integration;
 /// Base class for other zone mappers.
 /// Has prepared code which should be the same across implementations. 
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class ZoneMapperBase(IAppsCatalog appsCatalog, string logName, object[] connect)
     : ServiceBase(logName, connect: [appsCatalog, ..connect]), IZoneMapper
 {

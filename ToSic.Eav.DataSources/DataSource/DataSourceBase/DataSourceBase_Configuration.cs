@@ -23,7 +23,7 @@ partial class DataSourceBase
     /// Set to `false` for parameters which don't affect the result or are very confidential (like passwords)
     /// </param>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     protected void ConfigMask(string key, string token, bool cacheRelevant = true)
     {
         const string myConfigOld = "Settings";
@@ -38,7 +38,7 @@ partial class DataSourceBase
     }
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public void Setup(IDataSourceOptions options, IDataSourceLinkable attach)
     {
         var l = Log.Fn();

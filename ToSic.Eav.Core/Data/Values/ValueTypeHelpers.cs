@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Data;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ValueTypeHelpers
 {
     /// <summary>
@@ -12,7 +12,7 @@ public class ValueTypeHelpers
     /// </summary>
     /// <param name="typeName"></param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static ValueTypes Get(string typeName) 
         => Enum.TryParse<ValueTypes>(typeName ?? "", true, out var code) ? code : ValueTypes.Undefined;
 

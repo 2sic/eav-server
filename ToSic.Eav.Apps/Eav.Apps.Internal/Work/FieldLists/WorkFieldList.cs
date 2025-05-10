@@ -5,7 +5,7 @@ using Callback = System.Func<ToSic.Eav.Apps.Internal.Work.CoupledIdLists, System
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate)
     : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntFL", connect: [entityUpdate])
 {

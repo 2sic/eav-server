@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data;
 /// * Changed to be a record in v19.01
 /// </remarks>
 [PrivateApi("2021-09-30 changed to private, before was internal-this is just fyi, always use the interface")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record ContentTypeAttribute : AttributeBase, IContentTypeAttribute
 {
     /// <inheritdoc />

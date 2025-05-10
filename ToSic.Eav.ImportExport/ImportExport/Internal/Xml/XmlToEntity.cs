@@ -9,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Internal.Xml;
 /// <summary>
 /// Import EAV Data from XML Format
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
     : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, appReaders])
 {

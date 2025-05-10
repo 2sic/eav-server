@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace ToSic.Eav.Data;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyFastAccess(IImmutableList<IEntity> list)
 {
     public IEntity Get(int id)
