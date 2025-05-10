@@ -111,7 +111,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net9.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
   </ItemGroup>
@@ -148,13 +148,6 @@
     <ProjectReference Include="..\ToSic.Sys.Security\ToSic.Sys.Security.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
-    <DefineConstants>NETSTANDARD</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net472'">
-    <DefineConstants>NETFULL</DefineConstants>
-  </PropertyGroup>
 
   <PropertyGroup>
     <NoWarn>1701;1702;CS8632</NoWarn>
