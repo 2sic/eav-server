@@ -5,7 +5,7 @@ using ToSic.Eav.LookUp;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Lib.LookUp;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupLibLookUp
 {
     public static IServiceCollection AddLibLookUp(this IServiceCollection services)

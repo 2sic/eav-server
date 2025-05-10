@@ -7,8 +7,8 @@
 // Fix issue with EditorBrowsableAttribute
 
 #if DEBUG
-global using ShowApiWhenReleased = FixEditorBrowsable.EditorBrowsableAttribute;
-global using ShowApiMode = FixEditorBrowsable.EditorBrowsableState;
+global using ShowApiWhenReleased = FixEditorBrowsable.FakeEditorBrowsableAttribute;
+global using ShowApiMode = FixEditorBrowsable.HideInternalApisOnReleaseOnly;
 #else
 global using ShowApiWhenReleased = System.ComponentModel.EditorBrowsableAttribute;
 global using ShowApiMode = System.ComponentModel.EditorBrowsableState;
@@ -20,10 +20,10 @@ global using ShowApiMode = System.ComponentModel.EditorBrowsableState;
 namespace FixEditorBrowsable;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Event | AttributeTargets.Delegate | AttributeTargets.Interface)]
-public sealed class EditorBrowsableAttribute(EditorBrowsableState state) : Attribute;
+public sealed class FakeEditorBrowsableAttribute(FakeEditorBrowsableState state) : Attribute;
 
 /// <summary>Specifies the browsable state of a property or method from within an editor.</summary>
-public enum EditorBrowsableState
+public enum FakeEditorBrowsableState
 {
     /// <summary>The property or method is always browsable from within an editor.</summary>
     Always,
