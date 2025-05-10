@@ -13,7 +13,7 @@ public class AppSysSettings
     /// <summary>
     /// Just a kind of version info so we can see what version of EAV created this in the DB
     /// </summary>
-    public string Version { get; set; } = SharedAssemblyInfo.AssemblyVersion;
+    public string Version { get; set; } = EavSharedAssemblyInfo.AssemblyVersion;
 
     /// <summary>
     /// Determines if this app inherits from another app.

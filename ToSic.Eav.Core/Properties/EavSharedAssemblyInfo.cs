@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains information for all assemblies to use
 /// </summary>
-public static class SharedAssemblyInfo
+public static class EavSharedAssemblyInfo
 {
     // Important: These must be constants!
     // This is because the version etc. may be compiled into Oqtane DLLs
