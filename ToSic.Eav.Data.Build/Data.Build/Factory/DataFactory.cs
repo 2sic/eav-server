@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Source;
-using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 
@@ -9,94 +8,58 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-internal class DataFactory(DataBuilder builder, IGenerator<DataBuilder, DataBuilderOptions> dataBuilderGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
-    : ServiceBase("Ds.DatBld", connect: [builder]), IDataFactory
+internal class DataFactory(DataBuilder dataBuilderGenerator, Generator<IDataFactory> selfGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
+    : ServiceWithOptionsBase<IDataFactory, DataFactoryOptions>("Ds.DatBld", selfGenerator, connect: [dataBuilderGenerator, ctFactoryLazy]), IDataFactory
 {
+
     #region Properties to configure Builder / Defaults
 
     /// <inheritdoc />
-    public int IdCounter { get; private set; }
+    public int IdCounter
+    {
+        get => _idCounter ??= Options.IdSeed;
+        private set => _idCounter = value;
+    }
+    private int? _idCounter;
+
+
+    private DateTime Created { get; } = DateTime.Now;
+    private DateTime Modified { get; } = DateTime.Now;
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
     public IContentType ContentType => field
         ??= Options.Type != null
             ? ctFactoryLazy.Value.Create(Options.Type)
-            : builder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
+            : DataBuilder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
 
+    /// <summary>
+    /// The DataBuilder used for this DataFactory.
+    /// </summary>
+    /// <remarks>
+    /// It's configured using the Options.
+    /// So once it's accessed, options cannot be updated anymore.
+    /// </remarks>
     [field: AllowNull, MaybeNull]
-    public DataFactoryOptions Options
+    private DataBuilder DataBuilder => field ??= dataBuilderGenerator.New(new()
     {
-        get => field ?? throw new($"Trying to access {nameof(Options)} without it being initialized - did you forget to call New()?");
-        set => field = value;
-    }
+        AllowUnknownValueTypes = Options.AllowUnknownValueTypes
+    });
 
 
-    private DateTime Created { get; } = DateTime.Now;
-    private DateTime Modified { get; } = DateTime.Now;
 
     /// <summary>
     /// The relationships which will usually be filled after creating all entities.
     /// They are either a list provided by outside, or a lazy list which will then be filled.
     /// </summary>
     [field: AllowNull, MaybeNull]
-    public ILookup<object, IEntity> Relationships => field ??= new LazyLookup<object, IEntity>();
+    public ILookup<object, IEntity> Relationships => field
+        ??= Options.Relationships ?? new LazyLookup<object, IEntity>();
 
     [field: AllowNull, MaybeNull]
-    private RawRelationshipsConvertHelper RelsConvertHelper => field ??= new(builder, Log);
+    private RawRelationshipsConvertHelper RelsConvertHelper => field
+        ??= new(DataBuilder, Log);
 
-    #endregion
-
-
-    #region Spawn New
-
-    public IDataFactory New(
-        NoParamOrder noParamOrder = default,
-        DataFactoryOptions? options = default,
-        ILookup<object, IEntity>? relationships = default
-    )
-    {
-        var freshBuilder = dataBuilderGenerator.New(new()
-        {
-            AllowUnknownValueTypes = options?.AllowUnknownValueTypes ?? false
-        });
-        var clone = new DataFactory(
-            freshBuilder,
-            dataBuilderGenerator,
-            ctFactoryLazy,
-            options: options,
-            relationships: relationships
-        );
-        if ((Log as Log)?.Parent != null)
-            clone.LinkLog(((Log)Log).Parent);
-        return clone;
-    }
-
-    /// <summary>
-    /// Private constructor to create a new factory with configuration
-    /// </summary>
-    private DataFactory(
-        DataBuilder builder,
-        IGenerator<DataBuilder, DataBuilderOptions> dataBuilderGenerator,
-        LazySvc<ContentTypeFactory> ctFactoryLazy,
-        DataFactoryOptions? options = default,
-        ILookup<object, IEntity>? relationships = default
-    ): this (builder, dataBuilderGenerator, ctFactoryLazy)
-    {
-        // Store settings
-        Options = options ?? new();
-
-        IdCounter = Options.IdSeed;
-
-        // Determine what relationships source to use
-        // If we got a lazy, use that and mark as lazy
-        // If we got a normal one, preserve it as it should be the master and not use the lazy ones
-        // which must be created anyway to avoid errors in later code
-        if (relationships is LazyLookup<object, IEntity> relationshipsAsLazy)
-            Relationships = relationshipsAsLazy;
-        else
-            Relationships = relationships ?? new LazyLookup<object, IEntity>();  // will be null or a real value
-    }
     #endregion
 
     #region Create IRawEntity / WrapUp
@@ -186,15 +149,21 @@ internal class DataFactory(DataBuilder builder, IGenerator<DataBuilder, DataBuil
         values ??= new Dictionary<string, object>();
         var valuesWithRelationships = RelsConvertHelper.RelationshipsToAttributes(values, Relationships);
 
+        // ID can be created in 3 ways
+        // 1. An ID was specified, use that
+        // 2. If the ID was 0 / not specified, and the options say to auto-count...
+        // 2a. ...the increment from the last count
+        // 2b. ...unless the current count is negative, then decrement
         var entityId = id == 0 && Options.AutoId
             ? (IdCounter < 0 ? IdCounter-- : IdCounter++) // negative means we're counting down
             : id;
 
-        var ent = builder.Entity.Create(
+        var attributes = DataBuilder.Attribute.Create(valuesWithRelationships);
+        var ent = DataBuilder.Entity.Create(
             appId: Options.AppId,
             entityId: entityId,
             contentType: ContentType,
-            attributes: builder.Attribute.Create(valuesWithRelationships),
+            attributes: attributes,
             titleField: Options.TitleField,
             guid: guid,
             created: created == default ? Created : created,

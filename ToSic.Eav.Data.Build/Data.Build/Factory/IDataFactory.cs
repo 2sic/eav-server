@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Raw;
-using ToSic.Lib.Coding;
-using ToSic.Lib.DI;
+using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -13,7 +12,7 @@ namespace ToSic.Eav.Data.Build;
 /// * Added in v15 to replace the previous IDataBuilder
 /// </remarks>
 [PublicApi]
-public interface IDataFactory: INeedsOptions<DataFactoryOptions>
+public interface IDataFactory: IServiceWithOptions<IDataFactory, DataFactoryOptions>
 {
     /// <summary>
     /// A counter for the ID in case the data provided doesn't have an ID to use.
@@ -32,20 +31,6 @@ public interface IDataFactory: INeedsOptions<DataFactoryOptions>
     /// TODO:
     /// </summary>
     ILookup<object, IEntity> Relationships { get; }
-
-    /// <summary>
-    /// Spawn a new <see cref="IDataFactory"/> with an initial configuration.
-    /// This returns a _new_ <see cref="IDataFactory"/> and will not modify the original/parent.
-    /// Uses the [Spawn New convention](xref:NetCode.Conventions.SpawnNew).
-    /// </summary>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="options">All the options which are relevant for the DataFactory</param>
-    /// <param name="relationships"></param>
-    /// <returns>Itself, to make call chaining easier</returns>
-    IDataFactory New(
-        NoParamOrder noParamOrder = default,
-        DataFactoryOptions? options = default,
-        ILookup<object, IEntity>? relationships = default);
 
     #region Simple Create
 

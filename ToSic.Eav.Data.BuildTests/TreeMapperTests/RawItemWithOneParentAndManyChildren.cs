@@ -5,8 +5,8 @@ namespace ToSic.Eav.Data.BuildTests.TreeMapperTests;
 internal class RawItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int>? childrenIds)
     : IRawEntity, IHasRelationshipKeys
 {
-    public int Id { get;  } = id;
-    public Guid Guid { get;  } = guid;
+    public int Id { get; } = id;
+    public Guid Guid { get; } = guid;
     public DateTime Created { get; } = DateTime.Now;
     public DateTime Modified { get; } = DateTime.Now;
 

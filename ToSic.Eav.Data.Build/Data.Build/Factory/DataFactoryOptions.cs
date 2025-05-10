@@ -134,4 +134,18 @@ public record DataFactoryOptions
         init => field = value;
 #endif
     }
+
+    /// <summary>
+    /// TODO:
+    /// </summary>
+    public ILookup<object, IEntity>? Relationships
+    {
+        get;
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
+        set => field = value;
+#else
+        init => field = value;
+#endif
+    }
+
 }

@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.BuildTests.TreeMapperTests;
 // TODO: CHANGE STARTUP TO NOT USE THE OTHER PROJECT WHICH IT PROBABLY DOESN'T NEED
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
-public class DataFactoryTest(IGenerator<IDataFactory, DataFactoryOptions> dataFactoryGenerator)
+public class DataFactoryTest(IDataFactory dataFactoryGenerator)
 {
     [Fact]
     public void ChildrenRelationships()
@@ -22,7 +22,7 @@ public class DataFactoryTest(IGenerator<IDataFactory, DataFactoryOptions> dataFa
             new(101, Guid.Empty, 0, null),
             new(102, Guid.Empty, 0, null),
         };
-        var all = builder.Create(allRaw);
+        var all = builder.Create(allRaw).ToList();
 
         const string childrenField = "Children";
         var parent = all.First();
@@ -34,7 +34,7 @@ public class DataFactoryTest(IGenerator<IDataFactory, DataFactoryOptions> dataFa
 
         var childrenProperty = parent.Entity.GetTac(childrenField);
         NotNull(childrenProperty);
-        var childrenList = childrenProperty as IEnumerable<IEntity>;
+        var childrenList = ((IEnumerable<IEntity>)childrenProperty).ToList();
         NotNull(childrenList);
         Equal(2, childrenList.Count());
         Equal(101, childrenList.First().EntityId);

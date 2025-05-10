@@ -13,25 +13,12 @@ public class DataBuilder(
     LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder,
     LazySvc<DimensionBuilder> languageBuilder,
     Generator<DataBuilder> builderGen)
-    : ServiceBase(EavLogs.Eav + "MltBld",
+    : ServiceWithOptionsBase<DataBuilder, DataBuilderOptions>($"{EavLogs.Eav}MltBld", builderGen,
         connect:
         [
-            entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder, builderGen
-        ]),
-        INeedsOptions<DataBuilderOptions>
+            entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder
+        ])
 {
-    /// <summary>
-    /// WIP, should replace the New below...
-    /// </summary>
-    [field: AllowNull, MaybeNull]
-    public DataBuilderOptions Options
-    {
-        get => field ??= new();
-        set => field = field == null
-            ? value
-            : throw new InvalidOperationException("Options can only be set once, and only when the DataBuilder is created.");
-    }
-
     public ContentTypeBuilder ContentType => contentTypeBuilder.Value;
     public EntityBuilder Entity => entityBuilder.Value;
 
