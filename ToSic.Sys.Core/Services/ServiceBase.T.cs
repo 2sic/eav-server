@@ -7,7 +7,7 @@ namespace ToSic.Lib.Services;
 /// </summary>
 /// <typeparam name="TMyServices"></typeparam>
 // #NoEditorBrowsableBecauseOfInheritance
-//[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+//[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : MyServicesBase
 {
     /// <summary>

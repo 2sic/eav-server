@@ -11,7 +11,7 @@ namespace ToSic.Lib.Services;
 /// </summary>
 [PrivateApi]
 // #NoEditorBrowsableBecauseOfInheritance
-//[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+//[ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public abstract class ServiceBase(string logName) : IHasLog
 {

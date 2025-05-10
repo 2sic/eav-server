@@ -42,7 +42,7 @@ public static class ILog_Properties
 
     // 2025-05-10 2dm disabled, changed code to not use this
     //[InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
     //public static TProperty GetterL<TProperty>(this ILog log,
     //    Func<ILogCall?, TProperty> getter,
     //    bool timer = default,
@@ -60,7 +60,7 @@ public static class ILog_Properties
     //}
 
     //[InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
     //public static TProperty GetterM<TProperty>(this ILog log,
     //    Func<ILogCall?, (TProperty Result, string Message)> getter,
     //    bool timer = default,
@@ -79,7 +79,7 @@ public static class ILog_Properties
 
 
     //[InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
     //public static TProperty GetterM<TProperty>(this ILog log,
     //    Func<(TProperty Result, string FinalMessage)> getter,
     //    bool timer = default,
@@ -96,7 +96,7 @@ public static class ILog_Properties
     //}
 
     //[InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
     //public static void Setter(this ILog log,
     //    Action setter,
     //    bool timer = default,
@@ -114,7 +114,7 @@ public static class ILog_Properties
     //}
 
     //[InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
     //public static void Setter<TProperty>(this ILog log,
     //    Func<TProperty> setter,
     //    bool timer = default,

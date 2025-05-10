@@ -6,7 +6,7 @@ namespace ToSic.Lib.Logging;
 partial class ILog_Add
 {
     //[PrivateApi("not in use yet, better keep secret for now")]
-    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
     //internal static void ExWithCode(this ILog? log,
     //    Exception exception,
     //    CodeRef codeRef
