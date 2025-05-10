@@ -4,8 +4,17 @@
 /// Execute something if a condition is met, but do it within a lock to avoid duplicate runs
 /// </summary>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class TryLockTryDo(object lockObject = null)
+public class TryLockTryDo(object? lockObject = null)
 {
+    /// <summary>
+    /// The real lock - either use the provided one or create a new one,
+    /// in which case sharing the locks is not expected.
+    /// </summary>
+    private readonly object _loadLock = lockObject ?? new object();
+
+    public int PreLockCount;
+    public int LockCount;
+
     // TODO: @STV SHOULD be applied to more places that use a lock, as I assume it's robust
     public void Do(Func<bool> condition, Action action)
     {
@@ -43,7 +52,4 @@ public class TryLockTryDo(object lockObject = null)
         return (cacheOrFallback(), false, "fallback; after 2nd condition checks");
     }
 
-    public int PreLockCount;
-    public int LockCount;
-    private readonly object _loadLock = lockObject ?? new object();
 }

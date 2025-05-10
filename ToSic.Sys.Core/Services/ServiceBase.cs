@@ -21,9 +21,11 @@ public abstract class ServiceBase(string logName) : IHasLog
     /// <param name="logName"></param>
     /// <param name="protect"></param>
     /// <param name="connect"></param>
-    protected ServiceBase(string logName, NoParamOrder protect = default, object[] connect = default) : this(logName)
+    // ReSharper disable once UnusedParameter.Local
+    protected ServiceBase(string logName, NoParamOrder protect = default, object[]? connect = default) : this(logName)
     {
-        if (connect == null) return;
+        if (connect == null)
+            return;
         ConnectLogs(connect);
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 //using static ToSic.Eav.Internal.Configuration.GlobalConfigHelpers;
@@ -9,12 +10,12 @@ public class GlobalConfiguration : IGlobalConfiguration
 {
     internal static IDictionary<string, string> Strings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-    public string? GetThis([CallerMemberName] string key = default)
+    public string? GetThis([CallerMemberName] string? key = default)
         => Strings.TryGetValue(key ?? "dummy", out var value)
             ? value
             : null;
 
-    public string GetThisOrSet(Func<string> generator, [CallerMemberName] string key = default)
+    public string GetThisOrSet(Func<string> generator, [CallerMemberName] string? key = default)
     {
         var value = GetThis(key);
         if (value != null)
@@ -24,14 +25,16 @@ public class GlobalConfiguration : IGlobalConfiguration
         return value;
     }
 
-    public string? GetThisErrorOnNull([CallerMemberName] string key = default)
-        => GetThis(key) ?? throw new ArgumentNullException(ErrorMessageNullNotAllowed(nameof(key)));
+    public string GetThisErrorOnNull([CallerMemberName] string? key = default)
+        => GetThis(key!)
+           ?? throw new ArgumentNullException(ErrorMessageNullNotAllowed(nameof(key)));
 
-    public string SetThis(string value, [CallerMemberName] string key = default)
+    [return: NotNullIfNotNull(nameof(value))]
+    public string? SetThis(string? value, [CallerMemberName] string? key = default)
     {
         if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentNullException(nameof(key), @"Key cannot be null or empty.");
-        Strings[key] = value;
+        Strings[key!] = value!;
         return value;
     }
 

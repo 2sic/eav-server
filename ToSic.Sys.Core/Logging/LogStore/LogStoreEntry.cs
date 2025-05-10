@@ -12,7 +12,8 @@ public class LogStoreEntry
     /// </summary>
     public const string TitleKey = " Title";
 
-    public ILog Log { get; internal set; }
+    public ILog? Log { get; internal set; }
+
     public IDictionary<string, string>? Specs { get; internal set; }
 
     public void AddSpec(string key, string value)

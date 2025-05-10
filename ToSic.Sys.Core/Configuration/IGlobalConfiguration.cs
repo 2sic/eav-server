@@ -14,12 +14,12 @@ namespace ToSic.Eav.Internal.Configuration;
 /// </remarks>
 public interface IGlobalConfiguration: ILogShouldNeverConnect
 {
-    string? GetThis([CallerMemberName] string key = default);
+    string? GetThis([CallerMemberName] string? key = default);
 
-    string? GetThisOrSet(Func<string> generator, [CallerMemberName] string key = default);
+    string? GetThisOrSet(Func<string> generator, [CallerMemberName] string? key = default);
 
-    string GetThisErrorOnNull([CallerMemberName] string key = default);
+    string GetThisErrorOnNull([CallerMemberName] string? key = default);
 
-    string SetThis(string? value, [CallerMemberName] string key = default);
+    string? SetThis(string? value, [CallerMemberName] string? key = default);
 
 }

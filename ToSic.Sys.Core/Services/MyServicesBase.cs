@@ -55,7 +55,7 @@ public abstract class MyServicesBase: ILazyInitLog
 
     internal bool InitDone;
 
-    void ILazyInitLog.SetLog(ILog parentLog)
+    void ILazyInitLog.SetLog(ILog? parentLog)
     {
         if (InitDone) return;
         DependencyLogs.SetLog(parentLog);

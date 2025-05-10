@@ -13,6 +13,6 @@ public class InternalApi_DoNotUse_MayChangeWithoutNotice: Attribute
 {
     public InternalApi_DoNotUse_MayChangeWithoutNotice() { }
 
-    public InternalApi_DoNotUse_MayChangeWithoutNotice(string comment = null) { }
+    public InternalApi_DoNotUse_MayChangeWithoutNotice(string? comment = null) { }
 
 }

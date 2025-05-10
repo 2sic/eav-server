@@ -33,5 +33,5 @@ public interface IServiceWithOptions<out TService, TOptions>
     /// </summary>
     /// <param name="options">The options</param>
     /// <returns></returns>
-    public TService New(TOptions options = default);
+    public TService New(TOptions? options = default);
 }

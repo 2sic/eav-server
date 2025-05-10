@@ -22,7 +22,7 @@ public static class ILog_Func
         [CallerLineNumber] int cLine = default
     )
     {
-        const string parameters = default;
+        const string? parameters = null;
         //  #duplicateFuncResult<TResult> - Make sure we keep it in sync
         // This section is a duplicate of other implementations
         // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
@@ -96,8 +96,7 @@ public static class ILog_Func
         [CallerLineNumber] int cLine = default
     )
     {
-        //return log.FuncMessage(func, null, message, timer, Create(cPath!, cName!, cLine), enabled);
-        const string parameters = default;
+        const string? parameters = null;
         // #duplicateFuncMessage<TResult>
         // This section is a duplicate of other implementations
         // We're keeping the code duplicate so the call stack doesn't get too deep when debugging

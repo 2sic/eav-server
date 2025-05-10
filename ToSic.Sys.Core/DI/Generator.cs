@@ -26,13 +26,14 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     /// The log is later given to generated objects.
     /// </summary>
     /// <param name="parentLog"></param>
-    void ILazyInitLog.SetLog(ILog parentLog) => Log = parentLog;
+    void ILazyInitLog.SetLog(ILog? parentLog)
+        => Log = parentLog;
 
     /// <summary>
     /// The parent log, which is attached to newly generated objects
     /// _if_ they support logging.
     /// </summary>
-    public ILog Log { get; private set; }
+    public ILog? Log { get; private set; }
 
     /// <summary>
     /// Set the init-command as needed
@@ -49,7 +50,7 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
         _initCall = newInitCall;
         return this;
     }
-    private Action<TService> _initCall;
+    private Action<TService>? _initCall;
 
 
 }

@@ -12,7 +12,7 @@ namespace ToSic.Lib.Services;
 /// <typeparam name="T"></typeparam>
 [PublicApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MyServicesBase<T>(T parentServices, NoParamOrder protect = default, object[] connect = default) : MyServicesBase(connect: connect)
+public class MyServicesBase<T>(T parentServices, NoParamOrder protect = default, object[]? connect = default) : MyServicesBase(connect: connect)
 {
     public T ParentServices { get; } = parentServices;
 

@@ -43,14 +43,15 @@ public static class LogCallBaseExtensions
         //logCall.IsOpen = false;
 
         log.WrapDepth--;
-        logCall.Entry.AppendResult(message);
-        var final = log.AddInternalReuse(null, null);
+        logCall.Entry?.AppendResult(message);
+        var final = log.AddInternalReuse(null!, null);
         final.WrapClose = true;
         final.AppendResult(message);
         if (logCall?.Timer == null)
             return;
         logCall.Timer.Stop();
-        logCall.Entry.Elapsed = logCall.Timer.Elapsed;
+        if (logCall.Entry != null)
+            logCall.Entry.Elapsed = logCall.Timer.Elapsed;
     }
 
 }

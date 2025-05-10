@@ -9,6 +9,7 @@ public static class HasLog_ConnectServices
     /// <summary>
     /// Add Log to all dependencies listed in <see cref="services"/>
     /// </summary>
+    /// <param name="parent"></param>
     /// <param name="services">One or more services which could implement <see cref="LazySvc{T}"/> or <see cref="IHasLog"/></param>
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

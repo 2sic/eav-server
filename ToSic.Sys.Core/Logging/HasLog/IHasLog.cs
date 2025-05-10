@@ -10,6 +10,6 @@ public interface IHasLog
     /// <summary>
     /// The log object which contains the log and can add more logs to the list.
     /// </summary>
-    ILog Log { get; }
+    ILog? Log { get; }
 
 }

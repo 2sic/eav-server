@@ -34,13 +34,13 @@ internal class DependencyLogs
 
         // Temporary warning to detect if IServiceProvider is being passed in
         if (services.Any(s => s is IServiceProvider))
-            throw new Exception("IServiceProvider should not be passed in as a dependency.");
+            throw new("IServiceProvider should not be passed in as a dependency.");
     }
 
     /// <summary>
     /// Auto-initialize the log on all dependencies
     /// </summary>
-    public void SetLog(ILog log)
+    public void SetLog(ILog? log)
     {
         LazyInitLogs.ForEach(s => s.SetLog(log));
         HasLogs.ForEach(hl => hl.LinkLog(log));

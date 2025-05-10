@@ -17,7 +17,7 @@ public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{Log
     public readonly List<T> AllServices = allServices?.ToList() ?? [];
 
 
-    public T Value => _preferredService.Get(FindServiceInSwitcher);
+    public T Value => _preferredService.Get(FindServiceInSwitcher)!;
     private readonly GetOnce<T> _preferredService = new();
 
     private T FindServiceInSwitcher()

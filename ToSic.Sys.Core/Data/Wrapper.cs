@@ -6,11 +6,13 @@
 /// <typeparam name="T"></typeparam>
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [PrivateApi]
-public abstract class Wrapper<T>(T unwrappedContents) : IWrapper<T>
+public abstract class Wrapper<T>(T? unwrappedContents) : IWrapper<T>
 {
+    private T? _unwrappedContents = unwrappedContents;
+
     /// <inheritdoc />
-    public virtual T GetContents() => unwrappedContents;
+    public virtual T? GetContents() => _unwrappedContents;
 
 
-    protected void Wrap(T contents) => unwrappedContents = contents;
+    protected void Wrap(T? contents) => _unwrappedContents = contents;
 }

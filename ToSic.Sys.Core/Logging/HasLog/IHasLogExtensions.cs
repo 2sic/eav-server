@@ -19,13 +19,13 @@ public static class IHasLogExtensions
     /// <returns>The same object as started this, to allow chaining</returns>
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static T LinkLog<T>(this T thingWithLog, ILog parentLog, bool forceConnect = false) where T: class, IHasLog
+    public static T LinkLog<T>(this T thingWithLog, ILog? parentLog, bool forceConnect = false) where T: class, IHasLog
     {
         switch (thingWithLog)
         {
             case null:
                 return null!; // Ignore fact that it returns null, since the problem is on the caller
-            case ILogShouldNeverConnect _ when !forceConnect:
+            case ILogShouldNeverConnect when !forceConnect:
                 return thingWithLog;
             case ILazyInitLog logConnector:
                 logConnector.SetLog(parentLog);

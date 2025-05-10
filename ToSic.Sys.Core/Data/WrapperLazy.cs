@@ -5,19 +5,20 @@
 public class WrapperLazy<T>: Wrapper<T> where T : class
 {
     public WrapperLazy(T contents) : base(contents)
-    {
-    }
+    { }
 
     /// <summary>
     /// Overload for lazy wrapper.
     /// </summary>
     /// <param name="getContents"></param>
-    protected WrapperLazy(Func<T> getContents): base(default) => _getContents = getContents;
-    private Func<T> _getContents;
+    protected WrapperLazy(Func<T> getContents): base(default)
+        => _getContents = getContents;
+    private Func<T>? _getContents;
 
-    private T _unwrappedContents;
+    private T? _unwrappedContents;
 
-    protected void Reset() => Wrap(default);
+    protected void Reset()
+        => Wrap(default);
 
     /// <summary>
     /// Complete the wrapper, ensure the data was retrieved, and drop the getter.
@@ -31,15 +32,17 @@ public class WrapperLazy<T>: Wrapper<T> where T : class
         // Kill the getter
         _getContents = null;
         // return the result
-        return result;
+        return result!;
     }
 
 
     /// <inheritdoc />
-    public override T GetContents()
+    public override T? GetContents()
     {
-        if (_unwrappedContents != default) return _unwrappedContents;
-        _unwrappedContents = base.GetContents() ?? _getContents();
+        if (_unwrappedContents != default)
+            return _unwrappedContents;
+        _unwrappedContents = base.GetContents()
+                             ?? _getContents?.Invoke();
         return _unwrappedContents;
     }
 }

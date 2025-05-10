@@ -22,7 +22,9 @@ namespace ToSic.Lib.DI;
 /// </param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class LazySvc<TService>(IServiceProvider sp) : ILazyLike<TService>, IHasLog, ILazyInitLog where TService : class
+public class LazySvc<TService>(IServiceProvider sp)
+    : ILazyLike<TService>, IHasLog, ILazyInitLog
+    where TService : class
 {
     /// <summary>
     /// Set the init-command as needed
@@ -39,14 +41,14 @@ public class LazySvc<TService>(IServiceProvider sp) : ILazyLike<TService>, IHasL
         _initCall = newInitCall;
         return this;
     }
-    private Action<TService> _initCall;
+    private Action<TService>? _initCall;
 
     public TService Value => _valueGet.Get(() =>
     {
         var value = sp.Build<TService>(Log);
         _initCall?.Invoke(value);
         return value;
-    });
+    })!;
     private readonly GetOnce<TService> _valueGet = new();
 
     public bool IsValueCreated => _valueGet.IsValueCreated;
@@ -56,21 +58,20 @@ public class LazySvc<TService>(IServiceProvider sp) : ILazyLike<TService>, IHasL
     /// </summary>
     /// <param name="replacement"></param>
     public void Inject(TService replacement)
-    {
-        _valueGet.Reset(replacement);
-    }
+        => _valueGet.Reset(replacement);
 
     /// <summary>
     /// Initializer to attach the log to the generator.
     /// The log is later given to generated objects.
     /// </summary>
     /// <param name="parentLog"></param>
-    void ILazyInitLog.SetLog(ILog parentLog) => Log = parentLog;
+    void ILazyInitLog.SetLog(ILog? parentLog)
+        => Log = parentLog;
 
     /// <summary>
     /// The parent log, which is attached to newly generated objects
     /// _if_ they support logging.
     /// </summary>
-    public ILog Log { get; private set; }
+    public ILog? Log { get; private set; }
 
 }

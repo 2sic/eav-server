@@ -14,5 +14,5 @@ public interface IWrapper<out T>
     /// <br/>
     /// Avoid using this property for use inside the real object, but create another property for this, so it's easier to spot dependencies.
     /// </summary>
-    T GetContents();
+    T? GetContents();
 }
