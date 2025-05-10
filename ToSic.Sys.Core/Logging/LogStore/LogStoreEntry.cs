@@ -13,7 +13,7 @@ public class LogStoreEntry
     public const string TitleKey = " Title";
 
     public ILog Log { get; internal set; }
-    public IDictionary<string, string> Specs { get; internal set; }
+    public IDictionary<string, string>? Specs { get; internal set; }
 
     public void AddSpec(string key, string value)
     {
@@ -21,10 +21,11 @@ public class LogStoreEntry
         Specs[key] = value;
     }
 
-    public void UpdateSpecs(IDictionary<string, string> specs)
+    public void UpdateSpecs(IDictionary<string, string>? specs)
     {
         // Skip if nothing new
-        if (specs == null || specs.Count == 0) return;
+        if (specs == null || specs.Count == 0)
+            return;
 
         // If we have no specs yet, just take the new ones
         if (Specs == null || Specs.Count == 0)
@@ -41,5 +42,7 @@ public class LogStoreEntry
     /// <summary>
     /// Optional "better" title for insights
     /// </summary>
-    public string Title => Specs?.TryGetValue(TitleKey, out var title) == true ? title : null;
+    public string? Title => Specs?.TryGetValue(TitleKey, out var title) == true
+        ? title
+        : null;
 }

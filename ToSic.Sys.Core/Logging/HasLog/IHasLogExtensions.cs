@@ -24,7 +24,7 @@ public static class IHasLogExtensions
         switch (thingWithLog)
         {
             case null:
-                return null;
+                return null!; // Ignore fact that it returns null, since the problem is on the caller
             case ILogShouldNeverConnect _ when !forceConnect:
                 return thingWithLog;
             case ILazyInitLog logConnector:

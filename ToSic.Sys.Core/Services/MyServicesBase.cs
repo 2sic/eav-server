@@ -15,9 +15,11 @@ namespace ToSic.Lib.Services;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public abstract class MyServicesBase: ILazyInitLog
 {
-    protected MyServicesBase(NoParamOrder protect = default, object[] connect = default)
+    // ReSharper disable once UnusedParameter.Local
+    protected MyServicesBase(NoParamOrder protect = default, object[]? connect = default)
     {
-        if (connect == null) return;
+        if (connect == null)
+            return;
         ConnectLogs(connect);
     }
 
@@ -31,10 +33,13 @@ public abstract class MyServicesBase: ILazyInitLog
     /// Add objects to various queues to be auto-initialized when <see cref="ServiceDependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
-    protected void ConnectLogs(object[] services) => DependencyLogs.Add(services);
+    protected void ConnectLogs(object[] services)
+        => DependencyLogs.Add(services);
 
-    [Obsolete("Avoid using, will be removed soon. Use ConnectLogs([...])")]
-    protected void ConnectServices(params object[] services) => DependencyLogs.Add(services);
+    // Note: disabled 2025-05-10 2dm, seems unused
+    //[Obsolete("Avoid using, will be removed soon. Use ConnectLogs([...])")]
+    //protected void ConnectServices(params object[] services)
+    //    => DependencyLogs.Add(services);
 
     /// <summary>
     /// Experimental Connect-one, may be removed again.
@@ -42,9 +47,9 @@ public abstract class MyServicesBase: ILazyInitLog
     /// <typeparam name="TService"></typeparam>
     /// <param name="service"></param>
     /// <returns>the service passed in</returns>
-    protected TService ConnectService<TService>(TService service)
+    protected TService ConnectLog<TService>(TService service)
     {
-        DependencyLogs.Add([service]);
+        DependencyLogs.Add([service!]);
         return service;
     }
 

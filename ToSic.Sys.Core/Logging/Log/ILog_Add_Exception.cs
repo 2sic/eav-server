@@ -7,7 +7,7 @@ partial class ILog_Add
 {
     [PrivateApi("not in use yet, better keep secret for now")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    internal static void ExWithCode(this ILog log,
+    internal static void ExWithCode(this ILog? log,
         Exception exception,
         CodeRef codeRef
     ) => log?.ExceptionInternal(exception, codeRef);
@@ -22,13 +22,13 @@ partial class ILog_Add
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static TException Ex<TException>(this ILog log,
+    public static TException Ex<TException>(this ILog? log,
         TException exception,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     ) where TException : Exception
-        => log.ExceptionInternal(exception, CodeRef.Create(cPath, cName, cLine));
+        => log.ExceptionInternal(exception, CodeRef.Create(cPath!, cName!, cLine));
 
     /// <summary>
     /// Add a **Exception** to the log.
@@ -41,15 +41,15 @@ partial class ILog_Add
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static TException Ex<TException>(this ILog log,
+    public static TException Ex<TException>(this ILog? log,
         string message,
         TException exception,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     ) where TException : Exception
     {
         log.E(message);
-        return log.ExceptionInternal(exception, CodeRef.Create(cPath, cName, cLine));
+        return log.ExceptionInternal(exception, CodeRef.Create(cPath!, cName!, cLine));
     }
 }

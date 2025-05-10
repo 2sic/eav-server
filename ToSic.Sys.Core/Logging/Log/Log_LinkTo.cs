@@ -10,7 +10,7 @@ public partial class Log
     /// </summary>
     /// <param name="newParent">parent log to attach to</param>
     /// <param name="name">optional new name</param>
-    internal void LinkTo(ILog newParent, string name = null)
+    internal void LinkTo(ILog? newParent, string? name = default)
     {
         if (newParent == this)
             throw new("LOG ERROR - attaching a log to itself can't work");

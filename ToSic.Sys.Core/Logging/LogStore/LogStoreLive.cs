@@ -46,22 +46,26 @@ public class LogStoreLive : ILogStoreLive
     #region Add
 
     /// <inheritdoc />
-    public LogStoreEntry Add(string segment, ILog log) => AddInternal(segment, log, false);
+    public LogStoreEntry? Add(string segment, ILog log)
+        => AddInternal(segment, log, false);
 
     [PrivateApi("shouldn't be visible outside")]
-    public LogStoreEntry ForceAdd(string key, ILog log) => AddInternal(key, log, true);
+    public LogStoreEntry? ForceAdd(string key, ILog log)
+        => AddInternal(key, log, true);
 
     [PrivateApi]
-    private LogStoreEntry AddInternal(string key, ILog log, bool force)
+    private LogStoreEntry? AddInternal(string key, ILog log, bool force)
     {
         // Check exit clauses if not forced
         if (!force)
         {
             // only add if not paused
-            if (Pause) return null;
+            if (Pause)
+                return null;
 
             // don't keep in journal if it shouldn't be preserved
-            if ((log as Log)?.Preserve != true) return null;
+            if ((log as Log)?.Preserve != true)
+                return null;
         }
 
         // auto-pause after 1000 logs were run through this, till someone decides to unpause again

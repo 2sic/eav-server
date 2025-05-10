@@ -2,5 +2,5 @@
 
 internal interface ILogLike
 {
-    ILog Log { get; }
+    ILog? Log { get; }
 }

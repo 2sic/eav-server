@@ -21,13 +21,13 @@ public class LogFilter(
 
     public bool ShouldLog => Count <= LogFirstMax || Count % ReLogIteration == 0;
 
-    public ILogCall<T> FnOrNull<T>(
-        string parameters = default,
-        string message = default,
+    public ILogCall<T>? FnOrNull<T>(
+        string? parameters = default,
+        string? message = default,
         bool timer = false,
         bool enabled = true,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     )
     {

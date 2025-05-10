@@ -13,6 +13,7 @@ public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{Log
     // TODO
     // - add to global log history when regenerating incl. choice
 
+    // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
     public readonly List<T> AllServices = allServices?.ToList() ?? [];
 
 
@@ -38,6 +39,6 @@ public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{Log
 
     public bool IsValueCreated => _preferredService.IsValueCreated;
 
-    public T ByNameId(string nameId, bool insensitive = false)
+    public T? ByNameId(string nameId, bool insensitive = false)
         => AllServices.Find(s => s.NameId.Equals(nameId, insensitive ? InvariantCultureIgnoreCase : Ordinal));
 }

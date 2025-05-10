@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using ToSic.Lib.Services;
@@ -18,10 +19,15 @@ public abstract record FunFactActionsBase<T> : RecordHelperBase
     /// <summary>
     /// List of actions to apply to the object
     /// </summary>
-    [JsonIgnore]        // Prevent System.Text.Json from serializing this property
-    [IgnoreDataMember]  // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
+    [JsonIgnore] // Prevent System.Text.Json from serializing this property
+    [IgnoreDataMember] // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
     [PrivateApi]
-    public List<(string Info, Action<T> Action)> Actions { get => field ??= []; init => field = value; }
+    [field: AllowNull, MaybeNull]
+    public List<(string Info, Action<T> Action)> Actions
+    {
+        get => field ??= [];
+        init => field = value;
+    }
 
     protected List<(string, Action<T>)> CloneActions((string, Action<T>) addition)
         => [..Actions, addition];
@@ -34,7 +40,7 @@ public abstract record FunFactActionsBase<T> : RecordHelperBase
             l.A(action.Info);
             action.Action(initial);
         }
-        return l.Return(initial);
+        return l.Return(initial!);
     }
 
     public abstract T CreateResult();

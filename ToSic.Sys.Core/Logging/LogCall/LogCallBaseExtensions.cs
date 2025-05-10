@@ -6,21 +6,25 @@ public static class LogCallBaseExtensions
     #region DoInTimer
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void DoInTimer(this ILogCall logCall, Action action)
+    public static void DoInTimer(this ILogCall? logCall, Action action)
     {
-        var skipStartingTimer = logCall?.Timer.IsRunning ?? true;
-        if (!skipStartingTimer) logCall.Timer.Start();
+        var timerWasAlreadyRunning = logCall is { Timer.IsRunning: true };
+        if (!timerWasAlreadyRunning)
+            logCall?.Timer.Start();
         action();
-        if (!skipStartingTimer) logCall.Timer.Stop();
+        if (!timerWasAlreadyRunning)
+            logCall?.Timer.Stop();
     }
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static TResult DoInTimer<TResult>(this ILogCall logCall, Func<TResult> action)
+    public static TResult DoInTimer<TResult>(this ILogCall? logCall, Func<TResult> action)
     {
-        var skipStartingTimer = logCall?.Timer.IsRunning ?? true;
-        if (!skipStartingTimer) logCall.Timer.Start();
+        var timerWasAlreadyRunning = logCall is { Timer.IsRunning: true };
+        if (!timerWasAlreadyRunning)
+            logCall?.Timer.Start();
         var result = action();
-        if (!skipStartingTimer) logCall.Timer.Stop();
+        if (!timerWasAlreadyRunning)
+            logCall?.Timer.Stop();
         return result;
     }
 
@@ -29,9 +33,10 @@ public static class LogCallBaseExtensions
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    internal static void DoneInternal(this ILogCall logCall, string message)
+    internal static void DoneInternal(this ILogCall? logCall, string? message)
     {
-        if (!(logCall?.Log is Log log)) return;
+        if (logCall?.Log is not Log log)
+            return;
 
         //if (!logCall.IsOpen)
         //    log.AddInternal("Log Warning: Wrapper already closed from previous call", null);
@@ -42,7 +47,8 @@ public static class LogCallBaseExtensions
         var final = log.AddInternalReuse(null, null);
         final.WrapClose = true;
         final.AppendResult(message);
-        if (logCall.Timer == null) return;
+        if (logCall?.Timer == null)
+            return;
         logCall.Timer.Stop();
         logCall.Entry.Elapsed = logCall.Timer.Elapsed;
     }

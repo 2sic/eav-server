@@ -80,13 +80,14 @@ partial class DbEntity
 
             // is New
             if (isNew)
-                l.Do("Create new...", l2 =>
+                l.Do(message: "Create new...", action: () =>
                 {
+                    var l2 = l.Fn();
                     if (newEnt.EntityGuid == Guid.Empty)
                     {
-                        if (logDetails) l2.A("New entity guid was null, will throw exception");
-                        throw new ArgumentException(
-                            "can't create entity in DB with guid null - entities must be fully prepared before sending to save");
+                        if (logDetails)
+                            l2.A("New entity guid was null, will throw exception");
+                        throw new ArgumentException("can't create entity in DB with guid null - entities must be fully prepared before sending to save");
                     }
 
                     dbEnt = CreateDbRecord(newEnt, transactionId, contentTypeId);
@@ -105,7 +106,7 @@ partial class DbEntity
                             DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dbEnt),
                                 "update json");
                         });
-                    return $"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}";
+                    l2.Done($"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
                 });
             // is Update
             else

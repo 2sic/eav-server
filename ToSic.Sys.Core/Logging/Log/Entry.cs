@@ -5,8 +5,8 @@ namespace ToSic.Lib.Logging;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class Entry: ICanEstimateSize
 {
-    public string Message { get; }
-    public string Result { get; private set; }
+    public string? Message { get; }
+    public string? Result { get; private set; }
     public TimeSpan Elapsed { get; set; }
     public int Depth;
 
@@ -14,17 +14,17 @@ public class Entry: ICanEstimateSize
     public bool WrapClose;
     public bool WrapOpenWasClosed;
 
-    public readonly EntryOptions Options;
+    public readonly EntryOptions? Options;
 
     private readonly ILog _log;
 
-    public string Source => (_log as Log)?.FullIdentifier;
+    public string? Source => (_log as Log)?.FullIdentifier;
 
     public string ShortSource => _log.NameId;
 
     public DateTime Created { get; } = DateTime.Now;
 
-    internal Entry(ILog log, string message, int depth, CodeRef code, EntryOptions options = default)
+    internal Entry(ILog log, string message, int depth, CodeRef? code, EntryOptions? options = default)
     {
         _log = log;
         Message = message;
@@ -45,7 +45,7 @@ public class Entry: ICanEstimateSize
 #endif
     }
 
-    public void AppendResult(string message)
+    public void AppendResult(string? message)
     {
         Result = message;
         WrapOpenWasClosed = true;
@@ -56,18 +56,19 @@ public class Entry: ICanEstimateSize
     /// <summary>
     /// Code reference where the log was added
     /// </summary>
-    public CodeRef Code;
+    public CodeRef? Code;
 
     #endregion
 
-    public SizeEstimate EstimateSize(ILog log = default)
+    public SizeEstimate EstimateSize(ILog? log = default)
     {
-        if (_estimate != null) return _estimate;
+        if (_estimate != null)
+            return _estimate;
         var estimator = new MemorySizeEstimator(log);
         _estimate = estimator.EstimateMany([Message, Result, Elapsed, Depth, WrapOpen, WrapClose, WrapOpenWasClosed])
             + new SizeEstimate(0, 10);
         return _estimate;
     }
 
-    private SizeEstimate _estimate;
+    private SizeEstimate? _estimate;
 }

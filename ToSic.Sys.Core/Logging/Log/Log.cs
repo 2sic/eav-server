@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Lib.Memory;
+// ReSharper disable RedundantAccessorBody
 
 namespace ToSic.Lib.Logging;
 
@@ -31,12 +32,12 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     /// <param name="cName">auto pre filled by the compiler - the method name</param>
     /// <param name="cLine">auto pre filled by the compiler - the code line</param>
     public Log(string name,
-        ILog parent = default,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        ILog? parent = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default)
-        : this(name, parent, CodeRef.Create(cPath, cName, cLine), message) { }
+        : this(name, parent, CodeRef.Create(cPath!, cName!, cLine), message) { }
 
     /// <summary>
     /// Create a logger and optionally attach it to a parent logger
@@ -45,11 +46,12 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     /// <param name="parent">optional parent logger to attach to</param>
     /// <param name="code">The code reference - must be generated before</param>
     /// <param name="initialMessage">optional initial message to log</param>
-    public Log(string name, ILog parent, CodeRef code, string initialMessage = default)
+    public Log(string name, ILog? parent, CodeRef code, string? initialMessage = default)
     {
         this.Rename(name);
         LinkTo(parent);
-        if (initialMessage == default) return;
+        if (initialMessage == default)
+            return;
         this.AddInternal(initialMessage, code);
     }
 
@@ -90,11 +92,14 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     private void AddEntry(Entry entry)
     {
         // prevent parallel threads from updating entries at the same time
-        lock (Entries) { Entries.Add(entry); }
+        lock (Entries)
+        {
+            Entries.Add(entry);
+        }
         (Parent as Log)?.AddEntry(entry);
     }
 
-    Entry ILogInternal.CreateAndAdd(string message, CodeRef code, EntryOptions options)
+    Entry ILogInternal.CreateAndAdd(string message, CodeRef? code, EntryOptions? options)
     {
         var e = new Entry(this, message, WrapDepth, code, options);
         AddEntry(e);
@@ -120,7 +125,7 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     /// <summary>
     /// Parent to which it's linked
     /// </summary>
-    public ILog Parent { get; private set; }
+    public ILog? Parent { get; private set; }
 
     /// <summary>
     /// How deep this logger is in the whole tree
@@ -128,22 +133,21 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     internal int Depth { get; set; }
 
 
-    /// <inheritdoc />
     public bool Preserve
     {
-        get => _preserve;
+        get => field;
         set
         {
-            _preserve = value;
+            field = value;
             // pass it on to the parent if suddenly turned on, so that the chain knows if it should be preserved
-            if (Parent is Log logParent) logParent.Preserve = value;
+            if (Parent is Log logParent)
+                logParent.Preserve = value;
         }
-    }
-    private bool _preserve = true;
+    } = true;
 
     #endregion
 
-    public SizeEstimate EstimateSize(ILog log = default)
+    public SizeEstimate EstimateSize(ILog? log = default)
     {
         if (_estimate != null && Entries.Count == _entriesOnLastEstimate)
             return _estimate;
@@ -152,6 +156,6 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
         _estimate = estimator.EstimateMany([Id, Scope, Name, Created, Entries, WrapDepth, Preserve]);
         return _estimate;
     }
-    private SizeEstimate _estimate;
+    private SizeEstimate? _estimate;
     private int _entriesOnLastEstimate = -1;
 }

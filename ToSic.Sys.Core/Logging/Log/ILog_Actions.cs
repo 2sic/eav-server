@@ -9,6 +9,7 @@ namespace ToSic.Lib.Logging;
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP")]
 // ReSharper disable once InconsistentNaming
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+// ReSharper disable once InconsistentNaming
 public static class ILog_Actions
 {
     /// <summary>
@@ -24,13 +25,13 @@ public static class ILog_Actions
     /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void Do(this ILog log,
+    public static void Do(this ILog? log,
         Action action,
         bool timer = default,
         bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = null,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     ) => log.Do(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
@@ -49,18 +50,20 @@ public static class ILog_Actions
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void Do(this ILog log,
+    public static void Do(this ILog? log,
         string parameters,
         Action action,
         bool timer = default,
         bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = null,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     )
     {
-        var l = enabled ? new LogCall(log, Create(cPath, cName, cLine), false, parameters, message, timer) : null;
+        var l = enabled
+            ? new LogCall(log, Create(cPath!, cName!, cLine), false, parameters, message, timer)
+            : null;
         action();
         if (enabled) l.Done();
     }
@@ -78,13 +81,13 @@ public static class ILog_Actions
     /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void Do(this ILog log,
+    public static void Do(this ILog? log,
         Action<ILogCall> action,
         bool timer = default,
         bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = null,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     ) => log.DoLogCall(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
@@ -95,25 +98,25 @@ public static class ILog_Actions
         Action<ILogCall> action,
         bool timer = default,
         bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = null,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     ) => log.DoLogCall(parameters, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    private static void DoLogCall(this ILog log,
+    private static void DoLogCall(this ILog? log,
         string parameters,
         Action<ILogCall> action,
         bool timer = default,
         bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     )
     {
-        var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, parameters, message, timer);
+        var l = new LogCall(enabled ? log : null, Create(cPath!, cName!, cLine), false, parameters, message, timer);
         action(l);
         if (enabled) l.Done();
     }
@@ -126,18 +129,20 @@ public static class ILog_Actions
     /// <param name="log"></param>
     /// <param name="action">The method called, whose return value will be logged but not passed on</param>
     /// <param name="timer"></param>
+    /// <param name="message"></param>
     /// <param name="cPath">Code file path, auto-added by compiler</param>
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
+    /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void Do(this ILog log,
+    public static void Do(this ILog? log,
         Func<string> action,
         bool timer = default,
         bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = null,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     ) => log.Do(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
 
@@ -151,59 +156,28 @@ public static class ILog_Actions
     /// <param name="parameters"></param>
     /// <param name="action">The method called, whose return value will be logged but not passed on</param>
     /// <param name="timer"></param>
+    /// <param name="message"></param>
     /// <param name="cPath">Code file path, auto-added by compiler</param>
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
+    /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void Do(this ILog log,
+    public static void Do(this ILog? log,
         string parameters,
         Func<string> action,
         bool timer = default,
         bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = null,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     )
     {
-        var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, parameters, message, timer);
+        var l = new LogCall(enabled ? log : null, Create(cPath!, cName!, cLine), false, parameters, message, timer);
         var msg = action();
         if (enabled) l.Done(msg);
     }
 
 
-    #region Func With LogCall and Message
-
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void Do(this ILog log,
-        Func<ILogCall, string> action,
-        bool timer = default,
-        bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
-        [CallerLineNumber] int cLine = default
-    ) => log.Do(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
-
-    [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void Do(this ILog log,
-        string parameters,
-        Func<ILogCall, string> action,
-        bool timer = default,
-        bool enabled = true,
-        string message = null,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
-        [CallerLineNumber] int cLine = default
-    )
-    {
-        var l = new LogCall(enabled ? log : null, Create(cPath, cName, cLine), false, parameters, message, timer);
-        var msg = action(l);
-        if (enabled) l.Done(msg);
-    }
-
-    #endregion
 }

@@ -19,11 +19,14 @@ public static partial class ILogExtensions
     /// <returns></returns>
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static ILog SubLogOrNull(this ILog log, string name, bool enabled = true)
+    public static ILog? SubLogOrNull(this ILog log, string name, bool enabled = true)
     {
-        if (!enabled) return null;
-        log = log.GetRealLog();
-        return log == default ? null : new Log(name, log);
+        if (!enabled)
+            return null;
+        var realLog = log.GetRealLog();
+        return realLog == default
+            ? null
+            : new Log(name, realLog);
     }
         
 }

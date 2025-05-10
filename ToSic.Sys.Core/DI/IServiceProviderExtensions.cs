@@ -45,7 +45,7 @@ public static class IServiceProviderExtensions
     /// <param name="serviceProvider"></param>
     /// <param name="parentLog"></param>
     /// <returns></returns>
-    public static T Build<T>(this IServiceProvider serviceProvider, ILog parentLog)
+    public static T Build<T>(this IServiceProvider serviceProvider, ILog? parentLog)
     {
         // temp: debug with try-catch, as we're getting some strange problems
         //try
@@ -64,13 +64,14 @@ public static class IServiceProviderExtensions
     }
 
 
-    public static T Build<T>(this IServiceProvider serviceProvider, Type type, ILog parentLog = null) where T: class
+    public static T Build<T>(this IServiceProvider serviceProvider, Type type, ILog? parentLog = null) where T: class
     {
         // Try to first check registered types, otherwise try to find in DLLs etc. using Activator Utilities
         var service = serviceProvider.GetService(type)
                       ?? ActivatorUtilities.CreateInstance(serviceProvider, type);
-        if (service is IHasLog withLog && parentLog != null) withLog.LinkLog(parentLog);
-        return service as T;
+        if (service is IHasLog withLog && parentLog != null)
+            withLog.LinkLog(parentLog);
+        return (service as T)!;
     }
 
 }

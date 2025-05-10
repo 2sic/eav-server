@@ -12,9 +12,9 @@ public interface ILogStore
     /// </summary>
     /// <param name="segment">Segment name, like `webapi` or `module`</param>
     /// <param name="log"></param>
-    LogStoreEntry Add(string segment, ILog log);
+    LogStoreEntry? Add(string segment, ILog log);
 
     [PrivateApi]
-    LogStoreEntry ForceAdd(string key, ILog log);
+    LogStoreEntry? ForceAdd(string key, ILog log);
 
 }

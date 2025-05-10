@@ -16,21 +16,23 @@ public static class ILog_Func
         Func<TResult> func,
         bool timer = default,
         bool enabled = true,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     )
     {
-        const bool logResult = true;
         const string parameters = default;
         //  #duplicateFuncResult<TResult> - Make sure we keep it in sync
         // This section is a duplicate of other implementations
         // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
-        var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath, cName, cLine)) : null;
+        var l = enabled
+            ? log.FnCode<TResult>(parameters, message, timer, Create(cPath!, cName!, cLine))
+            : null;
         var result = func();
-        if (!enabled) return result;
-        return logResult ? l.ReturnAndLog(result) : l.Return(result);
+        if (!enabled)
+            return result;
+        return l.ReturnAndLog(result);
 
     }
 
@@ -46,20 +48,20 @@ public static class ILog_Func
         Func<TResult> func,
         bool timer = default,
         bool enabled = true,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     )
     {
-        const bool logResult = true;
         //  #duplicateFuncResult<TResult> - Make sure we keep it in sync
         // This section is a duplicate of other implementations
         // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
-        var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath, cName, cLine)) : null;
+        var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath!, cName!, cLine)) : null;
         var result = func();
-        if (!enabled) return result;
-        return logResult ? l.ReturnAndLog(result) : l.Return(result);
+        return enabled
+            ? l.ReturnAndLog(result)
+            : result;
     }
 
     //private static TResult FuncResult<TResult>(this ILog log,
@@ -88,22 +90,24 @@ public static class ILog_Func
         Func<(TResult Result, string FinalMessage)> func,
         bool timer = default,
         bool enabled = true,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     )
     {
-        //return log.FuncMessage(func, null, message, timer, Create(cPath, cName, cLine), enabled);
-        const bool logResult = true;
+        //return log.FuncMessage(func, null, message, timer, Create(cPath!, cName!, cLine), enabled);
         const string parameters = default;
         // #duplicateFuncMessage<TResult>
         // This section is a duplicate of other implementations
         // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
-        var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath, cName, cLine)) : null;
+        var l = enabled
+            ? log.FnCode<TResult>(parameters, message, timer, Create(cPath!, cName!, cLine))
+            : null;
         var (result, resultMsg) = func();
-        if (!enabled) return result;
-        return logResult ? l.ReturnAndLog(result, resultMsg) : l.Return(result, resultMsg);
+        return enabled
+            ? l.ReturnAndLog(result, resultMsg)
+            : result;
     }
 
     //[InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
@@ -111,10 +115,10 @@ public static class ILog_Func
     //    bool enabled,
     //    Func<(TResult Result, string Message)> func,
     //    bool timer = default,
-    //    [CallerFilePath] string cPath = default,
-    //    [CallerMemberName] string cName = default,
+    //    [CallerFilePath] string? cPath = default,
+    //    [CallerMemberName] string? cName = default,
     //    [CallerLineNumber] int cLine = default
-    //) => log.FuncMessage(func, null, null, timer, Create(cPath, cName, cLine), enabled);
+    //) => log.FuncMessage(func, null, null, timer, Create(cPath!, cName!, cLine), enabled);
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -123,21 +127,18 @@ public static class ILog_Func
         Func<(TResult Result, string FinalMessage)> func,
         bool timer = default,
         bool enabled = true,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     )
     {
-        //return log.FuncMessage(func, parameters, message, timer, Create(cPath, cName, cLine), enabled);
-        const bool logResult = true;
         // #duplicateFuncMessage<TResult>
         // This section is a duplicate of other implementations
         // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
-        var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath, cName, cLine)) : null;
+        var l = enabled ? log.FnCode<TResult>(parameters, message, timer, Create(cPath!, cName!, cLine)) : null;
         var (result, resultMsg) = func();
-        if (!enabled) return result;
-        return logResult ? l.ReturnAndLog(result, resultMsg) : l.Return(result, resultMsg);
+        return enabled ? l.ReturnAndLog(result, resultMsg) : result;
     }
 
 
@@ -163,46 +164,48 @@ public static class ILog_Func
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static TResult Func<TResult>(this ILog log,
-        Func<ILogCall, TResult> func,
+    public static TResult? Func<TResult>(this ILog log,
+        Func<ILogCall?, TResult?> func,
         bool timer = default,
         bool enabled = true,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.FuncLogResult(func, null, message, timer, Create(cPath, cName, cLine), enabled);
+    ) => log.FuncLogResult(func, null, message, timer, Create(cPath!, cName!, cLine), enabled);
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static TResult Func<TResult>(this ILog log,
+    public static TResult Func<TResult>(this ILog? log,
         string parameters,
-        Func<ILogCall, TResult> func,
+        Func<ILogCall?, TResult> func,
         bool timer = default,
         bool enabled = true,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.FuncLogResult(func, parameters, message, timer, Create(cPath, cName, cLine), enabled);
+    ) => log.FuncLogResult(func, parameters, message, timer, Create(cPath!, cName!, cLine), enabled);
 
     // Experimental - try to force inline when compiling, to reduce call stack
     // https://stackoverflow.com/questions/12303924/how-to-force-inline-functions-in-c
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    private static TResult FuncLogResult<TResult>(this ILog log,
-        Func<ILogCall, TResult> func,
-        string parameters,
-        string message,
+    private static TResult FuncLogResult<TResult>(this ILog? log,
+        Func<ILogCall?, TResult> func,
+        string? parameters,
+        string? message,
         bool timer,
         CodeRef code,
-        bool enabled /*,
-        bool logResult = true */)
+        bool enabled)
     {
-        var l = enabled ? log.FnCode<TResult>(parameters, message, timer, code) : null;
+        var l = enabled
+            ? log.FnCode<TResult>(parameters, message, timer, code)
+            : null;
         var result = func(l);
-        if (!enabled) return result;
-        return /*logResult*/ true ? l.ReturnAndLog(result) : l.Return(result);
+        return enabled
+            ? l.ReturnAndLog(result)
+            : result;
     }
 
     #endregion
@@ -213,29 +216,29 @@ public static class ILog_Func
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TResult Func<TResult>(this ILog log,
-        Func<ILogCall, (TResult Result, string FinalMessage)> func,
+        Func<ILogCall?, (TResult Result, string FinalMessage)> func,
         bool timer = default,
         bool enabled = true,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     ) => log.FuncLogResultMessage(func, null, message, timer,
-        Create(cPath, cName, cLine), enabled);
+        Create(cPath!, cName!, cLine), enabled);
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static TResult Func<TResult>(this ILog log,
         string parameters,
-        Func<ILogCall, (TResult Result, string FinalMessage)> func,
+        Func<ILogCall?, (TResult Result, string FinalMessage)> func,
         bool timer = default,
         bool enabled = true,
-        string message = default,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        string? message = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
     ) => log.FuncLogResultMessage(func, parameters, message, timer,
-        Create(cPath, cName, cLine), enabled);
+        Create(cPath!, cName!, cLine), enabled);
 
 
     // Experimental - try to force inline when compiling, to reduce call stack
@@ -243,18 +246,22 @@ public static class ILog_Func
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     private static TResult FuncLogResultMessage<TResult>(this ILog log,
-        Func<ILogCall, (TResult Result, string FinalMessage)> func,
-        string parameters,
-        string message,
+        Func<ILogCall?, (TResult Result, string FinalMessage)> func,
+        string? parameters,
+        string? message,
         bool timer,
         CodeRef code,
         bool enabled,
         bool logResult = true)
     {
-        var l = enabled ? log.FnCode<TResult>(parameters, message, timer, code) : null;
+        var l = enabled
+            ? log.FnCode<TResult>(parameters, message, timer, code)
+            : null;
         var (result, resultMessage) = func(l);
         if (!enabled) return result;
-        return logResult ? l.ReturnAndLog(result, resultMessage) : l.Return(result, resultMessage);
+        return logResult
+            ? l.ReturnAndLog(result, resultMessage)
+            : l.Return(result, resultMessage);
     }
 
     #endregion

@@ -37,7 +37,9 @@ public class LogAdd: LogTestBase
 
     [Theory]
     [MemberData(nameof(SimpleMessages))]
+#pragma warning disable xUnit1026
     public void A_NotEnabled(string testName, string expected, string message, string result, int depth)
+#pragma warning restore xUnit1026
     {
         var log = LogFactory();
         log.LogForAdd.A(false, message);

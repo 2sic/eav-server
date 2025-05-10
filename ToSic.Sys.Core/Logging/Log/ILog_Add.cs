@@ -10,6 +10,7 @@ namespace ToSic.Lib.Logging;
 [PublicApi]
 // ReSharper disable once InconsistentNaming
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+// ReSharper disable once InconsistentNaming
 public static partial class ILog_Add
 {
     /// <summary>
@@ -20,15 +21,16 @@ public static partial class ILog_Add
     /// <param name="cPath">Code file path, auto-added by compiler</param>
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
+    /// <param name="options"></param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void A(this ILog log,
+    public static void A(this ILog? log,
         string message,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default,
-        EntryOptions options = default
-    ) => log.AddInternal(message, CodeRef.Create(cPath, cName, cLine), options);
+        EntryOptions? options = default
+    ) => log.AddInternal(message, CodeRef.Create(cPath!, cName!, cLine), options);
 
 
     /// <summary>
@@ -40,17 +42,18 @@ public static partial class ILog_Add
     /// <param name="cPath">Code file path, auto-added by compiler</param>
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
+    /// <param name="options"></param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void A(this ILog log,
         bool enabled, 
         string message,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default,
-        EntryOptions options = default
-    ) { if (enabled) log.AddInternal(message, CodeRef.Create(cPath, cName, cLine), options); }
+        EntryOptions? options = default
+    ) { if (enabled) log.AddInternal(message, CodeRef.Create(cPath!, cName!, cLine), options); }
 
     /// <summary>
     /// Add a **warning** to the log.
@@ -64,10 +67,10 @@ public static partial class ILog_Add
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void W(this ILog log,
         string message,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.AddInternal(LogConstants.WarningPrefix + message, CodeRef.Create(cPath, cName, cLine));
+    ) => log.AddInternal(LogConstants.WarningPrefix + message, CodeRef.Create(cPath!, cName!, cLine));
 
     /// <summary>
     /// Add an **error** to the log.
@@ -79,12 +82,12 @@ public static partial class ILog_Add
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public static void E(this ILog log,
+    public static void E(this ILog? log,
         string message,
-        [CallerFilePath] string cPath = default,
-        [CallerMemberName] string cName = default,
+        [CallerFilePath] string? cPath = default,
+        [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.AddInternal(LogConstants.ErrorPrefix + message, CodeRef.Create(cPath, cName, cLine));
+    ) => log.AddInternal(LogConstants.ErrorPrefix + message, CodeRef.Create(cPath!, cName!, cLine));
 
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -97,11 +100,12 @@ public static partial class ILog_Add
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     private static NumberFormatInfo AposThousandSeparator()
     {
-        if (_aposSeparator != null) return _aposSeparator;
+        if (_aposSeparator != null)
+            return _aposSeparator;
         _aposSeparator = CultureInfo.InvariantCulture.NumberFormat.Clone() as NumberFormatInfo;
-        _aposSeparator.NumberGroupSeparator = "'";
+        _aposSeparator!.NumberGroupSeparator = "'";
         return _aposSeparator;
     }
 
-    private static NumberFormatInfo _aposSeparator;
+    private static NumberFormatInfo? _aposSeparator;
 }

@@ -8,19 +8,23 @@ internal static partial class LogExtensionsInternal
     /// </summary>
     /// <param name="log"></param>
     /// <returns>The target Log object OR null</returns>
-    internal static ILog GetRealLog(this ILog log) => log as Log ?? (log as ILogLike)?.Log ?? log;
+    internal static ILog? GetRealLog(this ILog? log)
+        => log as Log
+           ?? (log as ILogLike)?.Log
+           ?? log;
 
 
     /// <summary>
-    /// Add a message
+    /// Add a message if we're actually logging something, otherwise skip.
+    /// Return the entry as it may be used again - if we actually had a real logger.
     /// </summary>
-    internal static Entry AddInternal(this ILog log, string message, CodeRef code, EntryOptions options = default)
-    {
-        // Null-check
-        if (!(log.GetRealLog() is ILogInternal realLog)) return null;
-        return realLog.CreateAndAdd(message, code, options);
-    }
+    internal static Entry? AddInternal(this ILog? log, string message, CodeRef? code, EntryOptions? options = default)
+        => log.GetRealLog() is not ILogInternal realLog
+            ? null
+            : realLog.CreateAndAdd(message, code, options);
 
-    internal static Entry AddInternalReuse(this ILog log, string message, CodeRef code) 
-        => log.AddInternal(message, code) ?? new Entry(null, null, 0, code);
+    internal static Entry AddInternalReuse(this ILog? log, string message, CodeRef? code) 
+        => log.AddInternal(message, code)
+           // If no log was given, return a blank entry, as it won't be attached to anything
+           ?? new Entry(null!, null!, 0, code);
 }

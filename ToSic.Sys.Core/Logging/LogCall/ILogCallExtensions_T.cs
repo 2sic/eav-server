@@ -1,4 +1,6 @@
-﻿namespace ToSic.Lib.Logging;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ToSic.Lib.Logging;
 
 // ReSharper disable once InconsistentNaming
 partial class ILogCallExtensions
@@ -9,7 +11,9 @@ partial class ILogCallExtensions
     /// <param name="logCall">The log call or null</param>
     /// <param name="result">The result to return</param>
     /// <returns>The result specified</returns>
-    public static T Return<T>(this ILogCall<T> logCall, T result) => logCall.Return(result, null);
+    [return: NotNullIfNotNull(nameof(result))]
+    public static T Return<T>(this ILogCall<T>? logCall, T result)
+        => logCall.Return(result, null);
 
     /// <summary>
     /// Close the log call and return a specific result, without adding any message.
@@ -18,7 +22,8 @@ partial class ILogCallExtensions
     /// <param name="result">The result to return</param>
     /// <param name="message">Message to add to the log</param>
     /// <returns>The result specified</returns>
-    public static T Return<T>(this ILogCall<T> logCall, T result, string message)
+    [return: NotNullIfNotNull(nameof(result))]
+    public static T Return<T>(this ILogCall<T>? logCall, T result, string? message)
     {
         logCall?.DoneInternal(message);
         return result;
@@ -32,7 +37,9 @@ partial class ILogCallExtensions
     /// <param name="logCall">The log call or null</param>
     /// <param name="result"></param>
     /// <returns></returns>
-    public static T ReturnAsOk<T>(this ILogCall<T> logCall, T result) => logCall.Return(result, "ok");
+    [return: NotNullIfNotNull(nameof(result))]
+    public static T ReturnAsOk<T>(this ILogCall<T>? logCall, T result)
+        => logCall.Return(result, "ok");
 
     /// <summary>
     /// Return a value with the standard message "error"
@@ -40,8 +47,10 @@ partial class ILogCallExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="logCall">The log call or null</param>
     /// <param name="result"></param>
+    /// <param name="message"></param>
     /// <returns></returns>
-    public static T ReturnAsError<T>(this ILogCall<T> logCall, T result, string message = default)
+    [return: NotNullIfNotNull(nameof(result))]
+    public static T ReturnAsError<T>(this ILogCall<T>? logCall, T result, string? message = default)
         => logCall.Return(result, $"error {message}");
 
     /// <summary>
@@ -51,9 +60,12 @@ partial class ILogCallExtensions
     /// <param name="logCall">The log call or null</param>
     /// <param name="result"></param>
     /// <returns></returns>
-    public static T ReturnAndLog<T>(this ILogCall<T> logCall, T result) =>
+    [return: NotNullIfNotNull(nameof(result))]
+    public static T ReturnAndLog<T>(this ILogCall<T>? logCall, T result) =>
         logCall.Return(result, (result as ICanDump)?.Dump() ?? $"{result}");
-    public static T ReturnAndLogIfNull<T>(this ILogCall<T> logCall, T result) =>
+
+    [return: NotNullIfNotNull(nameof(result))]
+    public static T ReturnAndLogIfNull<T>(this ILogCall<T>? logCall, T result) =>
         logCall.Return(result, (result as ICanDump)?.Dump() ?? $"is null: {result == null}");
 
     /// <summary>
@@ -64,7 +76,8 @@ partial class ILogCallExtensions
     /// <param name="result"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-    public static T ReturnAndLog<T>(this ILogCall<T> logCall, T result, string message)
+    [return: NotNullIfNotNull(nameof(result))]
+    public static T ReturnAndLog<T>(this ILogCall<T>? logCall, T result, string message)
         => logCall.Return(result, $"{(result as ICanDump)?.Dump() ?? $"{result}"} - {message}");
 
 
@@ -73,7 +86,8 @@ partial class ILogCallExtensions
     /// </summary>
     /// <param name="logCall">The log call or null</param>
     /// <returns></returns>
-    public static T ReturnNull<T>(this ILogCall<T> logCall) => logCall.Return(default, "null");
+    public static T? ReturnNull<T>(this ILogCall<T>? logCall)
+        => logCall!.Return(default, "null");
 
     /// <summary>
     /// Return a null or the default value (like a zero for int) with specified message.
@@ -81,24 +95,27 @@ partial class ILogCallExtensions
     /// <param name="logCall">The log call or null</param>
     /// <param name="message">Message to add to the log</param>
     /// <returns></returns>
-    public static T ReturnNull<T>(this ILogCall<T> logCall, string message) => logCall.Return(default, message);
+    public static T? ReturnNull<T>(this ILogCall<T>? logCall, string message)
+        => logCall!.Return(default, message);
 
-    #region String
+    #region String (removed all 2025-05-10 as no extra value)
 
-    /// <summary>
-    /// Return `true` for `ILogCall bool` objects.
-    /// </summary>
-    /// <param name="logCall">The log call or null</param>
-    /// <returns></returns>
-    public static string ReturnEmpty(this ILogCall<string> logCall) => logCall.Return("", "empty");
+    ///// <summary>
+    ///// Return `true` for `ILogCall bool` objects.
+    ///// </summary>
+    ///// <param name="logCall">The log call or null</param>
+    ///// <returns></returns>
+    //public static string ReturnEmpty(this ILogCall<string> logCall)
+    //    => logCall.Return("", "empty");
 
-    /// <summary>
-    /// Return `true` for `ILogCall bool` objects.
-    /// </summary>
-    /// <param name="logCall">The log call or null</param>
-    /// <param name="message">Message to add to the log</param>
-    /// <returns></returns>
-    public static string ReturnEmpty(this ILogCall<string> logCall, string message) => logCall.Return("", message);
+    ///// <summary>
+    ///// Return `true` for `ILogCall bool` objects.
+    ///// </summary>
+    ///// <param name="logCall">The log call or null</param>
+    ///// <param name="message">Message to add to the log</param>
+    ///// <returns></returns>
+    //public static string ReturnEmpty(this ILogCall<string> logCall, string message)
+    //    => logCall.Return("", message);
 
     #endregion
 }

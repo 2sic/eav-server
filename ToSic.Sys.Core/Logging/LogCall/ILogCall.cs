@@ -18,7 +18,7 @@ public interface ILogCall: ILog
     /// <summary>
     /// The main log-entry for this call, which will also receive the final value at the end of the call.
     /// </summary>
-    Entry Entry { get; }
+    Entry? Entry { get; }
 
     /// <summary>
     /// A stopwatch object which is used for timing purposes on this call.
@@ -28,7 +28,7 @@ public interface ILogCall: ILog
     /// <summary>
     /// Reference to the parent log.
     /// </summary>
-    ILog Log { get; }
+    ILog? Log { get; }
 
     //[PrivateApi]
     //bool IsOpen { get; }

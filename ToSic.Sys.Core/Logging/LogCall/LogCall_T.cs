@@ -13,8 +13,7 @@
 public class LogCall<T>: LogCallBase, ILogCall<T>
 {
     [PrivateApi]
-    internal LogCall(ILog log, CodeRef code, bool isProperty, string parameters = default, string message = default, bool timer = false) 
+    internal LogCall(ILog? log, CodeRef code, bool isProperty, string? parameters = default, string? message = default, bool timer = false) 
         : base(log, code, isProperty, parameters, message, timer)
-    {
-    }
+    { }
 }

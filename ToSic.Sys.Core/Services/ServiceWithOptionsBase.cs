@@ -1,16 +1,18 @@
-﻿using ToSic.Lib.Coding;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
 // ReSharper disable RedundantAccessorBody
 
 namespace ToSic.Lib.Services;
 
-public abstract class ServiceWithOptionsBase<TService, TOptions>(string logName, Generator<TService> selfGenerator, NoParamOrder protect = default, object[] connect = default) :
+public abstract class ServiceWithOptionsBase<TService, TOptions>(string logName, Generator<TService> selfGenerator, NoParamOrder protect = default, object[]? connect = default) :
     ServiceBase(logName, protect, connect: [selfGenerator, ..connect ?? []]),
     IServiceWithOptions<TService, TOptions>
     where TService : class, IServiceWithOptions<TService, TOptions>
     where TOptions : class, new()
 {
     /// <inheritdoc />
+    [field: AllowNull, MaybeNull]
     public virtual TOptions Options
     {
         get => field ??= GetDefaultOptions();
@@ -24,11 +26,11 @@ public abstract class ServiceWithOptionsBase<TService, TOptions>(string logName,
     protected virtual TOptions GetDefaultOptions() => new();
 
     /// <inheritdoc />
-    public TService New(TOptions options = default)
+    public TService New(TOptions? options = default)
     {
         var instance = selfGenerator.New();
         if (instance is ServiceWithOptionsBase<TService, TOptions> settable)
-            settable.Options = options;
+            settable.Options = options!;
         return instance;
     }
 }

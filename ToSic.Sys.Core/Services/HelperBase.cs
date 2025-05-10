@@ -11,7 +11,7 @@ namespace ToSic.Lib.Services;
 [PrivateApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 [method: PrivateApi]
-public abstract class HelperBase(ILog parentLog, string logName) : IHasLog
+public abstract class HelperBase(ILog? parentLog, string logName) : IHasLog
 {
     /// <inheritdoc />
     [JsonIgnore]        // Prevent System.Text.Json from serializing this property

@@ -12,7 +12,7 @@ namespace ToSic.Lib.DI;
 public class ServiceSwitcherSingleton<T>(
     ILogStore logStore,
     LazySvc<ServiceSwitcher<T>> serviceSwitcher,
-    object[] connect = default)
+    object[]? connect = default)
     : ServiceBase($"{LogScopes.Lib}.SrvSwS", connect: [.. connect ?? [], logStore, serviceSwitcher]), ILazyLike<T>
     where T : ISwitchableService
 {
@@ -21,7 +21,8 @@ public class ServiceSwitcherSingleton<T>(
     private T GetSingletonSwitchableService()
     {
         // Already loaded
-        if (_preferredService != null) return _preferredService;
+        if (_preferredService != null)
+            return _preferredService;
 
         logStore.Add(LogNames.LogStoreStartUp, Log);
         var call = Log.Fn<T>(message: "re-check singleton service");
@@ -32,11 +33,11 @@ public class ServiceSwitcherSingleton<T>(
     /// <summary>
     /// Note: This must be static, as the service itself is used transient, not singleton!
     /// </summary>
-    private static T _preferredService;
+    private static T? _preferredService;
 
     public bool IsValueCreated => _preferredService != null;
 
-    public T ByNameId(string nameId) => serviceSwitcher.Value.ByNameId(nameId);
+    public T? ByNameId(string nameId) => serviceSwitcher.Value.ByNameId(nameId);
 
     protected void Reset() => _preferredService = default;
 }

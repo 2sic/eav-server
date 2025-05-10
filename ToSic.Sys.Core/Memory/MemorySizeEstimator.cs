@@ -5,46 +5,49 @@ using ToSic.Lib.Services;
 namespace ToSic.Lib.Memory;
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public class MemorySizeEstimator(ILog parentLog) : HelperBase(parentLog, "Eav.MemSiz")
+public class MemorySizeEstimator(ILog? parentLog) : HelperBase(parentLog, "Eav.MemSiz")
 {
-    public SizeEstimate Estimate(object value)
+    public SizeEstimate Estimate(object? value)
         => EstimateInternal(value, 5);
 
-    public SizeEstimate EstimateMany(object[] values)
+    public SizeEstimate EstimateMany(object?[] values)
         => values.Aggregate(new SizeEstimate(), (current, value) => current + Estimate(value));
 
-    public SizeEstimate EstimateInternal(object value, int recursion)
+    public SizeEstimate EstimateInternal(object? value, int recursion)
     {
-        if (value == null) return new(0, 0);
-        if (recursion <= 0) return new(0, 0, Error: true);
+        if (value == null)
+            return new();
+        if (recursion <= 0)
+            return new(Error: true);
 
         var type = value.GetType();
         if (type.IsValueType)
-            return new(SizeOfValueType(value), 0);
+            return new(SizeOfValueType(value));
         if (type.IsEnum)
-            return new(4, 0);
+            return new(4);
 
         return value switch
         {
             ICanEstimateSize canEstimate => canEstimate.EstimateSize(Log),
             IEnumerable => SizeOfEnumerable(value, recursion),
-            _ => new(0, 0, Unknown: true)
+            _ => new(Unknown: true)
         };
     }
 
     private SizeEstimate SizeOfEnumerable(object value, int recursion)
     {
         if (value is not IEnumerable enumerable)
-            return new(0, 0, Unknown: true);
+            return new(Unknown: true);
 
         try
         {
-            return (from object item in enumerable select EstimateInternal(item, recursion - 1))
-                .Aggregate(new SizeEstimate(0, 0), (current, estimate) => current + estimate);
+            return enumerable.Cast<object>()
+                .Select(item => EstimateInternal(item, recursion - 1))
+                .Aggregate(new SizeEstimate(), (current, estimate) => current + estimate);
         }
         catch (Exception)
         {
-            return new(0, 0, Error: true);
+            return new(Error: true);
         }
     }
 
