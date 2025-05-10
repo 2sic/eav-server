@@ -40,11 +40,11 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <!-- Import common files which change how the project compiles -->
   <ItemGroup>
-    <Compile Include="..\ToSic.Sys.Core\Properties\LibAssemblyInfo.cs" Link="Properties\LibAssemblyInfo.cs" />
-    <Compile Include="..\ToSic.Sys.Core\Properties\LibAssemblyInfoInherited.cs" Link="Properties\LibAssemblyInfoInherited.cs" />
-    <Compile Include="..\ToSic.Sys.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+    <Compile Include="..\ToSic.Lib.Imports\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="..\ToSic.Lib.Imports\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+    <Compile Include="..\ToSic.Lib.Imports\HideInternalApisOnReleaseOnly.cs" Link="Properties\HideInternalApisOnReleaseOnly.cs" />
   </ItemGroup>
-
 
 </Project>

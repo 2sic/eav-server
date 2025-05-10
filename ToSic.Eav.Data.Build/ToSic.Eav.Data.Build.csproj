@@ -25,12 +25,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <!-- Include assembly version info etc. -->
+  <!-- Import common files which change how the project compiles; AssemblyInfo from EAV, rest from Lib.Imports -->
   <ItemGroup>
     <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />
-    <Compile Include="..\ToSic.Eav.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
-    <Compile Include="..\ToSic.Sys.Core\Shared\HideInternalApisOnReleaseOnly.cs" Link="HideInternalApisOnReleaseOnly.cs" />
+    <Compile Include="..\ToSic.Lib.Imports\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+    <Compile Include="..\ToSic.Lib.Imports\HideInternalApisOnReleaseOnly.cs" Link="Properties\HideInternalApisOnReleaseOnly.cs" />
   </ItemGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />

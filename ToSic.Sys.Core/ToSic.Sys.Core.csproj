@@ -19,6 +19,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- Import common files which change how the project compiles -->
+  <ItemGroup>
+    <Compile Include="..\ToSic.Lib.Imports\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="..\ToSic.Lib.Imports\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+    <Compile Include="..\ToSic.Lib.Imports\HideInternalApisOnReleaseOnly.cs" Link="Properties\HideInternalApisOnReleaseOnly.cs" />
+  </ItemGroup>
+
+
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <!-- generate xml docs -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -43,6 +51,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Shared\" />
   </ItemGroup>
 
 

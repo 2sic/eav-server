@@ -116,8 +116,11 @@
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
   </ItemGroup>
 
+  <!-- Import common files which change how the project compiles -->
   <ItemGroup>
-    <Compile Include="..\ToSic.Sys.Core\Shared\HideInternalApisOnReleaseOnly.cs" Link="HideInternalApisOnReleaseOnly.cs" />
+    <!--<Compile Include="..\ToSic.Lib.Imports\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />-->
+    <Compile Include="..\ToSic.Lib.Imports\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+    <Compile Include="..\ToSic.Lib.Imports\HideInternalApisOnReleaseOnly.cs" Link="Properties\HideInternalApisOnReleaseOnly.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -153,61 +156,10 @@
     <DefineConstants>NETFULL</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|AnyCPU'">
+  <PropertyGroup>
     <NoWarn>1701;1702;CS8632</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='efc and WebApi|net472|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='efc and WebApi|net9.0|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='debug eav only|net472|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='debug eav only|net9.0|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Dbg Testing|net472|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Dbg Testing|net9.0|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Oqtane|net472|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Oqtane|net9.0|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugOqtane|net472|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugOqtane|net9.0|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugDnn|net472|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugDnn|net9.0|AnyCPU'">
-    <NoWarn>1701;1702;CS8632</NoWarn>
-  </PropertyGroup>
 
   <!-- Support Nullable in .net Framework -->
   <ItemGroup Condition="$(TargetFramework) == 'net472'">
