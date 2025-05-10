@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSources.Sys.Internal;
 using static ToSic.Eav.Apps.AppStackConstants;
@@ -20,7 +19,7 @@ namespace ToSic.Eav.DataSources.Sys;
     // HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes"
 )]
 // ReSharper disable once UnusedMember.Global
-public class SystemStack: DataSourceBase
+public class SystemStack: CustomDataSourceAdvanced
 {
     #region Configuration
 
@@ -37,20 +36,16 @@ public class SystemStack: DataSourceBase
 
     #region Constructor / DI / Services
 
-    private readonly IDataFactory _dataFactory;
     private readonly IAppReaderFactory _appReadFac;
     private readonly IZoneCultureResolver _zoneCulture;
     private readonly AppDataStackService _dataStackService;
 
-    public SystemStack(MyServices services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture, IDataFactory dataFactory)
-        : base(services, "Ds.AppStk")
+    public SystemStack(MyServices services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture)
+        : base(services, "Ds.AppStk", connect: [appReadFac, zoneCulture, dataStackService])
     {
-        ConnectLogs([
-            _appReadFac = appReadFac,
-            _zoneCulture = zoneCulture,
-            _dataStackService = dataStackService,
-            _dataFactory = dataFactory
-        ]);
+        _appReadFac = appReadFac;
+        _zoneCulture = zoneCulture;
+        _dataStackService = dataStackService;
         ProvideOut(GetStack);
     }
 
@@ -83,7 +78,7 @@ public class SystemStack: DataSourceBase
         var asRaw = res2.Select(r => new AppStackDataRaw(r)).ToList();
         // Note: must use configure here, because AppId and AddValues are properties that's not set in the constructor
         var options = new RawConvertOptions(addKeys: AddValues ? new[] { "Value" } : null);
-        var stackFactory = _dataFactory.New(options: AppStackDataRaw.Options with { AppId = AppId, RawConvertOptions = options });
+        var stackFactory = DataFactory.New(options: AppStackDataRaw.Options with { AppId = AppId, RawConvertOptions = options });
         var converted = stackFactory.Create(asRaw);
 
         return converted;

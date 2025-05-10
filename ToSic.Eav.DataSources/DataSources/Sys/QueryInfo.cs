@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource.Internal.Query;
+﻿using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.Services;
@@ -31,10 +30,9 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
     HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 
-public sealed class QueryInfo : DataSourceBase
+public sealed class QueryInfo : CustomDataSourceAdvanced
 {
     private readonly IDataSourceGenerator<Attributes> _attributesGenerator;
-    private readonly IDataFactory _dataFactory;
     public QueryBuilder QueryBuilder { get; }
     private readonly LazySvc<QueryManager> _queryManager;
 
@@ -59,19 +57,12 @@ public sealed class QueryInfo : DataSourceBase
     /// Constructs a new Attributes DS
     /// </summary>
     public QueryInfo(MyServices services,
-        LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataFactory dataFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
-        services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn")
+        LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataSourceGenerator<Attributes> attributesGenerator) : base(
+        services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn", connect: [queryBuilder, queryManager, attributesGenerator])
     {
-        ConnectLogs([
-            QueryBuilder = queryBuilder,
-            _queryManager = queryManager,
-            _attributesGenerator = attributesGenerator,
-            _dataFactory = dataFactory.New(options: new()
-            {
-                TitleField = StreamsType.Name.ToString(),
-                TypeName = QueryStreamsContentType
-            })
-        ]);
+        QueryBuilder = queryBuilder;
+        _queryManager = queryManager;
+        _attributesGenerator = attributesGenerator;
         ProvideOut(GetStreamsOfQuery);
         ProvideOut(GetAttributes, "Attributes");
     }
@@ -84,10 +75,16 @@ public sealed class QueryInfo : DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
 
+        var dataFactory = DataFactory.New(options: new()
+        {
+            TitleField = StreamsType.Name.ToString(),
+            TypeName = QueryStreamsContentType
+        });
+
         var result = Query?.Out
                          .OrderBy(stream => stream.Key)
                          .Select(stream
-                             => _dataFactory.Create(new Dictionary<string, object>
+                             => dataFactory.Create(new Dictionary<string, object>
                              {
                                  { StreamsType.Name.ToString(), stream.Key }
                              }))

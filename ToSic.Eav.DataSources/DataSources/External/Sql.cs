@@ -5,7 +5,6 @@ using Microsoft.Data.SqlClient;
 #endif
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
@@ -133,16 +132,12 @@ public class Sql : CustomDataSourceAdvanced
     /// Initializes a new instance of the SqlDataSource class
     /// </summary>
     [PrivateApi]
-    public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql")
+    public Sql(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql")
     {
-        ConnectLogs([
-            _dataFactory = dataFactory
-        ]);
         SqlServices = services;
         ProvideOut(GetList);
     }
     [PrivateApi] protected readonly MyServices SqlServices;
-    private readonly IDataFactory _dataFactory;
 
     #endregion
 
@@ -322,10 +317,10 @@ public class Sql : CustomDataSourceAdvanced
                                      ?? columNames.FirstOrDefault();
                     l.A($"will use '{casedTitle}' as title field");
 
-                    var sqlFactory = _dataFactory.New(options: new()
+                    var sqlFactory = DataFactory.New(options: new()
                     {
                         AppId = Constants.TransientAppId,
-                        TitleField = casedTitle,
+                        TitleField = casedTitle ?? "Unknown",
                         TypeName = ContentType,
                     });
 

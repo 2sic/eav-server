@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Internal;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Plumbing;
@@ -29,7 +28,7 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
-public sealed class Attributes: DataSourceBase
+public sealed class Attributes: CustomDataSourceAdvanced
 {
 
     #region Configuration-properties (no config)
@@ -49,19 +48,13 @@ public sealed class Attributes: DataSourceBase
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders, dataFactory])
+    public Attributes(IAppReaderFactory appReaders, MyServices services)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders])
     {
         _appReaders = appReaders;
-        _dataFactory = dataFactory.New(options: new()
-        {
-            TitleField = nameof(IAttributeType.Title),
-            TypeName = AttribContentTypeName,
-        });
-
         ProvideOut(GetList);
     }
     private readonly IAppReaderFactory _appReaders;
-    private readonly IDataFactory _dataFactory;
 
     private IImmutableList<IEntity> GetList()
     {
@@ -157,7 +150,14 @@ public sealed class Attributes: DataSourceBase
         list = sysFields.Concat(list).ToList();
 
         // if it didn't work yet, maybe try from stream items
-        var data = list.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList();
+        var dataFactory = DataFactory.New(options: new()
+        {
+            TitleField = nameof(IAttributeType.Title),
+            TypeName = AttribContentTypeName,
+        });
+        var data = list
+            .Select(attribData => dataFactory.Create(attribData))
+            .ToImmutableList();
         return l.Return(data, $"{data.Count}");
     }
 

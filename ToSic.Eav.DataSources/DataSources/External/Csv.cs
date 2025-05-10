@@ -117,7 +117,8 @@ public class Csv : CustomDataSourceAdvanced
 
 
     [PrivateApi]
-    public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths, dataFactory])
+    public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths, dataFactory])
     {
         _user = user;
         _serverPaths = serverPaths;
@@ -215,7 +216,7 @@ public class Csv : CustomDataSourceAdvanced
                                  $"{commonErrorsIdTitle}"));
             }
 
-            var csvFactory = _dataFactory.New(options: new()
+            var csvFactory = DataFactory.New(new()
             {
                 AppId = Constants.TransientAppId,
                 TitleField = titleColName,

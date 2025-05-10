@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSources;
@@ -20,10 +19,8 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
     HelpLink = "https://go.2sxc.org/DsPaging")]
 
-public sealed class Paging: DataSourceBase
+public sealed class Paging: CustomDataSourceAdvanced
 {
-    private readonly IDataFactory _pagingFactory;
-
     #region Configuration-properties (no config)
 
     private const int DefPageSize = 10;
@@ -65,11 +62,8 @@ public sealed class Paging: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging")
+    public Paging(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging")
     {
-        ConnectLogs([
-            _pagingFactory = dataFactory.New(options: new() { TypeName = "Paging" })
-        ]);
         ProvideOut(GetList);
         ProvideOut(GetPaging, "Paging");
     }
@@ -113,7 +107,9 @@ public sealed class Paging: DataSourceBase
             { "PageCount", pageCount }
         };
 
-        var entity = _pagingFactory.Create(paging, id: PageNumber);
+        var entity = DataFactory
+            .New(options: new() { TypeName = "Paging" })
+            .Create(paging, id: PageNumber);
 
         // Assemble list of this for the stream
         var list = new List<IEntity> { entity };

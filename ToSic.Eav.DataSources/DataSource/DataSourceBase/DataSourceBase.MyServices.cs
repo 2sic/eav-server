@@ -14,30 +14,16 @@ partial class DataSourceBase
     /// * Important: The internals of this class are not documented, as they will change with time.
     /// </remarks>
     [PrivateApi]
-    public class MyServices : MyServicesBase
+    public class MyServices(
+        IDataSourceConfiguration configuration,
+        LazySvc<DataSourceErrorHelper> errorHandler,
+        ConfigurationDataLoader configDataLoader,
+        LazySvc<IDataSourceCacheService> cacheService)
+        : MyServicesBase(connect: [configuration, errorHandler, configDataLoader, cacheService])
     {
-        public LazySvc<IDataSourceCacheService> CacheService { get; }
-        public IDataSourceConfiguration Configuration { get; }
-        public ConfigurationDataLoader ConfigDataLoader { get; }
-        public LazySvc<DataSourceErrorHelper> ErrorHandler { get; }
-
-        /// <summary>
-        /// Note that we will use Generators for safety, because in rare cases the dependencies could be re-used to create a sub-data-source
-        /// </summary>
-        [PrivateApi]
-        public MyServices(
-            IDataSourceConfiguration configuration,
-            LazySvc<DataSourceErrorHelper> errorHandler,
-            ConfigurationDataLoader configDataLoader,
-            LazySvc<IDataSourceCacheService> cacheService
-        )
-        {
-            ConnectLogs([
-                Configuration = configuration,
-                ErrorHandler = errorHandler,
-                ConfigDataLoader = configDataLoader,
-                CacheService = cacheService
-            ]);
-        }
+        public LazySvc<IDataSourceCacheService> CacheService { get; } = cacheService;
+        public IDataSourceConfiguration Configuration { get; } = configuration;
+        public ConfigurationDataLoader ConfigDataLoader { get; } = configDataLoader;
+        public LazySvc<DataSourceErrorHelper> ErrorHandler { get; } = errorHandler;
     }
 }

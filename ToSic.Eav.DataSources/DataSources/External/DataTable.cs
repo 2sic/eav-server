@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Plumbing;
 using IEntity = ToSic.Eav.Data.IEntity;
 using SqlDataTable = System.Data.DataTable;
@@ -14,7 +13,6 @@ namespace ToSic.Eav.DataSources;
 [PublicApi]
 public class DataTable : CustomDataSourceAdvanced
 {
-    private readonly IDataFactory _dataFactory;
     // help Link: https://go.2sxc.org/DsDataTable
     #region Configuration-properties
 
@@ -73,9 +71,8 @@ public class DataTable : CustomDataSourceAdvanced
     /// Initializes a new instance of the DataTableDataSource class
     /// </summary>
     [PrivateApi]
-    public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl", connect: [dataFactory])
+    public DataTable(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl")
     {
-        _dataFactory = dataFactory;
         ProvideOut(GetEntities);
     }
 
@@ -118,16 +115,16 @@ public class DataTable : CustomDataSourceAdvanced
     /// <summary>
     /// Convert a DataTable to a Dictionary of EntityModels
     /// </summary>
-    private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null
-    ) => Log.Func(() =>
+    private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         // Validate Columns
         if (!source.Columns.Contains(entityIdField))
             throw new($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
         if (!source.Columns.Contains(titleField))
             throw new($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-        var tblFactory = _dataFactory.New(options: new()
+        var tblFactory = DataFactory.New(options: new()
         {
             AppId = Constants.TransientAppId,
             TitleField = titleField,
@@ -151,6 +148,6 @@ public class DataTable : CustomDataSourceAdvanced
         }
 
         var final = result.ToImmutableList();
-        return (final, $"{final.Count}");
-    });
+        return l.Return(final, $"{final.Count}");
+    }
 }

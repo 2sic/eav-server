@@ -22,7 +22,6 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     public new class MyServices: DataSourceBase.MyServices
     {
         [PrivateApi]
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public IDataFactory DataFactory { get; }
 
         [PrivateApi]
@@ -32,7 +31,8 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
             LazySvc<DataSourceErrorHelper> errorHandler,
             ConfigurationDataLoader configDataLoader,
             LazySvc<IDataSourceCacheService> cacheService,
-            IDataFactory dataFactory) : base(configuration, errorHandler, configDataLoader, cacheService)
+            IDataFactory dataFactory)
+            : base(configuration, errorHandler, configDataLoader, cacheService)
         {
             DataFactory = ConnectService(dataFactory);
         }
@@ -56,6 +56,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     {
         DataFactory = services.DataFactory;
     }
+
     protected CustomDataSourceAdvanced(MyServicesBase<MyServices> services, string logName = null)
         : base(services.ParentServices, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: [services])
     {

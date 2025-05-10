@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -24,26 +23,19 @@ namespace ToSic.Eav.DataSources.Sys;
 )]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-public class MetadataTargetTypes : Eav.DataSource.DataSourceBase
+public class MetadataTargetTypes : CustomDataSourceAdvanced
 {
-    private readonly IDataFactory _dataFactory;
-
-    public MetadataTargetTypes(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
+    public MetadataTargetTypes(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
     {
-        ConnectLogs([
-            _dataFactory = dataFactory.New(options: new()
-            {
-                AppId = 0,
-                TitleField = Data.Attributes.TitleNiceName,
-                TypeName = "MetadataTargetTypes",
-            })
-        ]);
         ProvideOut(GetList);
     }
 
-    private IImmutableList<IEntity> GetList() => Log.Func(l =>
+    private IImmutableList<IEntity> GetList()
     {
-        var publicTargetTypes = Enum.GetValues(typeof(TargetTypes))
+        var l = Log.Fn<IImmutableList<IEntity>>();
+
+        var publicTargetTypes = Enum
+            .GetValues(typeof(TargetTypes))
             .Cast<TargetTypes>()
             .Select(value =>
             {
@@ -65,8 +57,16 @@ public class MetadataTargetTypes : Eav.DataSource.DataSourceBase
             .OrderBy(s => (s.Title.StartsWith("Custom") ? "Z" : "") + s.Title)
             .ToList();
 
+        var dataFactory = DataFactory.New(options: new()
+        {
+            AppId = 0,
+            TitleField = Data.Attributes.TitleNiceName,
+            TypeName = "MetadataTargetTypes",
+        });
+
+
         var list = publicTargetTypes
-            .Select(set => _dataFactory.Create(
+            .Select(set => dataFactory.Create(
                     new Dictionary<string, object>
                     {
                         { Data.Attributes.TitleNiceName, set.Title },
@@ -74,8 +74,9 @@ public class MetadataTargetTypes : Eav.DataSource.DataSourceBase
                     },
                     id: (int)set.TargetType
                 )
-            ).ToImmutableList();
+            )
+            .ToImmutableList();
             
-        return (list, $"{list.Count} items");
-    });
+        return l.Return(list, $"{list.Count} items");
+    }
 }

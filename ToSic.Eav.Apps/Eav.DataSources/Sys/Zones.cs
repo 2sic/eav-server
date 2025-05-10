@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -33,58 +32,59 @@ namespace ToSic.Eav.DataSources.Sys;
     ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
 // ReSharper disable once UnusedMember.Global
-public sealed class Zones: Eav.DataSource.DataSourceBase
+public sealed class Zones: CustomDataSourceAdvanced
 {
-    private readonly IDataFactory _dataFactory;
-
     /// <inheritdoc />
     /// <summary>
     /// Constructs a new Zones DS
     /// </summary>
     [PrivateApi]
-    public Zones(MyServices services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog, IDataFactory dataFactory): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones")
+    public Zones(MyServices services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
     {
-        ConnectLogs([
-            _zoneMapper = zoneMapper,
-            _appsCatalog = appsCatalog,
-            _dataFactory = dataFactory.New(options: new()
-            {
-                AppId = 0,
-                TitleField = ZoneType.Name.ToString(),
-                TypeName = "Zone",
-            })
-        ]);
+        _zoneMapper = zoneMapper;
+        _appsCatalog = appsCatalog;
         ProvideOut(GetList);
     }
     private readonly IZoneMapper _zoneMapper;
     private readonly IAppsCatalog _appsCatalog;
 
 
-    private IImmutableList<IEntity> GetList() => Log.Func(l =>
+    private IImmutableList<IEntity> GetList()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
+        var dataFactory = DataFactory.New(options: new()
+        {
+            AppId = 0,
+            TitleField = ZoneType.Name.ToString(),
+            TypeName = "Zone",
+        });
+        
         // Get cache, which manages a list of zones
         var zones = _appsCatalog.Zones;
-        var list = zones.Values.OrderBy(z => z.ZoneId).Select(zone =>
-        {
-            var site = _zoneMapper.SiteOfZone(zone.ZoneId);
-
-            // Assemble the entities
-            var znData = new Dictionary<string, object>
+        var results = zones.Values
+            .OrderBy(z => z.ZoneId)
+            .Select(zone =>
             {
-                {ZoneType.Id.ToString(), zone.ZoneId},
-                {ZoneType.Name.ToString(), $"Zone {zone.ZoneId}"},
-                {ZoneType.TenantId.ToString(), site?.Id},
-                {ZoneType.TenantName.ToString(), site?.Name},
-                {ZoneType.DefaultAppId.ToString(), zone.DefaultAppId},
-                {ZoneType.PrimaryAppId.ToString(), zone.PrimaryAppId},
-                {ZoneType.IsCurrent.ToString(), zone.ZoneId == ZoneId},
-                {ZoneType.AppCount.ToString(), zone.Apps.Count}
-            };
+                var site = _zoneMapper.SiteOfZone(zone.ZoneId);
 
-            return _dataFactory.Create(znData, id: zone.ZoneId);
-        });
-        var results = list.ToImmutableList();
-        return (results, $"{results.Count}");
-    });
+                // Assemble the entities
+                var znData = new Dictionary<string, object>
+                {
+                    { ZoneType.Id.ToString(), zone.ZoneId },
+                    { ZoneType.Name.ToString(), $"Zone {zone.ZoneId}" },
+                    { ZoneType.TenantId.ToString(), site?.Id },
+                    { ZoneType.TenantName.ToString(), site?.Name },
+                    { ZoneType.DefaultAppId.ToString(), zone.DefaultAppId },
+                    { ZoneType.PrimaryAppId.ToString(), zone.PrimaryAppId },
+                    { ZoneType.IsCurrent.ToString(), zone.ZoneId == ZoneId },
+                    { ZoneType.AppCount.ToString(), zone.Apps.Count }
+                };
+
+                return dataFactory.Create(znData, id: zone.ZoneId);
+            })
+            .ToImmutableList();
+        return l.Return(results, $"{results.Count}");
+    }
 
 }
