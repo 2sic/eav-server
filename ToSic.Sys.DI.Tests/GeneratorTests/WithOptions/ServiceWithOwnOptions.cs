@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
 
 namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 
@@ -12,14 +11,9 @@ public class ServiceWithOwnOptions(Generator<ServiceWithOwnOptions> selfGenerato
     internal const string DefaultName = "custom";
     internal const int DefaultNumber = -1;
 
-    [field: AllowNull, MaybeNull]
-    public override ServiceOptions Options => field
-        // If the base had default options (not set explicitly), ignore them and set our custom defaults
-        ??= OptionsAreDefault
-            ? new()
-            {
-                Name = DefaultName,
-                Number = DefaultNumber
-            }
-            : base.Options;
+    protected override ServiceOptions GetDefaultOptions() => new()
+    {
+        Name = DefaultName,
+        Number = DefaultNumber
+    };
 }

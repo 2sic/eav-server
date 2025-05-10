@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.DI;
+﻿namespace ToSic.Lib.Services;
 
 /// <summary>
 /// Experimental; describes a service which can be configured, but will generate a new instance for it.
@@ -19,16 +19,19 @@ public interface IServiceWithOptions<out TService, TOptions>
     where TOptions : class
 {
     /// <summary>
-    /// Set the options for the new object
+    /// The options for this service, read-only.
     /// </summary>
-    /// <returns></returns>
+    /// <remarks>
+    /// Will usually default to new/standard options of type <see cref="TOptions"/>,
+    /// unless set when creating a new service using <see cref="New(TOptions)"/>.
+    /// </remarks>
     TOptions Options { get; }
 
 
     /// <summary>
-    /// Generate a new instance of the service, using alternate configuration.
+    /// Generate a new instance of the service, using alternate options.
     /// </summary>
-    /// <param name="options">The configuration / options</param>
+    /// <param name="options">The options</param>
     /// <returns></returns>
-    public TService New(TOptions options);
+    public TService New(TOptions options = default);
 }

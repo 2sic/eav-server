@@ -18,8 +18,6 @@ public static class StartUp
 
         // Service Generators
         services.TryAddTransient(typeof(Generator<>));
-        services.TryAddTransient(typeof(Generator<,>));
-        services.TryAddTransient(typeof(IGenerator<,>), typeof(Generator<,>));
 
         // Empty MyServices
         services.TryAddTransient<MyServicesEmpty>();
