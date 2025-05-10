@@ -8,7 +8,6 @@ namespace ToSic.Lib.Logging;
 /// They are all implemented as extension methods, so that they will not fail even if the log object is null.
 /// </summary>
 [PublicApi]
-// ReSharper disable once InconsistentNaming
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 // ReSharper disable once InconsistentNaming
 public static partial class ILog_Add
@@ -89,6 +88,7 @@ public static partial class ILog_Add
         [CallerLineNumber] int cLine = default
     ) => log.AddInternal(LogConstants.ErrorPrefix + message, CodeRef.Create(cPath!, cName!, cLine));
 
+
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static string Dump(this DateTime dateTime)
@@ -96,6 +96,8 @@ public static partial class ILog_Add
         var utc = dateTime.ToUniversalTime();
         return $"Timestamp - Date/Time: {utc:o}; Ticks: {utc.Ticks.ToString("N0", AposThousandSeparator())}";
     }
+
+
     [PrivateApi]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     private static NumberFormatInfo AposThousandSeparator()

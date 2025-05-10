@@ -23,6 +23,5 @@ public class LogCall: LogCallBase
     [PrivateApi]
     internal LogCall(ILog? log, CodeRef code, bool isProperty, string? parameters = null, string? message = null, bool timer = false)
         : base(log, code, isProperty, parameters, message, timer)
-    {
-    }
+    { }
 }

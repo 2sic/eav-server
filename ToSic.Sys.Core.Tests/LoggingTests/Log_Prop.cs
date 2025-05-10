@@ -14,12 +14,12 @@ public class Log_Prop: LogTestBase
         {
             get => Log.Getter(() => _name);
             // the compiler treats this as Func<string> - with return value
-            set => Log.Setter(() => _name = value);
+            set => Log.Do(cName: $"set{nameof(Name)}", action: () => _name = value);
         }
         public string NameSetWithBody
         {
             // the compiler treats this as an Action
-            set => Log.Setter(() => { _name = value; });
+            set => Log.Do(cName: $"set{nameof(NameSetWithBody)}", action: () => _name = value);
         }
         private string _name = "iJungleboy";
     }

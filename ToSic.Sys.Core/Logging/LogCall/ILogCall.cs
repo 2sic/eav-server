@@ -29,7 +29,4 @@ public interface ILogCall: ILog
     /// Reference to the parent log.
     /// </summary>
     ILog? Log { get; }
-
-    //[PrivateApi]
-    //bool IsOpen { get; }
 }

@@ -96,15 +96,29 @@ public class DataStream(
     #region Get Dictionary and Get List
 
     /// <inheritdoc />
-    public IEnumerable<IEntity> List => _list.GetM(Log, parameters: $"{nameof(Name)}:{Name}", timer: true, generator: _ =>
+    public IEnumerable<IEntity> List => _list.Get(GetList);
+        
+    //    _list.GetM(Log, parameters: $"{nameof(Name)}:{Name}", timer: true, generator: _ =>
+    //{
+    //    // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
+    //    if (!AutoCaching)
+    //        return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
+
+    //    var cacheItem = cache.Value.ListCache.GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds, CacheErrorDurationInSeconds);
+    //    return (cacheItem.List, $"with {nameof(AutoCaching)}");
+    //});
+
+    private IImmutableList<IEntity> GetList()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", timer: true);
         // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
         if (!AutoCaching)
-            return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
+            return l.Return(ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
 
         var cacheItem = cache.Value.ListCache.GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds, CacheErrorDurationInSeconds);
-        return (cacheItem.List, $"with {nameof(AutoCaching)}");
-    });
+        return l.Return(cacheItem.List, $"with {nameof(AutoCaching)}");
+
+    }
 
     /// <inheritdoc />
     public void ResetStream() => _list.Reset();

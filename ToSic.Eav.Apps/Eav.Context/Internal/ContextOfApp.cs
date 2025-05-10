@@ -77,17 +77,54 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     EffectivePermissions IContextOfUserPermissions.Permissions => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
 
-    private bool UserMayEdit => _userMayEditGet.Get(() => Log.GetterM(() =>
+    private bool UserMayEdit => _userMayEditGet.Get(GetUserMayEdit);
+    //    .GetM(Log, _ => 
+    //{
+    //    // Case 1: Superuser always may
+    //    if (User.IsSystemAdmin)
+    //        return (true, "super");
+
+    //    // Case 2: No App-State
+    //    if (AppReader == null)
+    //    {
+    //        if (UserMayAdmin)
+    //            return (true, "no app, use UserMayAdmin checks");
+
+    //        // If user isn't allowed yet, it may be that the environment allows it
+    //        var enfPermissions = AppServices.EnvironmentPermissions.New();
+    //        var fromEnv = ((IEnvironmentPermissionSetup)enfPermissions)
+    //            .Init(this as IContextOfSite, null)
+    //            .EnvironmentAllows(GrantSets.WriteSomething).Allowed;
+
+    //        return (fromEnv, "no app, result from Env");
+    //    }
+
+    //    // Case 3: From App
+    //    var fromApp = Services.AppPermissionCheck.New()
+    //        .ForAppInInstance(this, AppReader)
+    //        .UserMay(GrantSets.WriteSomething)
+    //        .Allowed;
+
+    //    // Check if language permissions may alter / remove edit permissions
+    //    if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
+    //        fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReader) ?? true;
+
+    //    return (fromApp, $"{fromApp}");
+    //});
+    private readonly GetOnce<bool> _userMayEditGet = new();
+
+    private bool GetUserMayEdit()
     {
+        var l = Log.Fn<bool>();
         // Case 1: Superuser always may
         if (User.IsSystemAdmin)
-            return (true, "super");
+            return l.ReturnTrue("super");
 
         // Case 2: No App-State
         if (AppReader == null)
         {
             if (UserMayAdmin)
-                return (true, "no app, use UserMayAdmin checks");
+                return l.ReturnTrue("no app, use UserMayAdmin checks");
 
             // If user isn't allowed yet, it may be that the environment allows it
             var enfPermissions = AppServices.EnvironmentPermissions.New();
@@ -95,7 +132,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
                 .Init(this as IContextOfSite, null)
                 .EnvironmentAllows(GrantSets.WriteSomething).Allowed;
 
-            return (fromEnv, "no app, result from Env");
+            return l.Return(fromEnv, "no app, result from Env");
         }
 
         // Case 3: From App
@@ -108,9 +145,8 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
             fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReader) ?? true;
 
-        return (fromApp, $"{fromApp}");
-    }));
-    private readonly GetOnce<bool> _userMayEditGet = new();
+        return l.Return(fromApp, $"{fromApp}");
+    }
 
     #endregion
 

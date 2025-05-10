@@ -13,6 +13,4 @@
 /// </typeparam>
 [PublicApi]
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-public interface ILogCall<T>: ILogCall
-{
-}
+public interface ILogCall<T>: ILogCall;

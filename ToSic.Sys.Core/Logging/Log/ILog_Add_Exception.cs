@@ -5,12 +5,12 @@ namespace ToSic.Lib.Logging;
 // ReSharper disable once InconsistentNaming
 partial class ILog_Add
 {
-    [PrivateApi("not in use yet, better keep secret for now")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    internal static void ExWithCode(this ILog? log,
-        Exception exception,
-        CodeRef codeRef
-    ) => log?.ExceptionInternal(exception, codeRef);
+    //[PrivateApi("not in use yet, better keep secret for now")]
+    //[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    //internal static void ExWithCode(this ILog? log,
+    //    Exception exception,
+    //    CodeRef codeRef
+    //) => log?.ExceptionInternal(exception, codeRef);
 
     /// <summary>
     /// Add a **Exception** to the log.

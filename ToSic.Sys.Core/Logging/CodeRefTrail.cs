@@ -13,14 +13,14 @@ namespace ToSic.Lib.Logging;
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 public class CodeRefTrail
 {
-    public CodeRefTrail([CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
+    public CodeRefTrail([CallerFilePath] string? cPath = default, [CallerMemberName] string? cName = default, [CallerLineNumber] int cLine = default)
     {
-        CodeRefs.Add(CodeRef.Create(cPath, cName, cLine));
+        CodeRefs.Add(CodeRef.Create(cPath!, cName!, cLine));
     }
 
-    public CodeRefTrail WithHere([CallerFilePath] string cPath = default, [CallerMemberName] string cName = default, [CallerLineNumber] int cLine = default)
+    public CodeRefTrail WithHere([CallerFilePath] string? cPath = default, [CallerMemberName] string? cName = default, [CallerLineNumber] int cLine = default)
     {
-        CodeRefs.Add(CodeRef.Create(cPath, cName, cLine));
+        CodeRefs.Add(CodeRef.Create(cPath!, cName!, cLine));
         return this;
     }
 
@@ -32,5 +32,6 @@ public class CodeRefTrail
 
     public List<CodeRef> CodeRefs { get; } = [];
 
-    public override string ToString() => CodeRefs == null ? "" : string.Join("\n", CodeRefs.Select(cr => cr.ToString()));
+    public override string ToString()
+        => string.Join("\n", CodeRefs.Select(cr => cr.ToString()));
 }

@@ -4,8 +4,8 @@ using static ToSic.Lib.Logging.CodeRef;
 
 namespace ToSic.Lib.Logging;
 
-// ReSharper disable once InconsistentNaming
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+// ReSharper disable once InconsistentNaming
 public static class ILog_Func
 {
     #region Func with return value only

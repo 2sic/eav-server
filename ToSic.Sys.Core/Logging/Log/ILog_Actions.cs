@@ -33,7 +33,9 @@ public static class ILog_Actions
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.Do(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+        // ReSharper disable ExplicitCallerInfoArgument
+    ) => log.Do(parameters: null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+    // ReSharper restore ExplicitCallerInfoArgument
 
     /// <summary>
     /// Run code / action and just log that it happened.
@@ -51,7 +53,7 @@ public static class ILog_Actions
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog? log,
-        string parameters,
+        string? parameters,
         Action action,
         bool timer = default,
         bool enabled = true,
@@ -89,7 +91,9 @@ public static class ILog_Actions
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.DoLogCall(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+        // ReSharper disable ExplicitCallerInfoArgument
+    ) => log.DoLogCall(parameters: null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+    // ReSharper restore ExplicitCallerInfoArgument
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -102,11 +106,13 @@ public static class ILog_Actions
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
+        // ReSharper disable ExplicitCallerInfoArgument
     ) => log.DoLogCall(parameters, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+    // ReSharper restore ExplicitCallerInfoArgument
 
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     private static void DoLogCall(this ILog? log,
-        string parameters,
+        string? parameters,
         Action<ILogCall> action,
         bool timer = default,
         bool enabled = true,
@@ -144,7 +150,9 @@ public static class ILog_Actions
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
+        // ReSharper disable ExplicitCallerInfoArgument
     ) => log.Do(null, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
+    // ReSharper restore ExplicitCallerInfoArgument
 
 
     /// <summary>
@@ -164,7 +172,7 @@ public static class ILog_Actions
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static void Do(this ILog? log,
-        string parameters,
+        string? parameters,
         Func<string> action,
         bool timer = default,
         bool enabled = true,
