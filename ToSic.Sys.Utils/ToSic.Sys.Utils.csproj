@@ -35,13 +35,12 @@
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>
 
-  <!-- Try to get Nullable to be ignored in .net Framework -->
+  <!-- Support Nullable in .net Framework -->
   <ItemGroup Condition="$(TargetFramework) == 'net472'">
     <PackageReference Include="Nullable" Version="1.2.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
 
 </Project>

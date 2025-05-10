@@ -51,4 +51,13 @@
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" /><!-- from Oqtane.Server.csproj -->
   </ItemGroup>
+
+  <!-- Support Nullable in .net Framework -->
+  <ItemGroup Condition="$(TargetFramework) == 'net472'">
+    <PackageReference Include="Nullable" Version="1.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>

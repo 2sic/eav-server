@@ -45,4 +45,12 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Support Nullable in .net Framework -->
+  <ItemGroup Condition="$(TargetFramework) == 'net472'">
+    <PackageReference Include="Nullable" Version="1.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>

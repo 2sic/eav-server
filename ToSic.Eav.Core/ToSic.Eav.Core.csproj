@@ -204,4 +204,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='DebugDnn|net9.0|AnyCPU'">
     <NoWarn>1701;1702;CS8632</NoWarn>
   </PropertyGroup>
+
+  <!-- Support Nullable in .net Framework -->
+  <ItemGroup Condition="$(TargetFramework) == 'net472'">
+    <PackageReference Include="Nullable" Version="1.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>
