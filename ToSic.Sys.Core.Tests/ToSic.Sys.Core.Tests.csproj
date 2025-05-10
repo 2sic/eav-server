@@ -26,4 +26,8 @@
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ConfigurationTests\NewFolder\" />
+  </ItemGroup>
+
 </Project>
