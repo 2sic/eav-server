@@ -23,7 +23,7 @@ namespace ToSic.Lib.Sys.Fingerprints.Internal;
 /// IMPORTANT: do not put in DI, as we need to be sure the fingerprint can't be injected any other way
 /// </summary>
 [PrivateApi("internal, no need to publish this")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IFingerprint
 {
     string GetFingerprint();

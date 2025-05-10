@@ -6,7 +6,7 @@
 /// when passed around and must be accessed to get a value. 
 /// </summary>
 [PrivateApi("Very internal functionality, could change at any time")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICanGetByName
 {
     object? Get(string name);

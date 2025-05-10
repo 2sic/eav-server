@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Lib.Logging;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LogConstants
 {
     /// <summary>

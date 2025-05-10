@@ -33,7 +33,7 @@ public abstract class ServiceBase(string logName) : IHasLog
     [JsonIgnore]
     [IgnoreDataMember]
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public ILog Log { get; } = new Log(logName);
 
     /// <summary>

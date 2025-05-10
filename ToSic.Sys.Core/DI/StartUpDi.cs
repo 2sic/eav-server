@@ -4,10 +4,10 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Lib.DI;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartUp
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddLibDiBasics(this IServiceCollection services)
     {
         // Lazy objects in General
@@ -28,7 +28,7 @@ public static class StartUp
     /// <summary>
     /// Add Service Switchers
     /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddLibDiServiceSwitchers(this IServiceCollection services)
     {
         services.TryAddTransient(typeof(ServiceSwitcher<>));

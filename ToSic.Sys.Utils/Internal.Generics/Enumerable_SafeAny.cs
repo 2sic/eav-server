@@ -5,14 +5,14 @@
 /// </summary>
 partial class EnumerableExtensions
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool SafeAny<TSource>(
         [NotNullWhen(true)]
         this IEnumerable<TSource>? source
     )
         => source?.Any() == true;
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool SafeNone<TSource>(
         [NotNullWhen(false)]
         this IEnumerable<TSource>? source

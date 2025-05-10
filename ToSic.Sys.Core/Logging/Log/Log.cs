@@ -6,7 +6,7 @@ using ToSic.Lib.Memory;
 namespace ToSic.Lib.Logging;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class Log: ILog, ILogInternal, ICanEstimateSize
 {
     /// <summary>

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Security.Encryption;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Rfc2898Generator
 {
     /// <summary>

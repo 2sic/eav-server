@@ -6,7 +6,7 @@
 /// </summary>
 [PublicApi]
 // ReSharper disable once InconsistentNaming
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static partial class ILogExtensions
 {
     /// <summary>
@@ -18,7 +18,7 @@ public static partial class ILogExtensions
     /// <param name="enabled"></param>
     /// <returns></returns>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static ILog? SubLogOrNull(this ILog log, string name, bool enabled = true)
     {
         if (!enabled)

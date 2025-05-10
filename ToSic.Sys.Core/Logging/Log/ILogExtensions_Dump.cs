@@ -12,7 +12,7 @@ partial class ILogExtensions
     /// <param name="_"></param>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string Dump(this ILog _, byte[] bytes)
     {
         if (bytes == null || !bytes.Any()) return "[](0)";

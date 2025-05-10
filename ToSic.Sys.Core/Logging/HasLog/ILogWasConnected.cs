@@ -3,7 +3,7 @@
 /// <summary>
 /// Special interface to mark things which need to know when the log was connected.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILogWasConnected
 {
     /// <summary>

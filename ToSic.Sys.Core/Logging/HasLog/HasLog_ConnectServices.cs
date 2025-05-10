@@ -3,7 +3,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Lib.Logging;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class HasLog_ConnectServices
 {
     /// <summary>
@@ -12,7 +12,7 @@ public static class HasLog_ConnectServices
     /// <param name="parent"></param>
     /// <param name="services">One or more services which could implement <see cref="LazySvc{T}"/> or <see cref="IHasLog"/></param>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void ConnectLogs(this IHasLog parent, object[] services)
     {
         var depLogs = new DependencyLogs();

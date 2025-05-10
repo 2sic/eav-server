@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Lib.Memory;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record SizeEstimate(
     int Known = 0,
     int Estimated = 0,

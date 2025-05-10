@@ -13,7 +13,7 @@ namespace ToSic.Lib.FunFact;
 /// So every method will return a new object, basically queueing up what should be done to the object once created.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract record FunFactActionsBase<T> : RecordHelperBase
 {
     /// <summary>

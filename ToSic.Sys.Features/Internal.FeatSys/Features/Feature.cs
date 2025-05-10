@@ -4,7 +4,7 @@ using ToSic.Eav.Internal.Licenses;
 namespace ToSic.Eav.SysData;
 
 [PrivateApi("no good reason to publish this")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record Feature: Aspect
 {
     #region Static Constructors

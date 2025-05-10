@@ -15,7 +15,7 @@ public static class PathFixer
     /// Convert all "/" characters to "\" characters - usually to change url-style paths to folder style paths
     /// </summary>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string? Backslash(this string? original)
         => original?.Replace("/", "\\");
     // Additional replace too risky, breaks network paths like \\srv-xyz\
@@ -25,13 +25,13 @@ public static class PathFixer
     /// <summary>
     /// Convert all "\" characters to "/" characters
     /// </summary>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string? ForwardSlash(this string? original)
         => original?.Replace("\\", "/");
     // could break https:// links etc.
     // .Replace("//", "/").Replace("//", "/");
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string PrefixSlash(this string? original)
     {
         if (original == null)
@@ -43,7 +43,7 @@ public static class PathFixer
         return "/" + original;
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string SuffixSlash(this string? original)
     {
         if (original == null)
@@ -55,27 +55,27 @@ public static class PathFixer
         return original + "/";
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string? TrimLastSlash(this string? original)
         => original?.TrimEnd('/').TrimEnd('\\');
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string? TrimPrefixSlash(this string? original)
         => original?.TrimStart('/').TrimStart('\\');
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string FlattenMultipleForwardSlashes(this string path) 
         => path.Replace("//", "/").Replace("//", "/").Replace("//", "/");
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string FlattenMultipleBackslashes(this string path)
         => Regex.Replace(path, "\\+", "\\");
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string FlattenSlashes(this string path)
         => path.FlattenMultipleForwardSlashes().FlattenMultipleBackslashes();
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string ToAbsolutePathForwardSlash(this string path)
     {
         if (path.Contains(":"))
@@ -85,11 +85,11 @@ public static class PathFixer
         return path.ForwardSlash().PrefixSlash().FlattenMultipleForwardSlashes();
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsPathWithDrive(this string path)
         => Regex.IsMatch(path, @"^[a-zA-Z]:\\");
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsPathWithDriveOrNetwork(this string path)
         => Regex.IsMatch(path, @"^\\\\|^[a-zA-Z]:\\");
 }

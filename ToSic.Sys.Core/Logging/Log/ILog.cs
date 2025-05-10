@@ -10,7 +10,7 @@
 /// It will require you to add the namespace <see cref="Logging"/>.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just FYI")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILog
 {
     /// <summary>

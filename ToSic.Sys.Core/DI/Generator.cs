@@ -7,7 +7,7 @@
 /// Constructor should only be used in DI context and never be called directly.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
 {
     /// <summary>

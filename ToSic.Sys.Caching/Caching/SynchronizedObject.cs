@@ -5,7 +5,7 @@
 /// </summary>
 /// <typeparam name="T">The type which is enumerated, usually an <see cref="IEntity"/></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SynchronizedObject<T>: ICacheDependent, ICacheExpiring
 {
     /// <summary>

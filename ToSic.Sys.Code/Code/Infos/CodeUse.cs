@@ -3,7 +3,7 @@
 /// <summary>
 /// Information that a code was used - must always contain a code-info which describes what was used.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeUse(ICodeInfo change, int appId = default, string? specificId = default, string[]? more = default)
 {
     public ICodeInfo Change { get; } = change;

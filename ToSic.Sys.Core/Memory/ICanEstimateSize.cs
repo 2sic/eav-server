@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Lib.Memory;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICanEstimateSize
 {
     public SizeEstimate EstimateSize(ILog? log = default);

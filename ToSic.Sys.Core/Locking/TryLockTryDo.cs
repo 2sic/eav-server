@@ -3,7 +3,7 @@
 /// <summary>
 /// Execute something if a condition is met, but do it within a lock to avoid duplicate runs
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class TryLockTryDo(object? lockObject = null)
 {
     /// <summary>

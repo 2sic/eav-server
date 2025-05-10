@@ -3,10 +3,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ToSic.Lib.Logging;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartUpLogging
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddLibLogging(this IServiceCollection services)
     {
         // History (very core service)

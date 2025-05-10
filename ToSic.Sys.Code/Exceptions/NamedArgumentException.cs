@@ -4,7 +4,7 @@ using ToSic.Lib.Coding;
 
 namespace ToSic.Lib;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class NamedArgumentException : ArgumentException, IExceptionWithHelp
 {
     public NamedArgumentException(string message, string intro, string paramNames, string paramsText) :

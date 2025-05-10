@@ -4,7 +4,7 @@
 /// Helper base class for all wrappers
 /// </summary>
 /// <typeparam name="T"></typeparam>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [PrivateApi]
 public abstract class Wrapper<T>(T? unwrappedContents) : IWrapper<T>
 {

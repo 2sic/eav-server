@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExceptionSuperUserOnly(Exception inner = null) : ExceptionWithHelp(SuperUserHelp(null), inner)
 {
     private static CodeHelp SuperUserHelp(string message) => new(name: "super-user-help", detect: null,

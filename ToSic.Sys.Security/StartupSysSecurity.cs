@@ -6,10 +6,10 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Lib;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupSysSecurity
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddSysSecurity(this IServiceCollection services)
     {
         services.TryAddTransient<IUser, UserUnknown>();

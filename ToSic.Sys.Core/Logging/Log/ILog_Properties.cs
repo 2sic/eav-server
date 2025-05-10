@@ -8,7 +8,7 @@ namespace ToSic.Lib.Logging;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still experimental")]
 // ReSharper disable once InconsistentNaming
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
 public static class ILog_Properties
 {
@@ -21,7 +21,7 @@ public static class ILog_Properties
     /// <typeparam name="TProperty">Type of return value</typeparam>
     /// <returns></returns>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("2dm: Experimental, don't use yet")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static TProperty Getter<TProperty>(this ILog log,
         Func<TProperty> getter,
         bool timer = default,

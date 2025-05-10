@@ -1,11 +1,11 @@
 ﻿namespace ToSic.Lib.Logging;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class LogCallBaseExtensions
 {
     #region DoInTimer
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void DoInTimer(this ILogCall? logCall, Action action)
     {
         var timerWasAlreadyRunning = logCall is { Timer.IsRunning: true };
@@ -16,7 +16,7 @@ public static class LogCallBaseExtensions
             logCall?.Timer.Stop();
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static TResult DoInTimer<TResult>(this ILogCall? logCall, Func<TResult> action)
     {
         var timerWasAlreadyRunning = logCall is { Timer.IsRunning: true };
@@ -32,7 +32,7 @@ public static class LogCallBaseExtensions
     #endregion
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     internal static void DoneInternal(this ILogCall? logCall, string? message)
     {
         if (logCall?.Log is not Log log)

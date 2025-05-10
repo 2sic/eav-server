@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Lib.Code.InfoSystem;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class CodeInfoConstants
 {
     public const string ObsoleteNameInHistory = LogConstants.StoreWarningsPrefix + "obsolete";

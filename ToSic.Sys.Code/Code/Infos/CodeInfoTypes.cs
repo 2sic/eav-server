@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Lib.Code.Infos;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public enum CodeInfoTypes
 {
     Obsolete,

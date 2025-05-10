@@ -4,7 +4,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Lib.Memory;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MemorySizeEstimator(ILog? parentLog) : HelperBase(parentLog, "Eav.MemSiz")
 {
     public SizeEstimate Estimate(object? value)

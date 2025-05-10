@@ -4,7 +4,7 @@ using static System.StringComparison;
 
 namespace ToSic.Eav.Plumbing;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AssemblyHandling
 {
     /// <summary>

@@ -5,7 +5,7 @@
 /// </summary>
 [PublicApi]
 // ReSharper disable once InconsistentNaming
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static partial class ILogCallExtensions
 {
     /// <summary>

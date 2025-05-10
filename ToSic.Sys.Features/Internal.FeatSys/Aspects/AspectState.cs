@@ -5,7 +5,7 @@ namespace ToSic.Eav.SysData;
 /// <summary>
 /// Experimental - base class for any kind of aspect and it's state
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AspectState<TAspect>(TAspect aspect, bool isEnabled)
     where TAspect : Aspect
 {

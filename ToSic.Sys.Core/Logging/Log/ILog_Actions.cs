@@ -8,7 +8,7 @@ namespace ToSic.Lib.Logging;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP")]
 // ReSharper disable once InconsistentNaming
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
 public static class ILog_Actions
 {
@@ -24,7 +24,7 @@ public static class ILog_Actions
     /// <param name="timer"></param>
     /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void Do(this ILog? log,
         Action action,
         bool timer = default,
@@ -51,7 +51,7 @@ public static class ILog_Actions
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void Do(this ILog? log,
         string? parameters,
         Action action,
@@ -82,7 +82,7 @@ public static class ILog_Actions
     /// <param name="timer"></param>
     /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void Do(this ILog? log,
         Action<ILogCall> action,
         bool timer = default,
@@ -96,7 +96,7 @@ public static class ILog_Actions
     // ReSharper restore ExplicitCallerInfoArgument
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void Do(this ILog log,
         string parameters,
         Action<ILogCall> action,
@@ -110,7 +110,7 @@ public static class ILog_Actions
     ) => log.DoLogCall(parameters, action, timer: timer, enabled: enabled, message: message, cPath: cPath, cName: cName, cLine: cLine);
     // ReSharper restore ExplicitCallerInfoArgument
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     private static void DoLogCall(this ILog? log,
         string? parameters,
         Action<ILogCall> action,
@@ -141,7 +141,7 @@ public static class ILog_Actions
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void Do(this ILog? log,
         Func<string> action,
         bool timer = default,
@@ -170,7 +170,7 @@ public static class ILog_Actions
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <param name="enabled"></param>
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP but probably final")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void Do(this ILog? log,
         string? parameters,
         Func<string> action,

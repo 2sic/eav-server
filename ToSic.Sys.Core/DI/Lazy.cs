@@ -8,5 +8,5 @@
 /// </summary>
 /// <typeparam name="TService"></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyImplementation<TService>(IServiceProvider sp) : Lazy<TService>(sp.Build<TService>);

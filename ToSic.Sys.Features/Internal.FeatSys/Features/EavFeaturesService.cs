@@ -20,7 +20,7 @@ namespace ToSic.Eav.Internal.Features;
 ///            so WebFarmCache is working when feature is enabled https://github.com/2sic/2sxc/issues/3597
 /// </remarks>
 [PrivateApi("hide implementation")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesService, ILibFeaturesService
 {
     public IEnumerable<FeatureState> All => _allStaticCache ??= Merge(Stored, featuresCatalog.List, _staticSysFeatures);

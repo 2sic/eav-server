@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Security.Encryption;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class EncryptionResultExtensions
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static EncryptionResult<string> ToBase64(this EncryptionResult<byte[]> original)
     {
         return new()

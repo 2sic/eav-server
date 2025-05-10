@@ -8,7 +8,7 @@ namespace ToSic.Eav.SysData;
 /// Information about an enabled feature
 /// </summary>
 [PrivateApi("no good reason to publish this")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureState(
     Feature aspect,
     DateTime expiration,

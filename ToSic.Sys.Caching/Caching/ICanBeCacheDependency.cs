@@ -4,7 +4,7 @@
 /// Experimental - to make dependencies on global cache id more explicit
 /// and use cache IDs without keeping a reference to the object itself. 
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICanBeCacheDependency
 {
     /// <summary>

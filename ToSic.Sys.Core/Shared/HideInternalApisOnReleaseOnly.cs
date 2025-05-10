@@ -8,7 +8,7 @@
 
 #if DEBUG
 global using ShowApiWhenReleased = FixEditorBrowsable.FakeEditorBrowsableAttribute;
-global using ShowApiMode = FixEditorBrowsable.HideInternalApisOnReleaseOnly;
+global using ShowApiMode = FixEditorBrowsable.FakeEditorBrowsableState;
 #else
 global using ShowApiWhenReleased = System.ComponentModel.EditorBrowsableAttribute;
 global using ShowApiMode = System.ComponentModel.EditorBrowsableState;

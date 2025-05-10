@@ -7,7 +7,7 @@ using System.Text;
 namespace ToSic.Eav.Caching.CachingMonitors;
 
 // based on https://raw.githubusercontent.com/microsoft/referencesource/master/System.Runtime.Caching/System/Caching/HostFileChangeMonitor.cs
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FolderChangeMonitor : FileChangeMonitor
 {
     private const int MaxCharCountOfLongConvertedToHexadecimalString = 16;

@@ -4,7 +4,7 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Caching;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 {
     private static readonly MemoryCache Cache = MemoryCache.Default;

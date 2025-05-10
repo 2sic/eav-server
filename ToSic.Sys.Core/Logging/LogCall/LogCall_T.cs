@@ -9,7 +9,7 @@
 /// </remarks>
 /// <typeparam name="T">Type of data to return at the end of the call.</typeparam>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LogCall<T>: LogCallBase, ILogCall<T>
 {
     [PrivateApi]

@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib.Logging;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Entry: ICanEstimateSize
 {
     public string? Message { get; }

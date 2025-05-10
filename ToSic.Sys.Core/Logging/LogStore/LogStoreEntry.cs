@@ -4,7 +4,7 @@ using static System.StringComparer;
 namespace ToSic.Lib.Logging;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LogStoreEntry
 {
     /// <summary>

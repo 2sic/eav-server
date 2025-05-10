@@ -6,7 +6,7 @@
 /// <remarks>
 /// Added v15.04
 /// </remarks>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IContextResolverUserPermissions
 {
     EffectivePermissions UserPermissions();

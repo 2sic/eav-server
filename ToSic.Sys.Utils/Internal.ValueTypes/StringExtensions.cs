@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Plumbing;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StringExtensions
 {
     /// <summary>
@@ -32,7 +32,7 @@ public static class StringExtensions
     public static string? NullIfNoValue(this string value)
         => value.HasValue() ? value : null;
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string[]? SplitNewLine(this string? value) 
         => value?.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
 
@@ -50,14 +50,14 @@ public static class StringExtensions
         => original?.SplitNewLine().TrimmedAndWithoutEmpty() ?? [];
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string[]? TrimmedAndWithoutEmpty(this string[]? value) 
         => value?
             .Select(s => s.Trim())
             .Where(s => !string.IsNullOrWhiteSpace(s))
             .ToArray();
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string NeverNull(this string? value) => value ?? "";
 
     /// <summary>
@@ -66,7 +66,7 @@ public static class StringExtensions
     /// <param name="a">The initial string, can also be null.</param>
     /// <param name="b">The compare string, can also be null</param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool EqualsInsensitive(this string? a, string? b)
     {
         if (a == null && b == null) return true;
@@ -74,7 +74,7 @@ public static class StringExtensions
         return a.Equals(b, InvariantCultureIgnoreCase);
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool ContainsInsensitive(this string? a, string? b)
     {
         if (a == null && b == null) return true;
@@ -82,7 +82,7 @@ public static class StringExtensions
         return a.IndexOf(b, 0, CurrentCultureIgnoreCase) != -1;
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string? Truncate(this string? value, int maxLength)
     {
         if (value == null) return null;
@@ -96,7 +96,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string AsKey(this string? value) 
         => value ?? NullKey;
 
@@ -104,7 +104,7 @@ public static class StringExtensions
 
 
     // https://stackoverflow.com/questions/2571716/find-nth-occurrence-of-a-character-in-a-string
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static int GetNthIndex(this string s, char t, int n)
     {
         if (s.IsEmpty()) return -1;
@@ -123,7 +123,7 @@ public static class StringExtensions
     /// <param name="s"></param>
     /// <param name="separators"></param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string RemoveAll(this string s, params char[] separators)
     {
         // 2dm: took

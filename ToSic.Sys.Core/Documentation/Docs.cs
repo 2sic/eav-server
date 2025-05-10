@@ -11,7 +11,7 @@
 // TODO: TEMPORARY name DocWIP because there is another Docs attribute - should probably be merged
 [PrivateApi("WIP / Experimental")]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DocsWip(string docs) : Attribute
 {
     public string Documentation { get; } = docs;

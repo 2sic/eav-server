@@ -14,7 +14,7 @@
 /// See [Convention: Named Parameters](https://go.2sxc.org/named-params).
 /// </summary>
 [PublicApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public struct NoParamOrder
 {
     public const string HelpLink = "https://go.2sxc.org/named-params";

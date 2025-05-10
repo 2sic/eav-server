@@ -3,7 +3,7 @@
 /// <summary>
 /// WIP - trying to keep more information about cache changes
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICacheStatistics: ITimestamped
 {
     long FirstTimestamp { get; }

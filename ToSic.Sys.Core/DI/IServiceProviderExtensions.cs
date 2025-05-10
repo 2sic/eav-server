@@ -7,7 +7,7 @@ namespace ToSic.Lib.DI;
 /// Mostly internal.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class IServiceProviderExtensions
 {
     /// <summary>

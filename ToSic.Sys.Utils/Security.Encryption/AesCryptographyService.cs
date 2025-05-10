@@ -11,7 +11,7 @@ namespace ToSic.Eav.Security.Encryption;
 /// <remarks>
 /// In v19.03.03 we changed `new AesCryptoServiceProvider()` to be `Aes.Create()` because of obsolete warnings
 /// </remarks>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AesCryptographyService(Rfc2898Generator keyGen) : ServiceBase("Eav.EncAes"), ICanDebug
 {
     public EncryptionResult<string> EncryptToBase64(string value, AesConfiguration? configuration = default)

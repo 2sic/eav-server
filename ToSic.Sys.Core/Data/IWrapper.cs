@@ -5,7 +5,7 @@
 /// of the hosting system (environment)
 /// </summary>
 /// <typeparam name="T"></typeparam>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [PrivateApi]
 public interface IWrapper<out T>
 {

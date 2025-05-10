@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib.Code.Help;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeHelp(
     CodeHelp? original,
     string? name = default,

@@ -3,7 +3,7 @@
 /// <summary>
 /// Taken from https://github.com/morelinq/MoreLINQ/blob/master/MoreLinq/DistinctBy.cs
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static partial class EnumerableExtensions
 {
     // Note: seems .net 6 already has this
@@ -25,7 +25,7 @@ public static partial class EnumerableExtensions
     /// <returns>A sequence consisting of distinct elements from the source sequence,
     /// comparing them by the specified key projection.</returns>
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source,
         Func<TSource, TKey> keySelector)
     {
@@ -50,7 +50,7 @@ public static partial class EnumerableExtensions
     /// <returns>A sequence consisting of distinct elements from the source sequence,
     /// comparing them by the specified key projection.</returns>
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source,
         Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer)
     {

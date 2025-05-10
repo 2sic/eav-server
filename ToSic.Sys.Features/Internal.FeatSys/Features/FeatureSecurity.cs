@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.SysData;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureSecurity(int impact, string message = "")
 {
     public int Impact { get; } = impact;

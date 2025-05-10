@@ -3,7 +3,7 @@
 /// <summary>
 /// Very simple timestamp holder, mainly for Delegated Cache-Expiry to hold the private cache timestamp.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CacheExpiring: ITimestamped, ICacheExpiring
 {
     public long CacheTimestamp { get; set; }

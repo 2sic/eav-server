@@ -7,7 +7,7 @@ namespace ToSic.Lib.Sys.Fingerprints.Internal;
 /// This is for fingerprints which are not auto-generated,
 /// but instead are provided by data - usually through license registration.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EnterpriseFingerprint
 {
     public required int Id { get; init; }

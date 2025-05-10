@@ -4,7 +4,7 @@
 /// Marks something that is cache-dependent. Used for things that are themselves cached, but rely on an upstream cache. 
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICacheDependent: ITimestamped
 {
     /// <summary>

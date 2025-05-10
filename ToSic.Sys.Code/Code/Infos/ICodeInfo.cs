@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Lib.Code.Infos;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICodeInfo
 {
     string NameId { get; }

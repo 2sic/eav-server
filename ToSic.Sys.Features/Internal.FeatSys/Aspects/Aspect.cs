@@ -6,7 +6,7 @@ namespace ToSic.Eav.SysData;
 /// Base class for various aspects of the system, such as features or capabilities.
 /// </summary>
 [PrivateApi("no good reason to publish this")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record Aspect: IHasIdentityNameId
 {
     public const string PatronsUrl = "https://patrons.2sxc.org";

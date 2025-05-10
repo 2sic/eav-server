@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Caching;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CacheStatistics: ICacheStatistics
 {
     public long CacheTimestamp { get; private set; }
@@ -20,7 +20,7 @@ public class CacheStatistics: ICacheStatistics
     }
 }
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public struct CacheHistory
 {
     public long Timestamp;

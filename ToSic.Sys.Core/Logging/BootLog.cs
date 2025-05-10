@@ -3,7 +3,7 @@
 /// <summary>
 /// Experimental special logger during booting to see if we have any extreme issues.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class BootLog
 {
     public static ILog Log { get; } = Start();

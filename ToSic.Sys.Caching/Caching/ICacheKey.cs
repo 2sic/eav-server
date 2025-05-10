@@ -6,20 +6,20 @@
 /// so that a different cache is used based on changing parameters. 
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICacheKey
 {
     /// <summary>
     /// Unique key-id for this specific situation - could be the same for all instances, or could vary by some parameter.
     /// </summary>
     /// <returns>A string which is specific to this cache-item.</returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     string CachePartialKey { get; }
 
     /// <summary>
     /// Combination of the current key and all keys of upstream cached items, to create a long unique key for this context.
     /// </summary>
     /// <returns>Full key containing own partial key and upstream keys.</returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)] 
+    [ShowApiWhenReleased(ShowApiMode.Never)] 
     string CacheFullKey { get; }
 }

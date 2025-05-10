@@ -9,7 +9,7 @@
 /// additional information (e.g. an App containing more configuration)
 /// can extend the permissions. So a provider would then combine that with the user to get more permissions.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record EffectivePermissions(bool IsSiteAdmin, bool IsContentAdmin, bool IsContentEditor, bool ShowDraftData)
 {
     public EffectivePermissions(bool all)

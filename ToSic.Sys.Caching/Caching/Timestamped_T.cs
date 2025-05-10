@@ -7,7 +7,7 @@ namespace ToSic.Eav.Caching;
 /// </summary>
 /// <typeparam name="T">The type which is enumerated, usually an <see cref="IEntity"/></typeparam>
 [PrivateApi("this is just fyi")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Timestamped<T>(T value, long timestamp) : ITimestamped
 {
     /// <summary>

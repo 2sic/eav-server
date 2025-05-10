@@ -4,7 +4,7 @@ using ToSic.Lib.Services;
 
 namespace ToSic.Lib.Code.InfoSystem;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class CodeInfoService(LazySvc<CodeInfosInScope> scope) : ServiceBase("Lib.CodeCh")
 {
     public void Warn(CodeUse use)

@@ -5,7 +5,7 @@ using System.Text;
 namespace ToSic.Eav.Security.Encryption;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Sha256
 {
     /// <summary>
@@ -17,12 +17,12 @@ public class Sha256
     /// * In v15.01 we changed this to use the CryptoServiceProvider which is FIPS compliant
     /// * In v19.03.03 we changed `new SHA256CryptoServiceProvider()` to be `SHA256.Create()` because of obsolete warnings
     /// </remarks>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string Hash(string value) 
         => Hasher.Hash(SHA256.Create(), value);
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public string SignBase64(string certificateBase64, byte[] data)
     {
         var certificate = new X509Certificate2(Convert.FromBase64String(certificateBase64),

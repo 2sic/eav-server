@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Plumbing;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class TypeExtensions
 {
     /// <summary>
@@ -8,17 +8,17 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="t"></param>
     /// <returns></returns>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static Type UnboxIfNullable(this Type t)
         => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)
             ? Nullable.GetUnderlyingType(t) ?? t
             : t;
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsNumeric(this object? o)
         => o is not null && o.GetType().IsNumeric();
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsNumeric(this Type t)
         => Type.GetTypeCode(t) switch
         {
@@ -36,7 +36,7 @@ public static class TypeExtensions
             _ => false
         };
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static T? GetDirectlyAttachedAttribute<T>(this Type type) where T : class
         => type.GetCustomAttributes(typeof(T), false).FirstOrDefault() as T;
 }

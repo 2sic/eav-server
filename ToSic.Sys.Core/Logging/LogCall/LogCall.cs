@@ -8,7 +8,7 @@
 /// Note that normal code will never create this object, but get such an object when calling `ILog.Fn(...)`
 /// </remarks>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LogCall: LogCallBase
 {
     /// <summary>

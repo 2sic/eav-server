@@ -3,7 +3,7 @@ using ToSic.Lib;
 
 namespace ToSic.Eav.SysData;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record SysFeature : Feature
 {
     public const string Prefix = "System";

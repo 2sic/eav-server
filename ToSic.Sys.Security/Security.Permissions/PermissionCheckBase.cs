@@ -8,7 +8,7 @@ namespace ToSic.Eav.Security;
 /// <summary>
 /// Basic constructor, you must always call Init afterward
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices services, string logName, object[] connect = default)
     : ServiceBase<PermissionCheckBase.MyServices>(services, logName, connect: connect), IPermissionCheck
 {

@@ -18,7 +18,7 @@ namespace ToSic.Lib.Logging;
 /// <param name="cName">auto pre-filled by the compiler - method name</param>
 /// <param name="cLine">auto pre-filled by the compiler - code line number</param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("This is just FYI")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeRef([CallerFilePath] string? cPath = default, [CallerMemberName] string? cName = default, [CallerLineNumber] int cLine = default)
 {
     public const string Message = "Message";

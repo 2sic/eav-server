@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExceptionWithHelp : Exception, IExceptionWithHelp
 {
     public ExceptionWithHelp(CodeHelp help, Exception inner = null) : base(help.ErrorMessage, inner)

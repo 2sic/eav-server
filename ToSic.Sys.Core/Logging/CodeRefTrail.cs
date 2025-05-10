@@ -10,7 +10,7 @@ namespace ToSic.Lib.Logging;
 /// Important: this is _not_ functional, so object changes are apply to all instances of this object.
 /// </summary>
 [PrivateApi("Experimental")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeRefTrail
 {
     public CodeRefTrail([CallerFilePath] string? cPath = default, [CallerMemberName] string? cName = default, [CallerLineNumber] int cLine = default)

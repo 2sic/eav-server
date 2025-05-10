@@ -4,7 +4,7 @@
 /// Trivial interface just to ensure that we have debug on/off consistent
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICanDebug
 {
     /// <summary>

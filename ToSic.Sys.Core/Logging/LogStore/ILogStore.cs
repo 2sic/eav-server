@@ -4,7 +4,7 @@
 /// Interface to add <see cref="ILog"/>s to the log storage.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILogStore
 {
     /// <summary>

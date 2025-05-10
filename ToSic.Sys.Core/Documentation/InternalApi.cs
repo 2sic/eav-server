@@ -7,7 +7,7 @@
 /// </summary>
 [PublicApi]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
 public class InternalApi_DoNotUse_MayChangeWithoutNotice: Attribute
 {

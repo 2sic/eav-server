@@ -3,7 +3,7 @@
 /// <summary>
 /// Information about the current code - such as obsolete-message or important notification
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeInfo : ICodeInfo
 {
     protected CodeInfo(CodeInfoTypes type, string nameId, Version from, Version to, string? link = default, string? message = default)

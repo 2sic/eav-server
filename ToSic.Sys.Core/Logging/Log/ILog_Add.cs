@@ -8,7 +8,7 @@ namespace ToSic.Lib.Logging;
 /// They are all implemented as extension methods, so that they will not fail even if the log object is null.
 /// </summary>
 [PublicApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
 public static partial class ILog_Add
 {
@@ -22,7 +22,7 @@ public static partial class ILog_Add
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <param name="options"></param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void A(this ILog? log,
         string message,
         [CallerFilePath] string? cPath = default,
@@ -44,7 +44,7 @@ public static partial class ILog_Add
     /// <param name="options"></param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void A(this ILog log,
         bool enabled, 
         string message,
@@ -63,7 +63,7 @@ public static partial class ILog_Add
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void W(this ILog log,
         string message,
         [CallerFilePath] string? cPath = default,
@@ -80,7 +80,7 @@ public static partial class ILog_Add
     /// <param name="cName">Code method name, auto-added by compiler</param>
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void E(this ILog? log,
         string message,
         [CallerFilePath] string? cPath = default,
@@ -90,7 +90,7 @@ public static partial class ILog_Add
 
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string Dump(this DateTime dateTime)
     {
         var utc = dateTime.ToUniversalTime();
@@ -99,7 +99,7 @@ public static partial class ILog_Add
 
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     private static NumberFormatInfo AposThousandSeparator()
     {
         if (_aposSeparator != null)

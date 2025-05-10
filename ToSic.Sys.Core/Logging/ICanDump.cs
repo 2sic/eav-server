@@ -4,7 +4,7 @@
 /// Interface to mark classes which can dump their state into the log as a string.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICanDump
 {
     /// <summary>

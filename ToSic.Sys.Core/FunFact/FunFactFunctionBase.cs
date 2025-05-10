@@ -14,7 +14,7 @@ namespace ToSic.Lib.FunFact;
 /// <param name="parentLog"></param>
 /// <param name="functions"></param>
 /// <param name="logName"></param>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class FunFactFunctionBase<T>(ILog? parentLog, IEnumerable<(string, Func<T, T>)>? functions, string? logName)
     : HelperBase(parentLog, logName ?? "Eav.FnOExp")
 {

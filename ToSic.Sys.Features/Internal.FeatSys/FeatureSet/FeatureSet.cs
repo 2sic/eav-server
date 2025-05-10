@@ -20,7 +20,7 @@ namespace ToSic.Eav.SysData;
 /// <summary>
 /// Defines a license - name, guid etc.
 /// </summary>
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record FeatureSet :  Aspect
 {
     public FeatureSet() { }

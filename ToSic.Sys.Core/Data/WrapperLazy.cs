@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Lib.Data;
 
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class WrapperLazy<T>: Wrapper<T> where T : class
 {
     public WrapperLazy(T contents) : base(contents)

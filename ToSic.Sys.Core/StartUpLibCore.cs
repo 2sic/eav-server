@@ -5,10 +5,10 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Lib;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartUpLibCore
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddLibCore(this IServiceCollection services)
     {
         services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();

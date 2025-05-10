@@ -12,7 +12,7 @@ namespace ToSic.Lib.Services;
 /// Can collect all objects which need the log and init that.
 /// </summary>
 [PublicApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class MyServicesBase: ILazyInitLog
 {
     // ReSharper disable once UnusedParameter.Local

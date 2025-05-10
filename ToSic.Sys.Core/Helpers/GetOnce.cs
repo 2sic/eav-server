@@ -18,7 +18,7 @@ namespace ToSic.Lib.Helpers;
 /// (which is the most common case) most generators can't be added. 
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class GetOnce<TResult>
 {
     /// <summary>

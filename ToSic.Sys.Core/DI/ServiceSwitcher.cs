@@ -6,7 +6,7 @@ using static System.StringComparison;
 
 namespace ToSic.Lib.DI;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{LogScopes.Lib}.SrvSwt"), ILazyLike<T>
     where T : ISwitchableService
 {

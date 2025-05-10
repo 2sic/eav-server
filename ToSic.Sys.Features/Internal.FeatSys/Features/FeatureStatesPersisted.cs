@@ -3,7 +3,7 @@
 namespace ToSic.Eav.SysData;
 
 [PrivateApi("no good reason to publish this")]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record FeatureStatesPersisted
 {
     [JsonPropertyName("features")]

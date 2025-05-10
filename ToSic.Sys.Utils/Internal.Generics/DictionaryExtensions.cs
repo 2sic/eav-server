@@ -4,7 +4,7 @@ using static System.StringComparer;
 namespace ToSic.Lib.Internal.Generics;
 
 // ReSharper disable once InconsistentNaming
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class DictionaryExtensions
 {
     /// <summary>
@@ -27,7 +27,7 @@ public static class DictionaryExtensions
         => Equals(comparer, InvariantCultureIgnoreCase);
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IDictionary<string, T> ToInvariant<T>(this IDictionary<string, T> original)
     {
         // Bypass if it's already doing this - can only be checked on "real" dictionaries
@@ -37,31 +37,31 @@ public static class DictionaryExtensions
     }
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static Dictionary<string, T> ToInvariant<T>(this Dictionary<string, T> original)
         => original.Comparer.IsInvIgnoreCase()
             ? original
             : original.ToInvIgnoreCaseCopy();
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IImmutableDictionary<string, T> ToImmutableInvIgnoreCase<T>(this IDictionary<string, T> original)
         => original is ImmutableDictionary<string, T> im && im.KeyComparer.IsInvIgnoreCase()
             ? im
             : original.ToImmutableDictionary(InvariantCultureIgnoreCase);
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static Dictionary<string, T> ToInvIgnoreCaseCopy<T>(this IDictionary<string, T> original)
         => new(original, InvariantCultureIgnoreCase);
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IDictionary<string, T> ToEditableInIgnoreCase<T>(this IReadOnlyDictionary<string, T> original)
         => original.ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
 
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool TryGetTyped<TResult, TKey, TValue>(this IDictionary<TKey, TValue>? source, TKey key, out TResult? result)
     {
         result = default;
@@ -75,7 +75,7 @@ public static class DictionaryExtensions
         return true;
     }
 
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TValue> factory)
     {
         if (dict.TryGetValue(key, out var val))

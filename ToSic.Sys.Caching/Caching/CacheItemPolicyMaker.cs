@@ -11,7 +11,7 @@ namespace ToSic.Eav.Caching;
 /// It should ensure that all cache variants are possible, but that our code can easily spot which ones are used.
 /// </summary>
 [PrivateApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolicyMaker
 {
     internal static string LogName = "Eav.CacSpx";

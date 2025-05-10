@@ -17,7 +17,7 @@
 
 namespace ToSic.Eav.SysData;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureSetState(FeatureSet featureSet)
     : AspectState<FeatureSet>(featureSet, true)
 {

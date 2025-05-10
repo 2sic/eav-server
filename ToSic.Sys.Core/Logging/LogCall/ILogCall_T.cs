@@ -12,5 +12,5 @@
 /// Note that you cannot use `dynamic` for T, so if your result is dynamic, use `object`
 /// </typeparam>
 [PublicApi]
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILogCall<T>: ILogCall;

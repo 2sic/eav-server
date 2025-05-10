@@ -24,6 +24,7 @@
     <Compile Include="..\ToSic.Sys.Core\Properties\LibAssemblyInfo.cs" Link="Properties\LibAssemblyInfo.cs" />
     <Compile Include="..\ToSic.Sys.Core\Properties\LibAssemblyInfoInherited.cs" Link="Properties\LibAssemblyInfoInherited.cs" />
     <Compile Include="..\ToSic.Sys.Core\Properties\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
+    <Compile Include="..\ToSic.Sys.Core\Shared\HideInternalApisOnReleaseOnly.cs" Link="HideInternalApisOnReleaseOnly.cs" />
   </ItemGroup>
 
   

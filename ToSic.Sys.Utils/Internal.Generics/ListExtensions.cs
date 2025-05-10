@@ -2,7 +2,7 @@
 
 public static class ListExtensions
 {
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static List<List<T>> ChunkBy<T>(this List<T> source, int chunkSize) =>
         source
             .Select((x, i) => new { Index = i, Value = x })
