@@ -40,10 +40,10 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// Constructor for DI
     /// </summary>
     /// <param name="services"></param>
-    public ContextOfApp(MyServices services) : this(services, "Sxc.CtxApp")
+    public ContextOfApp(MyServices services) : this(services, "Sxc.CtxApp", [])
     {
     }
-    protected ContextOfApp(MyServices services, string logName) : base(services, logName)
+    protected ContextOfApp(MyServices services, string logName, object[] connect) : base(services, logName, connect: connect)
     {
         AppServices = services;
     }

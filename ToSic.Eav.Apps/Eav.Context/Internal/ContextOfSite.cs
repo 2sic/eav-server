@@ -30,7 +30,8 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     {
         Site = Services.Site;
     }
-    protected ContextOfSite(MyServicesBase<MyServices> services, string logName) : base(services, logName ?? "Eav.CtxSte")
+    protected ContextOfSite(MyServicesBase<MyServices> services, string logName, object[] connect)
+        : base(services, logName ?? "Eav.CtxSte", connect: connect)
     {
         Site = Services.Site;
     }
