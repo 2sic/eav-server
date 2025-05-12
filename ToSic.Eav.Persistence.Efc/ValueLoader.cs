@@ -87,4 +87,31 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
 
         return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
     }
+
+    #region Test
+    // 2025-05-12, stv, test alternative strategy to load values
+    //private List<LoadingValue> GetSqlValues2(List<int> entityIdsFound)
+    //{
+    //    var l = Log.Fn<List<LoadingValue>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
+
+    //    var attributesRaw = ValueQueries
+    //        .ValuesOfIdsQueryOptimized2(entityIdsFound)
+    //        .Select(v => new LoadingValue(
+    //                v.EntityId,
+    //                v.AttributeId,
+    //                v.StaticName,
+    //                v.Value,
+
+    //                v.ValueDimensionResults
+    //                    .Select(lng =>
+    //                        new Language(lng.EnvironmentKey, lng.ReadOnly, lng.DimensionId) as ILanguage)
+    //                    .ToImmutableList()
+    //            )
+    //        )
+    //        .ToList();
+
+    //    return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
+    //}
+
+    #endregion
 }
