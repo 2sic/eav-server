@@ -27,7 +27,10 @@ public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : 
     /// </summary>
     /// <param name="extendedServices"></param>
     /// <param name="logName"></param>
-    protected ServiceBase(MyServicesBase<TMyServices> extendedServices, string logName) : this(extendedServices.ParentServices, logName)
+    /// <param name="protect"></param>
+    /// <param name="connect"></param>
+    protected ServiceBase(MyServicesBase<TMyServices> extendedServices, string logName, NoParamOrder protect = default, object[]? connect = default)
+        : this(extendedServices.ParentServices, logName, connect: connect)
     {
         // Ensure the extended copy also has SetLog run
         extendedServices.ConnectServices(Log);
