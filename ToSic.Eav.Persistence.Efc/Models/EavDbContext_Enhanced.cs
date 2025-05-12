@@ -1,6 +1,9 @@
 ﻿
 
 // ReSharper disable once CheckNamespace
+
+using ToSic.Eav.Internal.Configuration;
+
 namespace ToSic.Eav.Persistence.Efc.Models;
 
 partial class EavDbContext 
@@ -55,5 +58,11 @@ partial class EavDbContext
     //    //foreach (var entry in modifiedSourceInfo)
     //    //    entry.Property("UpdatedTimestamp").CurrentValue = DateTime.UtcNow;
     //}
+    #endregion
+
+    #region Test
+    // 2025-05-12, stv, test alternative strategy to load values
+    //public string ConnectionString => _dbConfig.ConnectionString;
+
     #endregion
 }
