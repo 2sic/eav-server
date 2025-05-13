@@ -39,9 +39,9 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
 
         var values = context.TsDynDataValues
             .Where(v => entityIds.Contains(v.EntityId))
-            .Include(v => v.Attribute);
-            //.Include(v => v.TsDynDataValueDimensions)
-            //.ThenInclude(d => d.Dimension);
+            .Include(v => v.Attribute)
+            .Include(v => v.TsDynDataValueDimensions)
+            .ThenInclude(d => d.Dimension);
 
         return l.Return(values);
     }
