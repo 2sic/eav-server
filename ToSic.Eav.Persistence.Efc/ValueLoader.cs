@@ -1,8 +1,9 @@
-﻿using ToSic.Eav.Persistence.Efc.Intermediate;
+﻿using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Persistence.Efc.Intermediate;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs): HelperBase(appLoader.Log, "Efc.ValLdr")
+internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs, IEavFeaturesService features) : HelperBase(appLoader.Log, "Efc.ValLdr")
 {
     internal ValueQueries ValueQueries => field ??= new(appLoader.Context, Log);
 
@@ -12,13 +13,12 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
         var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>(timer: true);
 
         var sqlTime = Stopwatch.StartNew();
-        var chunkedAttributes = specs.IdsToLoadChunks
-            .Select(GetValuesOfEntityChunk);
+        var result = features.IsEnabled(BuiltInFeatures.SqlLoadPerformance)
+            ? GetValuesOfAllEntitiesInApp(appId: specs.AppId)
+            : specs.IdsToLoadChunks.Select(GetValuesOfEntityChunk).SelectMany(chunk => chunk);
         sqlTime.Stop();
 
-        var attributes = chunkedAttributes
-            .SelectMany(chunk => chunk)
-            .ToDictionary(i => i.Key, i => i.Value);
+        var attributes = result.ToDictionary(i => i.Key, i => i.Value);
 
         appLoader.AddSqlTime(sqlTime.Elapsed);
 
@@ -29,12 +29,29 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
     {
         var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
 
-        var attributesRaw = GetSqlValues(entityIdsFound);
+        var attributesRaw = GetSqlValuesChunk(entityIdsFound);
 
-        var cnv = new ConvertValuesToAttributes(appLoader.PrimaryLanguage, Log);
-        var attributes = cnv.EavValuesToTempAttributesBeta(attributesRaw);
-
+        var attributes = ConvertToTempAttributes(attributesRaw);
         return l.ReturnAsOk(attributes);
+    }
+
+    private Dictionary<int, List<TempAttributeWithValues>> GetValuesOfAllEntitiesInApp(int appId)
+    {
+        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>($"appId:{appId}", timer: true);
+
+        var attributesRaw = GetSqlValuesAll(appId);
+
+        var attributes = ConvertToTempAttributes(attributesRaw);
+        return l.ReturnAsOk(attributes);
+    }
+
+    /// <summary>
+    /// Helper to convert LoadingValue list to TempAttributeWithValues dictionary.
+    /// </summary>
+    private Dictionary<int, List<TempAttributeWithValues>> ConvertToTempAttributes(List<LoadingValue> attributesRaw)
+    {
+        var cnv = new ConvertValuesToAttributes(appLoader.PrimaryLanguage, Log);
+        return cnv.EavValuesToTempAttributesBeta(attributesRaw);
     }
 
     // 2025-04-28: this is the old version, which was slower - remove ca. 2025-Q3 #EfcSpeedUpValueLoading
@@ -65,27 +82,46 @@ internal class ValueLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
     /// <remarks>
     /// Updated 2025-04-28 for v20 to really just get the values we need, seems to be ca. 50% faster.
     /// </remarks>
-    private List<LoadingValue> GetSqlValues(List<int> entityIdsFound)
+    private List<LoadingValue> GetSqlValuesChunk(List<int> entityIdsFound)
     {
         var l = Log.Fn<List<LoadingValue>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
 
-        var attributesRaw = ValueQueries
-            .ValuesOfIdsQueryOptimized(entityIdsFound)
-            .Select(v => new LoadingValue(
-                    v.EntityId,
-                    v.AttributeId,
-                    v.Attribute.StaticName,
-                    v.Value,
-
-                    v.TsDynDataValueDimensions
-                        .Select(lng =>
-                            new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId) as ILanguage)
-                        .ToImmutableList()
-                )
-            )
-            .ToList();
+        var query = ValueQueries.ChunkValuesQuery(entityIdsFound);
+        var attributesRaw = ToLoadingValues(query);
 
         return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
+    }
+
+    /// <summary>
+    /// Get the attributes of the entities we're loading.
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <returns></returns>
+    private List<LoadingValue> GetSqlValuesAll(int appId)
+    {
+        var l = Log.Fn<List<LoadingValue>>($"Attributes SQL for appId:{appId}", timer: true);
+
+        var query = ValueQueries.AllValuesQuery(appId);
+        var attributesRaw = ToLoadingValues(query);
+
+        return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
+    }
+
+    // Reusable method to convert query results to LoadingValue list
+    private List<LoadingValue> ToLoadingValues(IEnumerable<TsDynDataValue> values)
+    {
+        return values
+            .Select(v => new LoadingValue(
+                v.EntityId,
+                v.AttributeId,
+                v.Attribute.StaticName,
+                v.Value,
+                v.TsDynDataValueDimensions
+                    .Select(lng =>
+                        new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId) as ILanguage)
+                    .ToList()
+            ))
+            .ToList();
     }
 
     #region Test

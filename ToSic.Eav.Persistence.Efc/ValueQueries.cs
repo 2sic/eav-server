@@ -40,18 +40,36 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
     /// <remarks>
     /// Improved 2025-04-28 for v20 to really just get the values we need, seems to be ca. 50% faster.
     /// </remarks>
-    internal IQueryable<TsDynDataValue> ValuesOfIdsQueryOptimized(List<int> entityIds)
+    internal IQueryable<TsDynDataValue> ChunkValuesQuery(List<int> entityIds)
     {
         var l = Log.Fn<IQueryable<TsDynDataValue>>(timer: true);
 
-        var query = context.TsDynDataValues;
-            // Skip values which have been flagged as deleted
-            //.Where(v => !v.TransDeletedId.HasValue);
+        var dimensions = context.TsDynDataDimensions.ToList(); // materialise (very fast)
 
-        var queryOfEntityIds = query
-            .Where(r => entityIds.Contains(r.EntityId));
+        var values = context.TsDynDataValues
+            .Where(v => entityIds.Contains(v.EntityId))
+            .Include(v => v.TsDynDataValueDimensions);
 
-        return l.Return(queryOfEntityIds);
+        return l.Return(values);
+    }
+
+    internal IQueryable<TsDynDataValue> AllValuesQuery(int appId)
+    {
+        var l = Log.Fn<IQueryable<TsDynDataValue>>(timer: true);
+
+        var dimensions = context.TsDynDataDimensions.ToList(); // materialise (very fast)
+
+        //var values = context.TsDynDataValues
+        //        .Join(context.TsDynDataEntities, v => v.EntityId, e => e.EntityId, (v, e) => new { v, e })
+        //        .Where(@t => @t.e.AppId == appId)
+        //        .Select(@t => @t.v)
+        //    .Include(v => v.TsDynDataValueDimensions);
+
+        var values = context.TsDynDataValues
+            .Where(@t => @t.Entity.AppId == appId)
+            .Include(v => v.TsDynDataValueDimensions);
+
+        return l.Return(values);
     }
 
     #region Test

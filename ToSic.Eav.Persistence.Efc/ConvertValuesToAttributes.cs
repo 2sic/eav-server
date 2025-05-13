@@ -72,7 +72,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
                             // any dimensions, then values with primary language
                             .OrderByDescending(v2 => !v2.Languages.Any())
                             .ThenByDescending(v2 => v2.Languages.Any(lng => lng.Key == primaryLower))
-                            .Select(v => new TempValueWithLanguage { Value = v.Value, Languages = v.Languages })
+                            .Select(v => new TempValueWithLanguage { Value = v.Value, Languages = v.Languages.ToImmutableList() })
                             .ToList();
 
 

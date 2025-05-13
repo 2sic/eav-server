@@ -55,7 +55,7 @@ internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializ
         codeRefTrail.AddMessage($"Raw entities: {rawEntities.Count}");
 
         // load attributes & values
-        var attributes = new ValueLoader(efcAppLoader, detailsLoadSpecs).LoadValues();
+        var attributes = new ValueLoader(efcAppLoader, detailsLoadSpecs, featuresSvc).LoadValues();
 
         #endregion
 
