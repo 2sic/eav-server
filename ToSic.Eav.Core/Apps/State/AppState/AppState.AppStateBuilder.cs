@@ -83,7 +83,7 @@ partial class AppState
             {
                 lState.Ex(ex);
                 st.IsHealthy = false;
-                st.HealthMessage += ex.Message + "\n";
+                st.HealthMessage += $"Error while building App state in memory, probably during initial load. {ex.Message}\n";
             }
             finally
             {

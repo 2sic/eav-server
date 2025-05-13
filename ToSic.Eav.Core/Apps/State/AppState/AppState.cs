@@ -84,6 +84,13 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
         => Loading ? value : throw new($"Can't set AppState.{property} when not in loading state");
 
     public bool IsHealthy { get; internal set; } = true;
-    public string HealthMessage { get; internal set; } = "Healthy";
+
+    /// <summary>
+    /// Health message containing errors or similar.
+    /// </summary>
+    /// <remarks>
+    /// Initial value must be an empty string, since any errors will always be added to the previous messages.
+    /// </remarks>
+    public string HealthMessage { get; internal set; } = "";
 
 }
