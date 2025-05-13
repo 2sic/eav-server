@@ -48,14 +48,16 @@ internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializ
         var rawEntities = LoadRaw(appId, entityIds);
         sqlTime.Stop();
 
-        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, rawEntities, featuresSvc, Log);
+        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, !filterByEntityIds, rawEntities, featuresSvc, Log);
 
         var relLoader = new RelationshipLoader(efcAppLoader, detailsLoadSpecs);
         var relatedEntities = relLoader.LoadRelationships();
         codeRefTrail.AddMessage($"Raw entities: {rawEntities.Count}");
 
         // load attributes & values
-        var attributes = new ValueLoader(efcAppLoader, detailsLoadSpecs, featuresSvc).LoadValues();
+        var attributes = featuresSvc.IsEnabled(BuiltInFeatures.SqlLoadPerformance)
+            ? new ValueLoaderPro(efcAppLoader, detailsLoadSpecs).LoadValues()
+            : new ValueLoaderStandard(efcAppLoader, detailsLoadSpecs).LoadValues();
 
         #endregion
 

@@ -217,7 +217,7 @@ public class EfcAppLoader(
 
             // load data
             if (startAt <= AppStateLoadSequence.ItemLoad)
-                LoadEntities(builder, codeRefTrail, entityIds);
+                LoadEntities(builder, codeRefTrail, entityIds ?? []);
             else
             {
                 codeRefTrail.AddMessage("skipping items load");
@@ -304,7 +304,7 @@ public class EfcAppLoader(
 
     #region App Entities
 
-    internal void LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds = null)
+    internal void LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds)
     {
         var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, featuresSvc);
         var entitySqlTime = entityLoader.LoadEntities(builder, codeRefTrail, entityIds);

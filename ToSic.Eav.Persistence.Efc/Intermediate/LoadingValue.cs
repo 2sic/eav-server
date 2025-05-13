@@ -5,5 +5,5 @@ internal record LoadingValue(
     int AttributeId,
     string StaticName,
     string Value,
-    List<ILanguage> Languages
+    IList<ILanguage> Languages
 );

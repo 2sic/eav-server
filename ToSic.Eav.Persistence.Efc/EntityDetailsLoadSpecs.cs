@@ -4,9 +4,12 @@ using ToSic.Lib.Internal.Generics;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class EntityDetailsLoadSpecs(int appId, List<TempEntity> entities, IEavFeaturesService features, ILog parentLog): HelperBase(parentLog, "Sql.DetLSp")
+internal class EntityDetailsLoadSpecs(int appId, bool loadAll, List<TempEntity> entities, IEavFeaturesService features, ILog parentLog)
+    : HelperBase(parentLog, "Sql.DetLSp")
 {
     public int AppId => appId;
+
+    public bool LoadAll => loadAll;
 
     private List<int> IdsToLoad
     {
