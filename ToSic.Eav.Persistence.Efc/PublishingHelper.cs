@@ -12,8 +12,7 @@ internal class PublishingHelper(EfcAppLoader parent): HelperBase(parent.Log, "Ef
             .EntitiesOfAdditionalDrafts(publishedIds)
             .Select(e => e.PublishedEntityId.Value);
 
-        var combined = publishedIds
-            .Union(relatedIds)
+        var combined = Enumerable.Union(publishedIds, relatedIds)
             .ToArray();
 
         return l.ReturnAsOk(combined);

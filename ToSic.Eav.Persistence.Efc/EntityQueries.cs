@@ -18,7 +18,7 @@ internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(paren
 
         // filter by EntityIds (if set)
         if (filterIds)
-            query = query.Where(e => entityIds.Contains(e.EntityId));
+            query = query.Where(e => Enumerable.Contains(entityIds, e.EntityId));
         l.A($"entityId filter: {(filterIds ? "enabled" : "none")}");
 
         if (filterByType)
@@ -36,8 +36,8 @@ internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(paren
             .Where(e =>
                 e.PublishedEntityId.HasValue
                 && !e.IsPublished
-                && publishIds.Contains(e.EntityId)
-                && !publishIds.Contains(e.PublishedEntityId.Value)
+                && Enumerable.Contains(publishIds, e.EntityId)
+                && !Enumerable.Contains(publishIds, e.PublishedEntityId.Value)
                 && e.TransDeletedId == null
             );
 
