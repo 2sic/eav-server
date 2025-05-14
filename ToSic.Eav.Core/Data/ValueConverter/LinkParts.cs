@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ToSic.Eav.Plumbing;
 
 namespace ToSic.Eav.Data;
 
@@ -51,4 +52,16 @@ public class LinkParts
     private const string RegExId = "id";
     private const string RegExName = "name";
     private const string RegExParams = "params";
+
+    #region Static Helpers
+
+    public static int? CheckIdStringForId(string id)
+    {
+        if (!id.HasValue()) return null;
+        var linkParts = new LinkParts(id);
+        if (!linkParts.IsMatch || linkParts.Id == 0) return null;
+        return linkParts.Id;
+    }
+
+    #endregion
 }

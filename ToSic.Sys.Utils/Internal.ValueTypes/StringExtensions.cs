@@ -26,7 +26,7 @@ public static class StringExtensions
 
     // ReSharper disable once RedundantNullableFlowAttribute
     [return: NotNullIfNotNull(nameof(fallback))]
-    public static string UseFallbackIfNoValue(this string? value, string fallback)
+    public static string? UseFallbackIfNoValue(this string? value, string? fallback)
         => !string.IsNullOrWhiteSpace(value) ? value : fallback;
 
     public static string? NullIfNoValue(this string value)
