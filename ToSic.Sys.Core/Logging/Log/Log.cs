@@ -135,7 +135,7 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
 
     public bool Preserve
     {
-        get => field ?? true;
+        get => field; // ?? true;
         set
         {
             field = value;
@@ -143,7 +143,7 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
             if (Parent is Log logParent)
                 logParent.Preserve = value;
         }
-    }
+    } = true;
 
     #endregion
 
