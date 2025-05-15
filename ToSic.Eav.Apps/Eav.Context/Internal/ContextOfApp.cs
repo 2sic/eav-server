@@ -61,7 +61,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     protected virtual IAppIdentity AppIdentity
     {
-        get => field;
+        get;
         set
         {
             field = value;

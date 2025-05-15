@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Serialization.Internal;
 using ToSic.Lib.DI;
-// ReSharper disable RedundantAccessorBody
+
 
 namespace ToSic.Eav.ImportExport.Json;
 

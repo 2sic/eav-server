@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
-using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 

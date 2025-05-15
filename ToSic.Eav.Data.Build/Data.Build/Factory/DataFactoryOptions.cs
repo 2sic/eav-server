@@ -41,11 +41,10 @@ public record DataFactoryOptions
     {
         get => field ?? DataConstants.DataFactoryDefaultTypeName;
 #if NETFRAMEWORK
-        set => field = value;
+        set;
 #else
-        init => field = value;
+        init;
 #endif
-
     }
 
     /// <summary>
@@ -57,9 +56,9 @@ public record DataFactoryOptions
     {
         get => field.UseFallbackIfNoValue(Attributes.TitleNiceName);
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
-        set => field = value;
+        set;
 #else
-        init => field = value;
+        init;
 #endif
     }
 
@@ -129,9 +128,9 @@ public record DataFactoryOptions
     {
         get => field ??= new();
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
-        set => field = value;
+        set;
 #else
-        init => field = value;
+        init;
 #endif
     }
 
@@ -140,12 +139,11 @@ public record DataFactoryOptions
     /// </summary>
     public ILookup<object, IEntity>? Relationships
     {
-        get => field;
+        get;
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
-        set => field = value;
+        set;
 #else
-        init => field = value;
+        init;
 #endif
     }
-
 }

@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-// ReSharper disable RedundantAccessorBody
+
 
 namespace ToSic.Eav.SysData;
 
@@ -24,7 +24,7 @@ public record FeatureStatePersisted
     public bool Enabled
     {
         get => field && Expires > DateTime.Now;
-        init => field = value;
+        init;
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public record FeatureStatePersisted
     [JsonPropertyName("configuration")]
     public Dictionary<string, object>? Configuration
     {
-        get => field;
+        get;
         init => field = value == null
             ? null
             : new(value, comparer: StringComparer.InvariantCultureIgnoreCase);

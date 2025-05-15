@@ -11,13 +11,13 @@ internal class AppWithParents: DataSourceBase
     public override int AppId
     {
         get => field == 0 ? base.AppId : field;
-        protected set => field = value;
+        protected set;
     }
 
     public override int ZoneId
     {
         get => field == 0 ? base.ZoneId : field;
-        protected set => field = value;
+        protected set;
     }
 
     ///// <summary>

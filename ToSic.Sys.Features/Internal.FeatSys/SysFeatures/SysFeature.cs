@@ -26,7 +26,7 @@ public record SysFeature : Feature
     public override string Link
     {
         get => field.UseFallbackIfNoValue(LibConstants.GoUrlSysFeats);
-        init => field = value;
+        init;
     }
 
     public override bool IsConfigurable => false;

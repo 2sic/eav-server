@@ -14,7 +14,7 @@ public class LazyLookup<TKey, TValue> : ILookup<TKey, TValue>
     public ILookup<TKey, TValue> Source
     {
         get => field ??= Raw.ToLookup(r => r.Key, r => r.Value);
-        private set => field = value;
+        private set;
     }
 
     public List<KeyValuePair<TKey, TValue>> Raw = [];

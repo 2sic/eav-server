@@ -8,7 +8,7 @@ using ToSic.Eav.Serialization.Internal;
 using ToSic.Lib.DI;
 using static ToSic.Eav.ImportExport.Internal.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
-// ReSharper disable RedundantAccessorBody
+
 
 namespace ToSic.Eav.Persistence.File;
 
@@ -46,7 +46,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     public JsonSerializer Serializer
     {
         get => field ??= GenerateSerializer();
-        private set => field = value;
+        private set;
     }
 
     private JsonSerializer NewSerializer()

@@ -59,7 +59,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     public string OutMode
     {
         get => field ??= DynamicOut ? OutModeDynamic : OutModeStatic;
-        set => field = value;
+        set;
     }
 
     public bool DynamicIn

@@ -26,7 +26,7 @@ public abstract record FunFactActionsBase<T> : RecordHelperBase
     public List<(string Info, Action<T> Action)> Actions
     {
         get => field ??= [];
-        init => field = value;
+        init;
     }
 
     protected List<(string, Action<T>)> CloneActions((string, Action<T>) addition)

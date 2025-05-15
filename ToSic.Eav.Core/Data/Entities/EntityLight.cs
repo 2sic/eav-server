@@ -43,7 +43,7 @@ public partial record EntityLight : IEntityLight
     internal /*required*/ string TitleFieldName
     {
         get => field ?? Type.TitleFieldName;
-        init => field = value;
+        init;
     }
 
     // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
@@ -75,7 +75,11 @@ public partial record EntityLight : IEntityLight
 
 
     /// <inheritdoc />
-    public required ITarget MetadataFor { get => field ??= new Target(); init => field = value; }
+    public required ITarget MetadataFor
+    {
+        get => field ??= new Target();
+        init;
+    }
 
     /// <inheritdoc />
     public required string Owner { get; init; }

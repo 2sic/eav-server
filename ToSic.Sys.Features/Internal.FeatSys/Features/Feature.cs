@@ -89,7 +89,7 @@ public record Feature: Aspect
     public virtual string Link
     {
         get => field ??= $"{PatronsUrl}/rf?{NameId}";
-        init => field = value;
+        init;
     }
 
     public required IEnumerable<FeatureLicenseRule> LicenseRules { get; init; }

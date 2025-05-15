@@ -31,7 +31,7 @@ public record Value<T> : IValue<T>
     public IImmutableList<ILanguage> LanguagesImmutable
     {
         get => field ??= DataConstants.NoLanguages;
-        init => field = value;
+        init;
     }
 
     /// <inheritdoc />

@@ -86,7 +86,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     public string[] Languages
     {
         get => field ??= Services.ZoneCultureResolver.SafeLanguagePriorityCodes();
-        set => field = value;
+        set;
     }
 
     /// <summary>

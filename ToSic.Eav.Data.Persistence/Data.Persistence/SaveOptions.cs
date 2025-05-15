@@ -10,7 +10,7 @@ public record SaveOptions
 
     public required string PrimaryLanguage
     {
-        get => field;
+        get;
         set => field = value.ToLowerInvariant();
     }
 

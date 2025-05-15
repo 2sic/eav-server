@@ -8,7 +8,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.StartUp;
 using ToSic.Lib.Services;
 using static ToSic.Eav.Constants;
-// ReSharper disable RedundantAccessorBody
+
 
 namespace ToSic.Eav.Apps.State;
 
@@ -44,7 +44,7 @@ partial class AppState
         public IAppStateCache AppState
         {
             get => field ?? throw new("Can't use before calling some init");
-            private set => field = value;
+            private set;
         }
 
         public IAppReader Reader => field ??= appReaderFactory.ToReader(AppState);

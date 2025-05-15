@@ -32,7 +32,7 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
     public IReadOnlyDictionary<string, T> Dictionary
     {
         get => field ??= new ReadOnlyDictionary<string, T>(_master);
-        private set => field = value;
+        private set;
     }
 
 #if NETCOREAPP
@@ -41,7 +41,7 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
     public IReadOnlyCollection<T> List
     {
         get => field ??= new ReadOnlyCollection<T>(_master.Values.ToList());
-        private set => field = value;
+        private set;
     }
 
     public virtual T? TryGet(string name)

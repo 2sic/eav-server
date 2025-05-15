@@ -65,7 +65,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
     /// </summary>
     public string Folder
     {
-        get => field;
+        get;
         private set => field = ValueOrExceptionIfNotInLoadingState(value, nameof(Folder));
     }
 
@@ -76,7 +76,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
     /// </summary>
     public string Name
     {
-        get => field;
+        get;
         private set => field = ValueOrExceptionIfNotInLoadingState(value, nameof(Name));
     }
 

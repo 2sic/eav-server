@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Helpers;
@@ -24,7 +23,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     private StreamDictionary OutWritable
     {
         get => field ??= new(Services.CacheService);
-        set => field = value;
+        set;
     }
 
     private bool _requiresRebuildOfOut = true;

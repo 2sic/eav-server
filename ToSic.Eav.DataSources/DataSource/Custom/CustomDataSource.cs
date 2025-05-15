@@ -52,7 +52,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     private DataFactoryOptions Options
     {
         get => field ??= new() { TypeName = "Custom" };
-        set => field = value;
+        set;
     }
 
     protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();

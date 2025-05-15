@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ToSic.Lib.Memory;
-// ReSharper disable RedundantAccessorBody
+
 
 namespace ToSic.Lib.Logging;
 
@@ -135,7 +135,8 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
 
     public bool Preserve
     {
-        get => field; // ?? true;
+        get;
+        // ?? true;
         set
         {
             field = value;

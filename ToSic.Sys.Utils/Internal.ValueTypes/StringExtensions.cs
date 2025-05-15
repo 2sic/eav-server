@@ -51,6 +51,7 @@ public static class StringExtensions
 
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
+    [return: NotNullIfNotNull(nameof(value))]
     public static string[]? TrimmedAndWithoutEmpty(this string[]? value) 
         => value?
             .Select(s => s.Trim())

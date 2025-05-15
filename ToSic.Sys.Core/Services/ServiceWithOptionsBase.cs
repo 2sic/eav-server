@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
-// ReSharper disable RedundantAccessorBody
+
 
 namespace ToSic.Lib.Services;
 
@@ -15,7 +15,7 @@ public abstract class ServiceWithOptionsBase<TService, TOptions>(string logName,
     public virtual TOptions Options
     {
         get => field ??= GetDefaultOptions();
-        private set => field = value;
+        private set;
     }
 
     /// <summary>

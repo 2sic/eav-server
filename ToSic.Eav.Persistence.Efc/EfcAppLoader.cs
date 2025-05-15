@@ -60,7 +60,7 @@ public class EfcAppLoader(
             field = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
             return l.Return(field, $"Primary language from Env (for value sorting): {field}");
         }
-        set => field = value;
+        set;
     }
 
     #endregion

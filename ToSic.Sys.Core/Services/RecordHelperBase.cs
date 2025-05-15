@@ -14,8 +14,12 @@ namespace ToSic.Lib.Services;
 public abstract record RecordHelperBase() : IHasLog
 {
     /// <inheritdoc />
-    [JsonIgnore]        // Prevent System.Text.Json from serializing this property
-    [IgnoreDataMember]  // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
+    [JsonIgnore] // Prevent System.Text.Json from serializing this property
+    [IgnoreDataMember] // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
     [PrivateApi]
-    public required ILog Log { get => field ??= new Log("unknown", null); init => field = value; }
+    public required ILog Log
+    {
+        get => field ??= new Log("unknown", null);
+        init;
+    }
 }

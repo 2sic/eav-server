@@ -1,4 +1,4 @@
-﻿// ReSharper disable RedundantAccessorBody
+﻿
 namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
@@ -15,7 +15,7 @@ public abstract class WorkUnitBase<TContext>(string logName, object[] connect = 
     public TContext AppWorkCtx
     {
         get => field ?? throw new($"Can't use this before {nameof(AppWorkCtx)} is set - pls use a Work-Generator.");
-        private set => field = value;
+        private set;
     }
 
     /// <summary>
