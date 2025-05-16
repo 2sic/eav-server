@@ -1,6 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <!-- By Default, als 2sxc DLLs will have the same root namespace -->
-    <RootNamespace>ToSic.Sys</RootNamespace>
-  </PropertyGroup>
-</Project>

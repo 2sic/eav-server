@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Internal.Requirements;
+using ToSic.Lib.Features.Tests;
 using ToSic.Lib.Features.Tests.RequirementChecks.Mocks;
 
-namespace ToSic.Lib.Features.Tests.RequirementsServiceTests.AnimalRequirements;
+namespace ToSic.Lib.RequirementsServiceTests.AnimalRequirements;
 
 public class Startup
 {

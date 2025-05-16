@@ -1,9 +1,11 @@
 ﻿using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.SysData;
+using ToSic.Lib.Features.Tests;
 using ToSic.Lib.Features.Tests.RequirementChecks.Mocks;
+using ToSic.Lib.Features.Tests.RequirementsServiceTests;
 using static ToSic.Lib.Features.Tests.RequirementChecks.Mocks.MockAnimalRequirementsCheck;
 
-namespace ToSic.Lib.Features.Tests.RequirementsServiceTests.AnimalRequirements;
+namespace ToSic.Lib.RequirementsServiceTests.AnimalRequirements;
 
 public class RequirementsServiceAnimals(RequirementsService requirementsService)
 {
