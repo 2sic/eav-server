@@ -1,44 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav.props" />
+
+  <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
+
+  <!--<Import Project="../SharedImports/CsProj.Props/Nullable.props" />-->
+
   <PropertyGroup>
-    <TargetFrameworks>net472;net9.0;</TargetFrameworks>
-    <Configurations>Debug;Release;Dbg Testing;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
     <RootNamespace>ToSic</RootNamespace>
-    <Deterministic>true</Deterministic>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
-    <!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <!-- end: Don't generate... -->
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <!-- generate xml docs -->
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1701;1702;CS1570;CS1572;CS1573;CS1574;CS1587;CS1591;CS1710;CS1711</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='efc and WebApi|AnyCPU'" />
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug eav only|AnyCPU'" />
-
-  <ItemGroup>
-    <Compile Remove="Eav.Apps.Internal\Work\Apps\**" />
-    <EmbeddedResource Remove="Eav.Apps.Internal\Work\Apps\**" />
-    <None Remove="Eav.Apps.Internal\Work\Apps\**" />
-  </ItemGroup>
-
-  <!-- Import common files which change how the project compiles; AssemblyInfo from EAV, rest from Lib.Imports -->
-  <ItemGroup>
-    <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />
-    <Compile Include="..\ToSic.Lib.Imports\System.Runtime.CompilerServices.cs" Link="Properties\System.Runtime.CompilerServices.cs" />
-    <Compile Include="..\ToSic.Lib.Imports\HideInternalApisOnReleaseOnly.cs" Link="Properties\HideInternalApisOnReleaseOnly.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />

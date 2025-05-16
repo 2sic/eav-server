@@ -1,0 +1,21 @@
+<Project>
+  <!-- Set Target Framework and C# version -->
+  <Import Project="./TargetFrameworkAndCSharp.props" />
+
+  <!-- Set Default Namespace to ToSic.Sys-->
+  <PropertyGroup>
+    <RootNamespace>ToSic.Eav</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Lots of rules to disable generating Assembly Info (since we provide it through an object) -->
+  <Import Project="./GenerateAssemblyDisable.props" />
+
+  <!-- Disable some common warnings we don't care about-->
+  <Import Project="./ConfigurationsAndWarnings.props" />
+
+  <!-- Include C# files which contain the Assembly Info and some classes so that C# latest is supported (such as init-properties) -->
+  <Import Project="./IncludeCode/Compiler Features and API Hiding.props" />
+
+  <!-- Nullable  not default for EAV -->
+  <!--<Import Project="./Nullable.props" />-->
+</Project>
