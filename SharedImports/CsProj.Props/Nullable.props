@@ -2,7 +2,7 @@
 
   <!-- All Sys projects are nullable -->
   <PropertyGroup>
-    <Nullable>enable</Nullable>
+    <!--<Nullable>enable</Nullable>-->
   </PropertyGroup>
 
   <!-- Support Nullable in .net Framework -->
