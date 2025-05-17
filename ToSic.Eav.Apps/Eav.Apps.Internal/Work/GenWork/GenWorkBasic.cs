@@ -11,8 +11,8 @@ public class GenWorkBasic<TWorkContext>(LazySvc<AppWorkContextService> ctxSvc, G
     : ServiceBase("App.WorkUn", connect: [ctxSvc, gen])
     where TWorkContext : WorkUnitBase<IAppWorkCtx>
 {
-    public AppWorkContextService CtxSvc => ctxSvc.Value;
-    public TWorkContext NewInternal(IAppWorkCtx ctx)
+    //public AppWorkContextService CtxSvc => ctxSvc.Value;
+    private TWorkContext NewInternal(IAppWorkCtx ctx)
     {
         var fresh = gen.New();
         fresh._initCtx(ctx);
@@ -20,9 +20,11 @@ public class GenWorkBasic<TWorkContext>(LazySvc<AppWorkContextService> ctxSvc, G
     }
 
 
-    public TWorkContext New(IAppReader appReader) => NewInternal(ctxSvc.Value.Context(appReader));
+    public TWorkContext New(IAppReader appReader)
+        => NewInternal(ctxSvc.Value.Context(appReader));
 
-    public TWorkContext New(int appId) => NewInternal(ctxSvc.Value.Context(appId));
+    public TWorkContext New(int appId)
+        => NewInternal(ctxSvc.Value.Context(appId));
 
     // These signatures are not used ATM, but might be useful in the future
     //public TWork New(IAppWorkCtx ctx) => NewInternal(ctx);

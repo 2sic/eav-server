@@ -5,8 +5,8 @@
 public static class IAppIdentityExtensions
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static string Show(this IAppIdentity appId)
-        => $"{appId.ZoneId}/{appId.AppId}";
+    public static string Show(this IAppIdentity? appIdentity)
+        => $"{appIdentity?.ZoneId}/{appIdentity?.AppId}";
 
     /// <summary>
     /// Take only the identity from a richer object which may have too much other stuff.

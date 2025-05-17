@@ -93,7 +93,7 @@ public class QueryManager(
         return l.Return(queries, "ok");
     }
 
-    public IQuery GetQuery(IAppIdentity appIdentity, string nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)
+    public IQuery? GetQuery(IAppIdentity appIdentity, string? nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)
     {
         var l = Log.Fn<IQuery>($"{nameOrGuid}, recurse: {recurseParents}");
         var qEntity = FindQuery(appIdentity, nameOrGuid, recurseParents);
@@ -103,22 +103,23 @@ public class QueryManager(
         return l.Return(delayedQuery, "found");
     }
 
-    internal IEntity FindQuery(IAppIdentity appIdentity, string nameOrGuid, int recurseParents = 0) 
+    internal IEntity? FindQuery(IAppIdentity appIdentity, string? nameOrGuid, int recurseParents = 0) 
     {
-        var l = Log.Fn<IEntity>($"{nameOrGuid}, recurse: {recurseParents}");
+        var l = Log.Fn<IEntity?>($"{nameOrGuid}, recurse: {recurseParents}");
         if (nameOrGuid.IsEmptyOrWs())
             return l.ReturnNull("null - no name");
         var all = AllQueryItems(appIdentity, recurseParents);
         var result = FindByNameOrGuid(all, nameOrGuid);
-        // If nothing found and we have an old name, try the new name
+        // If nothing found, and we have an old name, try the new name
         if (result == null && nameOrGuid.StartsWith(DataSourceConstantsInternal.SystemQueryPrefixPreV15))
             result = FindByNameOrGuid(all, nameOrGuid.Replace(DataSourceConstantsInternal.SystemQueryPrefixPreV15, DataSourceConstantsInternal.SystemQueryPrefix));
         return l.Return(result, result == null ? "null" : "ok");
     }
 
-    
-    private static IEntity FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
-        queries.FirstOrDefault(
-            q => q.Get<string>("Name").EqualsInsensitive(nameOrGuid)
-                 || q.EntityGuid.ToString().EqualsInsensitive(nameOrGuid));
+
+    private static IEntity? FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
+        queries.FirstOrDefault(q =>
+            q.Get<string>("Name").EqualsInsensitive(nameOrGuid)
+            || q.EntityGuid.ToString().EqualsInsensitive(nameOrGuid)
+        );
 }

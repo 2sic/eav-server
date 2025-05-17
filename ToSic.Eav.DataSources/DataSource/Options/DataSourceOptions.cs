@@ -16,7 +16,7 @@ public sealed record DataSourceOptions: IDataSourceOptions
 
     // todo: improve to probably be IAppIdentity or IAppReader
     public IAppIdentity AppIdentityOrReader { get; init; }
-    public ILookUpEngine LookUp { get; init; }
+    public ILookUpEngine? LookUp { get; init; }
     public bool? ShowDrafts { get; init; }
     public bool Immutable { get; init; }
 

@@ -54,7 +54,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     {
         var l = Log.Fn<IEnumerable<IEntity>>($"{nameof(contentTypeName)}: {contentTypeName}");
         var appWithParents = dataSourceFactory.Value.Create<AppWithParents>(attach: AppWorkCtx.Data);
-        var newCtx = AppWorkCtx.NewWithPresetData(data: appWithParents);
+        var newCtx = AppWorkCtx.SpawnNewWithPresetData(data: appWithParents);
         return l.Return(Get(contentTypeName, newCtx));
     }
 

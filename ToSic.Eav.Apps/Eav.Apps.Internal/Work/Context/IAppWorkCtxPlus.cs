@@ -15,6 +15,6 @@ public interface IAppWorkCtxPlus : IAppWorkCtx
     bool? ShowDrafts { get; }
     IDataSource Data { get; }
 
-    IAppWorkCtxPlus NewWithPresetData(IDataSource data);
+    IAppWorkCtxPlus SpawnNewWithPresetData(IDataSource data);
 
 }

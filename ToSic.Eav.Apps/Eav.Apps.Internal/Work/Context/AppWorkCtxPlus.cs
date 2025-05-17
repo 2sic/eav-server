@@ -21,17 +21,19 @@ public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus
         _data = data ?? origOfClass?._data;
     }
 
-    public IAppWorkCtxPlus NewWithPresetData(IDataSource data) => new AppWorkCtxPlus(this, data: data);
+    public IAppWorkCtxPlus SpawnNewWithPresetData(IDataSource data)
+        => new AppWorkCtxPlus(this, data: data);
 
     private IDataSourcesService DataSourcesFactory { get; }
 
 
 
-    public IDataSource Data => _data ??= DataSourcesFactory.CreateDefault(new DataSourceOptions
-    {
-        AppIdentityOrReader = AppReader.PureIdentity(),
-        ShowDrafts = ShowDrafts,
-    });
+    public IDataSource Data => _data
+        ??= DataSourcesFactory.CreateDefault(new DataSourceOptions
+        {
+            AppIdentityOrReader = AppReader.PureIdentity(),
+            ShowDrafts = ShowDrafts,
+        });
     private IDataSource _data;
 
 

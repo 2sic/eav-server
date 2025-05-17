@@ -13,6 +13,8 @@ public class AppWorkCtx : IAppWorkCtx
     /// <inheritdoc />
     public int AppId { get; }
 
+    public IAppReader AppReader { get; }
+
     public AppWorkCtx(IAppReader appReader)
     {
         AppId = appReader.AppId;
@@ -27,7 +29,5 @@ public class AppWorkCtx : IAppWorkCtx
         ZoneId = appReader?.ZoneId ?? original.ZoneId;
         AppReader = appReader ?? original.AppReader;
     }
-
-    public IAppReader AppReader { get; }
 
 }

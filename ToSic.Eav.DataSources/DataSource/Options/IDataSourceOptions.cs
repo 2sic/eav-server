@@ -13,9 +13,9 @@ public interface IDataSourceOptions
     /// The App Identity.
     /// If it is also a reader, it will be used for reading data.
     /// </summary>
-    IAppIdentity AppIdentityOrReader { get; }
+    IAppIdentity? AppIdentityOrReader { get; }
 
-    ILookUpEngine LookUp { get; }
+    ILookUpEngine? LookUp { get; }
 
     bool? ShowDrafts { get; }
 

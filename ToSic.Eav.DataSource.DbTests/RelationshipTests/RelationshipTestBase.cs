@@ -19,7 +19,7 @@ public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataB
 
     #endregion
 
-    protected new ILog Log { get; } = new Log("Tst.DSRelF");
+    protected ILog Log { get; } = new Log("Tst.DSRelF");
 
 
 
@@ -29,12 +29,12 @@ public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataB
     /// </summary>
     /// <returns></returns>
     protected RelationshipFilter FilterWithApi(string type, 
-        string relationship = null, 
-        string filter = null, 
-        string relAttrib = null,
-        string compareMode = null,
-        string separator = null,
-        string direction = null)
+        string? relationship = null, 
+        string? filter = null, 
+        string? relAttrib = null,
+        string? compareMode = null,
+        string? separator = null,
+        string? direction = null)
     {
         var relApi = BuildRelationshipFilter(type);
 
@@ -53,16 +53,15 @@ public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataB
     /// </summary>
     /// <returns></returns>
     protected RelationshipFilter FilterWithConfig(string type, 
-        string relationship = null, 
-        string filter = null,
-        string relAttrib = null,
-        string compareMode = null,
-        string separator = null,
-        string direction = null)
+        string? relationship = null, 
+        string? filter = null,
+        string? relAttrib = null,
+        string? compareMode = null,
+        string? separator = null,
+        string? direction = null)
     {
         var settings = new Dictionary<string, object> { { Attributes.TitleNiceName, "..." } };
 
-        void MaybeAddValueStr(string key, string value) { if (value != null) settings.Add(key, value); }
         MaybeAddValueStr(nameof(RelationshipFilter.Relationship), relationship);
         MaybeAddValueStr(nameof(RelationshipFilter.Filter), filter);
         MaybeAddValueStr(RelationshipFilter.FieldAttributeOnRelationship, relAttrib);
@@ -72,17 +71,22 @@ public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataB
 
         var config = BuildConfigurationProvider(settings);
         return BuildRelationshipFilter(RelationshipTestSpecs.Company, config);
+
+        void MaybeAddValueStr(string key, string? value)
+        {
+            if (value != null) settings.Add(key, value);
+        }
     }
 
 
 
 
-    protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine config = null)
+    protected RelationshipFilter BuildRelationshipFilter(string primaryType, ILookUpEngine? lookUpEngine = null)
     {
         var baseDs = dsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions
             {
                 AppIdentityOrReader = RelationshipTestSpecs.AppIdentity,
-                LookUp = config
+                LookUp = lookUpEngine
             }
         );
         var appDs = dsSvc.CreateDataSource<App>(baseDs);
