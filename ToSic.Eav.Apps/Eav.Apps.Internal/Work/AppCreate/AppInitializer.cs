@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -104,13 +103,13 @@ public class AppInitializer(
         };
 
 
-    private bool CreateAllMissingContentTypes(IAppReader appState, List<AddContentTypeAndOrEntityTask> newItems)
+    private bool CreateAllMissingContentTypes(IAppReader appReader, List<AddContentTypeAndOrEntityTask> newItems)
     {
         var l = Log.Fn<bool>($"Check for {newItems.Count}");
-        var typesMod = contentTypesMod.New(appState);
+        var typesMod = contentTypesMod.New(appReader);
         var addedTypes = false;
         foreach (var item in newItems)
-            if (item.InAppType && FindContentType(appState, item.SetName, item.InAppType) == null)
+            if (item.InAppType && FindContentType(appReader, item.SetName, item.InAppType) == null)
             {
                 l.A("couldn't find type, will create");
                 // create App-Man if not created yet
@@ -123,10 +122,10 @@ public class AppInitializer(
         return l.Return(addedTypes);
     }
         
-    private void MetadataEnsureTypeAndSingleEntity(IAppReader appStateRaw, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
+    private void MetadataEnsureTypeAndSingleEntity(IAppReader appReader, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
     {
-        var l = Log.Fn($"{cTypeAndOrEntity.SetName} for app {appStateRaw.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
-        var ct = FindContentType(appStateRaw, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
+        var l = Log.Fn($"{cTypeAndOrEntity.SetName} for app {appReader.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
+        var ct = FindContentType(appReader, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
 
         // if it's still null, we have a problem...
         if (ct == null)
@@ -137,11 +136,11 @@ public class AppInitializer(
 
         var values = cTypeAndOrEntity.Values ?? [];
         var attrs = builder.Value.Attribute.Create(values);
-        var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appStateRaw.AppId);
+        var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appReader.AppId);
         var newEnt = builder.Value.Entity
-            .Create(appId: appStateRaw.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
+            .Create(appId: appReader.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
 
-        var entSaver = entitySave.New(appStateRaw);
+        var entSaver = entitySave.New(appReader);
         entSaver.Save(newEnt, entSaver.SaveOptions());
         l.Done();
     }

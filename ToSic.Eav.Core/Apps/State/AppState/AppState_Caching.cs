@@ -60,7 +60,7 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, ICanBeCac
     /// In normal mode it will only use the private timestamp.
     /// In shared mode it will merge its timestamp with the parent
     /// </summary>
-    private static ICacheExpiring CreateExpiryDelegate(ParentAppState parent, ICacheExpiring cacheTimestampPrivate)
+    private static ICacheExpiring CreateExpiryDelegate(ParentAppState? parent, ICacheExpiring cacheTimestampPrivate)
         => (parent.InheritContentTypes || parent.InheritEntities) && parent.AppState != null
             ? new CacheExpiringMultiSource(cacheTimestampPrivate, parent.AppState)
             : cacheTimestampPrivate;

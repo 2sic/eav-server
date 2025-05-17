@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.Internal.Work;
-using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Helpers;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
@@ -23,12 +22,12 @@ public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus
 {
     public void Setup(IAppReader appReader, int appId)
     {
-        _appState = appReader;
+        _appReader = appReader;
         AppId = appId;
     }
 
-    private IAppReader AppReader => _appState ?? throw new("Can't use this Read class before setting AppState");
-    private IAppReader _appState;
+    private IAppReader AppReader => _appReader ?? throw new("Can't use this Read class before setting AppState");
+    private IAppReader _appReader;
 
     private int AppId;
 

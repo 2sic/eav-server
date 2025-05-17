@@ -1,8 +1,6 @@
 ﻿using System.Collections.Immutable;
-using System.IO;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal.Work;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Internal.ImportHelpers;
 using ToSic.Eav.ImportExport.Internal.Options;
@@ -35,7 +33,7 @@ public partial class ImportListXml(
     /// Create a xml import. The data stream passed will be imported to memory, and checked 
     /// for errors. If no error could be found, the data can be persisted to the repository.
     /// </summary>
-    /// <param name="appState"></param>
+    /// <param name="appReader"></param>
     /// <param name="typeName">content-type</param>
     /// <param name="dataStream">Xml data stream to import</param>
     /// <param name="languages">Languages that can be imported (2sxc languages enabled)</param>
@@ -43,7 +41,7 @@ public partial class ImportListXml(
     /// <param name="deleteSetting">How to handle entities already in the repository</param>
     /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
     public ImportListXml Init(
-        IAppReader appState,
+        IAppReader appReader,
         string typeName,
         Stream dataStream, 
         IEnumerable<string> languages, 
@@ -52,9 +50,9 @@ public partial class ImportListXml(
         ImportResolveReferenceMode resolveLinkMode)
     {
         ErrorLog = new(Log);
-        var contentType = appState.GetContentType(typeName);
+        var contentType = appReader.GetContentType(typeName);
 
-        AppReader = appState;
+        AppReader = appReader;
         _appId = AppReader.AppId;
 
         ContentType = contentType;

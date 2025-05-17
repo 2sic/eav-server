@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-
-namespace ToSic.Eav.Apps.Internal.Work;
+﻿namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Helper to generate a App Work Unit class to get a single / simple thing done.
@@ -24,7 +22,7 @@ public class GenWorkDb<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generator<T
 
     public TWork New(IAppWorkCtxWithDb ctx) => NewInternal(ctx);
 
-    public TWork New(IAppReader appState) => NewInternal(CtxSvc.CtxWithDb(appState));
+    public TWork New(IAppReader appReader) => NewInternal(CtxSvc.CtxWithDb(appReader));
 
     public TWork New(IAppIdentity identity) => NewInternal(ctxSvc.Value.CtxWithDb(ctxSvc.Value.AppReaders.Get(identity)));
 

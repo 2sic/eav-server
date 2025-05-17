@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
 
 namespace ToSic.Eav.Security.Internal;
@@ -10,16 +9,16 @@ public class MultiPermissionsTypes: MultiPermissionsApp
     private const string LogName = "Sec.MPTyps";
     protected IEnumerable<string> ContentTypes;
 
-    public MultiPermissionsTypes(MyServices services, LazySvc<IAppReaderFactory> appStates): base(services, LogName)
+    public MultiPermissionsTypes(MyServices services, LazySvc<IAppReaderFactory> appReaderFactory): base(services, LogName)
     {
         ConnectLogs([
-            _appStates = appStates
+            _appReaderFactory = appReaderFactory
         ]);
     }
-    private readonly LazySvc<IAppReaderFactory> _appStates;
+    private readonly LazySvc<IAppReaderFactory> _appReaderFactory;
 
     // Note: AppState must be public, as we have some extension methods that need it
-    public IAppReader AppState => field ??= _appStates.Value.GetOrKeep(App);
+    public IAppReader AppState => field ??= _appReaderFactory.Value.GetOrKeep(App);
 
     public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
     {

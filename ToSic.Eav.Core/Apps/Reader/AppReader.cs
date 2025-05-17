@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
@@ -23,6 +24,7 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
     internal IAppStateCache AppState => _appState;
 
     /// <inheritdoc />
+    [field: AllowNull, MaybeNull]
     public IAppSpecs Specs => field ??= new AppSpecs(_appState);
 
     #region Identity
@@ -45,9 +47,9 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     public IImmutableList<IEntity> List => _appState.List;
 
-    public IEntity GetDraft(IEntity entity) => _appState.GetDraft(entity);
+    public IEntity? GetDraft(IEntity entity) => _appState.GetDraft(entity);
 
-    public IEntity GetPublished(IEntity entity) => _appState.GetPublished(entity);
+    public IEntity? GetPublished(IEntity entity) => _appState.GetPublished(entity);
 
     #endregion
 

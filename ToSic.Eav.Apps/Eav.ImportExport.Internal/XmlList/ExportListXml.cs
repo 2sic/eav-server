@@ -1,7 +1,6 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.ImportExport.Internal.Options;
 using ToSic.Eav.ImportExport.Internal.Xml;
 
@@ -18,10 +17,12 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
 
     protected ExportImportValueConversion ValueConverter { get; } = valueConverter;
 
-    public ExportListXml Init(IAppReader appState, string typeName) => Init(appState, appState.GetContentType(typeName));
-    public ExportListXml Init(IAppReader app, IContentType contentType)
+    public ExportListXml Init(IAppReader appReader, string typeName)
+        => Init(appReader, appReader.GetContentType(typeName));
+
+    public ExportListXml Init(IAppReader appReader, IContentType contentType)
     {
-        AppState = app;
+        AppState = appReader;
         ContentType = contentType;
         return this;
     }

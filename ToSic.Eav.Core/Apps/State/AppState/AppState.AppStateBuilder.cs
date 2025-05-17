@@ -34,7 +34,7 @@ partial class AppState
             return this;
         }
 
-        public IAppStateBuilder InitForNewApp(ParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog)
+        public IAppStateBuilder InitForNewApp(ParentAppState? parentApp, IAppIdentity identity, string nameId, ILog parentLog)
         {
             AppState = new AppState(parentApp, identity, nameId, parentLog);
             MemoryCacheService.Notify(AppState);

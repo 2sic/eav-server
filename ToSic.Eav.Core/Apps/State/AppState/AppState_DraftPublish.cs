@@ -13,7 +13,7 @@ partial class AppState
     /// If entity is published and there is a draft of it, then it can be navigated through DraftEntity
     /// </summary>
     [PrivateApi]
-    internal IEntity GetDraft(IEntity entity)
+    internal IEntity? GetDraft(IEntity entity)
     {
         if (entity == null) return null;
         if (!entity.IsPublished) return null;

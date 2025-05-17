@@ -65,7 +65,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         set
         {
             field = value;
-            _appStateInternal.Reset();
+            _appReader.Reset();
             _appSettingsStack.Reset();
             _settings.Reset();
             _resources.Reset();
@@ -151,8 +151,8 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     #endregion
 
 
-    public IAppReader AppReader => _appStateInternal.Get(() => AppIdentity == null ? null : AppServices.AppReaders.Get(AppIdentity));
-    private readonly GetOnce<IAppReader> _appStateInternal = new();
+    public IAppReader AppReader => _appReader.Get(() => AppIdentity == null ? null : AppServices.AppReaders.Get(AppIdentity));
+    private readonly GetOnce<IAppReader> _appReader = new();
 
     #region Settings and Resources
 

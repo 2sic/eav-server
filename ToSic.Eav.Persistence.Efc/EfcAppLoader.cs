@@ -149,7 +149,7 @@ public class EfcAppLoader(
         codeRefTrail.WithHere().AddMessage($"App: {appId}, {nameof(appGuidName)}: '{appGuidName}'");
 
         // This will contain the parent reference - in most cases it's the -42 App
-        ParentAppState parent;
+        ParentAppState? parent;
 
         var ancestorAppId = GetAncestorAppIdOrZero(appId);
 

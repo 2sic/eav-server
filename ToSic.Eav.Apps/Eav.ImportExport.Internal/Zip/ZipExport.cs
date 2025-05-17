@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Xml.XPath;
+﻿using System.Xml.XPath;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
@@ -56,11 +55,11 @@ public class ZipExport(
             FileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
         ]);
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appState = appReaders.Get(appIdentity);
+        _appReader = appReaders.Get(appIdentity);
         return this;
     }
 
-    private IAppReader _appState;
+    private IAppReader _appReader;
     #endregion
 
     public void ExportForSourceControl(AppExportSpecs specs)
@@ -220,7 +219,7 @@ public class ZipExport(
     {
             // Get Export XML
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        var attributeSets = _appState.ContentTypes.OfScope(includeAttributeTypes: true);
+        var attributeSets = _appReader.ContentTypes.OfScope(includeAttributeTypes: true);
         attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
         // Exclude ParentApp attributeSets
@@ -250,7 +249,7 @@ public class ZipExport(
         var entityIds = entities
             .Select(e => e.EntityId.ToString()).ToArray();
 
-        var xmlExport = xmlExporter.Init(specs, _appState, true, contentTypeNames, entityIds);
+        var xmlExport = xmlExporter.Init(specs, _appReader, true, contentTypeNames, entityIds);
 
         #region reset App Guid if necessary
 

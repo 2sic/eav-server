@@ -7,8 +7,8 @@ public interface IAppReadEntities
 {
     IImmutableList<IEntity> List { get; }
 
-    IEntity GetDraft(IEntity entity);
+    IEntity? GetDraft(IEntity entity);
 
-    IEntity GetPublished(IEntity entity);
+    IEntity? GetPublished(IEntity entity);
 
 }

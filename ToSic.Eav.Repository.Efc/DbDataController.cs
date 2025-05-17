@@ -122,10 +122,10 @@ public class DbDataController(
     /// <summary>
     /// Set ZoneId, AppId and ParentAppId on current context.
     /// </summary>
-    /// <param name="appState"></param>
+    /// <param name="appReader"></param>
     /// <returns></returns>
-    public DbDataController Init(IAppReader appState)
-        => Init(appState.ZoneId, appState.AppId, appState.GetParentCache()?.AppId);
+    public DbDataController Init(IAppReader appReader)
+        => Init(appReader.ZoneId, appReader.AppId, appReader.GetParentCache()?.AppId);
 
     /// <summary>
     /// Set ZoneId and AppId on current context.

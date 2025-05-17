@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Internal.Xml;
 

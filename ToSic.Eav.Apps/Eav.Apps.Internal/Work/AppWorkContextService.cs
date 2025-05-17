@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Services;
 
@@ -20,14 +19,14 @@ public class AppWorkContextService(
     /// </summary>
     public IAppReaderFactory AppReaders => appReaders.Value;
     
-    public IAppWorkCtx Context(IAppReader appState) => new AppWorkCtx(appState);
+    public IAppWorkCtx Context(IAppReader appReader) => new AppWorkCtx(appReader);
 
-    public IAppWorkCtxPlus ContextPlus(IAppReader appState, bool? showDrafts = default, IDataSource data = default)
-        => new AppWorkCtxPlus(dataSourceSvc.Value, appState, showDrafts, data);
+    public IAppWorkCtxPlus ContextPlus(IAppReader appReader, bool? showDrafts = default, IDataSource data = default)
+        => new AppWorkCtxPlus(dataSourceSvc.Value, appReader, showDrafts, data);
 
     public IAppWorkCtx Context(int appId) => new AppWorkCtx(appReaders.Value.Get(appId));
     public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource data = default)
-        => new AppWorkCtxPlus(dataSourceSvc.Value, appState: appReaders.Value.Get(appId), showDrafts, data);
+        => new AppWorkCtxPlus(dataSourceSvc.Value, appReader: appReaders.Value.Get(appId), showDrafts, data);
 
     public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(appReaders.Value.GetOrKeep(appIdentity));
     public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource data = default)
@@ -38,9 +37,9 @@ public class AppWorkContextService(
 
     public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity) => CtxWithDb(Context(identity).AppReader);
 
-    public IAppWorkCtxWithDb CtxWithDb(IAppReader appState, DbDataController existingDb = default)
+    public IAppWorkCtxWithDb CtxWithDb(IAppReader appReader, DbDataController existingDb = default)
         => existingDb == null
-            ? new(dbGen.New().SetInit(dc => dc.Init(appState)), appState)
-            : new AppWorkCtxWithDb(existingDb, appState);
+            ? new(dbGen.New().SetInit(dc => dc.Init(appReader)), appReader)
+            : new AppWorkCtxWithDb(existingDb, appReader);
 
 }

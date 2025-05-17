@@ -1,5 +1,4 @@
-﻿using System.IO;
-using ToSic.Eav.Apps.Integration;
+﻿using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Context;

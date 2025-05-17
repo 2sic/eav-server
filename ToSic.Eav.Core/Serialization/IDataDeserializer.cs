@@ -18,7 +18,7 @@ public interface IDataDeserializer: IHasLog
     ///// <param name="appState">the app which contains the data to be serialized</param>
     //void Initialize(AppState appState);
 
-    void Initialize(IAppReader appState);
+    void Initialize(IAppReader appReader);
 
     public void ConfigureLogging(LogSettings settings);
 

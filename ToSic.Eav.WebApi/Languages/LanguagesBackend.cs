@@ -25,12 +25,13 @@ public class LanguagesBackend(
         return l.Return(cultures, "found:" + cultures.Count);
     }
 
-    public List<SiteLanguageDto> GetLanguagesOfApp(IAppReader appStateOrNull, bool withCount = false)
+    public List<SiteLanguageDto> GetLanguagesOfApp(IAppReader appReaderOrNull, bool withCount = false)
     {
         try
         {
-            var langs = appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appStateOrNull);
-            var converted = langs.Select(l =>
+            var langs = appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appReaderOrNull);
+            var converted = langs
+                .Select(l =>
                 {
                     var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };
                     if (withCount) dto.Permissions = new() { Count = l.PermissionCount };

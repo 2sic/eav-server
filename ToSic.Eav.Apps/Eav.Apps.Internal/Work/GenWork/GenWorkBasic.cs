@@ -1,20 +1,18 @@
-﻿using ToSic.Eav.Apps.State;
-
-namespace ToSic.Eav.Apps.Internal.Work;
+﻿namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Helper to generate a App Work Unit class to get a single / simple thing done.
 ///
 /// Primarily used to do one single operation such as a simple delete, publish etc.
 /// </summary>
-/// <typeparam name="TWork"></typeparam>
+/// <typeparam name="TWorkContext"></typeparam>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class GenWorkBasic<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generator<TWork> gen)
+public class GenWorkBasic<TWorkContext>(LazySvc<AppWorkContextService> ctxSvc, Generator<TWorkContext> gen)
     : ServiceBase("App.WorkUn", connect: [ctxSvc, gen])
-    where TWork : WorkUnitBase<IAppWorkCtx>
+    where TWorkContext : WorkUnitBase<IAppWorkCtx>
 {
     public AppWorkContextService CtxSvc => ctxSvc.Value;
-    public TWork NewInternal(IAppWorkCtx ctx)
+    public TWorkContext NewInternal(IAppWorkCtx ctx)
     {
         var fresh = gen.New();
         fresh._initCtx(ctx);
@@ -22,9 +20,9 @@ public class GenWorkBasic<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generato
     }
 
 
-    public TWork New(IAppReader appState) => NewInternal(ctxSvc.Value.Context(appState));
+    public TWorkContext New(IAppReader appReader) => NewInternal(ctxSvc.Value.Context(appReader));
 
-    public TWork New(int appId) => NewInternal(ctxSvc.Value.Context(appId));
+    public TWorkContext New(int appId) => NewInternal(ctxSvc.Value.Context(appId));
 
     // These signatures are not used ATM, but might be useful in the future
     //public TWork New(IAppWorkCtx ctx) => NewInternal(ctx);

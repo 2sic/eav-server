@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-
-namespace ToSic.Eav.Apps.Internal.Work;
+﻿namespace ToSic.Eav.Apps.Internal.Work;
 
 /// <summary>
 /// Context object for performing App modifications.
@@ -15,19 +13,19 @@ public class AppWorkCtx : IAppWorkCtx
     /// <inheritdoc />
     public int AppId { get; }
 
-    public AppWorkCtx(IAppReader appState)
+    public AppWorkCtx(IAppReader appReader)
     {
-        AppId = appState.AppId;
-        ZoneId = appState.ZoneId;
-        AppReader = appState;
+        AppId = appReader.AppId;
+        ZoneId = appReader.ZoneId;
+        AppReader = appReader;
     }
 
-    public AppWorkCtx(IAppWorkCtx original, IAppReader appState = default)
+    public AppWorkCtx(IAppWorkCtx original, IAppReader appReader = default)
     {
         if (original == null) throw new ArgumentException(@"Original must exist", nameof(original));
-        AppId = appState?.AppId ?? original.AppId;
-        ZoneId = appState?.ZoneId ?? original.ZoneId;
-        AppReader = appState ?? original.AppReader;
+        AppId = appReader?.AppId ?? original.AppId;
+        ZoneId = appReader?.ZoneId ?? original.ZoneId;
+        AppReader = appReader ?? original.AppReader;
     }
 
     public IAppReader AppReader { get; }

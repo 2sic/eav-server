@@ -26,10 +26,10 @@ public static class AppStateExtensions
         => hasAppSpecs.AppId == Constants.MetaDataAppId;
 
 
-    public static IEntity GetDraftOrKeep(this IAppReader appState, IEntity entity)
-        => appState.GetDraft(entity) ?? entity;
+    public static IEntity GetDraftOrKeep(this IAppReader appReader, IEntity entity)
+        => appReader.GetDraft(entity) ?? entity;
 
-    public static IEntity GetDraftOrPublished(this IAppReader appState, Guid guid)
-        => appState.GetDraftOrKeep(appState.List.One(guid));
+    public static IEntity GetDraftOrPublished(this IAppReader appReader, Guid guid)
+        => appReader.GetDraftOrKeep(appReader.List.One(guid));
 
 }

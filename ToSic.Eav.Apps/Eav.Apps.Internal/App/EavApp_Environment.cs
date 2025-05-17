@@ -1,5 +1,4 @@
-﻿using System.IO;
-using ToSic.Eav.Context;
+﻿using ToSic.Eav.Context;
 using ToSic.Eav.Data.PiggyBack;
 
 namespace ToSic.Eav.Apps.Internal;
