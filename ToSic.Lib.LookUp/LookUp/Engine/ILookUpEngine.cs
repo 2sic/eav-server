@@ -41,7 +41,7 @@ public interface ILookUpEngine: IHasLog
     /// <param name="name">the name we're looking for, invariant</param>
     /// <returns></returns>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    ILookUp FindSource(string name);
+    ILookUp? FindSource(string name);
 
     /// <summary>
     /// Will check if the lookup engine - or any of it's downstream engines - have a source with the given name

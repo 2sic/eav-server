@@ -27,7 +27,8 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     /// </summary>
     private readonly TokenReplace _reusableTokenReplace;
 
-    public LookUpEngine(ILog parentLog, NoParamOrder protector = default, IEnumerable<ILookUp> sources = default) : base(parentLog, "EAV.LookUp")
+    public LookUpEngine(ILog parentLog, NoParamOrder protector = default, IEnumerable<ILookUp>? sources = default)
+        : base(parentLog, "EAV.LookUp")
     {
         _reusableTokenReplace = new(this);
         if (sources != null)
@@ -66,11 +67,12 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         l.Done($"cloned {original.Sources.Count()}; added {sources?.Count}; overrides: {overrides?.Count}");
     }
 
-    public ILookUpEngine Downstream { get; private set; }
+    public ILookUpEngine? Downstream { get; private set; }
 
-    public ILookUp FindSource(string name) => SourceDic.ContainsKey(name)
-        ? SourceDic[name]
-        : Downstream?.FindSource(name);
+    public ILookUp? FindSource(string name)
+        => SourceDic.ContainsKey(name)
+            ? SourceDic[name]
+            : Downstream?.FindSource(name);
 
     [PrivateApi]
     public bool HasSource(string name) => FindSource(name) != null;

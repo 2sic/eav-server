@@ -9,7 +9,7 @@ namespace ToSic.Eav.LookUp;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PublicApi]
-public abstract class LookUpBase(string name, string description = "") : ILookUp
+public abstract class LookUpBase(string name, string? description = "") : ILookUp
 {
 
     #region default methods of interface
@@ -90,45 +90,19 @@ public abstract class LookUpBase(string name, string description = "") : ILookUp
         {
             TypeCode.String => FormatString((string)valueObject, format),
             TypeCode.Boolean => Format((bool)valueObject),
-            TypeCode.DateTime =>
-                // make sure datetime is converted as universal time with the correct format specifier if no format is given
-                !string.IsNullOrWhiteSpace(format)
-                    ? ((DateTime)valueObject).ToString(format,
-                        CultureHelpers.SafeCultureInfo(dimensions))
-                    : Format((DateTime)valueObject),
-            TypeCode.Double =>
-                // make sure it's converted to a neutral number format with "." notation if no format was given
-                !string.IsNullOrWhiteSpace(format)
-                    ? ((IFormattable)valueObject).ToString(format,
-                        CultureHelpers.SafeCultureInfo(dimensions))
-                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
-            TypeCode.Single =>
-                // make sure it's converted to a neutral number format with "." notation if no format was given
-                !string.IsNullOrWhiteSpace(format)
-                    ? ((IFormattable)valueObject).ToString(format,
-                        CultureHelpers.SafeCultureInfo(dimensions))
-                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
-            TypeCode.Int16 =>
-                // make sure it's converted to a neutral number format with "." notation if no format was given
-                !string.IsNullOrWhiteSpace(format)
-                    ? ((IFormattable)valueObject).ToString(format,
-                        CultureHelpers.SafeCultureInfo(dimensions))
-                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
-            TypeCode.Int32 =>
-                // make sure it's converted to a neutral number format with "." notation if no format was given
-                !string.IsNullOrWhiteSpace(format)
-                    ? ((IFormattable)valueObject).ToString(format,
-                        CultureHelpers.SafeCultureInfo(dimensions))
-                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
-            TypeCode.Int64 =>
-                // make sure it's converted to a neutral number format with "." notation if no format was given
-                !string.IsNullOrWhiteSpace(format)
-                    ? ((IFormattable)valueObject).ToString(format,
-                        CultureHelpers.SafeCultureInfo(dimensions))
-                    : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
-            TypeCode.Decimal =>
-                // make sure it's converted to a neutral number format with "." notation if no format was given
-                !string.IsNullOrWhiteSpace(format)
+            // make sure datetime is converted as universal time with the correct format specifier if no format is given
+            TypeCode.DateTime => !string.IsNullOrWhiteSpace(format)
+                ? ((DateTime)valueObject).ToString(format,
+                    CultureHelpers.SafeCultureInfo(dimensions))
+                : Format((DateTime)valueObject),
+            // make sure numbers are converted to a neutral number format with "." notation if no format was given
+            TypeCode.Double
+                or TypeCode.Single
+                or TypeCode.Int16
+                or TypeCode.Int32
+                or TypeCode.Int64
+                or TypeCode.Decimal
+                => !string.IsNullOrWhiteSpace(format)
                     ? ((IFormattable)valueObject).ToString(format,
                         CultureHelpers.SafeCultureInfo(dimensions))
                     : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
