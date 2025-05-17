@@ -9,10 +9,10 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
     private readonly FeatureState state = state;
 
     [JsonPropertyName("guid")]
-    public Guid Guid => state.Aspect.Guid;
+    public Guid Guid => state.Feature.Guid;
 
     [JsonPropertyName("description")]
-    public string Description => state.Aspect.Description;
+    public string Description => state.Feature.Description;
 
     [JsonPropertyName("enabledReason")]
     public string EnabledReason => state.EnabledReason;
@@ -33,10 +33,10 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
     public FeatureSecurity Security => state.Security;
 
     [JsonPropertyName("link")]
-    public string Link => state.Aspect.Link;
+    public string Link => state.Feature.Link;
 
     [JsonPropertyName("isConfigurable")]
-    public bool IsConfigurable => state.Aspect.IsConfigurable;
+    public bool IsConfigurable => state.Feature.IsConfigurable;
 
     [JsonPropertyName("configuration")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
@@ -44,5 +44,5 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
 
     [JsonPropertyName("configurationContentType")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public string ConfigurationContentType => state.Aspect.ConfigurationContentType;
+    public string ConfigurationContentType => state.Feature.ConfigurationContentType;
 }

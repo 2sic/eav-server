@@ -31,7 +31,8 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     /// </summary>
     private HashSet<string> EnabledFeatures => _enabledFeatures ??= new(All
             .Where(f => f.IsEnabled)
-            .SelectMany(f => new[] { f.NameId, f.Aspect.Guid.ToString() })
+            .OrderBy(f => f.NameId) // order them so it's easier to debug
+            .SelectMany(f => new[] { f.NameId, f.Feature.Guid.ToString() })
             .Distinct(InvariantCultureIgnoreCase),
         InvariantCultureIgnoreCase);
     private HashSet<string>? _enabledFeatures; // Do not use GetOnce, because of "Error Unable to marshal host object to interpreter space"
@@ -40,7 +41,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         => All.Where(f => f.IsEnabled && f.IsForEditUi);
 
     public bool IsEnabled(Guid guid)
-        => All.Any(f => f.Aspect.Guid == guid && f.IsEnabled);
+        => All.Any(f => f.Feature.Guid == guid && f.IsEnabled);
         
     public bool IsEnabled(IEnumerable<Guid> guids)
         => guids.All(IsEnabled);
@@ -49,7 +50,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         => nameIds == null || nameIds.Length == 0 || nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
 
     public FeatureState? Get(string nameId)
-        => All.FirstOrDefault(f => f.Aspect.Name == nameId || f.NameId == nameId);
+        => All.FirstOrDefault(f => f.Feature.Name == nameId || f.NameId == nameId);
 
     public bool IsEnabled(params Feature[] features) 
         => IsEnabled(features?.Select(f => f.NameId).ToArray());
@@ -76,7 +77,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
             .Select(id => new
             {
                 Id = id,
-                All.FirstOrDefault(f => f.Aspect.Guid == id)?.NameId
+                All.FirstOrDefault(f => f.Feature.Guid == id)?.NameId
             });
 
         var messages = missing.Select(f => $"'{f.NameId}'");
@@ -151,9 +152,9 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
                     msgShort,
                     (enabled ? "Enabled" : "Disabled") + message,
                     licenseEnabled,
-                    enabledByDefault: enabledRule?.EnableFeatureByDefault ?? false,
-                    enabledInConfiguration: inConfig?.Enabled,
-                    configuration: inConfig?.Configuration
+                    EnabledByDefault: enabledRule?.EnableFeatureByDefault ?? false,
+                    EnabledInConfiguration: inConfig?.Enabled,
+                    Configuration: inConfig?.Configuration
                 );
             })
             .ToList();
@@ -167,10 +168,10 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
                     f.Enabled,
                     "configuration",
                     "Configured manually",
-                    allowedByLicense: false,
-                    enabledByDefault: false,
-                    enabledInConfiguration: f.Enabled,
-                    configuration: f.Configuration
+                    AllowedByLicense: false,
+                    EnabledByDefault: false,
+                    EnabledInConfiguration: f.Enabled,
+                    Configuration: f.Configuration
                 )
             );
 

@@ -131,7 +131,7 @@ public class EavFeaturesLoader(
             .ToList();
 
         var storedFeaturesButNotUpdated = featuresSvc.All
-            .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Aspect.Guid))
+            .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Feature.Guid))
             .Select(FeaturePersistenceService.FeatureConfigBuilder)
             .ToList();
             

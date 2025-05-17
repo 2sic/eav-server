@@ -136,7 +136,7 @@ public class MdRequirements(
 
         var enabled = featsService.Value.IsEnabled(feat);
         var status = featsService.Value.Get(feat);
-        return l.Return((enabled, status?.Aspect ?? Aspect.None), $"enabled: {enabled}");
+        return l.Return((enabled, status?.Feature ?? Aspect.None), $"enabled: {enabled}");
     }
 
 

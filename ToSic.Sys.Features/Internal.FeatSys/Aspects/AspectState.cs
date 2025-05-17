@@ -6,14 +6,14 @@ namespace ToSic.Eav.SysData;
 /// Experimental - base class for any kind of aspect and it's state
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AspectState<TAspect>(TAspect aspect, bool isEnabled)
+public record AspectState<TAspect>(TAspect Aspect, bool IsEnabled)
     where TAspect : Aspect
 {
     /// <summary>
     /// Feature Definition.
     /// </summary>
     [JsonIgnore]
-    public TAspect Aspect { get; } = aspect;
+    public TAspect Feature { get; } = Aspect;
 
-    public virtual bool IsEnabled { get; } = isEnabled;
+    public virtual bool IsEnabled { get; } = IsEnabled;
 }

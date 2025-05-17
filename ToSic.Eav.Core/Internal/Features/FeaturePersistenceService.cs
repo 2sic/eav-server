@@ -136,7 +136,7 @@ public class FeaturePersistenceService(
     internal static FeatureStatePersisted FeatureConfigBuilder(FeatureState featureState) =>
         new()
         {
-            Id = featureState.Aspect.Guid,
+            Id = featureState.Feature.Guid,
             Enabled = featureState.IsEnabled
         };
 

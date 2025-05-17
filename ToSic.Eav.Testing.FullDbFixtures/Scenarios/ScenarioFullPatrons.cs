@@ -8,5 +8,5 @@ public record ScenarioFullPatrons : TestScenario
 {
     public override string ConStr => ScenarioConstants.DefaultConnectionString;
     public override string GlobalFolder => ScenarioConstants.DefaultGlobalFolder;
-    public override string GlobalDataCustomFolder => ScenarioConstants.DevMaterialsRoot + ScenarioConstants.DevMaterialsEnd;
+    public override string GlobalDataCustomFolder => $"{ScenarioConstants.DevMaterialsRoot}{ScenarioConstants.DevMaterialsEnd}";
 }

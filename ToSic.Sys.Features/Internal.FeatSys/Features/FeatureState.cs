@@ -9,17 +9,17 @@ namespace ToSic.Eav.SysData;
 /// </summary>
 [PrivateApi("no good reason to publish this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class FeatureState(
-    Feature aspect,
-    DateTime expiration,
-    bool enabled,
-    string msgShort,
-    string msgLong,
-    bool allowedByLicense,
-    bool enabledByDefault,
-    bool? enabledInConfiguration,
-    Dictionary<string, object> configuration)
-    : AspectState<Feature>(aspect, enabled), IHasIdentityNameId
+public record FeatureState(
+    Feature Feature,
+    DateTime Expiration,
+    bool Enabled,
+    string EnabledReason,
+    string EnabledReasonDetailed,
+    bool AllowedByLicense,
+    bool EnabledByDefault,
+    bool? EnabledInConfiguration,
+    Dictionary<string, object>? Configuration)
+    : AspectState<Feature>(Feature, Enabled), IHasIdentityNameId
 {
     public static FeatureState SysFeatureState(SysFeature definition, bool enabled)
         => new(definition, 
@@ -32,9 +32,9 @@ public class FeatureState(
             null,
             null);
 
-    public string NameId => Aspect.NameId;
+    public string NameId => Feature.NameId;
 
-    public FeatureSet License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
+    public FeatureSet License => _license.Get(() => Feature.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
     private readonly GetOnce<FeatureSet> _license = new();
 
     /// <summary>
@@ -47,49 +47,49 @@ public class FeatureState(
     /// <summary>
     /// Reason why it was enabled
     /// </summary>
-    public string EnabledReason { get; } = msgShort;
+    public string EnabledReason { get; } = EnabledReason;
 
     /// <summary>
     /// More detailed reason
     /// </summary>
-    public string EnabledReasonDetailed { get; } = msgLong;
+    public string EnabledReasonDetailed { get; } = EnabledReasonDetailed;
 
     /// <summary>
     /// Expiry of this feature
     /// </summary>
-    public DateTime Expiration { get; } = expiration;
+    public DateTime Expiration { get; } = Expiration;
 
     /// <summary>
     /// Determines if this feature should be available in the normal EditUI.
     /// This only applies to normal users.
     /// Admins and Super-Users will always get all the features in the Edit-UI, to allow for better UI hints. 
     /// </summary>
-    public bool IsForEditUi => Aspect.Ui;
+    public bool IsForEditUi => Feature.Ui;
 
     /// <summary>
     /// Determines if non-admins should still know about this feature in the UI
     /// </summary>
-    public bool IsPublic => Aspect.IsPublic;
+    public bool IsPublic => Feature.IsPublic;
 
-    public FeatureSecurity Security => Aspect.Security;
+    public FeatureSecurity Security => Feature.Security;
 
     /// <summary>
     /// Indicate if this feature is allowed to be activated
     /// </summary>
-    public bool AllowedByLicense { get; } = allowedByLicense;
+    public bool AllowedByLicense { get; } = AllowedByLicense;
 
     /// <summary>
     /// The stored enabled state.
     /// The EnabledStored would be null, true or false.
     /// Null if it was not stored. 
     /// </summary>
-    public bool? EnabledInConfiguration { get; } = enabledInConfiguration;
+    public bool? EnabledInConfiguration { get; } = EnabledInConfiguration;
 
     /// <summary>
     /// If this feature is enabled by default (assuming the license requirements are met)
     /// </summary>
-    public bool EnabledByDefault { get; } = enabledByDefault;
+    public bool EnabledByDefault { get; } = EnabledByDefault;
 
-    public Dictionary<string, object> Configuration => configuration;
+    public Dictionary<string, object>? Configuration { get; }= Configuration;
 
 }

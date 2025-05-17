@@ -18,8 +18,8 @@
 namespace ToSic.Eav.SysData;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class FeatureSetState(FeatureSet featureSet)
-    : AspectState<FeatureSet>(featureSet, true)
+public record FeatureSetState(FeatureSet Aspect)
+    : AspectState<FeatureSet>(Aspect, true)
 {
     /* def true as otherwise we wouldn't have the config */
 

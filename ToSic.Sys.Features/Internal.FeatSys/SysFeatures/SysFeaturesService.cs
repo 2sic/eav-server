@@ -36,7 +36,7 @@ public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap",
     public bool IsEnabled(string capabilityKey)
     {
         var capability = States
-            .FirstOrDefault(c => c.Aspect.NameId.EqualsInsensitive(capabilityKey));
+            .FirstOrDefault(c => c.Feature.NameId.EqualsInsensitive(capabilityKey));
         return capability?.IsEnabled == true;
     }
 

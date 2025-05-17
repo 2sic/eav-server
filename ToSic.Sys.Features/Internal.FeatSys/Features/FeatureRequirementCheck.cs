@@ -16,6 +16,6 @@ public class FeatureRequirementCheck(LazySvc<ILibFeaturesService> features) : Re
         => $"The feature '{requirement.NameId}' is not enabled - see https://go.2sxc.org/features.";
 
     protected override Aspect GetAspect(Requirement requirement)
-        => features.Value.Get(requirement.NameId)?.Aspect ?? Aspect.None;
+        => features.Value.Get(requirement.NameId)?.Feature ?? Aspect.None;
 
 }
