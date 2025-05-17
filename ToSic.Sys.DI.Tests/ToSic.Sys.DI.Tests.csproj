@@ -6,6 +6,10 @@
     <RootNamespace>ToSic.Lib.DI</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Xunit.Priority" Version="1.1.6" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
