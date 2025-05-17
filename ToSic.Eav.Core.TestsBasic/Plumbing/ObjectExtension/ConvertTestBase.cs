@@ -8,14 +8,14 @@ public class ConvertTestBase
     protected void ConvT<T>(object value, T exp, T expNumeric)
     {
         var resultDefault = value.ConvertOrDefaultTac<T>();
-        Assert.Equal(exp, resultDefault); //, $"Tested '{value}', expected def: '{exp}'");
+        Equal(exp, resultDefault); //, $"Tested '{value}', expected def: '{exp}'");
         if (resultDefault != null)
-            Assert.Equal(typeof(T).UnboxIfNullable(), resultDefault.GetType());
+            Equal(typeof(T).UnboxIfNullable(), resultDefault.GetType());
 
         var resultNumeric = value.ConvertOrDefaultTac<T>(numeric: true);
-        Assert.Equal(expNumeric, resultNumeric); //, $"Tested '{value}', expected num: '{expNumeric}'");
+        Equal(expNumeric, resultNumeric); //, $"Tested '{value}', expected num: '{expNumeric}'");
         if (resultNumeric != null)
-            Assert.Equal(typeof(T).UnboxIfNullable(), resultNumeric.GetType());
+            Equal(typeof(T).UnboxIfNullable(), resultNumeric.GetType());
     }
 
     /// <summary>
@@ -25,9 +25,9 @@ public class ConvertTestBase
     {
         ConvT(value, exp, expNumeric);
         var resultTruthy = value.ConvertOrDefaultTac<T>(truthy: true);
-        Assert.Equal(expTruthy, resultTruthy); //, $"Tested '{value}', expected tru: '{expTruthy}'");
+        Equal(expTruthy, resultTruthy); //, $"Tested '{value}', expected tru: '{expTruthy}'");
         if (resultTruthy != null)
-            Assert.Equal(typeof(T).UnboxIfNullable(), resultTruthy.GetType());
+            Equal(typeof(T).UnboxIfNullable(), resultTruthy.GetType());
     }
 
 
@@ -44,11 +44,11 @@ public class ConvertTestBase
     {
         var msg = $"V: {value}, F: {fallback}, fbOnDef: {fallbackOnDefault}, ";
         var result = value.ConvertOrFallbackTac(fallback, fallbackOnDefault: fallbackOnDefault);
-        Assert.Equal(exp, result); //, $"Exp: {exp}; {msg}");
+        Equal(exp, result); //, $"Exp: {exp}; {msg}");
         result = value.ConvertOrFallbackTac(fallback, numeric: true, fallbackOnDefault: fallbackOnDefault);
-        Assert.Equal(expNumeric, result); //, $"Num: {expNumeric}; {msg}");
+        Equal(expNumeric, result); //, $"Num: {expNumeric}; {msg}");
         result = value.ConvertOrFallbackTac(fallback, truthy: true, fallbackOnDefault: fallbackOnDefault);
-        Assert.Equal(expTruthy, result); //, $"Trt: {expTruthy}, {msg}");
+        Equal(expTruthy, result); //, $"Trt: {expTruthy}, {msg}");
     }
 
 }

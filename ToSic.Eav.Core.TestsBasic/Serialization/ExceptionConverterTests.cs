@@ -37,10 +37,10 @@ public class ExceptionConverterTests
 
         var json = JsonSerializer.Serialize(ex, jsonOpts);
 
-        Assert.Contains("42", json);
-        Assert.Contains(paramName, json);
-        Assert.Contains(iAmError, json);
-        Assert.Contains(someOutOfRangeErrorOccurred, json);
-        Assert.Contains("null", json);
+        Contains("42", json);
+        Contains(paramName, json);
+        Contains(iAmError, json);
+        Contains(someOutOfRangeErrorOccurred, json);
+        Contains("null", json);
     }
 }

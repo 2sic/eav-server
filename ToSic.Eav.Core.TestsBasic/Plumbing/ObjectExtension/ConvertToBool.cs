@@ -42,8 +42,8 @@ public class ConvertToBool: ConvertTestBase
     [Fact]
     public void StringToBoolNull()
     {
-        Assert.True(0.ConvertOrDefaultTac<bool?>().HasValue);
-        Assert.True("true".ConvertOrDefaultTac<bool?>().HasValue);
+        True(0.ConvertOrDefaultTac<bool?>().HasValue);
+        True("true".ConvertOrDefaultTac<bool?>().HasValue);
 
         ConvT<bool?>(null, null, null, null);
         ConvT<bool?>("", null, null, null);

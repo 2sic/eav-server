@@ -25,10 +25,10 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     private void AssertLookUpEngineHasSourcesOfOriginal(ILookUpEngine lookUpEngine)
     {
         var settings = Settings();
-        Assert.True(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
-        Assert.Equal("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").GetTac(Attributes.TitleNiceName));
-        Assert.Equal(LookUpTestConstants.OriginalSettingDefaultCat, settings["DefaultCategory"]);
-        Assert.Equal(OriginalSettingMaxItems, settings["MaxItems"]);
+        True(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
+        Equal("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").GetTac(Attributes.TitleNiceName));
+        Equal(LookUpTestConstants.OriginalSettingDefaultCat, settings["DefaultCategory"]);
+        Equal(OriginalSettingMaxItems, settings["MaxItems"]);
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
         var vc = new LookUpTestData(dataBuilder).AppSetAndRes();
         var settings = Settings();
         settings = vc.LookUp(settings);
-        Assert.Equal(ResolvedSettingDefaultCat, settings["DefaultCategory"]); //, "Default should be all");
-        Assert.Equal(ResolvedSettingMaxItems, settings["MaxItems"]); //, "Max should be 100");
+        Equal(ResolvedSettingDefaultCat, settings["DefaultCategory"]); //, "Default should be all");
+        Equal(ResolvedSettingMaxItems, settings["MaxItems"]); //, "Max should be 100");
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
         var mainEngine = new LookUpTestData(dataBuilder).AppSetAndRes(-1);
         var settings = mainEngine.LookUp(TestTokens());
         foreach (var setting in settings)
-            Assert.Equal(setting.Key, setting.Value); //, $"expected '{setting.Key}', got '{setting.Value}'");
+            Equal(setting.Key, setting.Value); //, $"expected '{setting.Key}', got '{setting.Value}'");
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
         var mainEngine = new LookUpTestData(dataBuilder).AppSetAndRes(-1);
         var settings = mainEngine.LookUp(TestTokens("-tweaked"), tweak: t => t.PostProcess(v => v + "-tweaked"));
         foreach (var setting in settings)
-            Assert.Equal(setting.Key, setting.Value); //, $"expected '{setting.Key}', got '{setting.Value}'");
+            Equal(setting.Key, setting.Value); //, $"expected '{setting.Key}', got '{setting.Value}'");
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
         var appSettingsSource = new LookUpInDictionary(LookUpTestConstants.KeyAppSettings, overrideDic);
         // test before override
         var result = mainEngine.LookUp(TestTokens(), overrides: new List<ILookUp> { appSettingsSource });
-        Assert.Equal(overridenTitle, result["App Settings"]); //, "should override");
+        Equal(overridenTitle, result["App Settings"]); //, "should override");
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     {
         var original = new LookUpTestData(dataBuilder).AppSetAndRes();
         var cloned = new LookUpEngine(original, null);
-        Assert.Empty(cloned.Sources);
+        Empty(cloned.Sources);
         AssertLookUpEngineHasSourcesOfOriginal(cloned.Downstream);
     }
 

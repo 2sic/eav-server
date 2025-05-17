@@ -19,8 +19,8 @@ public class AesCrypto
         var encrypted = crypto.EncryptToBase64(TestMessage, new(true) { Password = DummyPassword });
         Trace.WriteLine($"encrypted:'{encrypted.Value}'; IV:'{encrypted.Iv}'");
         Trace.WriteLine(crypto.Log.Dump());
-        Assert.NotEqual(TestMessage, encrypted.Value);
-        Assert.NotEqual(PreviousEncryptionSha256, encrypted.Value); //, "each encryption should give a different result - but that's not implemented yet");
+        NotEqual(TestMessage, encrypted.Value);
+        NotEqual(PreviousEncryptionSha256, encrypted.Value); //, "each encryption should give a different result - but that's not implemented yet");
 
         // reset crypto to get a fresh log
         crypto = GetAes();
@@ -31,7 +31,7 @@ public class AesCrypto
         });
         Trace.WriteLine($"decrypted:{decrypted}");
         Trace.WriteLine(crypto.Log.Dump());
-        Assert.Equal(TestMessage, decrypted);
+        Equal(TestMessage, decrypted);
     }
 
 }

@@ -44,6 +44,6 @@ public class SignatureHashSha1(ITestOutputHelper output)
         var isValidSignature = cspPublic.VerifyHash(hashClient, signatureClient, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
         output.WriteLine($"client:  Signature valid {isValidSignature}");
 
-        Assert.True(isValidSignature);
+        True(isValidSignature);
     }
 }

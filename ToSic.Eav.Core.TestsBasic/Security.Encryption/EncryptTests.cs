@@ -13,9 +13,9 @@ public class EncryptTests
 
         var encryptor = new BasicEncryptionNotReadyForUse();
         var encrypted = encryptor.Encrypt(TestMessage);
-        Assert.NotEqual(TestMessage, encrypted);
+        NotEqual(TestMessage, encrypted);
 
         var decrypted = encryptor.Decrypt(encrypted);
-        Assert.Equal(TestMessage, decrypted);
+        Equal(TestMessage, decrypted);
     }
 }
