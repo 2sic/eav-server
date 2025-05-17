@@ -15,7 +15,7 @@ public static class StartupEavImportExport
 {
     public static IServiceCollection AddImportExport(this IServiceCollection services)
     {
-        AddAppLoader(services);
+        AddAppStateInFolder(services);
 
         services.TryAddTransient<IDataSerializer, JsonSerializer>();
         services.TryAddTransient<IDataDeserializer, JsonSerializer>();
@@ -35,10 +35,10 @@ public static class StartupEavImportExport
         return services;
     }
 
-    public static IServiceCollection AddAppLoader(this IServiceCollection services)
+    public static IServiceCollection AddAppStateInFolder(this IServiceCollection services)
     {
         // core things - usually not replaced
-        services.TryAddTransient<IAppLoader, AppLoader>();
+        services.TryAddTransient<IAppLoader, AppStateInFolderLoader>();
         return services;
     }
 }

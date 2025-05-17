@@ -4,7 +4,7 @@ using ToSic.Eav.Internal.Loaders;
 
 namespace ToSic.Eav.Persistence.File;
 
-partial class AppLoader
+partial class AppStateInFolderLoader
 {
     private (List<IContentType> ContentTypes, List<IEntity> Entities) LoadGlobalContentTypes(IAppStateCache appState)
     {

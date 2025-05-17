@@ -16,7 +16,7 @@ public class RuntimeLoader400ContentTypes(IAppLoader appLoader, ITestOutputHelpe
     {
         // set loader root path, based on test environment
         AdditionalGlobalFolderRepositoryForReflection.PathToUse = TestFiles.GetTestPath(PersistenceTestConstants.Scenario40Types + "\\App_Data\\system");
-        var loader = (AppLoader)appLoader;
+        var loader = (AppStateInFolderLoader)appLoader;
         var time = Stopwatch.StartNew();
 
         output.WriteLine($"Note: ATM the first loader is the {nameof(AdditionalGlobalFolderRepositoryForReflection)} - but that is a coincidence, so this test may need to be adjusted in future");

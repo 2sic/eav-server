@@ -11,5 +11,6 @@ public static class StartupHelpers
     /// <returns></returns>
     public static IServiceCollection AddFixtureHelpers(this IServiceCollection services) =>
         services
-            .AddTransient<FullDbFixtureHelper>();
+            .AddTransient<FixtureStartupNoDb>()
+            .AddTransient<FixtureStartupWithDb>();
 }

@@ -7,7 +7,7 @@ using ToSic.Testing.Shared.Platforms;
 
 namespace ToSic.Eav.FeatureTests;
 
-public class IFeaturesInternalTests(IEavFeaturesService featuresInternal) : IClassFixture<DoFixtureStartup<ScenarioFullPatrons>>
+public class IFeaturesInternalTests(IEavFeaturesService featuresInternal) : IClassFixture<DoFixtureStartup<ScenarioFullPatronsWithDb>>
 {
     public class Startup : StartupTestsApps
     {

@@ -13,6 +13,11 @@
 public record TestScenario
 {
     /// <summary>
+    /// Will trigger the setup to use DB; disable for simpler test which shouldn't need the DBs.
+    /// </summary>
+    public virtual bool UseDb { get; init; }= true;
+
+    /// <summary>
     /// Connection String to the DB
     /// </summary>
     public virtual /*required*/ string ConStr { get; init; } = "";

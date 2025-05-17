@@ -8,11 +8,11 @@ using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Persistence.File;
 
-internal partial class AppLoader : ServiceBase, IAppLoader
+internal partial class AppStateInFolderLoader : ServiceBase, IAppLoader
 {
     #region Constructor and DI
 
-    public AppLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
+    public AppStateInFolderLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
         : base("Eav.RunTme", connect: [/* sp (never) */ fslGenerator, stateBuilder])
     {
         _serviceProvider = sp;
