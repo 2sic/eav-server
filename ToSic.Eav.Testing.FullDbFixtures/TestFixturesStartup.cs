@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Testing;
 
-public static class StartupHelpers
+public static class TestFixturesStartup
 {
     /// <summary>
     /// Add things necessary for DB fixtures to work.
