@@ -10,7 +10,7 @@ public class DataFactoryTest(IDataFactory dataFactoryGenerator)
     [Fact]
     public void ChildrenRelationships()
     {
-        var builder = dataFactoryGenerator.New(new());
+        var builder = dataFactoryGenerator.SpawnNew(new());
 
         var parentRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, [101, 102]);
 

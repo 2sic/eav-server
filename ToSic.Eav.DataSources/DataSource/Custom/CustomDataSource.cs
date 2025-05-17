@@ -152,7 +152,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         if (data.All(i => i is IRawEntity))
         {
             var raw = data.Cast<IRawEntity>().ToList();
-            var result = DataFactory.New(options: GetBest(options)).Create(raw);
+            var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
             return l.Return(result, "was IRawEntity");
         }
 
@@ -160,7 +160,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         if (data.All(i => i is IHasRawEntity))
         {
             var raw = data.Cast<IHasRawEntity<IRawEntity>>().ToList();
-            var result = DataFactory.New(options: GetBest(options)).Create(raw);
+            var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
             return l.Return(result, "was IHasRawEntity");
         }
 
@@ -188,7 +188,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
             return l.Return([], "no items returned");
 
         // Transform result to IEntity
-        var result = DataFactory.New(options: GetBest(options)).Create(raw);
+        var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
         return l.Return(result, $"Got {result.Count} items");
     }
 
@@ -205,7 +205,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
             return l.Return([], "no items returned");
 
         // Transform result to IEntity
-        var result = DataFactory.New(options: GetBest(options)).Create(raw);
+        var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
         return l.Return(result, $"Got {result.Count} items");
     }
 

@@ -6,7 +6,7 @@ public class PropertyRequestSpecsTests
     public void DimensionsBlankAutoExpand()
     {
         var specs = new PropReqSpecs("TestField");
-        Equal(new string?[] { null }, specs.Dimensions);
+        Equal([null], specs.Dimensions);
     }
 
     [Theory]

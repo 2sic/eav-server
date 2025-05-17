@@ -57,7 +57,7 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
             .OrderBy(s => (s.Title.StartsWith("Custom") ? "Z" : "") + s.Title)
             .ToList();
 
-        var dataFactory = DataFactory.New(options: new()
+        var dataFactory = DataFactory.SpawnNew(options: new()
         {
             AppId = 0,
             TitleField = Data.Attributes.TitleNiceName,

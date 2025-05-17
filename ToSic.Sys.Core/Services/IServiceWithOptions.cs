@@ -23,7 +23,7 @@ public interface IServiceWithOptions<out TService, TOptions>
     /// </summary>
     /// <remarks>
     /// Will usually default to new/standard options of type <see cref="TOptions"/>,
-    /// unless set when creating a new service using <see cref="New(TOptions)"/>.
+    /// unless set when creating a new service using <see cref="SpawnNew"/>.
     /// </remarks>
     TOptions Options { get; }
 
@@ -33,5 +33,5 @@ public interface IServiceWithOptions<out TService, TOptions>
     /// </summary>
     /// <param name="options">The options</param>
     /// <returns></returns>
-    public TService New(TOptions? options = default);
+    public TService SpawnNew(TOptions? options = default);
 }

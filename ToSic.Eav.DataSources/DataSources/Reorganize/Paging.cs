@@ -108,7 +108,7 @@ public sealed class Paging: CustomDataSourceAdvanced
         };
 
         var entity = DataFactory
-            .New(options: new() { TypeName = "Paging" })
+            .SpawnNew(options: new() { TypeName = "Paging" })
             .Create(paging, id: PageNumber);
 
         // Assemble list of this for the stream

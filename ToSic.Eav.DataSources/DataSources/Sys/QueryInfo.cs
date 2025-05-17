@@ -75,7 +75,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
 
-        var dataFactory = DataFactory.New(options: new()
+        var dataFactory = DataFactory.SpawnNew(options: new()
         {
             TitleField = StreamsType.Name.ToString(),
             TypeName = QueryStreamsContentType

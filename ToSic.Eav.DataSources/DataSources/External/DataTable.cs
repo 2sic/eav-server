@@ -124,7 +124,7 @@ public class DataTable : CustomDataSourceAdvanced
         if (!source.Columns.Contains(titleField))
             throw new($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-        var tblFactory = DataFactory.New(options: new()
+        var tblFactory = DataFactory.SpawnNew(options: new()
         {
             AppId = Constants.TransientAppId,
             TitleField = titleField,

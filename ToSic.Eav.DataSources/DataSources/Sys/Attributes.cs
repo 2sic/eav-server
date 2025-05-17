@@ -150,7 +150,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         list = sysFields.Concat(list).ToList();
 
         // if it didn't work yet, maybe try from stream items
-        var dataFactory = DataFactory.New(options: new()
+        var dataFactory = DataFactory.SpawnNew(options: new()
         {
             TitleField = nameof(IAttributeType.Title),
             TypeName = AttribContentTypeName,

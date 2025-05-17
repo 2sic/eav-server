@@ -53,7 +53,7 @@ public sealed class Zones: CustomDataSourceAdvanced
     private IImmutableList<IEntity> GetList()
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        var dataFactory = DataFactory.New(options: new()
+        var dataFactory = DataFactory.SpawnNew(options: new()
         {
             AppId = 0,
             TitleField = ZoneType.Name.ToString(),

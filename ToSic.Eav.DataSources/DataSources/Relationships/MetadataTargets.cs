@@ -84,7 +84,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
             if (mdFor.TargetType == (int)TargetTypes.ContentType)
             {
                 var contentTypeFactory =
-                    DataFactory.New(options: ContentTypeUtil.Options with { AppId = AppId, WithMetadata = true });
+                    DataFactory.SpawnNew(options: ContentTypeUtil.Options with { AppId = AppId, WithMetadata = true });
 
                 var key = mdFor.KeyString ?? mdFor.KeyGuid?.ToString();
                 if (key == null) return [];

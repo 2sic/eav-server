@@ -11,12 +11,12 @@ public class GenerateWithOwnOptions(ServiceWithOwnOptions initialSvc)
 
     [Fact]
     public void GeneratesNewInstance()
-        => NotEqual(initialSvc, initialSvc.New(new()));
+        => NotEqual(initialSvc, initialSvc.SpawnNew(new()));
 
     [Fact]
     public void GeneratesWithOptions()
     {
-        var obj = initialSvc.New(new() { Name = "Test", Number = 42 });
+        var obj = initialSvc.SpawnNew(new() { Name = "Test", Number = 42 });
         Equal("Test", obj.Options.Name);
         Equal(42, obj.Options.Number);
     }

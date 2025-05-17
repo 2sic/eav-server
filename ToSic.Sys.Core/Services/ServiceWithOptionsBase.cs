@@ -25,7 +25,7 @@ public abstract class ServiceWithOptionsBase<TService, TOptions>(string logName,
     protected virtual TOptions GetDefaultOptions() => new();
 
     /// <inheritdoc />
-    public TService New(TOptions? options = default)
+    public TService SpawnNew(TOptions? options = default)
     {
         var instance = selfGenerator.New();
         if (instance is ServiceWithOptionsBase<TService, TOptions> settable)

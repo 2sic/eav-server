@@ -216,7 +216,7 @@ public class Csv : CustomDataSourceAdvanced
                                  $"{commonErrorsIdTitle}"));
             }
 
-            var csvFactory = DataFactory.New(new()
+            var csvFactory = DataFactory.SpawnNew(new()
             {
                 AppId = Constants.TransientAppId,
                 TitleField = titleColName,
