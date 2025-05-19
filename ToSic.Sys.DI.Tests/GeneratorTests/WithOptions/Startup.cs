@@ -6,6 +6,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services) =>
         services
+            .AddTransient<TestServiceWithDefaultOptionsLightWip>()
             .AddTransient<ServiceWithOwnOptions>()
             .AddTransient<ServiceWithDefaultOptions>()
             .AddLibCore();

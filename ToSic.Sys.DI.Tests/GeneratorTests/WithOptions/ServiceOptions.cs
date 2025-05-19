@@ -1,7 +1,12 @@
-﻿namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
+﻿using System.Configuration;
+
+namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 
 public record ServiceOptions
 {
-    public string Name { get; init; } = "undefined";
-    public int Number { get; init; } = 0;
+    public const string NameUndefined = "undefined";
+    public const int NumberUndefined = -47;
+
+    public string Name { get; init; } = NameUndefined;
+    public int Number { get; init; } = NumberUndefined;
 }

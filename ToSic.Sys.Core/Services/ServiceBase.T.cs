@@ -17,13 +17,14 @@ public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : 
     /// <param name="logName">The new objects name in the logs</param>
     /// <param name="protect"></param>
     /// <param name="connect"></param>
-    protected ServiceBase(TMyServices services, string logName, NoParamOrder protect = default, object[]? connect = default) : base(logName, connect: connect)
+    protected ServiceBase(TMyServices services, string logName, NoParamOrder protect = default, object[]? connect = default)
+        : base(logName, connect: connect)
     {
         Services = services.ConnectServices(Log);
     }
 
     /// <summary>
-    /// Constructor for passing on service dependencies which are extended by a inheriting dependencies.
+    /// Constructor for passing on service dependencies which extend the original MyServices.
     /// </summary>
     /// <param name="extendedServices"></param>
     /// <param name="logName"></param>
