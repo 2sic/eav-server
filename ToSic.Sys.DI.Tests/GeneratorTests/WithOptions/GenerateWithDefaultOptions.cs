@@ -5,8 +5,8 @@ public class GenerateWithDefaultOptions(MockServiceSpawnNewDefaultOptions initia
     [Fact]
     public void InitialHasDefaultOptions()
     {
-        Equal(ServiceOptions.NameUndefined, initialSvc.Options.Name);
-        Equal(ServiceOptions.NumberUndefined, initialSvc.Options.Number);
+        Equal(MockServiceOptions.NameUndefined, initialSvc.Options.Name);
+        Equal(MockServiceOptions.NumberUndefined, initialSvc.Options.Number);
     }
 
     [Fact]

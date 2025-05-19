@@ -8,8 +8,8 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class DataFactory(DataBuilder dataBuilder, Generator<IDataFactory> selfGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
-    : ServiceRespawnBase<IDataFactory, DataFactoryOptions>("Ds.DatBld", selfGenerator, connect: [dataBuilder, ctFactoryLazy]), IDataFactory
+internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilder, Generator<IDataFactory, DataFactoryOptions> selfGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataBuilder, selfGenerator, ctFactoryLazy]), IDataFactory
 {
 
     #region Properties to configure Builder / Defaults
@@ -41,8 +41,7 @@ internal class DataFactory(DataBuilder dataBuilder, Generator<IDataFactory> self
     /// So once it's accessed, options cannot be updated anymore.
     /// </remarks>
     [field: AllowNull, MaybeNull]
-    private DataBuilder DataBuilder => field ??= dataBuilder.SpawnNew(new()
-    {
+    private DataBuilder DataBuilder => field ??= dataBuilder.New(new() {
         AllowUnknownValueTypes = Options.AllowUnknownValueTypes
     });
 
@@ -196,4 +195,6 @@ internal class DataFactory(DataBuilder dataBuilder, Generator<IDataFactory> self
 
     #endregion
 
+    public IDataFactory SpawnNew(DataFactoryOptions options)
+        => selfGenerator.New(options);
 }

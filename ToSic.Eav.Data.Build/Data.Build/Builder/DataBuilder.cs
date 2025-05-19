@@ -11,10 +11,8 @@ public class DataBuilder(
     LazySvc<ValueBuilder> valueBuilder,
     LazySvc<ContentTypeBuilder> contentTypeBuilder,
     LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder,
-    LazySvc<DimensionBuilder> languageBuilder,
-    Generator<DataBuilder> builderGen)
-    : ServiceRespawnBase<DataBuilder, DataBuilderOptions>($"{EavLogs.Eav}MltBld", builderGen,
-        connect:
+    LazySvc<DimensionBuilder> languageBuilder)
+    : ServiceWithSetup<DataBuilderOptions>($"{EavLogs.Eav}MltBld", connect:
         [
             entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder
         ])
@@ -23,10 +21,12 @@ public class DataBuilder(
     public EntityBuilder Entity => entityBuilder.Value;
 
     [field: AllowNull, MaybeNull]
-    public AttributeBuilder Attribute => field ??= attributeBuilder.Value.Setup(Options.AllowUnknownValueTypes);
+    public AttributeBuilder Attribute => field
+        ??= attributeBuilder.Value.Setup(Options.AllowUnknownValueTypes);
 
     [field: AllowNull, MaybeNull]
-    public ValueBuilder Value => field ??= valueBuilder.Value.Setup(Options.AllowUnknownValueTypes);
+    public ValueBuilder Value => field
+        ??= valueBuilder.Value.Setup(Options.AllowUnknownValueTypes);
 
     public ContentTypeAttributeBuilder TypeAttributeBuilder => typeAttributeBuilder.Value;
 
@@ -40,7 +40,6 @@ public class DataBuilder(
             contentType: ContentType.Transient("FakeEntity"),
             titleField: Attributes.TitleNiceName
         );
-
 
 
 }

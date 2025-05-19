@@ -2,7 +2,7 @@
 
 namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 
-public record ServiceOptions
+public record MockServiceOptions
 {
     public const string NameUndefined = "undefined";
     public const int NumberUndefined = -47;

@@ -13,7 +13,7 @@ public class DataFactoryOptionTests(IDataFactory dataFactory)
 
     [Fact]
     public void DefaultFactoryNewHasIdSeed1()
-        => Equal(1, dataFactory.SpawnNew().IdCounter);
+        => Equal(1, dataFactory.SpawnNew(new()).IdCounter);
 
     [Fact]
     public void DefaultFactoryNewWithOptionsHasIdSeedAsSet()

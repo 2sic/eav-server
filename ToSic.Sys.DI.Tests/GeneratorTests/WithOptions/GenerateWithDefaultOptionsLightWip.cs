@@ -1,12 +1,12 @@
 ﻿namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 
-public class GenerateWithDefaultOptionsLightWip(MockServiceWithSetup initialSvc, Generator<MockServiceWithSetup, ServiceOptions> generator)
+public class GenerateWithDefaultOptionsLightWip(MockServiceWithSetup initialSvc, Generator<MockServiceWithSetup, MockServiceOptions> generator)
 {
     [Fact]
     public void InitialHasDefaultOptions()
     {
-        Equal(ServiceOptions.NameUndefined, initialSvc.Options.Name);
-        Equal(ServiceOptions.NumberUndefined, initialSvc.Options.Number);
+        Equal(MockServiceOptions.NameUndefined, initialSvc.Options.Name);
+        Equal(MockServiceOptions.NumberUndefined, initialSvc.Options.Number);
     }
 
     [Fact]

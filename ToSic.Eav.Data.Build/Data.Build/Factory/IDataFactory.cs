@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.Build;
 /// * Added in v15 to replace the previous IDataBuilder
 /// </remarks>
 [PublicApi]
-public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
+public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>, IServiceWithSetup<DataFactoryOptions>
 {
     /// <summary>
     /// A counter for the ID in case the data provided doesn't have an ID to use.

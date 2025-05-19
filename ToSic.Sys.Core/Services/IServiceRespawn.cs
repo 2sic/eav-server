@@ -14,15 +14,15 @@
 /// </remarks>
 /// <typeparam name="TService"></typeparam>
 /// <typeparam name="TOptions"></typeparam>
-public interface IServiceRespawn<out TService, TOptions>
-    : IHasOptions<TOptions>
-        where TService : class, IServiceRespawn<TService, TOptions>
-        where TOptions : class
+public interface IServiceRespawn<out TService, in TOptions>
+    // : IServiceWithSetup<TOptions>
+        // where TService : class, IServiceRespawn<TService, TOptions>
+        // where TOptions : class
 {
     /// <summary>
     /// Generate a new instance of the service, using alternate options.
     /// </summary>
     /// <param name="options">The options</param>
     /// <returns></returns>
-    public TService SpawnNew(TOptions? options = default);
+    public TService SpawnNew(TOptions options);
 }
