@@ -10,7 +10,7 @@ public class LogAddInConstructor : LogTestBase
     public void MessageInConstructor(string testName, string expected, string message, string result, int depth)
     {
         var log = new Log("", message: message);
-        Equal(1, log.Entries.Count);
+        Single(log.Entries);
         AssertEntry(testName, log.Entries[0], expected, result, depth);
     }
 

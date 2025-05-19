@@ -20,7 +20,7 @@ public static partial class ILogCallExtensions
     /// </summary>
     /// <param name="logCall">The log call or null</param>
     /// <param name="message"></param>
-    public static void Done(this ILogCall? logCall, string message)
+    public static void Done(this ILogCall? logCall, string? message)
         => logCall.DoneInternal(message);
 
     /// <summary>

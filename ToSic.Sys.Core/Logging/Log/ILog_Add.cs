@@ -24,7 +24,7 @@ public static partial class ILog_Add
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void A(this ILog? log,
-        string message,
+        string? message,
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default,

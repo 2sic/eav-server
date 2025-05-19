@@ -99,7 +99,7 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
         (Parent as Log)?.AddEntry(entry);
     }
 
-    Entry ILogInternal.CreateAndAdd(string message, CodeRef? code, EntryOptions? options)
+    Entry ILogInternal.CreateAndAdd(string? message, CodeRef? code, EntryOptions? options)
     {
         var e = new Entry(this, message, WrapDepth, code, options);
         AddEntry(e);

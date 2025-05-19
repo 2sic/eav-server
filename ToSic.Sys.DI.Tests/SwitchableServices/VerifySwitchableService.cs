@@ -23,5 +23,5 @@ public class VerifySwitchableService(ServiceSwitcher<ITestSwitchableService> swi
 
     [Fact]
     public void FindFallbackByName() =>
-        Equal(TestSwitchableFallback.Name, switcher.ByNameId(TestSwitchableFallback.Name).NameId);
+        Equal(TestSwitchableFallback.Name, switcher.ByNameId(TestSwitchableFallback.Name)?.NameId);
 }

@@ -1,4 +1,5 @@
-﻿namespace ToSic.Lib.Core.Tests.LoggingTests;
+﻿#pragma warning disable xUnit1026
+namespace ToSic.Lib.Core.Tests.LoggingTests;
 
 
 // ReSharper disable once InconsistentNaming

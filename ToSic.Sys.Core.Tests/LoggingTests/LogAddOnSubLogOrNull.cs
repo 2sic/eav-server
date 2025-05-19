@@ -10,9 +10,9 @@ public class LogAddOnSubLogOrNull : LogAdd
     /// <summary>
     /// Create a log for the test. Can be overriden in inheriting classes. 
     /// </summary>
-    protected override (ILog LogForAdd, Log RealLog) LogFactory(string name = "")
+    protected override (ILog? LogForAdd, Log? RealLog) LogFactory(string name = "")
     {
-        var log = (Log)new Log("").SubLogOrNull("");
+        var log = (Log)new Log("").SubLogOrNull("")!;
         return (log, log);
     }
 

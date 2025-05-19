@@ -7,7 +7,7 @@ public class LogFn_BoolReturnTrue : LogFn
     /// <summary>
     /// Create a log for the test. Can be overriden in inheriting classes. 
     /// </summary>
-    protected override (ILog LogForAdd, Log RealLog) LogFactory(string name = "")
+    protected override (ILog? LogForAdd, Log? RealLog) LogFactory(string name = "")
     {
         var log = new Log(name);
         var fn = log.Fn<bool>();

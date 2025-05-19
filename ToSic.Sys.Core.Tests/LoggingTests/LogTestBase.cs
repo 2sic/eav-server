@@ -7,7 +7,7 @@ public class LogTestBase
     public const int Depth0 = 0;
     public const string? ResultNone = null;
 
-    protected string ThisMethodName([CallerMemberName] string? cName = null) => cName;
+    protected string ThisMethodName([CallerMemberName] string? cName = null) => cName!;
 
     protected static void AssertLogIsEmpty(Log log, string testName) =>
         Empty(log.Entries);

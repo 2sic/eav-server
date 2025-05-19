@@ -55,11 +55,13 @@ public class LinkParts
 
     #region Static Helpers
 
-    public static int? CheckIdStringForId(string id)
+    public static int? CheckIdStringForId(string? id)
     {
-        if (!id.HasValue()) return null;
+        if (!id.HasValue())
+            return null;
         var linkParts = new LinkParts(id);
-        if (!linkParts.IsMatch || linkParts.Id == 0) return null;
+        if (!linkParts.IsMatch || linkParts.Id == 0)
+            return null;
         return linkParts.Id;
     }
 

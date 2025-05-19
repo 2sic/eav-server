@@ -32,7 +32,7 @@ public class VerifySwitchableServiceSingleton(
 
     [Fact, Priority(4)]
     public void FindFallbackByName() =>
-        Equal(TestSwitchableFallback.Name, switcher4.ByNameId(TestSwitchableFallback.Name).NameId);
+        Equal(TestSwitchableFallback.Name, switcher4.ByNameId(TestSwitchableFallback.Name)?.NameId);
 }
 
 //[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

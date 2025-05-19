@@ -2,6 +2,10 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
 
+  <PropertyGroup>
+    <RootNamespace>ToSic.Lib.Core.Tests</RootNamespace>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>

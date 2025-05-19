@@ -1,4 +1,5 @@
-﻿namespace ToSic.Lib.Core.Tests.LoggingTests;
+﻿#pragma warning disable CS8604 // Possible null reference argument.
+namespace ToSic.Lib.Core.Tests.LoggingTests;
 
 
 public class LogAdd: LogTestBase
@@ -6,7 +7,7 @@ public class LogAdd: LogTestBase
     /// <summary>
     /// Create a log for the test. Can be overriden in inheriting classes. 
     /// </summary>
-    protected virtual (ILog LogForAdd, Log RealLog) LogFactory(string name = "")
+    protected virtual (ILog? LogForAdd, Log? RealLog) LogFactory(string name = "")
     {
         var log = new Log(name);
         return (log, log);

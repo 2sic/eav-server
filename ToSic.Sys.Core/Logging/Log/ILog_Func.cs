@@ -12,7 +12,7 @@ public static class ILog_Func
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP, not final")]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static TResult Func<TResult>(this ILog log,
+    public static TResult Func<TResult>(this ILog? log,
         Func<TResult> func,
         bool timer = default,
         bool enabled = true,

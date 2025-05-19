@@ -9,9 +9,9 @@ public class Log_Func: LogTestBase
     [Fact]
     public void Basic_EnsureNullSafe()
     {
-        var log = null as ILog;
+        ILog? log = null;
         var x = log.Func(() => 7);
-        Assert.Equal(7, x);
+        Equal(7, x);
     }
 
     #endregion
@@ -37,13 +37,13 @@ public class Log_Func: LogTestBase
     {
         var log = new Log("tst.Test");
         var x = logFunc(log);
-        Assert.Equal(expected, x);
-        Assert.Equal(expectedCount, log.Entries.Count); //, "should have two entries (start/stop)");
+        Equal(expected, x);
+        Equal(expectedCount, log.Entries.Count); //, "should have two entries (start/stop)");
         if (log.Entries.Any())
         {
             var header = log.Entries[0];
-            Assert.Equal(expected?.ToString() ?? "", header.Result);
-            Assert.Equal($"{fnName}()", header.Message);
+            Equal(expected?.ToString() ?? "", header.Result);
+            Equal($"{fnName}()", header.Message);
         }
     }
 
@@ -52,9 +52,10 @@ public class Log_Func: LogTestBase
         var expected = new DateTime();
         var log = new Log("test");
         var x = log.Func(() => expected);
-        Assert.Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
-        Assert.Equal(expected.ToString(), log.Entries[0].Result);
-        Assert.Equal(expected, x);
+        Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
+        // ReSharper disable once SpecifyACultureInStringConversionExplicitly
+        Equal(expected.ToString(), log.Entries[0].Result);
+        Equal(expected, x);
     }
 
     #endregion
@@ -63,16 +64,12 @@ public class Log_Func: LogTestBase
     {
         var log = new Log("tst.Test");
         var x = log.Func(() => (7, "ok"));
-        Assert.Equal(7, x);
-        Assert.Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
+        Equal(7, x);
+        Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
         var header = log.Entries[0];
-        Assert.Equal("7 - ok", header.Result);
-        Assert.Equal($"{ThisMethodName()}()", header.Message);
+        Equal("7 - ok", header.Result);
+        Equal($"{ThisMethodName()}()", header.Message);
     }
-
-    #region TODO: timer
-
-    #endregion
 
 
     #region With Params
@@ -81,10 +78,10 @@ public class Log_Func: LogTestBase
     public void Func_Params_ReturnValue()
     {
         var log = new Log("test");
-        var x = log.Func("id: 7", () => 7);
-        Assert.Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
-        Assert.Equal($"{ThisMethodName()}(id: 7)", log.Entries[0].Message);
-        Assert.Equal("7", log.Entries[0].Result);
+        log.Func("id: 7", () => 7);
+        Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
+        Equal($"{ThisMethodName()}(id: 7)", log.Entries[0].Message);
+        Equal("7", log.Entries[0].Result);
     }
 
 
@@ -92,10 +89,10 @@ public class Log_Func: LogTestBase
     public void Func_Params_ReturnNumber()
     {
         var log = new Log("test");
-        var x = log.Func("7", func: () => 7);
-        Assert.Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
-        Assert.Equal($"{ThisMethodName()}(7)", log.Entries[0].Message);
-        Assert.Equal("7", log.Entries[0].Result);
+        log.Func("7", func: () => 7);
+        Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
+        Equal($"{ThisMethodName()}(7)", log.Entries[0].Message);
+        Equal("7", log.Entries[0].Result);
     }
 
 
@@ -103,20 +100,20 @@ public class Log_Func: LogTestBase
     public void Func_ParamsMessage_ReturnNumber()
     {
         var log = new Log("test");
-        var x = log.Func("7", message: "get 7", func: () => 7);
-        Assert.Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
-        Assert.Equal($"{ThisMethodName()}(7) get 7", log.Entries[0].Message);
-        Assert.Equal("7", log.Entries[0].Result);
+        log.Func("7", message: "get 7", func: () => 7);
+        Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
+        Equal($"{ThisMethodName()}(7) get 7", log.Entries[0].Message);
+        Equal("7", log.Entries[0].Result);
     }
 
     [Fact]
     public void Func_ParamsMessage_ReturnNumberAndMessage()
     {
         var log = new Log("test");
-        var x = log.Func("7", message: "get 7", func: () => (7, "all ok"));
-        Assert.Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
-        Assert.Equal($"{ThisMethodName()}(7) get 7", log.Entries[0].Message);
-        Assert.Equal("7 - all ok", log.Entries[0].Result);
+        log.Func("7", message: "get 7", func: () => (7, "all ok"));
+        Equal(2, log.Entries.Count); //, "should have two entries (start/stop)");
+        Equal($"{ThisMethodName()}(7) get 7", log.Entries[0].Message);
+        Equal("7 - all ok", log.Entries[0].Result);
     }
     #endregion
 
@@ -131,10 +128,10 @@ public class Log_Func: LogTestBase
             log.A("nice");
             return 7;
         });
-        Assert.Equal(7, x);
-        Assert.Equal($"{ThisMethodName()}()", parentLog.Entries[0].Message);
-        Assert.Equal("7", parentLog.Entries[0].Result);
-        Assert.Equal(3, parentLog.Entries.Count);
+        Equal(7, x);
+        Equal($"{ThisMethodName()}()", parentLog.Entries[0].Message);
+        Equal("7", parentLog.Entries[0].Result);
+        Equal(3, parentLog.Entries.Count);
     }
 
     [Fact]
@@ -146,10 +143,10 @@ public class Log_Func: LogTestBase
             log.A("nice");
             return 7;
         });
-        Assert.Equal(7, x);
-        Assert.Equal($"{ThisMethodName()}(id: 7)", parentLog.Entries[0].Message);
-        Assert.Equal("7", parentLog.Entries[0].Result);
-        Assert.Equal(3, parentLog.Entries.Count);
+        Equal(7, x);
+        Equal($"{ThisMethodName()}(id: 7)", parentLog.Entries[0].Message);
+        Equal("7", parentLog.Entries[0].Result);
+        Equal(3, parentLog.Entries.Count);
     }
 
 
@@ -166,25 +163,25 @@ public class Log_Func: LogTestBase
             log.A("nice");
             return (7, "ok");
         });
-        Assert.Equal(7, x);
-        Assert.Equal($"{ThisMethodName()}()", parentLog.Entries[0].Message);
-        Assert.Equal("7 - ok", parentLog.Entries[0].Result);
-        Assert.Equal(3, parentLog.Entries.Count);
+        Equal(7, x);
+        Equal($"{ThisMethodName()}()", parentLog.Entries[0].Message);
+        Equal("7 - ok", parentLog.Entries[0].Result);
+        Equal(3, parentLog.Entries.Count);
     }
 
     [Fact]
     public void Func_InnerLog_ParamAndValueAndMessage()
     {
         var parentLog = new Log("tst.Test");
-        var x = parentLog.Func<int>("id: 7", log =>
+        var x = parentLog.Func("id: 7", log =>
         {
             log.A("nice");
             return (7, "ok");
         });
-        Assert.Equal(7, x);
-        Assert.Equal($"{ThisMethodName()}(id: 7)", parentLog.Entries[0].Message);
-        Assert.Equal("7 - ok", parentLog.Entries[0].Result);
-        Assert.Equal(3, parentLog.Entries.Count);
+        Equal(7, x);
+        Equal($"{ThisMethodName()}(id: 7)", parentLog.Entries[0].Message);
+        Equal("7 - ok", parentLog.Entries[0].Result);
+        Equal(3, parentLog.Entries.Count);
     }
 
     #endregion

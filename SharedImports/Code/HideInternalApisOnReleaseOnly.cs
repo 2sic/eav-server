@@ -31,7 +31,9 @@ namespace FixEditorBrowsable;
 // in which case Resharper thinks it could be removed
 // ReSharper disable UnusedMember.Global
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Event | AttributeTargets.Delegate | AttributeTargets.Interface)]
+#pragma warning disable CS9113 // Parameter is unread.
 internal sealed class FakeEditorBrowsableAttribute(FakeEditorBrowsableState state) : Attribute;
+#pragma warning restore CS9113 // Parameter is unread.
 
 /// <summary>Specifies the browsable state of a property or method from within an editor.</summary>
 internal enum FakeEditorBrowsableState
