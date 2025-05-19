@@ -36,15 +36,18 @@ public abstract class ServiceBase(string logName) : IHasLog
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public ILog Log { get; } = new Log(logName);
 
+    // 2025-05-19 disabled, should not be in use anymore; #remove ca. 2025-Q3
+    ///// <summary>
+    ///// Connect Log of all dependencies listed in <see cref="services"/>
+    ///// </summary>
+    ///// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
+    //[Obsolete("Avoid using, will be removed soon. Use ConnectLogs([...])")]
+    //protected void ConnectServices(params object[] services) => (this as IHasLog).ConnectLogs(services);
+
     /// <summary>
     /// Connect Log of all dependencies listed in <see cref="services"/>
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
-    [Obsolete("Avoid using, will be removed soon. Use ConnectLogs([...])")]
-    protected void ConnectServices(params object[] services) => (this as IHasLog).ConnectLogs(services);
-    /// <summary>
-    /// Connect Log of all dependencies listed in <see cref="services"/>
-    /// </summary>
-    /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
-    protected void ConnectLogs(object[] services) => (this as IHasLog).ConnectLogs(services);
+    protected void ConnectLogs(object[] services)
+        => (this as IHasLog).ConnectLogs(services);
 }

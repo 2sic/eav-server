@@ -1,12 +1,12 @@
 ﻿namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 
-public class GenerateWithOwnOptions(ServiceWithOwnOptions initialSvc)
+public class GenerateWithOwnOptions(MockServiceSpawnNewCustomOptions initialSvc)
 {
     [Fact]
     public void InitialHasDefaultOptions()
     {
-        Equal(ServiceWithOwnOptions.DefaultName, initialSvc.Options.Name);
-        Equal(ServiceWithOwnOptions.DefaultNumber, initialSvc.Options.Number);
+        Equal(MockServiceSpawnNewCustomOptions.DefaultName, initialSvc.Options.Name);
+        Equal(MockServiceSpawnNewCustomOptions.DefaultNumber, initialSvc.Options.Number);
     }
 
     [Fact]

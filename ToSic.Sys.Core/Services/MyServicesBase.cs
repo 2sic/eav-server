@@ -70,7 +70,8 @@ public static class ServiceDependenciesExtensions
     /// Auto-initialize the log on all dependencies.
     /// Special format to allow command chaining, so it returns itself.
     /// </summary>
-    public static TDependencies ConnectServices<TDependencies>(this TDependencies parent, ILog log) where TDependencies : MyServicesBase
+    public static TMyServices ConnectServices<TMyServices>(this TMyServices parent, ILog log)
+        where TMyServices : MyServicesBase
     {
         (parent as ILazyInitLog).SetLog(log);
         return parent;

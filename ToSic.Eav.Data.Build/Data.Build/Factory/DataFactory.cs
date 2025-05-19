@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.Build;
 [PrivateApi("hide implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal class DataFactory(DataBuilder dataBuilder, Generator<IDataFactory> selfGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
-    : ServiceWithOptionsBase<IDataFactory, DataFactoryOptions>("Ds.DatBld", selfGenerator, connect: [dataBuilder, ctFactoryLazy]), IDataFactory
+    : ServiceRespawnBase<IDataFactory, DataFactoryOptions>("Ds.DatBld", selfGenerator, connect: [dataBuilder, ctFactoryLazy]), IDataFactory
 {
 
     #region Properties to configure Builder / Defaults

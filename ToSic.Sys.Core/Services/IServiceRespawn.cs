@@ -14,20 +14,11 @@
 /// </remarks>
 /// <typeparam name="TService"></typeparam>
 /// <typeparam name="TOptions"></typeparam>
-public interface IServiceWithOptions<out TService, TOptions>
-    where TService : class, IServiceWithOptions<TService, TOptions>
-    where TOptions : class
+public interface IServiceRespawn<out TService, TOptions>
+    : IHasOptions<TOptions>
+        where TService : class, IServiceRespawn<TService, TOptions>
+        where TOptions : class
 {
-    /// <summary>
-    /// The options for this service, read-only.
-    /// </summary>
-    /// <remarks>
-    /// Will usually default to new/standard options of type <see cref="TOptions"/>,
-    /// unless set when creating a new service using <see cref="SpawnNew"/>.
-    /// </remarks>
-    TOptions Options { get; }
-
-
     /// <summary>
     /// Generate a new instance of the service, using alternate options.
     /// </summary>

@@ -1,15 +1,13 @@
 ﻿using ToSic.Lib.Coding;
 using ToSic.Lib.DI;
-using ToSic.Sys.Services;
-
 
 namespace ToSic.Lib.Services;
 
-public abstract class ServiceWithOptionsBase<TService, TOptions>(string logName, Generator<TService> selfGenerator, NoParamOrder protect = default, object[]? connect = default) :
+public abstract class ServiceRespawnBase<TService, TOptions>(string logName, Generator<TService> selfGenerator, NoParamOrder protect = default, object[]? connect = default) :
     ServiceBase(logName, protect, connect: [selfGenerator, ..connect ?? []]),
-    IServiceWithOptions<TService, TOptions>,
-    IServiceWithOptionsToSetup<TOptions>
-    where TService : class, IServiceWithOptions<TService, TOptions>
+    IServiceRespawn<TService, TOptions>,
+    IServiceWithSetup<TOptions>
+    where TService : class, IServiceRespawn<TService, TOptions>
     where TOptions : class, new()
 {
     /// <inheritdoc />
@@ -20,7 +18,8 @@ public abstract class ServiceWithOptionsBase<TService, TOptions>(string logName,
         set;
     }
 
-    void IServiceWithOptionsToSetup<TOptions>.SetOptions(TOptions options) => Options = options;
+    void IServiceWithSetup<TOptions>.Setup(TOptions options)
+        => Options = options;
 
     /// <summary>
     /// Method to generate new / default options. You can override this to provide your own default options.
@@ -32,9 +31,7 @@ public abstract class ServiceWithOptionsBase<TService, TOptions>(string logName,
     public TService SpawnNew(TOptions? options = default)
     {
         var instance = selfGenerator.New();
-        (instance as IServiceWithOptionsToSetup<TOptions>)?.SetOptions(options);
-        //if (instance is IServiceWithOptionsToSetup<TOptions> settable)
-        //    settable.Options = options!;
+        (instance as IServiceWithSetup<TOptions>)?.Setup(options);
         return instance;
     }
 }

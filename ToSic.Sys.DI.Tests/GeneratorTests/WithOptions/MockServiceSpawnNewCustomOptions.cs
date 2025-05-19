@@ -5,8 +5,8 @@ namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 /// <summary>
 /// Example service which uses options, but if not set, will use its own defaults.
 /// </summary>
-public class ServiceWithOwnOptions(Generator<ServiceWithOwnOptions> selfGenerator)
-    : ServiceWithOptionsBase<ServiceWithOwnOptions, ServiceOptions>("Tst", selfGenerator)
+public class MockServiceSpawnNewCustomOptions(Generator<MockServiceSpawnNewCustomOptions> selfGenerator)
+    : ServiceRespawnBase<MockServiceSpawnNewCustomOptions, ServiceOptions>("Tst", selfGenerator)
 {
     internal const string DefaultName = "custom";
     internal const int DefaultNumber = -1;

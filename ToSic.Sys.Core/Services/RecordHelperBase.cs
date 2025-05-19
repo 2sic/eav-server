@@ -16,6 +16,7 @@ public abstract record RecordHelperBase() : IHasLog
     /// <inheritdoc />
     [JsonIgnore] // Prevent System.Text.Json from serializing this property
     [IgnoreDataMember] // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
+    [field: AllowNull, MaybeNull]
     [PrivateApi]
     public required ILog Log
     {

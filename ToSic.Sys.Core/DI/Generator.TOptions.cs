@@ -1,5 +1,4 @@
 ﻿using ToSic.Lib.Services;
-using ToSic.Sys.Services;
 
 namespace ToSic.Lib.DI;
 
@@ -12,7 +11,7 @@ namespace ToSic.Lib.DI;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazyInitLog
-     where TService : IHasOptions<TOptions> where TOptions : class
+     where TService : IServiceWithSetup<TOptions> where TOptions : class
 {
     /// <summary>
     /// Factory method to generate a new service
@@ -23,8 +22,8 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
         var instance = sp.Build<TService>(Log);
         _initCall?.Invoke(instance);
 
-        if (instance is IServiceWithOptionsToSetup<TOptions> settable)
-            settable.SetOptions(options);
+        if (instance is IServiceWithSetup<TOptions> settable)
+            settable.Setup(options);
         else
             throw new NotSupportedException($"The service {nameof(TOptions)} doesn't support setting options");
         return instance;

@@ -13,7 +13,7 @@ public class DataBuilder(
     LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder,
     LazySvc<DimensionBuilder> languageBuilder,
     Generator<DataBuilder> builderGen)
-    : ServiceWithOptionsBase<DataBuilder, DataBuilderOptions>($"{EavLogs.Eav}MltBld", builderGen,
+    : ServiceRespawnBase<DataBuilder, DataBuilderOptions>($"{EavLogs.Eav}MltBld", builderGen,
         connect:
         [
             entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder
