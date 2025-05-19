@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav-CoreTemp.props" />
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav.props" />
 
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
