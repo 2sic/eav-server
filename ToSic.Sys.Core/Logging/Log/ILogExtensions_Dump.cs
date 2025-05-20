@@ -13,9 +13,10 @@ partial class ILogExtensions
     /// <param name="bytes"></param>
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static string Dump(this ILog _, byte[] bytes)
+    public static string Dump(this ILog _, byte[]? bytes)
     {
-        if (bytes == null || !bytes.Any()) return "[](0)";
+        if (bytes == null || !bytes.Any())
+            return "[](0)";
         return $"[{Encoding.Default.GetString(bytes)}]({bytes.Length})";
     }
 }

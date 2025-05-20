@@ -5,7 +5,7 @@ namespace ToSic.Lib.Logging;
 
 [PrivateApi("no need to publish this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LogCallBase : ILogLike, ILogCall
+public class LogCallBase : ILogCall
 {
     /// <summary>
     /// Keep constructor internal

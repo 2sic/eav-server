@@ -9,8 +9,8 @@ internal static partial class LogExtensionsInternal
     /// <param name="log"></param>
     /// <returns>The target Log object OR null</returns>
     internal static ILog? GetRealLog(this ILog? log)
-        => log as Log
-           ?? (log as ILogLike)?.Log
+        => log as Log   // First check if it is already a log
+           ?? (log as IHasLog)?.Log // Check if it's a LogCall - which behaves as as IHasLog
            ?? log;
 
 

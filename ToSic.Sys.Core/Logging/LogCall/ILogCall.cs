@@ -13,7 +13,7 @@ namespace ToSic.Lib.Logging;
 /// </remarks>
 [PublicApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface ILogCall: ILog
+public interface ILogCall: ILog, IHasLog
 {
     /// <summary>
     /// The main log-entry for this call, which will also receive the final value at the end of the call.
@@ -25,8 +25,8 @@ public interface ILogCall: ILog
     /// </summary>
     Stopwatch Timer { get; }
 
-    /// <summary>
-    /// Reference to the parent log.
-    /// </summary>
-    ILog? Log { get; }
+    ///// <summary>
+    ///// Reference to the parent log.
+    ///// </summary>
+    //ILog? Log { get; }
 }
