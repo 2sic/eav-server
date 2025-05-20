@@ -69,8 +69,7 @@ public class FeaturePersistenceService(
                     if (change.Configuration != null)
                         feature["configuration"] = JsonToObject(FeatToJson(change.Configuration));
                 }
-                // Delete
-                // TODO: in future if it has a configuration, probably better just null the "enabled" and not delete
+                // Delete, but only if the change does not have a configuration and there was no previous configuration
                 else
                     featureArray.Remove(feature);
             }
