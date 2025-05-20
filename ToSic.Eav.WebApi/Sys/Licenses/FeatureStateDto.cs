@@ -20,9 +20,11 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
     [JsonPropertyName("enabledReasonDetailed")]
     public string EnabledReasonDetailed => state.EnabledReasonDetailed;
 
+    /// <inheritdoc cref="FeatureState.EnabledByDefault"/>
     [JsonPropertyName("enabledByDefault")]
     public bool EnabledByDefault => state.EnabledByDefault;
 
+    /// <inheritdoc cref="FeatureState.EnabledInConfiguration"/>
     [JsonPropertyName("enabledInConfiguration")]
     public bool? EnabledInConfiguration => state.EnabledInConfiguration;
 
@@ -35,12 +37,16 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
     [JsonPropertyName("link")]
     public string Link => state.Feature.Link;
 
+    /// <inheritdoc cref="Feature.IsConfigurable"/>
     [JsonPropertyName("isConfigurable")]
     public bool IsConfigurable => state.Feature.IsConfigurable;
 
+    /// <summary>
+    /// Additional configuration from the json file.
+    /// </summary>
     [JsonPropertyName("configuration")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public Dictionary<string, object> Configuration => null;
+    public Dictionary<string, object> Configuration => state.Configuration;
 
     [JsonPropertyName("configurationContentType")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
