@@ -12,6 +12,7 @@ using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
@@ -83,6 +84,7 @@ public static class StartUpEavCore
 
         // v20 Startup
         services.AddTransient<IStartUpRegistrations, EavStartupRegistrations>();
+        services.TryAddTransient<ITargetTypeService, TargetTypesService>();
 
         return services;
     }

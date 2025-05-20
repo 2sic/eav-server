@@ -14,12 +14,12 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 {
     #region MyServices
 
-    public class MyServices(ITargetTypes metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates, object[] connect = default)
+    public class MyServices(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates, object[] connect = default)
         : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates, ..connect ?? []])
     {
         public DataBuilder DataBuilder { get; } = dataBuilder;
 
-        public ITargetTypes MetadataTargets { get; } = metadataTargets;
+        public ITargetTypeService MetadataTargets { get; } = metadataTargets;
         public IAppReaderFactory AppStates { get; } = appStates;
     }
 
@@ -29,7 +29,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     private readonly IAppReadContentTypes _globalAppOrNull = services.AppStates.GetSystemPreset(nullIfNotLoaded: true);
 
-    public ITargetTypes MetadataTargets { get; } = services.MetadataTargets;
+    public ITargetTypeService MetadataTargets { get; } = services.MetadataTargets;
 
 
     public void Initialize(IAppReader appReader)

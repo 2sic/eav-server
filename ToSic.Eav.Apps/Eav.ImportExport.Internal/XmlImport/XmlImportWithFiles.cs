@@ -17,7 +17,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
         LazySvc<DbDataController> dbDataForNewApp,
         LazySvc<DbDataController> dbDataForAppImport,
         IImportExportEnvironment importExportEnvironment,
-        ITargetTypes metaTargetTypes,
+        ITargetTypeService metaTargetTypes,
         AppCachePurger appCachePurger,
         IAppsCatalog appsCatalog,
         LazySvc<XmlToEntity> xmlToEntity,
@@ -33,7 +33,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
         internal readonly LazySvc<DbDataController> DbDataForNewApp = dbDataForNewApp;
         internal readonly LazySvc<DbDataController> DbDataForAppImport = dbDataForAppImport;
         internal readonly IImportExportEnvironment Environment = importExportEnvironment;
-        internal readonly ITargetTypes MetaTargetTypes = metaTargetTypes;
+        internal readonly ITargetTypeService MetaTargetTypes = metaTargetTypes;
         internal readonly IAppsCatalog AppsCatalog = appsCatalog;
         internal readonly LazySvc<XmlToEntity> XmlToEntity = xmlToEntity;
         internal readonly AppCachePurger AppCachePurger = appCachePurger;

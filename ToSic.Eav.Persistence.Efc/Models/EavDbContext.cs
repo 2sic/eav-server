@@ -6,15 +6,12 @@ using Microsoft.EntityFrameworkCore.Metadata;
 namespace ToSic.Eav.Persistence.Efc.Models;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class EavDbContext : DbContext
+public partial class EavDbContext(DbContextOptions<EavDbContext> options, IDbConfiguration dbConfig, ILogStore logStore)
+    : DbContext(options)
 {
-    //public bool DebugMode = false;
+    private ILog Log { get; } = new Log("EF.DbCtx");
 
-    public EavDbContext(DbContextOptions<EavDbContext> options, IDbConfiguration dbConfig) : base(options)
-    {
-        _dbConfig = dbConfig;
-    }
-    private readonly IDbConfiguration _dbConfig;
+    //public bool DebugMode = false;
 
     public virtual DbSet<TsDynDataApp> TsDynDataApps { get; set; }
     public virtual DbSet<TsDynDataTargetType> TsDynDataTargetTypes { get; set; }
@@ -32,7 +29,11 @@ public partial class EavDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var connectionString = _dbConfig.ConnectionString;
+        // Note: this only takes a few MS, but is called many times, so logging is disabled again
+        //logStore.Add("boot-log", Log);
+        var l = Log.Fn("starting with options builder", timer: true);
+
+        var connectionString = dbConfig.ConnectionString;
         if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
             connectionString += ";MultipleActiveResultSets=True";
 #if NETFRAMEWORK
@@ -58,10 +59,14 @@ public partial class EavDbContext : DbContext
             )
             .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
 #endif
+        l.Done();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        logStore.Add("boot-log", Log);
+        var l = Log.Fn(timer: true);
+
         modelBuilder.Entity<TsDynDataDimension>(entity =>
         {
             entity.HasKey(e => e.DimensionId)
@@ -520,7 +525,11 @@ public partial class EavDbContext : DbContext
                 .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionDeleted");
         });
 
+        l.Done("done with own code");
+
+        l = Log.Fn($"calling internal code {nameof(OnModelCreatingPartial)}", timer: true);
         OnModelCreatingPartial(modelBuilder);
+        l.Done();
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

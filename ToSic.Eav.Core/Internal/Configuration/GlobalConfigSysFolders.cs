@@ -1,5 +1,4 @@
-﻿using System.IO;
-using ToSic.Eav.Internal.Loaders;
+﻿using ToSic.Eav.Internal.Loaders;
 using static ToSic.Eav.Internal.Configuration.GlobalConfigHelpers;
 
 namespace ToSic.Eav.Internal.Configuration;

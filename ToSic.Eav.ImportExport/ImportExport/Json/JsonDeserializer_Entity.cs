@@ -111,11 +111,14 @@ partial class JsonSerializer
             return l.Return(new(), "no for found");
 
         var mdFor = jEnt.For;
+
+        var targetType = mdFor.TargetType != 0
+            ? mdFor.TargetType
+            : MetadataTargets.GetId(mdFor.Target); // #TargetTypeIdInsteadOfTarget
+
         var target = new Target(
-            targetType: mdFor.TargetType != 0
-                ? mdFor.TargetType
-                : MetadataTargets.GetId(mdFor.Target), identifier // #TargetTypeIdInsteadOfTarget
-            : null,
+            targetType: targetType,
+            identifier: null,
             keyString: mdFor.String,
             keyNumber: mdFor.Number,
             keyGuid: mdFor.Guid

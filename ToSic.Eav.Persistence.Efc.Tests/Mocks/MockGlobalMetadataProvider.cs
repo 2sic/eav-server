@@ -1,13 +1,12 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Persistence.Efc.Tests19.Mocks;
 
-public class MockGlobalMetadataProvider(LazySvc<EavDbContext> dbLazy) : EfcMetadataTargetTypes(dbLazy)
+public class MockGlobalMetadataProvider() : ITargetTypesLoader
 {        
-    protected override ImmutableDictionary<int, string> GetTargetTypes()
-    {
-        return (new Dictionary<int, string>
+    public ImmutableDictionary<int, string> GetTargetTypes() =>
+        (new Dictionary<int, string>
         {
             {1, "Default" },
             {2, "EAV Field Properties" },
@@ -20,5 +19,4 @@ public class MockGlobalMetadataProvider(LazySvc<EavDbContext> dbLazy) : EfcMetad
             {9, "Reserved" },
             {10, "CmsObject" },
         }).ToImmutableDictionary();
-    }
 }

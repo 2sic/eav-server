@@ -13,7 +13,7 @@ partial class JsonSerializer(JsonSerializer.MyServices services, string logName 
     #region Serializer Dependencies / MyServices
 
     public new class MyServices(
-        ITargetTypes metadataTargets,
+        ITargetTypeService metadataTargets,
         IAppReaderFactory appStates,
         DataBuilder dataBuilder,
         LazySvc<IValueConverter> valueConverter)

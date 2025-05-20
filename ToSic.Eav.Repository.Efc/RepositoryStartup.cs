@@ -9,7 +9,8 @@ public static class StartupRepositoryEfc
 {
     public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services)
     {
-        services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
+        //services.TryAddTransient<ITargetTypes, EfcMetadataTargetTypes>();
+        services.TryAddTransient<ITargetTypesLoader, EfcMetadataTargetTypes>();
 
         // transient lifetime is important, otherwise 2-3x slower!
         // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient

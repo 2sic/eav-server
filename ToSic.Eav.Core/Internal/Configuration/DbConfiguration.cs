@@ -1,8 +1,6 @@
 ﻿namespace ToSic.Eav.Internal.Configuration;
 
-/// <summary>
-/// Global Eav Configuration
-/// </summary>
+/// <inheritdoc cref="IDbConfiguration"/>
 public class DbConfiguration : IDbConfiguration
 {
     /// <summary>

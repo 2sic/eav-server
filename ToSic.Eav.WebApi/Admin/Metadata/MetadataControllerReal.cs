@@ -16,7 +16,7 @@ namespace ToSic.Eav.WebApi.Admin.Metadata;
 public class MetadataControllerReal(
     IConvertToEavLight converter,
     IAppReaderFactory appReaders,
-    ITargetTypes metadataTargets,
+    ITargetTypeService metadataTargets,
     LazySvc<MdRecommendations> mdRead)
     : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appReaders, metadataTargets, mdRead]),
         IMetadataController
