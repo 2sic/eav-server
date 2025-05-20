@@ -25,9 +25,9 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity GetDbEntityFull(int entityId)
     {
-        var callLog = DbContext.Log.Fn<TsDynDataEntity>($"Get {entityId}");
+        var l = DbContext.Log.Fn<TsDynDataEntity>($"Get {entityId}");
         var found = EntityQuery.Single(e => e.EntityId == entityId);
-        return callLog.ReturnAsOk(found);
+        return l.ReturnAsOk(found);
     }
 
     /// <summary>
@@ -36,9 +36,9 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity GetDbEntityStub(int entityId)
     {
-        var callLog = DbContext.Log.Fn<TsDynDataEntity>($"Get {entityId}");
+        var l = DbContext.Log.Fn<TsDynDataEntity>($"Get {entityId}");
         var found = DbContext.SqlDb.TsDynDataEntities.Single(e => e.EntityId == entityId);
-        return callLog.ReturnAsOk(found);
+        return l.ReturnAsOk(found);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity[] GetDbEntitiesWithChildren(int[] repositoryIds)
     {
-        var callLog = DbContext.Log.Fn<TsDynDataEntity[]>($"Get {repositoryIds.Length}", timer: true);
+        var l = DbContext.Log.Fn<TsDynDataEntity[]>($"Get {repositoryIds.Length}", timer: true);
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
         // var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
         //var found = EntityQuery
@@ -59,7 +59,7 @@ partial class DbEntity
             .Include(e => e.RelationshipsWithThisAsParent)
             .Where(e => Enumerable.Contains(repositoryIds, e.EntityId))
             .ToArray();
-        return callLog.Return(found, found.Length.ToString());
+        return l.Return(found, found.Length.ToString());
     }
 
     //private ToSicEavEntities GetDbEntity(int entityId, string includes)

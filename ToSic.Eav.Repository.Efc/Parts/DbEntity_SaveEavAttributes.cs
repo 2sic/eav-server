@@ -10,18 +10,19 @@ partial class DbEntity
     /// <param name="entityId"></param>
     private bool ClearAttributesInDbModel(int entityId)
     {
-        var callLog = Log.Fn<bool>(timer: true);
+        var l = Log.Fn<bool>(timer: true);
         var val = DbContext.SqlDb.TsDynDataValues
             .Include(v => v.TsDynDataValueDimensions)
             .Where(v => v.EntityId == entityId)
             .ToList();
 
-        if (val.Count == 0) return callLog.ReturnFalse("no changes");
+        if (val.Count == 0)
+            return l.ReturnFalse("no changes");
 
         var dims = val.SelectMany(v => v.TsDynDataValueDimensions);
         DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(dims));
         DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(val));
-        return callLog.ReturnTrue("ok");
+        return l.ReturnTrue("ok");
     }
 
     private void SaveAttributesAsEav(IEntity newEnt,
@@ -29,10 +30,11 @@ partial class DbEntity
         List<TsDynDataAttribute> dbAttributes,
         TsDynDataEntity dbEnt,
         int transactionId,
-        bool logDetails
-    ) => Log.Do($"id:{newEnt.EntityId}", timer: true, action: () =>
+        bool logDetails)
     {
-        if (!_attributeQueueActive) throw new("Attribute save-queue not ready - should be wrapped");
+        var l = Log.Fn($"id:{newEnt.EntityId}", timer: true);
+        if (!_attributeQueueActive)
+            throw new("Attribute save-queue not ready - should be wrapped");
         foreach (var attribute in newEnt.Attributes.Values)
             Log.Do($"InnerAttribute:{attribute.Name}", () =>
             {
@@ -93,26 +95,26 @@ partial class DbEntity
 
                 return "ok";
             });
-    });
+        l.Done();
+    }
 
     internal void DoWhileQueueingAttributes(Action action)
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-        Log.Do($"attribute queue:{randomId} start", () =>
-        {
-            if (_attributeUpdateQueue.Any())
-                throw new("Attribute queue started while already containing stuff - bad!");
-            _attributeQueueActive = true;
-            // 1. check if it's the outermost call, in which case afterwards we import
-            //var willPurgeQueue = _isOutermostCall;
-            // 2. make sure any follow-up calls are not regarded as outermost
-            //_isOutermostCall = false;
-            // 3. now run the inner code
-            action.Invoke();
-            // 4. now check if we were the outermost call, in if yes, save the data
-            DbContext.DoAndSaveWithoutChangeDetection(AttributeQueueRun);
-            _attributeQueueActive = false;
-        });
+        var l = Log.Fn($"attribute queue:{randomId} start");
+        if (_attributeUpdateQueue.Any())
+            throw new("Attribute queue started while already containing stuff - bad!");
+        _attributeQueueActive = true;
+        // 1. check if it's the outermost call, in which case afterwards we import
+        //var willPurgeQueue = _isOutermostCall;
+        // 2. make sure any follow-up calls are not regarded as outermost
+        //_isOutermostCall = false;
+        // 3. now run the inner code
+        action.Invoke();
+        // 4. now check if we were the outermost call, in if yes, save the data
+        DbContext.DoAndSaveWithoutChangeDetection(AttributeQueueRun);
+        _attributeQueueActive = false;
+        l.Done();
     }
 
     // ReSharper disable once RedundantDefaultMemberInitializer

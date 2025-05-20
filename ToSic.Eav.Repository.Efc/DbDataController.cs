@@ -329,9 +329,9 @@ public class DbDataController(
     /// <returns></returns>
     public List<int> Save(List<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var callLog = Log.Fn<List<int>>(timer: true);
+        var l = Log.Fn<List<int>>(timer: true);
         logStore.Add("save-data", Log);
-        return callLog.ReturnAsOk(Entities.SaveEntity(entityOptionPairs));
+        return l.ReturnAsOk(Entities.SaveEntity(entityOptionPairs));
     }
 
     public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)
