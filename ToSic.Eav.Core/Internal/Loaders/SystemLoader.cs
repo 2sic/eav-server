@@ -24,31 +24,24 @@ public class SystemLoader : ServiceBase
     private readonly IEnumerable<IStartUpRegistrations> _startUpRegistrations;
     private readonly LazySvc<EavSystemLoader> _systemLoaderLazy;
 
-    /// <summary>
-    /// This is just for public access, don't use in this file
-    /// </summary>
-    public EavSystemLoader EavSystemLoader => _systemLoaderLazy.IsValueCreated
-        ? _systemLoaderLazy.Value
-        : throw new("Can't access this property unless StartUp has run first");
-
     public void StartUp()
     {
         var l = Log.Fn();
-        DoRegistrations();
+        StartUpAllRegistrations();
         l.A("Will now run StartUp on EAV SystemLoader - logs are tracked separately");
         _systemLoaderLazy.Value.StartUp();
         l.Done();
     }
 
-    private void DoRegistrations()
+    private void StartUpAllRegistrations()
     {
         var l = Log.Fn();
         foreach (var registration in _startUpRegistrations)
-            DoRegistration(registration);
+            StartUpRegistration(registration);
         l.Done();
     }
 
-    private void DoRegistration(IStartUpRegistrations registration)
+    private void StartUpRegistration(IStartUpRegistrations registration)
     {
         var l = Log.Fn(registration.NameId);
         try

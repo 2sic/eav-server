@@ -20,14 +20,13 @@ public class LicenseControllerReal(
     LazySvc<ILicenseService> licenseServiceLazy,
     LazySvc<IEavFeaturesService> featuresLazy,
     LazySvc<IGlobalConfiguration> globalConfiguration,
-    LazySvc<EavSystemLoader> systemLoaderLazy,
     LazySvc<LicenseCatalog> licenseCatalog,
     SystemFingerprint fingerprint,
     LazySvc<EavFeaturesLoader> featuresLoader)
     : ServiceBase("Bck.Lics",
         connect:
         [
-            licenseServiceLazy, featuresLazy, globalConfiguration, licenseCatalog, systemLoaderLazy, fingerprint, featuresLoader
+            licenseServiceLazy, featuresLazy, globalConfiguration, licenseCatalog, fingerprint, featuresLoader
         ]), ILicenseController
 {
     // auto-download license file
