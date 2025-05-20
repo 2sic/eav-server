@@ -8,8 +8,9 @@ namespace ToSic.Eav.ImportExport.Internal.XmlList;
 partial class ImportListXml
 {
 
-    private bool RunDocumentValidityChecks() => Log.Func(timer: true, func: () =>
+    private bool RunDocumentValidityChecks()
     {
+        var l = Log.Fn<bool>();
         // #1 Assure that each element has a GUID and language child element
         foreach (var element in DocumentElements)
         {
@@ -30,24 +31,26 @@ partial class ImportListXml
         // count languages
         var documentElementLanguagesCount = documentElementLanguagesAll.Select(item => item.Count);
 
-        if (documentElementLanguagesCount.All(count => count == 1)) return (true, "ok");
+        if (documentElementLanguagesCount.All(count => count == 1))
+            return l.ReturnTrue("ok");
 
         if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any()))
-            return (true, "ok");
+            return l.ReturnTrue("ok");
 
         ErrorLog.Add(ImportErrorCode.MissingElementLanguage,
             "Langs=" + string.Join(", ", _languages));
-        return (false, "error");
-    });
+        return l.ReturnFalse("error");
+    }
 
-    private bool LoadStreamIntoDocumentElement(Stream dataStream) => Log.Func(timer: true, func: () =>
+    private bool LoadStreamIntoDocumentElement(Stream dataStream)
     {
+        var l = Log.Fn<bool>(timer: true);
         Document = XDocument.Load(dataStream);
         dataStream.Position = 0;
         if (Document == null)
         {
             ErrorLog.Add(ImportErrorCode.InvalidDocument);
-            return (false, $"error {ImportErrorCode.InvalidDocument}");
+            return l.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
         }
 
         // #1 Check that document-root is the expected value
@@ -58,7 +61,7 @@ partial class ImportListXml
         {
             const string msg = "can't import - document doesn't have a root element";
             Log.A(msg);
-            throw new(msg);
+            throw l.Ex(new Exception(msg));
         }
 
         // #2 make sure it has elements to import
@@ -66,7 +69,7 @@ partial class ImportListXml
         if (!DocumentElements.Any())
         {
             ErrorLog.Add(ImportErrorCode.InvalidDocument);
-            return (false, $"error {ImportErrorCode.InvalidDocument}");
+            return l.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
         }
 
         // #3 Check the content type of the document (it can be found on each element in the Type attribute)
@@ -75,11 +78,11 @@ partial class ImportListXml
             documentTypeAttribute.Value != ContentType.Name.RemoveSpecialCharacters())
         {
             ErrorLog.Add(ImportErrorCode.InvalidContentType);
-            return (false, $"error: {ImportErrorCode.InvalidContentType} - Trying to import of type {ContentType} but file contains {documentTypeAttribute}");
+            return l.ReturnFalse($"error: {ImportErrorCode.InvalidContentType} - Trying to import of type {ContentType} but file contains {documentTypeAttribute}");
         }
 
-        return (true, "ok");
-    });
+        return l.ReturnTrue("ok");
+    }
 
 
 }

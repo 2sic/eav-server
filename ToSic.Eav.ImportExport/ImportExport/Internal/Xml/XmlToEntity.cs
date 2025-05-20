@@ -285,10 +285,9 @@ public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
         return wrap.Return(sourceValueNode, (sourceValueNode != null).ToString());
     }
 
-    private (XElement Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang,
-        List<XElement> xmlValuesOfAttrib
-    ) => Log.Func(envLang.EnvironmentKey, () =>
+    private (XElement Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, List<XElement> xmlValuesOfAttrib)
     {
+        var l = Log.Fn<(XElement Element, bool ReadOnly)>(envLang.EnvironmentKey);
         XElement sourceValueNode = null;
         var readOnly = false;
 
@@ -313,8 +312,8 @@ public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
             break;
         }
 
-        return ((sourceValueNode, readOnly), (sourceValueNode != null).ToString());
-    });
+        return l.Return((sourceValueNode, readOnly), (sourceValueNode != null).ToString());
+    }
 
 
     private class ImportValue

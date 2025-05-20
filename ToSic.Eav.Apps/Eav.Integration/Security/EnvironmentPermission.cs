@@ -70,35 +70,41 @@ public abstract class EnvironmentPermission(string logPrefix, object[] connect =
     /// Check if user is anonymous - also log the ID to assist in debugging
     /// </summary>
     /// <returns></returns>
-    protected bool UserIsAnonymous() => Log.Func($"UserId:{Context.User?.Id.ToString()}", () => Context.User?.IsAnonymous ?? true);
+    protected bool UserIsAnonymous()
+        => Log.Quick(parameters: $"UserId:{Context.User?.Id.ToString()}", func: () => Context.User?.IsAnonymous ?? true);
 
     /// <summary>
     /// Check if user is super user
     /// </summary>
     /// <returns></returns>
-    protected bool UserIsSystemAdmin() => Log.Func(() => Context.User?.IsSystemAdmin ?? false);
+    protected bool UserIsSystemAdmin()
+        => Log.Quick(() => Context.User?.IsSystemAdmin ?? false);
 
     /// <summary>
     /// Check if user is valid admin of current portal / zone
     /// </summary>
     /// <returns></returns>
-    protected bool UserIsContentAdmin() => Log.Func(() => Context.User?.IsContentAdmin ?? false);
+    protected bool UserIsContentAdmin()
+        => Log.Quick(() => Context.User?.IsContentAdmin ?? false);
 
     /// <summary>
     /// Verify that we're in the same zone, allowing admin/module checks
     /// </summary>
     /// <returns></returns>
-    protected bool CurrentZoneMatchesSiteZone() => Log.Func(() =>
+    protected bool CurrentZoneMatchesSiteZone()
     {
+        var l = Log.Fn<bool>();
         // Check if we are running out-of http-context
-        if (Context.Site == null || Context.Site.Id == Constants.NullId) return (false, "no");
+        if (Context.Site == null || Context.Site.Id == Constants.NullId)
+            return l.ReturnFalse("no");
 
         // Check if no app is provided, like when an app hasn't been selected yet, so it's an empty module, must be on current portal
-        if (AppIdentity == null) return (true, "no app, so context unchanged");
+        if (AppIdentity == null)
+            return l.ReturnTrue("no app, so context unchanged");
 
         // If we have the full context, we must check if the site has changed
         // This will important for other security checks, only allow zone-change for super users
         var result = Context.Site.ZoneId == AppIdentity.ZoneId;
-        return (result, result.ToString());
-    });
+        return l.Return(result, result.ToString());
+    }
 }

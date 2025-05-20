@@ -340,13 +340,12 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     }
 
 
-    private ResultOrError<Func<IEntity, string>> GetFieldValue(CompareType type, string fieldName) => Log.Func(l =>
+    private ResultOrError<Func<IEntity, string>> GetFieldValue(CompareType type, string fieldName)
     {
-        switch (type)
+        var l = Log.Fn<ResultOrError<Func<IEntity, string>>>();
+        return type switch
         {
-            case CompareType.Any:
-                l.A($"compare on a normal attribute:{fieldName}");
-                return new(true, e =>
+            CompareType.Any => l.Return(new(true, e =>
                 {
                     try
                     {
@@ -359,19 +358,20 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
                                   "Probably comparing an attribute on the related entity that doesn't exist. " +
                                   $"Was trying to compare the attribute '{fieldName}'");
                     }
-                });
-            case CompareType.Id:
-                l.A("will compare on ID");
-                return new(true, e => e?.EntityId.ToString());
-            case CompareType.Title:
-                l.A("will compare on title");
-                return new(true, e => e?.GetBestTitle()?.ToLowerInvariant());
+                }), $"compare on a normal attribute:{fieldName}"),
+            CompareType.Id => l.Return(new(true, e => e?.EntityId.ToString()), "will compare on ID"),
+            CompareType.Title => l.Return(new(true, e => e?.GetBestTitle()?.ToLowerInvariant()),
+                "will compare on title"),
             // ReSharper disable once RedundantCaseLabel
-            case CompareType.Auto:
-            default:
-                return new ResultOrError<Func<IEntity, string>>(false, null, 
-                    Error.Create(title: "Problem with CompareType", message: $"The CompareType '{type}' is unexpected."));
-        }
-    });
+            CompareType.Auto => l.Return(
+                new(false, null,
+                    Error.Create(title: "Problem with CompareType",
+                        message: $"The CompareType '{type}' is unexpected.")), "error"),
+            _ => l.Return(
+                new(false, null,
+                    Error.Create(title: "Problem with CompareType",
+                        message: $"The CompareType '{type}' is unexpected.")), "error")
+        };
+    }
 
 }

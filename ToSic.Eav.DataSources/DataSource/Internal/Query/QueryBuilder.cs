@@ -28,8 +28,9 @@ public class QueryBuilder(
     /// Build a query-definition object based on the entity-ID defining the query
     /// </summary>
     /// <returns></returns>
-    public QueryDefinition GetQueryDefinition(int appId, int queryEntityId) => Log.Func($"def#{queryEntityId} for a#{appId}", () =>
+    public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
     {
+        var l = Log.Fn<QueryDefinition>($"def#{queryEntityId} for a#{appId}");
         try
         {
             var app = appsCatalog.AppIdentity(appId);
@@ -39,13 +40,13 @@ public class QueryBuilder(
             // use findRepo, as it uses the cache, which gives the list of all items
             var dataQuery = appEntities.FindRepoId(queryEntityId);
             var result = Create(dataQuery, appId);
-            return (result);
+            return l.Return(result);
         }
         catch (KeyNotFoundException)
         {
-            throw new("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId);
+            throw l.Ex(new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId));
         }
-    });
+    }
 
 
     public QueryResult BuildQuery(

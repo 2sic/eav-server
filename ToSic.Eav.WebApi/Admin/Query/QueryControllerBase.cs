@@ -190,7 +190,7 @@ public abstract class QueryControllerBase<TImplementation>(
 
         var timer = new Stopwatch();
         timer.Start();
-        var results = Log.Func(message: "Serialize", timer: true, func: () =>
+        var results = Log.Quick(message: "Serialize", timer: true, func: () =>
         {
             var converter = Services.EntToDicLazy.Value;
             //converter.WithGuid = true;
@@ -200,7 +200,7 @@ public abstract class QueryControllerBase<TImplementation>(
             // Use passed in function to select the part to serialize
             var part = partLookup(builtQuery);
             var converted = converter.Convert(part);
-            return (converted, "ok");
+            return converted;
         });
         timer.Stop();
 

@@ -60,8 +60,9 @@ public class QueryManager(
     /// ...but will be auto-assembled the moment they are accessed
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine lookUps) => Log.Func(() =>
+    public Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine lookUps)
     {
+        var l = Log.Fn<Dictionary<string, IQuery>>();
         var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entQuery in AllQueryItems(app))
         {
@@ -71,8 +72,8 @@ public class QueryManager(
             if (!dict.ContainsKey(name))
                 dict[name] = delayedQuery;
         }
-        return (dict);
-    });
+        return l.Return(dict);
+    }
 
     internal IImmutableList<IEntity> AllQueryItems(IAppIdentity appIdOrReader, int recurseParents = 0)
     {

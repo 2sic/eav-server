@@ -28,6 +28,10 @@ public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
     /// Creates a permission checker for an type in this app
     /// </summary>
     /// <returns></returns>
-    private IPermissionCheck BuildItemPermissionChecker(IEntity item) =>
-        Log.Func($"{item.EntityId}", () => (BuildPermissionChecker(item.Type, item), "ok"));
+    private IPermissionCheck BuildItemPermissionChecker(IEntity item)
+    {
+        var l = Log.Fn<IPermissionCheck>($"type: {item.Type}; entity:{item.EntityId}");
+        var checker = BuildPermissionChecker(item.Type, item);
+        return l.ReturnAsOk(checker);
+    }
 }

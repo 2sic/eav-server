@@ -19,8 +19,9 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         int? parentId = null, string parentField = null)
         => Delete([id], contentType, force, skipIfCant, parentId, parentField);
 
-    public bool Delete(List<int> ids) => Log.Func($"ids:{ids.Count}", timer: true, func: () =>
-        Delete([.. ids], null, false, true));
+    public bool Delete(List<int> ids)
+        => Log.Quick(parameters: $"ids:{ids.Count}", timer: true, func:
+            () => Delete([.. ids], null, false, true));
 
 
     /// <summary>

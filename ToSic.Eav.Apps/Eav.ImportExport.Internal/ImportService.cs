@@ -79,7 +79,7 @@ public class ImportService(
                     // important: must always create a new loader, because it will cache content-types which hurts the import
                     Storage.DoWhileQueuingVersioning(() =>
                     {
-                        var nonSysTypes = Log.Func(message: "Import Types in Sys-Scope", timer: true, func: () =>
+                        var nonSysTypes = Log.Quick(message: "Import Types in Sys-Scope", timer: true, func: () =>
                         {
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
@@ -121,7 +121,7 @@ public class ImportService(
             else
             {
                 var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader; // load all entities
-                var newIEntitiesRaw = Log.Func(message: "Pre-Import Entities merge", timer: true, func: () =>
+                var newIEntitiesRaw = Log.Quick(message: "Pre-Import Entities merge", timer: true, func: () =>
                     newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                         .Where(e => e != null)
@@ -187,8 +187,9 @@ public class ImportService(
             .ToList();
     }
 
-    private IContentType MergeContentTypeUpdateWithExisting(IAppReader appReader, IContentType contentType) => Log.Func(l =>
+    private IContentType MergeContentTypeUpdateWithExisting(IAppReader appReader, IContentType contentType)
     {
+        var l = Log.Fn<IContentType>();
 
         l.A("New CT, must reset attributes");
 
@@ -210,12 +211,13 @@ public class ImportService(
             var newType = dataBuilder.ContentType.CreateFrom(contentType, metadataItems: ctMetadata,
                 attributes: newAttributes);
 
-            return (newType, "existing not found, only reset IDs");
+            return l.Return(newType, "existing not found, only reset IDs");
         }
 
         l.A("found existing, will merge");
 
-        var mergedAttributes = contentType.Attributes.Select(newAttribute =>
+        var mergedAttributes = contentType.Attributes
+            .Select(newAttribute =>
             {
                 var oldAttr = existing.Attributes.FirstOrDefault(a => a.Name == newAttribute.Name);
                 if (oldAttr == null)
@@ -245,8 +247,8 @@ public class ImportService(
         var newContentType = dataBuilder.ContentType.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
         // contentType.Metadata.Use(merged);
 
-        return (newContentType, "done");
-    });
+        return l.Return(newContentType, "done");
+    }
 
     private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
     {

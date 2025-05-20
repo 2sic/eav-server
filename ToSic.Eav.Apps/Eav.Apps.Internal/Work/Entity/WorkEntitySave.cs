@@ -156,16 +156,19 @@ public class WorkEntitySave(
     /// WIP - clear attributes which shouldn't be saved at all
     /// </summary>
     /// <param name="entity"></param>
-    private IImmutableDictionary<string, IAttribute> AttributesWithEmptyEphemerals(IEntity entity) => Log.Func(l =>
+    private IImmutableDictionary<string, IAttribute> AttributesWithEmptyEphemerals(IEntity entity)
     {
+        var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
         var attributes = entity.Type?.Attributes?.ToList();
-        if (attributes == null || !attributes.Any()) return (null, "no attributes");
+        if (attributes == null || !attributes.Any())
+            return l.ReturnNull("no attributes");
 
         var toClear = attributes
             .Where(a => a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
             .ToList();
 
-        if (!toClear.Any()) return (null, "no ephemeral attributes");
+        if (!toClear.Any())
+            return l.ReturnNull("no ephemeral attributes");
 
         var result = entity.Attributes.ToImmutableDictionary(pair => pair.Key,
             pair =>
@@ -177,7 +180,7 @@ public class WorkEntitySave(
                 return empty;
             }, InvariantCultureIgnoreCase);
 
-        return (result, "temp");
-    });
+        return l.Return(result, "temp");
+    }
 
 }

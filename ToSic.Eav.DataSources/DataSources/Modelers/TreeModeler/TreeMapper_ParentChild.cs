@@ -65,18 +65,19 @@ partial class TreeMapper
     /// <param name="e"></param>
     /// <param name="attribute"></param>
     /// <returns></returns>
-    private object GetKey(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>
+    private object GetKey(IEntity e, string attribute)
     {
+        var l = Log.Fn<object>(enabled: Debug);
         try
         {
             var val = e.Get(attribute);
             l.A(Debug, $"Entity: {e.EntityId}[{attribute}]={val} ({val.GetType().Name})");
-            return val.ToString();
+            return l.Return(val.ToString());
         }
         catch (Exception ex)
         {
             l.Ex(ex);
-            return default;
+            return l.ReturnAsError(default);
         }
-    });
+    }
 }

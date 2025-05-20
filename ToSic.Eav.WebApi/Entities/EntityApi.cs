@@ -189,7 +189,7 @@ public class EntityApi(
         var list = entityToDic.Convert(afterAncestorFilter).ToList();
 
         // Truncate all values to 50 chars
-        var result = Log.Func(null, message: "truncate dictionary", timer: true,
+        var result = Log.Quick(message: "truncate dictionary", timer: true,
             func: () => list
                 .Select(eLight => eLight.ToDictionary(pair => pair.Key, pair => Truncate(pair.Value, 50)))
                 .ToList()

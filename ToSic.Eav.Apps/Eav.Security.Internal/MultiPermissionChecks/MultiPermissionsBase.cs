@@ -55,7 +55,7 @@ public abstract class MultiPermissionsBase<TServices>(TServices services, string
     /// </summary>
     /// <param name="grants"></param>
     /// <returns>True if all pass, false if any one fails</returns>
-    public bool EnsureAny(List<Grants> grants) => Log.Func(() =>
+    public bool EnsureAny(List<Grants> grants) => Log.Quick(() =>
         PermissionCheckers.Any(set => set.Value.Ensure(grants, out _)));
 
 }

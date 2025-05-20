@@ -100,8 +100,9 @@ public partial class ImportListXml(
     /// Deserialize data xml stream to the memory. The data will also be checked for 
     /// errors.
     /// </summary>
-    private bool ValidateAndImportToMemory() => Log.Func(timer: true, func: l =>
+    private bool ValidateAndImportToMemory()
     {
+        var l = Log.Fn<bool>(timer: true);
         var nodesCount = 0;
         var entityGuidManager = new ImportItemGuidManager();
 
@@ -264,8 +265,8 @@ public partial class ImportListXml(
         }
 
         l.A($"Prepared {ImportEntities.Count} entities for import");
-        return (true, "done");
-    });
+        return l.ReturnTrue("done");
+    }
 
 
     /// <summary>

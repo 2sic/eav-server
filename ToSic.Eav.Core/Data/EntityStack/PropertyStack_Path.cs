@@ -24,9 +24,9 @@ partial class PropertyStack
 
     [PrivateApi]
     public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path,
-        IPropertyLookup initialSource, string prefixToIgnore = null
-    ) => specs.LogOrNull.Func(specs.Field, l =>
+        IPropertyLookup initialSource, string prefixToIgnore = null)
     {
+        var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
         var fields = SplitPathIntoParts(specs.Field, prefixToIgnore);
         PropReqResult result = null;
         var currentSource = initialSource;
@@ -38,11 +38,12 @@ partial class PropertyStack
 
             // If nothing found, stop here and return
             if (result.Result == null)
-                return (result.AsFinal(0), $"nothing found on {field}");
+                return l.Return(result.AsFinal(0), $"nothing found on {field}");
 
             var isLastKey = i == fields.Length - 1;
 
-            if (isLastKey) return (result, "last hit, found something");
+            if (isLastKey)
+                return l.Return(result, "last hit, found something");
 
             // If we got a sub-list and still have keys in the path to check, update the source
             if (result.Result is IEnumerable<IPropertyLookup> resultToStartFrom)
@@ -53,7 +54,7 @@ partial class PropertyStack
 
                 currentSource = resultToStartFrom.FirstOrDefault();
                 if (currentSource == null)
-                    return (PropReqResult.NullFinal(result.Path), "found EMPTY list of lookups; will stop");
+                    return l.Return(PropReqResult.NullFinal(result.Path), "found EMPTY list of lookups; will stop");
                 continue;
             }
 
@@ -62,16 +63,16 @@ partial class PropertyStack
             {
                 currentSource = hasPropLookup.PropertyLookup;
                 if (currentSource == null)
-                    return (PropReqResult.NullFinal(result.Path), "found sub-object without more lookups; will stop");
+                    return l.Return(PropReqResult.NullFinal(result.Path), "found sub-object without more lookups; will stop");
                 continue;
             }
 
             // If we got any other value, but would still have fields to check, we must stop now
             // and report there was nothing to find
             if (i < fields.Length - 1)
-                return (PropReqResult.NullFinal(result.Path), "stop, nothing to find");
+                return l.Return(PropReqResult.NullFinal(result.Path), "stop, nothing to find");
         }
 
-        return (result ?? PropReqResult.NullFinal(null), "stop");
-    });
+        return l.Return(result ?? PropReqResult.NullFinal(null), "stop");
+    }
 }

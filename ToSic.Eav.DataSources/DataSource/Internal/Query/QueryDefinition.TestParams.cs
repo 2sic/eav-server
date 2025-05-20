@@ -30,12 +30,13 @@ partial class QueryDefinition
     /// They are in the format [source:key]=value
     /// </summary>
     /// <returns></returns>
-    private List<ILookUp> GenerateTestValueLookUps() => Log.Func($"{Entity.EntityId}", l =>
+    private List<ILookUp> GenerateTestValueLookUps()
     {
+        var l = Log.Fn<List<ILookUp>>();
         // Parse Test-Parameters in Format [Token:Property]=Value
         var testParameters = TestParameters;
         if (testParameters == null)
-            return ([], "no test params");
+            return l.Return([], "no test params");
 
         // extract the lines which look like [source:property]=value
         var testValueTokens = TestParamRegex.Matches(testParameters);
@@ -57,7 +58,7 @@ partial class QueryDefinition
             currentLookUp.Properties.Add(testParam.Groups[KeyProperty].Value, testParam.Groups[KeyValue].Value);
         }
 
-        return (result, "ok");
-    });
+        return l.Return(result, "ok");
+    }
 
 }

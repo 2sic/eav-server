@@ -14,12 +14,13 @@ internal class DataSourcesService(
     #region GetDataSource
 
     /// <inheritdoc />
-    public IDataSource Create(Type type, IDataSourceLinkable attach = default, IDataSourceOptions options = default) => Log.Func(() =>
+    public IDataSource Create(Type type, IDataSourceLinkable attach = default, IDataSourceOptions options = default)
     {
+        var l = Log.Fn<IDataSource>();
         var newDs = serviceProvider.Build<IDataSource>(type, Log);
         newDs.Setup(options, attach);
-        return newDs;
-    });
+        return l.Return(newDs);
+    }
 
 
     #endregion

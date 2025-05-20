@@ -71,8 +71,9 @@ public class QueryRun : Eav.DataSource.DataSourceBase
 
     #endregion
 
-    private Query BuildQuery() => Log.Func(() =>
+    private Query BuildQuery()
     {
+        var l = Log.Fn<Query>();
         // parse config to be sure we get the right query name etc.
         Configuration.Parse();
 
@@ -99,7 +100,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         if (configEntity == null)
         {
             Log.A("no configuration found - empty list");
-            return (null, "silent error");
+            return l.ReturnNull("silent error");
         }
 
         Log.A($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
@@ -109,7 +110,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         if (queryDef == null)
         {
             Log.A("can't find query in configuration - empty list");
-            return (null, "silent error");
+            return l.ReturnNull("silent error");
         }
 
         #endregion
@@ -119,8 +120,8 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         // create the query & set params
         var query = _queryGenerator.New().Init(ZoneId, AppId, queryDef, LookUpWithoutParams());
         query.Params(ResolveParams(configEntity));
-        return (query, "ok");
-    });
+        return l.ReturnAsOk(query);
+    }
 
     /// <summary>
     /// Create a new lookup machine and remove the params which would be in there right now

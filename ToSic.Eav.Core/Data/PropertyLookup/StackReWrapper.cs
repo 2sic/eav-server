@@ -9,13 +9,14 @@ internal class StackReWrapper(StackAddress stackAddress, ILog parentLog) : Helpe
 {
     public StackAddress StackAddress { get; } = stackAddress;
 
-    public PropReqResult ReWrapIfPossible(PropReqResult reqResult) => Log.Func(l =>
+    public PropReqResult ReWrapIfPossible(PropReqResult reqResult)
     {
+        var l = Log.Fn<PropReqResult>();
         var result = reqResult.Result;
 
         // Skip if not relevant
         if (result == null)
-            return (reqResult, "null result");
+            return l.Return(reqResult, "null result");
 
         // Skip if already wrapped / has stack navigation
         // Note: ATM there is no known case where we just receive one item back (just one IEntity, ...)
@@ -23,7 +24,7 @@ internal class StackReWrapper(StackAddress stackAddress, ILog parentLog) : Helpe
             || result is IPropertyStackLookup
             || result is IEnumerable<IPropertyStackLookup>
            )
-            return (reqResult, "already wrapped");
+            return l.Return(reqResult, "already wrapped");
 
 
         // List of IEntities
@@ -32,7 +33,7 @@ internal class StackReWrapper(StackAddress stackAddress, ILog parentLog) : Helpe
             l.A("Result is IEnumerable<IEntity> - will wrap in navigation");
             reqResult = WrapResultInOwnStack(reqResult, entityChildren,
                 (ent, address) => new EntityWithStackNavigation(ent, address));
-            return (reqResult, "wrapped as Entity-Stack, final");
+            return l.Return(reqResult, "wrapped as Entity-Stack, final");
         }
 
 
@@ -45,18 +46,19 @@ internal class StackReWrapper(StackAddress stackAddress, ILog parentLog) : Helpe
             l.A("Result is IEnumerable<PropertyLookupDictionary> - will wrap in navigation");
             reqResult = WrapResultInOwnStack(reqResult, dicChildren,
                 (obj, address) => new PropertyLookupWithStackNavigation(obj, address));
-            return (reqResult, "wrapped as dictionary prop stack, final");
+            return l.Return(reqResult, "wrapped as dictionary prop stack, final");
         }
 
-        return (reqResult, "result not modified");
-    });
+        return l.Return(reqResult, "result not modified");
+    }
 
     private PropReqResult WrapResultInOwnStack<TOriginal, TResult>(
         PropReqResult reqResult,
         IEnumerable<TOriginal> dicChildren,
         Func<TOriginal, StackAddress, TResult> factory
-    ) where TOriginal : IPropertyLookup => Log.Func(() =>
+    ) where TOriginal : IPropertyLookup
     {
+        var l = Log.Fn<PropReqResult>();
         reqResult.ResultOriginal = reqResult.Result;
 
         var children = dicChildren.ToArray();
@@ -68,6 +70,6 @@ internal class StackReWrapper(StackAddress stackAddress, ILog parentLog) : Helpe
             .Select((c, i) => factory(c, childrenStackAddress.NewWithOtherIndex(i)))
             .ToList();
 
-        return (reqResult);
-    });
+        return l.Return(reqResult);
+    }
 }

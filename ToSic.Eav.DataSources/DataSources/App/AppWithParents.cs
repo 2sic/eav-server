@@ -44,8 +44,9 @@ internal class AppWithParents: DataSourceBase
         ProvideOut(GetList);
     }
 
-    private IImmutableList<IEntity> GetList() => Log.Func(() =>
+    private IImmutableList<IEntity> GetList()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         var appReader = _appReaders.Get(this);
             
         var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions
@@ -69,6 +70,7 @@ internal class AppWithParents: DataSourceBase
 
         var merge = _mergeGenerator.New(attach: initialLink);
 
-        return merge.Out.First().Value.List.ToImmutableList();
-    });
+        var result = merge.Out.First().Value.List.ToImmutableList();
+        return l.Return(result, $"{result.Count}");
+    }
 }

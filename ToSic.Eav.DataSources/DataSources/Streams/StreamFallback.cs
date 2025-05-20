@@ -44,13 +44,14 @@ public sealed class StreamFallback : DataSourceBase
         return foundStream?.List.ToImmutableList() ?? [];
     }
 
-    private IDataStream FindIdealFallbackStream() => Log.Func(() =>
+    private IDataStream FindIdealFallbackStream()
     {
+        var l = Log.Fn<IDataStream>("");
         Configuration.Parse();
 
         // Check if there is a default-stream in with content - if yes, try to return that
         if (In.HasStreamWithItems(StreamDefaultName))
-            return (In[StreamDefaultName], "found default");
+            return l.Return(In[StreamDefaultName], "found default");
 
         // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
         var streamList = In
@@ -61,9 +62,9 @@ public sealed class StreamFallback : DataSourceBase
             if (stream.Value.List.Any())
             {
                 ReturnedStreamName = stream.Key;
-                return (stream.Value, $"will return stream:{ReturnedStreamName}");
+                return l.Return(stream.Value, $"will return stream:{ReturnedStreamName}");
             }
 
-        return (null, "didn't find any stream, will return empty");
-    });
+        return l.ReturnNull("didn't find any stream, will return empty");
+    }
 }

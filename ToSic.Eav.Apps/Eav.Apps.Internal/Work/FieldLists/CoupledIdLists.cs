@@ -58,22 +58,24 @@ public class CoupledIdLists: HelperBase
     /// Move an item in the coupled lists
     /// </summary>
     /// <returns></returns>
-    public DicNameObj Move(int sourceIndex, int targetIndex) => Log.Func($"reorder entities before:{sourceIndex} to after:{targetIndex}", () =>
+    public DicNameObj Move(int sourceIndex, int targetIndex)
     {
+        var l = Log.Fn<DicNameObj>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
         var hasChanges = Lists.Values
             .Aggregate(false, (prev, l) => l.Move(sourceIndex, targetIndex) || prev);
         return hasChanges
-            ? (Lists.ToObject(), "ok")
-            : (null, "outside of range, no changes");
-    });
+            ? l.Return(Lists.ToObject(), "ok")
+            : l.ReturnNull("outside of range, no changes");
+    }
 
     /// <summary>
     /// Reorder the pair of sequences
     /// </summary>
     /// <param name="newSequence">List of index-IDs how it should be sorted now</param>
     /// <returns></returns>
-    public DicNameObj Reorder(int[] newSequence) => Log.Func($"seq:[{string.Join(",", newSequence)}]", l =>
+    public DicNameObj Reorder(int[] newSequence)
     {
+        var l = Log.Fn<DicNameObj>($"seq:[{string.Join(",", newSequence)}]");
         // some error checks
         if (newSequence.Length != Lists.First().Value.Count)
         {
@@ -97,8 +99,8 @@ public class CoupledIdLists: HelperBase
             }
         });
 
-        return (Lists.ToObject(), "ok");
-    });
+        return l.Return(Lists.ToObject(), "ok");
+    }
 
     /// <summary>
     /// Replace an item in the primary list, and optionally also in the coupled list. 
@@ -106,10 +108,11 @@ public class CoupledIdLists: HelperBase
     /// <param name="index"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public DicNameObj Replace(int index, (bool, int?)[] values) => Log.Func($"index: {index}", () =>
+    public DicNameObj Replace(int index, (bool, int?)[] values)
     {
+        var l = Log.Fn<DicNameObj>($"index: {index}");
         if (index == -1)
-            throw new("Sort order is never -1 any more; deprecated");
+            throw l.Ex(new Exception("Sort order is never -1 any more; deprecated"));
 
         // if necessary, increase length on all
         var i = 0;
@@ -121,12 +124,15 @@ public class CoupledIdLists: HelperBase
             return prev || changed;
         });
 
-        return ok ? Lists.ToObject() : null;
-    });
+        return ok
+            ? l.Return(Lists.ToObject())
+            : l.ReturnNull();
+    }
 
     private static bool ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
     {
-        if (listMain[index] == entityId) return false;
+        if (listMain[index] == entityId)
+            return false;
         listMain[index] = entityId;
         return true;
     }

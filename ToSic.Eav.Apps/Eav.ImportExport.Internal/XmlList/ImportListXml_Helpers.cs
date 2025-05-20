@@ -49,26 +49,30 @@ partial class ImportListXml
     /// </summary>
     public List<Entity> ImportEntities { get; } = [];
 
-    private Entity GetImportEntity(Guid entityGuid) => Log.Func(l =>
+    private Entity GetImportEntity(Guid entityGuid)
     {
+        var l = Log.Fn<Entity>();
         var result = ImportEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
-        if (result != null) l.A($"Will modify entity from existing import list {entityGuid}");
-        return result;
-    });
+        return l.Return(result, result == null ? "null" : $"Will modify entity from existing import list {entityGuid}");
+    }
 
 
     private int _appendEntityCount = 0;
 
-    private Entity AppendEntity(Guid entityGuid, IDictionary<string, IAttribute> values) => Log.Func(l =>
+    private Entity AppendEntity(Guid entityGuid, IDictionary<string, IAttribute> values)
     {
-        if (_appendEntityCount++ < 100) l.A($"Add entity to import list {entityGuid}");
-        if (_appendEntityCount == 100) l.A("Add entity: will stop listing each one...");
-        if (_appendEntityCount % 100 == 0) l.A("Add entity: Current count:" + _appendEntityCount);
+        var l = Log.Fn<Entity>();
+        if (_appendEntityCount++ < 100)
+            l.A($"Add entity to import list {entityGuid}");
+        if (_appendEntityCount == 100)
+            l.A("Add entity: will stop listing each one...");
+        if (_appendEntityCount % 100 == 0)
+            l.A("Add entity: Current count:" + _appendEntityCount);
         var entity = builder.Entity.Create(appId: _appId, guid: entityGuid, contentType: ContentType,
             attributes: builder.Attribute.Create(values));
         ImportEntities.Add(entity);
-        return entity;
-    });
+        return l.Return(entity);
+    }
 
     /// <summary>
     /// Errors found while importing the document to memory.

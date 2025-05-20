@@ -73,12 +73,13 @@ public sealed class Apps: CustomDataSource
 
     #endregion
 
-    private IEnumerable<IRawEntity> GetDefault(IAppsCatalog appsCatalog, IAppReaderFactory appReaders) => Log.Func(l =>
+    private IEnumerable<IRawEntity> GetDefault(IAppsCatalog appsCatalog, IAppReaderFactory appReaders)
     {
+        var l = Log.Fn<IEnumerable<IRawEntity>>();
         // try to load the content-type - if it fails, return empty list
         var allZones = appsCatalog.Zones;
         if (!allZones.TryGetValue(OfZoneId, out var zone)) 
-            return ([],"fails load content-type");
+            return l.Return([],"fails load content-type");
 
         var list = zone.Apps
             .OrderBy(a => a.Key)
@@ -121,6 +122,6 @@ public sealed class Apps: CustomDataSource
             })
             .Cast<IRawEntity>();
 
-        return (list, $"ok");
-    });
+        return l.Return(list, $"ok");
+    }
 }

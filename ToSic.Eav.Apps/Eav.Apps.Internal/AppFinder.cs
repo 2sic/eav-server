@@ -62,22 +62,23 @@ public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appRea
         }
     }
 
-    /// <summary>
-    /// Find an app based on the app name. Will check the App Metadata for this
-    /// </summary>
-    public int AppIdFromAppName(int zoneId, string appName) => Log.Func(appName, () =>
-    {
-        var nameLower = appName.ToLowerInvariant();
+    // 2025-05-20 2dm; doesn't seem used... #remove 2025-Q3
+    ///// <summary>
+    ///// Find an app based on the app name. Will check the App Metadata for this
+    ///// </summary>
+    //public int AppIdFromAppName(int zoneId, string appName) => Log.Func(appName, () =>
+    //{
+    //    var nameLower = appName.ToLowerInvariant();
 
-        foreach (var p in appsCatalog.Apps(zoneId))
-        {
-            var specs = appReaders.Get(new AppIdentity(zoneId, p.Key)).Specs;
+    //    foreach (var p in appsCatalog.Apps(zoneId))
+    //    {
+    //        var specs = appReaders.Get(new AppIdentity(zoneId, p.Key)).Specs;
 
-            if (!string.IsNullOrEmpty(specs.Name) && specs.Name.ToLowerInvariant() == nameLower)
-                return (p.Key, "name matched");
-        }
+    //        if (!string.IsNullOrEmpty(specs.Name) && specs.Name.ToLowerInvariant() == nameLower)
+    //            return (p.Key, "name matched");
+    //    }
 
-        // not found
-        return (AppConstants.AppIdNotFound, "not found");
-    });
+    //    // not found
+    //    return (AppConstants.AppIdNotFound, "not found");
+    //});
 }

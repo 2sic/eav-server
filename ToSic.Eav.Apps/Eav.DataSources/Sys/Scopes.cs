@@ -41,8 +41,9 @@ public sealed class Scopes : CustomDataSource
     }
     private readonly IAppReaderFactory _appReadFac;
 
-    private IEnumerable<IRawEntity> GetList() => Log.Func(l =>
+    private IEnumerable<IRawEntity> GetList()
     {
+        var l = Log.Fn<IEnumerable<IRawEntity>>();
         var scopes = _appReadFac.Get(AppId).ContentTypes.GetAllScopesWithLabels();
         var list = scopes
             .Select(s => new RawEntity(new()
@@ -52,6 +53,6 @@ public sealed class Scopes : CustomDataSource
             }))
             .ToList();
 
-        return (list, $"{list.Count}");
-    });
+        return l.Return(list, $"{list.Count}");
+    }
 }

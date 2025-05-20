@@ -178,9 +178,14 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         }
     }
 
-    private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results) => Log.Func(() => int.TryParse(Take, out var tk)
-        ? (results.Take(tk), $"take {tk}")
-        : (results, "take all"));
+    private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results)
+    {
+        var l = Log.Fn<IEnumerable<IEntity>>();
+        var valid = int.TryParse(Take, out var tk);
+        return valid 
+            ? l.Return(results.Take(tk), $"take {tk}")
+            : l.Return(results, "take all");
+    }
 
 
     /// <summary>

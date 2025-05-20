@@ -7,8 +7,9 @@ partial class PropertyStack
 
     public IPropertyStack GetStack(params string[] names) => GetStack(null, names);
 
-    public IPropertyStack GetStack(ILog log, params string[] names) => log.Func(l =>
+    public IPropertyStack GetStack(ILog log, params string[] names)
     {
+        var l = log.Fn<IPropertyStack>();
         // Get all required names in the order they were requested
         var newSources = new List<KeyValuePair<string, IPropertyLookup>>();
         foreach (var name in names)
@@ -20,6 +21,6 @@ partial class PropertyStack
 
         var newStack = new PropertyStack();
         newStack.Init("New", newSources.ToArray());
-        return (newStack, newSources.Count.ToString());
-    });
+        return l.Return(newStack, newSources.Count.ToString());
+    }
 }

@@ -103,14 +103,15 @@ public class DataTable : CustomDataSourceAdvanced
         return this;
     }
 
-    private IImmutableList<IEntity> GetEntities() => Log.Func(l =>
+    private IImmutableList<IEntity> GetEntities()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         l.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
         var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
-        return (result, $"ok: {result.Count}");
-    });
+        return l.Return(result, $"ok: {result.Count}");
+    }
 
     /// <summary>
     /// Convert a DataTable to a Dictionary of EntityModels
