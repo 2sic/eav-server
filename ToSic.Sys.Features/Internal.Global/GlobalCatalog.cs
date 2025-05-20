@@ -18,7 +18,9 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
     {
         logStore.Add(LogNames.LogStoreStartUp, Log);
         // ReSharper disable ExplicitCallerInfoArgument
-        Log.A($"Catalog Created for {typeof(T).Name}", code.Path, code.Name, code.Line);
+        Log
+            .FnCode(message: $"Catalog Created for {typeof(T).Name}", timer: true, code: code)
+            .Done();
         // ReSharper restore ExplicitCallerInfoArgument
     }
 
@@ -26,18 +28,14 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
     /// The dictionary containing all the items.
     /// Case-insensitive.
     /// </summary>
-#if NETCOREAPP
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
-#endif
     public IReadOnlyDictionary<string, T> Dictionary
     {
         get => field ??= new ReadOnlyDictionary<string, T>(_master);
         private set;
     }
 
-#if NETCOREAPP
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
-#endif
     public IReadOnlyCollection<T> List
     {
         get => field ??= new ReadOnlyCollection<T>(_master.Values.ToList());
@@ -63,8 +61,8 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
             }
 
         // Reset the read-only dictionary
-        Dictionary = null!; // new ReadOnlyDictionary<string, T>(_master);
-        List = null!; //new ReadOnlyCollection<T>(_master.Values.ToList());
+        Dictionary = null!;
+        List = null!;
         l.Done($"now contains {_master.Count} items");
     }
 

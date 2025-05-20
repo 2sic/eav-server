@@ -100,7 +100,7 @@ public class EavFeaturesLoader(
             // return features stored
             var newState = JsonSerializer.Deserialize<FeatureStatesPersisted>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
-            return l.ReturnAndLog(newState, "ok, features loaded");
+            return l.Return(newState, "ok, features loaded");
         }
         catch (Exception e)
         {

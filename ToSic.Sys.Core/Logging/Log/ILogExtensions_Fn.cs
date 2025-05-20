@@ -60,7 +60,7 @@ partial class ILogExtensions
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    internal static ILogCall FnCode(this ILog? log,
+    public static ILogCall FnCode(this ILog? log,
         string? parameters = default,
         string? message = default,
         bool timer = false,
@@ -69,7 +69,7 @@ partial class ILogExtensions
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    internal static ILogCall<TResult> FnCode<TResult>(this ILog? log,
+    public static ILogCall<TResult> FnCode<TResult>(this ILog? log,
         string? parameters = default,
         string? message = default,
         bool timer = false,

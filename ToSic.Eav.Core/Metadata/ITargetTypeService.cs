@@ -8,7 +8,7 @@ namespace ToSic.Eav.Metadata;
 /// </summary>
 [PrivateApi("was internal till 16.09")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface ITargetTypeService
+public interface ITargetTypeService: IHasLog // needs IHasLog to better time the loading of the target types
 {
     /// <summary>
     /// Look up the target Id of a metadata target. These are registered somewhere (DB, file-system, etc.)

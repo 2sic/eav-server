@@ -14,7 +14,8 @@ public class LogFn_BoolReturnTrue : LogFn
         return (fn, log);
     }
 
-    protected override void Finish((ILog LogForAdd, Log RealLog) log) => (log.LogForAdd as ILogCall<bool>)?.Return(true);
+    protected override void Finish((ILog? LogForAdd, Log? RealLog) log)
+        => (log.LogForAdd as ILogCall<bool>)?.Return(true);
 
     protected override int EntryCount => 3;
 
