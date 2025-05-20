@@ -25,17 +25,6 @@ public static class StartUpEavCore
 {
     public static IServiceCollection AddEavCore(this IServiceCollection services)
     {
-        // Data Builder & Converters
-        //services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
-        //services.TryAddTransient<DataBuilder>();
-        //services.TryAddTransient<DimensionBuilder>();
-        //services.TryAddTransient<AttributeBuilder>();
-        //services.TryAddTransient<EntityBuilder>();
-        //services.TryAddTransient<ValueBuilder>();
-        //services.TryAddTransient<ContentTypeBuilder>();
-        //services.TryAddTransient<ContentTypeAttributeBuilder>();
-        //services.TryAddTransient<ContentTypeFactory>();
-
         // Configuration objects
         services.TryAddTransient<IDbConfiguration, DbConfiguration>();
         services.TryAddTransient<GlobalPaths>();
@@ -43,6 +32,7 @@ public static class StartUpEavCore
         services.TryAddTransient<EavSystemLoader>();
         services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
         services.TryAddTransient<FeaturePersistenceService>();
+        services.TryAddTransient<FeaturesIoHelper>();
 
         // Features - 2024-05-31 changed to non-singleton
         services.TryAddTransient<IEavFeaturesService, EavFeaturesService>();    // this must come first!

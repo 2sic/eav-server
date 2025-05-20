@@ -15,11 +15,12 @@ public class EavFeaturesLoader(
     SystemFingerprint fingerprint,  // note: must be of type SystemFingerprint, not IFingerprint
     IEavFeaturesService featuresSvc,
     FeaturePersistenceService featurePersistenceService,
+    FeaturesIoHelper featuresIo,
     LicenseLoader licenseLoader,
     IAppReaderFactory appReaders,
     SysFeaturesService sysFeaturesService)
     : ServiceBase($"{EavLogs.Eav}FtLdr",
-        connect: [fingerprint, appReaders, featuresSvc, featurePersistenceService, licenseLoader, sysFeaturesService])
+        connect: [fingerprint, appReaders, featuresSvc, featurePersistenceService, featuresIo, licenseLoader, sysFeaturesService])
 {
 
     /// <summary>
@@ -94,8 +95,8 @@ public class EavFeaturesLoader(
         var l = Log.Fn<FeatureStatesPersisted>();
         try
         {
-            var (filePath, fileContent) = featurePersistenceService.LoadFeaturesFile();
-            if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileContent)) 
+            var (_, fileContent) = featuresIo.Load();
+            if (string.IsNullOrEmpty(fileContent)) 
                 return l.ReturnNull("ok, but 'features.json' is missing");
 
             // return features stored
@@ -115,16 +116,16 @@ public class EavFeaturesLoader(
     /// Update existing features config in "features.json". 
     /// </summary>
     [PrivateApi]
-    public bool UpdateFeatures(List<FeatureManagementChange> changes)
+    public bool UpdateFeatures(List<FeatureStateChange> changes)
     {
         var l = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
-        var saved = featurePersistenceService.SaveFeaturesUpdate(changes);
+        var saved = featurePersistenceService.ApplyUpdatesAndSave(changes);
         var newState = FeatureListStoredBuilder(changes);
         SetFeaturesStored(newState);
         return l.ReturnAndLog(saved, "ok, updated");
     }
 
-    private FeatureStatesPersisted FeatureListStoredBuilder(List<FeatureManagementChange> changes)
+    private FeatureStatesPersisted FeatureListStoredBuilder(List<FeatureStateChange> changes)
     {
         var updatedIds = changes
             .Select(f => f.FeatureGuid)
@@ -132,12 +133,12 @@ public class EavFeaturesLoader(
 
         var storedFeaturesButNotUpdated = featuresSvc.All
             .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Feature.Guid))
-            .Select(FeaturePersistenceService.FeatureConfigBuilder)
+            .Select(FeatureStatePersisted.FromState)
             .ToList();
             
         var updatedFeatures = changes
             .Where(f => f.Enabled.HasValue)
-            .Select(FeaturePersistenceService.FeatureConfigBuilder)
+            .Select(FeatureStatePersisted.FromChange)
             .ToList();
 
         return new()

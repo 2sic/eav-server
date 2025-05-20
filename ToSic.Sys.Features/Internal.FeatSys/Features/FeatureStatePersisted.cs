@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ToSic.Eav.Internal.Features;
 
 
 namespace ToSic.Eav.SysData;
@@ -42,4 +43,20 @@ public record FeatureStatePersisted
             ? null
             : new(value, comparer: StringComparer.InvariantCultureIgnoreCase);
     }
+
+    public static FeatureStatePersisted FromState(FeatureState featureState) =>
+        new()
+        {
+            Id = featureState.Feature.Guid,
+            Enabled = featureState.IsEnabled
+        };
+
+
+    public static FeatureStatePersisted FromChange(FeatureStateChange change) =>
+        new()
+        {
+            Id = change.FeatureGuid,
+            Enabled = change.Enabled ?? false
+        };
+
 }

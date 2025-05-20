@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Internal.Features;
 
-public class FeatureManagementChange
+public class FeatureStateChange
 {
     [JsonPropertyName("featureGuid")]
     public Guid FeatureGuid { get; set; }

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Fingerprint;
@@ -12,53 +11,10 @@ namespace ToSic.Eav.Internal.Features;
 
 public class FeaturePersistenceService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
+    LazySvc<FeaturesIoHelper> featuresIo,
     LazySvc<SystemFingerprint> fingerprint)
-    : ServiceBase("FeatCfgMng", connect: [globalConfiguration, fingerprint])
+    : ServiceBase("FeatCfgMng", connect: [globalConfiguration, featuresIo, fingerprint])
 {
-
-    #region File Operations
-
-    /// <summary>
-    /// Return content from 'features.json' file.
-    /// Also return full path to 'features.json'.
-    /// </summary>
-    /// <returns>file path and content as string</returns>
-    internal (string filePath, string fileContent) LoadFeaturesFile()
-    {
-        // folder with "features.json"
-        var configurationsPath = globalConfiguration.Value.ConfigFolder();
-
-        // ensure that path to store files already exits
-        Directory.CreateDirectory(configurationsPath);
-
-        var featureFilePath = Path.Combine(configurationsPath, FeatureConstants.FeaturesJson);
-
-        return File.Exists(featureFilePath)
-            ? (featureFilePath, File.ReadAllText(featureFilePath))
-            : (featureFilePath, null);
-    }
-
-    /// <summary>
-    /// Update existing features config in "features.json". 
-    /// </summary>
-    private bool SaveFile(string filePath, string fileContent)
-    {
-        var l = Log.Fn<bool>($"fp={filePath}");
-        try
-        {
-            File.WriteAllText(filePath, fileContent);
-            return l.ReturnTrue("ok, file saved");
-        }
-        catch (Exception e)
-        {
-            l.Ex(e);
-            return l.ReturnFalse($"save file failed:{e.Message}");
-        }
-    }
-
-    #endregion
-
-
     #region JSON serialization
 
     private static JsonObject JsonToObject(string json)
@@ -71,13 +27,10 @@ public class FeaturePersistenceService(
     #endregion
 
 
-
-
-
     /// <summary>
     /// Update existing features config and save. 
     /// </summary>
-    internal bool SaveFeaturesUpdate(List<FeatureManagementChange> changes)
+    internal bool ApplyUpdatesAndSave(List<FeatureStateChange> changes)
     {
         var changeCount = changes?.Count ?? -1;
         var l = Log.Fn<bool>($"c:{changeCount}");
@@ -86,7 +39,7 @@ public class FeaturePersistenceService(
 
         try
         {
-            var (filePath, fileContent) = LoadFeaturesFile();
+            var (_, fileContent) = featuresIo.Value.Load();
             
             // In case the file is empty, create a dummy so the remaining code works
             fileContent ??= JsonSerializer.Serialize(new FeatureStatesPersisted(), JsonOptions.FeaturesJson);
@@ -100,7 +53,7 @@ public class FeaturePersistenceService(
                 // Insert (not yet configured)
                 if (feature == null)
                 {
-                    var featObj = FeatureConfigBuilder(change);
+                    var featObj = FeatureStatePersisted.FromChange(change);
                     if (change.Configuration != null)
                         featObj = featObj with { Configuration = change.Configuration };
                     featureArray.Add(JsonToObject(FeatToJson(featObj)));
@@ -125,7 +78,7 @@ public class FeaturePersistenceService(
             // update to latest fingerprint
             fileJson["fingerprint"] = fingerprint.Value.GetFingerprint();
 
-            var saved = SaveFile(filePath, fileJson.ToString());
+            var saved = featuresIo.Value.Save(fileJson.ToString());
             return l.Return(saved, $"features saved: {saved}");
         }
         catch (Exception e)
@@ -134,20 +87,4 @@ public class FeaturePersistenceService(
             return l.ReturnFalse("save features failed:" + e.Message);
         }
     }
-
-
-    internal static FeatureStatePersisted FeatureConfigBuilder(FeatureState featureState) =>
-        new()
-        {
-            Id = featureState.Feature.Guid,
-            Enabled = featureState.IsEnabled
-        };
-
-        
-    internal static FeatureStatePersisted FeatureConfigBuilder(FeatureManagementChange change) =>
-        new()
-        {
-            Id = change.FeatureGuid,
-            Enabled = change.Enabled ?? false
-        };
 }

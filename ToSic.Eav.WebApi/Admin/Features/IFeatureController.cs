@@ -6,5 +6,5 @@ namespace ToSic.Eav.WebApi.Admin.Features;
 public interface IFeatureController
 {
     FeatureStateDto Details(string nameId);
-    bool SaveNew(List<FeatureManagementChange> changes);
+    bool SaveNew(List<FeatureStateChange> changes);
 }

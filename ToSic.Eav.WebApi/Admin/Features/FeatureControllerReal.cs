@@ -13,7 +13,7 @@ public class FeatureControllerReal(
 {
     public const string LogSuffix = "Feats";
 
-    public bool SaveNew(List<FeatureManagementChange> changes)
+    public bool SaveNew(List<FeatureStateChange> changes)
     {
         var l = Log.Fn<bool>($"{changes.Count} changes");
         // validity check 
