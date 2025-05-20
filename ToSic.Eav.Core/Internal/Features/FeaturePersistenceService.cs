@@ -87,6 +87,9 @@ public class FeaturePersistenceService(
         try
         {
             var (filePath, fileContent) = LoadFeaturesFile();
+            
+            // In case the file is empty, create a dummy so the remaining code works
+            fileContent ??= JsonSerializer.Serialize(new FeatureStatesPersisted(), JsonOptions.FeaturesJson);
             var fileJson = JsonToObject(fileContent);
 
             var featureArray = fileJson["features"]
