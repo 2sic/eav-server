@@ -26,6 +26,7 @@ public static class PathFixer
     /// Convert all "\" characters to "/" characters
     /// </summary>
     [ShowApiWhenReleased(ShowApiMode.Never)]
+    [return: NotNullIfNotNull(nameof(original))]
     public static string? ForwardSlash(this string? original)
         => original?.Replace("\\", "/");
     // could break https:// links etc.
