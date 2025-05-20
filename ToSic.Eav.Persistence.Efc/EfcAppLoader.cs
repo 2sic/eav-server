@@ -268,7 +268,7 @@ public class EfcAppLoader(
         {
             // Get all Entities in the 2SexyContent-App scope
             var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, featuresSvc);
-            var dbEntity = entityLoader.LoadRaw(appId, [], AppLoadConstants.TypeAppConfig);
+            var dbEntity = entityLoader.LoadEntitiesFromDb(appId, [], AppLoadConstants.TypeAppConfig);
             if (dbEntity.Count == 0)
                 return l.Return(nullTuple, "not in db");
 

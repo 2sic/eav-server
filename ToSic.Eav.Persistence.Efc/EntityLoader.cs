@@ -45,7 +45,7 @@ internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializ
         #region Get Entities with Attribute-Values from Database
 
         sqlTime.Start();
-        var rawEntities = LoadRaw(appId, entityIds);
+        var rawEntities = LoadEntitiesFromDb(appId, entityIds);
         sqlTime.Stop();
 
         var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, !filterByEntityIds, rawEntities, featuresSvc, Log);
@@ -90,7 +90,7 @@ internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializ
         return l.Return(sqlTime.Elapsed);
     }
 
-    public List<TempEntity> LoadRaw(int appId, int[] entityIds, string filterType = null)
+    public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string filterType = null)
     {
         var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterType)}: '{filterType}'", timer: true);
 

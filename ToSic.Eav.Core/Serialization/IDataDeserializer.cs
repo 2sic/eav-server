@@ -12,12 +12,6 @@ namespace ToSic.Eav.Serialization;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDataDeserializer: IHasLog
 {
-    ///// <summary>
-    ///// Initialize with the app. One of two possible initializers.
-    ///// </summary>
-    ///// <param name="appState">the app which contains the data to be serialized</param>
-    //void Initialize(AppState appState);
-
     void Initialize(IAppReader appReader);
 
     public void ConfigureLogging(LogSettings settings);

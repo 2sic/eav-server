@@ -9,11 +9,14 @@ namespace ToSic.Eav.Metadata;
 internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBase("MDa.TTSvc", connect: [loader]), ITargetTypeService
 {
     private const string ReservedType = "Reserved";
+    
+    // Log is usually not needed here
+    private const bool EnableLog = false;
 
     /// <inheritdoc />
     public int GetId(string targetTypeName)
     {
-        var l = Log.Fn<int>(targetTypeName);
+        var l = Log.Fn<int>(targetTypeName, enabled: EnableLog);
         
         if (TargetTypesByName.TryGetValue(targetTypeName, out var key))
             return l.Return(key, "found by name");
@@ -28,7 +31,7 @@ internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBa
     /// <inheritdoc />
     public string GetName(int typeId)
     {
-        var l = Log.Fn<string>(typeId.ToString());
+        var l = Log.Fn<string>(typeId.ToString(), enabled: EnableLog);
         if (!TargetTypes.TryGetValue(typeId, out var result))
             throw l.Ex(new ArgumentException($"Tried to get TargetType name of '{typeId}' but couldn't find it in the list.", nameof(typeId)));
 
