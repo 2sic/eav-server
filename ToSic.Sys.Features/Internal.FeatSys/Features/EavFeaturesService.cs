@@ -138,7 +138,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
                 var inConfig = config?.Features.FirstOrDefault(cf => cf.Id == featDef.Guid);
                 if (inConfig != null)
                 {
-                    enabled = licenseEnabled && inConfig.Enabled;
+                    enabled = licenseEnabled && inConfig.EnabledRespectingExpiry();
                     if (expiry == DateTime.MinValue)
                         expiry = inConfig.Expires; // set expiry by configuration (when is not set by license)
                     msgShort = licenseEnabled ? "configuration" : "unlicensed";
@@ -165,12 +165,12 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
             .Select(f => new FeatureState(
                     Feature.UnknownFeature(f.Id),
                     f.Expires,
-                    f.Enabled,
+                    f.EnabledRespectingExpiry(),
                     "configuration",
                     "Configured manually",
                     AllowedByLicense: false,
                     EnabledByDefault: false,
-                    EnabledInConfiguration: f.Enabled,
+                    EnabledInConfiguration: f.Enabled != null,
                     Configuration: f.Configuration
                 )
             );

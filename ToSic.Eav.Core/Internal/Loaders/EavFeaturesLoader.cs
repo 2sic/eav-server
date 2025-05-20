@@ -3,7 +3,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
 using ToSic.Lib.Services;
@@ -12,7 +11,6 @@ namespace ToSic.Eav.Internal.Loaders;
 
 [PrivateApi]
 public class EavFeaturesLoader(
-    SystemFingerprint fingerprint,  // note: must be of type SystemFingerprint, not IFingerprint
     IEavFeaturesService featuresSvc,
     FeaturePersistenceService featurePersistenceService,
     FeaturesIoHelper featuresIo,
@@ -20,7 +18,7 @@ public class EavFeaturesLoader(
     IAppReaderFactory appReaders,
     SysFeaturesService sysFeaturesService)
     : ServiceBase($"{EavLogs.Eav}FtLdr",
-        connect: [fingerprint, appReaders, featuresSvc, featurePersistenceService, featuresIo, licenseLoader, sysFeaturesService])
+        connect: [appReaders, featuresSvc, featurePersistenceService, featuresIo, licenseLoader, sysFeaturesService])
 {
 
     /// <summary>
@@ -120,33 +118,8 @@ public class EavFeaturesLoader(
     {
         var l = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
         var saved = featurePersistenceService.ApplyUpdatesAndSave(changes);
-        var newState = FeatureListStoredBuilder(changes);
-        SetFeaturesStored(newState);
-        return l.ReturnAndLog(saved, "ok, updated");
+        var ok = ReloadFeatures();
+        return l.ReturnAndLog(saved && ok, "ok, updated");
     }
 
-    private FeatureStatesPersisted FeatureListStoredBuilder(List<FeatureStateChange> changes)
-    {
-        var updatedIds = changes
-            .Select(f => f.FeatureGuid)
-            .ToList();
-
-        var storedFeaturesButNotUpdated = featuresSvc.All
-            .Where(f => f.EnabledInConfiguration.HasValue && !updatedIds.Contains(f.Feature.Guid))
-            .Select(FeatureStatePersisted.FromState)
-            .ToList();
-            
-        var updatedFeatures = changes
-            .Where(f => f.Enabled.HasValue)
-            .Select(FeatureStatePersisted.FromChange)
-            .ToList();
-
-        return new()
-        {
-            Features = storedFeaturesButNotUpdated
-                .Union(updatedFeatures)
-                .ToList(),
-            Fingerprint = fingerprint.GetFingerprint()
-        };
-    }
 }

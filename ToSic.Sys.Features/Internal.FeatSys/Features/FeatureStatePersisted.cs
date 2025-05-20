@@ -22,11 +22,9 @@ public record FeatureStatePersisted
     /// </summary>
     /// <remarks>by default all features are disabled</remarks>
     [JsonPropertyName("enabled")]
-    public bool Enabled
-    {
-        get => field && Expires > DateTime.Now;
-        init;
-    }
+    public bool? Enabled { get; init; }
+
+    public bool EnabledRespectingExpiry() => Enabled == true && Expires > DateTime.Now;
 
     /// <summary>
     /// Expiry of this feature
@@ -44,19 +42,19 @@ public record FeatureStatePersisted
             : new(value, comparer: StringComparer.InvariantCultureIgnoreCase);
     }
 
-    public static FeatureStatePersisted FromState(FeatureState featureState) =>
-        new()
-        {
-            Id = featureState.Feature.Guid,
-            Enabled = featureState.IsEnabled
-        };
+    //public static FeatureStatePersisted FromState(FeatureState featureState) =>
+    //    new()
+    //    {
+    //        Id = featureState.Feature.Guid,
+    //        Enabled = featureState.IsEnabled
+    //    };
 
 
     public static FeatureStatePersisted FromChange(FeatureStateChange change) =>
         new()
         {
             Id = change.FeatureGuid,
-            Enabled = change.Enabled ?? false
+            Enabled = change.Enabled// ?? false
         };
 
 }
