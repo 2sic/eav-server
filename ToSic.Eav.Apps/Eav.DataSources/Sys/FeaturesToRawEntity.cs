@@ -7,12 +7,12 @@ public static class FeaturesToRawEntity
     public static IRawEntity ToRawEntity(this FeatureState state)
         => new RawEntity
         {
-            Guid = state.Feature.Guid,
+            Guid = state.Aspect.Guid,
             Values = new Dictionary<string, object>
             {
                 { nameof(state.NameId), state.NameId },
-                { Attributes.TitleNiceName, state.Feature.Name },
-                { nameof(Aspect.Description), state.Feature.Description },
+                { Attributes.TitleNiceName, state.Aspect.Name },
+                { nameof(Aspect.Description), state.Aspect.Description },
                 { nameof(state.IsEnabled), state.IsEnabled },
                 { nameof(state.EnabledByDefault), state.EnabledByDefault },
                 // Not important, don't include
@@ -26,7 +26,7 @@ public static class FeaturesToRawEntity
                 { $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? Constants.NullNameId },
                 { $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
                 { nameof(state.AllowedByLicense), state.AllowedByLicense },
-                { nameof(state.Feature.Link), state.Feature.Link },
+                { nameof(state.Aspect.Link), state.Aspect.Link },
                 { nameof(state.IsPublic), state.IsPublic },
             }
         };
@@ -42,17 +42,17 @@ public static class FeaturesToRawEntity
     public static IRawEntity ToRawEntity(this FeatureSetState state)
         => new RawEntity
         {
-            Guid = state.Feature.Guid,
+            Guid = state.Aspect.Guid,
             Values = new Dictionary<string, object>
             {
                 // Properties describing the License
                 // { Attributes.NameIdNiceName, License.Name },
-                { Attributes.TitleNiceName, state.Feature.Name },
-                { nameof(state.Feature.NameId), state.Feature.NameId },
+                { Attributes.TitleNiceName, state.Aspect.Name },
+                { nameof(state.Aspect.NameId), state.Aspect.NameId },
                 { nameof(state.LicenseKey), state.LicenseKey },
-                { nameof(state.Feature.Description), state.Feature.Description },
-                { nameof(state.Feature.AutoEnable), state.Feature.AutoEnable },
-                { nameof(state.Feature.Priority), state.Feature.Priority },
+                { nameof(state.Aspect.Description), state.Aspect.Description },
+                { nameof(state.Aspect.AutoEnable), state.Aspect.AutoEnable },
+                { nameof(state.Aspect.Priority), state.Aspect.Priority },
                 // The License Condition is an internal property
                 // Used when checking conditions on other objects - if this license is what is expected
                 //{ "LicenseConditionType", License.Condition.Type },

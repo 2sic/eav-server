@@ -33,7 +33,7 @@ public sealed class Licenses : CustomDataSource
         ConnectLogs([licenseService]);
         ProvideOutRaw(
             () => licenseService.All
-                .OrderBy(l => l.Feature?.Priority ?? 0)
+                .OrderBy(l => l.Aspect?.Priority ?? 0)
                 .Select(l => l.ToRawEntity()),
             options: () => new() { TypeName = "License" }
         );

@@ -109,9 +109,9 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     public DicString LookUp(
         DicString values,
         NoParamOrder noParamOrder = default,
-        IEnumerable<ILookUp> overrides = default,
+        IEnumerable<ILookUp>? overrides = default,
         int depth = 4,
-        Func<ITweakLookUp, ITweakLookUp> tweak = default)
+        Func<ITweakLookUp, ITweakLookUp>? tweak = default)
     {
         var overridesList = overrides?.ToList() ?? [];
         var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overridesList.Count}, depth: {depth}, hasTweak: {tweak != null}");

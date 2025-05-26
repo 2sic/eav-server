@@ -7,13 +7,11 @@ namespace ToSic.Eav.SysData;
 /// </summary>
 [PrivateApi("no good reason to publish this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record Aspect: IHasIdentityNameId
+public record Aspect(): IHasIdentityNameId
 {
     public const string PatronsUrl = "https://patrons.2sxc.org";
 
-    public Aspect() { }
-
-    protected Aspect(string NameId, Guid Guid, string Name, string Description = default)
+    protected Aspect(string NameId, Guid Guid, string Name, string Description = default): this()
     {
         this.NameId = NameId;
         this.Guid = Guid;
@@ -44,7 +42,7 @@ public record Aspect: IHasIdentityNameId
     /// <summary>
     /// A nice description
     /// </summary>
-    public string Description { get; init; }
+    public string Description { get; init; } = "";
 
     public override string ToString() => $"Aspect: {Name} ({NameId} / {Guid})";
 }

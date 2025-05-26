@@ -58,9 +58,9 @@ public class LicenseService : ILicenseService
             .Where(l => l.IsEnabled)
             .OrderByDescending(l => l.Expiration) // same feature license with longer expiration have priority
             // must do Distinct = GroupBy+First to ensure we don't have duplicate keys
-            .GroupBy(l => l.Feature)
+            .GroupBy(l => l.Aspect)
             .Select(g => g.First())
-            .ToImmutableDictionary(l => l.Feature.Guid, l => l); ;
+            .ToImmutableDictionary(l => l.Aspect.Guid, l => l); ;
         CacheTimestamp = DateTime.Now.Ticks;
         AllLicensesAreInvalid = AreAllLicensesInvalid();
     }
@@ -72,10 +72,10 @@ public class LicenseService : ILicenseService
     internal static bool AreAllLicensesInvalid()
     {
         // if we do not have license for validation, than it can not be invalid
-        if (AllCache.All(l => l.Feature.AutoEnable)) return false;
+        if (AllCache.All(l => l.Aspect.AutoEnable)) return false;
             
         // any valid license?
-        foreach (var license in AllCache.Where(l => !l.Feature.AutoEnable))
+        foreach (var license in AllCache.Where(l => !l.Aspect.AutoEnable))
             if (license.Valid)
                 return false;
         return true;

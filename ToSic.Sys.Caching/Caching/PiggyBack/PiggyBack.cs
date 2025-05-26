@@ -11,13 +11,14 @@ namespace ToSic.Eav.Data.PiggyBack;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PiggyBack
 {
-    private readonly ConcurrentDictionary<string, object> _cache = new(StringComparer.InvariantCultureIgnoreCase);
+    private readonly ConcurrentDictionary<string, object?> _cache = new(StringComparer.InvariantCultureIgnoreCase);
 
     public bool Has(string key) => _cache.ContainsKey(key);
 
     public TData GetOrGenerate<TData>(string key, Func<TData> create)
     {
-        if (_cache.TryGetValue(key, out var result) && result is TData typed) return typed;
+        if (_cache.TryGetValue(key, out var result) && result is TData typed)
+            return typed;
         try
         {
             typed = create();

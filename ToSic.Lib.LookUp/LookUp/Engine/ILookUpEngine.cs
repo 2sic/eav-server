@@ -28,9 +28,9 @@ public interface ILookUpEngine: IHasLog
     IDictionary<string, string> LookUp(
         IDictionary<string, string> values,
         NoParamOrder noParamOrder = default,
-        IEnumerable<ILookUp> overrides = null,
+        IEnumerable<ILookUp>? overrides = default,
         int depth = LibLookUpConstants.DefaultLookUpDepth,
-        Func<ITweakLookUp, ITweakLookUp> tweak = default);
+        Func<ITweakLookUp, ITweakLookUp>? tweak = default);
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     ILookUpEngine Downstream { get; }

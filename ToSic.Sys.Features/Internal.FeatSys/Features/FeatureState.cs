@@ -32,9 +32,9 @@ public record FeatureState(
             null,
             null);
 
-    public string NameId => Feature.NameId;
+    public string NameId => Aspect.NameId;
 
-    public FeatureSet License => _license.Get(() => Feature.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
+    public FeatureSet License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
     private readonly GetOnce<FeatureSet> _license = new();
 
     /// <summary>
@@ -64,14 +64,14 @@ public record FeatureState(
     /// This only applies to normal users.
     /// Admins and Super-Users will always get all the features in the Edit-UI, to allow for better UI hints. 
     /// </summary>
-    public bool IsForEditUi => Feature.Ui;
+    public bool IsForEditUi => Aspect.Ui;
 
     /// <summary>
     /// Determines if non-admins should still know about this feature in the UI
     /// </summary>
-    public bool IsPublic => Feature.IsPublic;
+    public bool IsPublic => Aspect.IsPublic;
 
-    public FeatureSecurity Security => Feature.Security;
+    public FeatureSecurity Security => Aspect.Security;
 
     /// <summary>
     /// Indicate if this feature is allowed to be activated

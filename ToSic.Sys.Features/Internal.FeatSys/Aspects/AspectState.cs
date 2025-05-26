@@ -13,7 +13,7 @@ public record AspectState<TAspect>(TAspect Aspect, bool IsEnabled)
     /// Feature Definition.
     /// </summary>
     [JsonIgnore]
-    public TAspect Feature { get; } = Aspect;
+    public TAspect Aspect { get; } = Aspect;
 
     public virtual bool IsEnabled { get; } = IsEnabled;
 }
