@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Capabilities.Platform;
 using ToSic.Sys.Capabilities.SysFeatures;
@@ -9,7 +10,7 @@ using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService
 
 namespace ToSic.Sys;
 
-public static class StartupLibFeatSys
+public static class SetupSysCapabilities
 {
     public static IServiceCollection AddSysCapabilities(this IServiceCollection services)
     {
@@ -26,6 +27,11 @@ public static class StartupLibFeatSys
         services.AddTransient<IRequirementCheck, SysFeatureRequirementCheck>();
 
         services.TryAddTransient<ILicenseService, LicenseService>();
+
+        // Fingerprinting: Because fo security, we are not injecting the interface
+        // As that would allow replacing the finger-printer with something else
+        // We actually only use the direct object in DI
+        services.TryAddTransient<SystemFingerprint>();
 
         return services;
     }

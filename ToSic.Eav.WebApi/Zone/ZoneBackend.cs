@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Integration;
-using ToSic.Eav.Security.Fingerprint;
+using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Capabilities.Platform;
 using ToSic.Sys.Code.InfoSystem;

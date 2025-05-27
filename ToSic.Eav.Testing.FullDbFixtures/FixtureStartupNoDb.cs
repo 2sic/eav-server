@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Internal.Configuration;
-using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Testing.Scenarios;
+using ToSic.Sys.Capabilities.Fingerprints;
 
 namespace ToSic.Eav.Testing;
 

@@ -13,6 +13,6 @@ public static class GlobalConfigDb
     /// </summary>
     /// <returns>The folder, can be null if it was never set</returns>
     public static string ConnectionString(this IGlobalConfiguration config)
-        => config.GetThisErrorOnNull();
+        => config.GetThis() ?? throw new ("Couldn't load Connection String as SetConnectionString must have been forgotten");
 
 }

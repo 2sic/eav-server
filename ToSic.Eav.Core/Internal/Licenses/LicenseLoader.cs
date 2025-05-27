@@ -19,7 +19,6 @@ using System.Text;
 using System.Text.Json;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Encryption;
-using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.DI;
 using ToSic.Sys.Capabilities;
 using ToSic.Sys.Capabilities.FeatureSet;

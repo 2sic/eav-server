@@ -15,23 +15,21 @@
  *
  */
 
-using System.Reflection;
-using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Platform;
+using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Security.Fingerprint;
+namespace ToSic.Sys.Capabilities.Fingerprints;
 
 /// <summary>
 /// Class responsible for generating the fingerprint
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IGlobalConfiguration> globalConfig)
-    : ServiceBase($"{EavLogs.Eav}SysFpr", connect: [platform]), IFingerprint
+    : ServiceBase("Sys.SysFpr", connect: [platform]), IFingerprint
 {
     public string GetFingerprint()
     {
@@ -43,18 +41,18 @@ public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<I
         var systemGuid = platform1.Identity.ToLowerInvariant();  // unique id of an installation
         var sysVersion = platform1.Version;                            // Major version, fingerprint should change with each
         var dbConnection = GetDbName().ToLowerInvariant();      // Database name
-        var versionEav = Assembly.GetExecutingAssembly().GetName().Version
+        var versionEav = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
             ?? throw new NullReferenceException("Version is missing");
 
         _fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
         return _fingerprintCache = Sha256.Hash(_fingerprintKey);
     }
-    private static string _fingerprintCache;
+    private static string? _fingerprintCache;
 
     /// <summary>
     /// Remember the key for debugging purposes to compare what was used to generate the fingerprint
     /// </summary>
-    private static string _fingerprintKey;
+    private static string? _fingerprintKey;
 
     private string GetDbName()
     {
@@ -67,9 +65,9 @@ public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<I
 
     internal static void ResetForTest() => _fingerprintCache = null;
 
-    public List<EnterpriseFingerprint> EnterpriseFingerprints => _enterpriseFingerprints;
-    private static List<EnterpriseFingerprint> _enterpriseFingerprints = [];
+    public List<EnterpriseFingerprint> EnterpriseFingerprints => _enterpriseFingerprintsStatic;
+    private static List<EnterpriseFingerprint> _enterpriseFingerprintsStatic = [];
 
-    internal void LoadEnterpriseFingerprints(List<EnterpriseFingerprint> enterpriseFingerprints) 
-        => _enterpriseFingerprints = enterpriseFingerprints;
+    public void LoadEnterpriseFingerprints(List<EnterpriseFingerprint> enterpriseFingerprints) 
+        => _enterpriseFingerprintsStatic = enterpriseFingerprints;
 }

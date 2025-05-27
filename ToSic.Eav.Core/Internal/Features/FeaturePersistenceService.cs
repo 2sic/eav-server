@@ -1,11 +1,11 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Internal.Configuration;
-using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Fingerprints;
 
 namespace ToSic.Eav.Internal.Features;
 

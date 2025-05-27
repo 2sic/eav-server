@@ -2,7 +2,6 @@
 using System.Text.Json;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
@@ -10,6 +9,7 @@ using ToSic.Eav.WebApi.Validation;
 using ToSic.Lib.Documentation;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
 
 namespace ToSic.Eav.WebApi.Sys.Licenses;

@@ -81,6 +81,10 @@
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Security\Fingerprint\" />
+  </ItemGroup>
+
   <!--WHAT ARE WE TURNING OFF HERE?-->
   <PropertyGroup>
     <NoWarn>$(NoWarn);1701;1702;CS8632</NoWarn>

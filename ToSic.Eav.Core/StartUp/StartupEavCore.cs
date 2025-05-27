@@ -14,7 +14,6 @@ using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Encryption;
-using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.Caching;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Code.InfoSystem;
@@ -29,7 +28,6 @@ public static class StartUpEavCore
     public static IServiceCollection AddEavCore(this IServiceCollection services)
     {
         // Configuration objects
-        services.TryAddTransient<IDbConfiguration, DbConfiguration>();
         services.TryAddTransient<GlobalPaths>();
         services.TryAddTransient<SystemLoader>();
         services.TryAddTransient<EavSystemLoader>();
@@ -58,12 +56,6 @@ public static class StartUpEavCore
             
         // Permissions helper
         services.TryAddTransient<PermissionCheckBase.MyServices>();
-
-        // Fingerprinting: Because fo security, we are not injecting the interface
-        // As that would allow replacing the finger-printer with something else
-        // We actually only use the direct object in DI
-        //services.TryAddTransient<IFingerprint, Fingerprint>();
-        services.TryAddTransient<SystemFingerprint>();
 
         services.TryAddTransient<LicenseLoader>();
 
