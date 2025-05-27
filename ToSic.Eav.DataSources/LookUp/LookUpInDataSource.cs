@@ -32,7 +32,7 @@ public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cul
     {
         // Check if it has sub-keys to see if it's trying to match an inbound stream
         var subTokens = CheckAndGetSubToken(key);
-        if (!subTokens.HasSubtoken) return string.Empty;
+        if (!subTokens.HasSubToken) return string.Empty;
 
         // check if this stream exists
         if (!dataSource.In.TryGetValue(subTokens.Source, out var entityStream)) return string.Empty;

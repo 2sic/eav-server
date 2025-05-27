@@ -12,7 +12,7 @@ namespace ToSic.Eav.LookUp;
 [PrivateApi("hide implementation")]
 public class LookUpEngine : HelperBase, ILookUpEngine
 {
-    #region Constants
+    #region Debug
 
     [PrivateApi] protected bool LogDetailed = true;
     #endregion
@@ -27,6 +27,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     /// </summary>
     private readonly TokenReplace _reusableTokenReplace;
 
+    // ReSharper disable once UnusedParameter.Local
     public LookUpEngine(ILog parentLog, NoParamOrder protector = default, IEnumerable<ILookUp>? sources = default)
         : base(parentLog, "EAV.LookUp")
     {
@@ -39,17 +40,19 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     /// Cloning another LookUpEngine and keep the sources.
     /// </summary>
     public LookUpEngine(
-        ILookUpEngine original,
+        ILookUpEngine? original,
         ILog parentLog,
+        // ReSharper disable once UnusedParameter.Local
         NoParamOrder protector = default,
-        List<ILookUp> sources = default,
-        List<ILookUp> overrides = default,
+        List<ILookUp>? sources = default,
+        List<ILookUp>? overrides = default,
         bool skipOriginalSource = false,
         bool onlyUseProperties = false
         ): this(parentLog)
     {
-        if (original == null) return;
-        var l = Log.Fn($"clone: {original.Log.NameId}; LogDetailed: {LogDetailed}; {nameof(onlyUseProperties)}: {onlyUseProperties}");
+        if (original == null)
+            return;
+        var l = Log.Fn($"clone: {original.Log?.NameId}; LogDetailed: {LogDetailed}; {nameof(onlyUseProperties)}: {onlyUseProperties}");
         
         // Link downstream. This is either the original, or if we copy the sources, then we won't use the original, so we use its downstream
         Link(onlyUseProperties ? original.Downstream : original);
@@ -75,11 +78,13 @@ public class LookUpEngine : HelperBase, ILookUpEngine
             : Downstream?.FindSource(name);
 
     [PrivateApi]
-    public bool HasSource(string name) => FindSource(name) != null;
+    public bool HasSource(string name)
+        => FindSource(name) != null;
 
-    public void Link(ILookUpEngine downstream) => Downstream = downstream;
+    public void Link(ILookUpEngine? downstream)
+        => Downstream = downstream;
         
-    internal DicString LookUpInternal(DicString values, int depth = 4, ITweakLookUp tweaker = default)
+    internal DicString LookUpInternal(DicString values, int depth = 4, ITweakLookUp? tweaker = default)
     {
         var l = Log.Fn<DicString>($"values: {values.Count}, depth: {depth}");
         // start by creating a copy of the dictionary
@@ -137,10 +142,10 @@ public class LookUpEngine : HelperBase, ILookUpEngine
 
     private void Add(IEnumerable<ILookUp> lookUps)
     {
-        if (lookUps == null) return;
         var list = lookUps.ToList();
-        if (list.Count == 0) return;
-        var sourceNames = Log.Try(() => string.Join(", ", list.Select(l => $"'{l.Name ?? "unknown"}'")));
+        if (list.Count == 0)
+            return;
+        var sourceNames = Log.Try(() => string.Join(", ", list.Select(l => $"'{l.Name}'")));
         Log.A(Log.Try(() => $"Add/replace sources: {sourceNames}"));
         foreach (var lookUp in list) 
             SourceDic[lookUp.Name] = lookUp;
@@ -153,10 +158,12 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     ///// <param name="lookUp">a <see cref="ILookUp"/> which should override the original configuration</param>
     private void AddOverride(ILookUp lookUp)
     {
+        // check if it already has this provider. 
+        // ensure that there is an "override property provider" which would pre-catch certain keys
         var found = SourceDic.TryGetValue(lookUp.Name, out var original);
         var l = (LogDetailed ? Log : null).Fn($"{lookUp.Name}; found existing: {found}");
         SourceDic[lookUp.Name] = found
-            ? new LookUpInLookUps(lookUp.Name, [lookUp, original])
+            ? new LookUpInLookUps(lookUp.Name, [lookUp, original!])
             : lookUp;
         l.Done();
     }
@@ -168,13 +175,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     /// <param name="lookUps">list of <see cref="ILookUp"/> which should override the original configuration</param>
     private void AddOverride(IEnumerable<ILookUp> lookUps)
     {
-        if (lookUps == null) return;
         foreach (var provider in lookUps)
-            if (provider.Name == null)
-                throw new NullReferenceException("LookUp must have a Name");
-            else
-                // check if it already has this provider. 
-                // ensure that there is an "override property provider" which would pre-catch certain keys
-                AddOverride(provider);
+            AddOverride(provider);
     }
 }

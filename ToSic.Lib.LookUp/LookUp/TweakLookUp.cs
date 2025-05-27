@@ -13,8 +13,8 @@ public class TweakLookUp: ITweakLookUp
 
     internal TweakLookUp(
         TweakLookUp original,
-        Func<string, string> postProcess = default,
-        Func<string, LookUpSpecs, string> postProcessAdv = default
+        Func<string, string>? postProcess = default,
+        Func<string, LookUpSpecs, string>? postProcessAdv = default
     )
     {
         _postProcess = postProcess ?? original._postProcess;
@@ -27,8 +27,8 @@ public class TweakLookUp: ITweakLookUp
     public ITweakLookUp PostProcess(Func<string, LookUpSpecs, string> postProcessAdv)
         => new TweakLookUp(this, postProcessAdv: postProcessAdv);
 
-    private readonly Func<string, string> _postProcess;
-    private readonly Func<string, LookUpSpecs, string> _postProcessAdv;
+    private readonly Func<string, string>? _postProcess;
+    private readonly Func<string, LookUpSpecs, string>? _postProcessAdv;
 
     public string PostProcess(string template, LookUpSpecs specs)
     {

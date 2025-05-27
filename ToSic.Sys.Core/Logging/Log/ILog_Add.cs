@@ -45,7 +45,7 @@ public static partial class ILog_Add
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static void A(this ILog log,
+    public static void A(this ILog? log,
         bool enabled, 
         string message,
         [CallerFilePath] string? cPath = default,
@@ -64,7 +64,7 @@ public static partial class ILog_Add
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static void W(this ILog log,
+    public static void W(this ILog? log,
         string message,
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,

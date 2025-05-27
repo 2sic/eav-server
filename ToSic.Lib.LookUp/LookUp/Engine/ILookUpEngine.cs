@@ -33,7 +33,7 @@ public interface ILookUpEngine: IHasLog
         Func<ITweakLookUp, ITweakLookUp>? tweak = default);
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
-    ILookUpEngine Downstream { get; }
+    ILookUpEngine? Downstream { get; }
 
     /// <summary>
     /// Find a source by name in the current engine or any downstream engines.

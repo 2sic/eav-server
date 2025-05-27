@@ -14,9 +14,9 @@ public abstract class LookUpBase(string name, string? description = "") : ILookU
 
     #region default methods of interface
     /// <inheritdoc/>
-    public string Name { get; } = name;
+    public string Name { get; } = name ?? throw new NullReferenceException("LookUp must have a Name");
 
-    public virtual string Description => description;
+    public virtual string Description => description ?? "";
 
     #region Sub-Token analysis and splitting
     // this is needed by some key accesses which support sub-properties like Content:Publisher:Location:City...
@@ -30,20 +30,19 @@ public abstract class LookUpBase(string name, string? description = "") : ILookU
     [PrivateApi]
     protected SubToken CheckAndGetSubToken(string original)
     {
-        var result = new SubToken();
-
         // Do quick-check - without a ":" it doesn't have sub-tokens so stop here
         if (!original.Contains(":"))
-            return result;
+            return new() { HasSubToken = false };
 
         var match = SubProperties.Match(original);
-        if (match.Success)
-        {
-            result.HasSubtoken = true;
-            result.Source = match.Groups[1].Value;
-            result.Rest = match.Groups[2].Value;
-        }
-        return result;
+        return match.Success
+            ? new SubToken
+            {
+                HasSubToken = true,
+                Source = match.Groups[1].Value,
+                Rest = match.Groups[2].Value,
+            }
+            : new() { HasSubToken = false };
     }
 
         
@@ -106,7 +105,7 @@ public abstract class LookUpBase(string name, string? description = "") : ILookU
                     ? ((IFormattable)valueObject).ToString(format,
                         CultureHelpers.SafeCultureInfo(dimensions))
                     : ((IFormattable)valueObject).ToString("G", CultureInfo.InvariantCulture),
-            _ => FormatString(valueObject.ToString(), format)
+            _ => FormatString(valueObject.ToString() ?? "", format)
         };
     }
 
@@ -120,7 +119,7 @@ public abstract class LookUpBase(string name, string? description = "") : ILookU
 [PrivateApi]
 public class SubToken
 {
-    public bool HasSubtoken;
-    public string Source;
-    public string Rest;
+    public bool HasSubToken;
+    public string? Source;
+    public string? Rest;
 }

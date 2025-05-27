@@ -44,7 +44,7 @@ public class LookUpInEntity : LookUpIn<IEntity>
 
         // Not found yet, so check for Navigation-Property (e.g. Manager:Name)
         var subTokens = CheckAndGetSubToken(key);
-        if (!subTokens.HasSubtoken)
+        if (!subTokens.HasSubToken)
             return string.Empty;
         valueObject = Data.Get(subTokens.Source, languages: _dimensions);
 
