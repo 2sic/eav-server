@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Security;
-using ToSic.Lib.Security.Permissions;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Integration.Security;
 

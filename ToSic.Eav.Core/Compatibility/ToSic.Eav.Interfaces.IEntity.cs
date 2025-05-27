@@ -3,6 +3,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using System.Collections.Immutable;
+using ToSic.Sys.Security.Permissions;
 
 // This is old stuff / compatibility necessary for DNN
 // It should not bleed into Oqtane or newer implementations

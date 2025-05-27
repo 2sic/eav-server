@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Plumbing;
-using ToSic.Eav.Security.Permissions;
+using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Internal.Api01;

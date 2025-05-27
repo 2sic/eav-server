@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Context;
+﻿namespace ToSic.Sys.Users;
 
 [PrivateApi]
 public interface IRole

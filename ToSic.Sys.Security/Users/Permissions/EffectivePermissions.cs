@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Context;
+﻿namespace ToSic.Sys.Users.Permissions;
 
 /// <summary>
 /// Special object which only contains the user permissions.

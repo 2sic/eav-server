@@ -2,6 +2,7 @@
 using ToSic.Eav.Context;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Internal.Features;
+using ToSic.Sys.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security.Internal;

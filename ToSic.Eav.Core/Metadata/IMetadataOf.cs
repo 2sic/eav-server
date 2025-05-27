@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Security;
+using ToSic.Sys.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Metadata;

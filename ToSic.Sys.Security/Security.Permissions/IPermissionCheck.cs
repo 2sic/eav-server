@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Security.Permissions;
-
-namespace ToSic.Eav.Security;
+﻿namespace ToSic.Sys.Security.Permissions;
 
 public interface IPermissionCheck: IHasLog
 {

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Security;
+﻿namespace ToSic.Sys.Security.Permissions;
 
 public enum Grants
 {

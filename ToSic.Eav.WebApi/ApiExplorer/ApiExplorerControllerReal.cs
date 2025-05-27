@@ -3,6 +3,7 @@ using System.Reflection;
 using ToSic.Eav.Context;
 using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Infrastructure;
+using ToSic.Sys.Users;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
 #else

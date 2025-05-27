@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.Internal.Features;
-using ToSic.Lib.Security.Permissions;
+﻿using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Services;
+using ToSic.Sys.Users;
 
-namespace ToSic.Eav.Security;
+namespace ToSic.Sys.Security.Permissions;
 
 /// <summary>
 /// Basic constructor, you must always call Init afterward

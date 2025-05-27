@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Lib.Helpers;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Data;
 

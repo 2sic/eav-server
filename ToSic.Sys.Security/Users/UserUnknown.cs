@@ -3,7 +3,7 @@ using ToSic.Lib;
 
 #pragma warning disable CS9113 // Parameter is unread.
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Sys.Users;
 
 internal sealed class UserUnknown(WarnUseOfUnknown<UserUnknown> _) : IUser, IIsUnknown
 {

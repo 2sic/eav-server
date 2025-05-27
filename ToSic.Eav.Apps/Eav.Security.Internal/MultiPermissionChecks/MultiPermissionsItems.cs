@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
+using ToSic.Sys.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Security.Internal;

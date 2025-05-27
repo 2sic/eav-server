@@ -5,6 +5,7 @@ using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Security.Internal;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Eav.WebApi.Formats;
+using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Utils;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -162,7 +163,7 @@ public class EntityApi(
     }
 
     // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
-    public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Eav.Security.Grants> requiredGrants)
+    public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Grants> requiredGrants)
     {
         var permCheck = multiPermissionsTypes.New().Init(context, app, contentType);
         if (!permCheck.EnsureAll(requiredGrants, out var error))

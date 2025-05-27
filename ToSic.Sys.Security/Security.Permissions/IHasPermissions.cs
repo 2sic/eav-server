@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Security;
+﻿namespace ToSic.Sys.Security.Permissions;
 
 /// <summary>
 /// Anything that uses <see cref="IHasPermissions"/> can have custom permissions.

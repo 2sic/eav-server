@@ -1,5 +1,7 @@
 ﻿using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Internal;
+using ToSic.Sys.Users;
+using ToSic.Sys.Users.Permissions;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Context.Internal;

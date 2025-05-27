@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Security.Internal;
+﻿using ToSic.Sys.Security.Permissions;
+
+namespace ToSic.Eav.Security.Internal;
 
 /// <summary>
 /// A permission checker which is initialized with various items which must be checked

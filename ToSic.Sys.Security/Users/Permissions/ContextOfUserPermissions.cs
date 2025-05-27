@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Sys.Users.Permissions;
 
 /// <summary>
 /// Very basic implementation.

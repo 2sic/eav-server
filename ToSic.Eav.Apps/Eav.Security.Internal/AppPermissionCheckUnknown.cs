@@ -1,5 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Internal.Unknown;
+using ToSic.Sys.Security.Permissions;
+
 #pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Eav.Security.Internal;

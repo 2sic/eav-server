@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.DataSources.Internal;
+using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;

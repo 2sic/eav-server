@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data;
 using ToSic.Eav.Security;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Metadata;
 

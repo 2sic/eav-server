@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Lib.Security.Permissions;
+﻿using ToSic.Sys.Users;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Security;
+namespace ToSic.Sys.Security.Permissions;
 
 partial class PermissionCheckBase
 {

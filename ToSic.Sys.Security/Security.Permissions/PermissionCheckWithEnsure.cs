@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Security;
+﻿namespace ToSic.Sys.Security.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PermissionCheckWithEnsure 

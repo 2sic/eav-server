@@ -1,6 +1,6 @@
-﻿using static ToSic.Eav.Security.Grants;
+﻿using static ToSic.Sys.Security.Permissions.Grants;
 
-namespace ToSic.Eav.Security.Permissions;
+namespace ToSic.Sys.Security.Permissions;
 
 public static class GrantSets
 {

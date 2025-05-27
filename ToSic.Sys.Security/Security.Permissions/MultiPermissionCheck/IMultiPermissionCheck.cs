@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Security;
+﻿namespace ToSic.Sys.Security.Permissions;
 
 /// <summary>
 /// A wrapper for many permission checks. All of which must approve, for the request to succeed

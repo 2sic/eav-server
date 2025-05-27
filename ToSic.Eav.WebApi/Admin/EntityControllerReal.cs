@@ -1,8 +1,9 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Internal.Options;
-using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.ImportExport;
 using ToSic.Eav.WebApi.Infrastructure;
+using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Users;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;

@@ -1,5 +1,5 @@
 ﻿using ToSic.Lib.Data;
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Sys.Users;
 
 public interface IRole<out T>: IRole, IWrapper<T>;

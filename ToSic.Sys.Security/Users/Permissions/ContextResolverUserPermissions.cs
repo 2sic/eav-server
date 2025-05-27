@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Context;
+﻿namespace ToSic.Sys.Users.Permissions;
 
 internal class ContextResolverUserPermissions(IContextOfUserPermissions userPermissions)
     : IContextResolverUserPermissions

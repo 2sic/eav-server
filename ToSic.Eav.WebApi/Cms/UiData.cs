@@ -1,9 +1,10 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Security;
-using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.SysData;
 using ToSic.Eav.WebApi.Context;
+using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Users;
 
 namespace ToSic.Eav.WebApi.Cms;
 

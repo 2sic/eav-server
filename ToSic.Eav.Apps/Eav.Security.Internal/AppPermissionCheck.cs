@@ -2,6 +2,8 @@
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Context;
 using ToSic.Eav.Integration.Security;
+using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Users;
 
 namespace ToSic.Eav.Security.Internal;
 

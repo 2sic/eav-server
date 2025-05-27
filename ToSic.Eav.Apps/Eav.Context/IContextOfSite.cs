@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Context;
+﻿using ToSic.Sys.Users;
+using ToSic.Sys.Users.Permissions;
+
+namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IContextOfSite: IHasLog, IContextOfUserPermissions

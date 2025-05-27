@@ -18,6 +18,7 @@ using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Internal;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Apps.Integration;
 

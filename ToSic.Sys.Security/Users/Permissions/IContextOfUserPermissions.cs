@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Context;
+﻿namespace ToSic.Sys.Users.Permissions;
 
 /// <summary>
 /// WIP 15.04.

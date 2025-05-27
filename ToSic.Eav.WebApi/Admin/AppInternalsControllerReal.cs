@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.Context;
-using ToSic.Eav.Security.Permissions;
 using ToSic.Eav.WebApi.Admin.Metadata;
+using ToSic.Sys.Security.Permissions;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Admin;

@@ -1,5 +1,3 @@
-﻿using ToSic.Eav.Security;
-
-namespace ToSic.Lib.Security.Permissions;
+﻿namespace ToSic.Sys.Security.Permissions;
 
 public record PermissionCheckInfo(bool Allowed, Conditions Condition);

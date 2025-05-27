@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Context;
+using ToSic.Sys.Users;
+using ToSic.Sys.Users.Permissions;
 
-namespace ToSic.Lib;
+namespace ToSic.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupSysSecurity

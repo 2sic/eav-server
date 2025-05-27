@@ -4,6 +4,7 @@ using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Lib.Coding;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Data;
 

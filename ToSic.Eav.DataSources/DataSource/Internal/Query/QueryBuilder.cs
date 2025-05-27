@@ -7,6 +7,7 @@ using ToSic.Eav.Services;
 using ToSic.Lib.LookUp;
 using ToSic.Lib.LookUp.Engines;
 using ToSic.Lib.LookUp.Sources;
+using ToSic.Sys.Users.Permissions;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 
