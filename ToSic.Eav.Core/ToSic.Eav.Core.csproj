@@ -82,8 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Code\" />
-    <Folder Include="Security\Fingerprint\" />
+    <Folder Include="SysData\" />
   </ItemGroup>
 
   <!--WHAT ARE WE TURNING OFF HERE?-->

@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.Apps.Internal.Work;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
@@ -14,12 +16,15 @@ using ToSic.Eav.Integration;
 using ToSic.Eav.Integration.Environment;
 using ToSic.Eav.Integration.Security;
 using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.Internal.Features;
+using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Security.Internal;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.Apps.Integration;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Apps;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavApps
@@ -78,6 +83,20 @@ public static class StartupEavApps
         services.TryAddTransient<ContextOfApp.MyServices>();
         services.TryAddTransient<ContextOfSite.MyServices>();
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
+
+        // App Loaders
+        services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
+        services.TryAddTransient<SystemLoader>();
+        services.TryAddTransient<EavSystemLoader>();
+        services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
+        services.TryAddTransient<FeaturePersistenceService>();
+        services.TryAddTransient<FeaturesIoHelper>();
+        services.TryAddTransient<AppLoaderLogSettings>();   // new v20
+        services.TryAddTransient<LicenseLoader>();
+
+        services.TryAddSingleton<IAppsCache, AppsCache>();
+        services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
+
 
         // File System Loaders
         services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();

@@ -9,7 +9,7 @@ public class AppLoaderLogSettings(ISysFeaturesService featuresSvc): ServiceBase(
     private const string NameDetailed = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadAppDetails);
     private const string NameSummary = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadAppSummary);
 
-    internal LogSettings GetLogSettings()
+    public LogSettings GetLogSettings()
     {
         var l = Log.Fn<LogSettings>();
         var settings = new LogSettings(Details: false);
@@ -25,7 +25,7 @@ public class AppLoaderLogSettings(ISysFeaturesService featuresSvc): ServiceBase(
         return l.Return(settings, "with changed configuration");
     }
 
-    internal static LogSettings PatchLogSettings(LogSettings settings, Dictionary<string, object> config, string nameDetailed, string nameSummary)
+    public static LogSettings PatchLogSettings(LogSettings settings, Dictionary<string, object> config, string nameDetailed, string nameSummary)
     {
         var detailed = config.ConfigBool(nameDetailed, settings.Details);
         var summary = config.ConfigBool(nameSummary, settings.Summary);

@@ -7,11 +7,7 @@ using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Internal.Compression;
-using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.Caching;
@@ -29,35 +25,35 @@ public static class StartUpEavCore
     {
         // Configuration objects
         services.TryAddTransient<GlobalPaths>();
-        services.TryAddTransient<SystemLoader>();
-        services.TryAddTransient<EavSystemLoader>();
-        services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
-        services.TryAddTransient<FeaturePersistenceService>();
-        services.TryAddTransient<FeaturesIoHelper>();
+        //services.TryAddTransient<SystemLoader>();
+        //services.TryAddTransient<EavSystemLoader>();
+        //services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
+        //services.TryAddTransient<FeaturePersistenceService>();
+        //services.TryAddTransient<FeaturesIoHelper>();
 
         // Features - 2024-05-31 changed to non-singleton
         services.TryAddTransient<ISysFeaturesService, SysFeaturesService>();    // this must come first!
         services.TryAddTransient<ILibFeaturesService, SysFeaturesService>();    // v20
 
         // App-State and Cache
-        services.TryAddSingleton<IAppsCache, AppsCache>();
-        services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
+        //services.TryAddSingleton<IAppsCache, AppsCache>();
+        //services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
         services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
         services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
         services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
         services.TryAddTransient<AppReader>();
         services.TryAddTransient<AppDataStackService>();
-        services.TryAddTransient<AppLoaderLogSettings>();   // new v20
+        //services.TryAddTransient<AppLoaderLogSettings>();   // new v20
 
         // v13 #SwitchableAppsCache
-        services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
+        //services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
         services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
             
         // Permissions helper
         services.TryAddTransient<PermissionCheckBase.MyServices>();
 
-        services.TryAddTransient<LicenseLoader>();
+        //services.TryAddTransient<LicenseLoader>();
 
         services.TryAddTransient<Compressor>();
 

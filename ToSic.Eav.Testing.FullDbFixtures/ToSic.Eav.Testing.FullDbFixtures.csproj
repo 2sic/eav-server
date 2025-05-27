@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
   </ItemGroup>
