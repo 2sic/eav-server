@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Lib.Caching;
 
 /// <summary>
 /// Experimental - to make dependencies on global cache id more explicit

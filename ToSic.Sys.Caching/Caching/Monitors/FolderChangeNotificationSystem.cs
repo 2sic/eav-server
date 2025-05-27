@@ -3,7 +3,7 @@ using System.Runtime.Caching;
 using System.Runtime.Caching.Hosting;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Caching.CachingMonitors;
+namespace ToSic.Lib.Caching.Monitors;
 
 //  based on https://github.com/microsoft/referencesource/blob/master/System.Runtime.Caching/System/Caching/FileChangeNotificationSystem.cs
 [ShowApiWhenReleased(ShowApiMode.Never)]

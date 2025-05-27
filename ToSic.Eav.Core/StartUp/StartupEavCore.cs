@@ -16,6 +16,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
+using ToSic.Lib.Caching;
 using ToSic.Lib.Code.InfoSystem;
 using CodeInfoService = ToSic.Lib.Code.InfoSystem.CodeInfoService;
 

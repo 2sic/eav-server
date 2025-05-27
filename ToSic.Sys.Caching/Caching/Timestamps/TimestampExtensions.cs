@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Lib.Caching;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class TimestampExtensions

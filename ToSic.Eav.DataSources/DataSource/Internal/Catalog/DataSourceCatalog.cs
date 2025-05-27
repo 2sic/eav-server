@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Internal.AppDataSources;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
+using ToSic.Lib.Caching;
 
 namespace ToSic.Eav.DataSource.Internal.Catalog;
 

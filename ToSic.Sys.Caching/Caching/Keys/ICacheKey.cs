@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Lib.Caching.Keys;
 
 /// <summary>
 /// Marks objects which can identify what cache it's for. <br/>

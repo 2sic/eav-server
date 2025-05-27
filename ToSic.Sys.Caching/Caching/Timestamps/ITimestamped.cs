@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Lib.Caching;
 
 /// <summary>
 /// Provides a time stamp when something was created / updated for caching. 

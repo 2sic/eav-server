@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.Caching;
+using ToSic.Lib.Caching;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Caching;
 using ToSic.Eav.DataSource.Internal.Errors;
+using ToSic.Lib.Caching;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Internal.Caching;

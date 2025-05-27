@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.Caching.Synchronized;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Data;

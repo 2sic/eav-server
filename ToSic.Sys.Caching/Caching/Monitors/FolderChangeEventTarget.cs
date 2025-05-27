@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Caching;
 
-namespace ToSic.Eav.Caching.CachingMonitors;
+namespace ToSic.Lib.Caching.Monitors;
 
 internal class FolderChangeEventTarget
 {

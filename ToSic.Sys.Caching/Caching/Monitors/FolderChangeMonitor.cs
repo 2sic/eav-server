@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.Caching;
 using System.Text;
 
-namespace ToSic.Eav.Caching.CachingMonitors;
+namespace ToSic.Lib.Caching.Monitors;
 
 // based on https://raw.githubusercontent.com/microsoft/referencesource/master/System.Runtime.Caching/System/Caching/HostFileChangeMonitor.cs
 [ShowApiWhenReleased(ShowApiMode.Never)]

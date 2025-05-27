@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Lib.Caching;
 
 /// <summary>
 /// Marks something that is cache-dependent. Used for things that are themselves cached, but rely on an upstream cache. 

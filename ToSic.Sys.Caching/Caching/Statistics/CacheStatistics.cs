@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Lib.Caching.Statistics;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class CacheStatistics: ICacheStatistics

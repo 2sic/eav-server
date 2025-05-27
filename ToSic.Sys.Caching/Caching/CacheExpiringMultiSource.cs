@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Lib.Caching;
 
 /// <summary>
 /// This is a Cache-info wrapper when multiple sources would trigger a cache-refresh

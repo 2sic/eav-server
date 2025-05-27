@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
+using ToSic.Lib.Caching;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Metadata;

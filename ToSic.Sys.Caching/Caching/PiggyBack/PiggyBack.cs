@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using ToSic.Eav.Caching;
 
-namespace ToSic.Eav.Data.PiggyBack;
+namespace ToSic.Lib.Caching.PiggyBack;
 
 /// <summary>
 /// Experimental: Goal is to provide a simple value cache to certain objects like AppState

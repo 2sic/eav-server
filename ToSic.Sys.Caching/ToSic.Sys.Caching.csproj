@@ -5,7 +5,7 @@
   <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
 
   <PropertyGroup>
-    <RootNamespace>ToSic.Sys</RootNamespace>
+    <RootNamespace>ToSic.Lib</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

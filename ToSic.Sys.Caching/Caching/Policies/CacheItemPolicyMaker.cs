@@ -1,10 +1,11 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Caching.CachingMonitors;
+using ToSic.Eav.Caching;
+using ToSic.Lib.Caching.Monitors;
 using ToSic.Lib.FunFact;
-using static ToSic.Eav.Caching.MemoryCacheService;
+using static ToSic.Lib.Caching.MemoryCacheService;
 using static System.Runtime.Caching.ObjectCache;
 
-namespace ToSic.Eav.Caching;
+namespace ToSic.Lib.Caching.Policies;
 
 /// <summary>
 /// WIP fluid API cache specs.
