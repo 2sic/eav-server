@@ -4,9 +4,9 @@ namespace ToSic.Lib.GetByName;
 
 public class ObjectWrapperCanGetByName(object? source): ICanGetByName
 {
-    private readonly IDictionary<string, object>? _source = source == null
+    private readonly IDictionary<string, object?>? _source = source == null
         ? null
-        : source as IDictionary<string, object>
+        : source as IDictionary<string, object?>
           ?? (source.IsAnonymous()
               ? source.ObjectToDictionary(caseInsensitive: true)
               : null

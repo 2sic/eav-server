@@ -17,7 +17,7 @@ namespace ToSic.Eav.Security.Encryption
             //using var rsa = RSA.Create(DwKeySize);
             using var rsa = new RSACng(DwKeySize);
 
-            rsa.FromXmlString(PrivateKey);
+            rsa.FromXmlString(PrivateKey ?? throw new NullReferenceException($"{nameof(PrivateKey)} cannot be null."));
 
             // Decrypt
             var dataToDecrypt = Convert.FromBase64String(encryptedData);
@@ -84,6 +84,8 @@ namespace ToSic.Eav.Security.Encryption
 
             using var outputStream = File.CreateText(PublicKeyPath);
             if (Pem)
+#pragma warning disable CS0162 // Unreachable code detected
+                // ReSharper disable HeuristicUnreachableCode
             {
                 outputStream.WriteLine("-----BEGIN PUBLIC KEY-----");
                 for (var i = 0; i < base64.Length; i += 64)
@@ -92,6 +94,8 @@ namespace ToSic.Eav.Security.Encryption
                 }
                 outputStream.WriteLine("-----END PUBLIC KEY-----");
             }
+            // ReSharper restore HeuristicUnreachableCode
+#pragma warning restore CS0162 // Unreachable code detected
             else
             {
                 outputStream.Write(base64);

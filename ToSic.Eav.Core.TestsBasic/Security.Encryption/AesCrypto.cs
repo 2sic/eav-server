@@ -16,7 +16,7 @@ public class AesCrypto
     public void TestBasicAesCrypto()
     {
         var crypto = GetAes();
-        var encrypted = crypto.EncryptToBase64(TestMessage, new(true) { Password = DummyPassword });
+        var encrypted = crypto.EncryptToBase64(TestMessage, new() { Password = DummyPassword });
         Trace.WriteLine($"encrypted:'{encrypted.Value}'; IV:'{encrypted.Iv}'");
         Trace.WriteLine(crypto.Log.Dump());
         NotEqual(TestMessage, encrypted.Value);
@@ -24,7 +24,7 @@ public class AesCrypto
 
         // reset crypto to get a fresh log
         crypto = GetAes();
-        var decrypted = crypto.DecryptFromBase64(encrypted.Value, new(true)
+        var decrypted = crypto.DecryptFromBase64(encrypted.Value, new()
         {
             Password = DummyPassword,
             InitializationVector64 = encrypted.Iv

@@ -31,7 +31,7 @@ public static partial class ObjectExtensions
         if (argumentType.IsValueType && argumentType != methodType)
         {
             var obj = Activator.CreateInstance(argument.GetType());
-            return obj.Equals(argument);
+            return obj == null || obj.Equals(argument);
         }
 
         return false;
@@ -127,9 +127,9 @@ public static partial class ObjectExtensions
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsDefault<T>(this T? value)
-        => EqualityComparer<T>.Default.Equals(value, default);
+        => value == null || EqualityComparer<T>.Default.Equals(value, default!);
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsNotDefault<T>(this T? value)
-        => !EqualityComparer<T>.Default.Equals(value, default);
+        => value != null && !EqualityComparer<T>.Default.Equals(value, default!);
 }

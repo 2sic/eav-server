@@ -6,12 +6,14 @@ namespace ToSic.Eav.Plumbing;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class NumberExtensions
 {
-    public static NumberFormatInfo NumberSeparator => _numberSeparator.Get(() =>
-    {
-        var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
-        nfi.NumberGroupSeparator = "`";
-        return nfi;
-    });
+    public static NumberFormatInfo NumberSeparator =>
+        _numberSeparator.Get(() =>
+        {
+            var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+            nfi.NumberGroupSeparator = "`";
+            return nfi;
+        })!;
+
     private static readonly GetOnce<NumberFormatInfo> _numberSeparator = new();
 
 

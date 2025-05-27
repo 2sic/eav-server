@@ -30,32 +30,34 @@ public static class AnonymousTypesExtensions
     }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IDictionary<string, object> ToDicInvariantInsensitive(this object a, bool mutable = false)
+    public static IDictionary<string, object?> ToDicInvariantInsensitive(this object a, bool mutable = false)
         => ObjectToDictionary(a, mutable, caseInsensitive: true);
 
     // inspired by https://stackoverflow.com/questions/3481923/in-c-sharp-convert-anonymous-type-into-key-value-array
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IDictionary<string, object> ObjectToDictionary(this object a, bool mutable = false, bool caseInsensitive = false)
+    public static IDictionary<string, object?> ObjectToDictionary(this object a, bool mutable = false, bool caseInsensitive = false)
     {
         // edge case for object that is 'string'
         // prevent exception "Parameter count mismatch" in x.GetValue(a, null) for object that is 'string'
         if (a is string) 
         {
-            var d = new Dictionary<string, object>(caseInsensitive ? InvariantCultureIgnoreCase : null) { { "Value", a } };
+            var d = new Dictionary<string, object?>(caseInsensitive ? InvariantCultureIgnoreCase : null) { { "Value", a } };
             return mutable
                 ? d
                 : d.ToImmutableDictionary(caseInsensitive ? InvariantCultureIgnoreCase : null);
         }
         
         var props = a.GetType().GetProperties();
+
+#pragma warning disable CS8619
         if (mutable)
             return caseInsensitive
                 ? props.ToDictionary(x => x.Name, x => x.GetValue(a, null), InvariantCultureIgnoreCase)
                 : props.ToDictionary(x => x.Name, x => x.GetValue(a, null));
-        var dict = caseInsensitive
+        return caseInsensitive
             ? props.ToImmutableDictionary(x => x.Name, x => x.GetValue(a, null), InvariantCultureIgnoreCase)
             : props.ToImmutableDictionary(x => x.Name, x => x.GetValue(a, null));
-        return dict;
+#pragma warning restore CS8619
     }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
