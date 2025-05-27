@@ -1,29 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Catalog;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Internal.Compression;
-using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Internal.Unknown;
-using ToSic.Eav.Security;
-using ToSic.Eav.Security.Encryption;
-using ToSic.Eav.Security.Fingerprint;
-using ToSic.Lib;
 using ToSic.Lib.LookUp;
 using ToSic.Sys;
-using CodeInfoService = ToSic.Sys.Code.InfoSystem.CodeInfoService;
 
 namespace ToSic.Eav.StartUp;
 

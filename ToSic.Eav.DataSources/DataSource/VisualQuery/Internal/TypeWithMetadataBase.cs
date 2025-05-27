@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Plumbing;
-using ToSic.Lib.Data;
-using ToSic.Sys.Utils;
+﻿using ToSic.Lib.Data;
 
 namespace ToSic.Eav.DataSource.VisualQuery.Internal;
 

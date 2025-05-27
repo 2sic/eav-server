@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Plumbing;
-using ToSic.Sys.Utils;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Contains all the common constants etc. for Data-Scopes

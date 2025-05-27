@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Internal.Features;
-using ToSic.Sys.Capabilities.Features;
+﻿using ToSic.Sys.Capabilities.Features;
 using static ToSic.Eav.Internal.Features.BuiltInFeatures;
 
 internal class RegisterEavFeatures

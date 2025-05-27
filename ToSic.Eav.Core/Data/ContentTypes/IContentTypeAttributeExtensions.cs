@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Plumbing;
-using ToSic.Sys.Utils;
-using static ToSic.Eav.Data.AttributeMetadata;
+﻿using static ToSic.Eav.Data.AttributeMetadata;
 
 namespace ToSic.Eav.Data;
 

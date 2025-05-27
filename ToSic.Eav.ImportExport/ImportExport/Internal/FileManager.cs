@@ -1,5 +1,4 @@
-﻿using System.IO;
-using ToSic.Eav.Apps.Internal;
+﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Lib.DI;
 

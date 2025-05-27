@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ToSic.Eav.WebApi.Assets;
+﻿namespace ToSic.Eav.WebApi.Assets;
 
 public class FileUploadDto
 {

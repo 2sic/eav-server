@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Licenses;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
 

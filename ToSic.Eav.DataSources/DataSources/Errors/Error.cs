@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace ToSic.Eav.DataSources;
+﻿namespace ToSic.Eav.DataSources;
 
 /// <summary>
 /// Internal DataSource to generate an error on purpose.

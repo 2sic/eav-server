@@ -1,7 +1,5 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Plumbing;
 using ToSic.Lib.Coding;
-using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Data;
 partial record Entity

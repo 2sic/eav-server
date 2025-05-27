@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using ToSic.Eav.LookUp;
 using ToSic.Lib.LookUp;
 using ToSic.Lib.LookUp.Sources;
 

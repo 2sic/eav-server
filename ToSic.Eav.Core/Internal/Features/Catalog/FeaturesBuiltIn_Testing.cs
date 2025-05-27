@@ -1,6 +1,4 @@
 ﻿#if DEBUG
-using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.SysData;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
 

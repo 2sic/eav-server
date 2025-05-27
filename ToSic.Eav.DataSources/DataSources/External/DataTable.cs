@@ -1,6 +1,4 @@
 ﻿using System.Data;
-using ToSic.Eav.Plumbing;
-using ToSic.Sys.Utils;
 using IEntity = ToSic.Eav.Data.IEntity;
 using SqlDataTable = System.Data.DataTable;
 

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace ToSic.Eav.Repository.Efc.Parts;
+﻿namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbContentType
 {

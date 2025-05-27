@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Caching;
-using ToSic.Eav.Data.PiggyBack;
-using ToSic.Lib.Caching;
+﻿using ToSic.Lib.Caching;
 using ToSic.Lib.Caching.PiggyBack;
 using ToSic.Lib.Caching.Statistics;
 

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
-
-namespace ToSic.Eav.Serialization.Internal;
+﻿namespace ToSic.Eav.Serialization.Internal;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SerializerExtensions
