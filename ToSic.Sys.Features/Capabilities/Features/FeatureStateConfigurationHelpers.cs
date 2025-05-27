@@ -1,16 +1,19 @@
-﻿namespace ToSic.Eav.SysData;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ToSic.Eav.SysData;
 
 public static class FeatureStateConfigurationHelpers
 {
 
     public static bool ConfigBool(this IDictionary<string, object> dic, string key, bool fallback = false) =>
-        (dic?.TryGetValue(key, out var value) ?? false) && value is bool b
+        dic.TryGetValue(key, out var value) && value is bool b
             ? b
             : fallback;
 
 
-    public static string ConfigString(this IDictionary<string, object> dic, string key, string fallback = default) =>
-        (dic?.TryGetValue(key, out var value) ?? false) && value is string b
+    [return: NotNullIfNotNull(nameof(fallback))]
+    public static string? ConfigString(this IDictionary<string, object> dic, string key, string? fallback = default) =>
+        dic.TryGetValue(key, out var value) && value is string b
             ? b
             : fallback;
 
@@ -25,7 +28,8 @@ public static class FeatureStateConfigurationHelpers
             : fallback;
 
 
-    public static string ConfigString(this FeatureState fs, string key, string fallback = default) =>
+    [return: NotNullIfNotNull(nameof(fallback))]
+    public static string? ConfigString(this FeatureState fs, string key, string? fallback = default) =>
         (fs.Configuration?.TryGetValue(key, out var value) ?? false) && value is string b
             ? b
             : fallback;

@@ -38,7 +38,7 @@ public interface ILicenseService
     /// <returns></returns>
     bool IsEnabled(FeatureSet license);
 
-    FeatureSetState State(FeatureSet license);
+    FeatureSetState? State(FeatureSet license);
     /// <summary>
     /// Check if any license is valid.
     /// </summary>

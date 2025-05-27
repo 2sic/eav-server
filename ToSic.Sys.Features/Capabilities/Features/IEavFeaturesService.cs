@@ -66,7 +66,7 @@ public interface IEavFeaturesService: ICacheExpiring, ICanBeCacheDependency
     bool IsEnabled(params Feature[] features);
 
 
-    FeatureStatesPersisted Stored { get; }
+    FeatureStatesPersisted? Stored { get; }
 
     bool UpdateFeatureList(FeatureStatesPersisted newList, List<FeatureState> sysFeatures);
 }

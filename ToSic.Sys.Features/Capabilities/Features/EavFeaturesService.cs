@@ -47,7 +47,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
         => guids.All(IsEnabled);
 
     public bool IsEnabled(params string[]? nameIds)
-        => nameIds == null || nameIds.Length == 0 || nameIds.All(name => EnabledFeatures.Contains(name?.Trim()));
+        => nameIds == null || nameIds.Length == 0 || nameIds.All(name => EnabledFeatures.Contains(name?.Trim() ?? ""));
 
     public FeatureState? Get(string nameId)
         => All.FirstOrDefault(f => f.Aspect.Name == nameId || f.NameId == nameId);
@@ -89,10 +89,10 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     #region Static Caches
 
     [PrivateApi]
-    public FeatureStatesPersisted Stored => _staticStored;
+    public FeatureStatesPersisted? Stored => _staticStored;
 
-    private static FeatureStatesPersisted _staticStored;
-    private static List<FeatureState> _staticSysFeatures;
+    private static FeatureStatesPersisted? _staticStored;
+    private static List<FeatureState>? _staticSysFeatures;
 
     public bool UpdateFeatureList(FeatureStatesPersisted newList, List<FeatureState> sysFeatures)
     {
@@ -109,7 +109,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
     }
 
 
-    private static List<FeatureState> Merge(FeatureStatesPersisted config, IReadOnlyCollection<Feature> featuresCat, List<FeatureState> sysFeatureStates)
+    private static List<FeatureState> Merge(FeatureStatesPersisted? config, IReadOnlyCollection<Feature> featuresCat, List<FeatureState>? sysFeatureStates)
     {
         var licService = new LicenseService();
 
@@ -198,7 +198,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
 
     public bool CacheIsNotifyOnly => true;
 
-    string ICanBeCacheDependency.CacheDependencyId => typeof(IEavFeaturesService).FullName;
+    string ICanBeCacheDependency.CacheDependencyId => typeof(IEavFeaturesService).FullName!;
 
     bool ILibFeaturesService.IsEnabled(string nameIds) => IsEnabled([nameIds]);
 

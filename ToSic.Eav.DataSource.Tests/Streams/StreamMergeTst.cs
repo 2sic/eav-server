@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+#pragma warning disable xUnit1026
 
 namespace ToSic.Eav.DataSourceTests.Streams;
 

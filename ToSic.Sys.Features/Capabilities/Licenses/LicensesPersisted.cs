@@ -28,17 +28,17 @@ public class LicensesPersisted
     /// <summary>
     /// Just a title to better label the license configuration
     /// </summary>
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     /// <summary>
     /// Optional comments about the license
     /// </summary>
-    public string Comments { get; set; }
+    public string? Comments { get; set; }
 
     /// <summary>
     /// The customer license key which activated this license
     /// </summary>
-    public string Key { get; set; }
+    public string? Key { get; set; }
 
     /// <summary>
     /// A unique identifier for this configuration - serves as salt in the license
@@ -48,18 +48,18 @@ public class LicensesPersisted
     /// <summary>
     /// Fingerprints of systems where this license applies
     /// </summary>
-    public List<FeatureSetDetailsPersisted> Fingerprints { get; set; }
+    public List<FeatureSetDetailsPersisted>? Fingerprints { get; set; }
 
     /// <summary>
     /// Fingerprints of systems where this license applies
     /// </summary>
-    public List<FeatureSetDetailsPersisted> Licenses { get; set; }
+    public List<FeatureSetDetailsPersisted>? Licenses { get; set; }
 
     /// <summary>
     /// List of 2sxc/eav versions which this license applies to
     /// Important for 
     /// </summary>
-    public string Versions { get; set; }
+    public string? Versions { get; set; }
 
     /// <summary>
     /// When the license becomes invalid
@@ -69,7 +69,7 @@ public class LicensesPersisted
     /// <summary>
     /// Authority which generated this license
     /// </summary>
-    public string Authority { get; set; }
+    public string? Authority { get; set; }
 
     /// <summary>
     /// Date-Time generated
@@ -79,12 +79,12 @@ public class LicensesPersisted
     /// <summary>
     /// Digital signature signing the certificate
     /// </summary>
-    public string Signature { get; set; }
+    public required string Signature { get; set; }
 
     /// <summary>
     /// The owner of the license - usually the github account which activated this
     /// </summary>
-    public string Owner { get; set; }
+    public string? Owner { get; set; }
 
     /// <summary>
     /// Internal property to work with the data, shouldn't end up in the json

@@ -31,12 +31,15 @@ public class LicenseService : ILicenseService
     /// <remarks>
     /// We use the real static LicenseDefinition as an index, because this ensures that people can't inject other license objects to bypass security.
     /// </remarks>
-    public IImmutableDictionary<Guid, FeatureSetState> Enabled => EnabledCache;
+    public IImmutableDictionary<Guid, FeatureSetState> Enabled
+        => EnabledCache;
 
     /// <inheritdoc />
-    public bool IsEnabled(FeatureSet license) => EnabledCache.ContainsKey(license.Guid);
+    public bool IsEnabled(FeatureSet license)
+        => EnabledCache.ContainsKey(license.Guid);
 
-    public FeatureSetState State(FeatureSet license) => EnabledCache.TryGetValue(license.Guid, out var result) ? result : null;
+    public FeatureSetState? State(FeatureSet license)
+        => EnabledCache.TryGetValue(license.Guid, out var result) ? result : null;
 
     #endregion
 

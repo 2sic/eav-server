@@ -23,8 +23,8 @@ public record FeatureSetState(FeatureSet Aspect)
 {
     /* def true as otherwise we wouldn't have the config */
 
-    public string Title { get; init; }
-    public string LicenseKey { get; init; }
+    public required string Title { get; init; }
+    public string? LicenseKey { get; init; }
 
     public Guid EntityGuid { get; init; }
 
@@ -49,6 +49,6 @@ public record FeatureSetState(FeatureSet Aspect)
 
     public bool VersionIsValid { get; init; }
         
-    public string Owner { get; init; }
+    public string? Owner { get; init; }
 
 }

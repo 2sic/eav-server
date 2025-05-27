@@ -34,8 +34,8 @@ public record FeatureState(
 
     public string NameId => Aspect.NameId;
 
-    public FeatureSet License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
-    private readonly GetOnce<FeatureSet> _license = new();
+    public FeatureSet? License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
+    private readonly GetOnce<FeatureSet?> _license = new();
 
     /// <summary>
     /// Feature is enabled and hasn't expired yet.

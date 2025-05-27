@@ -6,12 +6,12 @@ public class FeatureSetDetailsPersisted
     /// <summary>
     /// A fingerprint / License
     /// </summary>
-    public string Id { get; set; }
+    public required string Id { get; set; }
 
     /// <summary>
     /// Optional comments, like what system it's for
     /// </summary>
-    public string Comments { get; set; }
+    public string? Comments { get; set; }
 
     /// <summary>
     /// If parts of a license can expire, then it would be specified here.
