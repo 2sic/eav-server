@@ -1,7 +1,11 @@
-﻿using ToSic.Eav.Apps;
+﻿using System.Collections.Immutable;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Internal;
+using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys.Internal;
 using static ToSic.Eav.Apps.AppStackConstants;
 

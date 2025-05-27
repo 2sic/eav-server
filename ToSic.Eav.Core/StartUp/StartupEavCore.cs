@@ -1,11 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Catalog;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Internal.Compression;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Metadata;
@@ -37,7 +33,7 @@ public static class StartUpEavCore
         //services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
         services.TryAddTransient<AppReader>();
-        services.TryAddTransient<AppDataStackService>();
+        //services.TryAddTransient<AppDataStackService>();
 
         // Permissions helper
         services.TryAddTransient<PermissionCheckBase.MyServices>();

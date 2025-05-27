@@ -21,9 +21,3 @@ public static class AppReaderInternal
     public static IAppStateCache? GetParentCache(this IAppReader reader)
         => reader.GetCache().ParentApp?.AppState;
 }
-
-public static class AppReaderFactoryInternal
-{
-    public static IAppReader ToReader(this IAppReaderFactory appReaderFactory, IAppStateCache appState)
-        => appReaderFactory.ToReader(appState);
-}

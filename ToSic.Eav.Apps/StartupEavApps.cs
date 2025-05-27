@@ -6,6 +6,7 @@ using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.Apps.Internal.Work;
+using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
@@ -102,6 +103,8 @@ public static class StartupEavApps
         services.TryAddSingleton<IAppsCache, AppsCache>();
         services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
         services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
+
+        services.TryAddTransient<AppDataStackService>();
 
 
         // File System Loaders
