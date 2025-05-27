@@ -82,6 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Apps\Reader\Internal\" />
     <Folder Include="SysData\" />
   </ItemGroup>
 

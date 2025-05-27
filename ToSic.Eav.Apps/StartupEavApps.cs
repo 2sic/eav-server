@@ -97,7 +97,8 @@ public static class StartupEavApps
         services.TryAddTransient<LicenseLoader>();
 
         // App-State and Cache
-        services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
+        services.AddTransient<AppsCacheSwitch>();
+        services.AddTransient<IAppCachePurger, AppsCacheSwitch>(); // Implementation for the Database layer to use
         services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
         services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
         services.TryAddSingleton<IAppsCache, AppsCache>();

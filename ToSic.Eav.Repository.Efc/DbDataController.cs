@@ -15,7 +15,7 @@ public class DbDataController(
     EavDbContext dbContext,
     LazySvc<EfcAppLoader> efcLoaderLazy,
     LazySvc<IUser> userLazy,
-    AppsCacheSwitch appsCache,
+    IAppCachePurger appsCache,
     Generator<JsonSerializer> jsonSerializerGenerator,
     ILogStore logStore,
     LazySvc<Compressor> compressor,
@@ -201,7 +201,7 @@ public class DbDataController(
     {
         var l = Log.Fn($"{_purgeAppCacheOnSave}");
         if (_purgeAppCacheOnSave)
-            appsCache.Value.Purge(this);
+            appsCache.Purge(this);
         l.Done();
     }
 

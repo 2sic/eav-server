@@ -24,7 +24,7 @@ public class AppsCacheSwitch(
     LazySvc<IAppLoaderTools> appLoaderTools
     )
     : ServiceSwitcherSingleton<IAppsCacheSwitchable>(logStore, serviceSwitcher, connect: [featuresService, appLoaderTools]),
-        ICacheDependent
+        ICacheDependent, IAppCachePurger
 {
     public IAppLoaderTools AppLoaderTools => appLoaderTools.Value;
 
@@ -33,10 +33,15 @@ public class AppsCacheSwitch(
     public new IAppsCacheSwitchable Value => _value.Get(GetOnceDuringCurrentRequest);
     private readonly GetOnce<IAppsCacheSwitchable> _value = new();
 
+    public void Purge(IAppIdentity app)
+        => Value.Purge(app);
+
+
     private IAppsCacheSwitchable GetOnceDuringCurrentRequest()
     {
         // First call and/or not created yet, retrieve as expected
-        if (!CacheChanged()) return base.Value;
+        if (!CacheChanged())
+            return base.Value;
 
         // Otherwise reset the previously Singleton result and force new retrieve
         Reset();
