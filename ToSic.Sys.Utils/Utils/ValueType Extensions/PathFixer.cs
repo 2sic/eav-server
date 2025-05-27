@@ -16,6 +16,7 @@ public static class PathFixer
     /// </summary>
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
+    [return: NotNullIfNotNull(nameof(original))]
     public static string? Backslash(this string? original)
         => original?.Replace("/", "\\");
     // Additional replace too risky, breaks network paths like \\srv-xyz\

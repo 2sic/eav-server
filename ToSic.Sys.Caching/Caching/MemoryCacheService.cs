@@ -14,11 +14,13 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 
     public bool Contains(string key) => Cache.Contains(key);
 
-    public object Get(string key) => Cache.Get(key);
+    public object? Get(string key)
+        => Cache.Get(key);
 
-    public T Get<T>(string key, T fallback = default) => Cache.Get(key) is T typed ? typed : fallback;
+    public T? Get<T>(string key, T? fallback = default)
+        => Cache.Get(key) is T typed ? typed : fallback;
 
-    public bool TryGet<T>(string key, out T value)
+    public bool TryGet<T>(string key, out T? value)
     {
         value = default;
         if (!Cache.Contains(key))
@@ -44,7 +46,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="func"></param>
-    public void Set(string key, object value, Func<IPolicyMaker, IPolicyMaker> func = default)
+    public void Set(string key, object value, Func<IPolicyMaker, IPolicyMaker>? func = default)
     {
         var l = Log.Fn($"key: '{key}'");
         try
@@ -106,6 +108,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     
     internal static CacheEntryChangeMonitor CreateCacheNotifyMonitor(IEnumerable<ICanBeCacheDependency> keys)
     {
+        // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         var prefixed = (keys ?? []).Where(x => x != null).Select(ExpandDependencyId);
         return Cache.CreateCacheEntryChangeMonitor(prefixed);
     }

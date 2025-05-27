@@ -19,15 +19,15 @@ public class PiggyBack
     {
         if (_cache.TryGetValue(key, out var result) && result is TData typed)
             return typed;
+
+        typed = create();
+
         try
         {
-            typed = create();
             _cache.TryAdd(key, typed);
-            return typed;
         }
         catch { /* ignore / silent */ }
-
-        return default;
+        return typed;
     }
 
     public (TData Value, bool IsCached) GetOrGenerate<TData>(ICacheExpiring parent, string key, Func<TData> create)

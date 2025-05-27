@@ -2,5 +2,5 @@
 
 internal class DirectoryMonitor
 {
-    public FileSystemWatcher FileSystemWatcher;
+    public required FileSystemWatcher FileSystemWatcher { get; init; }
 }

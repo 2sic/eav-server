@@ -11,8 +11,9 @@ namespace ToSic.Eav.Caching.CachingMonitors;
 public class FolderChangeMonitor : FileChangeMonitor
 {
     private const int MaxCharCountOfLongConvertedToHexadecimalString = 16;
-    private static FolderChangeNotificationSystem? _folderChangeNotificationSystem;
-    private object? _fcnState;
+    private static FolderChangeNotificationSystem? _folderChangeNotificationSystemStatic;
+    private Dictionary<string, FolderChangeEventTarget>? _fcnState;
+    private FolderChangeEventTarget? _folderChangeState;
 
     public override ReadOnlyCollection<string> FilePaths => _folderPaths
         .Select(folderInfo => folderInfo.Key)
@@ -20,15 +21,14 @@ public class FolderChangeMonitor : FileChangeMonitor
         .AsReadOnly();
     private readonly IDictionary<string, bool> _folderPaths;
 
-    public override string UniqueId => _uniqueId;
-    private string _uniqueId;
-        
+    public override string UniqueId { get; }
+
     public override DateTimeOffset LastModified => _lastModified;
     private DateTimeOffset _lastModified;
 
-    public FolderChangeMonitor(IList<string> folderPaths)
-        : this(folderPaths?.ToDictionary(p => p, p => true) ?? new Dictionary<string, bool>())
-    { }
+    //public FolderChangeMonitor(IList<string>? folderPaths)
+    //    : this(folderPaths?.ToDictionary(p => p, p => true) ?? new Dictionary<string, bool>())
+    //{ }
 
     public FolderChangeMonitor(IDictionary<string, bool> folderPaths)
     {
@@ -38,81 +38,78 @@ public class FolderChangeMonitor : FileChangeMonitor
         _folderPaths = new ReadOnlyDictionary<string, bool>(folderPaths);
 
         // Init the FolderChangeNotificationSystem
-        if (_folderChangeNotificationSystem == null)
-            Interlocked.CompareExchange(ref _folderChangeNotificationSystem, new(), null);
-        InitDisposableMembers();
+        if (_folderChangeNotificationSystemStatic == null)
+            Interlocked.CompareExchange(ref _folderChangeNotificationSystemStatic, new(), null);
+        UniqueId = InitDisposableMembers();
     }
 
-    private void InitDisposableMembers()
+    private string InitDisposableMembers()
     {
         var dispose = true;
+        string uniqueId;
         try
         {
-            string uniqueId;
             if (_folderPaths.Count == 1)
             {
                 var path = _folderPaths.First();
-                _folderChangeNotificationSystem!
-                    .StartMonitoring(path.Key, path.Value, new(OnChanged), out _fcnState, out var lastWrite, out var fileSize);
+                _folderChangeNotificationSystemStatic!
+                    .StartMonitoring(path.Key, path.Value, OnChanged, out _folderChangeState, out var lastWrite, out var fileSize);
                 uniqueId = path + lastWrite.UtcDateTime.Ticks.ToString("X", CultureInfo.InvariantCulture) + fileSize.ToString("X", CultureInfo.InvariantCulture);
                 _lastModified = lastWrite;
             }
             else
             {
                 var capacity = _folderPaths.Sum(path => path.Key.Length + (2 * MaxCharCountOfLongConvertedToHexadecimalString));
-                var fcnState = new Hashtable(_folderPaths.Count);
-                _fcnState = fcnState;
+                _fcnState = new(_folderPaths.Count);
                 var sb = new StringBuilder(capacity);
                 foreach (var path in _folderPaths)
                 {
-                    if (fcnState.Contains(path.Key))
+                    if (_fcnState.ContainsKey(path.Key))
                         continue;
-                    _folderChangeNotificationSystem!
-                        .StartMonitoring(path.Key, path.Value, new(OnChanged), out var state, out var lastWrite, out var fileSize);
-                    fcnState[path.Key] = state;
+                    _folderChangeNotificationSystemStatic!
+                        .StartMonitoring(path.Key, path.Value, OnChanged, out var state, out var lastWrite, out var fileSize);
+                    _fcnState[path.Key] = state;
                     sb.Append(path.Key);
                     sb.Append(lastWrite.UtcDateTime.Ticks.ToString("X", CultureInfo.InvariantCulture));
                     sb.Append(fileSize.ToString("X", CultureInfo.InvariantCulture));
-                    if (lastWrite > _lastModified) _lastModified = lastWrite;
+                    if (lastWrite > _lastModified)
+                        _lastModified = lastWrite;
                 }
                 uniqueId = sb.ToString();
             }
-            _uniqueId = uniqueId;
             dispose = false;
         }
         finally
         {
             InitializationComplete();
             if (dispose)
-            {
                 Dispose();
-            }
         }
+        return uniqueId;
     }
 
     protected override void Dispose(bool disposing)
     {
-        if (!disposing || _folderChangeNotificationSystem == null || _folderPaths == null || _fcnState == null)
+        if (!disposing || _folderChangeNotificationSystemStatic == null || _folderPaths == null || _fcnState == null)
             return;
             
         if (_folderPaths.Count > 1)
         {
-            var fcnState = _fcnState as Hashtable;
             foreach (var path in _folderPaths)
             {
                 if (string.IsNullOrEmpty(path.Key))
                     continue;
                     
-                var state = fcnState[path.Key];
+                var state = _fcnState[path.Key];
                 if (state != null)
-                    _folderChangeNotificationSystem.StopMonitoring(path.Key, path.Value, state);
+                    _folderChangeNotificationSystemStatic.StopMonitoring(path.Key, path.Value, state);
             }
         }
         else
         {
             var path = _folderPaths.First();
-            if (path.Key != null && _fcnState != null)
-                _folderChangeNotificationSystem.StopMonitoring(path.Key, path.Value, _fcnState);
+            if (path.Key != null && _folderChangeState != null)
+                _folderChangeNotificationSystemStatic.StopMonitoring(path.Key, path.Value, _folderChangeState);
         }
     }
 }

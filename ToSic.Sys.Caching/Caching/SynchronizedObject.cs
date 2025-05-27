@@ -16,7 +16,7 @@ public class SynchronizedObject<T>: ICacheDependent, ICacheExpiring
     /// <summary>
     /// The cached object/result
     /// </summary>
-    protected T Cache;
+    protected T? Cache;
         
     /// <summary>
     /// A callback to rebuild the cache which is provided when this object is created 

@@ -12,10 +12,13 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
     private readonly Hashtable _dirMonitors = Hashtable.Synchronized(new(StringComparer.OrdinalIgnoreCase));
     private readonly object _lock = new();
 
-    public void StartMonitoring(string dirPath, OnChangedCallback onChangedCallback, out object state, out DateTimeOffset lastWriteTime, out long fileSize) =>
-        StartMonitoring(dirPath, true, onChangedCallback, out state, out lastWriteTime, out fileSize);
+    public void StartMonitoring(string dirPath, OnChangedCallback onChangedCallback, out object state, out DateTimeOffset lastWriteTime, out long fileSize)
+    {
+        StartMonitoring(dirPath, true, onChangedCallback, out var typedState, out lastWriteTime, out fileSize);
+        state = typedState;
+    }
 
-    public void StartMonitoring(string dirPath, bool includeSubdirectories, OnChangedCallback onChangedCallback, out object state, out DateTimeOffset lastWriteTime, out long fileSize)
+    internal void StartMonitoring(string dirPath, bool includeSubdirectories, OnChangedCallback onChangedCallback, out FolderChangeEventTarget state, out DateTimeOffset lastWriteTime, out long fileSize)
     {
         if (dirPath == null)
             throw new ArgumentNullException(nameof(dirPath));
@@ -67,14 +70,12 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
     //private static long GetDirectorySize(DirectoryInfo directoryInfo) => 
     //    directoryInfo.GetFiles("*.*",SearchOption.AllDirectories).Sum(f => f.Length);
 
-    public void StopMonitoring(string dirPath, bool includeSubdirectories, object state)
+    internal void StopMonitoring(string dirPath, bool includeSubdirectories, FolderChangeEventTarget target)
     {
         if (dirPath == null)
             throw new ArgumentNullException(nameof(dirPath));
-        if (state == null)
-            throw new ArgumentNullException(nameof(state));
-        if (state is not FolderChangeEventTarget target)
-            throw new ArgumentException("target is null");
+        if (target == null)
+            throw new ArgumentNullException(nameof(target));
         var key = GetKey(dirPath, includeSubdirectories);
         if (_dirMonitors[key] is not DirectoryMonitor dirMon)
             return;
@@ -89,6 +90,9 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
         }
     }
 
-    public void StopMonitoring(string dirPath, object state) => StopMonitoring(dirPath, true, state);
+    public void StopMonitoring(string dirPath, object state)
+        => StopMonitoring(dirPath, true,
+            state as FolderChangeEventTarget
+            ?? throw new ArgumentException($"target is not {nameof(FolderChangeEventTarget)}", nameof(state)));
 
 }
