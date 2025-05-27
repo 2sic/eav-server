@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 
-namespace ToSic.Eav.LookUp;
+namespace ToSic.Lib.LookUp.Sources;
 
 /// <summary>
 /// Look-Up helper to get something from a standard .net NameValueCollection. <br/>

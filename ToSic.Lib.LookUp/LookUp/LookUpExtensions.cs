@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Plumbing;
 
-namespace ToSic.Eav.LookUp;
+namespace ToSic.Lib.LookUp;
 
 public static class LookUpExtensions
 {

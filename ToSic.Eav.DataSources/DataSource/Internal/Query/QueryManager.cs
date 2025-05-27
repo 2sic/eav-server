@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.LookUp.Engines;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Internal.Query;

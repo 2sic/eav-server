@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.LookUp;
+﻿using ToSic.Lib.LookUp.Engines;
+
+namespace ToSic.Lib.LookUp;
 
 /// <summary>
 /// A key-value map which resolves keys like "SortOrder" to "asc". <br/>

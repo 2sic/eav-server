@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Lib.LookUp;
 
 /// <summary>
 /// Tweak lookup.

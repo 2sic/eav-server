@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Data;
 
-namespace ToSic.Eav.LookUp;
+namespace ToSic.Lib.LookUp.Sources;
 
 [PublicApi]
 public abstract class LookUpIn<T>(T data, string name = "source without name", string? description = default)

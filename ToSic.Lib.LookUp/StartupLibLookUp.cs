@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.LookUp;
+using ToSic.Lib.LookUp.Engines;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Lib.LookUp;

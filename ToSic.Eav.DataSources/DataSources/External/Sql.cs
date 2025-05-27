@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Plumbing;
+using ToSic.Lib.LookUp;
 using static System.StringComparison;
 using IEntity = ToSic.Eav.Data.IEntity;
 

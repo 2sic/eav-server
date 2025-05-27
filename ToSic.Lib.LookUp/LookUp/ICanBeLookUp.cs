@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Lib.LookUp;
 
 /// <summary>
 /// Marks objects which can serve as a look-up source.

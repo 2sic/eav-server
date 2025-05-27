@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Lib.LookUp.Sources;
 
 /// <summary>
 /// This Value Provider chains two or more LookUps and tries one after another to deliver a result

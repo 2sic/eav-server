@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using ToSic.Eav.Context;
 
-namespace ToSic.Eav.LookUp;
+namespace ToSic.Lib.LookUp.Sources;
 
 /// <summary>
 /// Base Class to create your own LookUp Class - used by all Look-Ups. <br/>

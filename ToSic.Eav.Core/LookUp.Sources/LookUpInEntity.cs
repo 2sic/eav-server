@@ -1,7 +1,8 @@
 ﻿using ToSic.Eav.Context;
+using ToSic.Lib.LookUp.Sources;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.LookUp;
+namespace ToSic.Eav.LookUp.Sources;
 
 /// <summary>
 /// Get Values from an <see cref="IEntity"/>. <br/>

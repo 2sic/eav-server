@@ -1,5 +1,8 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Lib.LookUp;
+using ToSic.Lib.LookUp.Engines;
+using ToSic.Lib.LookUp.Sources;
 using Xunit.DependencyInjection;
 
 namespace ToSic.Eav.LookUp;

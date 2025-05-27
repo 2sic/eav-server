@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Lib.LookUp.Engines;
 
 /// <summary>
 /// An object implementing this interface can provide an engine for the current context.

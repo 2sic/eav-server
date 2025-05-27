@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.LookUp;
+﻿using ToSic.Lib.LookUp;
+
+namespace ToSic.Eav.LookUp;
 
 public static class LookUpTestAccessors
 {

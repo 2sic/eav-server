@@ -1,7 +1,8 @@
 ﻿using ToSic.Eav.Context;
+using ToSic.Lib.LookUp.Sources;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.LookUp;
+namespace ToSic.Eav.LookUp.Sources;
 
 /// <inheritdoc />
 /// <summary>

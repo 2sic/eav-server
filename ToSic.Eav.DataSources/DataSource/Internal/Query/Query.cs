@@ -2,6 +2,8 @@
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.LookUp;
 using ToSic.Lib.Helpers;
+using ToSic.Lib.LookUp.Engines;
+using ToSic.Lib.LookUp.Sources;
 using static System.String;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;

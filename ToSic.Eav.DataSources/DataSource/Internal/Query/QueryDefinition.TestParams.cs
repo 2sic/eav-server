@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.LookUp;
+using ToSic.Lib.LookUp;
+using ToSic.Lib.LookUp.Sources;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 
