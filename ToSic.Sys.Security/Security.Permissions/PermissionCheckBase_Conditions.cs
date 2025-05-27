@@ -93,6 +93,6 @@ partial class PermissionCheckBase
     /// <summary>
     /// Verify that the permission is for owners, and the user is the item owner
     /// </summary>
-    private static bool VerifyUserIsItemOwner(string condition, string targetOwner, IUser user)
+    private static bool VerifyUserIsItemOwner(string condition, string? targetOwner, IUser user)
         => condition == nameof(IPermission.Owner) && targetOwner == user.IdentityToken;
 }

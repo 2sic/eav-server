@@ -8,7 +8,7 @@ public static class PermissionCheckWithEnsure
     /// </summary>
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static bool Ensure(this IPermissionCheck permCheck, List<Grants> grants, out string error)
+    public static bool Ensure(this IPermissionCheck permCheck, List<Grants> grants, out string? error)
     {
         var log = permCheck.Log;
         var l = log.Fn<bool>(log.Try(() => $"[{string.Join(",", grants)}]"), log.Try(() => "or throw"));

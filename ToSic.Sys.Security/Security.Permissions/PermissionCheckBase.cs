@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Services;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Lib.Services;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 
@@ -8,7 +9,7 @@ namespace ToSic.Sys.Security.Permissions;
 /// Basic constructor, you must always call Init afterward
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices services, string logName, object[] connect = default)
+public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices services, string logName, object[]? connect = default)
     : ServiceBase<PermissionCheckBase.MyServices>(services, logName, connect: connect), IPermissionCheck
 {
     // ReSharper disable once InconsistentNaming
@@ -28,12 +29,14 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices
     #region Permission Targets and resulting list of metadata to control
 
     //private IContentType TargetType { get; set; }
-    private IHasPermissions TargetTypePermissionsOrNull { get; set; }
+    private IHasPermissions? TargetTypePermissionsOrNull { get; set; }
 
     //private IEntity TargetItem { get; set; }
-    private IHasPermissions TargetItemPermissionsOrNull { get; set; }
-    private string TargetItemOwner { get; set; }
+    private IHasPermissions? TargetItemPermissionsOrNull { get; set; }
 
+    private string? TargetItemOwner { get; set; }
+
+    [field: AllowNull, MaybeNull]
     protected List<IPermission> PermissionList => field ??= BuildPermissionList();
 
     private List<IPermission> BuildPermissionList()
@@ -44,14 +47,14 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices
         [
             ..TargetTypePermissionsOrNull?.Permissions ?? [],
             ..TargetItemPermissionsOrNull?.Permissions ?? [],
-            .._additionalPermissions
+            .._additionalPermissions ?? throw new NullReferenceException($"{nameof(_additionalPermissions)} is null, it appears that you didn't call {nameof(InitTargets)}")
         ];
 
         return l.Return(list, $"permissions: {list.Count}");
     }
 
 
-    private List<IPermission> _additionalPermissions;
+    private List<IPermission>? _additionalPermissions;
 
     public bool HasPermissions => PermissionList.Any();
 
@@ -81,7 +84,7 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices
     //    GrantedBecause = Conditions.Undefined;
     //    l.Done();
     //}
-    protected void InitTargets(IHasPermissions typePermissions = default, IHasPermissions itemPermissions = default, string targetOwner = default, IEnumerable<IPermission> permissions = default) 
+    protected void InitTargets(IHasPermissions? typePermissions = default, IHasPermissions? itemPermissions = default, string? targetOwner = default, IEnumerable<IPermission>? permissions = default) 
     {
         var l = Log.Fn();
 
