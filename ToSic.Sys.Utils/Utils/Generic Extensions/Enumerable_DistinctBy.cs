@@ -7,7 +7,7 @@
 public static partial class EnumerableExtensions
 {
     // Note: seems .net 6 already has this
-#if !NET6_0_OR_GREATER
+#if !NETCOREAPP
 
     /// <summary>
     /// Returns all distinct elements of the given source, where "distinctness"

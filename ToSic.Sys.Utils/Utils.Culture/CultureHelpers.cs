@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
 namespace ToSic.Eav.Context;
 
 public static class CultureHelpers
 {
-    public static CultureInfo SafeCultureInfo(string[] dimensions)
+    public static CultureInfo SafeCultureInfo(string[]? dimensions)
     {
         try
         {

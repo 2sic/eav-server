@@ -67,30 +67,26 @@ public class AssemblyHandling
     /// Does special try/catch to prevent bugs when assemblies are missing
     /// Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes 
     /// </remarks>
-    private static IEnumerable<Type> GetLoadableTypes(Assembly assembly, ILog? log = null)
+    private static List<Type> GetLoadableTypes(Assembly assembly, ILog? log = null)
     {
-        // try to log
+        var l = log.Fn<List<Type>>($"GetLoadableTypes(assembly: {assembly?.FullName})", timer: true);
         try
         {
-            log.A($"GetLoadableTypes(assembly: {assembly.FullName})");
-        }
-        catch {  /*ignore */}
-
-        try
-        {
-            return assembly.GetTypes();
+            var list = assembly!.GetTypes().ToList();
+            return l.Return(list, $"{list.Count}");
         }
         catch (ReflectionTypeLoadException e)
         {
-            log.A($"had ReflectionTypeLoadException {e.Message} \n" +
+            l.A($"had ReflectionTypeLoadException {e.Message} \n" +
                   "will continue with using Types.Where");
-            return e.Types.Where(t => t != null)!;
+            var list = e.Types.Where(t => t != null).Cast<Type>().ToList();
+            return l.Return(list, $"{list.Count}");
         }
         catch (Exception ex)
         {
-            log.A($"None of the types from assembly '{assembly.FullName}' could be loaded.");
-            log.Ex(ex);
-            return [];
+            l.A($"None of the types from assembly '{assembly!.FullName}' could be loaded.");
+            l.Ex(ex);
+            return l.ReturnAsError([]);
         }
     }
 }
