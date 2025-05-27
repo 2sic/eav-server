@@ -16,7 +16,7 @@ public class CodeHelp(
     private const string ErrHasDetails = "***** You can see more help in the toolbar. ***** \n ";
     private const string ErrHelpSuf = "What follows is the internal error: -------------------------";
 
-    public CodeHelp(string name, string detect, string linkCode = default, bool detectRegex = default, string? uiMessage = default, string? detailsHtml = default)
+    public CodeHelp(string name, string? detect, string? linkCode = default, bool detectRegex = default, string? uiMessage = default, string? detailsHtml = default)
         : this(original: null, name: name, detect: detect, linkCode: linkCode, detectRegex: detectRegex, uiMessage: uiMessage, detailsHtml: detailsHtml)
     { }
 
@@ -32,15 +32,19 @@ public class CodeHelp(
 
     public readonly string? LinkCode = linkCode ?? original?.LinkCode;
 
-    public string? Link => LinkCode.HasValue()
-        ? LinkCode.Contains("http") ? LinkCode : string.Format(ErrHelpLink, LinkCode)
-        : "";
+    public string? Link
+        => LinkCode.HasValue()
+            ? LinkCode.Contains("http") ? LinkCode : string.Format(ErrHelpLink, LinkCode)
+            : "";
 
-    public string LinkMessage => LinkCode.HasValue()
-        ? string.Format(ErrLinkMessage, Link)
-        : "";
+    public string LinkMessage
+        => LinkCode.HasValue()
+            ? string.Format(ErrLinkMessage, Link)
+            : "";
 
-    public string ErrorMessage => $"{ErrHelpPre} {UiMessage} {LinkMessage} {(DetailsHtml != null ? ErrHasDetails : "")} {ErrHelpSuf}";
+    public string ErrorMessage
+        => $"{ErrHelpPre} {UiMessage} {LinkMessage} {(DetailsHtml != null ? ErrHasDetails : "")} {ErrHelpSuf}";
 
-    public override string ToString() => $"CodeHelp: {Name}";
+    public override string ToString()
+        => $"CodeHelp: {Name}";
 }

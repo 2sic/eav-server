@@ -8,7 +8,7 @@ partial class CodeInfoService
 {
     private const int StackFramesWhichBelongToThisService = 3;
 
-    private (string Stack, string Main, string[] AllCshtml) GetStackAndMainFile()
+    private (string Stack, string? Main, string[] AllCshtml) GetStackAndMainFile()
     {
         // Get stack trace skipping some frames which are part of the logging infrastructure
         var trace = new StackTrace(StackFramesWhichBelongToThisService, true);

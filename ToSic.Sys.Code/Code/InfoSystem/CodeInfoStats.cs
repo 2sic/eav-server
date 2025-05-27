@@ -10,13 +10,16 @@ public class CodeInfoStats
     /// </summary>
     public CodeInfoStats() { }
 
-    public void Register(LogStoreEntry use)
+    public void Register(LogStoreEntry? use)
     {
         // We need the specs
-        if (use?.Specs == null) return;
-        if (!use.Specs.TryGetValue("AppId", out var appIdStr)) return;
+        if (use?.Specs == null)
+            return;
+        if (!use.Specs.TryGetValue("AppId", out var appIdStr))
+            return;
         var appId = appIdStr.ConvertOrDefault<int>();
-        if (appId == 0) return;
+        if (appId == 0)
+            return;
         ByAppCache[appId] = true;
     }
 

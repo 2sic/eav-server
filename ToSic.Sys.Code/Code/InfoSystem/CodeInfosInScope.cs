@@ -8,8 +8,11 @@ public class CodeInfosInScope(CodeInfoStats codeInfoStats)
 {
     public readonly CodeInfoStats CodeInfoStats = codeInfoStats;
 
-    public IEnumerable<CodeInfoInLogStore> GetObsoletes() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Obsolete) ?? new List<CodeInfoInLogStore>();
-    public IEnumerable<CodeInfoInLogStore> GetWarnings() => Warnings?.Where(x => x.Use.Change.Type == CodeInfoTypes.Warning) ?? new List<CodeInfoInLogStore>();
+    public IEnumerable<CodeInfoInLogStore> GetObsoletes()
+        => Warnings.Where(x => x.Use.Change.Type == CodeInfoTypes.Obsolete);
+
+    public IEnumerable<CodeInfoInLogStore> GetWarnings()
+        => Warnings.Where(x => x.Use.Change.Type == CodeInfoTypes.Warning);
 
     private IEnumerable<CodeInfoInLogStore> Warnings => _warnings;
     private readonly List<CodeInfoInLogStore> _warnings = [];
@@ -18,9 +21,10 @@ public class CodeInfosInScope(CodeInfoStats codeInfoStats)
     /// Add it to the list and ensure that any known specs are also included
     /// </summary>
     /// <param name="codeInfoUse"></param>
-    internal void AddObsolete(CodeInfoInLogStore codeInfoUse)
+    internal void AddObsolete(CodeInfoInLogStore? codeInfoUse)
     {
-        if (codeInfoUse == null) return;
+        if (codeInfoUse == null)
+            return;
         codeInfoUse.EntryOrNull?.UpdateSpecs(Specs);
         _warnings.Add(codeInfoUse);
         CodeInfoStats.Register(codeInfoUse.EntryOrNull);
@@ -29,15 +33,18 @@ public class CodeInfosInScope(CodeInfoStats codeInfoStats)
     /// <summary>
     /// Add context information and update anything that was previously added
     /// </summary>
-    public void AddContext(Func<IDictionary<string, string>> specsFactory, string entryPoint = default)
+    public void AddContext(Func<IDictionary<string, string>>? specsFactory, string? entryPoint = default)
     {
-        if (entryPoint != null) EntryPoint = entryPoint;
-        if (specsFactory == null) return;
+        if (entryPoint != null)
+            EntryPoint = entryPoint;
+        if (specsFactory == null)
+            return;
         _specsFactory = specsFactory;
         _specs.Reset();
 
         // If nothing to add, ignore.
-        if (!_warnings.SafeAny()) return;
+        if (!_warnings.Any())
+            return;
 
         // We could use some specs, so let's get them
         var specs = Specs;
@@ -48,21 +55,22 @@ public class CodeInfosInScope(CodeInfoStats codeInfoStats)
             CodeInfoStats.Register(logged?.EntryOrNull);
         }
     }
-    internal string EntryPoint { get; private set; }
+    internal string? EntryPoint { get; private set; }
 
-    private IDictionary<string, string> Specs => _specs.Get(() =>
-    {
-        try
+    private IDictionary<string, string>? Specs
+        => _specs.Get(() =>
         {
-            return _specsFactory?.Invoke();
-        }
-        catch
-        {
-            return null;
-        }
-    });
+            try
+            {
+                return _specsFactory?.Invoke();
+            }
+            catch
+            {
+                return null;
+            }
+        });
 
 
-    private readonly GetOnce<IDictionary<string, string>> _specs = new();
-    private Func<IDictionary<string, string>> _specsFactory;
+    private readonly GetOnce<IDictionary<string, string>?> _specs = new();
+    private Func<IDictionary<string, string>>? _specsFactory;
 }

@@ -6,8 +6,8 @@ namespace ToSic.Lib.Code.InfoSystem;
 /// Package to hold the log-entry in the history/store together with the code use itself.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class CodeInfoInLogStore(CodeUse use, LogStoreEntry entry = default)
+public class CodeInfoInLogStore(CodeUse use, LogStoreEntry? entry = default)
 {
     public CodeUse Use { get; } = use;
-    public LogStoreEntry EntryOrNull { get; } = entry;
+    public LogStoreEntry? EntryOrNull { get; } = entry;
 }

@@ -3,10 +3,14 @@
 namespace ToSic.Lib;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ExceptionSuperUserOnly(Exception inner = null) : ExceptionWithHelp(SuperUserHelp(null), inner)
+public class ExceptionSuperUserOnly(Exception? inner = null) : ExceptionWithHelp(SuperUserHelp(null), inner)
 {
-    private static CodeHelp SuperUserHelp(string message) => new(name: "super-user-help", detect: null,
-        uiMessage: message ?? "Dev/SuperUser 👨🏽‍💻 ERROR INFORMATION",
-        detailsHtml: "Only SuperUsers and Devs 👨🏽‍💻 see this message. Normal users won't see it");
+    private static CodeHelp SuperUserHelp(string? message)
+        => new(
+            name: "super-user-help",
+            detect: null,
+            uiMessage: message ?? "Dev/SuperUser 👨🏽‍💻 ERROR INFORMATION",
+            detailsHtml: "Only SuperUsers and Devs 👨🏽‍💻 see this message. Normal users won't see it"
+        );
 
 }
