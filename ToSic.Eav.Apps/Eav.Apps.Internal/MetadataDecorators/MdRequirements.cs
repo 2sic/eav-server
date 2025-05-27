@@ -11,13 +11,14 @@ using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
 using ToSic.Sys.Utils;
 using static ToSic.Eav.Apps.Internal.MetadataDecorators.RequirementDecorator;
+using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
 namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MdRequirements(
     LazySvc<ILicenseService> licenseService,
-    LazySvc<IEavFeaturesService> featsService,
+    LazySvc<ISysFeaturesService> featsService,
     LazySvc<IPlatformInfo> platInfo,
     LicenseCatalog licenseCatalog,
     LazySvc<SysFeaturesService> sysCapSvc)

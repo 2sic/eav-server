@@ -24,7 +24,7 @@ public class ImportApp(
     AppFinder appFinder,
     ISite site,
     Generator<XmlImportWithFiles> xmlImpExpFiles,
-    IEavFeaturesService features)
+    ISysFeaturesService features)
     : ServiceBase("Bck.Export",
         connect: [envLogger, zipImport, globalConfiguration, user, appFinder, site, xmlImpExpFiles, features])
 {

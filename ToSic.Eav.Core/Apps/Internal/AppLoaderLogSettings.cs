@@ -5,7 +5,7 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Apps.Internal;
 
-public class AppLoaderLogSettings(IEavFeaturesService featuresSvc): ServiceBase("Ldr.LogSet")
+public class AppLoaderLogSettings(ISysFeaturesService featuresSvc): ServiceBase("Ldr.LogSet")
 {
     private const string NameDetailed = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadAppDetails);
     private const string NameSummary = nameof(BuiltInFeatures.InsightsLoggingCustomConfig.LoadAppSummary);

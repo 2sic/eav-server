@@ -13,7 +13,7 @@ public class WorkAttributesMod(
     GenWorkBasic<WorkAttributes> workAttributes,
     ContentTypeAttributeBuilder attributeBuilder,
     Generator<IDataDeserializer> dataDeserializer,
-    LazySvc<IEavFeaturesService> features)
+    LazySvc<ISysFeaturesService> features)
     : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.AttMod",
         connect: [attributeBuilder, workMetadata, workAttributes, features, dataDeserializer])
 {

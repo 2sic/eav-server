@@ -20,7 +20,7 @@ namespace ToSic.Eav.Caching;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppsCacheSwitch(
     ILogStore logStore,
-    IEavFeaturesService featuresService,
+    ISysFeaturesService featuresService,
     LazySvc<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher,
     LazySvc<IAppLoaderTools> appLoaderTools
     )

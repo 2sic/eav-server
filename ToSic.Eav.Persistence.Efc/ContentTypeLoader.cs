@@ -13,7 +13,7 @@ internal class ContentTypeLoader(
     Generator<IDataDeserializer> dataDeserializer,
     DataBuilder dataBuilder,
     IAppStateCacheService appStates,
-    IEavFeaturesService featuresSvc)
+    ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
     internal IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)

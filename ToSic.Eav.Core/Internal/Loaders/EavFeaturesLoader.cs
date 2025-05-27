@@ -8,12 +8,13 @@ using ToSic.Eav.SysData;
 using ToSic.Lib.Services;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
+using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
 namespace ToSic.Eav.Internal.Loaders;
 
 [PrivateApi]
 public class EavFeaturesLoader(
-    IEavFeaturesService featuresSvc,
+    ISysFeaturesService featuresSvc,
     FeaturePersistenceService featurePersistenceService,
     FeaturesIoHelper featuresIo,
     LicenseLoader licenseLoader,

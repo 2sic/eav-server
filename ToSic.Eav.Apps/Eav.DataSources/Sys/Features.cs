@@ -29,7 +29,7 @@ public sealed class Features : CustomDataSource
     /// Constructs a new Scopes DS
     /// </summary>
     [PrivateApi]
-    public Features(MyServices services, IEavFeaturesService featuresService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Feats")
+    public Features(MyServices services, ISysFeaturesService featuresService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Feats")
     {
         ConnectLogs([featuresService]);
         ProvideOutRaw(

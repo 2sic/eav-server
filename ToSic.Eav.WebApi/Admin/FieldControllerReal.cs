@@ -8,7 +8,7 @@ public class FieldControllerReal(
     LazySvc<ContentTypeDtoService> ctApiLazy,
     GenWorkPlus<WorkInputTypes> inputTypes,
     GenWorkDb<WorkAttributesMod> attributesMod,
-    LazySvc<IEavFeaturesService> featuresSvc)
+    LazySvc<ISysFeaturesService> featuresSvc)
     : ServiceBase("Api.FieldRl", connect: [inputTypes, attributesMod, ctApiLazy, featuresSvc]), IFieldController
 {
     public const string LogSuffix = "Field";

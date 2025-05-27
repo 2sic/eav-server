@@ -41,7 +41,7 @@ public class ContentExportApi(
     Generator<JsonSerializer> jsonSerializer,
     IResponseMaker responseMaker,
     Generator<ExportListXml> exportListXmlGenerator,
-    LazySvc<IEavFeaturesService> features)
+    LazySvc<ISysFeaturesService> features)
     : ServiceBase("Api.EaCtEx",
         connect: [site, appPathSvc, appWorkCtxSvc, exportListXmlGenerator, appsCatalog, jsonSerializer, responseMaker, features])
 {

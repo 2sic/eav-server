@@ -39,8 +39,8 @@ public static class StartUpEavCore
         services.TryAddTransient<FeaturesIoHelper>();
 
         // Features - 2024-05-31 changed to non-singleton
-        services.TryAddTransient<IEavFeaturesService, EavFeaturesService>();    // this must come first!
-        services.TryAddTransient<ILibFeaturesService, EavFeaturesService>();    // v20
+        services.TryAddTransient<ISysFeaturesService, SysFeaturesService>();    // this must come first!
+        services.TryAddTransient<ILibFeaturesService, SysFeaturesService>();    // v20
 
         // App-State and Cache
         services.TryAddSingleton<IAppsCache, AppsCache>();

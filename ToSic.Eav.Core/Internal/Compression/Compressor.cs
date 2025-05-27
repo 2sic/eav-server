@@ -4,7 +4,7 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Internal.Compression;
 
-public class Compressor(IEavFeaturesService features = null)
+public class Compressor(ISysFeaturesService features = null)
 {
     private ICompressor _compressor = CompressorFactory(CompressorType.GZip);
 

@@ -4,6 +4,7 @@ using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
+using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
 namespace ToSic.Sys;
 

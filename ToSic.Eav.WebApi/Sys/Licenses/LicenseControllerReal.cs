@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi.Sys.Licenses;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LicenseControllerReal(
     LazySvc<ILicenseService> licenseServiceLazy,
-    LazySvc<IEavFeaturesService> featuresLazy,
+    LazySvc<ISysFeaturesService> featuresLazy,
     LazySvc<IGlobalConfiguration> globalConfiguration,
     LazySvc<LicenseCatalog> licenseCatalog,
     SystemFingerprint fingerprint,

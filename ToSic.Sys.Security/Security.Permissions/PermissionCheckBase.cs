@@ -16,10 +16,10 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices
 
     #region MyServices
 
-    public class MyServices(IEavFeaturesService features, IEnvironmentPermission environmentPermission)
+    public class MyServices(ISysFeaturesService features, IEnvironmentPermission environmentPermission)
         : MyServicesBase(connect: [features, environmentPermission])
     {
-        public IEavFeaturesService Features { get; } = features;
+        public ISysFeaturesService Features { get; } = features;
         public IEnvironmentPermission EnvironmentPermission { get; } = environmentPermission;
     }
 

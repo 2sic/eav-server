@@ -20,7 +20,7 @@ namespace ToSic.Sys.Capabilities.Features;
 /// </remarks>
 [PrivateApi("hide implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesService, ILibFeaturesService
+public class SysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeaturesService, ILibFeaturesService
 {
     public IEnumerable<FeatureState> All => _allStaticCache ??= Merge(Stored, featuresCatalog.List, _staticSysFeatures);
     private static List<FeatureState>? _allStaticCache;
@@ -197,7 +197,7 @@ public class EavFeaturesService(FeaturesCatalog featuresCatalog) : IEavFeaturesS
 
     public bool CacheIsNotifyOnly => true;
 
-    string ICanBeCacheDependency.CacheDependencyId => typeof(IEavFeaturesService).FullName!;
+    string ICanBeCacheDependency.CacheDependencyId => typeof(ISysFeaturesService).FullName!;
 
     bool ILibFeaturesService.IsEnabled(string nameIds) => IsEnabled([nameIds]);
 

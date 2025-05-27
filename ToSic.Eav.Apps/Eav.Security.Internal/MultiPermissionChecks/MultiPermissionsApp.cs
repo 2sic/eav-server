@@ -19,12 +19,12 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
     public class MyServices(
         LazySvc<IZoneMapper> zoneMapper,
         Generator<AppPermissionCheck> appPermCheckGenerator,
-        Generator<IEavFeaturesService> featIntGen)
+        Generator<ISysFeaturesService> featIntGen)
         : MyServicesBase(connect: [zoneMapper, appPermCheckGenerator, featIntGen])
     {
         internal LazySvc<IZoneMapper> ZoneMapper { get; } = zoneMapper;
         internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; } = appPermCheckGenerator;
-        internal Generator<IEavFeaturesService> FeatIntGen { get; } = featIntGen;
+        internal Generator<ISysFeaturesService> FeatIntGen { get; } = featIntGen;
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
     public IContextOfSite Context { get; private set; }
     protected ISite SiteForSecurityCheck { get; private set; }
     protected bool SamePortal { get; private set; }
-    public IEavFeaturesService FeaturesInternal => Services.FeatIntGen.New();
+    public ISysFeaturesService FeaturesInternal => Services.FeatIntGen.New();
 
     #endregion
 

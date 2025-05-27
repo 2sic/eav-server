@@ -10,7 +10,7 @@ namespace ToSic.Eav.WebApi.Admin.Features;
 public class FeatureControllerReal(
     // Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
     LazySvc<EavFeaturesLoader> systemLoaderLazy,
-    LazySvc<IEavFeaturesService> featuresLazy)
+    LazySvc<ISysFeaturesService> featuresLazy)
     : ServiceBase("Bck.Feats", connect: [systemLoaderLazy, featuresLazy]), IFeatureController
 {
     public const string LogSuffix = "Feats";

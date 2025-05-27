@@ -21,7 +21,7 @@ public class ZipExport(
     XmlExporter xmlExporter,
     Generator<FileManager> fileManagerGenerator,
     IGlobalConfiguration globalConfiguration,
-    IEavFeaturesService features
+    ISysFeaturesService features
     )
     : ServiceBase(EavLogs.Eav + ".ZipExp",
         connect: [appReaders, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator, features])

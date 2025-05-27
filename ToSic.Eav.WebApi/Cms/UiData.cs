@@ -9,7 +9,7 @@ using ToSic.Sys.Users;
 
 namespace ToSic.Eav.WebApi.Cms;
 
-internal class UiData(IEavFeaturesService features, IUser user) : IUiData
+internal class UiData(ISysFeaturesService features, IUser user) : IUiData
 {
     /// <summary>
     /// if the user has full edit permissions, he may also get the un-public features

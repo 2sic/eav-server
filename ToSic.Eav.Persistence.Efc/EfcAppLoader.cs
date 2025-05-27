@@ -22,7 +22,7 @@ public class EfcAppLoader(
     IAppsCatalog appsCatalog,
     IAppStateCacheService appStates,
     ILogStore logStore,
-    IEavFeaturesService featuresSvc,
+    ISysFeaturesService featuresSvc,
     DataBuilder dataBuilder,
     Generator<IDataDeserializer> dataDeserializer,
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
