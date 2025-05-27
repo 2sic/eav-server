@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp.Sources;
 /// As of now it's hardwired to look up Metadata of Entities. <br/>
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
-[PrivateApi("used to be public, but it's not clear why anybody should use it. ATM not used in our code base - was only used for Queries, and that has a renamed copy LookUpInQueryMetadata")]
+[PrivateApi("doesn't seem to be used! note: used to be public, but it's not clear why anybody should use it. ATM not used in our code base - was only used for Queries, and that has a renamed copy LookUpInQueryMetadata")]
 public class LookUpInMetadata : LookUpInEntity
 {
     private readonly IMetadataSource _metaDataSource;

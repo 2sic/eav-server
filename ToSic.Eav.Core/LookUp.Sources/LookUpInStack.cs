@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp.Sources;
 /// <summary>
 /// TODO
 /// </summary>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class LookUpInStack: LookUpIn<IPropertyStack>
 {
     private readonly string[] _dimensions;

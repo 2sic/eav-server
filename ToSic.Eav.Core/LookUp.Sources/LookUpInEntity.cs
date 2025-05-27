@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp.Sources;
 /// Get Values from an <see cref="IEntity"/>. <br/>
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class LookUpInEntity : LookUpIn<IEntity>
 {
     private readonly string[] _dimensions;

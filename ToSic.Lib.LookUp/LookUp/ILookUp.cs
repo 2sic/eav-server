@@ -3,10 +3,15 @@
 namespace ToSic.Lib.LookUp;
 
 /// <summary>
-/// A key-value map which resolves keys like "SortOrder" to "asc". <br/>
-/// It's usually used to get pre-stored configuration or to get settings from the context. <br/>
-/// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
+/// Describes a LookUp source similar to a dictionary, which can be used to resolve keys to values.
 /// </summary>
+/// <remarks>
+/// An important aspect of this source is that it is named, since many such sources will be used together.
+/// 
+/// It's usually used to get pre-stored configuration or to get settings from the context.
+/// 
+/// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
+/// </remarks>
 [PublicApi]
 public interface ILookUp : ICanBeLookUp
 {
