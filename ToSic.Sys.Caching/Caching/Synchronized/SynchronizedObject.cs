@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Caching;
-
-namespace ToSic.Lib.Caching.Synchronized;
+﻿namespace ToSic.Lib.Caching.Synchronized;
 
 /// <summary>
 /// WIP 12.03

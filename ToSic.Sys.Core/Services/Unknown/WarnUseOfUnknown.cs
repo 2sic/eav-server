@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Eav.Internal.Unknown;
+﻿namespace ToSic.Eav.Internal.Unknown;
 
 public class WarnUseOfUnknown<T>
 {

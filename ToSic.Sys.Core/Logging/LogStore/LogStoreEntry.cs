@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using static System.StringComparer;
+﻿using static System.StringComparer;
 
 namespace ToSic.Lib.Logging;
 

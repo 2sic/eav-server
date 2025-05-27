@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Caching;
 
 namespace ToSic.Lib.Caching.Policies;
 

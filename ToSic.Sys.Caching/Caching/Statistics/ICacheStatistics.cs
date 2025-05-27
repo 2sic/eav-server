@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Caching;
-
-namespace ToSic.Lib.Caching.Statistics;
+﻿namespace ToSic.Lib.Caching.Statistics;
 
 /// <summary>
 /// WIP - trying to keep more information about cache changes

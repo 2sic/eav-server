@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Plumbing;
-using ToSic.Sys.Utils;
-
-namespace ToSic.Lib.Code.Help;
+﻿namespace ToSic.Lib.Code.Help;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeHelp(

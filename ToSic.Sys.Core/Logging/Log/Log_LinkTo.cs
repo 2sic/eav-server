@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Lib.Logging;
 
 public partial class Log
 {

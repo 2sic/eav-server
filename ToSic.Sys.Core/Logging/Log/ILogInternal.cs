@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Lib.Logging;
 
 internal interface ILogInternal
 {

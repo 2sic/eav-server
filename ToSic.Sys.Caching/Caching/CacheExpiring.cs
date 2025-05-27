@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Caching;
-
-namespace ToSic.Lib.Caching;
+﻿namespace ToSic.Lib.Caching;
 
 /// <summary>
 /// Very simple timestamp holder, mainly for Delegated Cache-Expiry to hold the private cache timestamp.

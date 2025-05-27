@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Caching;
 using ToSic.Lib.Caching.Monitors;
 using ToSic.Lib.FunFact;
 using static ToSic.Lib.Caching.MemoryCacheService;

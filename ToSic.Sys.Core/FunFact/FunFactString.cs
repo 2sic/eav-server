@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ToSic.Lib.FunFact;
+﻿namespace ToSic.Lib.FunFact;
 
 /// <summary>
 /// WIP fluid functional object factory.
