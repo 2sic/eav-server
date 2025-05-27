@@ -17,8 +17,8 @@ using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.Caching;
-using ToSic.Lib.Code.InfoSystem;
-using CodeInfoService = ToSic.Lib.Code.InfoSystem.CodeInfoService;
+using ToSic.Sys.Code.InfoSystem;
+using CodeInfoService = ToSic.Sys.Code.InfoSystem.CodeInfoService;
 
 namespace ToSic.Eav.StartUp;
 

@@ -1,6 +1,6 @@
-﻿using ToSic.Lib.Code.Infos;
+﻿using ToSic.Sys.Code.Infos;
 
-namespace ToSic.Lib.Code.InfoSystem;
+namespace ToSic.Sys.Code.InfoSystem;
 
 partial class CodeInfoService
 {

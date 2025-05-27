@@ -1,7 +1,7 @@
-﻿using ToSic.Lib.Code.Infos;
-using ToSic.Lib.Helpers;
+﻿using ToSic.Lib.Helpers;
+using ToSic.Sys.Code.Infos;
 
-namespace ToSic.Lib.Code.InfoSystem;
+namespace ToSic.Sys.Code.InfoSystem;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeInfosInScope(CodeInfoStats codeInfoStats)

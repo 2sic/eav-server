@@ -1,8 +1,8 @@
-﻿using ToSic.Lib.Code.Infos;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using ToSic.Sys.Code.Infos;
 
-namespace ToSic.Lib.Code.InfoSystem;
+namespace ToSic.Sys.Code.InfoSystem;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class CodeInfoService(LazySvc<CodeInfosInScope> scope) : ServiceBase("Lib.CodeCh")

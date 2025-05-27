@@ -1,6 +1,6 @@
-﻿using ToSic.Lib.Code.Infos;
+﻿using ToSic.Sys.Code.Infos;
 
-namespace ToSic.Lib.Code.InfoSystem;
+namespace ToSic.Sys.Code.InfoSystem;
 
 /// <summary>
 /// Package to hold the log-entry in the history/store together with the code use itself.

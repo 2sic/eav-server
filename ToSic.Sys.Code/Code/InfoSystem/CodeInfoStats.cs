@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace ToSic.Lib.Code.InfoSystem;
+namespace ToSic.Sys.Code.InfoSystem;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeInfoStats

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Code.Help;
+﻿namespace ToSic.Sys.Code.Help;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class CodeHelp(

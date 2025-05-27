@@ -1,6 +1,6 @@
-﻿using ToSic.Lib.Code.Help;
+﻿using ToSic.Sys.Code.Help;
 
-namespace ToSic.Lib;
+namespace ToSic.Sys.Exceptions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IExceptionWithHelp

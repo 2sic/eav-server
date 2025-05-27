@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Code.Infos;
+﻿namespace ToSic.Sys.Code.Infos;
 
 /// <summary>
 /// Information that a code was used - must always contain a code-info which describes what was used.

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Code.Infos;
+﻿namespace ToSic.Sys.Code.Infos;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public enum CodeInfoTypes

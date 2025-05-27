@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Code.Help;
+﻿namespace ToSic.Sys.Code.Help;
 
 /// <summary>
 /// TODO: This actually doesn't really work as expected.

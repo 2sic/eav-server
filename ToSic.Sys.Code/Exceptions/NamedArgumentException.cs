@@ -1,7 +1,7 @@
-﻿using ToSic.Lib.Code.Help;
-using ToSic.Lib.Coding;
+﻿using ToSic.Lib.Coding;
+using ToSic.Sys.Code.Help;
 
-namespace ToSic.Lib;
+namespace ToSic.Sys.Exceptions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class NamedArgumentException : ArgumentException, IExceptionWithHelp

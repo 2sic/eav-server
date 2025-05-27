@@ -21,9 +21,8 @@ using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib;
-using ToSic.Lib.Code.InfoSystem;
 using ToSic.Lib.LookUp;
-using CodeInfoService = ToSic.Lib.Code.InfoSystem.CodeInfoService;
+using CodeInfoService = ToSic.Sys.Code.InfoSystem.CodeInfoService;
 
 namespace ToSic.Eav.StartUp;
 

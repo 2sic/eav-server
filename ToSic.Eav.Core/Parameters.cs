@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using ToSic.Lib;
 using ToSic.Lib.Coding;
+using ToSic.Sys.Exceptions;
 
 namespace ToSic.Eav;
 
