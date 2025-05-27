@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Internal.Generics;
+﻿namespace ToSic.Sys.Utils;
 
 /// <summary>
 /// Taken from https://github.com/morelinq/MoreLINQ/blob/master/MoreLinq/DistinctBy.cs

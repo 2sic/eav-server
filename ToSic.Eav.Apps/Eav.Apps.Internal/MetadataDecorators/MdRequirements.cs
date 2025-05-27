@@ -4,7 +4,7 @@ using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.SysData;
-using ToSic.Lib.Internal.Generics;
+using ToSic.Sys.Utils;
 using static ToSic.Eav.Apps.Internal.MetadataDecorators.RequirementDecorator;
 
 namespace ToSic.Eav.Apps.Internal.MetadataDecorators;

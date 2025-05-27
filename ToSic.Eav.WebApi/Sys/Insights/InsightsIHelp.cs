@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Lib.Coding;
 using ToSic.Razor.Html5;
+using ToSic.Sys.Utils;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;

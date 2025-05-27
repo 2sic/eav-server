@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Runtime.Caching;
 using System.Runtime.Caching.Hosting;
-using ToSic.Eav.Helpers;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Caching.CachingMonitors;
 

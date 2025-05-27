@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
 using ToSic.Eav.Context;
-using ToSic.Eav.Helpers;
 using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Infrastructure;
 #if NETFRAMEWORK

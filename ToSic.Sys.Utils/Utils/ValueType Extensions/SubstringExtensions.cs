@@ -1,6 +1,6 @@
 ﻿using static System.StringComparison;
 
-namespace ToSic.Eav.Plumbing;
+namespace ToSic.Sys.Utils;
 
 /// <summary>
 /// IMPORTANT

@@ -2,7 +2,6 @@
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 #if NETFRAMEWORK
-using ToSic.Lib.Internal.Generics;
 #endif
 
 namespace ToSic.Eav.Metadata;

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Persistence.Efc.Intermediate;
 #if NETFRAMEWORK
-using ToSic.Lib.Internal.Generics;
+using ToSic.Sys.Utils;
 #endif
 
 namespace ToSic.Eav.Persistence.Efc;

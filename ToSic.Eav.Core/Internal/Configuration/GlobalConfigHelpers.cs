@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Helpers;
-
-namespace ToSic.Eav.Internal.Configuration;
+﻿namespace ToSic.Eav.Internal.Configuration;
 
 public class GlobalConfigHelpers
 {

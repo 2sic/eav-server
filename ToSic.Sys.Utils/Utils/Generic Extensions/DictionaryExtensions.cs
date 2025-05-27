@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using static System.StringComparer;
 
-namespace ToSic.Lib.Internal.Generics;
+namespace ToSic.Sys.Utils;
 
 // ReSharper disable once InconsistentNaming
 [ShowApiWhenReleased(ShowApiMode.Never)]

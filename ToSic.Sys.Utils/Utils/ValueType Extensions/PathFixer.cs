@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ToSic.Eav.Helpers;
+namespace ToSic.Sys.Utils;
 
 public static class PathFixer
 {

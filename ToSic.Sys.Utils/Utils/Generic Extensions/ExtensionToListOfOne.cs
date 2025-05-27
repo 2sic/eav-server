@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Internal.Generics;
+﻿namespace ToSic.Sys.Utils;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ExtensionToListOfOne

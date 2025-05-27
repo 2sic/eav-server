@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Persistence.Efc.Intermediate;
-using ToSic.Lib.Internal.Generics;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Persistence.Efc;
 

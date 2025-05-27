@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Internal.Generics;
+﻿namespace ToSic.Sys.Utils;
 
 public static class ListExtensions
 {

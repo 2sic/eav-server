@@ -1,4 +1,5 @@
-﻿using static ToSic.Razor.Blade.Tag;
+﻿using ToSic.Sys.Utils;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 

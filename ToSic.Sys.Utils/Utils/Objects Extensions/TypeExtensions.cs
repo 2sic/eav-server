@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Plumbing;
+﻿namespace ToSic.Sys.Utils;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class TypeExtensions

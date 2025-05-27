@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Plumbing;
+﻿using ToSic.Sys.Utils;
+
+namespace ToSic.Eav.Plumbing;
 
 internal static class StringExtensionsTestAccessors
 {

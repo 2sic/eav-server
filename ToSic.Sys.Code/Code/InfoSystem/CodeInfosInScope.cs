@@ -1,6 +1,5 @@
 ﻿using ToSic.Lib.Code.Infos;
 using ToSic.Lib.Helpers;
-using ToSic.Lib.Internal.Generics;
 
 namespace ToSic.Lib.Code.InfoSystem;
 
