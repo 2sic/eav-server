@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.Catalog;
 using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Api01;
@@ -94,8 +95,13 @@ public static class StartupEavApps
         services.TryAddTransient<AppLoaderLogSettings>();   // new v20
         services.TryAddTransient<LicenseLoader>();
 
+        // App-State and Cache
+        services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
+        services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
+        services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
         services.TryAddSingleton<IAppsCache, AppsCache>();
         services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
+        services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
 
 
         // File System Loaders

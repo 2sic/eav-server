@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps;
 
 public class AppReader() : ServiceBase("App.Reader"), IAppReader
 {
-    internal AppReader Init(IAppStateCache appState, ILog parentLog)
+    /*internal*/public AppReader Init(IAppStateCache appState, ILog parentLog)
     {
         _appState = appState as AppState;
         this.LinkLog(parentLog);

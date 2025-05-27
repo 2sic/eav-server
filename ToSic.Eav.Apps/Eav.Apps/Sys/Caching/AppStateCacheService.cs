@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Internal;
 /// The names of the Get etc. will probably change a few more times
 /// </summary>
 [PrivateApi("internal")]
-internal class AppStateCacheService(AppsCacheSwitch appsCacheSwitch) : IAppStateCacheService
+public class AppStateCacheService(AppsCacheSwitch appsCacheSwitch) : IAppStateCacheService
 {
     internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
 

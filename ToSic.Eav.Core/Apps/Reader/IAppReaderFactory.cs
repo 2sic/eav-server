@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Coding;
+﻿using ToSic.Eav.Apps.State;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Apps;
 
@@ -56,4 +57,6 @@ public interface IAppReaderFactory
 
     /// <see cref="IAppsCatalog.AppIdentity"/>
     IAppIdentityPure AppIdentity(int appId);
+
+    IAppReader ToReader(IAppStateCache state);
 }

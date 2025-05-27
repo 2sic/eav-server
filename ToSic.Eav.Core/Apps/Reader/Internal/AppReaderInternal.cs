@@ -25,5 +25,5 @@ public static class AppReaderInternal
 public static class AppReaderFactoryInternal
 {
     public static IAppReader ToReader(this IAppReaderFactory appReaderFactory, IAppStateCache appState)
-        => ((AppReaderFactory)appReaderFactory).ToReader(appState);
+        => appReaderFactory.ToReader(appState);
 }

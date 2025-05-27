@@ -4,9 +4,8 @@ namespace ToSic.Eav.Apps.Internal;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class JsonServiceInternalUnknown : IJsonServiceInternal
+public class JsonServiceInternalUnknown(WarnUseOfUnknown<JsonServiceInternalUnknown> _) : IJsonServiceInternal
 {
-    public JsonServiceInternalUnknown(WarnUseOfUnknown<JsonServiceInternalUnknown> _) { }
 
     public T To<T>(string json) => throw new NotImplementedException();
 }

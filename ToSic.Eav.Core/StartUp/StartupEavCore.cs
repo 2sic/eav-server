@@ -25,31 +25,20 @@ public static class StartUpEavCore
     {
         // Configuration objects
         services.TryAddTransient<GlobalPaths>();
-        //services.TryAddTransient<SystemLoader>();
-        //services.TryAddTransient<EavSystemLoader>();
-        //services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
-        //services.TryAddTransient<FeaturePersistenceService>();
-        //services.TryAddTransient<FeaturesIoHelper>();
 
         // Features - 2024-05-31 changed to non-singleton
         services.TryAddTransient<ISysFeaturesService, SysFeaturesService>();    // this must come first!
         services.TryAddTransient<ILibFeaturesService, SysFeaturesService>();    // v20
 
         // App-State and Cache
-        //services.TryAddSingleton<IAppsCache, AppsCache>();
-        //services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
-        services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
-        services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
-        services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
+        //services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
+        //services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
+        //services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
+        //services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
         services.TryAddTransient<AppReader>();
         services.TryAddTransient<AppDataStackService>();
-        //services.TryAddTransient<AppLoaderLogSettings>();   // new v20
 
-        // v13 #SwitchableAppsCache
-        //services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
-        services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
-            
         // Permissions helper
         services.TryAddTransient<PermissionCheckBase.MyServices>();
 
