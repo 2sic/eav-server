@@ -6,7 +6,7 @@
 /// to get Html Lookups working.
 /// </summary>
 [PrivateApi]
-public class TweakLookUp: ITweakLookUp
+internal class TweakLookUp: ITweakLookUp
 {
     public TweakLookUp()
     { }

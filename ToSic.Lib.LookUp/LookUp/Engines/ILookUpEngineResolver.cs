@@ -1,7 +1,8 @@
 ﻿namespace ToSic.Eav.LookUp;
 
 /// <summary>
-/// An object implementing this interface can provide an engine for the current context. <br/>
+/// An object implementing this interface can provide an engine for the current context.
+/// 
 /// It's important so that code can easily ask for the current engine, but that the
 /// real implementation is dependency-injected later on, as each environment (DNN, Nop, etc.)
 /// can provide different initial engines. <br/>
