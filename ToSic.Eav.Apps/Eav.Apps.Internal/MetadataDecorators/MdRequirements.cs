@@ -3,6 +3,7 @@ using ToSic.Eav.Internal.Requirements;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
+using ToSic.Sys.Capabilities.Platform;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
 using ToSic.Sys.Utils;

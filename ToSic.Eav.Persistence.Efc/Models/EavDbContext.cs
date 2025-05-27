@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 namespace ToSic.Eav.Persistence.Efc.Models;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class EavDbContext(DbContextOptions<EavDbContext> options, IDbConfiguration dbConfig, ILogStore logStore)
+public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGlobalConfiguration globalConfig, ILogStore logStore)
     : DbContext(options)
 {
     private ILog Log { get; } = new Log("EF.DbCtx");
@@ -33,7 +33,7 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IDbCon
         //logStore.Add("boot-log", Log);
         var l = Log.Fn("starting with options builder", timer: true);
 
-        var connectionString = dbConfig.ConnectionString;
+        var connectionString = globalConfig.ConnectionString(); // dbConfig.ConnectionString;
         if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
             connectionString += ";MultipleActiveResultSets=True";
 #if NETFRAMEWORK

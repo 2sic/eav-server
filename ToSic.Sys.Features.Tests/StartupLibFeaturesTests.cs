@@ -25,6 +25,7 @@ public static class StartupLibFeatures
     /// <param name="services"></param>
     public static IServiceCollection StartupLibFeaturesTests(this IServiceCollection services)
         => services
-            .AddLibFeatSys()
+            .AddSysCapabilities()
+            .AddSysCapabilitiesFallback()
             .AddLibCore();
 }

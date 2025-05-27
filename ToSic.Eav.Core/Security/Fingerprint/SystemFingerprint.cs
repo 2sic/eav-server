@@ -22,6 +22,7 @@ using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using ToSic.Sys.Capabilities.Fingerprints;
+using ToSic.Sys.Capabilities.Platform;
 
 namespace ToSic.Eav.Security.Fingerprint;
 
@@ -29,8 +30,8 @@ namespace ToSic.Eav.Security.Fingerprint;
 /// Class responsible for generating the fingerprint
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IDbConfiguration> dbConfigLazy)
-    : ServiceBase($"{EavLogs.Eav}SysFpr", connect: [platform, dbConfigLazy]), IFingerprint
+public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IGlobalConfiguration> globalConfig)
+    : ServiceBase($"{EavLogs.Eav}SysFpr", connect: [platform]), IFingerprint
 {
     public string GetFingerprint()
     {
@@ -42,7 +43,8 @@ public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<I
         var systemGuid = platform1.Identity.ToLowerInvariant();  // unique id of an installation
         var sysVersion = platform1.Version;                            // Major version, fingerprint should change with each
         var dbConnection = GetDbName().ToLowerInvariant();      // Database name
-        var versionEav = Assembly.GetExecutingAssembly().GetName().Version;
+        var versionEav = Assembly.GetExecutingAssembly().GetName().Version
+            ?? throw new NullReferenceException("Version is missing");
 
         _fingerprintKey = $"guid={systemGuid}&platform={nameId}&sys={sysVersion.Major}&eav={versionEav.Major}&db={dbConnection}";
         return _fingerprintCache = Sha256.Hash(_fingerprintKey);
@@ -56,7 +58,8 @@ public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<I
 
     private string GetDbName()
     {
-        var dbConnection = dbConfigLazy.Value.ConnectionString;
+        // ReSharper disable once ExplicitCallerInfoArgument
+        var dbConnection = globalConfig.Value.GetThis(key: "ConnectionString") ?? throw new NullReferenceException("Needs ConnectionString");
         const string key = "initial catalog=";
         var dbName = dbConnection.Between(key, ";", true) ?? dbConnection;
         return dbName;

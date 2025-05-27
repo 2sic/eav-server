@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Context;
+﻿namespace ToSic.Sys.Capabilities.Platform;
 
 [PrivateApi("internal functionality")]
 public interface IPlatformInfo

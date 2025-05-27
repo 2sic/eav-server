@@ -48,7 +48,8 @@ public static class StartupEav
             .AddEavCoreFallbackServices()
             // Library
             .AddLibCore()
-            .AddLibFeatSys();
+            .AddSysCapabilities()
+            .AddSysCapabilitiesFallback();
 
         return services;
     }

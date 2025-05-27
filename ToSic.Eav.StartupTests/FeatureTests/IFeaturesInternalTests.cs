@@ -4,6 +4,7 @@ using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Platform;
 using ToSic.Testing.Shared.Platforms;
 
 namespace ToSic.Eav.FeatureTests;

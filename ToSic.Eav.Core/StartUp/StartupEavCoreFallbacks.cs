@@ -32,13 +32,9 @@ public static class StartUpEavCoreFallbacks
         // very basic stuff - normally overriden by the platform
         services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 
-        //services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
         services.AddLibLookUp();
 
         services.AddSysSecurity();
-        //services.TryAddTransient<IUser, UserUnknown>();
-        //services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
-        //services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
         services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
@@ -48,7 +44,6 @@ public static class StartUpEavCoreFallbacks
 
         // Unknown-Runtime for loading configuration etc. File-runtime
         services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
-        services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
 
         services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 

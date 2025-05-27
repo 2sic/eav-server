@@ -2,6 +2,8 @@
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.StartUp;
 using ToSic.Lib;
+using ToSic.Sys;
+
 #pragma warning disable CA1822
 
 namespace ToSic.Eav;
@@ -24,5 +26,6 @@ public class StartupTestsEavCore
             .AddEavDataBuild()
             .AddEavCore()
             .AddEavCoreFallbackServices()
-            .AddLibCore();
+            .AddLibCore()
+            .AddSysCapabilitiesFallback();
 }

@@ -47,5 +47,6 @@ public class StartupTestsApps
             .AddEavCoreFallbackServices()
             // Library
             .AddLibCore()
-            .AddLibFeatSys();
+            .AddSysCapabilities()
+            .AddSysCapabilitiesFallback();
 }

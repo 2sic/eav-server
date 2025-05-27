@@ -17,6 +17,7 @@ public class FixtureStartupWithDb(LazySvc<IDbConfiguration> dbConfiguration, IGl
     public override void SetupFixtureConfiguration(TestScenario testScenario)
     {
         dbConfiguration.Value.ConnectionString = testScenario.ConStr;
+        globalConfig.ConnectionString(testScenario.ConStr);
         base.SetupFixtureConfiguration(testScenario);
     }
 }
