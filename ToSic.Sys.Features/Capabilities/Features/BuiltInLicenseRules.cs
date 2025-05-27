@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.SysData;
+﻿using ToSic.Sys.Capabilities.Licenses;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 public class BuiltInLicenseRules
 {
@@ -10,7 +9,7 @@ public class BuiltInLicenseRules
     // So always create the definition there first, then use the GUID of that definition here
 
 
-    public static List<FeatureLicenseRule> BuildRule(FeatureSet licDef, bool featureEnabled) =>
+    public static List<FeatureLicenseRule> BuildRule(FeatureSet.FeatureSet licDef, bool featureEnabled) =>
         [new(licDef, featureEnabled)];
 
 

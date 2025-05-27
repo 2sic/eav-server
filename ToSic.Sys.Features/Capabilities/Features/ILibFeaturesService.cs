@@ -1,7 +1,5 @@
 ﻿
-using ToSic.Eav.SysData;
-
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 [PrivateApi("Internal stuff only")]
 public interface ILibFeaturesService

@@ -15,6 +15,7 @@ using ToSic.Eav.Internal;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Security.Files;
 using ToSic.Eav.Serialization.Internal;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 #if NETFRAMEWORK
 using System.Web.Http;

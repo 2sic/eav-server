@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Data;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Aspects;
 
 /// <summary>
 /// Base class for various aspects of the system, such as features or capabilities.

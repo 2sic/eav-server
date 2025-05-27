@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Features;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureSecurity(int impact, string message = "")

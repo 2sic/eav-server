@@ -22,7 +22,7 @@ using ToSic.Eav.Plumbing;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using ToSic.Lib.Sys.Fingerprints.Internal;
+using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Security.Fingerprint;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Aspects;
 
 /// <summary>
 /// Experimental - base class for any kind of aspect and it's state

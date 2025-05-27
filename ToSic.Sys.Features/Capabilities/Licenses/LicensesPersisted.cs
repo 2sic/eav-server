@@ -17,10 +17,11 @@
 
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using ToSic.Sys.Capabilities.FeatureSet;
 using ToSic.Sys.Utils;
 using static System.String;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Licenses;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LicensesPersisted

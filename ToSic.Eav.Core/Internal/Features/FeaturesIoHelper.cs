@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Internal.Configuration;
 using ToSic.Lib.Services;
+using ToSic.Sys.Capabilities;
 
 namespace ToSic.Eav.Internal.Features;
 

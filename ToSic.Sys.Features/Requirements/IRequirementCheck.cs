@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.SysData;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
 
-namespace ToSic.Eav.Internal.Requirements;
+namespace ToSic.Sys.Requirements;
 
 public interface IRequirementCheck: ISwitchableService
 {

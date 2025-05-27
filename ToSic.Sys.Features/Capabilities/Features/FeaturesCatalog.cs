@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Internal.Catalogs;
-using ToSic.Eav.SysData;
+﻿using ToSic.Sys.Startup;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 /// <summary>
 /// The features catalog manages all the features which the system registers at startup.

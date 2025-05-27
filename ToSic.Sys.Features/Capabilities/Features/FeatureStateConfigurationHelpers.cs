@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Features;
 
 public static class FeatureStateConfigurationHelpers
 {

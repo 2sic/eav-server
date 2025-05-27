@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Internal.Licenses;
+﻿namespace ToSic.Sys.Capabilities;
 
 public class LicenseConstants
 {

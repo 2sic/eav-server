@@ -6,7 +6,7 @@ using ToSic.Eav.StartUp;
 using ToSic.Eav.TestData;
 using ToSic.Eav.Testing;
 using ToSic.Lib;
-using ToSic.Lib.Internal.FeatSys;
+using ToSic.Sys;
 
 namespace ToSic.Eav;
 

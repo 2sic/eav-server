@@ -15,10 +15,9 @@
  *
  */
 
-using ToSic.Eav.SysData;
-using static ToSic.Eav.Internal.Licenses.LicenseConstants;
+using static ToSic.Sys.Capabilities.LicenseConstants;
 
-namespace ToSic.Eav.Internal.Licenses;
+namespace ToSic.Sys.Capabilities.Licenses;
 
 public class BuiltInLicenses
 {
@@ -28,7 +27,7 @@ public class BuiltInLicenses
 
     public static readonly DateTime UnlimitedExpiry = DateTime.MaxValue;
 
-    public static readonly FeatureSet System = new()
+    public static readonly FeatureSet.FeatureSet System = new()
     {
         NameId = FeatureSetSystem, Priority = 10000,
         Name = "System",
@@ -38,7 +37,7 @@ public class BuiltInLicenses
         AutoEnable = true
     };
 
-    public static readonly FeatureSet Extension = new()
+    public static readonly FeatureSet.FeatureSet Extension = new()
     {
         NameId = FeatureSetExtension, Priority = 10001,
         Name = "Extension",
@@ -48,7 +47,7 @@ public class BuiltInLicenses
         AutoEnable = true
     };
 
-    public static readonly FeatureSet CoreFree = new()
+    public static readonly FeatureSet.FeatureSet CoreFree = new()
     {
         NameId = LicensePrefix + nameof(CoreFree), Priority = 1,
         Name = "Core (free for everyone)",
@@ -58,7 +57,7 @@ public class BuiltInLicenses
         AutoEnable = true
     };
 
-    public static readonly FeatureSet CorePlus = new()
+    public static readonly FeatureSet.FeatureSet CorePlus = new()
     {
         NameId = LicensePrefix + nameof(CorePlus), Priority = 2,
         Name = "Core+ (free for everyone who registers)",
@@ -66,7 +65,7 @@ public class BuiltInLicenses
         Description = "These core features are free for anyone who registers their system. It has various features which may be security relevant, so by registering we can inform you if security issues appear. ",
     };
 
-    public static readonly FeatureSet PatronPerfectionist = new()
+    public static readonly FeatureSet.FeatureSet PatronPerfectionist = new()
     {
         NameId = LicensePrefix + nameof(PatronPerfectionist), Priority = 121,
         Name = "Patron Perfectionist",
@@ -74,7 +73,7 @@ public class BuiltInLicenses
         Description = "Patrons / supporters of 2sxc who really care about perfect pictures and ultra-fast caching. They get some very enhanced goodies."
     };
 
-    public static readonly FeatureSet PatronSentinel = new()
+    public static readonly FeatureSet.FeatureSet PatronSentinel = new()
     {
         NameId = LicensePrefix + nameof(PatronSentinel), Priority = 122,
         Name = "Patron Sentinel",
@@ -83,7 +82,7 @@ public class BuiltInLicenses
     };
 
 
-    public static readonly FeatureSet PatronBasic = new()
+    public static readonly FeatureSet.FeatureSet PatronBasic = new()
     {
         NameId = LicensePrefix + nameof(PatronBasic), Priority = 101,
         Name = "Patron Basic",
@@ -94,7 +93,7 @@ public class BuiltInLicenses
         AlsoInheritEnabledFrom = [PatronPerfectionist]
     };
 
-    public static readonly FeatureSet PatronAdvancedCms = new()
+    public static readonly FeatureSet.FeatureSet PatronAdvancedCms = new()
     {
         NameId = LicensePrefix + nameof(PatronAdvancedCms), Priority = 102,
         Name = "Patron Advanced CMS",
@@ -107,7 +106,7 @@ public class BuiltInLicenses
     /// Note that previously the GUID was used for Patrons Advanced, but as we modified this in 18.02
     /// we decided that the features previously in PatronAdvanced are usually licensed for languages, not for the other features (Copyright).
     /// </summary>
-    public static readonly FeatureSet PatronLanguages = new()
+    public static readonly FeatureSet.FeatureSet PatronLanguages = new()
     {
         NameId = LicensePrefix + nameof(PatronLanguages), Priority = 102,
         Name = "Patron Languages",
@@ -115,7 +114,7 @@ public class BuiltInLicenses
         Description = "Patrons with advanced needs in managing languages."
     };
 
-    public static readonly FeatureSet PatronData = new()
+    public static readonly FeatureSet.FeatureSet PatronData = new()
     {
         NameId = LicensePrefix + nameof(PatronData), Priority = 102,
         Name = "Patron Data",
@@ -123,7 +122,7 @@ public class BuiltInLicenses
         Description = "Awesome data features such as content-type inheritance and advanced pickers."
     };
 
-    public static readonly FeatureSet PatronSuperAdmin = new()
+    public static readonly FeatureSet.FeatureSet PatronSuperAdmin = new()
     {
         NameId = LicensePrefix + nameof(PatronSuperAdmin), Priority = 501,
         Name = "Patron SuperAdmin",
@@ -131,7 +130,7 @@ public class BuiltInLicenses
         Description = "Patrons with advanced needs in regards to automation, administration etc."
     };
 
-    public static readonly FeatureSet PatronInfrastructure = new()
+    public static readonly FeatureSet.FeatureSet PatronInfrastructure = new()
     {
         NameId = LicensePrefix + nameof(PatronInfrastructure), Priority = 501,
         Name = "Patron Infrastructure",
@@ -139,7 +138,7 @@ public class BuiltInLicenses
         Description = "Patrons who wish to save cost by optimizing their infrastructure."
     };
 
-    public static readonly FeatureSet WebFarmCache = new()
+    public static readonly FeatureSet.FeatureSet WebFarmCache = new()
     {
         NameId = LicensePrefix + nameof(WebFarmCache), Priority = 301,
         Name = "WebFarmCache",
@@ -148,7 +147,7 @@ public class BuiltInLicenses
             "DNN installations which run as a Farm can enable WebFarm caching to ensure the servers are in sync when something is edited."
     };
 
-    public static readonly FeatureSet EnterpriseCms = new()
+    public static readonly FeatureSet.FeatureSet EnterpriseCms = new()
     {
         NameId = LicensePrefix + nameof(EnterpriseCms), Priority = 702,
         Name = "EnterpriseCms",
@@ -157,7 +156,7 @@ public class BuiltInLicenses
             "Extreme CMS features for complex sites with extra needs, like global, shared Apps across many portals. "
     };
 
-    public static readonly FeatureSet CoreBeta = new()
+    public static readonly FeatureSet.FeatureSet CoreBeta = new()
     {
         NameId = LicensePrefix + nameof(CoreBeta), Priority = 1000,
         Name = "Beta",
@@ -166,7 +165,7 @@ public class BuiltInLicenses
     };
 
 #if DEBUG
-    public static readonly FeatureSet CoreTesting = new()
+    public static readonly FeatureSet.FeatureSet CoreTesting = new()
     {
         NameId = LicensePrefix + nameof(CoreTesting), Priority = TestLicensesBaseId,
         Name = "Testing",

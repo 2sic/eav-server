@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Requirements;
-using ToSic.Eav.SysData;
-using ToSic.Lib.Features.Tests.RequirementsServiceTests;
+﻿using ToSic.Lib.Features.Tests.RequirementsServiceTests;
+using ToSic.Sys.Capabilities;
+using ToSic.Sys.Capabilities.SysFeatures;
+using ToSic.Sys.Requirements;
 
 namespace ToSic.Lib.Features.Tests.SysFeaturesTests;
 

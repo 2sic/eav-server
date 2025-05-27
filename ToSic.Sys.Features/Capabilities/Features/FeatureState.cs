@@ -1,8 +1,10 @@
-﻿using ToSic.Eav.Internal.Licenses;
-using ToSic.Lib.Data;
+﻿using ToSic.Lib.Data;
 using ToSic.Lib.Helpers;
+using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Capabilities.Licenses;
+using ToSic.Sys.Capabilities.SysFeatures;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Features;
 
 /// <summary>
 /// Information about an enabled feature
@@ -34,8 +36,8 @@ public record FeatureState(
 
     public string NameId => Aspect.NameId;
 
-    public FeatureSet? License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
-    private readonly GetOnce<FeatureSet?> _license = new();
+    public FeatureSet.FeatureSet? License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
+    private readonly GetOnce<FeatureSet.FeatureSet?> _license = new();
 
     /// <summary>
     /// Feature is enabled and hasn't expired yet.

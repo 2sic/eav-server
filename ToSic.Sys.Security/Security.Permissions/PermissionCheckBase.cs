@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Internal.Features;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 
 namespace ToSic.Sys.Security.Permissions;

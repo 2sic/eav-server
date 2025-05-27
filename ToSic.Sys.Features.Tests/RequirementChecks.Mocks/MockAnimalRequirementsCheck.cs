@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Internal.Requirements;
-using ToSic.Eav.SysData;
+﻿using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Requirements;
 
 namespace ToSic.Lib.Features.Tests.RequirementChecks.Mocks;
 

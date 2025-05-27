@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Lib.Sys.Fingerprints.Internal;
+namespace ToSic.Sys.Capabilities.Fingerprints;
 
 /// <summary>
 /// This is for fingerprints which are not auto-generated,

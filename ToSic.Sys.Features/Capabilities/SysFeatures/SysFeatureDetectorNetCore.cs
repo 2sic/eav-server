@@ -1,7 +1,8 @@
-﻿using ToSic.Eav.SysData;
+﻿using ToSic.Sys.Capabilities.Features;
+
 // ReSharper disable ConvertToPrimaryConstructor
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.SysFeatures;
 
 public class SysFeatureDetectorNetCore : SysFeatureDetector
 {

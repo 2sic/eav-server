@@ -4,6 +4,7 @@ using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Security;
 using ToSic.Lib.Helpers;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.Apps.AppStackConstants;

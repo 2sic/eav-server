@@ -15,7 +15,7 @@
  *
  */
 
-namespace ToSic.Lib.Sys.Fingerprints.Internal;
+namespace ToSic.Sys.Capabilities.Fingerprints;
 
 /// <summary>
 /// Defines all classes which can provide fingerprints.

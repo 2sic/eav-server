@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.Internal.Requirements;
-using ToSic.Lib.Internal.FeatSys.Features;
+using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Licenses;
+using ToSic.Sys.Capabilities.SysFeatures;
+using ToSic.Sys.Requirements;
 
-namespace ToSic.Lib.Internal.FeatSys;
+namespace ToSic.Sys;
 
 public static class StartupLibFeatSys
 {

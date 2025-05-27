@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.SysData;
+﻿namespace ToSic.Sys.Requirements;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHasRequirements

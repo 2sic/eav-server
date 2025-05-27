@@ -1,7 +1,8 @@
 ﻿using ToSic.Lib;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.SysFeatures;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record SysFeature : Feature

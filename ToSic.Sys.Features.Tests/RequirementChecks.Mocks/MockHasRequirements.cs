@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.SysData;
+﻿using ToSic.Sys.Requirements;
 
 namespace ToSic.Lib.Features.Tests.RequirementChecks.Mocks;
 

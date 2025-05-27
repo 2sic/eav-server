@@ -6,6 +6,7 @@ using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Internal.Features;
 

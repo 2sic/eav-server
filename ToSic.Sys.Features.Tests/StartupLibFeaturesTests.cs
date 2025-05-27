@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Lib.Internal.FeatSys;
+using ToSic.Sys;
 
 namespace ToSic.Lib.Features.Tests;
 

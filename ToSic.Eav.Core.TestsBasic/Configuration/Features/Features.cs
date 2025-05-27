@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
+using ToSic.Sys.Capabilities.Features;
 using Xunit.Abstractions;
 
 namespace ToSic.Eav.Configuration.Features;

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Internal.Features;
+﻿namespace ToSic.Sys.Capabilities;
 
 [PrivateApi]
 public class FeatureConstants

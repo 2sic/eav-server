@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Licenses;
+﻿using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Requirements;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Features;
 
 [PrivateApi("no good reason to publish this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -13,7 +13,7 @@ public record Feature: Aspect
     {
         var newRules = licRules?.ToList() ?? [];
         // Create virtual license rule, so it can be enabled by its own GUID
-        var ownLicenseDefinition = new FeatureSet
+        var ownLicenseDefinition = new FeatureSet.FeatureSet
         {
             NameId = LicenseConstants.LicenseCustom,
             Priority = 0,

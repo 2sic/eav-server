@@ -15,7 +15,9 @@
  *
  */
 
-namespace ToSic.Eav.SysData;
+using ToSic.Sys.Capabilities.Aspects;
+
+namespace ToSic.Sys.Capabilities.FeatureSet;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record FeatureSetState(FeatureSet Aspect)

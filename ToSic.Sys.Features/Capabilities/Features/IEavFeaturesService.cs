@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.SysData;
-using ToSic.Lib.Caching;
+﻿using ToSic.Lib.Caching;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 [PrivateApi("Internal stuff only")]
 public interface IEavFeaturesService: ICacheExpiring, ICanBeCacheDependency

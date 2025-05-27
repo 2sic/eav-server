@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 public class FeatureStateChange
 {

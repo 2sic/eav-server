@@ -2,6 +2,7 @@
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Razor.Markup;
+using ToSic.Sys.Capabilities.Licenses;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;

@@ -1,8 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Internal.Features;
 
-
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Features;
 
 /// <summary>
 /// This stores the enabled / expiry of a feature

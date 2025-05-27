@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Requirements;
-using ToSic.Eav.SysData;
-using ToSic.Lib.DI;
+﻿using ToSic.Lib.DI;
+using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Requirements;
 
-namespace ToSic.Lib.Internal.FeatSys.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 public class FeatureRequirementCheck(LazySvc<ILibFeaturesService> features) : RequirementCheckBase
 {

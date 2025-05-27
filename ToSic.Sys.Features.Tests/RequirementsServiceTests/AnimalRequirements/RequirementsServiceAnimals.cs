@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Internal.Requirements;
-using ToSic.Eav.SysData;
-using ToSic.Lib.Features.Tests;
+﻿using ToSic.Lib.Features.Tests;
 using ToSic.Lib.Features.Tests.RequirementChecks.Mocks;
 using ToSic.Lib.Features.Tests.RequirementsServiceTests;
+using ToSic.Sys.Requirements;
 using static ToSic.Lib.Features.Tests.RequirementChecks.Mocks.MockAnimalRequirementsCheck;
 
 namespace ToSic.Lib.RequirementsServiceTests.AnimalRequirements;

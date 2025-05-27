@@ -4,6 +4,7 @@ using ToSic.Eav.Internal.Features;
 using ToSic.Lib.Caching;
 using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
+using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Caching;
 

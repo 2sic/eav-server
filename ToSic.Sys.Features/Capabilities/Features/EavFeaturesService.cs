@@ -1,11 +1,10 @@
-﻿using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.SysData;
-using ToSic.Lib.Caching;
+﻿using ToSic.Lib.Caching;
+using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
 
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 /// <summary>
 /// WARNING: this is used as a singleton / static

@@ -3,6 +3,7 @@ using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.SysData;
+using ToSic.Sys.Capabilities.Licenses;
 
 namespace ToSic.Eav.DataSources.Sys;
 

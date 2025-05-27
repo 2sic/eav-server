@@ -1,10 +1,10 @@
 ﻿using ToSic.Eav.Plumbing;
-using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.SysFeatures;
 
 public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap", connect: [/* never! sp*/ ])
 {

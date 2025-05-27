@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using ToSic.Lib.Data;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Internal.Catalogs;
+namespace ToSic.Sys.Startup;
 
 /// <summary>
 /// A template object to build a global catalog of features or something.

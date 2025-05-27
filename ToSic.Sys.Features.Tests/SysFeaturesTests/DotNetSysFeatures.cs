@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Internal.Features;
+﻿using ToSic.Sys.Capabilities.SysFeatures;
 
 namespace ToSic.Lib.Features.Tests.SysFeaturesTests;
 

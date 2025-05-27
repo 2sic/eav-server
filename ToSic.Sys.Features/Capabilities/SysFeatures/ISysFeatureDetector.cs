@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.SysData;
+﻿using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.SysFeatures;
 
 public interface ISysFeatureDetector
 {

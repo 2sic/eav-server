@@ -16,9 +16,9 @@
  */
 
 using System.Collections.Immutable;
-using ToSic.Eav.SysData;
+using ToSic.Sys.Capabilities.FeatureSet;
 
-namespace ToSic.Eav.Internal.Licenses;
+namespace ToSic.Sys.Capabilities.Licenses;
 
 public class LicenseService : ILicenseService
 {
@@ -35,10 +35,10 @@ public class LicenseService : ILicenseService
         => EnabledCache;
 
     /// <inheritdoc />
-    public bool IsEnabled(FeatureSet license)
+    public bool IsEnabled(FeatureSet.FeatureSet license)
         => EnabledCache.ContainsKey(license.Guid);
 
-    public FeatureSetState? State(FeatureSet license)
+    public FeatureSetState? State(FeatureSet.FeatureSet license)
         => EnabledCache.TryGetValue(license.Guid, out var result) ? result : null;
 
     #endregion

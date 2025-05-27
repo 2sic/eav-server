@@ -6,6 +6,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Internal;
 using ToSic.Eav.Apps.Internal;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
 using static System.StringComparison;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;

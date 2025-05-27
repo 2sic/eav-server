@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Sys.Capabilities.Features;
 
 [PrivateApi("no good reason to publish this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

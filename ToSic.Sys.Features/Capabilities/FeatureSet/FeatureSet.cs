@@ -15,7 +15,10 @@
  *
  */
 
-namespace ToSic.Eav.SysData;
+using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Requirements;
+
+namespace ToSic.Sys.Capabilities.FeatureSet;
 
 /// <summary>
 /// Defines a license - name, guid etc.

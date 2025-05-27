@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Internal.Licenses;
-
-using static ToSic.Eav.Internal.Licenses.BuiltInLicenses;
+using ToSic.Sys.Capabilities.Licenses;
+using static ToSic.Sys.Capabilities.Licenses.BuiltInLicenses;
 
 internal class RegisterEavLicenses
 {

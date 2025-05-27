@@ -1,5 +1,3 @@
-﻿using ToSic.Eav.SysData;
-
-namespace ToSic.Eav.Internal.Requirements;
+﻿namespace ToSic.Sys.Requirements;
 
 public record RequirementError(Requirement Requirement, string Message);

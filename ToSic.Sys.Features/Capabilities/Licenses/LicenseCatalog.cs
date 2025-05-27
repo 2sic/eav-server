@@ -15,20 +15,19 @@
  *
  */
 
-using ToSic.Eav.Internal.Catalogs;
-using ToSic.Eav.SysData;
+using ToSic.Sys.Startup;
 
-namespace ToSic.Eav.Internal.Licenses;
+namespace ToSic.Sys.Capabilities.Licenses;
 
 public class LicenseCatalog(ILogStore logStore)
-    : GlobalCatalogBase<FeatureSet>(logStore, $"Lib.LicCat", new())
+    : GlobalCatalogBase<FeatureSet.FeatureSet>(logStore, $"Lib.LicCat", new())
 {
     /// <summary>
     /// Replace the TryGet to use both the name as well as the guid
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public override FeatureSet? TryGet(string? name) =>
+    public override FeatureSet.FeatureSet? TryGet(string? name) =>
         name == null
             ? null
             : base.TryGet(name)

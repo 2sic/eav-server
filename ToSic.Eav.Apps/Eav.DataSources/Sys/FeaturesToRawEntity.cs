@@ -1,4 +1,7 @@
 ﻿using ToSic.Eav.Data.Raw;
+using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.FeatureSet;
 
 namespace ToSic.Eav.SysData;
 

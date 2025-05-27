@@ -2,6 +2,8 @@
 using ToSic.Eav.SysData;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
+using ToSic.Sys.Capabilities.FeatureSet;
+using ToSic.Sys.Capabilities.Licenses;
 
 namespace ToSic.Eav.Configuration;
 

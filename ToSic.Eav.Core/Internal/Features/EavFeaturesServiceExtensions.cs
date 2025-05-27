@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Internal.Features;
+﻿using ToSic.Sys.Capabilities.Features;
+
+namespace ToSic.Eav.Internal.Features;
 
 public static class EavFeaturesServiceExtensions
 {

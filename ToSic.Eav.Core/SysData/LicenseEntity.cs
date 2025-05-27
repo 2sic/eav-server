@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data;
-using ToSic.Lib.Sys.Fingerprints.Internal;
+using ToSic.Sys.Capabilities.Fingerprints;
 
 namespace ToSic.Eav.SysData;
 

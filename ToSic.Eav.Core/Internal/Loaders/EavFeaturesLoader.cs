@@ -6,6 +6,8 @@ using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.SysData;
 using ToSic.Lib.Services;
+using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.SysFeatures;
 
 namespace ToSic.Eav.Internal.Loaders;
 

@@ -26,7 +26,11 @@ using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Eav.SysData;
 using ToSic.Lib.DI;
-using ToSic.Lib.Sys.Fingerprints.Internal;
+using ToSic.Sys.Capabilities;
+using ToSic.Sys.Capabilities.FeatureSet;
+using ToSic.Sys.Capabilities.Fingerprints;
+using ToSic.Sys.Capabilities.Licenses;
+using ToSic.Sys.Startup;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Internal.Licenses;

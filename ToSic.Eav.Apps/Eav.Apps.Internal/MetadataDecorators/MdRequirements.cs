@@ -4,6 +4,11 @@ using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.SysData;
+using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Licenses;
+using ToSic.Sys.Capabilities.SysFeatures;
+using ToSic.Sys.Requirements;
 using ToSic.Sys.Utils;
 using static ToSic.Eav.Apps.Internal.MetadataDecorators.RequirementDecorator;
 
@@ -84,7 +89,7 @@ public class MdRequirements(
     }
 
     private record ReqStatusPrivate(RequirementDecorator Decorator, string NameId, bool Approved, Aspect Aspect = default)
-        : RequirementStatus(Approved, Aspect ?? SysData.Aspect.None with { NameId = NameId }, "")
+        : RequirementStatus(Approved, Aspect ?? Aspect.None with { NameId = NameId }, "")
     {
         //public RequirementDecorator Decorator = decorator;
     }

@@ -10,6 +10,7 @@ using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Services;
+using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.ImportExport.Internal.Zip;
 

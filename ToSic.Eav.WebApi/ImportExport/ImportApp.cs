@@ -9,6 +9,7 @@ using ToSic.Eav.Integration.Environment;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 using ISite = ToSic.Eav.Context.ISite;
 

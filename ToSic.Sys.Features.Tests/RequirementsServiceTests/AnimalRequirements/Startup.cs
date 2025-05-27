@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Internal.Requirements;
 using ToSic.Lib.Features.Tests;
 using ToSic.Lib.Features.Tests.RequirementChecks.Mocks;
+using ToSic.Sys.Requirements;
 
 namespace ToSic.Lib.RequirementsServiceTests.AnimalRequirements;
 

@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Internal.Loaders;
+namespace ToSic.Sys.Startup;
 
 public class LoaderBase: ServiceBase
 {

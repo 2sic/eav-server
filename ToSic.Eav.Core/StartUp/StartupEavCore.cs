@@ -17,6 +17,7 @@ using ToSic.Eav.Security;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Security.Fingerprint;
 using ToSic.Lib.Caching;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Code.InfoSystem;
 using ToSic.Sys.Security.Permissions;
 using CodeInfoService = ToSic.Sys.Code.InfoSystem.CodeInfoService;

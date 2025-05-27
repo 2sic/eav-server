@@ -1,7 +1,7 @@
 ﻿
-using ToSic.Eav.SysData;
+using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.SysFeatures;
 
 // TODO: probably move to the Sxc project or somewhere similar
 
