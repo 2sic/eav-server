@@ -82,6 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Code\" />
     <Folder Include="Security\Fingerprint\" />
   </ItemGroup>
 

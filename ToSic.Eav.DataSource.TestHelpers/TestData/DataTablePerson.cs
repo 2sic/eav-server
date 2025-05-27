@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Code;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
@@ -9,10 +8,6 @@ namespace ToSic.Eav.TestData;
 
 public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {
-
-    public DataTablePerson(ICanGetService parent): this(parent.GetService<DataSourcesTstBuilder>(), parent.GetService<DataBuilder>())
-    {
-    }
 
     private static readonly Dictionary<int, DataTable> CachedDs = new();
 
