@@ -20,7 +20,7 @@ namespace ToSic.Sys.Capabilities.Features;
 /// </remarks>
 [PrivateApi("hide implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class SysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeaturesService, ILibFeaturesService
+public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeaturesService, ILibFeaturesService
 {
     public IEnumerable<FeatureState> All => _allStaticCache ??= Merge(Stored, featuresCatalog.List, _staticSysFeatures);
     private static List<FeatureState>? _allStaticCache;

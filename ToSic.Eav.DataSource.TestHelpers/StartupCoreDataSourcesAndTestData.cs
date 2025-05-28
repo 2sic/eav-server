@@ -31,9 +31,9 @@ public class StartupCoreDataSourcesAndTestData
             .AddDataSources()
             .AddEavPersistence()
             .AddEavDataBuild()
-            
+
             .AddEavCoreLibAndSys()
 
-            .AddEavCoreLibAndSysFallbackServices()
-            .AddSysCapabilitiesFallback();
+            .AddEavDataBuildFallbacks()
+            .AddEavCoreLibAndSysFallbackServices();
 }

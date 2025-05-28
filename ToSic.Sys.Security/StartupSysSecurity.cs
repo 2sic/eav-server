@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 using ToSic.Sys.Users.Permissions;
 
@@ -13,6 +14,10 @@ public static class StartupSysSecurity
     {
         services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
         services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
+
+        // Permissions helper
+        services.TryAddTransient<PermissionCheckBase.MyServices>();
+
         return services;
     }
 

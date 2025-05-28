@@ -26,6 +26,7 @@ public class ValueConversionTests(ExportImportValueConversion exportListXml)
                 .AddEavDataBuild()
                 .AddEavCoreLibAndSys()
 
+                .AddEavDataBuildFallbacks()
                 .AddEavCoreLibAndSysFallbackServices();
     }
 

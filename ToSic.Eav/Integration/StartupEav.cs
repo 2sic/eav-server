@@ -51,6 +51,7 @@ public static class StartupEav
             // Fallbacks for services which were not implemented - must come last
             .AddAppFallbackServices()
             .AddEavImportExportFallback()
+            .AddEavDataBuildFallbacks()
             .AddEavCoreLibAndSysFallbackServices();
 
         return services;

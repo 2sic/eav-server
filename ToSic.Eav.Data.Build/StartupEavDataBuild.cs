@@ -26,4 +26,12 @@ public static class StartupEavDataBuild
         return services;
     }
 
+    public static IServiceCollection AddEavDataBuildFallbacks(this IServiceCollection services)
+    {
+        // very basic stuff - normally overriden by the platform
+        services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
+
+        return services;
+    }
+
 }

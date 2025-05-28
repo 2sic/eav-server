@@ -38,7 +38,7 @@ public static class StartUpEavCoreFallbacks
     public static IServiceCollection AddEavCoreOnlyFallbackServices(this IServiceCollection services)
     {
         // very basic stuff - normally overriden by the platform
-        services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
+        //services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 
         return services;
     }

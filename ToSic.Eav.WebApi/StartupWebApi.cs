@@ -133,19 +133,14 @@ public static class StartupWebApi
         return services;
     }
 
-#if NETFRAMEWORK
     public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
     {
+#if NETCOREAPP
+        // Helper to get header, query string and route information from current request
+        services.TryAddScoped<RequestHelper>();
+#endif
+
         return services;
     }
-#else
-        public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
-        {
-            // Helper to get header, query string and route information from current request
-            services.TryAddScoped<RequestHelper>();
-
-            return services;
-        }
-#endif
 
 }

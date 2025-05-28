@@ -27,6 +27,6 @@ public class StartupTestsEavCore
 
             .AddEavCoreLibAndSys()
 
-            .AddEavCoreLibAndSysFallbackServices()
-            .AddSysCapabilitiesFallback();
+            .AddEavDataBuildFallbacks()
+            .AddEavCoreLibAndSysFallbackServices();
 }

@@ -6,7 +6,6 @@ using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Capabilities.Platform;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
-using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
 namespace ToSic.Sys;
 
@@ -20,6 +19,11 @@ public static class SetupSysCapabilities
 
         // New SystemCapability
         services.TryAddTransient<SysFeaturesService>();
+
+        // Features - 2024-05-31 changed to non-singleton
+        services.TryAddTransient<ISysFeaturesService, LibSysFeaturesService>();    // this must come first!
+        services.TryAddTransient<ILibFeaturesService, LibSysFeaturesService>();    // v20
+
 
         // V14 Requirements Checks - don't use try-add, as we'll add many
         services.TryAddTransient<RequirementsService>();
