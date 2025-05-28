@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace ToSic.Eav.Serialization;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ExceptionConverter<TExceptionType> : JsonConverter<TExceptionType>
+public class JsonExceptionConverter<TExceptionType> : JsonConverter<TExceptionType>
 {
     public override bool CanConvert(Type typeToConvert)
     {

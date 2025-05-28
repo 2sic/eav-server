@@ -65,5 +65,5 @@ public interface IConvertEntity<out T>: IConvert<IEntity, T>, IConvert<IEntityWr
         
 
     [PrivateApi("WIP")]
-    TypeSerialization Type { get; set; }
+    TypeSerializationOptions Type { get; set; }
 }

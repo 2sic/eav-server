@@ -4,7 +4,7 @@
 /// Specs for serializing the type. ATM only used for Metadata!
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class TypeSerialization
+public class TypeSerializationOptions
 {
     /// <summary>
     /// Old property for internal use...

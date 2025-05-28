@@ -56,7 +56,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         MetadataForSerialization serializeMetadataFor = null,
         ISubEntitySerialization serializeMetadata = null,
         ISubEntitySerialization serializeRelationships = null,
-        TypeSerialization serializeType = default): this()
+        TypeSerializationOptions serializeType = default): this()
     {
         SerializeId = serializeId ?? original?.SerializeId;
         SerializeAppId = serializeAppId ?? original?.SerializeAppId;
@@ -179,7 +179,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     public ISubEntitySerialization SerializeRelationships { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public TypeSerialization SerializeType { get; init; }
+    public TypeSerializationOptions SerializeType { get; init; }
 
     #endregion
 

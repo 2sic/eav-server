@@ -81,6 +81,11 @@
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Convert\" />
+    <Folder Include="Serialization\" />
+  </ItemGroup>
+
   <!--WHAT ARE WE TURNING OFF HERE?-->
   <PropertyGroup>
     <NoWarn>$(NoWarn);1701;1702;CS8632</NoWarn>

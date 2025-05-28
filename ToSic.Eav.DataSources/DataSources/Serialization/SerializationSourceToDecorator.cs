@@ -46,7 +46,7 @@ internal class SerializationSourceToDecorator
             SerializeTitle = TryParseIncludeRule(ds.IncludeRelationshipTitle)
         };
 
-        var typeSer = new TypeSerialization
+        var typeSer = new TypeSerializationOptions
         {
             SerializeAs = ds.IncludeTypeAs,
             SerializeId = TryParseIncludeRule(ds.IncludeTypeId),

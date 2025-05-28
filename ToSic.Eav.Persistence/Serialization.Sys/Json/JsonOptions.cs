@@ -22,7 +22,7 @@ public static class JsonOptions
     private static readonly JsonSerializerOptions DefaultOptions = new()
     {
         AllowTrailingCommas = true,
-        Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter(), new ObjectToInferredTypesConverter(), new ExceptionConverter<Exception>() },
+        Converters = { new JsonDateTimeConverter(), new JsonStringEnumConverter(), new ObjectToInferredTypesConverter(), new JsonExceptionConverter<Exception>() },
         //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
         IncludeFields = true,
         // Limit the object graph we'll consume to a fixed depth. This prevents stackoverflow exceptions

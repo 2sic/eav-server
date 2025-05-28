@@ -96,7 +96,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
 
     [PrivateApi("not public ATM")]
-    public TypeSerialization Type { get; set; } = new();
+    public TypeSerializationOptions Type { get; set; } = new();
 
     #endregion
 
