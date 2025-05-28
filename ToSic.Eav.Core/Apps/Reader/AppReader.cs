@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Services;
 
@@ -21,7 +22,7 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
     /// <summary>
     /// internal, but in some cases it will be given out by hidden extension methods
     /// </summary>
-    internal IAppStateCache AppState => _appState;
+    public IAppStateCache AppState => _appState;
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]

@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Apps.State;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps;
@@ -34,4 +36,9 @@ public interface IAppReader:
     /// WIP 2025-03-27 2dm / STV
     /// </summary>
     string HealthMessage { get; }
+
+    /// <summary>
+    /// internal, but in some cases it will be given out by hidden extension methods
+    /// </summary>
+    internal IAppStateCache AppState { get; }
 }

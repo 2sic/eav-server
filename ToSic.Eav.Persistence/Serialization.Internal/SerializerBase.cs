@@ -138,7 +138,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
 
-    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppReaderOrError.GetCache();
+    protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppReaderOrError.AppState;
     private IEntitiesSource _relList;
 
 }

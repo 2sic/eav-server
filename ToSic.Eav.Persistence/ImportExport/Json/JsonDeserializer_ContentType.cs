@@ -33,7 +33,7 @@ partial class JsonSerializer
         var lMain = LogDsDetails.Fn<ContentTypeWithEntities>(timer: true);
         var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
-            var preferredSource = AppReaderOrNull?.GetCache() as IEntitiesSource;
+            var preferredSource = AppReaderOrNull?.AppState as IEntitiesSource;
             var sharedEntSource = DeserializationSettings?.RelationshipsSource;
             var relationshipsSource = preferredSource ?? sharedEntSource ?? relationships.Source;
             // 2024-09-30 2dm warning: ATM the code always seemed to use the relationships source, even if a shared source was available.
