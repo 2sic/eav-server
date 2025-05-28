@@ -13,7 +13,7 @@ public static class AppReaderInternal
         => ((AppState)reader.GetCache()).ListNotHavingDrafts.List;
 
     public static AppRelationshipManager GetRelationships(this IAppReader reader)
-        => reader.GetCache().Relationships;
+        => reader.GetCache().Relationships as AppRelationshipManager;
 
     public static IAppStateCache GetCache(this IAppReader reader)
         => ((AppReader)reader).AppState;

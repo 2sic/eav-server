@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.State;
+﻿//using ToSic.Eav.Apps.State;
 using ToSic.Lib.Caching;
 
 namespace ToSic.Eav.Data;
@@ -10,5 +10,5 @@ public interface IRelationshipSource: ICacheExpiring
     /// <summary>
     /// Contains all the relationships of the current app cache.
     /// </summary>
-    AppRelationshipManager Relationships { get; }
+    /*AppRelationshipManager*/ IEnumerable<EntityRelationship> Relationships { get; }
 }

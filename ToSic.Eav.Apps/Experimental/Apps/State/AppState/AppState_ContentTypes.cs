@@ -25,7 +25,7 @@ partial class AppState
     /// <param name="name">name of the type</param>
     /// <returns>a type object or null if not found</returns>
     [PrivateApi("was public till 16.09, but only used on IApp where we now have a similar API")]
-    internal IContentType GetContentType(string name) =>
+    public IContentType GetContentType(string name) =>
         _appTypesByName.TryGetValue(name, out var type)
             ? type
             : ParentApp.GetContentType(name);

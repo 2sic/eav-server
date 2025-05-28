@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Internal.Compression;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Metadata;
@@ -27,18 +25,10 @@ public static class StartUpEavCore
         services.TryAddTransient<ILibFeaturesService, SysFeaturesService>();    // v20
 
         // App-State and Cache
-        //services.AddTransient<AppsCacheSwitch>();   // Transient should work... wip
-        //services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
-        //services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
-        //services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
-        services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
-        //services.TryAddTransient<AppReader>();
-        //services.TryAddTransient<AppDataStackService>();
+        //services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
 
         // Permissions helper
         services.TryAddTransient<PermissionCheckBase.MyServices>();
-
-        //services.TryAddTransient<LicenseLoader>();
 
         services.TryAddTransient<Compressor>();
 

@@ -5,6 +5,7 @@ using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.Apps.Services;
+using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
@@ -27,6 +28,7 @@ public static class StartupEavApps
     public static IServiceCollection AddEavApps(this IServiceCollection services)
     {
         services.TryAddTransient<AppReader>();
+        services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
 
         // Context
         services.TryAddTransient<IContextOfSite, ContextOfSite>();
@@ -83,6 +85,7 @@ public static class StartupEavApps
 
         // v17
         services.TryAddTransient<IAppJsonService, AppJsonService>();
+        services.TryAddTransient<IAppJsonConfigBaseService, AppJsonService>();
 
         return services;
     }
@@ -103,6 +106,10 @@ public static class StartupEavApps
         services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
         services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
+
+        // Unknown-Runtime for loading configuration etc. File-runtime
+        services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
+        services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
 
         // v17
         services.TryAddTransient<IJsonServiceInternal, JsonServiceInternalUnknown>();

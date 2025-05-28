@@ -11,8 +11,7 @@ namespace ToSic.Eav.Apps.State;
 public class AppRelationshipManager: SynchronizedList<EntityRelationship>
 {
     internal AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))
-    {
-    }
+    { }
 
     private static ImmutableList<EntityRelationship> Rebuild(AppState appState)
     {
@@ -78,19 +77,4 @@ public class AppRelationshipManager: SynchronizedList<EntityRelationship>
         #endregion
 
     }
-
-    #region Archive till #Remove2024-Q3
-
-    //2024-01-23 2dm - rewrote to the code above but must keep this till 2024-Q3
-    //in case something breaks
-
-    //private static void Add(IReadOnlyDictionary<int, IEntity> lookup, List<EntityRelationship> list, int parent, int? child)
-    //{
-    //    //var lookup = appState.Index;
-    //    if (lookup.ContainsKey(parent) &&
-    //        (!child.HasValue || lookup.ContainsKey(child.Value)))
-    //        list.Add(new(lookup[parent], child.HasValue ? lookup[child.Value] : null));
-    //}
-
-    #endregion
 }

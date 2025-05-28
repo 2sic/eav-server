@@ -34,22 +34,24 @@ public static class StartupEav
             .AddEavWork()
             // Apps
             .AddEavApps()
-            .AddAppFallbackServices()
             // SQL Server
             .AddRepositoryAndEfc()
             // Import/Export as well as File Based Json loading
             .AddEavImportExport()
-            .AddEavImportExportFallback()
             .AddEavPersistence()
             // DataSources
             .AddDataSources()
             // EAV Core
             .AddEavDataBuild()
             .AddEavCore()
-            .AddEavCoreFallbackServices()
             // Library
             .AddLibCore()
             .AddSysCapabilities()
+
+            // Fallbacks for services which were not implemented - must come last
+            .AddAppFallbackServices()
+            .AddEavImportExportFallback()
+            .AddEavCoreFallbackServices()
             .AddSysCapabilitiesFallback();
 
         return services;

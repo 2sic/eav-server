@@ -44,4 +44,16 @@ public interface IAppStateCache: ICacheExpiring,
     /// Health-info, added in 19.03
     /// </summary>
     string HealthMessage { get; }
+
+    /// <summary>
+    /// All ContentTypes in this App
+    /// </summary>
+    IEnumerable<IContentType> ContentTypes { get; }
+
+    /// <summary>
+    /// Get a content-type by name. Will also check global types if needed.
+    /// </summary>
+    /// <param name="name">name of the type</param>
+    /// <returns>a type object or null if not found</returns>
+    IContentType GetContentType(string name);
 }

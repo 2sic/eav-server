@@ -6,6 +6,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.StartUp;
 using ToSic.Lib.Caching;
 using ToSic.Lib.Services;
+using ToSic.Sys.Utils;
 using static ToSic.Eav.Constants;
 
 
@@ -137,8 +138,10 @@ partial class AppState
                 .OfType(AppLoadConstants.TypeAppConfig)
                 .OrderBy(e => e.EntityId)
                 .FirstOrDefault();
-            if (st.Name.IsEmptyOrWs()) st.Name = config?.Get<string>(AppLoadConstants.FieldName);
-            if (st.Folder.IsEmptyOrWs()) st.Folder = config?.Get<string>(AppLoadConstants.FieldFolder);
+            if (st.Name.IsEmptyOrWs())
+                st.Name = config?.Get<string>(AppLoadConstants.FieldName);
+            if (st.Folder.IsEmptyOrWs())
+                st.Folder = config?.Get<string>(AppLoadConstants.FieldFolder);
 
             // Last corrections for the DefaultApp "Content"
             if (st.NameId == DefaultAppGuid)

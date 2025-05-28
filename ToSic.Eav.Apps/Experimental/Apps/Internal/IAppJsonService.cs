@@ -4,7 +4,7 @@ namespace ToSic.Eav.Apps.Internal;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IAppJsonService
+public interface IAppJsonService: IAppJsonConfigBaseService
 {
     void MoveAppJsonTemplateFromOldToNewLocation();
 

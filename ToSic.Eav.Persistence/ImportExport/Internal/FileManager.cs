@@ -5,7 +5,7 @@ using ToSic.Lib.DI;
 namespace ToSic.Eav.ImportExport.Internal;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class FileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(EavLogs.Eav + ".FileMn")
+public class FileManager(LazySvc<IAppJsonConfigBaseService> appJsonService) : ServiceBase(EavLogs.Eav + ".FileMn")
 {
     /// <summary>
     /// Separator for file search patterns.

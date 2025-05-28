@@ -54,6 +54,11 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
     public AppRelationshipManager Relationships { get; }
 
     /// <summary>
+    /// WIP...
+    /// </summary>
+    IEnumerable<EntityRelationship> IRelationshipSource.Relationships => Relationships;
+
+    /// <summary>
     /// The official name identifier of the app, usually a Guid as a string, but often also "Default" for Content-Apps
     /// </summary>
     [PrivateApi]

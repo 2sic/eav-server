@@ -54,7 +54,8 @@ public class ContentTypeAttributeMetadata(
             foreach (var sourceDef in SysSettings.InheritMetadataOf)
             {
                 var fromCurrent = GetMdOfOneSource(sourceDef.Key, sourceDef.Value, ownMd);
-                if (fromCurrent == null) continue;
+                if (fromCurrent == null)
+                    continue;
                 var ofNewTypes = fromCurrent.Where(e => !final.Any(f => f.Type.Is(e.Type.NameId))).ToList();
                 if (ofNewTypes.SafeAny())
                     final.AddRange(ofNewTypes);
@@ -99,8 +100,10 @@ public class ContentTypeAttributeMetadata(
     private List<IContentTypeAttribute> SourceAttributes => _sourceAttributes.Get(() =>
     {
         // Check all the basics to ensure we can work
-        if (!SysSettings.InheritMetadata) return null;
-        if (Source.MainSource is not IAppStateCache appState) return null;
+        if (!SysSettings.InheritMetadata)
+            return null;
+        if (Source.MainSource is not IAppStateCache appState)
+            return null;
 
         // Get all the keys in the source-list except Empty (self-reference)
         var sourceKeys = SysSettings.InheritMetadataOf.Keys
@@ -109,7 +112,7 @@ public class ContentTypeAttributeMetadata(
             .ToArray();
 
         // Get all attributes in all content-types of the App and keep the ones we need
-        var appAttribs = ((AppState)appState).ContentTypes.SelectMany(ct => ct.Attributes);
+        var appAttribs = appState.ContentTypes.SelectMany(ct => ct.Attributes);
         return appAttribs.Where(a => sourceKeys.Contains(a.Guid)).ToList();
     });
     private readonly GetOnce<List<IContentTypeAttribute>> _sourceAttributes = new();

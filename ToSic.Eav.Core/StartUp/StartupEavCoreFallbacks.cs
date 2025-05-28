@@ -37,13 +37,13 @@ public static class StartUpEavCoreFallbacks
         services.AddSysSecurity();
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
-        services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
+        //services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
 
         // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
         services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
-        // Unknown-Runtime for loading configuration etc. File-runtime
-        services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
+        //// Unknown-Runtime for loading configuration etc. File-runtime
+        //services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
 
         services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
