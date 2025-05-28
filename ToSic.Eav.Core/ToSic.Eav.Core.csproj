@@ -82,8 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Apps\Reader\Internal\" />
-    <Folder Include="SysData\" />
+    <Folder Include="LookUp.Sources\" />
   </ItemGroup>
 
   <!--WHAT ARE WE TURNING OFF HERE?-->

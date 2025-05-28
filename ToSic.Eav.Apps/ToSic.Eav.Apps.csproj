@@ -4,7 +4,7 @@
 
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
-  <!--<Import Project="../SharedImports/CsProj.Props/Nullable.props" />-->
+  <Import Project="../SharedImports/CsProj.Props/Nullable.props" />
 
   <PropertyGroup>
     <RootNamespace>ToSic.Eav</RootNamespace>

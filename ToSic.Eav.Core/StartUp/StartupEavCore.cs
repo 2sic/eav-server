@@ -32,7 +32,7 @@ public static class StartUpEavCore
         //services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
         //services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
-        services.TryAddTransient<AppReader>();
+        //services.TryAddTransient<AppReader>();
         //services.TryAddTransient<AppDataStackService>();
 
         // Permissions helper

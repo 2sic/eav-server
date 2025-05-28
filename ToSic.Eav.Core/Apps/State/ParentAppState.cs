@@ -38,8 +38,10 @@ public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inh
     {
         get
         {
-            if (!InheritEntities || AppState == null) return new List<IEntity>(0);
-            if (_entitiesCache != null) return _entitiesCache.List;
+            if (!InheritEntities || AppState == null)
+                return new List<IEntity>(0);
+            if (_entitiesCache != null)
+                return _entitiesCache.List;
             _entitiesCache = new(AppState,
                 () => AppState.List.Select(WrapUnwrappedEntity).ToImmutableList());
             return _entitiesCache.List;
@@ -48,11 +50,15 @@ public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inh
     private SynchronizedEntityList _entitiesCache;
 
 
-    internal IContentType GetContentType(string name) => InheritContentTypes ? WrapUnwrappedContentType(((AppState)AppState).GetContentType(name)) : null;
+    internal IContentType GetContentType(string name)
+        => InheritContentTypes
+            ? WrapUnwrappedContentType(((AppState)AppState).GetContentType(name))
+            : null;
 
     private IEnumerable<IContentType> GetInheritedTypes()
     {
-        if (!InheritContentTypes || AppState == null) return new List<IContentType>(0);
+        if (!InheritContentTypes || AppState == null)
+            return new List<IContentType>(0);
 
         var types = ((AppState)AppState).ContentTypes.Select(WrapUnwrappedContentType);
 
@@ -61,12 +67,14 @@ public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inh
 
     private IContentType WrapUnwrappedContentType(IContentType t)
     {
-        if (t == null || t.HasAncestor()) return t;
+        if (t == null || t.HasAncestor())
+            return t;
         return new ContentTypeWrapper(t, new Ancestor<IContentType>(new AppIdentity(AppState), t.Id));
     }
     private IEntity WrapUnwrappedEntity(IEntity e)
     {
-        if (e == null || e.HasAncestor()) return e;
+        if (e == null || e.HasAncestor())
+            return e;
         return new EntityWrapper(e, new Ancestor<IEntity>(new AppIdentity(AppState), e.EntityId));
     }
 

@@ -26,6 +26,8 @@ public static class StartupEavApps
 {
     public static IServiceCollection AddEavApps(this IServiceCollection services)
     {
+        services.TryAddTransient<AppReader>();
+
         // Context
         services.TryAddTransient<IContextOfSite, ContextOfSite>();
         services.TryAddTransient<ContextOfSite>();
