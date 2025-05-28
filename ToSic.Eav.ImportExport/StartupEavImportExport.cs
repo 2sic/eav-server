@@ -114,14 +114,14 @@ public static class StartupEavImportExport
     /// </remarks>
     public static IServiceCollection AddEavImportExportFallback(this IServiceCollection services)
     {
-        //services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
+        services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
         services.TryAddTransient<XmlExporter, XmlExporterUnknown>();
         //services.TryAddTransient<ISite, SiteUnknown>();
         //services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
         //services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         //services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
         //services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
-        //services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
+        services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 
         //// v17
         //services.TryAddTransient<IJsonServiceInternal, JsonServiceInternalUnknown>();

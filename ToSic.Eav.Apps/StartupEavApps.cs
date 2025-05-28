@@ -10,9 +10,7 @@ using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
 using ToSic.Eav.Integration;
-using ToSic.Eav.Integration.Environment;
 using ToSic.Eav.Integration.Security;
-using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
@@ -112,14 +110,14 @@ public static class StartupEavApps
     /// </remarks>
     public static IServiceCollection AddAppFallbackServices(this IServiceCollection services)
     {
-        services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
+        //services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
         //services.TryAddTransient<XmlExporter, XmlExporterUnknown>();
         services.TryAddTransient<ISite, SiteUnknown>();
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
         services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
         services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
-        services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
+        //services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 
         // v17
         services.TryAddTransient<IJsonServiceInternal, JsonServiceInternalUnknown>();
