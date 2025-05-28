@@ -83,7 +83,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Convert\" />
-    <Folder Include="Serialization\" />
   </ItemGroup>
 
   <!--WHAT ARE WE TURNING OFF HERE?-->

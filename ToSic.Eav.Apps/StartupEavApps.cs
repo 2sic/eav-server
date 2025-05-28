@@ -12,10 +12,12 @@ using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Integration.Security;
+using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
+using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.Security.Internal;
 using ToSic.Sys.Security.Permissions;
 
@@ -110,6 +112,11 @@ public static class StartupEavApps
         // Unknown-Runtime for loading configuration etc. File-runtime
         services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
         services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
+
+        services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
+
+        // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
+        services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
         // v17
         services.TryAddTransient<IJsonServiceInternal, JsonServiceInternalUnknown>();

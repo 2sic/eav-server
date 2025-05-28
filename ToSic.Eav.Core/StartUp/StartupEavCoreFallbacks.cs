@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.LookUp;
@@ -36,10 +34,6 @@ public static class StartUpEavCoreFallbacks
 
         services.AddSysSecurity();
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
-        services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
-
-        // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
-        services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
         services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
