@@ -31,7 +31,9 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
     /// </summary>
     public MultiPermissionsApp(MyServices services) : this(services, "Api.Perms") { }
 
-    protected MultiPermissionsApp(MyServices services, string logName) : base(services, logName) {}
+    protected MultiPermissionsApp(MyServices services, string logName, object[]? connect = default)
+        : base(services, logName, connect)
+    { }
 
     public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app)
     {

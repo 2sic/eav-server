@@ -5,21 +5,14 @@ using ToSic.Sys.Security.Permissions;
 namespace ToSic.Eav.Security.Internal;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MultiPermissionsTypes: MultiPermissionsApp
+public class MultiPermissionsTypes(MultiPermissionsApp.MyServices services, LazySvc<IAppReaderFactory> appReaderFactory)
+    : MultiPermissionsApp(services, LogName, connect: [appReaderFactory])
 {
     private const string LogName = "Sec.MPTyps";
     protected IEnumerable<string> ContentTypes;
 
-    public MultiPermissionsTypes(MyServices services, LazySvc<IAppReaderFactory> appReaderFactory): base(services, LogName)
-    {
-        ConnectLogs([
-            _appReaderFactory = appReaderFactory
-        ]);
-    }
-    private readonly LazySvc<IAppReaderFactory> _appReaderFactory;
-
     // Note: AppState must be public, as we have some extension methods that need it
-    public IAppReader AppState => field ??= _appReaderFactory.Value.GetOrKeep(App);
+    public IAppReader AppState => field ??= appReaderFactory.Value.GetOrKeep(App);
 
     public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
     {

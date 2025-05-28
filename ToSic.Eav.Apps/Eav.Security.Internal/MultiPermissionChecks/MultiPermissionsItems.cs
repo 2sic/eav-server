@@ -9,8 +9,6 @@ namespace ToSic.Eav.Security.Internal;
 public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
     : MultiPermissionsApp(services, "Sec.MpItms")
 {
-    #region Constructors and DI / Init
-
     public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
     {
         var l = Log.Fn<MultiPermissionsItems>($"..., appId: {app.AppId}, entityId: {item?.EntityId}");
@@ -19,8 +17,6 @@ public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
         return l.Return(this);
     }
     private List<IEntity> _items;
-
-    #endregion
 
     protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
         => _items.ToDictionary(i => i.EntityId.ToString(), BuildItemPermissionChecker);

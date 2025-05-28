@@ -121,10 +121,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
         var l = Log.Fn<List<IPermission>>();
         var permissions = appIdentity == null
             ? null
-            // If we already have the App, try to reuse it to be faster
-            : (appIdentity as IApp)?.Metadata.Permissions.ToList()
-              // Otherwise go the whole nine yards
-              ?? appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();
+            : appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();
         return l.Return(permissions, $"found: {permissions?.Count}");
     }
 
