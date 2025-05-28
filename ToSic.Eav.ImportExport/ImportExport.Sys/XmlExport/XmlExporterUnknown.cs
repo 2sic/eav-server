@@ -1,19 +1,18 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.Context.Internal;
-using ToSic.Eav.ImportExport.Internal.Xml;
+﻿using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Unknown;
 #pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Eav.ImportExport.Internal;
 
-internal sealed class XmlExporterUnknown(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, IContextResolver ctxResolver, WarnUseOfUnknown<XmlExporterUnknown> _)
-    : XmlExporter(xmlSerializer, appsCatalog, ctxResolver, LogScopes.NotImplemented), IIsUnknown
+internal sealed class XmlExporterUnknown(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, WarnUseOfUnknown<XmlExporterUnknown> _)
+    : XmlExporter(xmlSerializer, appsCatalog, LogScopes.NotImplemented, connect: []), IIsUnknown
 {
-    protected override void PostContextInit(IContextOfApp appContext)
-    {
-        /* do nothing */
-    }
 
+    public override XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+    {
+        // do nothing
+        return this;
+    }
 
     public override void AddFilesToExportQueue()
     {

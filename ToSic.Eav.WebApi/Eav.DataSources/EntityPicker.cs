@@ -31,6 +31,7 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/todo")]
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
+// ReSharper disable once UnusedMember.Global
 public class EntityPicker : DataSourceBase
 {
     #region Configuration-properties
@@ -150,8 +151,10 @@ public class EntityPicker : DataSourceBase
         try
         {
             var types = ContentTypes;
-            if (types == null) return l.ReturnAsError(Error.Create(title: "TypeList==null, something threw an error there."));
-            if (!types.Any()) return l.Return(new List<IEntity>(), "no valid types found, empty list");
+            if (types == null)
+                return l.ReturnAsError(Error.Create(title: "TypeList==null, something threw an error there."));
+            if (!types.Any())
+                return l.Return(new List<IEntity>(), "no valid types found, empty list");
 
             // Find all Entities of the specified types
             var result = new List<IEntity>();
@@ -209,7 +212,8 @@ public class EntityPicker : DataSourceBase
 
             l.A($"found {typeNames.Count} type names, before verifying if they exist");
 
-            if (!typeNames.Any()) return l.Return([]);
+            if (!typeNames.Any())
+                return l.Return([]);
 
             var appState = _ctxResolver.AppRequired().AppReader;
 
@@ -233,20 +237,25 @@ public class EntityPicker : DataSourceBase
     {
         var l = Log.Fn<List<IEntity>>($"started with {list.Count}");
         var rawIds = ItemIds;
-        if (rawIds.IsEmptyOrWs()) return l.Return(list, "no filter, return all");
+        if (rawIds.IsEmptyOrWs())
+            return l.Return(list, "no filter, return all");
 
         var untyped = rawIds.CsvToArrayWithoutEmpty().ToList();
 
-        if (!untyped.Any()) return l.Return(list, "empty filter, return all");
+        if (!untyped.Any())
+            return l.Return(list, "empty filter, return all");
 
         var result = new List<IEntity>();
         foreach (var id in untyped)
         {
             IEntity found = null;
             // check if id is int or guid
-            if (Guid.TryParse(id, out var guid)) found = list.One(guid);
-            else if (int.TryParse(id, out var intId)) found = list.One(intId);
-            if (found != null) result.Add(found);
+            if (Guid.TryParse(id, out var guid))
+                found = list.One(guid);
+            else if (int.TryParse(id, out var intId))
+                found = list.One(intId);
+            if (found != null)
+                result.Add(found);
         }
         return l.Return(result, $"filtered to {result.Count}");
     }

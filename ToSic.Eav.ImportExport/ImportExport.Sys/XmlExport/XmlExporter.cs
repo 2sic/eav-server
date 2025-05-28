@@ -4,8 +4,6 @@ using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
-using ToSic.Eav.Context;
-using ToSic.Eav.Context.Internal;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.Identity;
 using ToSic.Eav.ImportExport.Internal.Xml;
@@ -17,13 +15,8 @@ namespace ToSic.Eav.ImportExport.Internal;
 // should all get it from cache only!
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class XmlExporter(
-    XmlSerializer xmlSerializer,
-    IAppsCatalog appsCatalog,
-    IContextResolver contextResolver,
-    string logPrefix,
-    object[] connect = default)
-    : ServiceBase(logPrefix + "XmlExp", connect: [..connect ?? [], appsCatalog, xmlSerializer, contextResolver])
+public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, string logPrefix, object[] connect)
+    : ServiceBase(logPrefix + "XmlExp", connect: [..connect, appsCatalog, xmlSerializer])
 {
 
     #region simple properties
@@ -46,11 +39,10 @@ public abstract class XmlExporter(
 
     #region Constructor & DI
 
-    protected IContextResolver ContextResolver { get; } = contextResolver;
     public XmlSerializer Serializer { get; } = xmlSerializer;
     protected readonly IAppsCatalog AppsCatalog = appsCatalog;
 
-    protected void Constructor(AppExportSpecs specs, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds)
+    protected void Constructor(AppExportSpecs specs, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, string defaultCultureCode)
     {
         _specs = specs;
         ZoneId = specs.ZoneId;
@@ -68,31 +60,35 @@ public abstract class XmlExporter(
         _isAppExport = appExport;
         ContentTypeNamesOrIds = typeNamesOrIds;
         EntityIDs = entityIds;
-    }
-
-
-    /// <summary>
-    /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
-    /// </summary>
-    /// <returns></returns>
-    public virtual XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
-    {
-        ContextResolver.SetApp(new AppIdentity(specs.ZoneId, specs.AppId));
-        var ctxOfApp = ContextResolver.AppRequired();
-        PostContextInit(ctxOfApp);
-        Constructor(specs, appRuntime, ctxOfApp.AppReader.Specs.NameId, appExport, attrSetIds, entityIds);
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
-        InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
-
-        return this;
+        InitExportXDocument(defaultCultureCode, EavSystemInfo.VersionString);
     }
 
-    /// <summary>
-    /// Post context init the caller must be able to init Adam, which is not part of this project, so we're handling it as a callback
-    /// </summary>
-    /// <param name="appContext"></param>
-    protected abstract void PostContextInit(IContextOfApp appContext);
+    public abstract XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds);
+
+    ///// <summary>
+    ///// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
+    ///// </summary>
+    ///// <returns></returns>
+    //public virtual XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+    //{
+    //    ContextResolver.SetApp(new AppIdentity(specs.ZoneId, specs.AppId));
+    //    var ctxOfApp = ContextResolver.AppRequired();
+    //    PostContextInit(ctxOfApp);
+    //    Constructor(specs, appRuntime, ctxOfApp.AppReader.Specs.NameId, appExport, attrSetIds, entityIds, ctxOfApp.Site.DefaultCultureCode);
+
+    //    // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
+    //    //InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
+
+    //    return this;
+    //}
+
+    ///// <summary>
+    ///// Post context init the caller must be able to init Adam, which is not part of this project, so we're handling it as a callback
+    ///// </summary>
+    ///// <param name="appContext"></param>
+    //protected abstract void PostContextInit(IContextOfApp appContext);
 
     private void EnsureThisIsInitialized()
     {
