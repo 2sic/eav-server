@@ -15,14 +15,14 @@ namespace ToSic.Eav.ImportExport.Internal.Zip;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipExport(
     IAppReaderFactory appReaders,
-    IDataSourcesService dataSourceFactory,
+    IDataSourcesService dataSourceServices,
     XmlExporter xmlExporter,
     Generator<FileManager> fileManagerGenerator,
     IGlobalConfiguration globalConfiguration,
     ISysFeaturesService features
     )
     : ServiceBase(EavLogs.Eav + ".ZipExp",
-        connect: [appReaders, xmlExporter, globalConfiguration, dataSourceFactory, fileManagerGenerator, features])
+        connect: [appReaders, xmlExporter, globalConfiguration, dataSourceServices, fileManagerGenerator, features])
 {
     private int _appId;
     private int _zoneId;
@@ -39,8 +39,6 @@ public class ZipExport(
     private string _physicalPathGlobal;
 
     #region DI Constructor
-
-    public IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
 
     public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal)
     {
@@ -229,7 +227,7 @@ public class ZipExport(
 
         // 2022-01-04 2dm - new code, simplified
         // Get all entities except Attribute/Field Metadata, which is exported in a different way
-        var entities = DataSourceFactory
+        var entities = dataSourceServices
             .CreateDefault(new DataSourceOptions
             {
                 AppIdentityOrReader = appIdentity,
