@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.LookUp;
 using ToSic.Sys;
 
@@ -23,18 +21,12 @@ public static class StartUpEavCoreFallbacks
     /// </remarks>
     public static IServiceCollection AddEavCoreFallbackServices(this IServiceCollection services)
     {
-        // Warnings for mock implementations
-        services.TryAddTransient(typeof(WarnUseOfUnknown<>));
-
         // very basic stuff - normally overriden by the platform
         services.TryAddTransient<IValueConverter, ValueConverterUnknown>();
 
         services.AddLibLookUp();
 
         services.AddSysSecurity();
-        services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
-
-        //services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
         return services;
     }

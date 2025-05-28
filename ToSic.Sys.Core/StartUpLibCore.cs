@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.DI;
 
 namespace ToSic.Lib;
@@ -12,6 +13,9 @@ public static class StartUpLibCore
     public static IServiceCollection AddLibCore(this IServiceCollection services)
     {
         services.TryAddTransient<IGlobalConfiguration, GlobalConfiguration>();
+
+        // Warnings for mock implementations
+        services.TryAddTransient(typeof(WarnUseOfUnknown<>));
 
         return services
             .AddLibLogging()
