@@ -4,15 +4,16 @@ using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Serialization.Internal;
 
 namespace ToSic.Eav.Integration;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public static class StartupEavImportExport
+public static class StartupEavPersistence
 {
-    public static IServiceCollection AddImportExport(this IServiceCollection services)
+    public static IServiceCollection AddEavPersistence(this IServiceCollection services)
     {
         AddAppStateInFolder(services);
 
@@ -30,6 +31,8 @@ public static class StartupEavImportExport
         services.TryAddTransient<XmlToEntity>();
 
         services.TryAddTransient<FileManager>();
+
+        services.TryAddTransient<EntitySaver>();
 
         return services;
     }

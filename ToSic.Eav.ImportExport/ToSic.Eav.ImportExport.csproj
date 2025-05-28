@@ -9,6 +9,7 @@
   <!--<Import Project="../SharedImports/CsProj.Props/Nullable.props" />-->
 
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Data.Build\ToSic.Eav.Data.Build.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />
@@ -18,6 +19,16 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.IO.Compression" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <!--<Reference Include="System.Runtime.Caching" />-->
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0'">
+    <!--<PackageReference Include="System.Runtime.Caching" Version="9.0.0" />-->
   </ItemGroup>
 
 </Project>

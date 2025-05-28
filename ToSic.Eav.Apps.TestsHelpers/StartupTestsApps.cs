@@ -38,11 +38,12 @@ public class StartupTestsApps
             // SQL Server
             .AddRepositoryAndEfc()
             // Import/Export as well as File Based Json loading
-            .AddImportExport()
+            .AddEavImportExport()
+            .AddEavImportExportFallback()
+            .AddEavPersistence()
             // DataSources
             .AddDataSources()
             // EAV Core
-            .AddEavDataPersistence()
             .AddEavDataBuild()
             .AddEavCore()
             .AddEavCoreFallbackServices()

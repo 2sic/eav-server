@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Startup;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.Integration;
 using ToSic.Eav.StartUp;
 using ToSic.Eav.TestData;
 using ToSic.Eav.Testing;
@@ -28,7 +29,7 @@ public class StartupCoreDataSourcesAndTestData
             .AddTransient<DataTableTrivial>()
             .AddTransient<DataTablePerson>()
             .AddDataSources()
-            .AddEavDataPersistence()
+            .AddEavPersistence()
             .AddEavDataBuild()
             .AddEavCore()
             .AddEavCoreFallbackServices()

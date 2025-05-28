@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCulture("")]
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Apps")]
+[assembly: InternalsVisibleTo("ToSic.Eav.ImportExport")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Work")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.Efc.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Repository.Efc.Tests19")]

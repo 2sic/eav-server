@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Startup;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Repository.Efc;
@@ -39,11 +38,12 @@ public static class StartupEav
             // SQL Server
             .AddRepositoryAndEfc()
             // Import/Export as well as File Based Json loading
-            .AddImportExport()
+            .AddEavImportExport()
+            .AddEavImportExportFallback()
+            .AddEavPersistence()
             // DataSources
             .AddDataSources()
             // EAV Core
-            .AddEavDataPersistence()
             .AddEavDataBuild()
             .AddEavCore()
             .AddEavCoreFallbackServices()
