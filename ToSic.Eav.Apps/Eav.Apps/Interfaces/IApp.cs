@@ -73,8 +73,3 @@ public interface IApp : IAppIdentity, IHasMetadata
 
     #endregion
 }
-
-public interface IAppWithInternal : IApp
-{
-    IAppReader AppReader { get; }
-}
