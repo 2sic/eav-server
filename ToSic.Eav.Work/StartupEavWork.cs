@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.Internal.Api01;
+using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.Apps.Internal.Work;
+using ToSic.Eav.ImportExport.Internal.XmlList;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;
@@ -14,13 +17,13 @@ public static class StartupEavWork
         //services.TryAddTransient<IContextOfSite, ContextOfSite>();
         //services.TryAddTransient<ContextOfSite>();
 
-        //// Runtimes and Managers
-        //services.TryAddTransient<ZoneManager>();
+        // Runtimes and Managers
+        services.TryAddTransient<ZoneManager>();
         //services.TryAddTransient<AppCachePurger>();
         //services.TryAddTransient<AppFinder>();
 
-        //// Runtime parts
-        //services.TryAddTransient<MdRecommendations>(); // new v13
+        // Runtime parts
+        services.TryAddTransient<MdRecommendations>(); // new v13
         //services.TryAddTransient<MdRequirements>(); // new v13
         //services.TryAddTransient<IRequirementsService, MdRequirements>(); // new v16.08
 
@@ -88,24 +91,24 @@ public static class StartupEavWork
         //services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
         //services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
 
-        //// Helpers to build stuff
-        //services.TryAddTransient<AppCreator>();
-        //services.TryAddTransient<ZoneCreator>();
-        //services.TryAddTransient<IAppInitializedChecker, AppInitializedChecker>();
-        //services.TryAddTransient<AppInitializedChecker>();
-        //services.TryAddTransient<AppInitializer>();
-        
-        
+        // Helpers to build stuff
+        services.TryAddTransient<AppCreator>();
+        services.TryAddTransient<ZoneCreator>();
+        services.TryAddTransient<IAppInitializedChecker, AppInitializedChecker>();
+        services.TryAddTransient<AppInitializedChecker>();
+        services.TryAddTransient<AppInitializer>();
 
-        //// export import stuff
-        //services.TryAddScoped<ExportListXml>();
-        //services.TryAddScoped<ImportListXml>();
+
+
+        // export import stuff
+        services.TryAddScoped<ExportListXml>();
+        services.TryAddScoped<ImportListXml>();
         //services.TryAddTransient<ExportImportValueConversion>();
         //services.TryAddTransient<XmlImportWithFiles>(); // Note: added v19.03.03 2025-03-11 by 2dm https://github.com/2sic/2sxc/issues/3598
         //services.TryAddTransient<XmlImportWithFiles.MyServices>();
 
-        //// Simple DataController - registration was missing
-        //services.TryAddTransient<SimpleDataEditService>();
+        // Simple DataController - registration was missing
+        services.TryAddTransient<SimpleDataEditService>();
 
         //// App Permission Check moved to this project as the implementations are now all identical
         //services.TryAddTransient<AppPermissionCheck>();

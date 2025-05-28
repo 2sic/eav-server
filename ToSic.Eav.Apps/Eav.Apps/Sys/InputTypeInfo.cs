@@ -126,7 +126,7 @@ public class InputTypeInfo(string type, string label, string description, string
         var l = log.Fn<IDictionary<string, bool>>();
 
         var newDic = NewDefaultConfigTypesDic();
-            
+
         // New setup v16.08
         // If we have custom settings, take @All and the custom settings only
         if (ConfigTypes.HasValue())

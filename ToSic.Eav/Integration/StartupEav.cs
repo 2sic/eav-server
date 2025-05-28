@@ -30,8 +30,9 @@ public static class StartupEav
         services.TryAddTransient<IConvertToEavLight, ConvertToEavLight>();
 
         services
-            // WebAPI
+            // WebAPI & Work
             .AddEavWebApi()
+            .AddEavWork()
             // Apps
             .AddEavApps()
             .AddAppFallbackServices()
