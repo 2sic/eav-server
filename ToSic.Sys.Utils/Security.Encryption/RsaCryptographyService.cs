@@ -11,11 +11,10 @@ namespace ToSic.Eav.Security.Encryption
 
         // Generate PEM format for public key
         private const bool Pem = false;
-
+        
         public byte[] Decrypt(string encryptedData)
         {
-            //using var rsa = RSA.Create(DwKeySize);
-            using var rsa = new RSACng(DwKeySize);
+            using var rsa = RSA.Create(DwKeySize);
 
             rsa.FromXmlString(PrivateKey ?? throw new NullReferenceException($"{nameof(PrivateKey)} cannot be null."));
 
@@ -56,11 +55,10 @@ namespace ToSic.Eav.Security.Encryption
         private string? _publicKey;
         private string? _privateKey;
         private readonly TryLockTryDo _genKeysInLock = new();
-
+        
         private void GenKeys()
         {
-            //using var rsa = RSA.Create(DwKeySize);
-            using var rsa = new RSACng(DwKeySize);
+            using var rsa = RSA.Create(DwKeySize);
 
             // create folder if not exist
             Directory.CreateDirectory(globalConfiguration.CryptoFolder());
@@ -69,15 +67,14 @@ namespace ToSic.Eav.Security.Encryption
             ExportPublicKey(rsa);
             ExportPrivateKey(rsa);
         }
-
         private string PublicKeyPath => Path.Combine(globalConfiguration.CryptoFolder(), "public.key");
         private string PrivateKeyPath => Path.Combine(globalConfiguration.CryptoFolder(), "private.key");
 
         #region ExportKeys
-        private void ExportPrivateKey(RSACng rsa)
+        private void ExportPrivateKey(RSA rsa)
             => File.WriteAllText(PrivateKeyPath, rsa.ToXmlString(true));
 
-        private void ExportPublicKey(RSACng rsa)
+        private void ExportPublicKey(RSA rsa)
         {
             var parameters = rsa.ExportParameters(false);
             var base64 = PublicKeyBase64(parameters);
