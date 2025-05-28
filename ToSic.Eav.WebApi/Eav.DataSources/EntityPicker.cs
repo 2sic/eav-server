@@ -201,10 +201,10 @@ public class EntityPicker : DataSourceBase
     /// <summary>
     /// List of ContentTypes to filter by
     /// </summary>
-    private List<IContentType> ContentTypes => _contentTypes.Get(() =>
+    private List<IContentType> ContentTypes => field ??= GetContentTypes();
+    private List<IContentType> GetContentTypes()
     {
         var l = Log.Fn<List<IContentType>>();
-        // Case 2: We have 1+ Type Names, let's get these
 
         try
         {
@@ -230,8 +230,7 @@ public class EntityPicker : DataSourceBase
             /* ignore */
             return l.ReturnAsError(null);
         }
-    });
-    private readonly GetOnce<List<IContentType>> _contentTypes = new();
+    }
 
     private List<IEntity> FilterByIds(List<IEntity> list)
     {
