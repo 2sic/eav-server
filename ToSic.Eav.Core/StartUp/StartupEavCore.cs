@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Internal.Compression;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Encryption;
@@ -24,13 +23,8 @@ public static class StartUpEavCore
         services.TryAddTransient<ISysFeaturesService, SysFeaturesService>();    // this must come first!
         services.TryAddTransient<ILibFeaturesService, SysFeaturesService>();    // v20
 
-        // App-State and Cache
-        //services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
-
         // Permissions helper
         services.TryAddTransient<PermissionCheckBase.MyServices>();
-
-        services.TryAddTransient<Compressor>();
 
         services.TryAddTransient<AesCryptographyService>();
         services.TryAddTransient<Rfc2898Generator>();

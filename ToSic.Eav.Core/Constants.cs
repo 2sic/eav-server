@@ -79,12 +79,6 @@ public partial class Constants
     [PrivateApi] public static readonly IAppIdentity GlobalIdentity = new AppIdentity(DefaultZoneId, MetaDataAppId);
 
 
-
-    #region special uses of Apps
-
-
-    #endregion
-
     public const string DynamicType = "dynamic";
 
     /// <summary>
@@ -110,4 +104,6 @@ public partial class Constants
     /// ApiController folder and route segment
     /// </summary>
     public const string Api = "api";
+
+    public const string EmptyRelationship = "null";
 }
