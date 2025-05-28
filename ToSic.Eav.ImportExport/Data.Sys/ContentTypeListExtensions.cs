@@ -12,7 +12,7 @@ public static class ContentTypeListExtensions
         return set.OrderBy(c => c.Name);
     }
 
-    internal static IList<string> GetAllScopesInclDefault(this IEnumerable<IContentType> list)
+    private static IList<string> GetAllScopesInclDefault(this IEnumerable<IContentType> list)
     {
         var scopes = list.Select(ct => ct.Scope).Distinct().ToList();
 
