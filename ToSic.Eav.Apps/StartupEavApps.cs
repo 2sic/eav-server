@@ -38,15 +38,6 @@ public static class StartupEavApps
         services.TryAddTransient<MdRequirements>(); // new v13
         services.TryAddTransient<IRequirementsService, MdRequirements>(); // new v16.08
         
-        // More services
-
-        //services.TryAddTransient<ImportService>();
-
-        //services.TryAddTransient<ZipExport>();
-        //services.TryAddTransient<ZipImport>();
-        //services.TryAddTransient<ZipImport.MyServices>();
-        //services.TryAddTransient<ZipFromUrlImport>();
-
         // Context
         services.TryAddTransient<IContextOfApp, ContextOfApp>();
         services.TryAddTransient<ContextOfApp.MyServices>();
@@ -79,11 +70,6 @@ public static class StartupEavApps
         services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
         services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
 
-        // export import stuff
-        //services.TryAddTransient<ExportImportValueConversion>();
-        //services.TryAddTransient<XmlImportWithFiles>(); // Note: added v19.03.03 2025-03-11 by 2dm https://github.com/2sic/2sxc/issues/3598
-        //services.TryAddTransient<XmlImportWithFiles.MyServices>();
-
         // App Permission Check moved to this project as the implementations are now all identical
         services.TryAddTransient<AppPermissionCheck>();
         services.TryAddTransient<MultiPermissionsTypes>();
@@ -110,14 +96,11 @@ public static class StartupEavApps
     /// </remarks>
     public static IServiceCollection AddAppFallbackServices(this IServiceCollection services)
     {
-        //services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
-        //services.TryAddTransient<XmlExporter, XmlExporterUnknown>();
         services.TryAddTransient<ISite, SiteUnknown>();
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
         services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
         services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
-        //services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 
         // v17
         services.TryAddTransient<IJsonServiceInternal, JsonServiceInternalUnknown>();

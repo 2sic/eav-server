@@ -3,7 +3,6 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Plumbing;
 using ToSic.Eav.StartUp;
-using ToSic.Lib.DI;
 using ToSic.Sys.Startup;
 
 namespace ToSic.Eav.Internal.Loaders;

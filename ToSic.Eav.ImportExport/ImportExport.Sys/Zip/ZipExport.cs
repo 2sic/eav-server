@@ -1,5 +1,4 @@
 ﻿using System.Xml.XPath;
-using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Shared;
@@ -7,7 +6,6 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Services;
 using ToSic.Sys.Capabilities.Features;

@@ -2,8 +2,6 @@
 using System.Text.Json.Nodes;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Serialization;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Fingerprints;
 

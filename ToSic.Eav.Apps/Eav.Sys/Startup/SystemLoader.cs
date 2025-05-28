@@ -1,6 +1,4 @@
 ﻿using ToSic.Eav.StartUp;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Internal.Loaders;
 

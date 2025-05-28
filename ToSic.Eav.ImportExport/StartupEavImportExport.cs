@@ -1,26 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.Catalog;
-using ToSic.Eav.Apps.Integration;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.MetadataDecorators;
-using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Caching;
-using ToSic.Eav.Cms.Internal.Languages;
-using ToSic.Eav.Context;
-using ToSic.Eav.Context.Internal;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Zip;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Integration.Environment;
-using ToSic.Eav.Integration.Security;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Internal.Requirements;
-using ToSic.Eav.Security.Internal;
-using ToSic.Sys.Security.Permissions;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;

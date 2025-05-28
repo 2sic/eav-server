@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.Data.Shared;
+﻿using ToSic.Eav.Data.Shared;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps;

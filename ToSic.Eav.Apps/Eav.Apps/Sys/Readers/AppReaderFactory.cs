@@ -1,8 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Lib.Coding;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
 using static ToSic.Eav.Constants;
 
 namespace ToSic.Eav.Apps;

@@ -1,9 +1,7 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal;
+﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Repository.Efc;
 
 namespace ToSic.Eav.ImportExport.Internal;

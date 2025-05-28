@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.State;
 using ToSic.Lib.Caching;
-using ToSic.Lib.DI;
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Capabilities.Features;
 
