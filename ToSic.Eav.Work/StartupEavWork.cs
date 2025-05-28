@@ -107,8 +107,8 @@ public static class StartupEavWork
         //services.TryAddTransient<XmlImportWithFiles>(); // Note: added v19.03.03 2025-03-11 by 2dm https://github.com/2sic/2sxc/issues/3598
         //services.TryAddTransient<XmlImportWithFiles.MyServices>();
 
-        // Simple DataController - registration was missing
-        services.TryAddTransient<SimpleDataEditService>();
+        //// Simple DataController - registration was missing
+        //services.TryAddTransient<SimpleDataEditService>();
 
         //// App Permission Check moved to this project as the implementations are now all identical
         //services.TryAddTransient<AppPermissionCheck>();
