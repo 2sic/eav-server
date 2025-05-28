@@ -243,7 +243,9 @@ public class RsaCryptographyServiceTests : IDisposable
         // Assert - All tasks should return the same public key
         var firstKey = results[0];
         True(results.All(r => r == firstKey));
-    }    /// <summary>
+    }
+    
+    /// <summary>
     /// Helper method to encrypt data for testing decryption
     /// </summary>
     private string EncryptDataForTesting(byte[] data)
