@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Source;
 
 namespace ToSic.Eav.Apps.State;
@@ -16,7 +15,7 @@ partial class AppState: IEntitiesSource
     private SynchronizedEntityList BuildList()
     {
         // todo: check if feature is enabled #SharedAppFeatureEnabled
-        var buildFn = ParentApp.InheritEntities
+        var buildFn = ((ParentAppState)ParentApp).InheritEntities
             ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableList()
             : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableList());
 

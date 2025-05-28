@@ -16,7 +16,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
     private static bool _loggedToBootLog = false;
 
     [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-    private AppState(ParentAppState? parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new(), $"App.St-{id.AppId}", connect: [])
+    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new(), $"App.St-{id.AppId}", connect: [])
     {
         // Track first time an app was built...
         if (!_loggedToBootLog)
@@ -46,7 +46,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
         l.Done();
     }
     [PrivateApi]
-    public ParentAppState? ParentApp { get; }
+    public IParentAppState ParentApp { get; }
 
     /// <summary>
     /// Manages all relationships between Entities

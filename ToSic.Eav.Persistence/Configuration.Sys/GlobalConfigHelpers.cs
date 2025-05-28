@@ -2,7 +2,7 @@
 
 public class GlobalConfigHelpers
 {
-    public static string ErrorMessageNullNotAllowed(string fieldName) =>
+    private static string ErrorMessageNullNotAllowed(string fieldName) =>
         $"ISystemFoldersConfiguration.{fieldName} cannot be null. Make sure it's set upon initial creation of the dependencies etc.";
 
     public static string CorrectFolderOrErrorIfInvalid(string value, string fieldName) =>

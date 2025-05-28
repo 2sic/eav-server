@@ -25,7 +25,7 @@ public interface IAppStateCache: ICacheExpiring,
 
     AppStateMetadata ThingInApp(AppThingsToStack target);
 
-    ParentAppState? ParentApp { get; }
+    IParentAppState ParentApp { get; }
 
     ICacheStatistics CacheStatistics { get; }
 

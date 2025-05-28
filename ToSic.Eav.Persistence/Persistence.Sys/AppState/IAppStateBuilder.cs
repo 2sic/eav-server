@@ -1,12 +1,10 @@
-﻿using ToSic.Eav.Data;
-
-namespace ToSic.Eav.Apps.State;
+﻿namespace ToSic.Eav.Apps.State;
 
 public interface IAppStateBuilder: IHasLog
 {
     IAppStateBuilder Init(IAppStateCache appState);
     IAppStateBuilder InitForPreset();
-    IAppStateBuilder InitForNewApp(ParentAppState? parentApp, IAppIdentity identity, string nameId, ILog parentLog);
+    IAppStateBuilder InitForNewApp(IParentAppState? parentApp, IAppIdentity identity, string nameId, ILog parentLog);
     IAppStateCache AppState { get; }
     IAppReader Reader { get; }
 

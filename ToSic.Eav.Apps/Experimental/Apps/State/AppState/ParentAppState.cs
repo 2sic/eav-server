@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.State;
 /// WIP v13 - should wrap a parent-app for re-use in a child-app
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inheritEntities)
+public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inheritEntities) : IParentAppState
 {
     /// <summary>
     /// The parent App

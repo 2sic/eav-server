@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.State;
 public static class AppStateExtensions
 {
     public static bool IsInherited(this IAppReader reader)
-        => reader.GetCache().ParentApp.InheritEntities;  // if it inherits entities, it itself is inherited
+        => ((ParentAppState)reader.GetCache().ParentApp).InheritEntities;  // if it inherits entities, it itself is inherited
 
     public static bool HasCustomParentApp(this IAppReader reader)
     {

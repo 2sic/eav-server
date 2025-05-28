@@ -28,7 +28,7 @@ partial class AppState
     public IContentType GetContentType(string name) =>
         _appTypesByName.TryGetValue(name, out var type)
             ? type
-            : ParentApp.GetContentType(name);
+            : ((ParentAppState)ParentApp).GetContentType(name);
 
     /// <summary>
     /// Get a content-type by number / id. Will also check global types if needed.

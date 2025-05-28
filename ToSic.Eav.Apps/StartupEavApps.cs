@@ -120,6 +120,9 @@ public static class StartupEavApps
 
         // v17
         services.TryAddTransient<IJsonServiceInternal, JsonServiceInternalUnknown>();
+
+        services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
+
         return services;
     }
 

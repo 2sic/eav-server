@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data;
-using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.LookUp;
 using ToSic.Sys;
@@ -35,7 +34,7 @@ public static class StartUpEavCoreFallbacks
         services.AddSysSecurity();
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
 
-        services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
+        //services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
         return services;
     }

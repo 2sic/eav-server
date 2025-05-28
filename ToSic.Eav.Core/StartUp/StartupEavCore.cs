@@ -15,9 +15,6 @@ public static class StartUpEavCore
 {
     public static IServiceCollection AddEavCore(this IServiceCollection services)
     {
-        //// Configuration objects
-        //services.TryAddTransient<GlobalPaths>();
-
         // Features - 2024-05-31 changed to non-singleton
         services.TryAddTransient<ISysFeaturesService, SysFeaturesService>();    // this must come first!
         services.TryAddTransient<ILibFeaturesService, SysFeaturesService>();    // v20
