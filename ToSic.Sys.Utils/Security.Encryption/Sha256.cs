@@ -19,6 +19,8 @@ public class Sha256
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string Hash(string value) 
         => Hasher.Hash(SHA256.Create(), value);
+
+
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public string SignBase64(string certificateBase64, byte[] data)
     {
@@ -26,9 +28,7 @@ public class Sha256
         if (data == null) throw new ArgumentNullException(nameof(data));
 
 #if NETFRAMEWORK
-#pragma warning disable SYSLIB0057 // Type or member is obsolete
         var certificate = new X509Certificate2(Convert.FromBase64String(certificateBase64), "", X509KeyStorageFlags.Exportable);
-#pragma warning restore SYSLIB0057 // Type or member is obsolete
 #else
         var certificate = X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(certificateBase64), "", X509KeyStorageFlags.Exportable);
 #endif
@@ -45,9 +45,7 @@ public class Sha256
         if (dataClient == null) throw new ArgumentNullException(nameof(dataClient));
 
 #if NETFRAMEWORK
-#pragma warning disable SYSLIB0057 // Type or member is obsolete
         var publicCert = new X509Certificate2(Convert.FromBase64String(publicCertBase64));
-#pragma warning restore SYSLIB0057 // Type or member is obsolete
 #else
         var publicCert = X509CertificateLoader.LoadCertificate(Convert.FromBase64String(publicCertBase64));
 #endif
