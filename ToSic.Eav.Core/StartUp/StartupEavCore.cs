@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security.Encryption;
+using ToSic.Lib;
 using ToSic.Lib.Caching;
+using ToSic.Sys;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Code.InfoSystem;
 using ToSic.Sys.Security.Permissions;
@@ -13,6 +15,17 @@ namespace ToSic.Eav.StartUp;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartUpEavCore
 {
+    public static IServiceCollection AddEavCoreLibAndSys(this IServiceCollection services)
+    {
+        services
+            .AddEavCore()
+            .AddSysCapabilities()
+            .AddSysSecurity()
+            .AddLibCore();
+
+        return services;
+    }
+
     public static IServiceCollection AddEavCore(this IServiceCollection services)
     {
         // Features - 2024-05-31 changed to non-singleton

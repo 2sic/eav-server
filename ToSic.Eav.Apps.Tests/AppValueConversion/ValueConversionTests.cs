@@ -7,6 +7,7 @@ using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.StartUp;
 using ToSic.Lib;
+using ToSic.Sys;
 
 namespace ToSic.Eav.Apps.Tests.AppValueConversion;
 
@@ -23,10 +24,9 @@ public class ValueConversionTests(ExportImportValueConversion exportListXml)
                 // EAV Core
                 //.AddEavDataPersistence()
                 .AddEavDataBuild()
-                .AddEavCore()
-                .AddEavCoreFallbackServices()
-                // Library
-                .AddLibCore();
+                .AddEavCoreLibAndSys()
+
+                .AddEavCoreLibAndSysFallbackServices();
     }
 
     #endregion

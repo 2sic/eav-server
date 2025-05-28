@@ -43,14 +43,12 @@ public class StartupTestsApps
             .AddDataSources()
             // EAV Core
             .AddEavDataBuild()
-            .AddEavCore()
-            // Library
-            .AddLibCore()
-            .AddSysCapabilities()
+
+            .AddEavCoreLibAndSys()
 
             // Fallbacks for services which were not implemented - must come last
             .AddAppFallbackServices()
             .AddEavImportExportFallback()
-            .AddEavCoreFallbackServices()
+            .AddEavCoreLibAndSysFallbackServices()
             .AddSysCapabilitiesFallback();
 }

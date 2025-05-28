@@ -8,7 +8,7 @@ namespace ToSic.Lib.LookUp;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupLibLookUp
 {
-    public static IServiceCollection AddLibLookUp(this IServiceCollection services)
+    public static IServiceCollection AddLibLookUpFallback(this IServiceCollection services)
     {
         services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
 

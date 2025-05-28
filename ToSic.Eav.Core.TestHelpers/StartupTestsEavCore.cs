@@ -24,8 +24,9 @@ public class StartupTestsEavCore
         services
             //.AddEavDataPersistence()
             .AddEavDataBuild()
-            .AddEavCore()
-            .AddEavCoreFallbackServices()
-            .AddLibCore()
+
+            .AddEavCoreLibAndSys()
+
+            .AddEavCoreLibAndSysFallbackServices()
             .AddSysCapabilitiesFallback();
 }

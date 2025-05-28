@@ -11,9 +11,16 @@ public static class StartupSysSecurity
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddSysSecurity(this IServiceCollection services)
     {
-        services.TryAddTransient<IUser, UserUnknown>();
         services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
         services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
         return services;
     }
+
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public static IServiceCollection AddSysSecurityFallback(this IServiceCollection services)
+    {
+        services.TryAddTransient<IUser, UserUnknown>();
+        return services;
+    }
+
 }

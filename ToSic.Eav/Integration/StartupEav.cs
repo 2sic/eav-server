@@ -43,16 +43,15 @@ public static class StartupEav
             .AddDataSources()
             // EAV Core
             .AddEavDataBuild()
-            .AddEavCore()
-            // Library
-            .AddLibCore()
-            .AddSysCapabilities()
+
+
+            .AddEavCoreLibAndSys()
+
 
             // Fallbacks for services which were not implemented - must come last
             .AddAppFallbackServices()
             .AddEavImportExportFallback()
-            .AddEavCoreFallbackServices()
-            .AddSysCapabilitiesFallback();
+            .AddEavCoreLibAndSysFallbackServices();
 
         return services;
     }
