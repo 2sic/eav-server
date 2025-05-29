@@ -3,8 +3,11 @@
 namespace ToSic.Eav.Internal.Loaders;
 
 /// <summary>
-/// WIP - the main loader which will run pre-loaders first, then the main loader
+/// The main / overall loader which will coordinate all the loaders.
 /// </summary>
+/// <remarks>
+/// It will run pre-loaders first, then the main loader.
+/// </remarks>
 public class SystemLoader : ServiceBase
 {
     public SystemLoader(

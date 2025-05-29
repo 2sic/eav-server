@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Services;
-
-namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps;
 
 /// <summary>
 /// Base object for things that have a full app-identity (app-id and zone-id) and can also log their state.

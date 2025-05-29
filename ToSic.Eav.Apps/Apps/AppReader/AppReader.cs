@@ -2,15 +2,13 @@
 using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.State;
-using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Apps;
 
 public class AppReader() : ServiceBase("App.Reader"), IAppReader
 {
-    /*internal*/public AppReader Init(IAppStateCache appState, ILog parentLog)
+    internal AppReader Init(IAppStateCache appState, ILog parentLog)
     {
         _appState = appState as AppState;
         this.LinkLog(parentLog);
