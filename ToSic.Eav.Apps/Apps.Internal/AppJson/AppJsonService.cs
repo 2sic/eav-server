@@ -1,7 +1,9 @@
-﻿using ToSic.Eav.Apps.Integration;
+﻿using System.Text.Json;
+using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Context;
 using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Serialization;
 using ToSic.Lib.Caching;
 using ToSic.Sys.Utils;
 
@@ -22,10 +24,9 @@ public class AppJsonService(
     ISite site,
     IAppReaderFactory appReaders,
     IAppPathsMicroSvc appPathsFactory,
-    MemoryCacheService memoryCacheService,
-    LazySvc<IJsonServiceInternal> json
+    MemoryCacheService memoryCacheService
 )
-    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appReaders, appPathsFactory, memoryCacheService, json]), IAppJsonService
+    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appReaders, appPathsFactory, memoryCacheService]), IAppJsonService
 {
 
     /// <summary>
@@ -110,18 +111,18 @@ public class AppJsonService(
         if (!File.Exists(pathToAppJson))
             return l.ReturnNull($"file '{Constants.AppJson}' not found");
 
-        AppJson appJson;
         try
         {
-            var text = File.ReadAllText(pathToAppJson);
-            l.A($"json read from file, size:{text.Length}");
+            var json = File.ReadAllText(pathToAppJson);
+            l.A($"json read from file, size:{json.Length}");
 
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(json))
                 return l.Return(new(),"json is empty");
 
-            appJson = json.Value.To<AppJson>(text);
-            if (appJson == null)
-                return l.Return(new(),"appJson is null");
+            var appJson = JsonSerializer.Deserialize<AppJson>(json, JsonOptions.SafeJsonForHtmlAttributes);
+            return appJson == null
+                ? l.Return(new(),"appJson is null")
+                : l.ReturnAsOk(appJson);
         }
         catch (Exception e)
         {
@@ -129,7 +130,6 @@ public class AppJsonService(
             return l.Return(new(), "json is not valid");
         }
 
-        return l.ReturnAsOk(appJson);
     }
 
 

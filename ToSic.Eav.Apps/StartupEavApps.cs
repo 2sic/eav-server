@@ -119,8 +119,6 @@ public static class StartupEavApps
         services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
         // v17
-        services.TryAddTransient<IJsonServiceInternal, JsonServiceInternalUnknown>();
-
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
         services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
