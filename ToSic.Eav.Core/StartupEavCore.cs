@@ -30,8 +30,8 @@ public static class StartUpEavCore
         services.TryAddTransient<MemoryCacheService>();
 
         // v20 Startup
-        services.AddTransient<IBootProcess, EavBootFeaturesRegistrations>();
-        services.AddTransient<IBootProcess, EavBootLicenseRegistrations>();
+        services.AddTransient<IBootProcess, BootRegistrationEavFeatures>();
+        services.AddTransient<IBootProcess, BootRegistrationEavLicenses>();
         services.TryAddTransient<ITargetTypeService, TargetTypesService>();
 
         return services;

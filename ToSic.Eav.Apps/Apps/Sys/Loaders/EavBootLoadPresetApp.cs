@@ -25,7 +25,7 @@ internal class EavBootLoadPresetApp(
     private void LoadPresetApp()
     {
         var (main, lStandalone, lNormal) = BootLogHelper.GetLoggersForStandaloneLogs(logStore, Log, "AppPst", "Load Global Preset App");
-        var logSettings = new EavSystemLoaderLogSettingsHelper(featuresLoader, Log)
+        var logSettings = new EavFeaturesLogSettingsHelper(featuresLoader, Log)
             .GetLogSettings();
 
         // Build the cache of all system-types. Must happen before everything else

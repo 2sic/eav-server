@@ -26,7 +26,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
         {
             if (inheritAppId > 0)
             {
-                var sysSettings = new AppSysSettings()
+                var sysSettings = new AppSysSettingsJsonInDb()
                 {
                     Inherit = true,
                     AncestorAppId = inheritAppId.Value

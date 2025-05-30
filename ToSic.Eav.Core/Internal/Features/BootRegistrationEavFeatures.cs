@@ -3,7 +3,7 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.StartUp;
 
-internal class EavBootFeaturesRegistrations(FeaturesCatalog featuresCatalog)
+internal class BootRegistrationEavFeatures(FeaturesCatalog featuresCatalog)
     : BootProcessBase("EavFts", bootPhase: BootPhase.Registrations, connect: [featuresCatalog])
 {
     /// <summary>

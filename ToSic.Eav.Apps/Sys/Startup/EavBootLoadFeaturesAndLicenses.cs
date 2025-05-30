@@ -6,7 +6,11 @@ namespace ToSic.Eav.Internal.Loaders;
 
 [PrivateApi]
 public class EavBootLoadFeaturesAndLicenses(ILogStore logStore, EavFeaturesLoader featuresLoader)
-    : BootProcessBase("EavLnF", bootPhase: BootPhase.Loading, priority: EavBootLoadPresetApp.LoadAppPriority + 1, connect: [logStore, featuresLoader])
+    : BootProcessBase("EavLnF",
+        bootPhase: BootPhase.Loading,
+        priority: EavBootLoadPresetApp.LoadAppPriority + 1, // Depends on the preset app being loaded first, for the content-types
+        connect: [logStore, featuresLoader]
+    )
 {
     private static bool _startupAlreadyRan;
 

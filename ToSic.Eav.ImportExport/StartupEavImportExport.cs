@@ -25,7 +25,9 @@ public static class StartupEavImportExport
         //// Runtime parts
         //services.TryAddTransient<MdRequirements>(); // new v13
         //services.TryAddTransient<IRequirementsService, MdRequirements>(); // new v16.08
-        
+
+        services.TryAddTransient<AppFileManager>();
+
         // More services
 
         services.TryAddTransient<ImportService>();

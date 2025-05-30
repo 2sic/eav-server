@@ -16,14 +16,14 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     public bool AllowCodeImport;
 
     public class MyServices(
-        Generator<FileManager> fileManagerGenerator,
+        Generator<AppFileManager> fileManagerGenerator,
         IImportExportEnvironment environment,
         Generator<XmlImportWithFiles> xmlImpExpFiles,
         AppCachePurger appCachePurger,
         IAppsCatalog appsCatalog)
         : MyServicesBase(connect: [fileManagerGenerator, environment, xmlImpExpFiles, appCachePurger, appsCatalog])
     {
-        public Generator<FileManager> FileManagerGenerator { get; } = fileManagerGenerator;
+        public Generator<AppFileManager> FileManagerGenerator { get; } = fileManagerGenerator;
         public IImportExportEnvironment Environment { get; } = environment;
         public Generator<XmlImportWithFiles> XmlImpExpFiles { get; } = xmlImpExpFiles;
         public AppCachePurger AppCachePurger { get; } = appCachePurger;

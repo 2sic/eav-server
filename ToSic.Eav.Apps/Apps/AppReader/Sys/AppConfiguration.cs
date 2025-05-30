@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Internal.Specs;
 /// </summary>
 [PrivateApi("Note: was public till 16.08")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class AppConfiguration : EntityBasedType, IAppConfiguration
+internal class AppConfiguration(IEntity entity) : EntityBasedType(entity), IAppConfiguration
 {
     // todo: probably move most to Eav.Apps.AppConstants
     [PrivateApi] public const string FieldAllowRazor = "AllowRazorTemplates";
@@ -18,10 +18,6 @@ internal class AppConfiguration : EntityBasedType, IAppConfiguration
     [PrivateApi] public const string FieldRequiredDnnVersion = "RequiredDnnVersion";
     [PrivateApi] public const string FieldRequiredOqtaneVersion = "RequiredOqtaneVersion";
     [PrivateApi] public const string FieldSupportsAjax = "SupportsAjaxReload";
-
-    [PrivateApi]
-    internal AppConfiguration(IEntity entity) : base(entity)
-    { }
 
     public Version Version => GetVersionOrDefault(nameof(Version));
 

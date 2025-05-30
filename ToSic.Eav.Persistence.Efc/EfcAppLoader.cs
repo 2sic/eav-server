@@ -243,7 +243,7 @@ public class EfcAppLoader(
         if (string.IsNullOrWhiteSpace(appSysSettings))
             return l.Return(0, "none found");
 
-        var sysSettings = JsonSerializer.Deserialize<AppSysSettings>(appInDb.SysSettings, JsonOptions.SafeJsonForHtmlAttributes);
+        var sysSettings = JsonSerializer.Deserialize<AppSysSettingsJsonInDb>(appInDb.SysSettings, JsonOptions.SafeJsonForHtmlAttributes);
         if (!sysSettings.Inherit || sysSettings.AncestorAppId == 0)
             return l.Return(0, "data found but inherit not active");
 

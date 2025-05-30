@@ -5,7 +5,7 @@ using ToSic.Lib.DI;
 namespace ToSic.Eav.ImportExport.Internal;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class FileManager(LazySvc<IAppJsonConfigBaseService> appJsonService) : ServiceBase(EavLogs.Eav + ".FileMn")
+public class AppFileManager(LazySvc<IAppJsonService> appJsonService) : ServiceBase(EavLogs.Eav + ".FileMn")
 {
     /// <summary>
     /// Separator for file search patterns.
@@ -13,7 +13,7 @@ public class FileManager(LazySvc<IAppJsonConfigBaseService> appJsonService) : Se
     /// </summary>
     private const char Separator = ';';
 
-    public FileManager SetFolder(int appId, string sourceFolder, string subFolder = null)
+    public AppFileManager SetFolder(int appId, string sourceFolder, string subFolder = null)
     {
         // appId is needed to get app.json from cache
         _appId = appId;

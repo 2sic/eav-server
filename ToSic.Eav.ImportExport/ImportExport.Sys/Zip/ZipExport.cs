@@ -17,7 +17,7 @@ public class ZipExport(
     IAppReaderFactory appReaders,
     IDataSourcesService dataSourceServices,
     XmlExporter xmlExporter,
-    Generator<FileManager> fileManagerGenerator,
+    Generator<AppFileManager> fileManagerGenerator,
     IGlobalConfiguration globalConfiguration,
     ISysFeaturesService features
     )
@@ -31,11 +31,11 @@ public class ZipExport(
     private const string SourceControlDataFile = Constants.AppDataFile;
     private readonly string _blankGuid = Guid.Empty.ToString();
 
-    public FileManager FileManager;
+    public AppFileManager AppFileManager;
     private string _physicalAppPath;
     private string _appFolder;
 
-    public FileManager FileManagerGlobal;
+    public AppFileManager AppFileManagerGlobal;
     private string _physicalPathGlobal;
 
     #region DI Constructor
@@ -48,8 +48,8 @@ public class ZipExport(
         _physicalAppPath = physicalAppPath;
         _physicalPathGlobal = physicalPathGlobal;
         ConnectLogs([
-            FileManager = fileManagerGenerator.New().SetFolder(appId, _physicalAppPath),
-            FileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
+            AppFileManager = fileManagerGenerator.New().SetFolder(appId, _physicalAppPath),
+            AppFileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
         ]);
         var appIdentity = new AppIdentity(_zoneId, _appId);
         _appReader = appReaders.Get(appIdentity);
@@ -91,7 +91,7 @@ public class ZipExport(
 
                     // Copy app global templates for version control
                     var _ = new List<Message>();
-                    FileManagerGlobal.CopyAllFiles(globalTemplatesStateFolder.FullName, true, _);
+                    AppFileManagerGlobal.CopyAllFiles(globalTemplatesStateFolder.FullName, true, _);
                 }
                 catch (Exception e)
                 {
@@ -155,13 +155,13 @@ public class ZipExport(
 
         // Copy app folder
         if (Directory.Exists(_physicalAppPath))
-            FileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
+            AppFileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
 
         // Copy global app folder only for ParentApp
         var parentAppGuid = xmlExport.AppReader.GetParentCache()?.NameId;
         if (parentAppGuid == null || AppStateExtensions.AppGuidIsAPreset(parentAppGuid))
             if (Directory.Exists(_physicalPathGlobal))
-                FileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
+                AppFileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
         // Copy SiteFiles
         CopyPortalFiles(xmlExport, siteFilesDirectory, specs.AssetsAdam, specs.AssetsSite);

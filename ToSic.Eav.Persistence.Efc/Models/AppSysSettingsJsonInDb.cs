@@ -8,7 +8,7 @@
 /// New in v13.01
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppSysSettings
+public class AppSysSettingsJsonInDb
 {
     /// <summary>
     /// Just a kind of version info so we can see what version of EAV created this in the DB

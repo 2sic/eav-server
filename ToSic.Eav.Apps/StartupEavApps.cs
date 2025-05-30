@@ -22,6 +22,7 @@ using ToSic.Eav.Security.Internal;
 using ToSic.Eav.StartUp;
 using ToSic.Lib.Boot;
 using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Utils.Assembly;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;
@@ -57,8 +58,7 @@ public static class StartupEavApps
         services.TryAddTransient<BootCoordinator>();
 
 
-        services.AddTransient<IBootProcess, EavBootWarmUpSql>();
-        services.AddTransient<IBootProcess, EavBootWarmUpAssemblies>();
+        services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
         services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
         services.AddTransient<IBootProcess, EavBootLoadFeaturesAndLicenses>();
 
@@ -95,7 +95,6 @@ public static class StartupEavApps
 
         // v17
         services.TryAddTransient<IAppJsonService, AppJsonService>();
-        services.TryAddTransient<IAppJsonConfigBaseService, AppJsonService>();
 
         return services;
     }

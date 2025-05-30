@@ -31,7 +31,7 @@ public static class StartupEavPersistence
 
         services.TryAddTransient<XmlToEntity>();
 
-        services.TryAddTransient<FileManager>();
+        //services.TryAddTransient<FileManager>();
 
         services.TryAddTransient<EntitySaver>();
 
