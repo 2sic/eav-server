@@ -20,7 +20,7 @@ using ToSic.Sys.Startup;
 namespace ToSic.Sys.Capabilities.Licenses;
 
 public class LicenseCatalog(ILogStore logStore)
-    : GlobalCatalogBase<FeatureSet.FeatureSet>(logStore, $"Lib.LicCat", new())
+    : GlobalCatalogBase<FeatureSet.FeatureSet>(logStore, "Sys.LicCat", new())
 {
     /// <summary>
     /// Replace the TryGet to use both the name as well as the guid

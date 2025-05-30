@@ -1,12 +1,13 @@
 ﻿using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Testing.Scenarios;
+using ToSic.Lib.Boot;
 using ToSic.Lib.DI;
 
 namespace ToSic.Eav.Testing;
 
 public class DoFixtureStartup<TScenario> where TScenario : TestScenario, new()
 {
-    public DoFixtureStartup(LazySvc<FixtureStartupNoDb> fixtureStartupBasic, LazySvc<FixtureStartupWithDb> fixtureSetupDb, SystemLoader systemLoader)
+    public DoFixtureStartup(LazySvc<FixtureStartupNoDb> fixtureStartupBasic, LazySvc<FixtureStartupWithDb> fixtureSetupDb, BootCoordinator bootCoordinator)
     {
         var testScenario = new TScenario();
         if (testScenario.UseDb)
@@ -14,6 +15,6 @@ public class DoFixtureStartup<TScenario> where TScenario : TestScenario, new()
         else
             fixtureStartupBasic.Value.SetupFixtureConfiguration(testScenario);
 
-        systemLoader.StartUp();
+        bootCoordinator.StartUp();
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Metadata;
 using ToSic.Lib;
+using ToSic.Lib.Boot;
 using ToSic.Lib.Caching;
 using ToSic.Sys;
 
@@ -29,7 +30,8 @@ public static class StartUpEavCore
         services.TryAddTransient<MemoryCacheService>();
 
         // v20 Startup
-        services.AddTransient<IStartUpRegistrations, EavStartupRegistrations>();
+        services.AddTransient<IBootProcess, EavBootFeaturesRegistrations>();
+        services.AddTransient<IBootProcess, EavBootLicenseRegistrations>();
         services.TryAddTransient<ITargetTypeService, TargetTypesService>();
 
         return services;

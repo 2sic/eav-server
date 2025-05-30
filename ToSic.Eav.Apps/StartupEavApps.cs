@@ -19,6 +19,8 @@ using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.Security.Internal;
+using ToSic.Eav.StartUp;
+using ToSic.Lib.Boot;
 using ToSic.Sys.Security.Permissions;
 
 // ReSharper disable once CheckNamespace
@@ -52,8 +54,14 @@ public static class StartupEavApps
 
         // App Loaders
         services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
-        services.TryAddTransient<SystemLoader>();
-        services.TryAddTransient<EavSystemLoader>();
+        services.TryAddTransient<BootCoordinator>();
+
+
+        services.AddTransient<IBootProcess, EavBootWarmUpSql>();
+        services.AddTransient<IBootProcess, EavBootWarmUpAssemblies>();
+        services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
+        services.AddTransient<IBootProcess, EavBootLoadFeaturesAndLicenses>();
+
         services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
         services.TryAddTransient<FeaturePersistenceService>();
         services.TryAddTransient<FeaturesIoHelper>();
