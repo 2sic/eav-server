@@ -139,14 +139,14 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     /// Constructs a new RelationshipFilter
     /// </summary>
     [PrivateApi]
-    public RelationshipFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [userPermissions])
+    public RelationshipFilter(MyServices services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [userPermissions])
     {
         _userPermissions = userPermissions;
         ProvideOut(GetRelationshipsOrFallback);
         // todo: unclear if implemented...
         //ConfigMaskMyConfig(nameof(ChildOrParent), $"{Settings.Direction}||{DefaultDirection}");
     }
-    private readonly IContextResolverUserPermissions _userPermissions;
+    private readonly ICurrentContextUserPermissionsService _userPermissions;
 
 
     private IImmutableList<IEntity> GetRelationshipsOrFallback()

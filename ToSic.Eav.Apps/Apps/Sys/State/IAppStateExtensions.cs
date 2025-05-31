@@ -15,8 +15,8 @@ public static class AppStateExtensions
         return !string.IsNullOrEmpty(parentAppGuid) && !AppGuidIsAPreset(parentAppGuid);
     }
 
-    public static bool AppGuidIsAPreset(string parentAppGuid) 
-        => parentAppGuid.HasValue() 
+    public static bool AppGuidIsAPreset(string parentAppGuid)
+        => parentAppGuid.HasValue()
            && (parentAppGuid == Constants.PresetName || parentAppGuid == Constants.GlobalPresetName);
 
 

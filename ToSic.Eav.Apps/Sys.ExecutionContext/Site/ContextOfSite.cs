@@ -58,7 +58,7 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     private bool IsContentAdmin => User?.IsContentAdmin ?? false;
     private bool IsContentEditor => User?.IsContentEditor ?? false;
 
-    EffectivePermissions IContextOfUserPermissions.Permissions => field
+    EffectivePermissions ICurrentContextUserPermissions.Permissions => field
         ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(
             IsSiteAdmin: mayAdmin,
             IsContentAdmin: mayAdmin || IsContentAdmin,
@@ -66,5 +66,6 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
             ShowDraftData: mayAdmin || IsContentAdmin || IsContentEditor));
 
     /// <inheritdoc />
-    public IContextOfSite Clone(ILog parentLog) => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);
+    public virtual IContextOfSite Clone(ILog parentLog)
+        => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);
 }

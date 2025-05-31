@@ -7,7 +7,7 @@
 /// Added v15.04
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IContextResolverUserPermissions
+public interface ICurrentContextUserPermissionsService
 {
     EffectivePermissions UserPermissions();
 }

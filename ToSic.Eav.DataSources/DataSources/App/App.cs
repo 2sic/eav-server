@@ -80,14 +80,14 @@ public partial class App : DataSourceBase
 
     public new class MyServices: MyServicesBase<Eav.DataSource.DataSourceBase.MyServices>
     {
-        public IContextResolverUserPermissions UserPermissions { get; }
+        public ICurrentContextUserPermissionsService UserPermissions { get; }
         public IDataSourcesService DataSourceFactory { get; }
         public IAppReaderFactory AppReaders { get; }
 
         public MyServices(Eav.DataSource.DataSourceBase.MyServices parentServices,
             IAppReaderFactory appReaders,
             IDataSourcesService dataSourceFactory,
-            IContextResolverUserPermissions userPermissions) : base(parentServices)
+            ICurrentContextUserPermissionsService userPermissions) : base(parentServices)
         {
             ConnectLogs([
                 AppReaders = appReaders,

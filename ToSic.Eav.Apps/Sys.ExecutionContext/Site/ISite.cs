@@ -3,7 +3,8 @@
 namespace ToSic.Eav.Context;
 
 /// <summary>
-/// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN)
+/// Describes a tenant - this is what the Environment calls a tenant (like a portal in DNN).
+/// Mainly caries the ID and some paths to where the Apps store their files.
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -63,7 +64,4 @@ public interface ISite: IZoneIdentity, IZoneCultureResolver, ILogShouldNeverConn
     /// Without protocol like Http etc.
     /// </summary>
     string UrlRoot { get; }
-
-    //[PrivateApi] 
-    //bool IsMultiZone { get; }
 }

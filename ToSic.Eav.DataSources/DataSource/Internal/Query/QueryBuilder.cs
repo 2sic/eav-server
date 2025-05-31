@@ -19,7 +19,7 @@ public class QueryBuilder(
     IZoneCultureResolver cultureResolver,
     Generator<PassThrough> passThrough,
     IAppsCatalog appsCatalog,
-    IContextResolverUserPermissions userPermissions,
+    ICurrentContextUserPermissionsService userPermissions,
     QueryDefinitionBuilder queryDefinitionBuilder)
     : ServiceBase("DS.PipeFt",
         connect: [cultureResolver, appsCatalog, dataSourceFactory, passThrough, userPermissions, queryDefinitionBuilder])

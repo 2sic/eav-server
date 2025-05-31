@@ -31,13 +31,13 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// <summary>
     /// Constructor
     /// </summary>
-    protected RelationshipDataSourceBase(MyServices services, IContextResolverUserPermissions userPermissions, string logName): base(services, logName, connect: [userPermissions])
+    protected RelationshipDataSourceBase(MyServices services, ICurrentContextUserPermissionsService userPermissions, string logName): base(services, logName, connect: [userPermissions])
     {
         _userPermissions = userPermissions;
         ProvideOut(GetRelated);
     }
 
-    private readonly IContextResolverUserPermissions _userPermissions;
+    private readonly ICurrentContextUserPermissionsService _userPermissions;
 
     private IImmutableList<IEntity> GetRelated()
     {

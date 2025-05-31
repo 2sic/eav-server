@@ -33,7 +33,6 @@ namespace ToSic.Eav.WebApi.ImportExport;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentExportApi(
-    ISite site,
     IAppPathsMicroSvc appPathSvc,
     AppWorkContextService appWorkCtxSvc,
     IAppsCatalog appsCatalog,
@@ -42,7 +41,7 @@ public class ContentExportApi(
     Generator<ExportListXml> exportListXmlGenerator,
     LazySvc<ISysFeaturesService> features)
     : ServiceBase("Api.EaCtEx",
-        connect: [site, appPathSvc, appWorkCtxSvc, exportListXmlGenerator, appsCatalog, jsonSerializer, responseMaker, features])
+        connect: [appPathSvc, appWorkCtxSvc, exportListXmlGenerator, appsCatalog, jsonSerializer, responseMaker, features])
 {
     public ContentExportApi Init(int appId)
     {
@@ -153,7 +152,7 @@ public class ContentExportApi(
 
         var (export, fileContent) = CreateBundleExport(exportConfiguration, indentation);
 
-        var appPaths = appPathSvc.Get(_appCtx.AppReader, site);
+        var appPaths = appPathSvc.Get(_appCtx.AppReader);
 
         var appDataPath = Path.Combine(appPaths.PhysicalPath, Constants.AppDataProtectedFolder, FsDataConstants.BundlesFolder);
         l.A($"appDataPath:'{appDataPath}'");

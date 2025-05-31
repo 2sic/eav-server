@@ -14,19 +14,17 @@ namespace ToSic.Eav.Apps.Internal;
 /// with exclude configuration to define files and folders that will not be exported in app export
 /// </summary>
 /// <param name="globalConfiguration"></param>
-/// <param name="site"></param>
 /// <param name="appReaders"></param>
 /// <param name="appPathsFactory"></param>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppJsonService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
-    ISite site,
     IAppReaderFactory appReaders,
     IAppPathsMicroSvc appPathsFactory,
     MemoryCacheService memoryCacheService
 )
-    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, site, appReaders, appPathsFactory, memoryCacheService]), IAppJsonService
+    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, appReaders, appPathsFactory, memoryCacheService]), IAppJsonService
 {
 
     /// <summary>
@@ -99,7 +97,7 @@ public class AppJsonService(
 
     private string GetAppFullPath(int appId, bool useShared)
     {
-        var appPaths = _appPathsCache.GetOrCreate(appId, () => appPathsFactory.Get(appReaders.Get(appId), site));
+        var appPaths = _appPathsCache.GetOrCreate(appId, () => appPathsFactory.Get(appReaders.Get(appId)));
         return useShared ? appPaths.PhysicalPathShared : appPaths.PhysicalPath;
     }
     private readonly Dictionary<int, IAppPaths> _appPathsCache = [];

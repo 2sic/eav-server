@@ -12,8 +12,8 @@ public static class StartupSysSecurity
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddSysSecurity(this IServiceCollection services)
     {
-        services.TryAddTransient<IContextOfUserPermissions, ContextOfUserPermissions>();
-        services.TryAddTransient<IContextResolverUserPermissions, ContextResolverUserPermissions>();
+        services.TryAddTransient<ICurrentContextUserPermissions, CurrentContextUserPermissionsBasic>();
+        services.TryAddTransient<ICurrentContextUserPermissionsService, CurrentContextUserPermissionsService>();
 
         // Permissions helper
         services.TryAddTransient<PermissionCheckBase.MyServices>();

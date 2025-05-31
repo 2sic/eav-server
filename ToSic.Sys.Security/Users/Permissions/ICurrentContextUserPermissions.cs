@@ -6,7 +6,7 @@
 /// depending on the full context it can be more or less.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IContextOfUserPermissions
+public interface ICurrentContextUserPermissions
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]
     EffectivePermissions Permissions { get; }

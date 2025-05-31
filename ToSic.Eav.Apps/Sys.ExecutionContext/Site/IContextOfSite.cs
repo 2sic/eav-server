@@ -4,7 +4,7 @@ using ToSic.Sys.Users.Permissions;
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IContextOfSite: IHasLog, IContextOfUserPermissions
+public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions
 {
     /// <summary>
     /// The website the current request is running in

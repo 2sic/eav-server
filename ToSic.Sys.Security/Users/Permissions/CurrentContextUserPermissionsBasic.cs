@@ -1,4 +1,5 @@
-﻿using ToSic.Lib.Services;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Lib.Services;
 
 namespace ToSic.Sys.Users.Permissions;
 
@@ -6,9 +7,10 @@ namespace ToSic.Sys.Users.Permissions;
 /// Very basic implementation.
 /// Should be replaced in Eav.Apps which often knows more about the user than just the simple site context
 /// </summary>
-internal class ContextOfUserPermissions(IUser user) : ServiceBase("Eav.CtxSec"), IContextOfUserPermissions
+internal class CurrentContextUserPermissionsBasic(IUser user) : ServiceBase("Eav.CtxSec"), ICurrentContextUserPermissions
 {
-    EffectivePermissions IContextOfUserPermissions.Permissions => field ??= GetPermissions();
+    [field: AllowNull, MaybeNull]
+    EffectivePermissions ICurrentContextUserPermissions.Permissions => field ??= GetPermissions();
 
     private EffectivePermissions GetPermissions()
     {

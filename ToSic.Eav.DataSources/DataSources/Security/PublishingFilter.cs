@@ -52,12 +52,12 @@ public class PublishingFilter : DataSourceBase
     /// Constructs a new PublishingFilter
     /// </summary>
     [PrivateApi]
-    public PublishingFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Publsh", connect: [userPermissions])
+    public PublishingFilter(MyServices services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Publsh", connect: [userPermissions])
     {
         _userPermissions = userPermissions;
         ProvideOut(PublishingFilterList);
     }
-    private readonly IContextResolverUserPermissions _userPermissions;
+    private readonly ICurrentContextUserPermissionsService _userPermissions;
 
 
     private IImmutableList<IEntity> PublishingFilterList()

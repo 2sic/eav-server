@@ -24,7 +24,8 @@ public class AppWorkCtx : IAppWorkCtx
 
     public AppWorkCtx(IAppWorkCtx original, IAppReader appReader = default)
     {
-        if (original == null) throw new ArgumentException(@"Original must exist", nameof(original));
+        if (original == null)
+            throw new ArgumentException(@"Original must exist", nameof(original));
         AppId = appReader?.AppId ?? original.AppId;
         ZoneId = appReader?.ZoneId ?? original.ZoneId;
         AppReader = appReader ?? original.AppReader;

@@ -23,6 +23,9 @@ namespace ToSic.Eav.Apps.Integration;
 internal class AppPathsMicroSvc(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config, LazySvc<ISite> siteLazy)
     : ServiceBase($"{EavLogs.Eav}.AppPth", connect: [serverPaths, config]), IAppPathsMicroSvc
 {
+    public IAppPaths Get(IAppReader appReader)
+        => new AppPaths(serverPaths, config, siteLazy, null, appReader);
+
     public IAppPaths Get(IAppReader appReader, ISite site)
         => new AppPaths(serverPaths, config, siteLazy, site, appReader);
 }
