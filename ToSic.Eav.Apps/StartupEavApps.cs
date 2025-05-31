@@ -55,8 +55,6 @@ public static class StartupEavApps
 
         // App Loaders
         services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
-        services.TryAddTransient<BootCoordinator>();
-
 
         services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
         services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
