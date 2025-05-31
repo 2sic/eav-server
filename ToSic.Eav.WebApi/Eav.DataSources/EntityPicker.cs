@@ -64,20 +64,23 @@ public class EntityPicker : DataSourceBase
         Generator<MultiPermissionsApp> appPermissions,
         Generator<MultiPermissionsTypes> typePermissions,
         IUser user,
+        IAppReaderFactory appReaders,
         MyServices services
-    ) : base(services, "Api.EntPck", connect: [workEntities, appPermissions, typePermissions, ctxResolver])
+    ) : base(services, "Api.EntPck", connect: [workEntities, appPermissions, typePermissions, ctxResolver, appReaders])
     {
         _workEntities = workEntities;
         _ctxResolver = ctxResolver;
         _appPermissions = appPermissions;
         _typePermissions = typePermissions;
         _user = user;
+        _appReaders = appReaders;
         ProvideOut(GetList);
     }
 
     private readonly GenWorkPlus<WorkEntities> _workEntities;
     private readonly IContextResolver _ctxResolver;
     private readonly IUser _user;
+    private readonly IAppReaderFactory _appReaders;
     private readonly Generator<MultiPermissionsApp> _appPermissions;
     private readonly Generator<MultiPermissionsTypes> _typePermissions;
 
@@ -133,7 +136,8 @@ public class EntityPicker : DataSourceBase
         if (TypeNames.IsEmptyOrWs())
         {
             // App permission checker
-            var permCheckApp = _appPermissions.New().Init(context, this.PureIdentity());
+            var permCheckApp = _appPermissions.New()
+                .Init(context, this.PureIdentity());
 
             // First do security check with no-type name
             if (!permCheckApp.EnsureAll(GrantSets.ReadSomething, out _))
@@ -180,7 +184,9 @@ public class EntityPicker : DataSourceBase
                 }
             }
 
-            if (result.Any()) result = FilterByIds(result);
+            if (result.Any())
+                result = FilterByIds(result);
+
             return l.Return(result, $"typed/filtered: {result.Count}");
         }
         catch (Exception ex)
@@ -208,17 +214,19 @@ public class EntityPicker : DataSourceBase
 
         try
         {
-            var typeNames = TypeNames.CsvToArrayWithoutEmpty().ToList();
+            var typeNames = TypeNames
+                .CsvToArrayWithoutEmpty()
+                .ToList();
 
             l.A($"found {typeNames.Count} type names, before verifying if they exist");
 
             if (!typeNames.Any())
                 return l.Return([]);
 
-            var appState = _ctxResolver.AppRequired().AppReader;
+            var appReader = _appReaders.Get(this.PureIdentity());
 
             var types = typeNames
-                .Select(appState.GetContentType)
+                .Select(appReader.GetContentType)
                 .Where(t => t != null)
                 .ToList();
 
@@ -228,7 +236,7 @@ public class EntityPicker : DataSourceBase
         {
             l.Ex(ex);
             /* ignore */
-            return l.ReturnAsError(null);
+            return l.ReturnAsError([]);
         }
     }
 

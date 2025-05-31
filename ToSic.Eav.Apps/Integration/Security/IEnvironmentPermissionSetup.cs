@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Context;
 using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Security;
@@ -13,6 +14,6 @@ public interface IEnvironmentPermissionSetup : IEnvironmentPermission
     /// <param name="context"></param>
     /// <param name="appIdentityOrNull"></param>
     /// <returns></returns>
-    IEnvironmentPermission Init<TContext>(TContext context, IAppIdentity appIdentityOrNull);
+    IEnvironmentPermission Init<TContext>(IContextOfSite context, IAppIdentity appIdentityOrNull);
 
 }

@@ -48,8 +48,8 @@ public static class StartupEavApps
         services.TryAddTransient<IRequirementsService, MdRequirements>(); // new v16.08
         
         // Context
-        services.TryAddTransient<IContextOfApp, ContextOfApp>();
-        services.TryAddTransient<ContextOfApp.MyServices>();
+        //services.TryAddTransient<IContextOfApp, ContextOfApp>();
+        //services.TryAddTransient<ContextOfApp.MyServices>();
         services.TryAddTransient<ContextOfSite.MyServices>();
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 

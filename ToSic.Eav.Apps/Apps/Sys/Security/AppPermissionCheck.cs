@@ -89,7 +89,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
             : null;
 
         LoadTargets(targetType ?? targetItem?.Type, targetItem, permissions);
-        ((IEnvironmentPermissionSetup)_environmentPermission).Init(ctx, appIdentity);
+        ((IEnvironmentPermissionSetup)_environmentPermission).Init<IContextOfSite>(ctx, appIdentity);
         Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
         l.Done();
     }

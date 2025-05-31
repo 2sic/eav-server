@@ -2,6 +2,7 @@
 using ToSic.Eav.Context;
 using ToSic.Eav.Security;
 using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Users;
 
 namespace ToSic.Eav.Integration.Security;
 
@@ -18,14 +19,19 @@ public abstract class EnvironmentPermission(string logPrefix, object[] connect =
     protected const string SalSystemUser = SalPrefix + ".Host";
 
 
-    public IEnvironmentPermission Init<TContext>(TContext context, IAppIdentity appIdentityOrNull)
+    public IEnvironmentPermission Init<TContext>(IContextOfSite context, IAppIdentity appIdentityOrNull)
     {
-        Context = context as IContextOfSite ?? throw new ArgumentException($"Must be an {nameof(IContextOfSite)}", nameof(context));
-        AppIdentity = appIdentityOrNull;
+        var siteCtx = context as IContextOfSite ?? throw new ArgumentException($"Must be an {nameof(IContextOfSite)}", nameof(context));
+        Context = siteCtx;
+        UserOrNull = siteCtx.User;
+        SiteOrNull = siteCtx.Site;
+        AppIdentityOrNull = appIdentityOrNull;
         return this;
     }
     protected IContextOfSite Context { get; private set; }
-    protected IAppIdentity AppIdentity { get; private set; }
+    private IUser? UserOrNull { get; set; }
+    private ISite? SiteOrNull { get; set; }
+    protected IAppIdentity AppIdentityOrNull { get; private set; }
 
     /// <summary>
     /// This should evaluate the grants and decide if the environment approves any of these grants.
@@ -71,21 +77,21 @@ public abstract class EnvironmentPermission(string logPrefix, object[] connect =
     /// </summary>
     /// <returns></returns>
     protected bool UserIsAnonymous()
-        => Log.Quick(parameters: $"UserId:{Context.User?.Id.ToString()}", func: () => Context.User?.IsAnonymous ?? true);
+        => Log.Quick(parameters: $"UserId:{UserOrNull?.Id.ToString()}", func: () => UserOrNull?.IsAnonymous ?? true);
 
     /// <summary>
     /// Check if user is super user
     /// </summary>
     /// <returns></returns>
     protected bool UserIsSystemAdmin()
-        => Log.Quick(() => Context.User?.IsSystemAdmin ?? false);
+        => Log.Quick(() => UserOrNull?.IsSystemAdmin ?? false);
 
     /// <summary>
     /// Check if user is valid admin of current portal / zone
     /// </summary>
     /// <returns></returns>
     protected bool UserIsContentAdmin()
-        => Log.Quick(() => Context.User?.IsContentAdmin ?? false);
+        => Log.Quick(() => UserOrNull?.IsContentAdmin ?? false);
 
     /// <summary>
     /// Verify that we're in the same zone, allowing admin/module checks
@@ -95,16 +101,16 @@ public abstract class EnvironmentPermission(string logPrefix, object[] connect =
     {
         var l = Log.Fn<bool>();
         // Check if we are running out-of http-context
-        if (Context.Site == null || Context.Site.Id == Constants.NullId)
+        if (SiteOrNull == null || SiteOrNull.Id == Constants.NullId)
             return l.ReturnFalse("no");
 
         // Check if no app is provided, like when an app hasn't been selected yet, so it's an empty module, must be on current portal
-        if (AppIdentity == null)
+        if (AppIdentityOrNull == null)
             return l.ReturnTrue("no app, so context unchanged");
 
         // If we have the full context, we must check if the site has changed
         // This will important for other security checks, only allow zone-change for super users
-        var result = Context.Site.ZoneId == AppIdentity.ZoneId;
+        var result = SiteOrNull.ZoneId == AppIdentityOrNull.ZoneId;
         return l.Return(result, result.ToString());
     }
 }
