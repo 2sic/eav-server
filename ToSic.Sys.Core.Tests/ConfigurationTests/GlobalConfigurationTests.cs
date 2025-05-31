@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Internal.Configuration;
+﻿using ToSic.Sys.Configuration;
 
 namespace ToSic.Sys.Core.Tests.ConfigurationTests;
 

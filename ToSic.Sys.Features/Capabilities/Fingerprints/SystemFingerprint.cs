@@ -20,6 +20,7 @@ using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using ToSic.Sys.Capabilities.Platform;
+using ToSic.Sys.Configuration;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.Capabilities.Fingerprints;

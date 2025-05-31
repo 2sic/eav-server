@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Internal.Configuration;
+﻿using ToSic.Sys.Configuration;
+
+namespace ToSic.Eav.Internal.Configuration;
 
 public static class GlobalConfigCryptoExtensions
 {

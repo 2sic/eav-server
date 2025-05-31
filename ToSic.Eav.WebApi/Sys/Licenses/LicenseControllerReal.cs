@@ -1,8 +1,7 @@
-﻿using System.Net.Http;
-using System.Text.Json;
-using ToSic.Eav.Internal.Configuration;
+﻿using System.Text.Json;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Serialization;
+using ToSic.Eav.Sys.Configuration;
 using ToSic.Eav.WebApi.Adam;
 using ToSic.Eav.WebApi.Assets;
 using ToSic.Eav.WebApi.Validation;
@@ -11,6 +10,11 @@ using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
+using ToSic.Sys.Configuration;
+
+#if NETFRAMEWORK
+using System.Net.Http;
+#endif
 
 namespace ToSic.Eav.WebApi.Sys.Licenses;
 

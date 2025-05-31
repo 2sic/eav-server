@@ -1,7 +1,8 @@
 ﻿using ToSic.Eav.Internal.Loaders;
-using static ToSic.Eav.Internal.Configuration.GlobalConfigHelpers;
+using ToSic.Sys.Configuration;
+using static ToSic.Eav.Sys.Configuration.GlobalConfigHelpers;
 
-namespace ToSic.Eav.Internal.Configuration;
+namespace ToSic.Eav.Sys.Configuration;
 
 public static class GlobalConfigSysFolders
 {

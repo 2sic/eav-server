@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToSic.Eav.Internal.Configuration;
+namespace ToSic.Sys.Configuration;
 
 /// <summary>
 /// Global configuration system.

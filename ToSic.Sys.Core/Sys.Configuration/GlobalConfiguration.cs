@@ -2,7 +2,7 @@
 
 //using static ToSic.Eav.Internal.Configuration.GlobalConfigHelpers;
 
-namespace ToSic.Eav.Internal.Configuration;
+namespace ToSic.Sys.Configuration;
 
 public class GlobalConfiguration : IGlobalConfiguration
 {

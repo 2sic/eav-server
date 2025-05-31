@@ -4,6 +4,7 @@ using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Fingerprints;
+using ToSic.Sys.Configuration;
 
 namespace ToSic.Eav.Internal.Features;
 

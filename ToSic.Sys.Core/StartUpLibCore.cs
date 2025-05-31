@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Lib.Boot;
 using ToSic.Lib.DI;
+using ToSic.Sys.Configuration;
 
 namespace ToSic.Lib;
 

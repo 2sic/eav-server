@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Internal.Configuration;
+using ToSic.Eav.Sys.Configuration;
+using ToSic.Sys.Configuration;
 
 namespace ToSic.Eav.Repositories;
 

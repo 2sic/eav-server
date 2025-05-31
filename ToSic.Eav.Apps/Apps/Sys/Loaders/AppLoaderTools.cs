@@ -13,5 +13,6 @@ namespace ToSic.Eav.Caching;
 internal class AppLoaderTools(Generator<IRepositoryLoader> repoFactory)
     : ServiceBase("Eav.LodTls", connect: [repoFactory]), IAppLoaderTools
 {
-    public IRepositoryLoader RepositoryLoader(ILog parentLog) => repoFactory.New().LinkLog(parentLog ?? Log);
+    public IRepositoryLoader RepositoryLoader(ILog parentLog)
+        => repoFactory.New().LinkLog(parentLog ?? Log);
 }

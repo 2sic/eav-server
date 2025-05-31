@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Internal.Configuration;
+﻿namespace ToSic.Eav.Sys.Configuration;
 
 public class GlobalConfigHelpers
 {
