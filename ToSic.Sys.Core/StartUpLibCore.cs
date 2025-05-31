@@ -5,6 +5,7 @@ using ToSic.Lib.Boot;
 using ToSic.Lib.DI;
 using ToSic.Sys.Configuration;
 
+// ReSharper disable once CheckNamespace
 namespace ToSic.Lib;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]

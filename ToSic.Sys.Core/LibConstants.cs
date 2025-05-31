@@ -1,4 +1,6 @@
-﻿namespace ToSic.Lib;
+﻿
+// ReSharper disable once CheckNamespace
+namespace ToSic.Lib;
 
 public class LibConstants
 {
