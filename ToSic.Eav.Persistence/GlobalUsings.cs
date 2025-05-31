@@ -14,4 +14,5 @@ global using ToSic.Lib.Logging;
 global using ToSic.Lib.Logging;
 global using ToSic.Lib.Services;
 global using ToSic.Sys.Utils;
+global using ToSic.Lib.DI;
 global using static System.Text.Json.Serialization.JsonIgnoreCondition;
