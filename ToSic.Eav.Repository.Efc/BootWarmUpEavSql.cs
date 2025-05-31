@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Metadata;
-using ToSic.Lib.Boot;
+using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.StartUp;
 

@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Services;
 
-namespace ToSic.Lib.Boot;
+namespace ToSic.Sys.Boot;
 
 /// <summary>
 /// The main / overall loader which will coordinate all the loaders.

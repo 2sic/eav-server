@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Plumbing;
-using ToSic.Eav.StartUp;
-using ToSic.Lib.Boot;
+using ToSic.Sys.Boot;
 
 namespace ToSic.Sys.Utils.Assembly;
 

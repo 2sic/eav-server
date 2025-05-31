@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToSic.Lib.Boot;
+namespace ToSic.Sys.Boot;
 
 public static class BootLogHelper
 {

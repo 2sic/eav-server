@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Internal.Unknown;
-using ToSic.Lib.Boot;
 using ToSic.Lib.DI;
+using ToSic.Sys.Boot;
 using ToSic.Sys.Configuration;
 
 // ReSharper disable once CheckNamespace

@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Metadata;
 using ToSic.Lib;
-using ToSic.Lib.Boot;
 using ToSic.Lib.Caching;
 using ToSic.Sys;
+using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.StartUp;
 

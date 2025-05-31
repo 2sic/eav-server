@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Boot;
+﻿namespace ToSic.Sys.Boot;
 public enum BootPhase
 {
     Unknown = 0,

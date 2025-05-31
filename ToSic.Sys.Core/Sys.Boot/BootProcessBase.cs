@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Services;
 
-namespace ToSic.Lib.Boot;
+namespace ToSic.Sys.Boot;
 
 public abstract class BootProcessBase(string logName, object[]? connect = default, BootPhase bootPhase = BootPhase.Registrations, int priority = 999)
     : ServiceBase($"B8T.{logName}", connect: connect), IBootProcess

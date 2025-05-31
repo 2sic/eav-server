@@ -1,4 +1,4 @@
-﻿using ToSic.Lib.Boot;
+﻿using ToSic.Sys.Boot;
 using ToSic.Sys.Capabilities.Licenses;
 
 namespace ToSic.Eav.StartUp;
