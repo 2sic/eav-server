@@ -6,12 +6,6 @@ namespace ToSic.Eav.Data;
 
 partial class EntityWrapper
 {
-    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
-    //[PrivateApi]
-    //[Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
-    //public object GetBestValue(string attributeName, bool resolveHyperlinks)
-    //    => Entity.GetBestValue(attributeName);
-
     [PrivateApi]
     [Obsolete("Obsolete, was in DNN, shouldn't be supported any more - use overload without resolveHyperlink")]
     public object GetBestValue(string attributeName, string[] languages, bool resolveHyperlinks)
@@ -31,14 +25,6 @@ partial class EntityWrapper
     [Obsolete("Deprecated. Do not use any more, as it cannot reliably know the real language list. Use GetBestValue(name, languageList)")]
     public TVal GetBestValue<TVal>(string name)
         => Entity.GetBestValue<TVal>(name, null);
-    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
-    //=> Entity.GetBestValue<TVal>(name);
-
-
-    // 2020-10-30 trying to drop uses with ResolveHyperlinks
-    ///// <inheritdoc />
-    //public TVal GetBestValue<TVal>(string name, bool resolveHyperlinks = false)
-    //    => Entity.GetBestValue<TVal>(name, resolveHyperlinks);
 
     // 2020-12-15 disabled - I believe it was never in use
     [PrivateApi]

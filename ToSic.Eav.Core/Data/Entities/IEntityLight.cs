@@ -36,17 +36,6 @@ public partial interface IEntityLight: IAppIdentityLight
     /// <returns>The content-type object.</returns>
     IContentType Type { get; }
 
-    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
-    ///// <summary>
-    ///// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>
-    ///// </summary>
-    ///// <returns>
-    ///// The title of this Entity.
-    ///// The field used is determined in the <see cref="IContentType"/>.
-    ///// If you need a string, use GetBestTitle() instead.
-    ///// </returns>
-    //object Title { get; }
-
     /// <summary>
     /// Gets the Last Modified DateTime
     /// </summary>
@@ -59,30 +48,11 @@ public partial interface IEntityLight: IAppIdentityLight
     /// <returns>A date-time object.</returns>
     DateTime Created { get; }
 
-    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
-    ///// <summary>
-    ///// Gets an Attribute by its StaticName
-    ///// </summary>
-    ///// <param name="attributeName">StaticName of the Attribute</param>
-    ///// <returns>The attribute - probably an <see cref="IAttribute{T}"/> </returns>
-    //object this[string attributeName] { get; }
-
     /// <summary>
     /// Relationship-helper object, important to navigate to children and parents
     /// </summary>
     /// <returns>The <see cref="IEntityRelationships"/> in charge of relationships for this Entity.</returns>
     IEntityRelationships Relationships { get; }
-
-    //// #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
-    ///// <summary>
-    ///// Best way to get the current entities title.
-    ///// The field used is determined in the <see cref="IContentType"/>.
-    ///// If you need the attribute-object, use the <see cref="Title"/> instead.
-    ///// </summary>
-    ///// <returns>
-    ///// The entity title as a string.
-    ///// </returns>
-    //string GetBestTitle();
 
     /// <summary>
     /// Owner of this entity

@@ -49,7 +49,6 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
 #endif
         T GetBestValue<T>(string attributeName, string[] languages);
 
-    // #EntityLight-UnusedAttributes - turned off 2025-01-17 2dm, probably remove 2025-Q2
     /// <summary>
     /// Best way to get the current entities title.
     /// The field used is determined in the <see cref="IContentType"/>.
@@ -58,7 +57,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// <returns>
     /// The entity title as a string.
     /// </returns>
-    /*new*/ string GetBestTitle();
+    string GetBestTitle();
 
 
     /// <summary>
