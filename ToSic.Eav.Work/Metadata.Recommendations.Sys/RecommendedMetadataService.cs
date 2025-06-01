@@ -1,10 +1,14 @@
-﻿using ToSic.Eav.Apps.Internal.Work;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Internal.MetadataDecorators;
+using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Metadata;
+using ToSic.Metadata.Requirements.Sys;
 using ToSic.Sys.Utils;
 using static System.String;
-using static ToSic.Eav.Apps.Internal.MetadataDecorators.MetadataRecommendation;
+using static ToSic.Metadata.Recommendations.Sys.MetadataRecommendation;
 
-namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
+namespace ToSic.Metadata.Recommendations.Sys;
 
 /// <summary>
 /// Figure out all the recommendations for a Metadata Target
@@ -16,7 +20,7 @@ namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
 /// </summary>
 /// <remarks>new in v13.02</remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MdRecommendations(LazySvc<MdRequirements> requirements, GenWorkPlus<WorkInputTypes> inputTypes)
+public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> requirements, GenWorkPlus<WorkInputTypes> inputTypes)
     : ServiceBase($"{AppConstants.LogName}.MdRead", connect: [requirements])
 {
     public void Setup(IAppReader appReader, int appId)

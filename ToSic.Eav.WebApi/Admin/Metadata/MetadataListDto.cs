@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Metadata.Recommendations.Sys;
 
 namespace ToSic.Eav.WebApi.Admin.Metadata;
 

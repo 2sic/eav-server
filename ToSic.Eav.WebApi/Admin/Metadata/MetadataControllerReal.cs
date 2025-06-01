@@ -2,6 +2,7 @@
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata;
+using ToSic.Metadata.Recommendations.Sys;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
@@ -17,7 +18,7 @@ public class MetadataControllerReal(
     IConvertToEavLight converter,
     IAppReaderFactory appReaders,
     ITargetTypeService metadataTargets,
-    LazySvc<MdRecommendations> mdRead)
+    LazySvc<RecommendedMetadataService> mdRead)
     : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appReaders, metadataTargets, mdRead]),
         IMetadataController
 {

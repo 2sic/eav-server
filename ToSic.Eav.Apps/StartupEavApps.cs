@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.Catalog;
 using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
@@ -16,7 +15,6 @@ using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Internal.Requirements;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.Security.Internal;
 using ToSic.Eav.StartUp;
@@ -42,10 +40,6 @@ public static class StartupEavApps
         // Runtimes and Managers
         services.TryAddTransient<AppCachePurger>();
         services.TryAddTransient<AppFinder>();
-
-        // Runtime parts
-        services.TryAddTransient<MdRequirements>(); // new v13
-        services.TryAddTransient<IRequirementsService, MdRequirements>(); // new v16.08
         
         // Context
         //services.TryAddTransient<IContextOfApp, ContextOfApp>();
@@ -125,7 +119,6 @@ public static class StartupEavApps
 
         // v17
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
-        services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
         return services;
     }

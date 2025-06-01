@@ -3,12 +3,13 @@ using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata;
+using ToSic.Metadata.Recommendations.Sys;
 using static ToSic.Eav.Data.AttributeMetadata;
 
 
 namespace ToSic.Eav.WebApi;
 
-public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes, IAppReaderFactory appReaders, LazySvc<MdRecommendations> mdRead)
+public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes, IAppReaderFactory appReaders, LazySvc<RecommendedMetadataService> mdRead)
     : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight, mdRead]),
         IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
 {
@@ -229,7 +230,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         return recommendations.Any(r => r.Name == typeName);
     }
 
-    private MdRecommendations MdRecommendations()
+    private RecommendedMetadataService MdRecommendations()
     {
         if (_mdRecs != null) return _mdRecs;
         _mdRecs = mdRead.Value;
@@ -237,7 +238,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         _mdRecs.Setup(appReader, _appId);
         return _mdRecs;
     }
-    private MdRecommendations _mdRecs;
+    private RecommendedMetadataService _mdRecs;
 
     #endregion
 }

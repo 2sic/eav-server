@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
+﻿namespace ToSic.Metadata.Requirements.Sys;
 
 internal class RequirementDecorator(IEntity entity) : EntityBasedType(entity)
 {

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Internal.Requirements;
+﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
@@ -6,13 +6,21 @@ using ToSic.Sys.Capabilities.Platform;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
 using ToSic.Sys.Utils;
-using static ToSic.Eav.Apps.Internal.MetadataDecorators.RequirementDecorator;
+using static ToSic.Metadata.Requirements.Sys.RequirementDecorator;
 using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
-namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
+namespace ToSic.Metadata.Requirements.Sys;
 
+/// <summary>
+/// Provides requirements from the metadata of anything.
+/// </summary>
+/// <param name="licenseService"></param>
+/// <param name="featsService"></param>
+/// <param name="platInfo"></param>
+/// <param name="licenseCatalog"></param>
+/// <param name="sysCapSvc"></param>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MdRequirements(
+public class MetadataRequirementsService(
     LazySvc<ILicenseService> licenseService,
     LazySvc<ISysFeaturesService> featsService,
     LazySvc<IPlatformInfo> platInfo,

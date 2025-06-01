@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Apps.Internal.MetadataDecorators;
+namespace ToSic.Metadata.Recommendations.Sys;
 
 /// <summary>
 /// Important: also used as DTO, so don't just rename the parameters
@@ -61,7 +61,7 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
         DeleteWarning = recDec.DeleteWarning;
 
         // Mark empty if possible - so it has no attributes, and it has a decorator to support this
-        if (!type.Attributes.Any() && type.Metadata.HasType(Metadata.Decorators.SaveEmptyDecoratorId))
+        if (!type.Attributes.Any() && type.Metadata.HasType(Eav.Metadata.Decorators.SaveEmptyDecoratorId))
             CreateEmpty = true;
     }
 

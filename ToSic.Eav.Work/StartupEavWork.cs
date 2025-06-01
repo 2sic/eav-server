@@ -4,6 +4,8 @@ using ToSic.Eav.Apps.Internal.Api01;
 using ToSic.Eav.Apps.Internal.MetadataDecorators;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.ImportExport.Internal.XmlList;
+using ToSic.Metadata.Recommendations.Sys;
+using ToSic.Metadata.Requirements.Sys;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;
@@ -23,9 +25,12 @@ public static class StartupEavWork
         //services.TryAddTransient<AppFinder>();
 
         // Runtime parts
-        services.TryAddTransient<MdRecommendations>(); // new v13
-        //services.TryAddTransient<MdRequirements>(); // new v13
-        //services.TryAddTransient<IRequirementsService, MdRequirements>(); // new v16.08
+        services.TryAddTransient<RecommendedMetadataService>(); // new v13
+        services.TryAddTransient<MetadataRequirementsService>(); // new v13
+        services.TryAddTransient<IRequirementsService, MetadataRequirementsService>(); // new v16.08
+
+        // v17
+        services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
         // New part v16 with better architecture
         services.TryAddTransient<AppWorkContextService>();
