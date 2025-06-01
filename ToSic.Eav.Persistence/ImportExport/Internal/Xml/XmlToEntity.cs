@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Xml.Linq;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.ImportExport.Internal.Xml;
@@ -9,20 +10,21 @@ namespace ToSic.Eav.ImportExport.Internal.Xml;
 /// Import EAV Data from XML Format
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
-    : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, appReaders])
+public class XmlToEntity(IGlobalContentTypesService globalContentTypes, DataBuilder dataBuilder)
+    : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, globalContentTypes])
 {
     private class TargetLanguageToSourceLanguage: DimensionDefinition
     {
         public List<DimensionDefinition> PrioritizedDimensions = [];
     }
 
-    private readonly IAppReader _presetApp = appReaders.GetSystemPreset();
-
     public XmlToEntity Init(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
     {
         AppId = appId;
-        envLanguages = envLanguages.OrderByDescending(p => p.Matches(envDefLang)).ThenBy(p => p.EnvironmentKey).ToList();
+        envLanguages = envLanguages
+            .OrderByDescending(p => p.Matches(envDefLang))
+            .ThenBy(p => p.EnvironmentKey)
+            .ToList();
         _envLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
         _envDefLang = envDefLang;
         _srcDefLang = srcDefLang?.ToString();
@@ -180,7 +182,7 @@ public class XmlToEntity(IAppReaderFactory appReaders, DataBuilder dataBuilder)
             throw new NullReferenceException("trying to import an xml entity but type is null - " + xEntity);
 		    
         // find out if it's a system type, and use that if it exists
-        var globalType = _presetApp.GetContentType(typeName);
+        var globalType = globalContentTypes.GetContentType(typeName);
         var guidString = xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
                          throw new NullReferenceException("can't import an entity without a guid identifier");
         var guid = Guid.Parse(guidString);

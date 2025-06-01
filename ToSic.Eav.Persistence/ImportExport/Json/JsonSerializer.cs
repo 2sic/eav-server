@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Serialization.Internal;
-using ToSic.Lib.DI;
 
 
 namespace ToSic.Eav.ImportExport.Json;
@@ -14,10 +14,10 @@ partial class JsonSerializer(JsonSerializer.MyServices services, string logName 
 
     public new class MyServices(
         ITargetTypeService metadataTargets,
-        IAppReaderFactory appStates,
+        IGlobalContentTypesService globalContentTypes,
         DataBuilder dataBuilder,
         LazySvc<IValueConverter> valueConverter)
-        : SerializerBase.MyServices(metadataTargets, dataBuilder, appStates, connect: [valueConverter])
+        : SerializerBase.MyServices(metadataTargets, dataBuilder, globalContentTypes, connect: [valueConverter])
     {
         public LazySvc<IValueConverter> ValueConverter { get; } = valueConverter;
     }

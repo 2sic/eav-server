@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -14,20 +14,18 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 {
     #region MyServices
 
-    public class MyServices(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IAppReaderFactory appStates, object[] connect = default)
-        : MyServicesBase(connect: [metadataTargets, dataBuilder, appStates, ..connect ?? []])
+    public class MyServices(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IGlobalContentTypesService globalContentTypes, object[] connect = default)
+        : MyServicesBase(connect: [metadataTargets, dataBuilder, globalContentTypes, ..connect ?? []])
     {
         public DataBuilder DataBuilder { get; } = dataBuilder;
 
         public ITargetTypeService MetadataTargets { get; } = metadataTargets;
-        public IAppReaderFactory AppStates { get; } = appStates;
+        public IGlobalContentTypesService GlobalContentTypes { get; } = globalContentTypes;
     }
 
     #endregion
 
     #region Constructor / DI
-
-    private readonly IAppReadContentTypes _globalAppOrNull = services.AppStates.GetSystemPreset(nullIfNotLoaded: true);
 
     public ITargetTypeService MetadataTargets { get; } = services.MetadataTargets;
 
@@ -95,7 +93,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
             msg += "app: not found, ";
         }
 
-        var globalType = _globalAppOrNull?.GetContentType(staticName);
+        var globalType = Services.GlobalContentTypes.GetContentTypeIfAlreadyLoaded(staticName);
 
         if (globalType != null)
             return l.Return(globalType, $"{msg}global: found");

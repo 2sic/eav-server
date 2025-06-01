@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Data;
+using ToSic.Eav.Data.Global.Sys;
 using ToSic.Lib.LookUp;
 using ToSic.Sys;
 
@@ -38,6 +38,7 @@ public static class StartUpEavCoreFallbacks
     public static IServiceCollection AddEavCoreOnlyFallbackServices(this IServiceCollection services)
     {
         // At the moment there is nothing to add here
+        services.TryAddTransient<IGlobalContentTypesService, GlobalContentTypesServiceUnknown>();
 
         return services;
     }

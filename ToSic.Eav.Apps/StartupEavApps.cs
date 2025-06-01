@@ -9,6 +9,7 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;
+using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Integration.Security;
 using ToSic.Eav.Internal.Environment;
@@ -32,6 +33,9 @@ public static class StartupEavApps
     {
         services.TryAddTransient<AppReader>();
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
+
+        // Global Content Types - needed by the Persistence Layer
+        services.TryAddTransient<IGlobalContentTypesService, GlobalContentTypesService>();
 
         // Context
         services.TryAddTransient<IContextOfSite, ContextOfSite>();
