@@ -4,7 +4,7 @@ using ToSic.Eav.Repository.Efc.Tests.Mocks;
 
 #pragma warning disable CA1822
 
-namespace ToSic.Eav.Repository.Efc.Tests.ImportApps;
+namespace ToSic.Eav.ImportAppsTests;
 
 // NOTE: QUITE A FEW DUPLICATES OF THIS - may want to consolidate
 
@@ -15,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.ImportApps;
 /// Use by adding this kind of attribute to your test class:
 /// `[Startup(typeof(TestStartupEavCore))]`
 /// </remarks>
-public class Startup: StartupTestsApps
+public class Startup: StartupTestWork
 {
     /// <summary>
     /// Startup helper

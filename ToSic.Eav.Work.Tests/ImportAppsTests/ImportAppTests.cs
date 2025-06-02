@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.ImportExport.Internal.Zip;
+using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Testing.Scenarios;
-using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Repository.Efc.Tests.ImportApps;
+namespace ToSic.Eav.ImportAppsTests;
 
 public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneManager zoneManager)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
@@ -48,7 +48,7 @@ public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneMa
         DeleteAnApp(Apps[name].Guid);
 
         var baseTestPath = TestFiles.GetTestPath("");
-        var testFileName = baseTestPath + "\\ImportApps\\Import-Packages\\" + Apps[name].Zip;
+        var testFileName = baseTestPath + "\\ImportAppsTests\\Import-Packages\\" + Apps[name].Zip;
 
         bool succeeded;
 

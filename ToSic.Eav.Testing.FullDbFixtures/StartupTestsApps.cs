@@ -24,13 +24,14 @@ public class StartupTestsApps
     /// <summary>
     /// Startup helper
     /// </summary>
-    public virtual void ConfigureServices(IServiceCollection services) =>
+    public virtual void ConfigureServices(IServiceCollection services)
+    {
         services
             .AddFixtureHelpers()
             // Apps
-            .AddEavAppsPersistence()
-            .AddEavContext()
-            .AddEavApps()
+            //.AddEavAppsPersistence()
+            //.AddEavContext()
+            //.AddEavApps()
 
             // SQL Server
             .AddRepositoryAndEfc()
@@ -40,15 +41,18 @@ public class StartupTestsApps
             // DataSources
             .AddDataSources()
             // EAV Core
-            .AddEavDataBuild()
-
-            .AddEavCoreLibAndSys()
+            //.AddEavDataBuild()
+            //.AddEavCoreLibAndSys()
 
             // Fallbacks for services which were not implemented - must come last
-            .AddContextFallbackServices()
-            .AddAppPersistenceFallbackServices()
+            //.AddContextFallbackServices()
+            //.AddAppPersistenceFallbackServices()
             .AddAppFallbackServices()
             .AddEavImportExportFallback()
-            .AddEavDataBuildFallbacks()
-            .AddEavCoreLibAndSysFallbackServices();
+            //.AddEavDataBuildFallbacks()
+            //.AddEavCoreLibAndSysFallbackServices()
+            ;
+
+        StartupTestsAppsPersistence.StartupTestsAppsPersistenceAndBelow(services);
+    }
 }

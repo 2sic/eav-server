@@ -2,14 +2,15 @@
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence.Versions;
+using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Testing.Scenarios;
 using ToSic.Lib.DI;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Repository.Efc.Tests.Versioning;
+namespace ToSic.Eav.Versioning;
 
-[Startup(typeof(StartupTestsApps))]
+[Startup(typeof(StartupTestWork))]
 public class VersioningTests(Generator<DbDataController> dbDataGenerator, GenWorkDb<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
