@@ -7,7 +7,7 @@
   <!--<Import Project="../SharedImports/CsProj.Props/Nullable.props" />-->
 
   <PropertyGroup>
-    <RootNamespace>ToSic</RootNamespace>
+    <RootNamespace>ToSic.Eav</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +31,10 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DataSources\Sys\" />
   </ItemGroup>
 
 </Project>

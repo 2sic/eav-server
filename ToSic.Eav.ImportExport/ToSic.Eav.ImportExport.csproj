@@ -32,4 +32,8 @@
     <!--<PackageReference Include="System.Runtime.Caching" Version="9.0.0" />-->
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data.Sys\" />
+  </ItemGroup>
+
 </Project>

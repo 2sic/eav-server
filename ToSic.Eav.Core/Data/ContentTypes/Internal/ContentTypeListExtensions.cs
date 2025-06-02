@@ -6,23 +6,33 @@ public static class ContentTypeListExtensions
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IEnumerable<IContentType> OfScope(this IEnumerable<IContentType> list, string scope = null, bool includeAttributeTypes = false)
     {
-        var set = list.Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
+        var set = list
+            .Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));
+        
         if (scope != null)
             set = set.Where(p => p.Scope == scope);
+
         return set.OrderBy(c => c.Name);
     }
 
     private static IList<string> GetAllScopesInclDefault(this IEnumerable<IContentType> list)
     {
-        var scopes = list.Select(ct => ct.Scope).Distinct().ToList();
+        var scopes = list
+            .Select(ct => ct.Scope)
+            .Distinct()
+            .ToList();
 
         // Make sure the "Default" scope is always included, otherwise it's missing on new apps
-        if (!scopes.Contains(Scopes.Default)) scopes.Add(Scopes.Default);
+        if (!scopes.Contains(Scopes.Default))
+            scopes.Add(Scopes.Default);
 
         // Add new Configuration scope for v12.02
-        if (!scopes.Contains(Scopes.SystemConfiguration)) scopes.Add(Scopes.SystemConfiguration);
+        if (!scopes.Contains(Scopes.SystemConfiguration))
+            scopes.Add(Scopes.SystemConfiguration);
 
-        return scopes.OrderBy(s => s).ToArray();
+        return scopes
+            .OrderBy(s => s)
+            .ToArray();
     }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
