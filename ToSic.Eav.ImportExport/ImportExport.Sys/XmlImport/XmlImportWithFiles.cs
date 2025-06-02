@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repositories.Sys;
 
 namespace ToSic.Eav.ImportExport.Internal;
 
@@ -12,38 +12,39 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
 {
     public class MyServices(
         LazySvc<ImportService> importerLazy,
-        LazySvc<DbDataController> dbDataForNewApp,
-        LazySvc<DbDataController> dbDataForAppImport,
+        IStorageFactory storageFactory,
         IImportExportEnvironment importExportEnvironment,
-        ITargetTypeService metaTargetTypes,
+        //ITargetTypeService metaTargetTypes,
         AppCachePurger appCachePurger,
         IAppsCatalog appsCatalog,
         LazySvc<XmlToEntity> xmlToEntity,
         LazySvc<DataBuilder> multiBuilder)
         : MyServicesBase(connect:
         [
-            importerLazy, dbDataForNewApp, dbDataForAppImport, importExportEnvironment,
-            metaTargetTypes, appsCatalog, xmlToEntity, appCachePurger, multiBuilder
+            importerLazy, storageFactory, importExportEnvironment,
+            /*metaTargetTypes,*/ appsCatalog, xmlToEntity, appCachePurger, multiBuilder
         ])
     {
+        public IStorageFactory StorageFactory { get; } = storageFactory;
         public readonly LazySvc<DataBuilder> MultiBuilder = multiBuilder;
         internal readonly LazySvc<ImportService> ImporterLazy = importerLazy;
-        internal readonly LazySvc<DbDataController> DbDataForNewApp = dbDataForNewApp;
-        internal readonly LazySvc<DbDataController> DbDataForAppImport = dbDataForAppImport;
         internal readonly IImportExportEnvironment Environment = importExportEnvironment;
-        internal readonly ITargetTypeService MetaTargetTypes = metaTargetTypes;
+        //internal readonly ITargetTypeService MetaTargetTypes = metaTargetTypes;
         internal readonly IAppsCatalog AppsCatalog = appsCatalog;
         internal readonly LazySvc<XmlToEntity> XmlToEntity = xmlToEntity;
         internal readonly AppCachePurger AppCachePurger = appCachePurger;
     }
 
     private List<DimensionDefinition> _targetDimensions;
-    private DbDataController _eavContext;
     public int AppId { get; private set; }
     public int ZoneId { get; private set; }
 
 
-    private XmlToEntity _xmlBuilder;
+    private XmlToEntity XmlBuilder
+    {
+        get => field ?? throw new("XmlBuilder not initialized, please call Init() first.");
+        set;
+    }
 
     /// <summary>
     /// The default language / culture - example: de-DE
@@ -58,7 +59,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
     /// Create a new xmlImport instance
     /// </summary>
     /// <param name="defaultLanguage">The portals default language / culture - example: de-DE</param>
-    /// <param name="allowUpdateOnSharedTypes">Specify if the import should be able to change system-wide things like shared attributesets</param>
+    /// <param name="allowUpdateOnSharedTypes">Specify if the import should be able to change system-wide things like shared content-types</param>
     public XmlImportWithFiles Init(string defaultLanguage, bool allowUpdateOnSharedTypes)
     {
         // Prepare
@@ -69,15 +70,4 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
     }
     #endregion
 
-
-    // 2025-04-29 2dm: seems unused, delete in a few days
-    //#region Helpers to keep architecture clean for now  - special for template-save in 2sxc
-
-    //protected bool RepositoryHasEntity(Guid entityGuid)
-    //    => _eavContext.Entities.EntityExists(entityGuid);
-
-    //protected int GetLatestRepositoryId(Guid entityGuid)
-    //    => _eavContext.Entities.GetMostCurrentDbEntity(entityGuid).EntityId;
-
-    //#endregion
 }

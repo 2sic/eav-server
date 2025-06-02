@@ -15,7 +15,8 @@ partial class XmlImportWithFiles
     public bool ImportXml(int zoneId, int appId, int? parentAppId, XDocument doc, bool leaveExistingValuesUntouched = true)
     {
         var l = Log.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
-        _eavContext = Services.DbDataForAppImport.Value.Init(zoneId, appId, parentAppId);
+        // #WipDecoupleDbFromImport
+        //Services.DbDataForAppImport.Value.Init(zoneId, appId, parentAppId);
             
         AppId = appId;
         ZoneId = zoneId;
@@ -43,11 +44,11 @@ partial class XmlImportWithFiles
             sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
             : new();
 
-        Log.A($"source def dim:{sourceDefaultDimensionId}");
+        l.A($"source def dim:{sourceDefaultDimensionId}");
 
         _targetDimensions = Services.AppsCatalog.Zone(zoneId).Languages;
 
-        _xmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+        XmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
         #endregion
 
         var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet).ToList();

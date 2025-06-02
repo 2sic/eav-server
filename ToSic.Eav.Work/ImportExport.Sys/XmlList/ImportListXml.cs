@@ -53,7 +53,7 @@ public partial class ImportListXml(
         var contentType = appReader.GetContentType(typeName);
 
         AppReader = appReader;
-        _appId = AppReader.AppId;
+        //_appId = AppReader.AppId;
 
         ContentType = contentType;
         if (ContentType == null)
@@ -70,7 +70,9 @@ public partial class ImportListXml(
         if (_languages == null || !_languages.Any())
             _languages = [string.Empty];
 
-        _languages = _languages.Select(l => l.ToLowerInvariant()).ToList();
+        _languages = _languages
+            .Select(l => l.ToLowerInvariant())
+            .ToList();
         _docLangPrimary = documentLanguageFallback.ToLowerInvariant();
         Log.A($"Languages: {languages.Count()}, fallback: {_docLangPrimary}");
         _deleteSetting = deleteSetting;
@@ -79,8 +81,10 @@ public partial class ImportListXml(
         Timer.Start();
         try
         {
-            if (!LoadStreamIntoDocumentElement(dataStream)) return this;
-            if (!RunDocumentValidityChecks()) return this;
+            if (!LoadStreamIntoDocumentElement(dataStream))
+                return this;
+            if (!RunDocumentValidityChecks())
+                return this;
             ValidateAndImportToMemory();
         }
         catch (Exception exception)
@@ -129,7 +133,7 @@ public partial class ImportListXml(
                 var value = xEntity.Element(valName)?.Value;
 
                 // Case 1: Nothing
-                if (value == null || value == XmlConstants.NullMarker)
+                if (value is null or XmlConstants.NullMarker)
                     continue;
 
                 // Case 2: Xml empty string
@@ -273,9 +277,15 @@ public partial class ImportListXml(
     /// Save the data in memory to the repository.
     /// </summary>
     /// <returns>True if succeeded</returns>
-    public void PersistImportToRepository() => Log.Do(timer: true, action: () =>
+    public void PersistImportToRepository()
     {
-        if (ErrorLog.HasErrors) return "stop, errors";
+        var l = Log.Fn(timer: true);
+
+        if (ErrorLog.HasErrors)
+        {
+            l.Done("stop, errors");
+            return;
+        }
 
         Timer.Start();
         if (_deleteSetting == ImportDeleteUnmentionedItems.All)
@@ -284,13 +294,13 @@ public partial class ImportListXml(
             entDelete.New(AppReader).Delete(idsToDelete);
         }
 
-        var import = importerLazy.Value.Init(null, _appId, false, true);
+        var import = importerLazy.Value.Init(AppReader.ZoneId, AppReader.AppId, false, true);
         import.ImportIntoDb(null, ImportEntities);
 
         // important note: don't purge cache here, but the caller MUST do this!
         Timer.Stop();
         TimeForDbImport = Timer.ElapsedMilliseconds;
-        return "ok";
-    });
+        l.Done("ok");
+    }
 
 }

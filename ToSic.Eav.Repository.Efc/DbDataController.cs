@@ -148,7 +148,9 @@ public class DbDataController(
             // If only AppId is supplied, look up it's zone and use that
             else
             {
-                var zoneIdOfApp = SqlDb.TsDynDataApps.Where(a => a.AppId == appId.Value).Select(a => (int?)a.ZoneId)
+                var zoneIdOfApp = SqlDb.TsDynDataApps
+                    .Where(a => a.AppId == appId.Value)
+                    .Select(a => (int?)a.ZoneId)
                     .SingleOrDefault();
                 if (!zoneIdOfApp.HasValue)
                     throw new ArgumentException($@"App with id {appId.Value} doesn't exist.", nameof(appId));
@@ -300,8 +302,7 @@ public class DbDataController(
     /// The loader must use the same connection, to ensure it runs in existing transactions.
     /// Otherwise, the loader would be blocked from getting intermediate data while we're running changes. 
     /// </summary>
-    public IRepositoryLoader Loader => LoaderWithRaw;
-    public IRepositoryLoaderWithRaw LoaderWithRaw => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
+    public IRepositoryLoaderWithRaw Loader => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
 
     public void DoWhileQueuingVersioning(Action action)
         => Versioning.DoAndSaveHistoryQueue(action);
@@ -340,8 +341,10 @@ public class DbDataController(
 
     #endregion
 
-    public int? GetParentAppId(string parentAppGuid, int parentAppId)
-        => SqlDb.TsDynDataApps.Count(a => a.Name == parentAppGuid) switch
+    public int GetParentAppId(string parentAppGuid, int parentAppId)
+    {
+        var appCountWithParentGuid = SqlDb.TsDynDataApps.Count(a => a.Name == parentAppGuid);
+        return appCountWithParentGuid switch
         {
             0 => throw new ArgumentException(
                 $"ParentApp missing. Can't find app:{parentAppGuid}. Import ParentApp first."),
@@ -349,11 +352,21 @@ public class DbDataController(
             // we have more apps with requested guid
             _ => SqlDb.TsDynDataApps.Count(a => a.Name == parentAppGuid && a.AppId == parentAppId) switch
             {
-                0 => throw new ArgumentException(
-                    $"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} but neither has AppId:{parentAppId}. Can't import."),
+                0 => throw new ArgumentException($"{ErrorMessage()} but neither has AppId:{parentAppId}. Can't import."),
                 1 => SqlDb.TsDynDataApps.Single(a => a.Name == parentAppGuid && a.AppId == parentAppId).AppId,
-                _ => throw new ArgumentException(
-                    $"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. More apps are with guid:{parentAppGuid} and AppId:{parentAppId}. Can't import.")
+                _ => throw new ArgumentException($"{ErrorMessage()} and AppId:{parentAppId}. Can't import.")
             }
         };
+
+        string ErrorMessage() =>
+            $"ParentApp is missing. Can't find app with guid:{parentAppGuid} and AppId:{parentAppId}. '{appCountWithParentGuid}' apps are with guid:{parentAppGuid}";
+    }
+
+    public int CreateApp(string guidName, int? inheritAppId = null)
+    {
+        var l = Log.Fn<int>($"guid:{guidName}, inheritAppId:{inheritAppId}");
+        var app = App.AddApp(null, guidName, inheritAppId);
+        SqlDb.SaveChanges(); // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
+        return l.Return(app.AppId, $"Created App with Id:{app.AppId} and Name:{app.Name} in ZoneId:{ZoneId}");
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.StartUp;
 using ToSic.Sys.Boot;
 
@@ -33,6 +34,7 @@ public static class StartupRepositoryEfc
         services.TryAddTransient<IRepositoryLoaderWithRaw, EfcRepositoryLoader>();
         services.AddTransient<IBootProcess, BootWarmUpEavSql>();
 
+        services.TryAddTransient<IStorageFactory, StorageFactoryEfc>();
 
         return services;
     }

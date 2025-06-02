@@ -72,14 +72,21 @@ public class ContentImportApi(
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
     {
         var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
-        var contextLanguages = appsCatalog.Zone(_appReader.ZoneId).LanguagesActive
+        var contextLanguages = appsCatalog.Zone(_appReader.ZoneId)
+            .LanguagesActive
             .Select(lng => lng.EnvironmentKey)
             .ToArray();
 
         using var contentSteam = new MemoryStream(Convert.FromBase64String(args.ContentBase64));
-        var importer = importListXml.Value.Init(_appReader, args.ContentType, contentSteam,
-            contextLanguages, args.DefaultLanguage,
-            args.ClearEntities, args.ImportResourcesReferences);
+        var importer = importListXml.Value.Init(
+            _appReader,
+            args.ContentType,
+            contentSteam,
+            contextLanguages,
+            args.DefaultLanguage,
+            args.ClearEntities,
+            args.ImportResourcesReferences
+        );
         return l.Return(importer);
     }
 

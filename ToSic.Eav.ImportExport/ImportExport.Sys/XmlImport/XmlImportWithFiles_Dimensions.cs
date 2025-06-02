@@ -23,7 +23,8 @@ partial class XmlImportWithFiles
                     Key = p.Attribute(XmlConstants.CultureSysKey).Value,
                     EnvironmentKey = p.Attribute(XmlConstants.CultureExtKey).Value,
                     Active = bool.Parse(p.Attribute(XmlConstants.CultureIsActiveAttrib).Value)
-                }).ToList();
+                })
+                .ToList();
         return sDimensions;
     }
 

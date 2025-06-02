@@ -126,7 +126,7 @@ partial class XmlImportWithFiles
 
         l.A($"Metadata ({metadata.IsMetadata}) - type:{metadata.TargetType}, #:{metadata.KeyNumber} guid:{metadata.KeyGuid}, $:{metadata.KeyString}");
 
-        var importEntity = _xmlBuilder.BuildEntityFromXml(entityNode, metadata);
+        var importEntity = XmlBuilder.BuildEntityFromXml(entityNode, metadata);
 
         return l.Return(importEntity, "got it");
     }

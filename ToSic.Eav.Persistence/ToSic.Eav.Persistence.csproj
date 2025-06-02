@@ -26,5 +26,9 @@
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data.Persistence\Interfaces\" />
+  </ItemGroup>
+
 
 </Project>

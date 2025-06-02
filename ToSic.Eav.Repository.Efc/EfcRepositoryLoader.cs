@@ -15,10 +15,10 @@ internal class EfcRepositoryLoader(DbDataController dataController) : IRepositor
         => _dataController.Loader.ContentTypes(appId, source);
 
     public IAppStateBuilder AppStateRawBuilder(int appId, CodeRefTrail codeRefTrail)
-        => _dataController.LoaderWithRaw.AppStateRawBuilder(appId, codeRefTrail);
+        => _dataController.Loader.AppStateRawBuilder(appId, codeRefTrail);
 
     public IAppReader AppReaderRaw(int appId, CodeRefTrail codeRefTrail)
-        => _dataController.LoaderWithRaw.AppReaderRaw(appId, codeRefTrail);
+        => _dataController.Loader.AppReaderRaw(appId, codeRefTrail);
 
     public IAppStateCache AppState(int appId, CodeRefTrail codeRefTrail)
         => _dataController.Loader.AppState(appId, codeRefTrail);

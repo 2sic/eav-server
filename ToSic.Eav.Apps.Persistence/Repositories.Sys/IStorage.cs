@@ -50,7 +50,7 @@ public interface IStorage: IHasLog
     /// <summary>
     /// This provides a loader to retrieve fully typed / configured app-packages for in-memory use, caching etc.
     /// </summary>
-    IRepositoryLoader Loader { get; }
+    IRepositoryLoaderWithRaw Loader { get; }
     #endregion
 
 
@@ -79,4 +79,7 @@ public interface IStorage: IHasLog
     #endregion
 
     int? ParentAppId { get; }
+    int GetParentAppId(string parentAppGuid, int parentAppId);
+
+    int CreateApp(string guidName, int? inheritAppId = null);
 }

@@ -21,7 +21,7 @@ partial class ImportListXml
     public long TimeForDbImport;
     #endregion
 
-    private int _appId;
+    //private int _appId;
 
     /// <summary>
     /// The xml document to imported.
@@ -68,7 +68,7 @@ partial class ImportListXml
             l.A("Add entity: will stop listing each one...");
         if (_appendEntityCount % 100 == 0)
             l.A("Add entity: Current count:" + _appendEntityCount);
-        var entity = builder.Entity.Create(appId: _appId, guid: entityGuid, contentType: ContentType,
+        var entity = builder.Entity.Create(appId: AppReader.AppId, guid: entityGuid, contentType: ContentType,
             attributes: builder.Attribute.Create(values));
         ImportEntities.Add(entity);
         return l.Return(entity);

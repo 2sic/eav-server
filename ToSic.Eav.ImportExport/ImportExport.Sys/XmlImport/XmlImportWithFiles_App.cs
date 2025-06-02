@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.Persistence.Interfaces;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -32,6 +33,7 @@ partial class XmlImportWithFiles
         if (appGuid == null)
             return l.ReturnFalse(LogError("Something is wrong in the xml structure, can't get an app-guid"));
 
+        // If it's not the default app, then we need to create it
         if (appGuid != XmlConstants.AppContentGuid)
         {
             // Build Guid (take existing, or create a new)
@@ -39,17 +41,20 @@ partial class XmlImportWithFiles
                 appGuid = Guid.NewGuid().ToString();
 
             // Adding app to EAV
-            var eavDc = Services.DbDataForNewApp.Value.Init(zoneId, null);
+            //var eavDc = Services.DbDataForNewApp.Value.Init(zoneId, null);
+            var storage = Services.StorageFactory.New(new(zoneId, null, null));
 
             // ParentApp
-            parentAppId = inheritAppId ?? GetParentAppId(xmlSource, eavDc);
+            parentAppId = inheritAppId ?? GetParentAppId(xmlSource, storage);
 
-            var app = eavDc.App.AddApp(null, appGuid, parentAppId);
+            // #WipDecoupleDbFromImport
+            //var app = eavDc.App.AddApp(null, appGuid, parentAppId);
+            //eavDc.SqlDb.SaveChanges();
+            //appId = app.AppId;
 
-            eavDc.SqlDb.SaveChanges();
-
-            appId = app.AppId;
+            appId = storage.CreateApp(appGuid, parentAppId);
         }
+        // Otherwise use the current app (the Content/Default app) to import into
         else
             appId = AppId;
 
@@ -62,18 +67,18 @@ partial class XmlImportWithFiles
         return l.Return(result, "done");
     }
 
-    private int? GetParentAppId(XElement xmlSource, Repository.Efc.DbDataController eavDc)
+    private int? GetParentAppId(XElement xmlSource, IStorage eavDc)
     {
         var l = Log.Fn<int?>();
         var parentAppXElement = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.ParentApp);
         if (parentAppXElement == null)
             return l.ReturnNull("app doesn't have inherit-data");
         
-        var parentAppGuidOrName = parentAppXElement?.Attribute(XmlConstants.Guid)?.Value;
+        var parentAppGuidOrName = parentAppXElement.Attribute(XmlConstants.Guid)?.Value;
         if (string.IsNullOrEmpty(parentAppGuidOrName) || parentAppGuidOrName == XmlConstants.ParentApp)
             return l.ReturnNull("app inherits default or nothing");
 
-        var parentIdString = parentAppXElement?.Attribute(XmlConstants.AppId)?.Value;
+        var parentIdString = parentAppXElement.Attribute(XmlConstants.AppId)?.Value;
         if (!int.TryParse(parentIdString, out var parAppId))
             return l.ReturnNull($"app inherit data not useful int: {parentIdString}");
         
