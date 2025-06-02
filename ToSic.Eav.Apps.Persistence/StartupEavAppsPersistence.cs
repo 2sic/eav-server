@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Sys.AppJson;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
@@ -35,7 +36,7 @@ public static class StartupEavAppsPersistence
         services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
 
         // v17
-        services.TryAddTransient<IAppJsonService, AppJsonService>();
+        services.TryAddTransient<IAppJsonConfigurationService, AppJsonConfigurationService>();
 
         return services;
     }

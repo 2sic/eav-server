@@ -1,16 +1,18 @@
 ﻿
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Apps.Internal.Specs;
+namespace ToSic.Eav.Apps.Sys.AppJson;
 
 /// <summary>
-/// Used to deserialize 'editions' from app.json.
+/// File based `app.json` configuration for apps.
+/// </summary>
+/// <remarks>
+/// Used to deserialize 'editions' from app.json and for export settings (like excluded files and folders).
 ///
 /// The remaining parts are subclasses, so they don't appear in public namespaces
-/// </summary>
+/// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppJson
+public class AppJsonConfiguration
 {
     public bool IsConfigured { get; set; }
     public ExportConfig Export { get; set; }

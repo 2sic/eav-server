@@ -1,35 +1,30 @@
 ﻿using System.Text.Json;
 using ToSic.Eav.Apps.Integration;
-using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Sys.Configuration;
 using ToSic.Lib.Caching;
 using ToSic.Sys.Configuration;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Apps.Internal;
+namespace ToSic.Eav.Apps.Sys.AppJson;
 
-/// <summary>
-/// Service to handle "app.json" optional json file in App_Data folder
-/// with exclude configuration to define files and folders that will not be exported in app export
-/// </summary>
+/// <inheritdoc cref="IAppJsonConfigurationService"/>
 /// <param name="globalConfiguration"></param>
 /// <param name="appReaders"></param>
 /// <param name="appPathsFactory"></param>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppJsonService(
+public class AppJsonConfigurationService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     IAppReaderFactory appReaders,
     IAppPathsMicroSvc appPathsFactory,
     MemoryCacheService memoryCacheService
 )
-    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, appReaders, appPathsFactory, memoryCacheService]), IAppJsonService
+    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, appReaders, appPathsFactory, memoryCacheService]),
+        IAppJsonConfigurationService
 {
 
-    /// <summary>
-    ///  move app.json template from old to new location
-    /// </summary>
+    /// <inheritdoc />
     public void MoveAppJsonTemplateFromOldToNewLocation()
     {
         var appDataProtectedFolder = new DirectoryInfo(Path.Combine(globalConfiguration.Value.GlobalFolder(), Constants.AppDataProtectedFolder));
@@ -41,20 +36,15 @@ public class AppJsonService(
             File.Move(oldAppJsonTemplateFilePath, appJsonTemplateFilePath);
     }
 
-    /// <summary>
-    /// Get the settings object from the App.json file in the App_Data folder
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <param name="useShared"></param>
-    /// <returns>The AppJson object, or null</returns>
-    public AppJson GetAppJson(int appId, bool useShared = false)
+    /// <inheritdoc />
+    public AppJsonConfiguration GetAppJson(int appId, bool useShared = false)
     {
-        var l = Log.Fn<AppJson>($"{nameof(appId)}: '{appId}'");
+        var l = Log.Fn<AppJsonConfiguration>($"{nameof(appId)}: '{appId}'");
 
         var cacheKey = AppJsonCacheKey(appId, useShared);
         l.A($"cache key: {cacheKey}");
 
-        if (memoryCacheService.TryGet<AppJson>(cacheKey, out var appJson))
+        if (memoryCacheService.TryGet<AppJsonConfiguration>(cacheKey, out var appJson))
             return l.Return(appJson, "ok, cache hit");
 
         var pathToAppJson = GetPathToAppJson(appId, useShared);
@@ -64,12 +54,14 @@ public class AppJsonService(
         if (appJson != null)
             memoryCacheService.Set(cacheKey, appJson, p => p.WatchFiles([pathToAppJson])); // cache appJson
         else
-            memoryCacheService.Set(cacheKey, new AppJson(), p => p.WatchFolders(GetExistingParent(pathToAppJson).ToDictionary(p => p, _ => true))); // cache null
+            memoryCacheService.Set(cacheKey, new AppJsonConfiguration(), p => p.WatchFolders(GetExistingParent(pathToAppJson).ToDictionary(p => p, _ => true))); // cache null
 
         return l.ReturnAsOk(appJson);
     }
 
-    public string AppJsonCacheKey(int appId, bool useShared) => $"Eav-{nameof(AppJsonService)}:{nameof(appId)}:{appId}:{nameof(useShared)}:{useShared}";
+    /// <inheritdoc />
+    public string AppJsonCacheKey(int appId, bool useShared)
+        => $"Eav-{nameof(AppJsonConfigurationService)}:{nameof(appId)}:{appId}:{nameof(useShared)}:{useShared}";
 
     /// <summary>
     /// Find parent path that exist to use it as cache dependency (folder cache monitor) 
@@ -102,9 +94,9 @@ public class AppJsonService(
     }
     private readonly Dictionary<int, IAppPaths> _appPathsCache = [];
 
-    private AppJson GetAppJsonInternal(string pathToAppJson)
+    private AppJsonConfiguration GetAppJsonInternal(string pathToAppJson)
     {
-        var l = Log.Fn<AppJson>($"{nameof(pathToAppJson)}:'{pathToAppJson}'");
+        var l = Log.Fn<AppJsonConfiguration>($"{nameof(pathToAppJson)}:'{pathToAppJson}'");
 
         if (!File.Exists(pathToAppJson))
             return l.ReturnNull($"file '{Constants.AppJson}' not found");
@@ -117,7 +109,7 @@ public class AppJsonService(
             if (string.IsNullOrEmpty(json))
                 return l.Return(new(),"json is empty");
 
-            var appJson = JsonSerializer.Deserialize<AppJson>(json, JsonOptions.SafeJsonForHtmlAttributes);
+            var appJson = JsonSerializer.Deserialize<AppJsonConfiguration>(json, JsonOptions.SafeJsonForHtmlAttributes);
             return appJson == null
                 ? l.Return(new(),"appJson is null")
                 : l.ReturnAsOk(appJson);
@@ -130,14 +122,7 @@ public class AppJsonService(
 
     }
 
-
-    /// <summary>
-    /// Get the exclude search patterns from the App.json file in the App_Data folder
-    /// </summary>
-    /// <param name="sourceFolder"></param>
-    /// <param name="appId"></param>
-    /// <param name="useShared"></param>
-    /// <returns>List&lt;string&gt; - never null</returns>
+    /// <inheritdoc />
     public List<string> ExcludeSearchPatterns(string sourceFolder, int appId, bool useShared = false)
     {
         var l = Log.Fn<List<string>>($"{nameof(sourceFolder)}:'{sourceFolder}', {nameof(appId)}:{appId}, {nameof(useShared)}:{useShared}");
