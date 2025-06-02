@@ -6,9 +6,10 @@ using ToSic.Eav.Apps.Sys.AppJson;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Internal.Licenses;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Persistence.File;
 using ToSic.Eav.StartUp;
 using ToSic.Sys.Boot;
-using ToSic.Sys.Utils.Assembly;
+using ToSic.Sys.Utils.Assemblies;
 
 
 // ReSharper disable once CheckNamespace
@@ -30,6 +31,8 @@ public static class StartupEavAppsPersistence
         services.TryAddTransient<AppLoaderLogSettings>();   // new v20
         services.TryAddTransient<LicenseLoader>();
 
+        // core things - usually not replaced
+        services.TryAddTransient<IAppLoader, AppStateInFolderLoader>();
 
         // File System Loaders
         services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
@@ -56,6 +59,7 @@ public static class StartupEavAppsPersistence
 
         // Unknown-Runtime for loading configuration etc. File-runtime
         services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
+
         services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
 
         return services;

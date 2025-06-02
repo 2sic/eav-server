@@ -4,6 +4,7 @@ using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.StartUp;
+using ToSic.Sys.Utils.Assemblies;
 
 namespace ToSic.Eav.Persistence.File;
 

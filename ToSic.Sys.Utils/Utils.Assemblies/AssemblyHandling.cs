@@ -2,7 +2,7 @@
 using ToSic.Eav.StartUp;
 using static System.StringComparison;
 
-namespace ToSic.Eav.Plumbing;
+namespace ToSic.Sys.Utils.Assemblies;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AssemblyHandling
@@ -67,7 +67,7 @@ public class AssemblyHandling
     /// Does special try/catch to prevent bugs when assemblies are missing
     /// Source: http://stackoverflow.com/questions/7889228/how-to-prevent-reflectiontypeloadexception-when-calling-assembly-gettypes 
     /// </remarks>
-    private static List<Type> GetLoadableTypes(Assembly assembly, ILog? log = null)
+    private static List<Type> GetLoadableTypes(System.Reflection.Assembly assembly, ILog? log = null)
     {
         var l = log.Fn<List<Type>>($"GetLoadableTypes(assembly: {assembly?.FullName})", timer: true);
         try

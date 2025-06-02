@@ -46,8 +46,8 @@ public static class StartupEavPersistence
 
     public static IServiceCollection AddAppStateInFolder(this IServiceCollection services)
     {
-        // core things - usually not replaced
-        services.TryAddTransient<IAppLoader, AppStateInFolderLoader>();
+        //// core things - usually not replaced
+        //services.TryAddTransient<IAppLoader, AppStateInFolderLoader>();
         return services;
     }
 }

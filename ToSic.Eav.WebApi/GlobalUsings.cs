@@ -7,7 +7,6 @@ global using System.Text.Json.Serialization;
 global using ToSic.Eav.Apps;
 global using ToSic.Eav.Apps.Internal.Work;
 global using ToSic.Eav.Data;
-global using ToSic.Eav.Plumbing;
 global using ToSic.Eav.WebApi.Dto;
 global using ToSic.Lib.DI;
 global using ToSic.Lib.Logging;

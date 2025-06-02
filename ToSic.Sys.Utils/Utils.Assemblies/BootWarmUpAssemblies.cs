@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Plumbing;
-using ToSic.Sys.Boot;
+﻿using ToSic.Sys.Boot;
 
-namespace ToSic.Sys.Utils.Assembly;
+namespace ToSic.Sys.Utils.Assemblies;
 
 /// <summary>
 /// Pre-Load the Assembly list into memory to log separately.

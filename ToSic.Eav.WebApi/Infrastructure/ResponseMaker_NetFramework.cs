@@ -1,13 +1,9 @@
 ﻿#if NETFRAMEWORK
-using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using ToSic.Eav.Internal;
-using ToSic.Eav.Plumbing;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi.Infrastructure;
