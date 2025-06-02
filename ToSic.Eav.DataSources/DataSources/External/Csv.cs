@@ -115,17 +115,15 @@ public class Csv : CustomDataSourceAdvanced
 
 
     [PrivateApi]
-    public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths, dataFactory])
+    public Csv(MyServices services, IUser user, IServerPaths serverPaths)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths])
     {
         _user = user;
         _serverPaths = serverPaths;
-        _dataFactory = dataFactory;
         ProvideOut(GetList);
     }
     private readonly IUser _user;
     private readonly IServerPaths _serverPaths;
-    private readonly IDataFactory _dataFactory;
 
 
     private IImmutableList<IEntity> GetList()

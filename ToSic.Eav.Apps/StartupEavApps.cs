@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.Catalog;
-using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
@@ -13,7 +12,6 @@ using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Integration.Security;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.Security.Internal;
 using ToSic.Sys.Security.Permissions;
@@ -44,20 +42,7 @@ public static class StartupEavApps
         //services.TryAddTransient<IContextOfApp, ContextOfApp>();
         //services.TryAddTransient<ContextOfApp.MyServices>();
         services.TryAddTransient<ContextOfSite.MyServices>();
-        services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
-
-        // App Loaders
-        //services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
-
-        //services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
-        //services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
-        //services.AddTransient<IBootProcess, EavBootLoadFeaturesAndLicenses>();
-
-        //services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
-        //services.TryAddTransient<FeaturePersistenceService>();
-        //services.TryAddTransient<FeaturesIoHelper>();
-        //services.TryAddTransient<AppLoaderLogSettings>();   // new v20
-        //services.TryAddTransient<LicenseLoader>();
+        //services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
         // App-State and Cache
         services.AddTransient<AppsCacheSwitch>();
@@ -70,11 +55,6 @@ public static class StartupEavApps
 
         services.TryAddTransient<AppDataStackService>();
 
-
-        //// File System Loaders
-        //services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
-        //services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
-
         // App Permission Check moved to this project as the implementations are now all identical
         services.TryAddTransient<AppPermissionCheck>();
         services.TryAddTransient<MultiPermissionsTypes>();
@@ -83,9 +63,6 @@ public static class StartupEavApps
 
         // V13 Language Checks
         services.TryAddTransient<AppUserLanguageCheck>();
-
-        //// v17
-        //services.TryAddTransient<IAppJsonService, AppJsonService>();
 
         return services;
     }
@@ -105,16 +82,11 @@ public static class StartupEavApps
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
         services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
-        //services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
 
-        //// Unknown-Runtime for loading configuration etc. File-runtime
-        //services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
-        //services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
+        //services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
 
-        services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
-
-        // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
-        services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
+        //// Special registration of iisUnknown to verify we see warnings if such a thing is loaded
+        //services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
         // v17
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();

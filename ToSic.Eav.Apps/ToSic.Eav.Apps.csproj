@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Apps\Integration\Paths\" />
     <Folder Include="Apps\Sys\AppJson\" />
   </ItemGroup>
 

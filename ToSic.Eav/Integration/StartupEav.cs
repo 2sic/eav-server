@@ -33,8 +33,9 @@ public static class StartupEav
             .AddEavWebApi()
             .AddEavWork()
             // Apps
-            .AddEavApps()
             .AddEavAppsPersistence()
+            .AddEavContext()
+            .AddEavApps()
             // SQL Server
             .AddRepositoryAndEfc()
             // Import/Export as well as File Based Json loading

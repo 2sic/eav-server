@@ -2,13 +2,8 @@
 
 namespace ToSic.Eav.Internal.Environment;
 
-public sealed class ServerPathsUnknown: ServerPathsBase, IIsUnknown
+public sealed class ServerPathsUnknown(WarnUseOfUnknown<ServerPathsUnknown> _): ServerPathsBase, IIsUnknown
 {
-    public ServerPathsUnknown(WarnUseOfUnknown<ServerPathsUnknown> _)
-    {
-
-    }
-
     public override string FullAppPath(string virtualPath) => "unknown-path, please implement IServerPaths";
 
     public override string FullContentPath(string virtualPath) => "unknown-path, please implement IServerPaths";
