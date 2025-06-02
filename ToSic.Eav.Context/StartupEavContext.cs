@@ -31,9 +31,10 @@ public static class StartupEavContext
         //// Global Content Types - needed by the Persistence Layer
         //services.TryAddTransient<IGlobalContentTypesService, GlobalContentTypesService>();
 
-        //// Context
-        //services.TryAddTransient<IContextOfSite, ContextOfSite>();
-        //services.TryAddTransient<ContextOfSite>();
+        // Context
+        services.TryAddTransient<IContextOfSite, ContextOfSite>();
+        services.TryAddTransient<ContextOfSite>();
+        services.TryAddTransient<ContextOfSite.MyServices>();
 
         //// Runtimes and Managers
         //services.TryAddTransient<AppCachePurger>();
@@ -42,7 +43,7 @@ public static class StartupEavContext
         //// Context
         ////services.TryAddTransient<IContextOfApp, ContextOfApp>();
         ////services.TryAddTransient<ContextOfApp.MyServices>();
-        //services.TryAddTransient<ContextOfSite.MyServices>();
+
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
         //// App-State and Cache
@@ -56,14 +57,14 @@ public static class StartupEavContext
 
         //services.TryAddTransient<AppDataStackService>();
 
-        //// App Permission Check moved to this project as the implementations are now all identical
-        //services.TryAddTransient<AppPermissionCheck>();
-        //services.TryAddTransient<MultiPermissionsTypes>();
-        //services.TryAddTransient<MultiPermissionsApp>();
-        //services.TryAddTransient<MultiPermissionsApp.MyServices>();
+        // App Permission Check moved to this project as the implementations are now all identical
+        services.TryAddTransient<AppPermissionCheck>();
+        services.TryAddTransient<MultiPermissionsTypes>();
+        services.TryAddTransient<MultiPermissionsApp>();
+        services.TryAddTransient<MultiPermissionsApp.MyServices>();
 
-        //// V13 Language Checks
-        //services.TryAddTransient<AppUserLanguageCheck>();
+        // V13 Language Checks
+        services.TryAddTransient<AppUserLanguageCheck>();
 
         return services;
     }
@@ -79,18 +80,18 @@ public static class StartupEavContext
     /// </remarks>
     public static IServiceCollection AddContextFallbackServices(this IServiceCollection services)
     {
-        //services.TryAddTransient<ISite, SiteUnknown>();
-        //services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
-        //services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
-        //services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
+        services.TryAddTransient<ISite, SiteUnknown>();
+        services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
+        services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
+        services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
 
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
 
         // Special registration of iisUnknown to verify we see warnings if such a thing is loaded
         //services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
-        //// v17
-        //services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
+        // v17
+        services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
 
         return services;
     }

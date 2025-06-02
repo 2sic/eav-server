@@ -27,9 +27,4 @@
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Apps\Integration\Paths\" />
-    <Folder Include="Apps\Sys\AppJson\" />
-  </ItemGroup>
-
 </Project>

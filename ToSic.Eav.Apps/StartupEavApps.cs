@@ -5,16 +5,7 @@ using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Cms.Internal.Languages;
-using ToSic.Eav.Context;
-using ToSic.Eav.Context.Internal;
 using ToSic.Eav.Data.Global.Sys;
-using ToSic.Eav.Integration;
-using ToSic.Eav.Integration.Security;
-using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Internal.Unknown;
-using ToSic.Eav.Security.Internal;
-using ToSic.Sys.Security.Permissions;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;
@@ -30,9 +21,9 @@ public static class StartupEavApps
         // Global Content Types - needed by the Persistence Layer
         services.TryAddTransient<IGlobalContentTypesService, GlobalContentTypesService>();
 
-        // Context
-        services.TryAddTransient<IContextOfSite, ContextOfSite>();
-        services.TryAddTransient<ContextOfSite>();
+        //// Context
+        //services.TryAddTransient<IContextOfSite, ContextOfSite>();
+        //services.TryAddTransient<ContextOfSite>();
 
         // Runtimes and Managers
         services.TryAddTransient<AppCachePurger>();
@@ -41,7 +32,7 @@ public static class StartupEavApps
         // Context
         //services.TryAddTransient<IContextOfApp, ContextOfApp>();
         //services.TryAddTransient<ContextOfApp.MyServices>();
-        services.TryAddTransient<ContextOfSite.MyServices>();
+        //services.TryAddTransient<ContextOfSite.MyServices>();
         //services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
         // App-State and Cache
@@ -55,14 +46,14 @@ public static class StartupEavApps
 
         services.TryAddTransient<AppDataStackService>();
 
-        // App Permission Check moved to this project as the implementations are now all identical
-        services.TryAddTransient<AppPermissionCheck>();
-        services.TryAddTransient<MultiPermissionsTypes>();
-        services.TryAddTransient<MultiPermissionsApp>();
-        services.TryAddTransient<MultiPermissionsApp.MyServices>();
+        //// App Permission Check moved to this project as the implementations are now all identical
+        //services.TryAddTransient<AppPermissionCheck>();
+        //services.TryAddTransient<MultiPermissionsTypes>();
+        //services.TryAddTransient<MultiPermissionsApp>();
+        //services.TryAddTransient<MultiPermissionsApp.MyServices>();
 
-        // V13 Language Checks
-        services.TryAddTransient<AppUserLanguageCheck>();
+        //// V13 Language Checks
+        //services.TryAddTransient<AppUserLanguageCheck>();
 
         return services;
     }
@@ -78,18 +69,18 @@ public static class StartupEavApps
     /// </remarks>
     public static IServiceCollection AddAppFallbackServices(this IServiceCollection services)
     {
-        services.TryAddTransient<ISite, SiteUnknown>();
-        services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
-        services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
-        services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
+        //services.TryAddTransient<ISite, SiteUnknown>();
+        //services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
+        //services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
+        //services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
 
         //services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
 
         //// Special registration of iisUnknown to verify we see warnings if such a thing is loaded
         //services.TryAddTransient<IIsUnknown, ServerPathsUnknown>();
 
-        // v17
-        services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
+        //// v17
+        //services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
 
         return services;
     }

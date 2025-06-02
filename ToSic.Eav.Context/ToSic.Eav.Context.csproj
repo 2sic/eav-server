@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <Folder Include="Apps.Sys\Languages\" />
   </ItemGroup>
 
 </Project>
