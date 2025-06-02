@@ -2,11 +2,9 @@
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Shared;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Persistence.Logging;
-using ToSic.Eav.Services;
 using ToSic.Eav.Sys.Configuration;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Configuration;
@@ -16,14 +14,13 @@ namespace ToSic.Eav.ImportExport.Internal.Zip;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipExport(
     IAppReaderFactory appReaders,
-    IDataSourcesService dataSourceServices,
     XmlExporter xmlExporter,
     Generator<AppFileManager> fileManagerGenerator,
     IGlobalConfiguration globalConfiguration,
     ISysFeaturesService features
     )
     : ServiceBase(EavLogs.Eav + ".ZipExp",
-        connect: [appReaders, xmlExporter, globalConfiguration, dataSourceServices, fileManagerGenerator, features])
+        connect: [appReaders, xmlExporter, globalConfiguration, fileManagerGenerator, features])
 {
     private int _appId;
     private int _zoneId;
@@ -233,12 +230,14 @@ public class ZipExport(
 
         // 2022-01-04 2dm - new code, simplified
         // Get all entities except Attribute/Field Metadata, which is exported in a different way
-        var entities = dataSourceServices
-            .CreateDefault(new DataSourceOptions
-            {
-                AppIdentityOrReader = appIdentity,
-                ShowDrafts = true,
-            })
+        var entities =
+            //dataSourceServices
+            //.CreateDefault(new DataSourceOptions
+            //{
+            //    AppIdentityOrReader = appIdentity,
+            //    ShowDrafts = true,
+            //})
+            _appReader
             .List
             .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute)
             .ToList();
