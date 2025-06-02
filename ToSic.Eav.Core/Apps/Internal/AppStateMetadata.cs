@@ -21,13 +21,13 @@ public class AppStateMetadata
     private AppThingsIdentifiers Target { get; }
 
 
-    public IEntity AppConfiguration => (_appConfigSynched ??= BuildSynchedMetadata(Owner, AppLoadConstants.TypeAppConfig)).Value;
-    private SynchronizedObject<IEntity> _appConfigSynched;
+    public IEntity AppConfiguration => (_appConfigSynced ??= BuildSyncedMetadata(Owner, AppLoadConstants.TypeAppConfig)).Value;
+    private SynchronizedObject<IEntity> _appConfigSynced;
 
-    private static SynchronizedObject<IEntity> BuildSynchedMetadata(IAppStateCache parent, string staticName)
+    private static SynchronizedObject<IEntity> BuildSyncedMetadata(IAppStateCache parent, string staticName)
     {
-        var synched = new SynchronizedObject<IEntity>(parent, () => parent.Metadata.FirstOrDefaultOfType(staticName));
-        return synched;
+        var synced = new SynchronizedObject<IEntity>(parent, () => parent.Metadata.FirstOrDefaultOfType(staticName));
+        return synced;
     }
 
     private static SynchronizedObject<IEntity> BuildSynchedItem(IEntitiesSource parent, string staticName)
@@ -40,7 +40,7 @@ public class AppStateMetadata
     /// <summary>
     /// The App-Settings or App-Resources
     /// </summary>
-    public IEntity MetadataItem => (_appItemSynced ??= BuildSynchedMetadata(Owner, Target.AppType)).Value;
+    public IEntity MetadataItem => (_appItemSynced ??= BuildSyncedMetadata(Owner, Target.AppType)).Value;
     private SynchronizedObject<IEntity> _appItemSynced;
 
     public IEntity SystemItem => (_appSystemSynched ??= BuildSynchedItem(Owner, Target.SystemType)).Value;
