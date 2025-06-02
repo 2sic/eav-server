@@ -49,6 +49,8 @@ public class StartupTestsApps
             .AddEavCoreLibAndSys()
 
             // Fallbacks for services which were not implemented - must come last
+            .AddContextFallbackServices()
+            .AddAppPersistenceFallbackServices()
             .AddAppFallbackServices()
             .AddEavImportExportFallback()
             .AddEavDataBuildFallbacks()
