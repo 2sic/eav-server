@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Serialization;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Convert an entity into another format

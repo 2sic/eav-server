@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data;
-
-namespace ToSic.Eav.Persistence;
+﻿namespace ToSic.Eav.Persistence;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

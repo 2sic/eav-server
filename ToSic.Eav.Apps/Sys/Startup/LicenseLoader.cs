@@ -17,7 +17,6 @@
 
 using System.Text;
 using System.Text.Json;
-using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Security.Encryption;
 using ToSic.Eav.Sys.Configuration;
 using ToSic.Sys.Capabilities;

@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
-
-namespace ToSic.Eav.Serialization;
+﻿namespace ToSic.Eav.Serialization;
 
 /// <summary>
 /// Marks objects that can serialize EAV data like Entities or Content-Types. <br/>

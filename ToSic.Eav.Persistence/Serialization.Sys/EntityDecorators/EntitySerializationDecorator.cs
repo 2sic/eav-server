@@ -1,7 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Data;
-
-namespace ToSic.Eav.Serialization;
+﻿namespace ToSic.Eav.Serialization;
 
 /// <summary>
 /// An entity should be able to specify if some properties should not be included
