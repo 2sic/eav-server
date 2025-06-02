@@ -7,7 +7,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     private JsonSerializer Serializer { get; } = db.JsonSerializerGenerator.New();
 
     /// <summary>
-    /// Set an Attribute as Title on an AttributeSet
+    /// Set an Attribute as Title on a Content-Type
     /// </summary>
     public void SetTitleAttribute(int attributeId, int contentTypeId)
     {
@@ -59,7 +59,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     private int AttributeId(int setId, string staticName) => GetAttribute(setId, name: staticName).AttributeId;
 
     /// <summary>
-    /// Set an Attribute as Title on an AttributeSet
+    /// Set an Attribute as Title on a Content-Type
     /// </summary>
     public void RenameAttribute(int attributeId, int contentTypeId, string newName)
     {
@@ -74,7 +74,7 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
     }
 
     /// <summary>
-    /// Append a new Attribute to an AttributeSet
+    /// Append a new Attribute to a Content-Type
     /// </summary>
     private int AppendToEndAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute)
     {
@@ -85,9 +85,9 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
 
         return AddAttributeAndSave(contentTypeId, contentTypeAttribute, maxIndex + 1 ?? 0);
     }
-        
+
     /// <summary>
-    /// Append a new Attribute to an AttributeSet
+    /// Append a new Attribute to a Content-Type
     /// </summary>
     public int AddAttributeAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
     {

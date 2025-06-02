@@ -4,7 +4,7 @@ partial class DbContentType
 {
 
     /// <summary>
-    /// if AttributeSet refers another AttributeSet, get ID of the referred AttributeSet. Otherwise returns passed ContentTypeId.
+    /// if AttributeSet refers another Content-Type, get ID of the referred Content-Type. Otherwise, returns passed ContentTypeId.
     /// </summary>
     /// <param name="contentTypeId">ContentTypeId to resolve</param>
     internal int ResolvePotentialGhostContentTypeId(int contentTypeId)
@@ -18,13 +18,13 @@ partial class DbContentType
 
     private List<TsDynDataContentType> FindPotentialGhostSources(string contentTypeParentName)
     {
-        var ghostAttributeSets = DbContext.SqlDb.TsDynDataContentTypes.Where(
+        var ghostType = DbContext.SqlDb.TsDynDataContentTypes.Where(
                 a => a.StaticName == contentTypeParentName
                      && a.TransDeletedId == null
                      && a.InheritContentTypeId == null).
             OrderBy(a => a.ContentTypeId)
             .ToList();
-        return ghostAttributeSets;
+        return ghostType;
     }
 
 
@@ -74,17 +74,17 @@ partial class DbContentType
     private int FindGhostParentIdOrLogWarnings(string contentTypeParentName)
     {
         // Look for the potential source of this ghost
-        var ghostAttributeSets = DbContext.ContentType.FindPotentialGhostSources(contentTypeParentName);
+        var ghostContentTypes = DbContext.ContentType.FindPotentialGhostSources(contentTypeParentName);
 
-        if (ghostAttributeSets.Count == 1)
-            return ghostAttributeSets.First().ContentTypeId;
+        if (ghostContentTypes.Count == 1)
+            return ghostContentTypes.First().ContentTypeId;
 
         // If multiple masters are found, use first and add a warning message
-        if (ghostAttributeSets.Count > 1)
-            DbContext.ImportLogToBeRefactored.Add(new($"Multiple potential master AttributeSets found for StaticName: {contentTypeParentName}", Message.MessageTypes.Warning));
+        if (ghostContentTypes.Count > 1)
+            DbContext.ImportLogToBeRefactored.Add(new($"Multiple potential master Content-Types found for StaticName: {contentTypeParentName}", Message.MessageTypes.Warning));
 
         // nothing found - report error
-        DbContext.ImportLogToBeRefactored.Add(new($"AttributeSet not imported because master set not found: {contentTypeParentName}", Message.MessageTypes.Warning));
+        DbContext.ImportLogToBeRefactored.Add(new($"Content-Type not imported because master set not found: {contentTypeParentName}", Message.MessageTypes.Warning));
         return 0;
     }
 

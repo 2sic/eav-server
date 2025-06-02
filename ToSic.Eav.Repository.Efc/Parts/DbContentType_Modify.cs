@@ -42,17 +42,17 @@ partial class DbContentType
     {
         var destinationSet = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
 
-        // add new AttributeSet, do basic configuration if possible, then save
+        // add new Content-Type, do basic configuration if possible, then save
         if (destinationSet == null)
             destinationSet = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, contentType.NameId, contentType.Scope, false, null);
 
-        // to use existing attribute Set, do some minimal conflict-checking
+        // to use existing Content-Type, do some minimal conflict-checking
         else
         {
-            DbContext.ImportLogToBeRefactored.Add(new($"AttributeSet already exists{contentType.NameId}|{contentType.Name}", Message.MessageTypes.Information));
+            DbContext.ImportLogToBeRefactored.Add(new($"Content-Type already exists{contentType.NameId}|{contentType.Name}", Message.MessageTypes.Information));
             if (destinationSet.InheritContentTypeId.HasValue)
             {
-                DbContext.ImportLogToBeRefactored.Add(new("Not allowed to import/extend an AttributeSet which uses Configuration of another AttributeSet: " + contentType.NameId, Message.MessageTypes.Error));
+                DbContext.ImportLogToBeRefactored.Add(new("Not allowed to import/extend an Content-Type which uses Configuration of another Content-Type: " + contentType.NameId, Message.MessageTypes.Error));
                 return null;
             }
         }
@@ -81,7 +81,7 @@ partial class DbContentType
         );
 
     /// <summary>
-    /// Import an AttributeSet with all Attributes and AttributeMetaData
+    /// Import a Content-Type with all Attributes and AttributeMetaData
     /// </summary>
     private void ExtendSaveContentTypes(ContentType contentType, SaveOptions saveOptions)
     {

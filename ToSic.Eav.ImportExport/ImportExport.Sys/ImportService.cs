@@ -60,14 +60,14 @@ public class ImportService(
     #endregion
 
     /// <summary>
-    /// Import AttributeSets and Entities
+    /// Import Content-Types and Entities
     /// </summary>
     public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities) 
     {
         var l = Log.Fn($"types: {newTypes?.Count}; entities: {newEntities?.Count}", timer: true);
         Storage.DoWithDelayedCacheInvalidation(() =>
         {
-            #region import AttributeSets if any were included but rollback transaction if necessary
+            #region import Content-Types if any were included but rollback transaction if necessary
 
             if (newTypes == null)
                 l.A("No types to import");
@@ -86,15 +86,15 @@ public class ImportService(
                             var newTypeList = newTypes.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
-                            // 2020-07-10 2dm changed to use StartsWith, as we have more scopes now
-                            // before var sysAttributeSets = newSetsList.Where(a => a.Scope == Constants.ScopeSystem).ToList();
-                            // warning: this may not be enough, we may have to always import the fields-scope first...
                             var newSysTypes = newTypeList
-                                .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false).ToList();
+                                .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false)
+                                .ToList();
                             if (newSysTypes.Any())
                                 MergeAndSaveContentTypes(appReaderRaw, newSysTypes);
 
-                            return newTypeList.Where(a => !newSysTypes.Contains(a)).ToList();
+                            return newTypeList
+                                .Where(a => !newSysTypes.Contains(a))
+                                .ToList();
                         });
 
                         var lInner = Log.Fn(message: "Import Types in non-Sys scopes", timer: true);
@@ -104,7 +104,7 @@ public class ImportService(
                             // and it may need these to load the remaining attributes of the content-types
                             var appReaderRaw = Storage.Loader.AppReaderRaw(AppId, new());
 
-                            // now the remaining attributeSets
+                            // now the remaining Content-Types
                             MergeAndSaveContentTypes(appReaderRaw, nonSysTypes);
                         }
                         lInner.Done();
@@ -272,11 +272,11 @@ public class ImportService(
         if (_mergeCountToStopLogging == LogMaxMerges)
             l.A($"Hit {LogMaxMerges} merges, will stop logging details");
 
-        #region try to get AttributeSet or otherwise cancel & log error
+        #region try to get Content-Type or otherwise cancel & log error
 
         var contentType = appState.GetContentType(update.Type.NameId);
 
-        if (contentType == null) // AttributeSet not Found
+        if (contentType == null) // not Found
         {
             Storage.ImportLogToBeRefactored.Add(new($"ContentType not found for {update.Type.NameId}", Message.MessageTypes.Error));
             return l.ReturnNull("error");

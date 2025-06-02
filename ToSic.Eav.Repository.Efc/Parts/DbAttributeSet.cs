@@ -80,12 +80,12 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
         }
         catch (InvalidOperationException ex)
         {
-            throw new($"Unable to get Content-Type/AttributeSet with StaticName \"{name}\" in app {DbContext.AppId}", ex);
+            throw new($"Unable to get Content-Type with StaticName \"{name}\" in app {DbContext.AppId}", ex);
         }
     }
 
     /// <summary>
-    /// Test whether AttributeSet exists on specified App and is not deleted
+    /// Test whether Content-Type exists on specified App and is not deleted
     /// </summary>
     private bool DbAttribSetExists(int appId, string staticName)
         => GetDbContentTypeCoreQuery(appId).Any(a => a.StaticName == staticName);
@@ -97,12 +97,12 @@ internal class DbAttributeSet(DbDataController db) : DbPartBase(db, "Db.AttSet")
 
         var targetAppId = appId ?? DbContext.AppId;
 
-        // ensure AttributeSet with StaticName doesn't exist on App
+        // ensure Content-Type with StaticName doesn't exist on App
         if (DbContext.AttribSet.DbAttribSetExists(targetAppId, nameId))
         {
             if (skipExisting)
                 return null;
-            throw new("An AttributeSet with StaticName \"" + nameId + "\" already exists.");
+            throw new("A Content-Type with StaticName \"" + nameId + "\" already exists.");
         }
 
         var newSet = new TsDynDataContentType

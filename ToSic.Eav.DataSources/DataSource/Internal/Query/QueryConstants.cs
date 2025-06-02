@@ -29,16 +29,16 @@ public class QueryConstants
 
     #region Query terms - used for DataSources but also the App project which has a Query Manager
 
-    /// <summary>content type name of the query AttributeSet</summary>
+    /// <summary>Content-Type name of the query Content-Type</summary>
     [PrivateApi] internal static readonly string QueryTypeName = "DataPipeline";
 
-    /// <summary>content-type name of the queryPart AttributeSet</summary>
+    /// <summary>Content-Type name of the queryPart Content-Type</summary>
     [PrivateApi] internal static readonly string QueryPartTypeName = "DataPipelinePart";
 
     #endregion
 
     /// <summary>
-    /// Attribute Name on the query-Entity describing the Stream-Wiring
+    /// Content-Type Name on the query-Entity describing the Stream-Wiring
     /// </summary>
     [PrivateApi] public const string QueryStreamWiringAttributeName = "StreamWiring";
 }

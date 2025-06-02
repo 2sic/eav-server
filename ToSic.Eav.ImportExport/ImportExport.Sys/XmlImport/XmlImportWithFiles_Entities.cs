@@ -72,7 +72,7 @@ partial class XmlImportWithFiles
             var keyType = entityNode.Attribute(XmlConstants.KeyTargetTypeNameOld)?.Value;
             switch (keyType)
             {
-                // Special case: App AttributeSets must be assigned to the current app
+                // Special case: App Content-Types must be assigned to the current app
                 case XmlConstants.App:
                     targetType = (int)TargetTypes.App;
                     break;

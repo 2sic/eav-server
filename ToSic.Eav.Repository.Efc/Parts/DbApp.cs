@@ -172,7 +172,7 @@ internal class DbApp(DbDataController db) : DbPartBase(db, "Db.App")
         // Delete Attribute-In-Sets
         db.RemoveRange(attributes);
 
-        // Delete AttributeSets
+        // Delete Content-Types
         db.RemoveRange(appContentTypes);
 
         // Delete App

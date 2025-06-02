@@ -137,13 +137,13 @@ public class Attributes
     #region DB Field / Names Constants
 
     /// <summary>
-    /// AttributeSet StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
+    /// Content-Type StaticName must match this Regex. Accept Alphanumeric, except the first char must be alphabetic or underscore.
     /// </summary>
     public static Regex StaticNameValidation =
         new("^[_a-zA-Z]{1}[_a-zA-Z0-9]*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     /// <summary>
-    /// If AttributeSet StaticName doesn't match, users see this message.
+    /// If Content-Type StaticName doesn't match, users see this message.
     /// </summary>
     public static string StaticNameErrorMessage = "Only alphanumerics and underscore is allowed, first char must be alphabetic or underscore.";
 

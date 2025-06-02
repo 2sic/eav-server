@@ -218,14 +218,18 @@ public class ZipExport(
     {
             // Get Export XML
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        var attributeSets = _appReader.ContentTypes.OfScope(includeAttributeTypes: true);
-        attributeSets = attributeSets.Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
+        var contentTypes = _appReader.ContentTypes.OfScope(includeAttributeTypes: true);
+        contentTypes = contentTypes
+            .Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
         // Exclude ParentApp attributeSets
         // TODO: option to include ParentApp attributeSets
-        attributeSets = attributeSets.Where(p => !p.HasAncestor());
+        contentTypes = contentTypes
+            .Where(p => !p.HasAncestor());
 
-        var contentTypeNames = attributeSets.Select(p => p.NameId).ToArray();
+        var contentTypeNames = contentTypes
+            .Select(p => p.NameId)
+            .ToArray();
 
         // 2022-01-04 2dm - new code, simplified
         // Get all entities except Attribute/Field Metadata, which is exported in a different way
@@ -236,10 +240,13 @@ public class ZipExport(
                 ShowDrafts = true,
             })
             .List
-            .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute).ToList();
+            .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute)
+            .ToList();
 
         if (!specs.IncludeContentGroups)
-            entities = entities.Where(p => p.Type.NameId != SexyContentContentGroupName).ToList();
+            entities = entities
+                .Where(p => p.Type.NameId != SexyContentContentGroupName)
+                .ToList();
 
         // Exclude ParentApp entities
         // TODO: option to include ParentApp entities

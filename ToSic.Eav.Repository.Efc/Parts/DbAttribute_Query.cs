@@ -4,7 +4,7 @@ partial class DbAttribute
 {
 
     /// <summary>
-    /// Get Attributes of an AttributeSet
+    /// Get Attributes of a Content-Type
     /// </summary>
     internal IQueryable<TsDynDataAttribute> GetAttributeDefinitions(int contentTypeId)
     {

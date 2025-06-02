@@ -103,7 +103,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
 
     /// <summary>
-    /// Exports given AttributeSets, Entities and Templates to an XML and returns the XML as string.
+    /// Exports given Content-Types, Entities and Templates to an XML and returns the XML as string.
     /// </summary>
     /// <returns></returns>
     public string GenerateNiceXml()
@@ -112,7 +112,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
         var doc = ExportXDocument;
 
-        // Will be used to show an export protocoll in future
+        // Will be used to show an export protocol in future
         Messages = null;
 
         // Write XDocument to string and return it
@@ -181,7 +181,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
             var attributes = new XElement(XmlConstants.Attributes);
 
-            // Add all Attributes to AttributeSet including meta information
+            // Add all Attributes to Content-Type/AttributeSet including meta information
             var appMetadata = AppReader.Metadata;
             foreach (var a in set.Attributes.OrderBy(a => a.SortOrder))
             {
@@ -202,7 +202,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
             }
 
             // Add AttributeSet / Content Type
-            var attributeSet = new XElement(XmlConstants.AttributeSet,
+            var contentType = new XElement(XmlConstants.AttributeSet,
                 new XAttribute(XmlConstants.Static, set.NameId),
                 new XAttribute(XmlConstants.Name, set.Name),
                 new XAttribute(XmlConstants.Scope, set.Scope),
@@ -213,10 +213,10 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
             if (set.HasAncestor())
             {
                 var parentStaticName = set.NameId;
-                attributeSet.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
+                contentType.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
             }
 
-            contentTypes.Add(attributeSet);
+            contentTypes.Add(contentType);
         }
 
         #endregion
