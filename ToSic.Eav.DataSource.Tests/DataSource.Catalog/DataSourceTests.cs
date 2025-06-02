@@ -5,11 +5,14 @@ namespace ToSic.Eav.DataSource.Catalog;
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class DataSourceTests(DataSourceCatalog dsCatalog)
 {
-    public const int EavInstalledDsCount = 40; // with 2sxc it's ca. 48;
+    // Note that these numbers will change as we refactor everything
+    // since some data sources will be in a later project and not loaded at this time
+    // So adjust as you refactor it.
+    public const int EavInstalledDsCount = 39; // with 2sxc it's ca. 48;
     public const int TestingAddedDsCount = 2;
     public const int StandardInstalledDSCount = EavInstalledDsCount + TestingAddedDsCount;
 
-    public const int StandardInstalledPipeLineDS = 33; // with 2sxc it's ca. 39;
+    public const int StandardInstalledPipeLineDS = 32; // with 2sxc it's ca. 39;
     public const string SqlFullName = "ToSic.Eav.DataSources.Sql";
     public const string DeferredFullName = "ToSic.Eav.DataSources.DeferredPipelineQuery";
 

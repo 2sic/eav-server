@@ -5,8 +5,6 @@ using ToSic.Eav.Integration;
 using ToSic.Eav.StartUp;
 using ToSic.Eav.TestData;
 using ToSic.Eav.Testing;
-using ToSic.Lib;
-using ToSic.Sys;
 
 namespace ToSic.Eav;
 
@@ -22,17 +20,14 @@ public class StartupCoreDataSourcesAndTestData
     /// <summary>
     /// Startup helper
     /// </summary>
-    public virtual void ConfigureServices(IServiceCollection services) =>
+    public virtual void ConfigureServices(IServiceCollection services)
+    {
         services
             .AddDataSourceTestHelpers()
             .AddTransient<DataTableTrivial>()
             .AddTransient<DataTablePerson>()
-            .AddDataSources()
-            .AddEavPersistence()
-            .AddEavDataBuild()
+            .AddDataSources();
 
-            .AddEavCoreLibAndSys()
-
-            .AddEavDataBuildFallbacks()
-            .AddEavCoreLibAndSysFallbackServices();
+        StartupTestsAppsPersistence.StartupTestsAppsPersistenceAndBelow(services);
+    }
 }

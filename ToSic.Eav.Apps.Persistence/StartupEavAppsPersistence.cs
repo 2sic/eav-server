@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Sys.AppJson;
 using ToSic.Eav.Apps.Sys.AppStateInFolder;
+using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Repositories.Sys;
@@ -59,6 +60,8 @@ public static class StartupEavAppsPersistence
         services.TryAddTransient<IAppStateLoader, AppStateLoaderUnknown>();
 
         services.TryAddTransient<IStorageFactory, StorageFactoryUnknown>();
+
+        services.TryAddTransient<IAppInitializedChecker, AppInitializedCheckerUnknown>();
 
         return services;
     }
