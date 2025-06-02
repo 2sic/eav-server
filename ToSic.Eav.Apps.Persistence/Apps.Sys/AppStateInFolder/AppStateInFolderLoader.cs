@@ -8,7 +8,7 @@ using ToSic.Sys.Utils.Assemblies;
 
 namespace ToSic.Eav.Persistence.File;
 
-internal partial class AppStateInFolderLoader : ServiceBase, IAppLoader
+internal partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 {
     #region Constructor and DI
 

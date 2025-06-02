@@ -10,7 +10,7 @@ namespace ToSic.Eav.StartUp;
 internal class EavBootLoadPresetApp(
     ILogStore logStore,
     // loader should be lazy, so we can swap the log before it's created
-    LazySvc<IAppLoader> appLoader,
+    LazySvc<IAppStateLoader> appLoader,
     AppsCacheSwitch appsCache,
     EavFeaturesLoader featuresLoader)
     : BootProcessBase("SqlWUp", bootPhase: BootPhase.Loading, priority: LoadAppPriority, connect: [logStore, appLoader, appsCache, featuresLoader])

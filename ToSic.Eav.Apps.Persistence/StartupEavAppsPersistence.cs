@@ -32,7 +32,7 @@ public static class StartupEavAppsPersistence
         services.TryAddTransient<LicenseLoader>();
 
         // core things - usually not replaced
-        services.TryAddTransient<IAppLoader, AppStateInFolderLoader>();
+        services.TryAddTransient<IAppStateLoader, AppStateInFolderLoader>();
 
         // File System Loaders
         services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
@@ -60,7 +60,7 @@ public static class StartupEavAppsPersistence
         // Unknown-Runtime for loading configuration etc. File-runtime
         services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
 
-        services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
+        services.TryAddTransient<IAppStateLoader, AppStateLoaderUnknown>();
 
         return services;
     }

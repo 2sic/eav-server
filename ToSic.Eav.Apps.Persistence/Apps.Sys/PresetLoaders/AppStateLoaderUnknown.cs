@@ -4,7 +4,7 @@ using ToSic.Eav.Internal.Unknown;
 
 namespace ToSic.Eav.Internal.Loaders;
 
-internal class AppLoaderUnknown(WarnUseOfUnknown<AppLoaderUnknown> _, Generator<IAppStateBuilder> stateBuilder): ServiceBase("Eav.BscRnt"), IAppLoader, IIsUnknown
+internal class AppStateLoaderUnknown(WarnUseOfUnknown<AppStateLoaderUnknown> _, Generator<IAppStateBuilder> stateBuilder): ServiceBase("Eav.BscRnt"), IAppStateLoader, IIsUnknown
 {
     public IAppStateBuilder LoadFullAppState(LogSettings logSettings)
         => stateBuilder.New().InitForPreset(); 

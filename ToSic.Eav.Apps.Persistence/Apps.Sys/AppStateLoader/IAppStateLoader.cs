@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Internal.Loaders;
 
-public interface IAppLoader: IHasLog
+public interface IAppStateLoader: IHasLog
 {
     IAppStateBuilder LoadFullAppState(LogSettings logSettings);
 }
