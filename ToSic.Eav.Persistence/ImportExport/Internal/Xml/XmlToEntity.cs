@@ -10,8 +10,8 @@ namespace ToSic.Eav.ImportExport.Internal.Xml;
 /// Import EAV Data from XML Format
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class XmlToEntity(IGlobalContentTypesService globalContentTypes, DataBuilder dataBuilder)
-    : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, globalContentTypes])
+public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
+    : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, globalData])
 {
     private class TargetLanguageToSourceLanguage: DimensionDefinition
     {
@@ -182,7 +182,7 @@ public class XmlToEntity(IGlobalContentTypesService globalContentTypes, DataBuil
             throw new NullReferenceException("trying to import an xml entity but type is null - " + xEntity);
 		    
         // find out if it's a system type, and use that if it exists
-        var globalType = globalContentTypes.GetContentType(typeName);
+        var globalType = globalData.GetContentType(typeName);
         var guidString = xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
                          throw new NullReferenceException("can't import an entity without a guid identifier");
         var guid = Guid.Parse(guidString);

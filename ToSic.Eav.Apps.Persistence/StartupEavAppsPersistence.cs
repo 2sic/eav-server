@@ -5,7 +5,6 @@ using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Sys.AppJson;
 using ToSic.Eav.Apps.Sys.AppStateInFolder;
 using ToSic.Eav.Caching;
-using ToSic.Eav.Configuration.Sys.Loaders;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.StartUp;
 using ToSic.Sys.Boot;
@@ -25,11 +24,7 @@ public static class StartupEavAppsPersistence
 
         services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
         services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
-        services.AddTransient<IBootProcess, EavBootLoadFeaturesAndLicenses>();
-
-        services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
         services.TryAddTransient<AppLoaderLogSettings>();   // new v20
-        services.TryAddTransient<LicenseLoader>();
 
         // core things - usually not replaced
         services.TryAddTransient<IAppStateLoader, AppStateInFolderLoader>();

@@ -14,13 +14,13 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 {
     #region MyServices
 
-    public class MyServices(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IGlobalContentTypesService globalContentTypes, object[] connect = default)
-        : MyServicesBase(connect: [metadataTargets, dataBuilder, globalContentTypes, ..connect ?? []])
+    public class MyServices(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IGlobalDataService globalData, object[] connect = default)
+        : MyServicesBase(connect: [metadataTargets, dataBuilder, globalData, ..connect ?? []])
     {
         public DataBuilder DataBuilder { get; } = dataBuilder;
 
         public ITargetTypeService MetadataTargets { get; } = metadataTargets;
-        public IGlobalContentTypesService GlobalContentTypes { get; } = globalContentTypes;
+        public IGlobalDataService GlobalData { get; } = globalData;
     }
 
     #endregion
@@ -93,7 +93,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
             msg += "app: not found, ";
         }
 
-        var globalType = Services.GlobalContentTypes.GetContentTypeIfAlreadyLoaded(staticName);
+        var globalType = Services.GlobalData.GetContentTypeIfAlreadyLoaded(staticName);
 
         if (globalType != null)
             return l.Return(globalType, $"{msg}global: found");

@@ -38,7 +38,7 @@ public static class StartUpEavCoreFallbacks
     public static IServiceCollection AddEavCoreOnlyFallbackServices(this IServiceCollection services)
     {
         // At the moment there is nothing to add here
-        services.TryAddTransient<IGlobalContentTypesService, GlobalContentTypesServiceUnknown>();
+        services.TryAddTransient<IGlobalDataService, GlobalDataServiceUnknown>();
 
         return services;
     }

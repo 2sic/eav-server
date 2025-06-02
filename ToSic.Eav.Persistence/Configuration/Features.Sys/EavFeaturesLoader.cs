@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
-using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
@@ -13,10 +12,10 @@ public class EavFeaturesLoader(
     FeaturePersistenceService featurePersistenceService,
     FeaturesIoHelper featuresIo,
     LicenseLoader licenseLoader,
-    IAppReaderFactory appReaders,
+    IGlobalDataService globalData,
     SysFeaturesService sysFeaturesService)
     : ServiceBase($"{EavLogs.Eav}FtLdr",
-        connect: [appReaders, featuresSvc, featurePersistenceService, featuresIo, licenseLoader, sysFeaturesService])
+        connect: [globalData, featuresSvc, featurePersistenceService, featuresIo, licenseLoader, sysFeaturesService])
 {
 
     /// <summary>
@@ -27,14 +26,13 @@ public class EavFeaturesLoader(
         var l = Log.Fn();
         try
         {
-            var presetApp = appReaders.GetSystemPreset();
-            l.A($"presetApp:{presetApp != null}");
+            var list = globalData.ListRequired;
+            l.A($"list:{list.Count}");
 
-            var licEntities = presetApp?.List
+            var licEntities = list
                 .OfType(LicenseEntity.TypeNameId)
                 .Select(e => new LicenseEntity(e))
-                .ToList()
-                ?? [];
+                .ToList();
             l.A($"licEnt:{licEntities.Count}");
 
             // Check all licenses and show extra message

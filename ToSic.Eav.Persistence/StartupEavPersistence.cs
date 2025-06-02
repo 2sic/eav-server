@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Configuration.Sys.Loaders;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Compression;
@@ -8,6 +9,7 @@ using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Serialization.Internal;
+using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.Integration;
 
@@ -37,6 +39,10 @@ public static class StartupEavPersistence
 
         // Compression for SQL History
         services.TryAddTransient<Compressor>();
+
+        services.AddTransient<IBootProcess, EavBootLoadFeaturesAndLicenses>();
+        services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
+        services.TryAddTransient<LicenseLoader>();
 
         services.TryAddTransient<FeaturePersistenceService>();
         services.TryAddTransient<FeaturesIoHelper>();

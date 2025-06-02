@@ -14,10 +14,10 @@ partial class JsonSerializer(JsonSerializer.MyServices services, string logName 
 
     public new class MyServices(
         ITargetTypeService metadataTargets,
-        IGlobalContentTypesService globalContentTypes,
+        IGlobalDataService globalData,
         DataBuilder dataBuilder,
         LazySvc<IValueConverter> valueConverter)
-        : SerializerBase.MyServices(metadataTargets, dataBuilder, globalContentTypes, connect: [valueConverter])
+        : SerializerBase.MyServices(metadataTargets, dataBuilder, globalData, connect: [valueConverter])
     {
         public LazySvc<IValueConverter> ValueConverter { get; } = valueConverter;
     }

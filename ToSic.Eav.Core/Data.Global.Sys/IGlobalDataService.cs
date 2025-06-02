@@ -1,13 +1,15 @@
-﻿namespace ToSic.Eav.Data.Global.Sys;
+﻿using System.Collections.Immutable;
+
+namespace ToSic.Eav.Data.Global.Sys;
 
 /// <summary>
-/// WIP - this should be an accessor for global content types, which are used for serializers.
+/// Accessor for global content types, which are used for serializers.
 /// </summary>
 /// <remarks>
 /// Since there are cases during boot where the global content types are not yet available,
 /// there is both an allow-null and strict mode for this service.
 /// </remarks>
-public interface IGlobalContentTypesService
+public interface IGlobalDataService
 {
     /// <summary>
     /// Get a single content type by name (display name or NameId).
@@ -18,4 +20,6 @@ public interface IGlobalContentTypesService
 
     /// <returns>a type object or null if not found</returns>
     IContentType GetContentTypeIfAlreadyLoaded(string name);
+
+    IImmutableList<IEntity> ListRequired { get; }
 }

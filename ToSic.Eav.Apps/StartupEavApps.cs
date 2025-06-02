@@ -19,7 +19,7 @@ public static class StartupEavApps
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
 
         // Global Content Types - needed by the Persistence Layer
-        services.TryAddTransient<IGlobalContentTypesService, GlobalContentTypesService>();
+        services.TryAddTransient<IGlobalDataService, GlobalDataService>();
 
         // Runtimes and Managers
         services.TryAddTransient<AppCachePurger>();
