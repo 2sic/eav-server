@@ -1,15 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Startup;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.StartUp;
 using ToSic.Eav.Testing;
-using ToSic.Lib;
-using ToSic.Sys;
 
 #pragma warning disable CA1822
 

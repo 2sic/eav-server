@@ -9,7 +9,7 @@ using ToSic.Sys.Utils.Assemblies;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
-internal partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
+public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 {
     #region Constructor and DI
 
@@ -68,7 +68,7 @@ internal partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         return l.Return(all, $"{all.Count} paths");
     }
 
-    internal List<FileSystemLoader> Loaders => field ??= BuildLoaders(null, LogSettings);
+    public List<FileSystemLoader> Loaders => field ??= BuildLoaders(null, LogSettings);
     private LogSettings LogSettings { get; set; }
 
     private List<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource, LogSettings logSettings)

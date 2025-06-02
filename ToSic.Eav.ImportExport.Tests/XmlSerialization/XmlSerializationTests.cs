@@ -7,7 +7,7 @@ using Xunit.DependencyInjection;
 namespace ToSic.Eav.ImportExport.Tests.XmlSerialization;
 
 [Startup(typeof(StartupTestsApps))]
-public class XmlSerializationTests(XmlSerializer xmlSerializer, IRepositoryLoader repoLoader, IAppsCatalog appsCatalog, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
+public class XmlSerializationTests(XmlSerializer xmlSerializer, IRepositoryLoaderWithRaw repoLoader, IAppsCatalog appsCatalog, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
 
     [Fact]

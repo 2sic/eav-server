@@ -8,7 +8,7 @@ public class ExceptionConverterTests
     // https://github.com/dotnet/runtime/issues/43026#issuecomment-949966701
     public void SerializeNestedExceptionsContainsNullsSuccess()
     {
-        var converter = new ExceptionConverter<Exception>();
+        var converter = new JsonExceptionConverter<Exception>();
 
         var jsonOpts = new JsonSerializerOptions();
         jsonOpts.Converters.Add(converter);

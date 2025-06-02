@@ -3,20 +3,17 @@
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Eav.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Apps.Persistence.Tests\ToSic.Eav.Apps.Persistence.Tests.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Apps.TestsHelpers\ToSic.Eav.Apps.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core.TestHelpers\ToSic.Eav.Core.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Persistence.Tests\ToSic.Eav.Persistence.Tests.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Testing.FullDbFixtures\ToSic.Eav.Testing.FullDbFixtures.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Copy ScenarioData to bin folder for reviewing during tests -->
-    <None Include="ImportApps\Import-Packages\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
