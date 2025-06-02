@@ -1,13 +1,12 @@
 ﻿using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Validation;
 using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Repositories;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Persistence.File;
 
-partial class FileSystemLoader : IRepositorySaver
+partial class FileSystemLoader
 {
     
 
