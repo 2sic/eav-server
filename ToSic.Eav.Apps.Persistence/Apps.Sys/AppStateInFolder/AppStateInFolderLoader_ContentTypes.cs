@@ -2,7 +2,7 @@
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Loaders;
 
-namespace ToSic.Eav.Persistence.File;
+namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
 partial class AppStateInFolderLoader
 {

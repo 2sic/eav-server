@@ -27,7 +27,7 @@ using ToSic.Sys.Configuration;
 using ToSic.Sys.Startup;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Internal.Licenses;
+namespace ToSic.Eav.Configuration.Sys.Loaders;
 
 /// <summary>
 /// Will check the loaded licenses and prepare validity information for use during system runtime

@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Capabilities.Fingerprints;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Eav.Configuration.Sys.Loaders;
 
 /// <summary>
 /// License entity - usually stored in the global / preset App.

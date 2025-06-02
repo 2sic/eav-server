@@ -2,11 +2,12 @@
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.StartUp;
 using ToSic.Sys.Utils.Assemblies;
 
-namespace ToSic.Eav.Persistence.File;
+namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
 internal partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 {
@@ -24,7 +25,7 @@ internal partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 
         // Add to global location so the insights can pick this ip.
         // Only add the first time it's really used
-        InternalAppLoader.LoadLog ??= Log;
+        AppStateInFolderGlobalLog.LoadLog ??= Log;
     }
 
     private readonly IServiceProvider _serviceProvider;

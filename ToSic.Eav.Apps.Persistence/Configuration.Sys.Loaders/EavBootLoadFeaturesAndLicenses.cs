@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.StartUp;
 using ToSic.Sys.Boot;
 
-namespace ToSic.Eav.Internal.Loaders;
+namespace ToSic.Eav.Configuration.Sys.Loaders;
 
 [PrivateApi]
 public class EavBootLoadFeaturesAndLicenses(ILogStore logStore, EavFeaturesLoader featuresLoader)

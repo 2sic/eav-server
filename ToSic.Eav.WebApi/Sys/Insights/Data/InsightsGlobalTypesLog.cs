@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Persistence.File;
+using ToSic.Eav.Apps.Sys.AppStateInFolder;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
@@ -15,7 +15,7 @@ internal class InsightsGlobalTypesLog(LazySvc<ILogStoreLive> logStore) : Insight
     public override string HtmlBody()
     {
         var msg = InsightsHtmlParts.PageStyles() + LogHtml.LogHeader(null, false);
-        var log = InternalAppLoader.LoadLog;
+        var log = AppStateInFolderGlobalLog.LoadLog;
         return msg + (log == null
             ? P("log is null").ToString()
             : LogHtml.DumpTree("Log for Global Types loading", log));

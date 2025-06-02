@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.ContentTypes;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Persistence.File;
+namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
 /// <summary>
 /// Special helper class for delayed construction of ContentTypes, so they can be immutable.
