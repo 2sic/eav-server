@@ -4,7 +4,6 @@ using ToSic.Eav.Apps.State;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.ImportExport.Internal.Xml;
-using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Persistence.Logging;
 using ToSic.Eav.Services;
@@ -49,10 +48,10 @@ public class ZipExport(
         _appFolder = appFolder;
         _physicalAppPath = physicalAppPath;
         _physicalPathGlobal = physicalPathGlobal;
-        ConnectLogs([
-            AppFileManager = fileManagerGenerator.New().SetFolder(appId, _physicalAppPath),
-            AppFileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal)
-        ]);
+
+        AppFileManager = fileManagerGenerator.New().SetFolder(appId, _physicalAppPath);
+        AppFileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal);
+        
         var appIdentity = new AppIdentity(_zoneId, _appId);
         _appReader = appReaders.Get(appIdentity);
         return this;
@@ -197,7 +196,8 @@ public class ZipExport(
 
             Directory.CreateDirectory(portalFilePath);
 
-            if (!File.Exists(file.Path)) continue;
+            if (!File.Exists(file.Path))
+                continue;
 
             var fullPath = Path.Combine(siteFilesDirectory.FullName, file.RelativePath);
             try
@@ -250,10 +250,13 @@ public class ZipExport(
 
         // Exclude ParentApp entities
         // TODO: option to include ParentApp entities
-        entities = entities.Where(p => !p.HasAncestor()).ToList();
+        entities = entities
+            .Where(p => !p.HasAncestor())
+            .ToList();
 
         var entityIds = entities
-            .Select(e => e.EntityId.ToString()).ToArray();
+            .Select(e => e.EntityId.ToString())
+            .ToArray();
 
         var xmlExport = xmlExporter.Init(specs, _appReader, true, contentTypeNames, entityIds);
 
