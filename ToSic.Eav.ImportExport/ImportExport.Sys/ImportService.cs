@@ -3,6 +3,7 @@ using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 using Entity = ToSic.Eav.Data.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -33,6 +34,7 @@ public class ImportService(
         // try to load the App into cache, and initialize the App before it's fully imported
         var dbController = genDbDataController.New().Init(zoneId, appId, parentAppId);
         Storage = dbController;
+        RepositoryLoaderWithRaw = dbController.LoaderWithRaw;
         AppId = appId;
         ZoneId = dbController.ZoneId;
 
@@ -50,6 +52,7 @@ public class ImportService(
     #region Private Fields
 
     internal IStorage Storage;
+    internal IRepositoryLoaderWithRaw RepositoryLoaderWithRaw;
     public SaveOptions SaveOptions;
 
     private int AppId;
@@ -80,7 +83,7 @@ public class ImportService(
                         {
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appReaderRaw = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
+                            var appReaderRaw = RepositoryLoaderWithRaw.AppReaderRaw(AppId, new());
                             var newTypeList = newTypes.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -100,7 +103,7 @@ public class ImportService(
                         {
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
-                            var appReaderRaw = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader;
+                            var appReaderRaw = RepositoryLoaderWithRaw.AppReaderRaw(AppId, new());
 
                             // now the remaining attributeSets
                             MergeAndSaveContentTypes(appReaderRaw, nonSysTypes);
@@ -117,7 +120,7 @@ public class ImportService(
                 l.A("Not entities to import");
             else
             {
-                var appStateTemp = Storage.Loader.AppStateBuilderRaw(AppId, new()).Reader; // load all entities
+                var appStateTemp = RepositoryLoaderWithRaw.AppReaderRaw(AppId, new()); // load all entities
                 var newIEntitiesRaw = Log.Quick(message: "Pre-Import Entities merge", timer: true, func: () =>
                     newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))

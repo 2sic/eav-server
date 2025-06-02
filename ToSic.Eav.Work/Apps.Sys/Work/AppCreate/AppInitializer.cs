@@ -17,7 +17,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppInitializer(
     LazySvc<DataBuilder> builder,
-    Generator<IRepositoryLoader> repoLoader,
+    Generator<IRepositoryLoaderWithRaw> repoLoader,
     GenWorkDb<WorkEntitySave> entitySave,
     GenWorkDb<WorkContentTypesMod> contentTypesMod,
     AppCachePurger cachePurger,
@@ -83,7 +83,7 @@ public class AppInitializer(
             // this is because other APIs may access the AppStates (though they shouldn't)
             CachePurger.Purge(appReader);
             // get the latest app-state, but not-initialized so we can make changes
-            appReader = repoLoader.New().AppStateBuilderRaw(appReader.AppId, codeRefTrail.WithHere()).Reader;
+            appReader = repoLoader.New().AppReaderRaw(appReader.AppId, codeRefTrail.WithHere());
         }
 
         addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appReader, task));

@@ -5,7 +5,7 @@ namespace ToSic.Eav.Repository.Efc;
 /// <summary>
 /// Wrapper for the EfcLoader, because we also need to do write operations on PrimaryApps, but the EFC loader cannot do that
 /// </summary>
-internal class EfcRepositoryLoader(DbDataController dataController) : IRepositoryLoader
+internal class EfcRepositoryLoader(DbDataController dataController) : IRepositoryLoaderWithRaw
 {
     private readonly DbDataController _dataController = dataController.Init(null, null);
 
@@ -14,11 +14,14 @@ internal class EfcRepositoryLoader(DbDataController dataController) : IRepositor
     public IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
         => _dataController.Loader.ContentTypes(appId, source);
 
-    public IAppStateBuilder AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)
-        => _dataController.Loader.AppStateBuilderRaw(appId, codeRefTrail);
+    public IAppStateBuilder AppStateRawBuilder(int appId, CodeRefTrail codeRefTrail)
+        => _dataController.LoaderWithRaw.AppStateRawBuilder(appId, codeRefTrail);
 
-    public IAppStateCache AppStateInitialized(int appId, CodeRefTrail codeRefTrail)
-        => _dataController.Loader.AppStateInitialized(appId, codeRefTrail);
+    public IAppReader AppReaderRaw(int appId, CodeRefTrail codeRefTrail)
+        => _dataController.LoaderWithRaw.AppReaderRaw(appId, codeRefTrail);
+
+    public IAppStateCache AppState(int appId, CodeRefTrail codeRefTrail)
+        => _dataController.Loader.AppState(appId, codeRefTrail);
 
     public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds = null)
         => _dataController.Loader.Update(app, startAt, codeRefTrail, entityIds);

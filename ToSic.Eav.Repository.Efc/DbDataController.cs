@@ -300,7 +300,8 @@ public class DbDataController(
     /// The loader must use the same connection, to ensure it runs in existing transactions.
     /// Otherwise, the loader would be blocked from getting intermediate data while we're running changes. 
     /// </summary>
-    public IRepositoryLoader Loader => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
+    public IRepositoryLoader Loader => LoaderWithRaw;
+    public IRepositoryLoaderWithRaw LoaderWithRaw => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
 
     public void DoWhileQueuingVersioning(Action action)
         => Versioning.DoAndSaveHistoryQueue(action);

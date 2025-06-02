@@ -140,7 +140,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
             var loader = tools.RepositoryLoader(null);
             if (primaryLanguage != null)
                 loader.PrimaryLanguage = primaryLanguage;
-            appState = loader.AppStateInitialized(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}; DateTime: {DateTime.Now:O}; 2sxc Version: {EavSystemInfo.VersionString}"));
+            appState = loader.AppState(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}; DateTime: {DateTime.Now:O}; 2sxc Version: {EavSystemInfo.VersionString}"));
             Set(cacheKey, appState);
         }
 

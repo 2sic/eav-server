@@ -32,7 +32,7 @@ public class EfcAppLoader(
         [
             context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, featuresSvc, dataBuilder,
             dataDeserializer, appFileContentTypesLoader, appStateBuilder
-        ]), IRepositoryLoader
+        ]), IRepositoryLoaderWithRaw
 {
     #region Setup, SQL Timer, Primary Language
     
@@ -94,16 +94,19 @@ public class EfcAppLoader(
     #region AppPackage Loader
 
     /// <inheritdoc />
-    IAppStateBuilder IRepositoryLoader.AppStateBuilderRaw(int appId, CodeRefTrail codeRefTrail)
+    IAppStateBuilder IRepositoryLoaderWithRaw.AppStateRawBuilder(int appId, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<IAppStateBuilder>($"{appId}", timer: true);
         codeRefTrail.WithHere();
-        var builder = LoadAppStateFromDb(appId, codeRefTrail);
+        var builder = LoadAppStateRawFromDb(appId, codeRefTrail);
         return l.ReturnAsOk(builder);
     }
 
+    IAppReader IRepositoryLoaderWithRaw.AppReaderRaw(int appId, CodeRefTrail codeRefTrail)
+        => LoadAppStateRawFromDb(appId, codeRefTrail).Reader;
+
     /// <inheritdoc />
-    IAppStateCache IRepositoryLoader.AppStateInitialized(int appId, CodeRefTrail codeRefTrail)
+    IAppStateCache IRepositoryLoader.AppState(int appId, CodeRefTrail codeRefTrail)
     {
         // Note: Ignore ensureInitialized on the content app
         // The reason is that this app - even when empty - is needed in the cache before data is imported
@@ -113,8 +116,7 @@ public class EfcAppLoader(
 
         var l = Log.Fn<IAppStateCache>($"{appId}", timer: true);
 
-        IRepositoryLoader loader = this;
-        var builder = loader.AppStateBuilderRaw(appId, codeRefTrail.WithHere().AddMessage("First Build"));
+        var builder = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere().AddMessage("First Build"));
 
         if (builder.Reader.Specs.IsContentApp())
             return l.Return(builder.AppState, "default app, don't auto-init");
@@ -125,7 +127,7 @@ public class EfcAppLoader(
         if (!needsReload)
             return l.Return(builder.AppState, "with init check, no reload needed");
 
-        var reloaded = loader.AppStateBuilderRaw(appId, codeRefTrail.WithHere()).AppState;
+        var reloaded = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere()).AppState;
         return l.Return(reloaded, "with init check; reloaded");
     }
 
@@ -137,7 +139,7 @@ public class EfcAppLoader(
     /// <param name="appId">AppId (can be different from the appId on current context (e.g. if something is needed from the default appId, like MetaData)</param>
     /// <param name="codeRefTrail"></param>
     /// <returns>An object with everything which an app has, usually for caching</returns>
-    private IAppStateBuilder LoadAppStateFromDb(int appId, CodeRefTrail codeRefTrail)
+    private IAppStateBuilder LoadAppStateRawFromDb(int appId, CodeRefTrail codeRefTrail)
     {
         var logStoreEntry = logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
@@ -145,8 +147,8 @@ public class EfcAppLoader(
         var l = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
         var appIdentity = appsCatalog.AppIdentity(appId);
         var appGuidName = appsCatalog.AppNameId(appIdentity);
-        logStoreEntry.AddSpec("App", $"{appIdentity.Show()}");
-        logStoreEntry.AddSpec("App NameId", appGuidName);
+        logStoreEntry?.AddSpec("App", $"{appIdentity.Show()}");
+        logStoreEntry?.AddSpec("App NameId", appGuidName);
         codeRefTrail.WithHere().AddMessage($"App: {appId}, {nameof(appGuidName)}: '{appGuidName}'");
 
         // This will contain the parent reference - in most cases it's the -42 App

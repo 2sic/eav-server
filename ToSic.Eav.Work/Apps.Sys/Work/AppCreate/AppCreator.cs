@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppCreator(
     DbDataController db,
-    IRepositoryLoader repositoryLoader,
+    IRepositoryLoaderWithRaw repositoryLoader,
     AppCachePurger appCachePurger,
     Generator<AppInitializer> appInitGenerator)
     : ServiceBase("Eav.AppBld", connect: [db, appInitGenerator, appCachePurger, repositoryLoader])
@@ -19,9 +19,6 @@ public class AppCreator(
     #region Constructor / DI
 
     private int _zoneId;
-
-    protected readonly AppCachePurger AppCachePurger = appCachePurger;
-    protected readonly IRepositoryLoader RepositoryLoader = repositoryLoader;
 
     public AppCreator Init(int zoneId)
     {
@@ -45,19 +42,19 @@ public class AppCreator(
         var appId = CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);
 
         // must get app from DB directly, not from cache, so no State.Get(...)
-        var appState = RepositoryLoader.AppStateBuilderRaw(appId, new()).Reader;
+        var appState = repositoryLoader.AppReaderRaw(appId, new());
 
         appInitGenerator.New().InitializeApp(appState, appName, new());
     }
 
     private int CreateInDb(string appGuid, int? inheritAppId)
     {
-        Log.A("create new app");
+        var l = Log.Fn<int>("create new app");
         var app = db.Init(_zoneId, null, inheritAppId).App.AddApp(null, appGuid, inheritAppId);
 
-        AppCachePurger.PurgeZoneList();
-        Log.A($"app created a:{app.AppId}, guid:{appGuid}");
-        return app.AppId;
+        appCachePurger.PurgeZoneList();
+        l.A($"app created a:{app.AppId}, guid:{appGuid}");
+        return l.Return(app.AppId);
     }
 
 }

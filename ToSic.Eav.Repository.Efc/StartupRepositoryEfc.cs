@@ -30,6 +30,7 @@ public static class StartupRepositoryEfc
         // Inner loader for use of the main RepositoryLoader
         services.TryAddTransient<EfcAppLoader>();
         services.TryAddTransient<IRepositoryLoader, EfcRepositoryLoader>();
+        services.TryAddTransient<IRepositoryLoaderWithRaw, EfcRepositoryLoader>();
         services.AddTransient<IBootProcess, BootWarmUpEavSql>();
 
 
