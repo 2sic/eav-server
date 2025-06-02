@@ -34,6 +34,7 @@ public static class StartupEav
             .AddEavWork()
             // Apps
             .AddEavApps()
+            .AddEavAppsPersistence()
             // SQL Server
             .AddRepositoryAndEfc()
             // Import/Export as well as File Based Json loading

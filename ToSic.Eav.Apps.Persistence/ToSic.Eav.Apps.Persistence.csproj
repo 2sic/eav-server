@@ -4,25 +4,25 @@
 
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
-  <!--<Import Project="../SharedImports/CsProj.Props/Nullable.props" />-->
+  <Import Project="../SharedImports/CsProj.Props/Nullable.props" />
 
   <PropertyGroup>
-    <RootNamespace>ToSic</RootNamespace>
+    <RootNamespace>ToSic.Eav</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.Apps.Persistence\ToSic.Eav.Apps.Persistence.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <!--<ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />
@@ -30,10 +30,6 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DataSources\Internal\" />
-  </ItemGroup>
+  </ItemGroup>-->
 
 </Project>

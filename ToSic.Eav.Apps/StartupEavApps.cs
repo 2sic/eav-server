@@ -14,14 +14,9 @@ using ToSic.Eav.Integration;
 using ToSic.Eav.Integration.Security;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Internal.Features;
-using ToSic.Eav.Internal.Licenses;
-using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Internal.Unknown;
 using ToSic.Eav.Security.Internal;
-using ToSic.Eav.StartUp;
-using ToSic.Sys.Boot;
 using ToSic.Sys.Security.Permissions;
-using ToSic.Sys.Utils.Assembly;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;
@@ -52,17 +47,17 @@ public static class StartupEavApps
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
         // App Loaders
-        services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
+        //services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
 
-        services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
-        services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
-        services.AddTransient<IBootProcess, EavBootLoadFeaturesAndLicenses>();
+        //services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
+        //services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
+        //services.AddTransient<IBootProcess, EavBootLoadFeaturesAndLicenses>();
 
-        services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
-        services.TryAddTransient<FeaturePersistenceService>();
-        services.TryAddTransient<FeaturesIoHelper>();
-        services.TryAddTransient<AppLoaderLogSettings>();   // new v20
-        services.TryAddTransient<LicenseLoader>();
+        //services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
+        //services.TryAddTransient<FeaturePersistenceService>();
+        //services.TryAddTransient<FeaturesIoHelper>();
+        //services.TryAddTransient<AppLoaderLogSettings>();   // new v20
+        //services.TryAddTransient<LicenseLoader>();
 
         // App-State and Cache
         services.AddTransient<AppsCacheSwitch>();
@@ -76,9 +71,9 @@ public static class StartupEavApps
         services.TryAddTransient<AppDataStackService>();
 
 
-        // File System Loaders
-        services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
-        services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
+        //// File System Loaders
+        //services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
+        //services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
 
         // App Permission Check moved to this project as the implementations are now all identical
         services.TryAddTransient<AppPermissionCheck>();
@@ -89,8 +84,8 @@ public static class StartupEavApps
         // V13 Language Checks
         services.TryAddTransient<AppUserLanguageCheck>();
 
-        // v17
-        services.TryAddTransient<IAppJsonService, AppJsonService>();
+        //// v17
+        //services.TryAddTransient<IAppJsonService, AppJsonService>();
 
         return services;
     }
@@ -110,11 +105,11 @@ public static class StartupEavApps
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
         services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
-        services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
+        //services.TryAddTransient<IAppInputTypesLoader, AppInputTypesLoaderUnknown>();
 
-        // Unknown-Runtime for loading configuration etc. File-runtime
-        services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
-        services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
+        //// Unknown-Runtime for loading configuration etc. File-runtime
+        //services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
+        //services.TryAddTransient<IAppLoader, AppLoaderUnknown>();
 
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
 

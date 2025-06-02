@@ -11,12 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Apps\AppReader\NewFolder\**" />
-    <EmbeddedResource Remove="Apps\AppReader\NewFolder\**" />
-    <None Remove="Apps\AppReader\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
@@ -31,6 +25,10 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Apps\Sys\AppJson\" />
   </ItemGroup>
 
 </Project>

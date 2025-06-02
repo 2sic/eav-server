@@ -33,6 +33,7 @@ public class StartupTestsApps
             .AddFixtureHelpers()
             // Apps
             .AddEavApps()
+            .AddEavAppsPersistence()
 
             // SQL Server
             .AddRepositoryAndEfc()

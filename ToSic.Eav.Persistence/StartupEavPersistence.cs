@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Compression;
+using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.File;
@@ -36,6 +37,9 @@ public static class StartupEavPersistence
 
         // Compression for SQL History
         services.TryAddTransient<Compressor>();
+
+        services.TryAddTransient<FeaturePersistenceService>();
+        services.TryAddTransient<FeaturesIoHelper>();
 
         return services;
     }
