@@ -62,7 +62,7 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
         DeleteWarning = recDec.DeleteWarning;
 
         // Mark empty if possible - so it has no attributes, and it has a decorator to support this
-        if (!type.Attributes.Any() && type.Metadata.HasType(Eav.Metadata.Decorators.SaveEmptyDecoratorId))
+        if (!type.Attributes.Any() && type.Metadata.HasType(Eav.Metadata.KnownDecorators.SaveEmptyDecoratorId))
             CreateEmpty = true;
     }
 

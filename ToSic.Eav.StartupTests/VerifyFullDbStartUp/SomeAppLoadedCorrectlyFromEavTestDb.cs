@@ -24,6 +24,6 @@ public class SomeAppLoadedCorrectlyFromEavTestDb(IAppReaderFactory appReaders) :
 
     [Fact]
     public void GetContentTypeOnNormalAppFailsInNet9AskSTV() => 
-        NotNull(appReaders.GetTac(AppIdentity).GetContentType(Decorators.IsPickerDataSourceDecoratorId));
+        NotNull(appReaders.GetTac(AppIdentity).GetContentType(KnownDecorators.IsPickerDataSourceDecoratorId));
 
 }

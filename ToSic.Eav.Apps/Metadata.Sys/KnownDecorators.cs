@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Metadata;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class Decorators
+public class KnownDecorators
 {
     public static string MessageField = "Message";
 

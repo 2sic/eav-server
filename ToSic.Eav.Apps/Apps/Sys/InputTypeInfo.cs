@@ -2,7 +2,7 @@
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
-using static ToSic.Eav.Metadata.Decorators;
+using static ToSic.Eav.Metadata.KnownDecorators;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
