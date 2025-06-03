@@ -29,6 +29,7 @@ public class PropertyLookupDictionary(string nameId, IDictionary<string, object>
             : PropReqResult.Null(path);
     }
 
-    public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
-        => [new() { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" }];
+    // #DropUseOfDumpProperties
+    //public List<PropertyDumpItem> _DumpNameWipDroppingMostCases(PropReqSpecs specs, string path) 
+    //    => [new() { Path = $"Not supported on {nameof(PropertyLookupDictionary)}" }];
 }

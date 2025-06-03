@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Services;
 using ToSic.Eav.Context;
+using ToSic.Eav.Data.PropertyDump.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSources.Sys.Internal;
 using static ToSic.Eav.Apps.AppStackConstants;
@@ -38,13 +39,15 @@ public class SystemStack: CustomDataSourceAdvanced
 
     private readonly IAppReaderFactory _appReadFac;
     private readonly IZoneCultureResolver _zoneCulture;
+    private readonly IPropertyDumpService _dumpService;
     private readonly AppDataStackService _dataStackService;
 
-    public SystemStack(MyServices services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture)
-        : base(services, "Ds.AppStk", connect: [appReadFac, zoneCulture, dataStackService])
+    public SystemStack(MyServices services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture, IPropertyDumpService dumpService)
+        : base(services, "Ds.AppStk", connect: [appReadFac, zoneCulture, dataStackService, dumpService])
     {
         _appReadFac = appReadFac;
         _zoneCulture = zoneCulture;
+        _dumpService = dumpService;
         _dataStackService = dataStackService;
         ProvideOut(GetStack);
     }
@@ -67,15 +70,19 @@ public class SystemStack: CustomDataSourceAdvanced
         var settings = _dataStackService.Init(appState).GetStack(stackName);
 
         // Dump results
-        var dump = settings._Dump(new(null, languages, true, Log), null);
+        var dump = _dumpService.Dump(settings, new(null, languages, true, Log), null);
+            // settings._Dump(new(null, languages, true, Log), null);
 
         dump = SystemStackHelpers.ApplyKeysFilter(dump, Keys);
 
         // V1 - show all options, just the top hit
-        var res2 = SystemStackHelpers.ReducePropertiesToRelevantOnes(dump)
+        var res2 = SystemStackHelpers
+            .ReducePropertiesToRelevantOnes(dump)
             .ToList();
 
-        var asRaw = res2.Select(r => new AppStackDataRaw(r)).ToList();
+        var asRaw = res2
+            .Select(r => new AppStackDataRaw(r))
+            .ToList();
         // Note: must use configure here, because AppId and AddValues are properties that's not set in the constructor
         var options = new RawConvertOptions(addKeys: AddValues ? new[] { "Value" } : null);
         var stackFactory = DataFactory.SpawnNew(options: AppStackDataRaw.Options with { AppId = AppId, RawConvertOptions = options });

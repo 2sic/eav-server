@@ -49,7 +49,9 @@ public class PropertyStackDump: IPropertyDumper
             {
                 var sourceDump =
                     dumpService?.Dump(s.Source, specs, path)
-                    ?? s.Source._Dump(specs, path);
+                    ?? [];
+                    // #DropUseOfDumpProperties
+                    //?? s.Source._DumpNameWipDroppingMostCases(specs, path);
                 sourceDump.ForEach(sd =>
                 {
                     sd.SourceName = s.Key;

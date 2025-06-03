@@ -66,4 +66,9 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
         // All loops completed, maybe one got a temporary result, return that
         return l.Return(result, "not-final");
     }
+
+    // #DropUseOfDumpProperties
+    //[PrivateApi("Internal")]
+    //public List<PropertyDumpItem> _DumpNameWipDroppingMostCases(PropReqSpecs specs, string path)
+    //    => new PropertyStackDump().Dump(this, specs, path, null);
 }

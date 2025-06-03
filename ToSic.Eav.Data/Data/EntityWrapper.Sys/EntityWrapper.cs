@@ -154,9 +154,10 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public virtual PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
         => Entity.FindPropertyInternal(specs, path.Add("Wrap", specs.Field));
 
-    [PrivateApi("Internal")]
-    public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) 
-        => Entity._Dump(specs, path);
+    // #DropUseOfDumpProperties
+    //[PrivateApi("Internal")]
+    //public List<PropertyDumpItem> _DumpNameWipDroppingMostCases(PropReqSpecs specs, string path) 
+    //    => Entity._DumpNameWipDroppingMostCases(specs, path);
 
     public IEnumerable<IDecorator<IEntity>> Decorators { get; } = [];
 }

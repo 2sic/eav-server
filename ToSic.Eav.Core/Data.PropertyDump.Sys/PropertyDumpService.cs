@@ -42,8 +42,8 @@ public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceB
         }
 
         // ATM do this as a last resort, since we want the rest to work first...
-        if (target is IPropertyLookupDump selfDumping)
-            return selfDumping._Dump(specs, path);
+        if (target is IPropertyDumpCustom selfDumping)
+            return selfDumping._DumpNameWipDroppingMostCases(specs, path);
 
         return l.Return([], "can't dump, no provider and not self-dumping");
     }

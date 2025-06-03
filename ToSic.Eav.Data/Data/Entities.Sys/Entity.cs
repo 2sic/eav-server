@@ -18,4 +18,9 @@ public partial record Entity: EntityLight, IEntity
     public override string ToString() => $"{GetType()} =id:{EntityId}/{EntityGuid}";
 
     #endregion
+
+    // #DropUseOfDumpProperties
+    //[PrivateApi]
+    //public List<PropertyDumpItem> _DumpNameWipDroppingMostCases(PropReqSpecs specs, string path)
+    //    => new EntityDump().Dump(this, specs, path, null);
 }
