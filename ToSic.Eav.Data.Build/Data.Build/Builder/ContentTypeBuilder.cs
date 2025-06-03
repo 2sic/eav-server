@@ -56,7 +56,7 @@ public class ContentTypeBuilder
 
         attributes ??= new List<IContentTypeAttribute>();
 
-        scope = Scopes.RenameOldScope(scope);
+        scope = ScopeConstants.RenameOldScope(scope);
 
         return new ContentType
         {
@@ -167,7 +167,7 @@ public class ContentTypeBuilder
 
     public IContentType Transient(int appId, string typeName, string nameId, string? scope = null)
         => Create(appId: appId, name: typeName, nameId: nameId, id: DynTypeId,
-            scope: scope ?? Scopes.System,
+            scope: scope ?? ScopeConstants.System,
             attributes: new List<IContentTypeAttribute>(), isDynamic: true);
 
 }

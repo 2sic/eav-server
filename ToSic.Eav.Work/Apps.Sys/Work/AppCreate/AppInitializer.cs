@@ -113,7 +113,7 @@ public class AppInitializer(
             {
                 l.A("couldn't find type, will create");
                 // create App-Man if not created yet
-                typesMod.Create(item.SetName, Scopes.App);
+                typesMod.Create(item.SetName, ScopeConstants.App);
                 addedTypes = true;
             }
             else

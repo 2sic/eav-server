@@ -22,7 +22,7 @@ public class AppInternalsControllerReal(
     /// <inheritdoc/>
     public AppInternalsDto Get(int appId)
     {
-        var systemConfiguration = TypeListInternal(appId, Scopes.SystemConfiguration).ToList();
+        var systemConfiguration = TypeListInternal(appId, ScopeConstants.SystemConfiguration).ToList();
         var settingsCustomExists = systemConfiguration.Any(ct => ct.Name == "SettingsCustom");
         var resourcesCustomExists = systemConfiguration.Any(ct => ct.Name == "ResourcesCustom");
 

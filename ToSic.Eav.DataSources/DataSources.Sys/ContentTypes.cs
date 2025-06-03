@@ -73,7 +73,7 @@ public sealed class ContentTypes: CustomDataSource
         var l = Log.Fn<IEnumerable<IRawEntity>>();
 
         var appId = OfAppId;
-        var scp = Scope.UseFallbackIfNoValue(Data.Scopes.Default);
+        var scp = Scope.UseFallbackIfNoValue(Data.ScopeConstants.Default);
 
         var types = _appReaders.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
 

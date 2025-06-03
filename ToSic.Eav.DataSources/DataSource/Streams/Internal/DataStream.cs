@@ -82,7 +82,7 @@ public class DataStream(
     public int CacheErrorDurationInSeconds { get; set; } = 0;
 
     /// <inheritdoc />
-    public string Scope { get; protected internal set; } = scope ?? Scopes.Default;
+    public string Scope { get; protected internal set; } = scope ?? ScopeConstants.Default;
 
     /// <summary>
     /// Provide access to the CacheKey - so it could be overridden if necessary without using the stream underneath it

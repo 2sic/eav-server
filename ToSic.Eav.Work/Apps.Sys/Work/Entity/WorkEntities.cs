@@ -25,8 +25,8 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     {
         var l = Log.Fn<IEnumerable<IEntity>>();
         var scopes = withConfiguration
-            ? [Scopes.Default, Scopes.SystemConfiguration]
-            : new[] { Scopes.Default };
+            ? [ScopeConstants.Default, ScopeConstants.SystemConfiguration]
+            : new[] { ScopeConstants.Default };
         return l.Return(AppWorkCtx.Data.List.Where(e => scopes.Contains(e.Type.Scope)));
     }
 

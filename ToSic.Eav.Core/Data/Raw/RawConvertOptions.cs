@@ -18,7 +18,7 @@ public class RawConvertOptions
         IEnumerable<string> addKeys = default
     )
     {
-        KeysToAdd = (addKeys ?? Array.Empty<string>())
+        KeysToAdd = (addKeys ?? [])
             .Where(s => s.HasValue())
             .ToImmutableHashSet(InvariantCultureIgnoreCase);
     }

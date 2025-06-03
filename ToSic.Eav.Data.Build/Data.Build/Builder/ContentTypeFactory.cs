@@ -33,7 +33,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         var ctNameId = nameId
                        ?? ctSpecs?.Guid.NullOrGetWith(g => Guid.TryParse(g, out var guid) ? guid.ToString() : null!)
                        ?? Guid.Empty.ToString();
-        var ctScope = scope ?? ctSpecs?.Scope ?? Scopes.Default;
+        var ctScope = scope ?? ctSpecs?.Scope ?? ScopeConstants.Default;
 
         // Must be null if no metadata
         var ctMetadata = ContentTypeDetails(ctSpecs?.Description)?.ToListOfOne();

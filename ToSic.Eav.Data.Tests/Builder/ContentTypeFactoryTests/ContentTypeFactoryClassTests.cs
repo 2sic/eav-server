@@ -17,7 +17,7 @@ public class ContentTypeFactoryClassTests(ContentTypeFactory factory)
 
     [Fact] public void Create_NoSpecs_Name() => Equal(nameof(TestTypeNoSpecsEmpty), GetPropNoSpecsEmpty(x => x.Name));
 
-    [Fact] public void Create_NoSpecs_Scope() => Equal(Scopes.Default, GetPropNoSpecsEmpty(x => x.Scope));
+    [Fact] public void Create_NoSpecs_Scope() => Equal(ScopeConstants.Default, GetPropNoSpecsEmpty(x => x.Scope));
 
     [Fact] public void Create_NoSpecs_NameId() => Equal(Guid.Empty.ToString(), GetPropNoSpecsEmpty(x => x.NameId));
 

@@ -23,12 +23,12 @@ public static class ContentTypeListExtensions
             .ToList();
 
         // Make sure the "Default" scope is always included, otherwise it's missing on new apps
-        if (!scopes.Contains(Scopes.Default))
-            scopes.Add(Scopes.Default);
+        if (!scopes.Contains(ScopeConstants.Default))
+            scopes.Add(ScopeConstants.Default);
 
         // Add new Configuration scope for v12.02
-        if (!scopes.Contains(Scopes.SystemConfiguration))
-            scopes.Add(Scopes.SystemConfiguration);
+        if (!scopes.Contains(ScopeConstants.SystemConfiguration))
+            scopes.Add(ScopeConstants.SystemConfiguration);
 
         return scopes
             .OrderBy(s => s)
@@ -39,10 +39,10 @@ public static class ContentTypeListExtensions
     public static IDictionary<string, string> GetAllScopesWithLabels(this IEnumerable<IContentType> list)
     {
         var scopes = list.GetAllScopesInclDefault();
-        var lookup = Scopes.ScopesWithNames;
+        var lookup = ScopeConstants.ScopesWithNames;
         var results = scopes
             .Select(s => new { value = s, name = lookup.TryGetValue(s, out var label) ? label : s })
-            .OrderByDescending(s => s.name == Scopes.Default)
+            .OrderByDescending(s => s.name == ScopeConstants.Default)
             .ThenBy(s => s.name)
             .ToDictionary(s => s.value, s => s.name);
         return results;

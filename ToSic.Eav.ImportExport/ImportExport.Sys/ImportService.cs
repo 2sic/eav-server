@@ -87,7 +87,7 @@ public class ImportService(
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
                             var newSysTypes = newTypeList
-                                .Where(a => a.Scope?.StartsWith(Scopes.System) ?? false)
+                                .Where(a => a.Scope?.StartsWith(ScopeConstants.System) ?? false)
                                 .ToList();
                             if (newSysTypes.Any())
                                 MergeAndSaveContentTypes(appReaderRaw, newSysTypes);
