@@ -20,7 +20,8 @@ public class PropertyLookupWithStackNavigation(PropertyLookupDictionary current,
     public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path) 
         => Navigator.GetNextInStack(specs, startAtSource, path);
 
-    public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path) => GetContents()._Dump(specs, path);
+    public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path)
+        => GetContents()._Dump(specs, path);
 
 
 

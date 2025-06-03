@@ -21,7 +21,9 @@ public record PropReqSpecs(string Field, string[] dimensions, bool DimsAreFinal,
     { }
 
     public readonly string[] Dimensions = dimensions != null
-        ? DimsAreFinal ? dimensions : ExtendDimsWithDefault(dimensions)
+        ? DimsAreFinal
+            ? dimensions
+            : ExtendDimsWithDefault(dimensions)
         : EmptyDimensions;
     
     /// <summary>
