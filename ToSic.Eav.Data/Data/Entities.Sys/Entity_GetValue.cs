@@ -9,7 +9,7 @@ partial record Entity
     // ReSharper disable once InheritdocInvalidUsage
     /// <inheritdoc />
     public object GetBestValue(string attributeName, string[] languages)
-        => FindPropertyInternal(new(attributeName, languages, false), null).Result;
+        => GetPropertyInternal(new(attributeName, languages, false), null).Result;
 
 
     // ReSharper disable once InheritdocInvalidUsage
@@ -18,9 +18,11 @@ partial record Entity
     public TVal GetBestValue<TVal>(string name, string[] languages)
         => GetBestValue(name, languages).ConvertOrDefault<TVal>();
 
+    PropReqResult IPropertyLookup.FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
+        => GetPropertyInternal(specs, path);
 
     [PrivateApi("Internal")]
-    public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
+    public PropReqResult GetPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {
         path = path?.Add("Entity", EntityId.ToString(), specs.Field);
 

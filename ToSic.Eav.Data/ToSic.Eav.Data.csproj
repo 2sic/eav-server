@@ -10,8 +10,4 @@
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\PropertyDump.Sys\" />
-  </ItemGroup>
-
 </Project>

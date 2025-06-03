@@ -5,11 +5,7 @@
 /// </summary>
 [PrivateApi("Hide, was public before 2023-08-10")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IEntityWrapper: IHasDecorators<IEntity>, IMultiWrapper<IEntity>, ICanBeEntity
-{
-    /// <summary>
-    /// The underlying entity. 
-    /// </summary>
-    /// <returns>The entity, or null if not provided</returns>
-    new IEntity Entity { get; }
-}
+public interface IEntityWrapper
+    : IHasDecorators<IEntity>,
+        IMultiWrapper<IEntity>,
+        ICanBeEntity;

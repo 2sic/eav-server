@@ -11,7 +11,8 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 #if DEBUG
         IEntityExtensions.CountOneIdOpt++;
 #endif
-        if (_byInt.TryGetValue(id, out var result)) return result;
+        if (_byInt.TryGetValue(id, out var result))
+            return result;
         result = _list.FirstOrDefault(e => e.EntityId == id);
         _byInt.TryAdd(id, result);
         return result;
@@ -21,7 +22,8 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 #if DEBUG
         IEntityExtensions.CountOneRepoOpt++;
 #endif
-        if (_byRepoId.TryGetValue(id, out var result)) return result;
+        if (_byRepoId.TryGetValue(id, out var result))
+            return result;
         result = _list.FirstOrDefault(e => e.RepositoryId == id);
         _byRepoId.TryAdd(id, result);
         return result;
@@ -32,7 +34,8 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 #if DEBUG
         IEntityExtensions.CountOneHasOpt++;
 #endif
-        if (_has.TryGetValue(id, out var result)) return result;
+        if (_has.TryGetValue(id, out var result))
+            return result;
         var found = Get(id) ?? GetRepo(id);
         var status = found != null;
         _has.TryAdd(id, status);
@@ -44,7 +47,8 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 #if DEBUG
         IEntityExtensions.CountOneGuidOpt++;
 #endif
-        if (_byGuid.TryGetValue(id, out var result)) return result;
+        if (_byGuid.TryGetValue(id, out var result))
+            return result;
         result = _list.FirstOrDefault(e => e.EntityGuid == id);
         _byGuid.TryAdd(id, result);
         return result;
@@ -55,7 +59,8 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 #if DEBUG
         IEntityExtensions.countOneOfContentTypeOpt++;
 #endif
-        if (_ofType.TryGetValue(name, out var found)) return found;
+        if (_ofType.TryGetValue(name, out var found))
+            return found;
 
         var newEntry = _list.Where(e => e.Type.Is(name)).ToImmutableList();
         _ofType.TryAdd(name, newEntry);

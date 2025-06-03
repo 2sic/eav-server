@@ -2,7 +2,7 @@
 
 [PrivateApi]
 // ReSharper disable once InconsistentNaming
-public static partial class IEntityExtensions
+public static class IEntityExtensions
 {
 #if DEBUG
     private static int countOneId;
@@ -112,7 +112,10 @@ public static partial class IEntityExtensions
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static Dictionary<string, object> AsDictionary(this IEntity entity)
     {
-        var attributes = entity.Attributes.ToDictionary(k => k.Value.Name, v => v.Value[0]);
+        var attributes = entity.Attributes.ToDictionary(
+            k => k.Value.Name,
+            v => v.Value[0]
+        );
         attributes.Add(Attributes.EntityIdPascalCase, entity.EntityId);
         attributes.Add(Attributes.EntityGuidPascalCase, entity.EntityGuid);
         return attributes;

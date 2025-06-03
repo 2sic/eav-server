@@ -43,25 +43,6 @@ public record PropReqSpecs(string Field, string[] dimensions, bool DimsAreFinal,
     public string Dump() => _dump ??= $"{nameof(PropReqSpecs)} {{ {nameof(Field)}:{Field}, {nameof(Dimensions)}:{string.Join(",", Dimensions)} }}";
     private string _dump;
 
-
-    ///// <summary>
-    ///// Make sure the dimensions list also has a null-entry,
-    ///// for fallback to the first/only language (if any are provided and no match was made first)
-    ///// </summary>
-    ///// <returns></returns>
-    //internal static string[] ExtendDimsWithDefault(PropReqSpecs specs)
-    //{
-    //    // empty list - add the default dimension
-    //    var dimensions = specs.Dimensions;
-    //    if (dimensions == null || dimensions.Length == 0)
-    //        return specs.SkipModDimensions ? [] : [null];
-
-    //    // we have dimensions but no default, add it
-    //    return specs.SkipModDimensions || dimensions.Last() == default
-    //        ? dimensions
-    //        : [.. dimensions, default];
-    //}
-
     internal static string[] ExtendDimsWithDefault(string[] dimensions)
     {
         // empty list - add the default dimension
