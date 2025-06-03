@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Apps")]
-//[assembly: InternalsVisibleTo("ToSic.Eav.Persistence")]
+[assembly: InternalsVisibleTo("ToSic.Eav.Persistence")]
 //[assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc")]
 
 //[assembly: InternalsVisibleTo("ToSic.Eav.Core.Tests")]

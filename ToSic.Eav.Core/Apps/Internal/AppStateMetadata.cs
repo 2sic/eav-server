@@ -30,10 +30,10 @@ public class AppStateMetadata
         return synced;
     }
 
-    private static SynchronizedObject<IEntity> BuildSynchedItem(IEntitiesSource parent, string staticName)
+    private static SynchronizedObject<IEntity> BuildSyncedItem(IEntitiesSource parent, string staticName)
     {
-        var synched = new SynchronizedObject<IEntity>(parent, () => parent.List.FirstOrDefaultOfType(staticName));
-        return synched;
+        var synced = new SynchronizedObject<IEntity>(parent, () => parent.List.FirstOrDefaultOfType(staticName));
+        return synced;
     }
 
 
@@ -43,10 +43,10 @@ public class AppStateMetadata
     public IEntity MetadataItem => (_appItemSynced ??= BuildSyncedMetadata(Owner, Target.AppType)).Value;
     private SynchronizedObject<IEntity> _appItemSynced;
 
-    public IEntity SystemItem => (_appSystemSynched ??= BuildSynchedItem(Owner, Target.SystemType)).Value;
+    public IEntity SystemItem => (_appSystemSynched ??= BuildSyncedItem(Owner, Target.SystemType)).Value;
     private SynchronizedObject<IEntity> _appSystemSynched;
 
-    public IEntity CustomItem => (_appCustomSynced ??= BuildSynchedItem(Owner, Target.CustomType)).Value;
+    public IEntity CustomItem => (_appCustomSynced ??= BuildSyncedItem(Owner, Target.CustomType)).Value;
     private SynchronizedObject<IEntity> _appCustomSynced;
 
 }
