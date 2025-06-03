@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Data.Stack\ToSic.Eav.Data.Stack.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Data\ToSic.Eav.Data.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />

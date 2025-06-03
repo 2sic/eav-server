@@ -16,7 +16,7 @@ public class PropReqResult(object result, ValueTypesWithState valueType, Propert
     /// <summary>
     /// Debug property to see if a result was wrapped to create something else
     /// </summary>
-    internal object ResultOriginal;
+    public object ResultOriginal;
 
     /// <summary>
     /// The IValue object, in case we need to use its cache

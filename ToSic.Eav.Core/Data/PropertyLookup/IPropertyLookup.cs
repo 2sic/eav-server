@@ -16,11 +16,3 @@ public interface IPropertyLookup
     [PrivateApi]
     List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path);
 }
-
-[PrivateApi]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IHasPropLookup
-{
-    [PrivateApi]
-    IPropertyLookup PropertyLookup { get; }
-}
