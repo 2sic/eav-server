@@ -14,20 +14,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Data.Persistence\Logging\ImportErrorCode.de-DE.resx">
+    <EmbeddedResource Update="Persistence.Sys\Logging\ImportErrorCode.de-DE.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Update="Data.Persistence\Logging\ImportErrorCode.resx">
+    <EmbeddedResource Update="Persistence.Sys\Logging\ImportErrorCode.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="System.IO.Compression" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data.Persistence\Interfaces\" />
   </ItemGroup>
 
 

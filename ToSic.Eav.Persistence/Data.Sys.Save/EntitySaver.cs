@@ -241,53 +241,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         var final = dataBuilder.Attribute.CreateFrom(update, result.ToImmutableList());
         return l.Return(final);
     }
-
-    // 2023-03-23 2dm - this new more functional code didn't produce the same result, so disabling it for now. Tests not passing with this.
-    ///// <summary>
-    ///// Merge two attributes, preserving languages as necessary
-    ///// </summary>
-    ///// <param name="original"></param>
-    ///// <param name="update"></param>
-    ///// <param name="saveOptions"></param>
-    ///// <returns></returns>
-    //private IAttribute MergeAttributeNewNotWorkingProperly(IAttribute original, IAttribute update, SaveOptions saveOptions) => Log.Func(() =>
-    //{
-    //    var values = ValuesOrderedForProcessing(original.Values, saveOptions)
-    //        .Select(orgVal =>
-    //        {
-    //            var remainingLanguages = new List<ILanguage>();
-    //            foreach (var valLang in orgVal.Languages) // first process master-languages, then read-only
-    //            {
-    //                // se if this language has already been set, in that case just leave it
-    //                var valInResults =
-    //                    update.Values.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
-    //                if (valInResults == null)
-    //                    // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
-    //                    // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
-    //                    if (!(valLang.Key == saveOptions.PrimaryLanguage &&
-    //                          update.Values.Any(v => v.Languages?.Count() == 0)))
-    //                        remainingLanguages.Add(valLang);
-    //            }
-
-    //            // nothing found to keep...
-    //            if (remainingLanguages.Count == 0) return null;
-
-    //            // Add the value with the remaining languages / relationships
-    //            // 2023-02-24 2dm optimized this, keep comment till ca. 2023-04 in case something breaks
-    //            //var languagesToUse = remainingLanguages.Select(l => LanguageBuilder.Clone(l) as ILanguage).ToList();
-    //            //var languagesToUse = LanguageBuilder.Clone(remainingLanguages);
-    //            var val = _dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
-    //            return val;
-    //        })
-    //        .Where(val => val != null)
-    //        .ToImmutableList();
-
-    //    // everything in the update will be kept, and optionally some stuff in the original may be preserved
-    //    var result = _dataBuilder.Attribute.CreateFrom(update, values);
-
-    //    return result;
-    //});
-
+    
     private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, List<string> keys)
     {
         var l = Log.Fn<IDictionary<string, IAttribute>>();

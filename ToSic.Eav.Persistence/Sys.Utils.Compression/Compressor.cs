@@ -20,7 +20,7 @@ public class Compressor(ISysFeaturesService features = null)
             CompressorType.NoCompression => null,
             CompressorType.Deflate => new DeflateCompressor(),
             CompressorType.GZip => new GZipCompressor(),
-            CompressorType.Brotli => new BrotliCompressor(),
+            CompressorType.Brotli => new BrotliCompressorNotWorkingAtm(),
             _ => throw new ArgumentOutOfRangeException(nameof(compressorType), compressorType, null)
         };
 

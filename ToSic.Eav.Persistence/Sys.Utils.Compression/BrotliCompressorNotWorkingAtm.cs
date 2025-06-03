@@ -2,7 +2,11 @@
 
 namespace ToSic.Eav.Internal.Compression;
 
-public class BrotliCompressor : ICompressor
+/// <summary>
+/// Brotli Compressor - currently not working, so using GZip instead.
+/// Reason is that it would only be natively supported in .net core.
+/// </summary>
+public class BrotliCompressorNotWorkingAtm : ICompressor
 {
     public byte[] CompressBytes(byte[] bytes)
     {
