@@ -10,24 +10,18 @@ partial class ConvertToEavLight
         entityValues.Add(Attributes.IsPublishedField, entity.IsPublished);
         if (entity.IsPublished && appState.GetDraft(entity) != null)
         {
-            // do a check if there was a field called Published, which we must remove for this to work
-            if (entityValues.ContainsKey(Attributes.DraftEntityField))
-                entityValues.Remove(Attributes.DraftEntityField);
-            entityValues.Add(Attributes.DraftEntityField, new
+            entityValues[Attributes.DraftEntityField] = new
             {
                 appState.GetDraft(entity).RepositoryId,
-            });
+            };
         }
 
-        if (!entity.IsPublished & appState.GetPublished(entity) != null)
+        if (!entity.IsPublished && appState.GetPublished(entity) != null)
         {
-            // do a check if there was a field called Published, which we must remove for this to work
-            if (entityValues.ContainsKey(Attributes.PublishedEntityField))
-                entityValues.Remove(Attributes.PublishedEntityField);
-            entityValues.Add(Attributes.PublishedEntityField, new
+            entityValues[Attributes.PublishedEntityField] = new
             {
                 appState.GetPublished(entity).RepositoryId,
-            });
+            };
         }
     }
 

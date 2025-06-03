@@ -23,7 +23,8 @@ public class EntityControllerReal(
     LazySvc<IUser> user,
     IResponseMaker responseMaker)
     : ServiceBase("Api.EntityRl",
-        connect: [context, appsCatalog, entityApi, contentExport, contentImport, user, responseMaker]), IEntityController
+        connect: [context, appsCatalog, entityApi, contentExport, contentImport, user, responseMaker]),
+        IEntityController
 {
     public const string LogSuffix = "Entity";
 
@@ -38,10 +39,14 @@ public class EntityControllerReal(
     public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null, string parentField = null)
     {
         var catalog = appsCatalog.Value;
-        if (id.HasValue) entityApi.Value.InitOrThrowBasedOnGrants(context.Value, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
-            .Delete(contentType, id.Value, force, parentId, parentField);
-        else if (guid.HasValue) entityApi.Value.InitOrThrowBasedOnGrants(context.Value, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
-            .Delete(contentType, guid.Value, force, parentId, parentField);
+        if (id.HasValue)
+            entityApi.Value
+                .InitOrThrowBasedOnGrants(context.Value, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
+                .Delete(contentType, id.Value, force, parentId, parentField);
+        else if (guid.HasValue)
+            entityApi.Value
+                .InitOrThrowBasedOnGrants(context.Value, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
+                .Delete(contentType, guid.Value, force, parentId, parentField);
         else
             throw new($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");
     }
@@ -63,11 +68,13 @@ public class EntityControllerReal(
         ExportLanguageResolution languageReferences, 
         string selectedIds = null)
     {
-        var (content, fileName) = contentExport.Value.Init(appId).ExportContent(
-            user.Value,
-            language, defaultLanguage, contentType,
-            recordExport, resourcesReferences,
-            languageReferences, selectedIds);
+        var (content, fileName) = contentExport.Value.Init(appId)
+            .ExportContent(
+                user.Value,
+                language, defaultLanguage, contentType,
+                recordExport, resourcesReferences,
+                languageReferences, selectedIds
+            );
 
         return responseMaker.File(fileContent: content, fileName: fileName);
     }

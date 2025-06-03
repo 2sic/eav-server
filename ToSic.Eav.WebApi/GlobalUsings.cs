@@ -2,7 +2,6 @@
 
 global using System;
 global using System.Collections.Generic;
-global using System.Linq;
 global using System.Text.Json.Serialization;
 global using ToSic.Eav.Apps;
 global using ToSic.Eav.Apps.Internal.Work;
