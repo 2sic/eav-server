@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data;
 /// </remarks>
 [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi, always use IEntity")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record EntityLight : IEntityLight
+public abstract record EntityLight //: IEntityLight
 {
     #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
 
@@ -46,7 +46,7 @@ public record EntityLight : IEntityLight
 
     /// <inheritdoc />
     [JsonIgnore]
-    public IEntityRelationships Relationships => field ??= PartsLazy.GetRelationshipDelegate(this);
+    public IEntityRelationships Relationships => field ??= PartsLazy.GetRelationshipDelegate((IEntity)this);
 
 
     /// <inheritdoc />

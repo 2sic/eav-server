@@ -206,8 +206,6 @@ partial class AppState
             l.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 
             // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-            //newEntity.PublishedEntity = Index[publishedId.Value];
-            //((Entity)newEntity.PublishedEntity).DraftEntity = newEntity;
             newEntity.EntityId = publishedId.Value; // this is not immutable, but probably not an issue because it is not in the index yet
             return l.ReturnTrue();
         }

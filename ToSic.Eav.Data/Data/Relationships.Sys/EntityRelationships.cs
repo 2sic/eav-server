@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data;
 /// which I wasn't able to track down, probably because of record specific equality checks.
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class EntityRelationships(IEntityLight entity, IRelationshipSource app, IEnumerable<IEntityRelationship> fallbackRels = null)
+internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnumerable<IEntityRelationship> fallbackRels = null)
     : IEntityRelationships
 {
     private readonly IEntity _entity = entity as IEntity;
@@ -24,7 +24,7 @@ internal class EntityRelationships(IEntityLight entity, IRelationshipSource app,
     /// <summary>
     /// Special constructor for cloning, where we attach the manager of the original
     /// </summary>
-    internal static EntityRelationships ForClone(IEntityLight entity, EntityRelationships original)
+    internal static EntityRelationships ForClone(IEntity entity, EntityRelationships original)
         => new(entity, original?._appSource, original?._fallbackRels);
 
     /// <summary>

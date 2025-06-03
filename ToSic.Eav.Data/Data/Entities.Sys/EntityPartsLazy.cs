@@ -6,11 +6,11 @@ namespace ToSic.Eav.Data.Build;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityPartsLazy
 {
-    internal readonly Func<IEntityLight, IEntityRelationships> GetRelationshipDelegate;
+    internal readonly Func<IEntity, IEntityRelationships> GetRelationshipDelegate;
     internal readonly Func<Guid, string, IMetadataOf> GetMetadataOfDelegate;
 
     public EntityPartsLazy(
-        Func<IEntityLight, IEntityRelationships> getRelationshipManager = default,
+        Func<IEntity, IEntityRelationships> getRelationshipManager = default,
         Func<Guid, string, IMetadataOf> getMetadataOf = default)
     {
         GetRelationshipDelegate = getRelationshipManager ?? (e => new EntityRelationships(e, null, null));

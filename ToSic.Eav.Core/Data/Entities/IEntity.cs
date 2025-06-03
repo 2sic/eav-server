@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Coding;
@@ -13,8 +14,81 @@ namespace ToSic.Eav.Data;
 /// > We recommend you read about the [](xref:Basics.Data.Index)
 /// </summary>
 [PublicApi]
-public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IPropertyLookup, IHasMetadata, ICanBeEntity
+public partial interface IEntity: IAppIdentityLight, /*IEntityLight,*/ IPublish, IHasPermissions, IPropertyLookup, IHasMetadata, ICanBeEntity
 {
+    #region Identifiers and simple Properties: EntityId, EntityGuid, EntityType, Modified, Created
+
+    /// <summary>
+    /// Gets the EntityId
+    /// </summary>
+    /// <returns>The internal EntityId - usually for reference in the DB, but not quite always (like when this is a draft entity).</returns>
+    int EntityId { get; }
+
+    /// <summary>
+    /// Gets the EntityGuid
+    /// </summary>
+    /// <returns>The GUID of the Entity</returns>
+    Guid EntityGuid { get; }
+
+    /// <summary>
+    /// Gets the ContentType of this Entity
+    /// </summary>
+    /// <returns>The content-type object.</returns>
+    IContentType Type { get; }
+
+    /// <summary>
+    /// Gets the Last Modified DateTime
+    /// </summary>
+    /// <returns>A date-time object.</returns>
+    DateTime Modified { get; }
+
+    /// <summary>
+    /// Gets the Created DateTime
+    /// </summary>
+    /// <returns>A date-time object.</returns>
+    DateTime Created { get; }
+
+    #endregion
+
+    #region Relationships: MetadataFor and Relationships
+
+    /// <summary>
+    /// Information which is relevant if this current entity is actually mapped to something else.
+    /// If it is mapped, then it's describing another thing, which is identified in this MetadataFor.
+    /// </summary>
+    /// <returns>A <see cref="ITarget"/> object describing the target.</returns>
+    ITarget MetadataFor { get; }
+
+    /// <summary>
+    /// Relationship-helper object, important to navigate to children and parents
+    /// </summary>
+    /// <returns>The <see cref="IEntityRelationships"/> in charge of relationships for this Entity.</returns>
+    IEntityRelationships Relationships { get; }
+
+    #endregion
+
+    #region Owner / OwnerId
+
+    /// <summary>
+    /// Owner of this entity
+    /// </summary>
+    /// <returns>A string identifying the owner. Uses special encoding to work with various user-ID providers.</returns>
+    string Owner { get; }
+
+    /// <summary>
+    /// Owner of this entity - as an int-ID
+    /// </summary>
+    /// <returns>
+    /// This is based on the <see cref="Owner"/> but will only return the ID
+    /// </returns>
+    /// <remarks>
+    /// Added in v15.03
+    /// </remarks>
+    int OwnerId { get; }
+
+    #endregion
+
+
     /// <summary>
     /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
     /// Automatically resolves the language-variations as well based on the list of preferred languages
@@ -26,10 +100,8 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// the object is string, int or even a EntityRelationship
     /// </returns>
     [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
-#if NETFRAMEWORK
-    new 
-#endif
-        object GetBestValue(string attributeName, string[] languages);
+    [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
+    object GetBestValue(string attributeName, string[] languages);
 
     /// <summary>
     /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -44,10 +116,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// </returns>
     [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
     [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
-#if NETFRAMEWORK
-    new
-#endif
-        T GetBestValue<T>(string attributeName, string[] languages);
+    T GetBestValue<T>(string attributeName, string[] languages);
 
     /// <summary>
     /// Best way to get the current entities title.
@@ -65,18 +134,12 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// </summary>
     /// <param name="dimensions">Array of dimensions/languages to use in the lookup</param>
     /// <returns>The entity title as a string</returns>
-#if NETFRAMEWORK
-    new
-#endif
-        string GetBestTitle(string[] dimensions);
+    string GetBestTitle(string[] dimensions);
 
     /// <summary>
     /// All the attributes of the current Entity.
     /// </summary>
-#if NETFRAMEWORK
-    new
-#endif
-        IImmutableDictionary<string, IAttribute> Attributes { get; }
+    IImmutableDictionary<string, IAttribute> Attributes { get; }
 
     /// <summary>
     /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>
@@ -86,29 +149,20 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// The field used is determined in the <see cref="IContentType"/>.
     /// If you need a string, use GetBestTitle() instead.
     /// </returns>
-#if NETFRAMEWORK
-    new
-#endif
-        IAttribute Title { get; }
+    IAttribute Title { get; }
 
     /// <summary>
     /// Gets an Attribute using its StaticName
     /// </summary>
     /// <param name="attributeName">StaticName of the Attribute</param>
     /// <returns>A typed Attribute Object</returns>
-#if NETFRAMEWORK
-    new
-#endif
-        IAttribute this[string attributeName] { get; }
+    IAttribute this[string attributeName] { get; }
 
     /// <summary>
     /// version of this entity in the repository
     /// </summary>
     /// <returns>The version number.</returns>
-#if NETFRAMEWORK
-    new
-#endif
-        int Version { get; }
+    int Version { get; }
 
 
     /// <summary>
@@ -201,6 +255,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// * If you want to supply a `fallback` it will automatically use the generic version of this method
     /// </remarks>
     [PublicApi]
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     object Get(string name, NoParamOrder noParamOrder = default, string language = default, string[] languages = default);
 
     /// <summary>
@@ -231,6 +286,7 @@ public partial interface IEntity: IEntityLight, IPublish, IHasPermissions, IProp
     /// * If you want to supply a `fallback` it will automatically use the generic version of this method
     /// </remarks>
     [PublicApi]
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default);
 
 

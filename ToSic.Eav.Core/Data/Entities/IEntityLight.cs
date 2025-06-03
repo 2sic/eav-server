@@ -9,8 +9,10 @@ namespace ToSic.Eav.Data;
 /// For the more powerful Entity, use <see cref="IEntity"/>.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-public partial interface IEntityLight: IAppIdentityLight
+public interface IEntityLight: IAppIdentityLight
 {
+    #region Identifiers and simple Properties: EntityId, EntityGuid, EntityType, Modified, Created
+
     /// <summary>
     /// Gets the EntityId
     /// </summary>
@@ -22,13 +24,6 @@ public partial interface IEntityLight: IAppIdentityLight
     /// </summary>
     /// <returns>The GUID of the Entity</returns>
     Guid EntityGuid { get; }
-
-    /// <summary>
-    /// Information which is relevant if this current entity is actually mapped to something else.
-    /// If it is mapped, then it's describing another thing, which is identified in this MetadataFor.
-    /// </summary>
-    /// <returns>A <see cref="ITarget"/> object describing the target.</returns>
-    ITarget MetadataFor { get; }
 
     /// <summary>
     /// Gets the ContentType of this Entity
@@ -48,11 +43,27 @@ public partial interface IEntityLight: IAppIdentityLight
     /// <returns>A date-time object.</returns>
     DateTime Created { get; }
 
+    #endregion
+
+    #region Relationships: MetadataFor and Relationships
+
+    /// <summary>
+    /// Information which is relevant if this current entity is actually mapped to something else.
+    /// If it is mapped, then it's describing another thing, which is identified in this MetadataFor.
+    /// </summary>
+    /// <returns>A <see cref="ITarget"/> object describing the target.</returns>
+    ITarget MetadataFor { get; }
+
     /// <summary>
     /// Relationship-helper object, important to navigate to children and parents
     /// </summary>
     /// <returns>The <see cref="IEntityRelationships"/> in charge of relationships for this Entity.</returns>
     IEntityRelationships Relationships { get; }
+
+    #endregion
+
+
+    #region Owner / OwnerId
 
     /// <summary>
     /// Owner of this entity
@@ -70,5 +81,7 @@ public partial interface IEntityLight: IAppIdentityLight
     /// Added in v15.03
     /// </remarks>
     int OwnerId { get; }
+
+    #endregion
 
 }
