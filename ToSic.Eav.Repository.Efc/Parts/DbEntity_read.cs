@@ -60,19 +60,18 @@ partial class DbEntity
         return l.Return(found, found.Length.ToString());
     }
 
-    //private ToSicEavEntities GetDbEntity(int entityId, string includes)
-    //    => IncludeMultiple(EntityQuery, includes).Single(e => e.EntityId == entityId);
+    private List<TsDynDataEntity> GetDbEntities(int[] entityIds)
+    {
+        var queryBase = EntityQuery
+            .Include(e => e.TsDynDataValues)
+            .ThenInclude(v => v.TsDynDataValueDimensions);
 
-    private List<TsDynDataEntity> GetDbEntities(int[] entityIds, string includes)
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
         // => IncludeMultiple(EntityQuery, includes).Where(e => entityIds.Contains(e.EntityId)).ToList();
-        => IncludeMultiple(EntityQuery, includes).Where(e => Enumerable.Contains(entityIds, e.EntityId)).ToList();
-
-    private static IQueryable<TsDynDataEntity> IncludeMultiple(IQueryable<TsDynDataEntity> origQuery, string additionalTables)
-    {
-        additionalTables.Split(',').ToList()
-            .ForEach(a => origQuery = origQuery.Include(a.Trim()));
-        return origQuery;
+        var result = queryBase
+            .Where(e => Enumerable.Contains(entityIds, e.EntityId))
+            .ToList();
+        return result;
     }
 
     /// <summary>
