@@ -13,13 +13,9 @@ public class DataConstants
 {
     #region DataFactory Constants
 
-    public static readonly int DataFactoryDefaultAppId = 0;
-
     public static readonly int DataFactoryDefaultEntityId = 0;
 
     public static readonly string DataFactoryDefaultTypeName = "unspecified";
-
-    public const int DataFactoryDefaultIdSeed = 1;
 
     #endregion
 
