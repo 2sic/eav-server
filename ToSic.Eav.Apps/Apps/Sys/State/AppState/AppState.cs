@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.StartUp;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.StartUp;
 
 namespace ToSic.Eav.Apps.State;
 
@@ -22,7 +23,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
         {
             BootLog.Log.Fn($"AppState for App {id.AppId}", timer: true).Done();
             // only stop once the first app is loaded; the master/root app doesn't have a parent
-            if (id.AppId != Constants.PresetAppId)
+            if (id.AppId != KnownAppsConstants.PresetAppId)
                 _loggedToBootLog = true;
         }
 

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Caching;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Internal.Compression;
@@ -30,7 +31,7 @@ public class DbDataController(
     /// <summary>
     /// AppId of this whole Context
     /// </summary>
-    public int AppId => _appId == Constants.AppIdEmpty ? Constants.MetaDataAppId : _appId;
+    public int AppId => _appId == KnownAppsConstants.AppIdEmpty ? KnownAppsConstants.MetaDataAppId : _appId;
     private int _appId;
 
     /// <summary>
@@ -42,7 +43,7 @@ public class DbDataController(
     /// <summary>
     /// ZoneId of this whole Context
     /// </summary>
-    public int ZoneId => _zoneId == 0 ? Constants.DefaultZoneId : _zoneId;
+    public int ZoneId => _zoneId == 0 ? KnownAppsConstants.DefaultZoneId : _zoneId;
     private int _zoneId;
 
     private const string UserNameUnknown = "unresolved(eav)";
@@ -141,8 +142,8 @@ public class DbDataController(
             // If nothing is supplied, use defaults
             if (!appId.HasValue)
             {
-                _zoneId = Constants.DefaultZoneId;
-                _appId = Constants.MetaDataAppId;
+                _zoneId = KnownAppsConstants.DefaultZoneId;
+                _appId = KnownAppsConstants.MetaDataAppId;
                 return this;
             }
             // If only AppId is supplied, look up it's zone and use that
@@ -170,7 +171,7 @@ public class DbDataController(
             _appId = appId.Value;
         }
         else
-            _appId = SqlDb.TsDynDataApps.First(a => a.Name == Constants.DefaultAppGuid).AppId;
+            _appId = SqlDb.TsDynDataApps.First(a => a.Name == KnownAppsConstants.DefaultAppGuid).AppId;
 
         return this;
     }
@@ -186,7 +187,7 @@ public class DbDataController(
     /// </summary>
     public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
     {
-        if (_appId == Constants.AppIdEmpty)
+        if (_appId == KnownAppsConstants.AppIdEmpty)
             throw new("SaveChanges with AppId 0 not allowed.");
 
         Versioning.GetTransactionId();

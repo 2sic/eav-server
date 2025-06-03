@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
@@ -12,7 +13,7 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
 
     [Fact]
     public void PresetAppStateIdIsMinus42() =>
-        Equal(Constants.PresetAppId, appReaders.GetSystemPresetTac().AppId);
+        Equal(KnownAppsConstants.PresetAppId, appReaders.GetSystemPresetTac().AppId);
 
     [Fact]
     public void IsHealthy() =>

@@ -1,4 +1,5 @@
-﻿using IEntity = ToSic.Eav.Data.IEntity;
+﻿using ToSic.Eav.Apps.Sys;
+using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 
@@ -24,7 +25,7 @@ public partial class QueryDefinition: EntityBasedWithLog
     public QueryDefinition(IEntity header, int appId, List<QueryPartDefinition> parts, ILog parentLog) 
         : base(header, parentLog, "DS.QDef")
     {
-        if (appId == Constants.AppIdEmpty)
+        if (appId == KnownAppsConstants.AppIdEmpty)
             appId = header.AppId;
         AppId = appId;
         Parts = parts;

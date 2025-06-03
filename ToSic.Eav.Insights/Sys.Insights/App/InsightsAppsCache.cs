@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
@@ -60,7 +61,7 @@ internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IApp
                     $"{Linker.LinkTo("stats", InsightsAppStats.Link, app.Id)} | {Linker.LinkTo("load log", InsightsAppLoadLog.Link, app.Id)} | {Linker.LinkTo("types", InsightsTypes.Link, app.Id)}",
                     Tag.Details(
                         Summary("show actions"),
-                        app.Id != Eav.Constants.PresetAppId ? Linker.LinkTo("purge", InsightsPurgeApp.Link, app.Id) : null
+                        app.Id != KnownAppsConstants.PresetAppId ? Linker.LinkTo("purge", InsightsPurgeApp.Link, app.Id) : null
                     ),
                     app.Hash?.ToString() ?? "-",
                     app.TS,

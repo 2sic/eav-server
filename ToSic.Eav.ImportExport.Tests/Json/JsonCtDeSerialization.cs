@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Tests.Persistence.File;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using Xunit.Abstractions;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
 
@@ -17,7 +18,7 @@ public class JsonCtDeSerialization(ITestOutputHelper output, JsonTestHelpers jso
 
 
         // Just convert the json to a ContentType and back - the AppId isn't really relevant here
-        var ser = jsonTestHelper.SerializerOfApp(Constants.PresetAppId);
+        var ser = jsonTestHelper.SerializerOfApp(KnownAppsConstants.PresetAppId);
         var contentType = ContentType(ser, json);
         var reSer = JsonTestHelpers.JsonOfContentType(ser, contentType);
         output.WriteLine(reSer);

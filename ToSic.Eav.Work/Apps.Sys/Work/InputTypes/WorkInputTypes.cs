@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Integration;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Sys.Utils;
 using static ToSic.Eav.Data.InputTypes;
 
@@ -40,7 +41,7 @@ public class WorkInputTypes(
         LogListOfInputTypes("Combined", inputTypes);
 
         // Merge input types registered in global metadata-app
-        var systemAppCtx = workEntities.CtxSvc.ContextPlus(Constants.MetaDataAppId);
+        var systemAppCtx = workEntities.CtxSvc.ContextPlus(KnownAppsConstants.MetaDataAppId);
         var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx);
         systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
         LogListOfInputTypes("System", systemAppInputTypes);

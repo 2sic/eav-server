@@ -66,5 +66,4 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
         // All loops completed, maybe one got a temporary result, return that
         return l.Return(result, "not-final");
     }
-        
 }

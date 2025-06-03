@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.StartUp;
@@ -26,7 +27,7 @@ partial class AppState
 
         public IAppStateBuilder InitForPreset()
         {
-            AppState = new AppState(new(null, false, false), PresetIdentity, PresetName, Log);
+            AppState = new AppState(new(null, false, false), KnownAppsConstants.PresetIdentity, KnownAppsConstants.PresetName, Log);
             MemoryCacheService.Notify(AppState);
             return this;
         }
@@ -91,7 +92,7 @@ partial class AppState
 
             bl.Done();
             // only keep logging for the preset and first app, then stop.
-            if (st.AppId != PresetAppId)
+            if (st.AppId != KnownAppsConstants.PresetAppId)
                 _loggedLoadToBootLog = true;
             l.Done();
         }
@@ -115,10 +116,10 @@ partial class AppState
             // Otherwise other checks (like is name empty) will fail, because it's not empty
             // This is necessary, because it does get loaded with real settings
             // But we must override them to always be the same.
-            if (st.NameId == PrimaryAppGuid)
+            if (st.NameId == KnownAppsConstants.PrimaryAppGuid)
             {
-                st.Folder = PrimaryAppFolder;
-                st.Name = PrimaryAppName;
+                st.Folder = KnownAppsConstants.PrimaryAppFolder;
+                st.Name = KnownAppsConstants.PrimaryAppName;
                 return l.ReturnTrue($"Primary App. Name: {st.Name}, Folder:{st.Folder}");
             }
 
@@ -141,12 +142,12 @@ partial class AppState
                 st.Folder = config?.Get<string>(AppLoadConstants.FieldFolder);
 
             // Last corrections for the DefaultApp "Content"
-            if (st.NameId == DefaultAppGuid)
+            if (st.NameId == KnownAppsConstants.DefaultAppGuid)
             {
                 // Always set the Name if we are on the content or primary app
-                st.Name = ContentAppName;
+                st.Name = KnownAppsConstants.ContentAppName;
                 // Only set the folder if not over-configured since it can change in v13+
-                if (st.Folder.IsEmptyOrWs()) st.Folder = ContentAppFolder;
+                if (st.Folder.IsEmptyOrWs()) st.Folder = KnownAppsConstants.ContentAppFolder;
             }
 
             return l.ReturnTrue($"Name: {st.Name}, Folder:{st.Folder}");
@@ -237,7 +238,7 @@ partial class AppState
         /// </summary>
         /// <remarks>
         /// Introduced in v15.05 to reduce work on entity delete.
-        /// In past we PurgeApp in whole on each entity delete.
+        /// In the past we PurgeApp in whole on each entity delete.
         /// This should be much faster, but side effects are possible.
         /// </remarks>
         [PrivateApi("Only internal use")]

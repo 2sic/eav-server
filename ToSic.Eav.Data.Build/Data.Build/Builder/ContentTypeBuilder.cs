@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
@@ -163,7 +164,7 @@ public class ContentTypeBuilder
     }
 
     public IContentType Transient(string typeName)
-        => Transient(Constants.TransientAppId, typeName, typeName);
+        => Transient(KnownAppsConstants.TransientAppId, typeName, typeName);
 
     public IContentType Transient(int appId, string typeName, string nameId, string? scope = null)
         => Create(appId: appId, name: typeName, nameId: nameId, id: DynTypeId,

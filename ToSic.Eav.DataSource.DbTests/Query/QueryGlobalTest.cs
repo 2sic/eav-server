@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSource.Internal;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.Internal.Query;
 
 namespace ToSic.Eav.DataSource.DbTests.Query;
@@ -17,7 +18,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void FindGlobalQueries()
     {
-        var queries = queryManager.AllQueryItems(Constants.PresetIdentity);
+        var queries = queryManager.AllQueryItems(KnownAppsConstants.PresetIdentity);
         var count = queries.Count;
         True(count is >= GlobalQueryCount and <= GlobalQueryCount + 5, $"should find {GlobalQueryCount} +/-5 query definitions, found {queries.Count}");
     }
@@ -27,7 +28,7 @@ public class QueryGlobalTestJsonSerializer(
     public void ReviewGlobalZonesQuery()
     {
         var queryName = $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones";
-        var queryEnt = queryManager.FindQuery(Constants.PresetIdentity, queryName);
+        var queryEnt = queryManager.FindQuery(KnownAppsConstants.PresetIdentity, queryName);
         Equal(queryName, queryEnt.GetTac<string>("Name"));//, "should find zones");
 
         var qdef = queryDefinitionBuilder.Create(queryEnt, queryEnt.AppId);
@@ -37,7 +38,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void UseGlobalZonesQuery()
     {
-        var queryEnt = queryManager.FindQuery(Constants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones");
+        var queryEnt = queryManager.FindQuery(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones");
 
         var qDef = queryDefinitionBuilder.Create(queryEnt, AppForQueryTests);
 

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
 using Xunit.Abstractions;
@@ -20,7 +21,7 @@ public class TypeExporter(ITestOutputHelper output, IRepositoryLoaderWithRaw loa
         var sharedCts = cts/*.Where(ct => ct.IsGlobal)*/.ToList();
         var exportStorageRoot =
             TestFiles.GetTestPath($"{PersistenceTestConstants.ScenarioRoot}{PersistenceTestConstants.TestingPath3}");// PersistenceTestConstants.ExportStorageRoot(TestContext);
-        var fileSysLoader = fsLoader.Init(Constants.PresetAppId, exportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null);
+        var fileSysLoader = fsLoader.Init(KnownAppsConstants.PresetAppId, exportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null);
 
         var time = Stopwatch.StartNew();
         sharedCts.ForEach(fileSysLoader.SaveContentType);

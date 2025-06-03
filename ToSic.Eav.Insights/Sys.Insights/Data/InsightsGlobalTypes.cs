@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Insights;
+﻿using ToSic.Eav.Apps.Sys;
+
+namespace ToSic.Eav.WebApi.Sys.Insights;
 
 internal class InsightsGlobalTypes(IAppReaderFactory appReadFac) : InsightsTypes(appReadFac, "GlobalTypes")
 {
@@ -8,7 +10,7 @@ internal class InsightsGlobalTypes(IAppReaderFactory appReadFac) : InsightsTypes
     {
         var l = Log.Fn<string>();
         var globTypes = AppReadFac.GetSystemPreset().ContentTypes;
-        var msg = TypesTable(Constants.PresetAppId, globTypes, null);
+        var msg = TypesTable(KnownAppsConstants.PresetAppId, globTypes, null);
 
         return l.ReturnAsOk(msg);
     }

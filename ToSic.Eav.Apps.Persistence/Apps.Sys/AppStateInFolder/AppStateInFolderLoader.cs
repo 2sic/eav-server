@@ -75,7 +75,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         => Paths
             .Select(path => _fslGenerator
                 .New()
-                .Init(Constants.PresetAppId, path, Source, true, entitiesSource, logSettings)
+                .Init(KnownAppsConstants.PresetAppId, path, Source, true, entitiesSource, logSettings)
             )
             .ToList();
 
@@ -99,7 +99,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
             var l = Log.Fn("load app data package");
             // Prepare metadata lists & relationships etc.
             builder.InitMetadata();
-            builder.SetNameAndFolder(Constants.PresetName, Constants.PresetName);
+            builder.SetNameAndFolder(KnownAppsConstants.PresetName, KnownAppsConstants.PresetName);
 
             l.Do(timer: true, action: () =>
             {

@@ -88,7 +88,7 @@ internal class AppStateStackSourcesBuilder(
     private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(AppThingsToStack thingType, ILog buildLog = null)
     {
         var l = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
-        void LogSource(string name, AppStateMetadata state)
+        void LogSource(string name, IAppStateMetadata state)
             => l.A($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
 
         var parts = new List<(string Name, IAppStateCache Source, string KeyCustom, string KeySystem)>()
@@ -107,9 +107,12 @@ internal class AppStateStackSourcesBuilder(
         {
             var stateMetadata = source?.ThingInApp(thingType);
             LogSource(name, stateMetadata);
-            if (stateMetadata == null) continue;
-            if (keyCustom != null) sources.Add(new(keyCustom, stateMetadata.MetadataItem));
-            if (keySystem != null) sources.Add(new(keySystem, stateMetadata.SystemItem));
+            if (stateMetadata == null)
+                continue;
+            if (keyCustom != null)
+                sources.Add(new(keyCustom, stateMetadata.MetadataItem));
+            if (keySystem != null)
+                sources.Add(new(keySystem, stateMetadata.SystemItem));
         }
 
         return l.Return(sources, "ok");

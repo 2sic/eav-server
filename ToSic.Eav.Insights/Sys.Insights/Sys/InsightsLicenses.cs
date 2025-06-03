@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Razor.Markup;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
@@ -41,7 +42,7 @@ internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
                     $"Enterprise License: for '{entFp.Title}' {EmojiTrueFalse(entFp.Valid)}",
                     Br(),
                     $"Fingerprint: '{entFp.Fingerprint}' ",
-                    "(guid: " + Linker.LinkTo($"{entFp.Guid}", nameof(Entity), Constants.PresetAppId,
+                    "(guid: " + Linker.LinkTo($"{entFp.Guid}", nameof(Entity), KnownAppsConstants.PresetAppId,
                         nameId: entFp.Guid.ToString()) + ")"
                 ));
 

@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using System.Globalization;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Sys.Users;
@@ -214,7 +215,7 @@ public class Csv : CustomDataSourceAdvanced
 
             var csvFactory = DataFactory.SpawnNew(new()
             {
-                AppId = Constants.TransientAppId,
+                AppId = KnownAppsConstants.TransientAppId,
                 TitleField = titleColName,
                 TypeName = ContentType,
             });

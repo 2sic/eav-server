@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.DependencyInjection;
@@ -25,7 +26,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
 
     #region Test Data Person tests
 
-    private const int AppId = Constants.TransientAppId;
+    private const int AppId = KnownAppsConstants.TransientAppId;
     //ContentType _ctNull = null;
 
     private IContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)

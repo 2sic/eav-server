@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Source;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Persistence.File;
@@ -13,7 +14,7 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
     {
         var testStorageRoot = TestFiles.GetTestPath(scenarioDeep);
         output.WriteLine($"path:'{testStorageRoot}'");
-        var loader = loaderRaw.Init(Constants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+        var loader = loaderRaw.Init(KnownAppsConstants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
         
         try
         {
@@ -32,7 +33,7 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         Trace.WriteLine("Test folder: " + testRoot);
 
         var loader = loaderRaw
-            .Init(Constants.PresetAppId, testRoot, RepositoryTypes.TestingDoNotUse, true, null);
+            .Init(KnownAppsConstants.PresetAppId, testRoot, RepositoryTypes.TestingDoNotUse, true, null);
         IList<IContentType> cts;
         try
         {

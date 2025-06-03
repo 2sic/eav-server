@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.PropertyLookup;
 using static ToSic.Eav.Apps.AppStackConstants;
 
@@ -60,11 +61,11 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
         var l = Log.Fn<AppStateStackSourcesBuilder>(target.Target.ToString());
         // Site should be skipped on the global zone
         l.A($"Owner: {AppSpecs.Show()}");
-        var siteAppReader = AppSpecs.ZoneId == Constants.DefaultZoneId
+        var siteAppReader = AppSpecs.ZoneId == KnownAppsConstants.DefaultZoneId
             ? null
             : appReaders.GetZonePrimary(AppSpecs.ZoneId);
         l.A($"Site: {siteAppReader?.Show()}");
-        var global = appReaders.Get(Constants.GlobalIdentity);
+        var global = appReaders.Get(KnownAppsConstants.GlobalIdentity);
         l.A($"Global: {global?.Show()}");
         var preset = appReaders.GetSystemPreset();
         l.A($"Preset: {preset?.Show()}");
@@ -72,10 +73,10 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
         // Find the ancestor, but only use it if it's _not_ the Preset
         var appState = AppSpecs.GetCache();
         var appAncestor = appState.ParentApp?.AppState;
-        var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == Constants.PresetAppId
+        var ancestorIfNotPreset = appAncestor == null || appAncestor.AppId == KnownAppsConstants.PresetAppId
             ? null
             : appAncestor;
-        l.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {Constants.PresetAppId}");
+        l.A($"Ancestor: {appAncestor?.Show()} - use: {ancestorIfNotPreset} (won't use if ancestor is preset App {KnownAppsConstants.PresetAppId}");
 
         var stackCache = new AppStateStackSourcesBuilder(
             target,

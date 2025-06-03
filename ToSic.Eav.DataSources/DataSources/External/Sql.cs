@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 #endif
 using System.Text;
 using System.Text.RegularExpressions;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.DataSources.Internal;
 using ToSic.Lib.LookUp;
 using static System.StringComparison;
@@ -318,7 +319,7 @@ public class Sql : CustomDataSourceAdvanced
 
                     var sqlFactory = DataFactory.SpawnNew(options: new()
                     {
-                        AppId = Constants.TransientAppId,
+                        AppId = KnownAppsConstants.TransientAppId,
                         TitleField = casedTitle ?? "Unknown",
                         TypeName = ContentType,
                     });

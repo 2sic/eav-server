@@ -23,7 +23,7 @@ public interface IAppStateCache: ICacheExpiring,
 
     string Folder { get; }
 
-    AppStateMetadata ThingInApp(AppThingsToStack target);
+    IAppStateMetadata ThingInApp(AppThingsToStack target);
 
     IParentAppState ParentApp { get; }
 

@@ -10,6 +10,6 @@ partial class AppState
     internal AppStateMetadata ResourcesInApp => field ??= new(this, AppStackConstants.Resources);
 
     [PrivateApi]
-    AppStateMetadata IAppStateCache.ThingInApp(AppThingsToStack target) =>
+    IAppStateMetadata IAppStateCache.ThingInApp(AppThingsToStack target) =>
         target == AppThingsToStack.Settings ? SettingsInApp : ResourcesInApp;
 }

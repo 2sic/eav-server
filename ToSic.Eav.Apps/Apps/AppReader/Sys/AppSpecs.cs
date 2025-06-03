@@ -30,8 +30,8 @@ internal class AppSpecs(AppState appState): IAppSpecs
 
     public IMetadataOf Metadata => appState.Metadata;
 
-    public AppStateMetadata Settings => appState.SettingsInApp;
+    public IAppStateMetadata Settings => appState.SettingsInApp;
 
-    public AppStateMetadata Resources => appState.ResourcesInApp;
+    public IAppStateMetadata Resources => appState.ResourcesInApp;
 
 }

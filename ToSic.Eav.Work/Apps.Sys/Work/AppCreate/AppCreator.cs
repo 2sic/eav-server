@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 
@@ -36,7 +37,7 @@ public class AppCreator(
     public void Create(string appName, string appGuid = null, int? inheritAppId = null)
     {
         // check if invalid app-name which should never be created like this
-        if (appName == Constants.ContentAppName || appName == Constants.DefaultAppGuid || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))
+        if (appName == KnownAppsConstants.ContentAppName || appName == KnownAppsConstants.DefaultAppGuid || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))
             throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
         var appId = CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);

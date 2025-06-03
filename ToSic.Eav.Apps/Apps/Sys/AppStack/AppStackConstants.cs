@@ -30,12 +30,12 @@ public class AppStackConstants
     public static string RootNameResources = "Resources";
 
 
-    public const string SysSettingsFieldScope = "SettingsEntityScope";
+    //public const string SysSettingsFieldScope = "SettingsEntityScope";
 
-    public static string FieldSettingsIdentifier = "SettingsIdentifier";
-    public static string FieldItemIdentifier = "ItemIdentifier";
+    //public static string FieldSettingsIdentifier = "SettingsIdentifier";
+    //public static string FieldItemIdentifier = "ItemIdentifier";
 
-    internal static string[] BlacklistKeys = [FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope];
+    //internal static string[] BlacklistKeys = [FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope];
 
     public static AppThingsIdentifiers Resources = new()
     {
@@ -52,20 +52,4 @@ public class AppStackConstants
         SystemType = "SettingsSystem",
         Target = AppThingsToStack.Settings
     };
-}
-
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public enum AppThingsToStack
-{
-    Resources,
-    Settings
-}
-
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public struct AppThingsIdentifiers
-{
-    public AppThingsToStack Target;
-    public string SystemType;
-    public string CustomType;
-    public string AppType;
 }

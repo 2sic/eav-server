@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.State;
+using ToSic.Eav.Apps.Sys;
 
 namespace ToSic.Eav.Caching;
 
@@ -32,13 +33,13 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
         var realZones = tools.RepositoryLoader(null).Zones();
 
         // Add the Preset-Zone to the list - important, otherwise everything fails
-        var presetZone = new Zone(Constants.PresetZoneId,
-            Constants.PresetAppId,
-            Constants.PresetAppId,
+        var presetZone = new Zone(KnownAppsConstants.PresetZoneId,
+            KnownAppsConstants.PresetAppId,
+            KnownAppsConstants.PresetAppId,
             new ReadOnlyDictionary<int, string>(
                 new Dictionary<int, string>
                 {
-                    { Constants.PresetAppId, Constants.PresetName }
+                    { KnownAppsConstants.PresetAppId, KnownAppsConstants.PresetName }
                 }),
             [
                 new()
@@ -51,7 +52,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
                     Parent = null
                 }
             ]);
-        realZones.Add(Constants.PresetZoneId, presetZone);
+        realZones.Add(KnownAppsConstants.PresetZoneId, presetZone);
 
         return new ReadOnlyDictionary<int, Zone>(realZones);
     }
@@ -117,7 +118,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
 
     private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string primaryLanguage = null)
     {
-        if (appIdentity.ZoneId == 0 || appIdentity.AppId == Constants.AppIdEmpty)
+        if (appIdentity.ZoneId == 0 || appIdentity.AppId == KnownAppsConstants.AppIdEmpty)
             return null;
 
         var cacheKey = CacheKey(appIdentity);

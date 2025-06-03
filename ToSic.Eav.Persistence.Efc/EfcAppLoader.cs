@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Internal.Features;
@@ -172,7 +173,7 @@ public class EfcAppLoader(
         else
         {
             // New v13 - use global app by default to share content-types
-            var globalApp = appStates.Get(Constants.PresetIdentity);
+            var globalApp = appStates.Get(KnownAppsConstants.PresetIdentity);
             parent = new(globalApp ?? throw new("Can't find global app - which is required to build any other apps. "),
                 true,
                 false);

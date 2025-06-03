@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
 using ToSic.Lib.Coding;
-using static ToSic.Eav.Constants;
+using static ToSic.Eav.Apps.Sys.KnownAppsConstants;
 
 namespace ToSic.Eav.Apps;
 

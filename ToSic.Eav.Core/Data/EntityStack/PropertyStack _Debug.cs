@@ -1,11 +1,21 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Debug;
+﻿using ToSic.Eav.Data.Debug;
 using ToSic.Eav.Data.PropertyLookup;
 
 namespace ToSic.Eav.Data;
 
 partial class PropertyStack
 {
+    #region Internal Constants for filtering out some keys, seem to be so that debug info hides confusing properties...
+
+    public const string SysSettingsFieldScope = "SettingsEntityScope";
+
+    public static string FieldSettingsIdentifier = "SettingsIdentifier";
+    public static string FieldItemIdentifier = "ItemIdentifier";
+
+    internal static string[] BlacklistKeys = [FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope];
+
+    #endregion
+
 
     [PrivateApi("Internal")]
     public List<PropertyDumpItem> _Dump(PropReqSpecs specs, string path)
@@ -42,7 +52,7 @@ partial class PropertyStack
         // Remove settings-internal keys which are not useful
         // use Blacklist to find these
         result = result.Where(r =>
-                !AppStackConstants.BlacklistKeys.Any(blk => r.Path.EndsWith(PropertyDumpItem.Separator + blk)))
+                !BlacklistKeys.Any(blk => r.Path.EndsWith(PropertyDumpItem.Separator + blk)))
             .ToArray();
 
         // V13 - drop null values

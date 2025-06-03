@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.State;
@@ -17,12 +18,12 @@ public static class AppStateExtensions
 
     public static bool AppGuidIsAPreset(string parentAppGuid)
         => parentAppGuid.HasValue()
-           && (parentAppGuid == Constants.PresetName || parentAppGuid == Constants.GlobalPresetName);
+           && (parentAppGuid == KnownAppsConstants.PresetName || parentAppGuid == KnownAppsConstants.GlobalPresetName);
 
 
     // TODO: @STV - try to use this where possible
     public static bool IsGlobalSettingsApp(this IAppIdentity hasAppSpecs)
-        => hasAppSpecs.AppId == Constants.MetaDataAppId;
+        => hasAppSpecs.AppId == KnownAppsConstants.MetaDataAppId;
 
 
     public static IEntity GetDraftOrKeep(this IAppReader appReader, IEntity entity)

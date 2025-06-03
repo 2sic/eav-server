@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Persistence.Efc;
+﻿using ToSic.Eav.Apps.Sys;
+
+namespace ToSic.Eav.Persistence.Efc;
 
 internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Efc.ZoneLoader")
 {
@@ -24,12 +26,12 @@ internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Ef
                 z =>
                 {
                     // On the default zone, the primary & default are the same
-                    var primary = z.ZoneId == Constants.DefaultZoneId
-                        ? Constants.MetaDataAppId
-                        : z.TsDynDataApps.FirstOrDefault(a => a.Name == Constants.PrimaryAppGuid)?.AppId ?? -1;
-                    var content = z.ZoneId == Constants.DefaultZoneId
-                        ? Constants.MetaDataAppId
-                        : z.TsDynDataApps.FirstOrDefault(a => a.Name == Constants.DefaultAppGuid)?.AppId ?? -1;
+                    var primary = z.ZoneId == KnownAppsConstants.DefaultZoneId
+                        ? KnownAppsConstants.MetaDataAppId
+                        : z.TsDynDataApps.FirstOrDefault(a => a.Name == KnownAppsConstants.PrimaryAppGuid)?.AppId ?? -1;
+                    var content = z.ZoneId == KnownAppsConstants.DefaultZoneId
+                        ? KnownAppsConstants.MetaDataAppId
+                        : z.TsDynDataApps.FirstOrDefault(a => a.Name == KnownAppsConstants.DefaultAppGuid)?.AppId ?? -1;
 
                     var appDictionary = z.TsDynDataApps.ToDictionary(a => a.AppId, a => a.Name);
 

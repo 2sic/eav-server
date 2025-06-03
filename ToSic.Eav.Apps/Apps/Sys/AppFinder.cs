@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Utils;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Internal;
 
@@ -15,7 +16,7 @@ public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appRea
         try
         {
             if (appName.IsEmptyOrWs())
-                return l.Return(Constants.AppIdEmpty, "no name");
+                return l.Return(KnownAppsConstants.AppIdEmpty, "no name");
 
             var nameLower = appName.ToLowerInvariant();
             var appId = appsCatalog.Apps(zoneId)

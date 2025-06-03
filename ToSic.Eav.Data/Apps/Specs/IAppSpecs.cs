@@ -22,8 +22,8 @@ public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
     /// </summary>
     IMetadataOf Metadata { get; }
 
-    AppStateMetadata Settings { get; }
+    IAppStateMetadata Settings { get; }
 
-    AppStateMetadata Resources { get; }
+    IAppStateMetadata Resources { get; }
 
 }

@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repository.Efc.Parts;
+﻿using ToSic.Eav.Apps.Sys;
+
+namespace ToSic.Eav.Repository.Efc.Parts;
 
 internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
 {
@@ -12,10 +14,10 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
 
         DbContext.Dimensions.AddRootCultureNode(Constants.CultureSystemKey, "Culture Root", newZone);
 
-        DbContext.App.AddApp(newZone, Constants.DefaultAppGuid);
+        DbContext.App.AddApp(newZone, KnownAppsConstants.DefaultAppGuid);
 
         // We reliably auto-init the site-app by default
-        DbContext.App.AddApp(newZone, Constants.PrimaryAppGuid);
+        DbContext.App.AddApp(newZone, KnownAppsConstants.PrimaryAppGuid);
 
         return newZone.ZoneId;
     }
@@ -30,8 +32,8 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
             .Include(z => z.TsDynDataApps)
             .Include(z => z.TsDynDataDimensions)
             // Skip "default" zone as that is a single purpose technical zone
-            .Where(z => z.ZoneId != Constants.DefaultZoneId)
-            .Where(z => z.TsDynDataApps.All(a => a.Name != Constants.PrimaryAppGuid))
+            .Where(z => z.ZoneId != KnownAppsConstants.DefaultZoneId)
+            .Where(z => z.TsDynDataApps.All(a => a.Name != KnownAppsConstants.PrimaryAppGuid))
             .ToList();
 
         if (!zonesWithoutPrimary.Any()) return l.ReturnFalse("no missing primary");
@@ -39,7 +41,7 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
         var newZones = zonesWithoutPrimary
             .Select(zone => new TsDynDataApp
             {
-                Name = Constants.PrimaryAppGuid,
+                Name = KnownAppsConstants.PrimaryAppGuid,
                 Zone = zone
             }).ToList();
 

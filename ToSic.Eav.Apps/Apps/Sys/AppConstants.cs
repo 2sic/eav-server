@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Internal;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public static class AppConstants
+public class AppConstants
 {
     public const string LogName = "App";
 

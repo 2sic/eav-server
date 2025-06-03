@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Tests.Json;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.ImportExport.Tests.Json;
 using ToSic.Eav.Persistence.File;
 using Xunit.Abstractions;
 
@@ -60,7 +61,7 @@ public class FileLoaderCtAttrGuid(ITestOutputHelper output, FileSystemLoader loa
         var ctAuthor = cts.First(ct => ct.Name.Equals(CtAuthorWithSharedAttributes));
 
         // Re-json the author and check
-        var serializer = jsonTestHelper.SerializerOfApp(Constants.PresetAppId);
+        var serializer = jsonTestHelper.SerializerOfApp(KnownAppsConstants.PresetAppId);
         var jsonAuthor = serializer.ToJson(ctAuthor);
         var jsonFullName = jsonAuthor.Attributes.First(a => a.Name.Equals(FFullName));
         Null(jsonFullName.Guid);

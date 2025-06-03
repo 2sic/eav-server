@@ -5,7 +5,7 @@ using ToSic.Lib.Caching.Synchronized;
 namespace ToSic.Eav.Apps.State;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppStateMetadata
+public class AppStateMetadata : IAppStateMetadata
 {
     /// <summary>
     /// </summary>

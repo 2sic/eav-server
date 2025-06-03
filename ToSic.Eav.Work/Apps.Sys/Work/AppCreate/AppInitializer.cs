@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
@@ -97,8 +98,8 @@ public class AppInitializer(
     private static string PickCorrectFolderName(string newAppName, string eavAppName) =>
         eavAppName switch
         {
-            Constants.DefaultAppGuid => Constants.ContentAppFolder,
-            Constants.PrimaryAppGuid or Constants.PrimaryAppName => Constants.PrimaryAppName,
+            KnownAppsConstants.DefaultAppGuid => KnownAppsConstants.ContentAppFolder,
+            KnownAppsConstants.PrimaryAppGuid or KnownAppsConstants.PrimaryAppName => KnownAppsConstants.PrimaryAppName,
             _ => string.IsNullOrEmpty(newAppName) ? eavAppName : RemoveIllegalCharsFromPath(newAppName)
         };
 

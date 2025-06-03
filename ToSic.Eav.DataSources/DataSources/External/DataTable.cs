@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using ToSic.Eav.Apps.Sys;
 using IEntity = ToSic.Eav.Data.IEntity;
 using SqlDataTable = System.Data.DataTable;
 
@@ -126,7 +127,7 @@ public class DataTable : CustomDataSourceAdvanced
 
         var tblFactory = DataFactory.SpawnNew(options: new()
         {
-            AppId = Constants.TransientAppId,
+            AppId = KnownAppsConstants.TransientAppId,
             TitleField = titleField,
             TypeName = contentType,
         });

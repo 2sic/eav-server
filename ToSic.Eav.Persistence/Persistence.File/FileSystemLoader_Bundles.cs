@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Internal.Loaders;
@@ -114,8 +115,8 @@ partial class FileSystemLoader
                         repoType: RepoType,
                         repoAddress: path,
                         parentTypeId: Constants.PresetContentTypeFakeParent,
-                        configZoneId: Constants.PresetZoneId,
-                        configAppId: Constants.PresetAppId);
+                        configZoneId: KnownAppsConstants.PresetZoneId,
+                        configAppId: KnownAppsConstants.PresetAppId);
                     return new ContentTypeWithEntities { ContentType = typeWithOrigin, Entities = ct.Entities };
                 })
                 .ToList();

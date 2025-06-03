@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Source;
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories;
@@ -45,7 +46,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
         var loader = loaderGenerator.New()// GetService<FileSystemLoader>()
             .Init(
-                Constants.PresetAppId,
+                KnownAppsConstants.PresetAppId,
                 testStorageRoot,
                 RepositoryTypes.TestingDoNotUse,
                 false,
@@ -71,7 +72,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
         output.WriteLine($"path:'{testStorageRoot}'");
         var loader = loaderGenerator.New()
-            .Init(Constants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+            .Init(KnownAppsConstants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
         var relationshipsSource = new ImmutableEntitiesSource();
         try
         {
