@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains all the common constants etc. for Data-Scopes
 /// </summary>
-[System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ScopeConstants
 {
     /// <summary>
