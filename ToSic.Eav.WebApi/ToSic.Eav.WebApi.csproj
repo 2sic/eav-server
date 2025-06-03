@@ -37,8 +37,4 @@
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Sys\Insights\" />
-  </ItemGroup>
-
 </Project>
