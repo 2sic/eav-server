@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Data;
 
 // ReSharper disable once InconsistentNaming
-static class IEntityExtensionsSubListNavigation
+static class IEntitySubListNavigation
 {
     /// <summary>
     /// Special case on entity lists v12.03
