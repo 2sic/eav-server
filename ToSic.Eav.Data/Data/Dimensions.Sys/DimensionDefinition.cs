@@ -35,7 +35,8 @@ public class DimensionDefinition
     /// </summary>
     /// <param name="environmentKey"></param>
     /// <returns></returns>
-    public bool Matches(string environmentKey) => string.Equals(EnvironmentKey, environmentKey, StringComparison.InvariantCultureIgnoreCase);
+    public bool Matches(string environmentKey)
+        => string.Equals(EnvironmentKey, environmentKey, StringComparison.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// If this dimension is active.
