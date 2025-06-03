@@ -24,7 +24,12 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     {
         Entity = baseEntity;
         RootContentsForEqualityCheck = Entity;
-        if (Entity is not IEntityWrapper wrapper) return;
+
+        // If it's not itself a wrapper, then we're done
+        if (Entity is not IEntityWrapper wrapper)
+            return;
+
+        // If it's a wrapper, then we must track the root entity for equality checks
         RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? Entity;
         Decorators = [..wrapper.Decorators];
     }
@@ -36,7 +41,8 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     /// <param name="decorator">Additional wrapper to add</param>
     public EntityWrapper(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
     {
-        if (decorator != null) Decorators = [..Decorators, decorator];
+        if (decorator != null)
+            Decorators = [..Decorators, decorator];
     }
 
 

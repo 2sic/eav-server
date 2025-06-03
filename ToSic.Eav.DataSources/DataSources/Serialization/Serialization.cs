@@ -290,7 +290,7 @@ public partial class Serialization : DataSourceBase
         var decorator = SerializationSourceToDecorator.Create(this);
 
         var result = before
-            .Select(IEntity (e) => new EntityDecorator12<EntitySerializationDecorator>(e, decorator))
+            .Select(IEntity (e) => new EntityWithDecorator<EntitySerializationDecorator>(e, decorator))
             .ToImmutableList();
 
         return l.Return(result, "modified");
