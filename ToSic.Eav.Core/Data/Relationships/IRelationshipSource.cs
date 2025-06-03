@@ -10,5 +10,5 @@ public interface IRelationshipSource: ICacheExpiring
     /// <summary>
     /// Contains all the relationships of the current app cache.
     /// </summary>
-    /*AppRelationshipManager*/ IEnumerable<EntityRelationship> Relationships { get; }
+    /*AppRelationshipManager*/ IEnumerable<IEntityRelationship> Relationships { get; }
 }

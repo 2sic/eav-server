@@ -55,7 +55,7 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
     /// <summary>
     /// WIP...
     /// </summary>
-    IEnumerable<EntityRelationship> IRelationshipSource.Relationships => Relationships;
+    IEnumerable<IEntityRelationship> IRelationshipSource.Relationships => Relationships;
 
     /// <summary>
     /// The official name identifier of the app, usually a Guid as a string, but often also "Default" for Content-Apps

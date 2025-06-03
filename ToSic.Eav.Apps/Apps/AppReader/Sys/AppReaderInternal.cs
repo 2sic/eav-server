@@ -11,7 +11,7 @@ public static class AppReaderInternal
     public static IImmutableList<IEntity> GetListNotHavingDrafts(this IAppReader reader)
         => ((AppState)reader.GetCache()).ListNotHavingDrafts.List;
 
-    public static AppRelationshipManager GetRelationships(this IAppReader reader)
+    internal static AppRelationshipManager GetRelationships(this IAppReader reader)
         => reader.GetCache().Relationships as AppRelationshipManager;
 
     public static IAppStateCache GetCache(this IAppReader reader)

@@ -14,12 +14,12 @@ namespace ToSic.Eav.Data;
 /// which I wasn't able to track down, probably because of record specific equality checks.
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class EntityRelationships(IEntityLight entity, IRelationshipSource app, IEnumerable<EntityRelationship> fallbackRels = null)
+internal class EntityRelationships(IEntityLight entity, IRelationshipSource app, IEnumerable<IEntityRelationship> fallbackRels = null)
     : IEntityRelationships
 {
     private readonly IEntity _entity = entity as IEntity;
     private readonly IRelationshipSource _appSource = app;
-    private readonly IEnumerable<EntityRelationship> _fallbackRels = fallbackRels;
+    private readonly IEnumerable<IEntityRelationship> _fallbackRels = fallbackRels;
 
     /// <summary>
     /// Special constructor for cloning, where we attach the manager of the original
@@ -30,13 +30,13 @@ internal class EntityRelationships(IEntityLight entity, IRelationshipSource app,
     /// <summary>
     /// This should be reworked, it often contains all relationships of the entire app
     /// </summary>
-    private IEnumerable<EntityRelationship> AllRelationships => field ??= _appSource?.Relationships ?? _fallbackRels ?? [];
+    private IEnumerable<IEntityRelationship> AllRelationships => field ??= _appSource?.Relationships ?? _fallbackRels ?? [];
 
     /// <inheritdoc />
     public IEnumerable<IEntity> AllChildren
         => ChildRelationships().Select(r => r.Child);
 
-    private IImmutableList<EntityRelationship> ChildRelationships()
+    private IImmutableList<IEntityRelationship> ChildRelationships()
     {
         // Most common scenario: already cached in synchronized list
         // Handled in Synchronized List - any changes will already be reflected
@@ -54,12 +54,12 @@ internal class EntityRelationships(IEntityLight entity, IRelationshipSource app,
 
     }
 
-    private SynchronizedList<EntityRelationship> _childRelationships;
+    private SynchronizedList<IEntityRelationship> _childRelationships;
 
     /// <summary>
     /// Directly retrieve the children - should only be called by the caching mechanism
     /// </summary>
-    private IImmutableList<EntityRelationship> GetChildrenUncached() =>
+    private IImmutableList<IEntityRelationship> GetChildrenUncached() =>
         AllRelationships
             .Where(r => ReferenceEquals(r.Parent, _entity))
             .ToImmutableList();
@@ -71,7 +71,7 @@ internal class EntityRelationships(IEntityLight entity, IRelationshipSource app,
         => ParentRelationships().Select(r => r.Parent);
 
     // note: don't cache the result, as it's already cache-chained
-    private IImmutableList<EntityRelationship> ParentRelationships()
+    private IImmutableList<IEntityRelationship> ParentRelationships()
     {
         // Most common scenario: already cached in synchronized list
         // Handled in Synchronized List - any changes will already be reflected
@@ -88,7 +88,7 @@ internal class EntityRelationships(IEntityLight entity, IRelationshipSource app,
         return _parentRelationships.List;
 
     }
-    private SynchronizedList<EntityRelationship> _parentRelationships;
+    private SynchronizedList<IEntityRelationship> _parentRelationships;
 
     #region Special Comparison
 
@@ -101,7 +101,7 @@ internal class EntityRelationships(IEntityLight entity, IRelationshipSource app,
     /// But as a standalone function because of the extensive
     /// documentation necessary for the pub/hidden/draft scenario.
     /// </remarks>
-    private IImmutableList<EntityRelationship> GetParentsUncached()
+    private IImmutableList<IEntityRelationship> GetParentsUncached()
     {
         var optimalCompare = SelfComparisonForParent();
         return AllRelationships

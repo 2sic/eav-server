@@ -7,18 +7,15 @@ namespace ToSic.Eav.Apps.State;
 
 [PrivateApi("don't publish this - too internal, special, complicated")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppRelationshipManager: SynchronizedList<EntityRelationship>
+internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEntityRelationship>(upstream, () => Rebuild(upstream))
 {
-    internal AppRelationshipManager(AppState upstream) : base(upstream, () => Rebuild(upstream))
-    { }
-
-    private static ImmutableList<EntityRelationship> Rebuild(AppState appState)
+    private static ImmutableList<IEntityRelationship> Rebuild(AppState appState)
     {
         // todo: could be optimized (minor)
         // atm guid-relationships (like in json-objects) 
         // will have multiple lookups - first to find the json, then to add to relationship index
 
-        var cache = new List<EntityRelationship>();
+        var cache = new List<IEntityRelationship>();
         var index = appState.Index;
         foreach (var entity in appState.List)
         {
@@ -35,9 +32,7 @@ public class AppRelationshipManager: SynchronizedList<EntityRelationship>
 
             foreach (var value in lazyEntityValues)
             foreach (var childId in value.EntityIds.Where(e => e != null))
-                // 2024-01-23 2dm - rewrote to the code below, must monitor for problems
-                //Add(index, cache, entity.EntityId, childId);
-                Add(entity/*.EntityId*/, childId.Value);
+                Add(entity, childId.Value);
         }
 
         return cache.ToImmutableList();
@@ -51,29 +46,9 @@ public class AppRelationshipManager: SynchronizedList<EntityRelationship>
         //   since the nulls were filtered before
         void Add(IEntity parent, int childId)
         {
-            // 2024-01-23 2dm - new exit point id child == null, monitor till 2024-Q3
             if (index.TryGetValue(childId, out var child))
-                cache.Add(new(parent, child));
+                cache.Add(new EntityRelationship(parent, child));
         }
-
-        #region Archive till #Remove2024-Q3
-
-        //// 2024-01-23 2dm - rewrote to the code below, must monitor for problems
-        //// Important changes
-        //// - directly add parent without lookup in index. It's not clear why it used the index, so if something pops up, we must document it
-        //// - removed the null-check for child, because it seems that the reason for it is a left-over
-        ////   since the nulls were filtered before
-        //void Add(int parentId, int/*?*/ childId)
-        //{
-        //    // See if we can find the parent; otherwise exit
-        //    var parent = index.TryGetValue(parentId, out var p) ? p : null;
-        //    if (parent == null) return;
-
-        //    var child = index.TryGetValue(childId, out var c) ? c : null;
-        //    cache.Add(new(parent, child));
-        //}
-
-        #endregion
 
     }
 }
