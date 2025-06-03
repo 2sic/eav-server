@@ -32,7 +32,7 @@ public static class StartUpEavCore
         // v20 Startup
         services.AddTransient<IBootProcess, BootRegistrationEavFeatures>();
         services.AddTransient<IBootProcess, BootRegistrationEavLicenses>();
-        services.TryAddTransient<ITargetTypeService, TargetTypesService>();
+        //services.TryAddTransient<ITargetTypeService, TargetTypesService>();
 
         return services;
     }

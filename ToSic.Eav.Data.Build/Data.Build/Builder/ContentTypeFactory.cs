@@ -167,16 +167,16 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         // All props
         var dic = new Dictionary<string, object>();
         if (description != null)
-            dic.Add(AttributeMetadata.DescriptionField, description);
+            dic.Add(AttributeMetadataConstants.DescriptionField, description);
         if (inputType != null)
-            dic.Add(AttributeMetadata.GeneralFieldInputType, inputType);
+            dic.Add(AttributeMetadataConstants.GeneralFieldInputType, inputType);
 
         var attributes = attributeBuilder.Create(dic);
 
         // Create a Description entity
         var entity = entityBuilder.Create(
             NoAppId,
-            ctBuilder.Transient(NoAppId, AttributeMetadata.TypeGeneral, AttributeMetadata.TypeGeneral),
+            ctBuilder.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral, AttributeMetadataConstants.TypeGeneral),
             attributes: attributes);
         return l.Return(entity, "created");
     }

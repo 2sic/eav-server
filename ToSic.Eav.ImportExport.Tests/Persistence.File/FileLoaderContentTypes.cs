@@ -41,7 +41,7 @@ public class FileLoaderContentTypes(ITestOutputHelper output, FileSystemLoader l
         var conMeta = conStr.Metadata;
         Equal(2, conMeta.Count());//, "constr should have 2 meta-items");
 
-        var conMetaAll = conMeta.FirstOrDefault(e => e.Type.Name == AttributeMetadata.TypeGeneral);
+        var conMetaAll = conMeta.FirstOrDefault(e => e.Type.Name == AttributeMetadataConstants.TypeGeneral);
         NotNull(conMetaAll);//, "should have @all metadata");
 
         var conMetaStr = conMeta.FirstOrDefault(e => e.Type.Name == "@string-default");

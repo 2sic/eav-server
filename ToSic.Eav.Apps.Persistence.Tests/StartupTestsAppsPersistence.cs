@@ -32,6 +32,7 @@ public class StartupTestsAppsPersistence
             .AddEavApps()
             .AddEavPersistence()
             .AddEavDataBuild()
+            .AddEavData()
             .AddEavCoreLibAndSys();
 
         // Register Fallback Services

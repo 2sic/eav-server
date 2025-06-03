@@ -44,7 +44,7 @@ public static class StartupEav
             .AddDataSources()
             // EAV Core
             .AddEavDataBuild()
-
+            .AddEavData()
             .AddEavCoreLibAndSys();
 
         return services;

@@ -11,8 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Sources.Sys\" />
-    <Folder Include="Metadata.Sys\" />
+    <Folder Include="Metadata\NewFolder\" />
   </ItemGroup>
 
 </Project>

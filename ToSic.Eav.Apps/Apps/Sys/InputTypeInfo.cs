@@ -109,7 +109,7 @@ public class InputTypeInfo(string type, string label, string description, string
     /// </summary>
     /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
     public static Dictionary<string, bool> NewDefaultConfigTypesDic()
-        => new(InvariantCultureIgnoreCase) { [AttributeMetadata.TypeGeneral] = true };
+        => new(InvariantCultureIgnoreCase) { [AttributeMetadataConstants.TypeGeneral] = true };
 
     /// <summary>
     /// Internal processing to get the config-types in the format we need.

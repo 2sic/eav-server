@@ -4,7 +4,7 @@ using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata;
 using ToSic.Metadata.Recommendations.Sys;
-using static ToSic.Eav.Data.AttributeMetadata;
+using static ToSic.Eav.Data.AttributeMetadataConstants;
 
 
 namespace ToSic.Eav.WebApi;

@@ -259,7 +259,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         // If it's not in the cache, compute the list of attributes and add it to the cache
         excludeAttributes = entity.Type.Attributes?.ToList()
             .Where(a => a.Type == ValueTypes.Empty
-                        || a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
+                        || a.Metadata.GetBestValue<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
             .Select(a => a.Name)
             .ToList();
 

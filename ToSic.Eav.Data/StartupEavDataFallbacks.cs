@@ -6,8 +6,7 @@ using ToSic.Sys;
 
 namespace ToSic.Eav.StartUp;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public static class StartupEavData
+public static partial class StartupEavData
 {
     /// <summary>
     /// This will add Do-Nothing services which will take over if they are not provided by the main system

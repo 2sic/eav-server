@@ -15,7 +15,7 @@ public class ContentTypeFactoryAttributesTests(ContentTypeFactory factory)
         Equal(type, attribute.Type); //, $"{name} type check");
         Equal(isTitle, attribute.IsTitle); //, $"{name} IsTitle check");
         if (description != default)
-            Equal(description, attribute.Metadata.GetBestValue<string>(AttributeMetadata.DescriptionField)); //, $"{name} Description check");
+            Equal(description, attribute.Metadata.GetBestValue<string>(AttributeMetadataConstants.DescriptionField)); //, $"{name} Description check");
     }
 
     private ContentTypeVirtualAttributes GetVAttribDecorator(Type t) => factory.Create(t).GetDecorator<ContentTypeVirtualAttributes>();

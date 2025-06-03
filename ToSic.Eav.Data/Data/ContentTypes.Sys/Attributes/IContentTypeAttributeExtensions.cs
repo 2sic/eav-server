@@ -1,4 +1,4 @@
-﻿using static ToSic.Eav.Data.AttributeMetadata;
+﻿using static ToSic.Eav.Data.AttributeMetadataConstants;
 
 namespace ToSic.Eav.Data;
 
@@ -48,10 +48,10 @@ public static class IContentTypeAttributeExtensions
     public static bool HasFormulas(this IContentTypeAttribute attribute, ILog log)
     {
         var l = log.Fn<bool>(attribute.Name);
-        var allMd = attribute.Metadata.FirstOrDefaultOfType(AttributeMetadata.TypeGeneral);
+        var allMd = attribute.Metadata.FirstOrDefaultOfType(AttributeMetadataConstants.TypeGeneral);
         if (allMd == null) return l.ReturnFalse("no @All");
 
-        var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == AttributeMetadata.MetadataFieldAllFormulas);
+        var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == AttributeMetadataConstants.MetadataFieldAllFormulas);
         if (calculationsAttr == null) return l.ReturnFalse("no calc property");
 
         var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;

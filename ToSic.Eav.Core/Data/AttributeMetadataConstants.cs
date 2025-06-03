@@ -5,7 +5,7 @@
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AttributeMetadata
+public class AttributeMetadataConstants
 {
     /// <summary>
     /// The content-type which describes general settings of an attribute

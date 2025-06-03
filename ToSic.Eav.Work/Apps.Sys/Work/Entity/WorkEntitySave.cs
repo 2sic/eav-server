@@ -164,7 +164,7 @@ public class WorkEntitySave(
             return l.ReturnNull("no attributes");
 
         var toClear = attributes
-            .Where(a => a.Metadata.GetBestValue<bool>(AttributeMetadata.MetadataFieldAllIsEphemeral))
+            .Where(a => a.Metadata.GetBestValue<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
             .ToList();
 
         if (!toClear.Any())

@@ -67,10 +67,10 @@ public class WorkAttributesMod(
         {
             { "VisibleInEditUI", true },
             { "Name", staticName },
-            { AttributeMetadata.GeneralFieldInputType, inputType }
+            { AttributeMetadataConstants.GeneralFieldInputType, inputType }
         };
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
         l.Done();
     }
 
@@ -81,10 +81,10 @@ public class WorkAttributesMod(
     public bool SetInputType(int attributeId, string inputType)
     {
         var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
-        var newValues = new Dictionary<string, object> { { AttributeMetadata.GeneralFieldInputType, inputType } };
+        var newValues = new Dictionary<string, object> { { AttributeMetadataConstants.GeneralFieldInputType, inputType } };
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadata.TypeGeneral, newValues);
+        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
         return l.ReturnTrue();
     }
 
