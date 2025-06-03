@@ -83,6 +83,7 @@
 
   <ItemGroup>
     <Folder Include="Data.PropertyDump.Sys\" />
+    <Folder Include="Data\Debug\" />
   </ItemGroup>
 
   <!--WHAT ARE WE TURNING OFF HERE?-->
