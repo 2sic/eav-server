@@ -26,7 +26,8 @@ public abstract class EntityBasedType : IEntityBasedType
     /// Create a EntityBasedType and wrap the entity provided
     /// </summary>
     /// <param name="entity"></param>
-    protected EntityBasedType(IEntity entity) => Entity = entity;
+    protected EntityBasedType(IEntity entity)
+        => Entity = entity;
 
     protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
         => LookupLanguages = languageCodes ?? [];
@@ -35,7 +36,8 @@ public abstract class EntityBasedType : IEntityBasedType
         => LookupLanguages = languageCode != null ? [languageCode] : [];
 
     /// <inheritdoc />
-    public virtual string Title => field ??= Entity?.GetBestTitle() ?? "";
+    public virtual string Title => field
+        ??= Entity?.GetBestTitle() ?? "";
 
     /// <inheritdoc />
     public int Id => Entity?.EntityId ?? 0;
