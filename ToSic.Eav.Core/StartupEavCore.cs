@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Metadata;
 using ToSic.Lib;
 using ToSic.Lib.Caching;
 using ToSic.Sys;

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps;
-
-namespace ToSic.Eav;
+﻿namespace ToSic.Eav;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class Constants

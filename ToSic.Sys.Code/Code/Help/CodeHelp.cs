@@ -23,12 +23,12 @@ public class CodeHelp(
     /// <summary>
     /// Name for internal use to better understand what this is for
     /// </summary>
-    public string? Name { get; } = name ?? original?.Name;
+    public string? Name { get; init; } = name ?? original?.Name;
 
-    public string? Detect { get; } = detect ?? original?.Detect;
-    public bool DetectRegex { get; } = detectRegex ?? original?.DetectRegex ?? false;
-    public string? UiMessage { get; } = uiMessage ?? original?.UiMessage;
-    public string? DetailsHtml { get; } = detailsHtml ?? original?.DetailsHtml;
+    public string? Detect { get; init; } = detect ?? original?.Detect;
+    public bool DetectRegex { get; init; } = detectRegex ?? original?.DetectRegex ?? false;
+    public string? UiMessage { get; init; } = uiMessage ?? original?.UiMessage;
+    public string? DetailsHtml { get; init; } = detailsHtml ?? original?.DetailsHtml;
 
     public readonly string? LinkCode = linkCode ?? original?.LinkCode;
 
