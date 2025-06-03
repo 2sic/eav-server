@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.Caching.PiggyBack;
 
 namespace ToSic.Eav.Data;
 
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Data;
 /// Represents a Content Type information (the schema) used for <see cref="IEntity"/> objects.
 /// </summary>
 [PublicApi]
-public interface IContentType: IAppIdentityLight, IHasMetadata
+public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
 {
     /// <summary>
     /// Gets the Display Name of the Content Type
@@ -82,7 +83,7 @@ public interface IContentType: IAppIdentityLight, IHasMetadata
     /// <remarks>
     /// The metadata is either already prepared, from the same app, or from a remote app
     /// </remarks>
-    new ContentTypeMetadata Metadata { get; }
+    new IMetadataOf Metadata { get; }
 
     /// <summary>
     /// Check if this type is the same as a name given.

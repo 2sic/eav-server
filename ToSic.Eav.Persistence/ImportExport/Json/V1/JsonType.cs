@@ -1,6 +1,9 @@
 ﻿
 
 // ReSharper disable once CheckNamespace
+
+using ToSic.Eav.Data.ContentTypes.Sys;
+
 namespace ToSic.Eav.ImportExport.Json.V1;
 
 public class JsonType
@@ -78,7 +81,7 @@ public class JsonType
         Id = type.NameId;
         if (withDescription)
         {
-            var description = type.Metadata.DetailsOrNull;
+            var description = type.DetailsOrNull();
             Title = description?.Title ?? type.NameId;
             Description = description?.Description ?? "";
         }

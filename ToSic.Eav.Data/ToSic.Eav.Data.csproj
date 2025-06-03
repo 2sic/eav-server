@@ -10,4 +10,9 @@
     <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Sources.Sys\" />
+    <Folder Include="Metadata.Sys\" />
+  </ItemGroup>
+
 </Project>

@@ -1,8 +1,10 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Internal;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.Caching.PiggyBack;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data;
@@ -21,7 +23,7 @@ namespace ToSic.Eav.Data;
     Scope = "System",
     Description = "A ContentType (Schema) describing Entities."
 )]
-public partial record ContentType : IContentType, IContentTypeShared, IHasDecorators<IContentType>
+public partial record ContentType : IContentType, IContentTypeShared, IHasDecorators<IContentType>, IHasPiggyBack
 {
     #region simple properties - all are #immutable
 
@@ -96,7 +98,8 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     /// <inheritdoc />
     [PrivateApi("WIP 12.03")]
     // Don't cache the result, as it could change during runtime
-    public string DynamicChildrenField => Metadata.DetailsOrNull?.DynamicChildrenField;
+    // TODO: probably remove and use the DetailsOrNull2() instead
+    public string DynamicChildrenField => this.DetailsOrNull()?.DynamicChildrenField;
 
     #endregion
 
@@ -104,7 +107,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     #region Advanced Properties: Metadata, Decorators - all #immutable
 
     /// <inheritdoc />
-    public required ContentTypeMetadata Metadata { get; init; }
+    public required IMetadataOf Metadata { get; init; }
 
     IMetadataOf IHasMetadata.Metadata => Metadata;
 
@@ -124,4 +127,6 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     /// Improve ToString for better debugging.
     /// </summary>
     public override string ToString() => $"{this.Name}/{NameId} - {base.ToString()}";
+
+    public PiggyBack PiggyBack => field ??= new();
 }

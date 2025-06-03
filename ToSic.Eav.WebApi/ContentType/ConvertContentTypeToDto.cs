@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Shared;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Shared;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Serialization;
 
@@ -30,7 +31,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
         ContentTypeDetails details = null;
         try
         {
-            details = cType.Metadata.DetailsOrNull;
+            details = cType.DetailsOrNull();
         }
         catch (Exception ex)
         {

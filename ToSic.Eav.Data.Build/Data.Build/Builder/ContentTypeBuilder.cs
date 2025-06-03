@@ -127,9 +127,9 @@ public class ContentTypeBuilder
             }
         }
 
-        metadata ??= (metadataItems != default
-            ? new(original.NameId, metadataItems, null, original.Name)
-            : original.Metadata);
+        metadata ??= metadataItems != default
+            ? new ContentTypeMetadata(original.NameId, metadataItems, null, original.Name)
+            : original.Metadata as ContentTypeMetadata;
 
         return Create(
             // Identifiers (5)

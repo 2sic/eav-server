@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Repositories;
+using ToSic.Lib.Caching.PiggyBack;
 using ToSic.Lib.Data;
 using ToSic.Lib.Helpers;
 
@@ -10,8 +11,7 @@ namespace ToSic.Eav.Data;
 public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType, IHasDecorators<IContentType>, IMultiWrapper<IContentType>
 {
     public ContentTypeWrapper(IContentType contentType) : base((contentType as ContentTypeWrapper)?.GetContents() ?? contentType)
-    {
-    }
+    { }
 
     public ContentTypeWrapper(IContentType contentType, IDecorator<IContentType> wrapperDecorator = null) : this(contentType)
     {
@@ -34,8 +34,10 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
     public IEnumerable<IDecorator<IContentType>> Decorators => _decorators.Get(() =>
     {
         var list = new List<IDecorator<IContentType>>();
-        if (_wrapperDecorator != null) list.Add(_wrapperDecorator);
-        if (GetContents() is IHasDecorators<IContentType> hasDecors) list.AddRange(hasDecors.Decorators);
+        if (_wrapperDecorator != null)
+            list.Add(_wrapperDecorator);
+        if (GetContents() is IHasDecorators<IContentType> hasDecors)
+            list.AddRange(hasDecors.Decorators);
         return list.ToImmutableList();
     });
     private readonly GetOnce<IImmutableList<IDecorator<IContentType>>> _decorators = new();
@@ -69,7 +71,7 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
 
     public bool IsDynamic => GetContents().IsDynamic;
 
-    public ContentTypeMetadata Metadata => GetContents().Metadata;
+    public IMetadataOf Metadata => GetContents().Metadata;
 
     public bool Is(string name) => GetContents().Is(name);
 
@@ -84,4 +86,6 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
     public bool AlwaysShareConfiguration => GetContents().AlwaysShareConfiguration;
 
     IMetadataOf IHasMetadata.Metadata => ((IHasMetadata)GetContents()).Metadata;
+
+    public PiggyBack PiggyBack => GetContents().PiggyBack;
 }

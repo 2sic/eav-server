@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Metadata;
+using ToSic.Lib.Caching;
 
 namespace ToSic.Eav.Data;
 
@@ -19,23 +20,14 @@ public class ContentTypeMetadata : MetadataOf<string>
     /// <param name="title"></param>
     public ContentTypeMetadata(string typeId, List<IEntity> items, Func<IHasMetadataSourceAndExpiring> deferredSource, string title)
         : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, items: items, deferredSource: deferredSource)
-    {
-    }
+    { }
 
-    /// <summary>
-    /// Description <see cref="IEntity"/> metadata of this content-type.
-    /// </summary>
-    [PrivateApi("was public in the class which used to be public, so it may be used, but try to privatise as we don't plan to publish this")]
-    public IEntity Description => this.FirstOrDefaultOfType(ContentTypeDetails.ContentTypeTypeName);
-
-    public ContentTypeDetails DetailsOrNull
-    {
-        get
-        {
-            var desc = Description;
-            return desc == null ? null : new ContentTypeDetails(desc);
-        }
-    }
+    // #BreakingChangeV20 - removed this completely; must communicate
+    ///// <summary>
+    ///// Description <see cref="IEntity"/> metadata of this content-type.
+    ///// </summary>
+    //[PrivateApi("was public in the class which used to be public, so it may be used, but try to privatise as we don't plan to publish this")]
+    //public IEntity Description => this.FirstOrDefaultOfType(ContentTypeDetails.ContentTypeTypeName);
 
     /// <summary>
     /// Load / initialize - needed when building the cache.
@@ -45,7 +37,7 @@ public class ContentTypeMetadata : MetadataOf<string>
     {
         // add the guid metadata on entity if it has a real guid
         // this is kind of wrong, because it should use the type MetadataForContentType
-        // but this slipped in a long time ago, and we cannot change it any more
+        // but this slipped in a long time ago, and we cannot change it anymore
         var hasProperGuid = Guid.TryParse(Key, out var ctGuid);
         var mdUsingGuid = !hasProperGuid
             ? null
@@ -57,4 +49,5 @@ public class ContentTypeMetadata : MetadataOf<string>
         return base.LoadFromProviderInsideLock(mdUsingGuid);
     }
 
+    //public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp > dependentTimeStamp;
 }

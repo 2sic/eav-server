@@ -29,7 +29,7 @@ public class PiggyBack
         return typed;
     }
 
-    public (TData Value, bool IsCached) GetOrGenerate<TData>(ICacheExpiring parent, string key, Func<TData> create)
+    public (TData Value, bool IsCached) GetOrGenerate<TData>(ITimestamped parent, string key, Func<TData> create)
     {
         // Check if exists and timestamp still ok, return that
         if (_cache.TryGetValue(key, out var result)
