@@ -57,7 +57,7 @@ public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneMa
             zipImport.Init(ZoneId, null, true);
             succeeded = zipImport.ImportZip(fsSource, baseTestPath + @"Temp\");
         }
-        True(succeeded, "should succeed!");
+        True(succeeded, "if fails, make sure the files are being copied to the build directory in the csproj");
     }
 
 

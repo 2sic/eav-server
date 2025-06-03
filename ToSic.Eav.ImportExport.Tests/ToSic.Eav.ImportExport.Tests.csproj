@@ -19,8 +19,8 @@
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>
 
+  <!-- Copy ScenarioData to bin folder for reviewing during tests -->
   <ItemGroup>
-    <!-- Copy ScenarioData to bin folder for reviewing during tests -->
     <None Include="Json\Scenarios\**" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Persistence.File\Scenarios\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
