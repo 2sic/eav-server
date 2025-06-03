@@ -71,7 +71,6 @@ public class SystemStack: CustomDataSourceAdvanced
 
         // Dump results
         var dump = _dumpService.Dump(settings, new(null, languages, true, Log), null);
-            // settings._Dump(new(null, languages, true, Log), null);
 
         dump = SystemStackHelpers.ApplyKeysFilter(dump, Keys);
 

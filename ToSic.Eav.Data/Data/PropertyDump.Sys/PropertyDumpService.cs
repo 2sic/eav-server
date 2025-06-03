@@ -12,8 +12,9 @@ public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceB
     /// <returns></returns>
     public (IPropertyDumper? Dumper, int Ranking) GetBestDumper(object source)
     {
+        var l = Log.Fn<(IPropertyDumper? Dumper, int Ranking)>("bestDumper");
         if (source == null || !dumpers.Any())
-            return (null, 0);
+            return l.Return((null, 0), "no source or no dumpers");
 
         var bestDumper = dumpers
             .Select(d => new
@@ -24,26 +25,24 @@ public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceB
             .OrderByDescending(set => set.Ranking)
             .First();
 
-        return (bestDumper.Ranking > 0 ? bestDumper.Dumper : null, bestDumper.Ranking);
+        var useDumper = bestDumper.Ranking > 0 ? bestDumper.Dumper : null;
+        return l.Return((useDumper, bestDumper.Ranking), $"Use dumper: {useDumper?.GetType().Name != null}; Ranking: {bestDumper.Ranking}");
     }
 
     public List<PropertyDumpItem> Dump(object target, PropReqSpecs specs, string path)
     {
         var l = Log.Fn<List<PropertyDumpItem>>();
 
-        //if (target is IPropertyLookupDump selfDumping)
-        //    return selfDumping._Dump(specs, path);
+        // If it's self dumping for an important reason, use that.
+        if (target is IPropertyDumpCustom selfDumping)
+            return selfDumping._DumpProperties(specs, path, this);
 
         var bestDumper = GetBestDumper(target);
         if (bestDumper is { Dumper: not null, Ranking: > 0 })
         {
             var result = bestDumper.Dumper.Dump(target, specs, path, this);
-            return l.Return(result, $"using dumper {bestDumper.Dumper.GetType().Name}, got {result.Count}");
+            return l.Return(result, $"got {result.Count}");
         }
-
-        // ATM do this as a last resort, since we want the rest to work first...
-        if (target is IPropertyDumpCustom selfDumping)
-            return selfDumping._DumpNameWipDroppingMostCases(specs, path);
 
         return l.Return([], "can't dump, no provider and not self-dumping");
     }
