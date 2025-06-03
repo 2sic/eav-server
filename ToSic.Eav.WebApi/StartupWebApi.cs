@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Admin.Features;
@@ -14,10 +13,9 @@ using ToSic.Eav.WebApi.Languages;
 using ToSic.Eav.WebApi.SaveHelpers;
 using ToSic.Eav.WebApi.Serialization;
 using ToSic.Eav.WebApi.Sys;
-using ToSic.Eav.WebApi.Sys.Insights;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Zone;
-using InsightsControllerReal = ToSic.Eav.WebApi.Sys.Insights.InsightsControllerReal;
+
 
 namespace ToSic.Eav.WebApi;
 
@@ -26,9 +24,6 @@ public static class StartupWebApi
 {
     public static IServiceCollection AddEavWebApi(this IServiceCollection services)
     {
-        // Insights, the most important core backend
-        services.AddInsights();
-
         // Real Controller Implementations https://go.2sxc.org/proxy-controllers
         services.TryAddTransient<FeatureControllerReal>();
         services.TryAddTransient<MetadataControllerReal>();
@@ -78,43 +73,6 @@ public static class StartupWebApi
         return services;
     }
 
-    public static IServiceCollection AddInsights(this IServiceCollection services)
-    {
-        // Insights, the most important core backend
-        services.TryAddTransient<InsightsControllerReal>();
-        services.TryAddTransient<InsightsDataSourceCache>();
-
-        services.AddTransient<IInsightsProvider, InsightsIsAlive>();
-        services.AddTransient<IInsightsProvider, InsightsTypes>();
-        services.AddTransient<IInsightsProvider, InsightsGlobalTypes>();
-        services.AddTransient<IInsightsProvider, InsightsMemoryCache>();
-
-        services.AddTransient<IInsightsProvider, InsightsLogs>();
-        services.AddTransient<IInsightsProvider, InsightsPauseLogs>();
-        services.AddTransient<IInsightsProvider, InsightsLogsFlush>();
-        services.AddTransient<IInsightsProvider, InsightsAppStats>();
-        services.AddTransient<IInsightsProvider, InsightsPurgeApp>();
-        services.AddTransient<IInsightsProvider, InsightsAppsCache>();
-        services.AddTransient<IInsightsProvider, InsightsAppLoadLog>();
-
-        services.AddTransient<IInsightsProvider, InsightsGlobalTypesLog>();
-        services.AddTransient<IInsightsProvider, InsightsTypeMetadata>();
-        services.AddTransient<IInsightsProvider, InsightsTypePermissions>();
-
-        services.AddTransient<IInsightsProvider, InsightsLicenses>();
-        services.AddTransient<IInsightsProvider, InsightsAttributes>();
-        services.AddTransient<IInsightsProvider, InsightsAttributeMetadata>();
-        services.AddTransient<IInsightsProvider, InsightsAttributePermissions>();
-
-        services.AddTransient<IInsightsProvider, InsightsEntity>();
-        services.AddTransient<IInsightsProvider, InsightsEntities>();
-        services.AddTransient<IInsightsProvider, InsightsEntityPermissions>();
-        services.AddTransient<IInsightsProvider, InsightsEntityMetadata>();
-
-        services.AddTransient<IInsightsProvider, InsightsHelp>();
-
-        return services;
-    }
 
     /// <summary>
     /// Add typed EAV WebApi objects.

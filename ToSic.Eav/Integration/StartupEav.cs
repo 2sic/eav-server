@@ -30,6 +30,7 @@ public static class StartupEav
 
         services
             // WebAPI & Work
+            .AddEavInsights()
             .AddEavWebApi()
             .AddEavWork()
             // Apps
