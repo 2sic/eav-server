@@ -7,8 +7,6 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.StartUp;
 using ToSic.Eav.WebApi;
-using ToSic.Lib;
-using ToSic.Sys;
 
 namespace ToSic.Eav.Integration;
 
@@ -47,18 +45,26 @@ public static class StartupEav
             // EAV Core
             .AddEavDataBuild()
 
+            .AddEavCoreLibAndSys();
 
-            .AddEavCoreLibAndSys()
+        return services;
+    }
 
-
-            // Fallbacks for services which were not implemented - must come last
+    /// <summary>
+    /// Fallbacks for services which were not implemented - must come last
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddEavEverythingFallbacks(this IServiceCollection services)
+    {
+        services
             .AddContextFallbackServices()
             .AddAppPersistenceFallbackServices()
             .AddAppFallbackServices()
             .AddEavImportExportFallback()
             .AddEavDataBuildFallbacks()
+            .AddEavDataFallbacks()
             .AddEavCoreLibAndSysFallbackServices();
-
         return services;
     }
 }
