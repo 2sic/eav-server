@@ -55,8 +55,14 @@ public class JsonAttributeSysSettings
 
 
     public ContentTypeAttributeSysSettings ToSysSettings() =>
-        new(Share, inherit: Inherit ?? SourceGuid, inheritName: InheritName,
-            inheritMetadata: InheritMetadata, ConvertInheritMetadataStringToDicOrNull());
+        new()
+        {
+            Share = Share,
+            Inherit = Inherit ?? SourceGuid,
+            InheritNameOfPrimary = InheritName,
+            InheritMetadataOfPrimary = InheritMetadata,
+            InheritMetadataOf = ConvertInheritMetadataStringToDicOrNull(),
+        };
 
     private Dictionary<Guid, string> ConvertInheritMetadataStringToDicOrNull()
     {

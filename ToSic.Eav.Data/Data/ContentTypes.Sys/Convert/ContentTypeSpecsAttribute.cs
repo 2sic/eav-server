@@ -1,5 +1,8 @@
 ﻿namespace ToSic.Eav.Data.Internal;
 
+/// <summary>
+/// Content type information for use when converting a POCO to a Content Type.
+/// </summary>
 [PrivateApi("WIP")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [AttributeUsage(AttributeTargets.Class)]

@@ -127,7 +127,10 @@ public class WorkAttributesMod(
             /*?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.")*/;
 
         // update with the Share = share (hide we'll ignore for now, it's for future needs)
-        var newSysSettings = new ContentTypeAttributeSysSettings(share: share);
+        var newSysSettings = new ContentTypeAttributeSysSettings
+        {
+            Share = share,
+        };
 
         var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
@@ -155,11 +158,13 @@ public class WorkAttributesMod(
         var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId);
 
         // set InheritMetadataOf to the guid above(as string)
-        var newSysSettings = new ContentTypeAttributeSysSettings(
-            inherit: null,
-            inheritName: false,
-            inheritMetadata: false,
-            inheritMetadataOf: new() { [inheritMetadataOf] = "" });
+        var newSysSettings = new ContentTypeAttributeSysSettings
+        {
+            Inherit = null,
+            InheritNameOfPrimary = false,
+            InheritMetadataOfPrimary = false,
+            InheritMetadataOf = new() { [inheritMetadataOf] = "" },
+        };
 
         var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);

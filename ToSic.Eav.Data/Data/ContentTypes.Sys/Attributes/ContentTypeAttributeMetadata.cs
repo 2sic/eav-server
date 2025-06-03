@@ -77,13 +77,15 @@ public class ContentTypeAttributeMetadata(
     private List<IEntity> MetadataOfOneSource(Guid guid)
     {
         // Empty refers to the own MD, should never get to here
-        if (guid == Guid.Empty) return null;
+        if (guid == Guid.Empty)
+            return null;
 
         // Find source and its metadata
         var source = SourceAttributes?.FirstOrDefault(a => a.Guid == guid);
 
         // Null-Check & cast inner source to this type, so we can access it's private .Source later on
-        if (source?.Metadata is not ContentTypeAttributeMetadata sourceMd) return null;
+        if (source?.Metadata is not ContentTypeAttributeMetadata sourceMd)
+            return null;
 
         var md = (
             sourceMd.Source.SourceDirect?.List

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data;
 /// </remarks>
 [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi, always use IEntity")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial record EntityLight : IEntityLight
+public record EntityLight : IEntityLight
 {
     #region Basic properties EntityId, EntityGuid, Title, Attributes, Type, Modified, etc.
 

@@ -8,36 +8,12 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeAttributeSysSettings
 {
-    public ContentTypeAttributeSysSettings() { }
-
-    public ContentTypeAttributeSysSettings(bool share, Guid? inherit, bool inheritName, bool inheritMetadata, Dictionary<Guid, string> inheritMetadataOf)
-    {
-        Share = share;
-        Inherit = inherit;
-        InheritNameOfPrimary = inheritName;
-        InheritMetadataOfPrimary = inheritMetadata;
-        InheritMetadataOf = inheritMetadataOf;
-    }
-
-    public ContentTypeAttributeSysSettings(bool share)
-    {
-        Share = share;
-    }
-
-    public ContentTypeAttributeSysSettings(Guid? inherit, bool inheritName, bool inheritMetadata, Dictionary<Guid, string> inheritMetadataOf)
-    {
-        Inherit = inherit;
-        InheritNameOfPrimary = inheritName;
-        InheritMetadataOfPrimary = inheritMetadata;
-        InheritMetadataOf = inheritMetadataOf;
-    }
-
     #region Sharing / Source
 
     /// <summary>
     /// Mark this Attribute that it shares itself / its properties
     /// </summary>
-    public bool Share { get; }
+    public bool Share { get; init; }
 
     ///// <summary>
     ///// Tell the system that despite being shared, it won't be available for picking up in any UI.
@@ -50,24 +26,26 @@ public class ContentTypeAttributeSysSettings
     /// <summary>
     /// Inherits-reference, ATM no purpose yet
     /// </summary>
-    public Guid? Inherit { get; }
+    public Guid? Inherit { get; init; }
 
     /// <summary>
     /// Stored value - should usually NOT be used; ATM no purpose yet
     /// </summary>
-    public bool InheritNameOfPrimary { get; }
+    public bool InheritNameOfPrimary { get; init; }
 
     /// <summary>
     /// Stored value - should usually NOT be used, instead use InheritMetadata
     /// </summary>
-    public bool InheritMetadataOfPrimary { get; }
+    public bool InheritMetadataOfPrimary { get; init; }
 
-    public Dictionary<Guid, string> InheritMetadataOf { get; set; }
+    public Dictionary<Guid, string> InheritMetadataOf { get; init; }
 
     public bool InheritMetadata => InheritMetadataOf?.Any() == true || (Inherit != null && InheritMetadataOfPrimary);
 
     public Guid? InheritMetadataMainGuid => InheritMetadataOf?.Any() == true 
         ? InheritMetadataOf.FirstOrDefault().Key 
-        : InheritMetadataOfPrimary ? Inherit : null;
+        : InheritMetadataOfPrimary
+            ? Inherit
+            : null;
 
 }
