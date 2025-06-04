@@ -1,11 +1,10 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Apps.Sys.FileSystemState;
+﻿using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.InputTypes.Sys;
 using ToSic.Sys.Utils;
 using static ToSic.Eav.Data.InputTypes.Sys.InputTypeDefinition;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkInputTypes(

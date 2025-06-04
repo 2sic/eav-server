@@ -1,17 +1,15 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
-using ToSic.Eav.Metadata;
-using ToSic.Metadata.Requirements.Sys;
+using ToSic.Eav.Metadata.Requirements.Sys;
 using ToSic.Sys.Utils;
 using static System.String;
-using static ToSic.Metadata.Recommendations.Sys.MetadataRecommendation;
+using static ToSic.Eav.Metadata.Recommendations.Sys.MetadataRecommendation;
 
-namespace ToSic.Metadata.Recommendations.Sys;
+namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
 /// <summary>
 /// Figure out all the recommendations for a Metadata Target

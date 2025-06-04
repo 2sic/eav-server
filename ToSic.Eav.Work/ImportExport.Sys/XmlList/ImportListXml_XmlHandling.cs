@@ -1,10 +1,8 @@
 ﻿using System.Xml.Linq;
-using ToSic.Eav.ImportExport.Internal.Xml;
-using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.Sys.Logging;
 
-namespace ToSic.Eav.ImportExport.Internal.XmlList;
+namespace ToSic.Eav.ImportExport.Sys.XmlList;
 
 partial class ImportListXml
 {

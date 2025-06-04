@@ -1,10 +1,8 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal.Work;
+using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Dimensions.Sys;
-using ToSic.Eav.ImportExport.Internal.Xml;
-using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
@@ -12,7 +10,7 @@ using ToSic.Eav.Persistence.Sys.Logging;
 using Entity = ToSic.Eav.Data.Entities.Sys.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.ImportExport.Internal.XmlList;
+namespace ToSic.Eav.ImportExport.Sys.XmlList;
 
 /// <summary>
 /// Import a virtual table of content-items

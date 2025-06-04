@@ -1,7 +1,7 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Sys.Xml;
 
-namespace ToSic.Eav.ImportExport.Internal.Xml;
+namespace ToSic.Eav.ImportExport.Sys.XmlList;
 
 /// <summary>
 /// Helper to find the current guid OR generate a new one

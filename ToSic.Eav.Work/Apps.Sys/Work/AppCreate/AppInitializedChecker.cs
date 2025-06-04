@@ -2,7 +2,7 @@
 using ToSic.Eav.Metadata;
 using static ToSic.Eav.Apps.Sys.AppLoadConstants;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.

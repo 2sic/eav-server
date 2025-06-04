@@ -8,7 +8,7 @@ using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 using static ToSic.Sys.Capabilities.Features.BuiltInFeatures;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkAttributesMod(

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Build;
+﻿namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record EntitySavePublishing

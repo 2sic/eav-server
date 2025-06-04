@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.DataSource;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Services;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// Helper to prepare the work context of any Unit of Work

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal.Work;
-
-namespace ToSic.Eav.ListPairsTests;
+﻿namespace ToSic.Eav.ListPairsTests;
 
 
 public partial class ListPairTests

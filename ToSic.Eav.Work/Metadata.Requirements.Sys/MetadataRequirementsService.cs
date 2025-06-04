@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Sys;
+﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
@@ -8,10 +7,10 @@ using ToSic.Sys.Capabilities.Platform;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
 using ToSic.Sys.Utils;
-using static ToSic.Metadata.Requirements.Sys.RequirementDecorator;
+using static ToSic.Eav.Metadata.Requirements.Sys.RequirementDecorator;
 using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
-namespace ToSic.Metadata.Requirements.Sys;
+namespace ToSic.Eav.Metadata.Requirements.Sys;
 
 /// <summary>
 /// Provides requirements from the metadata of anything.

@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// WIP - meant as a replacement of EntityRuntime with clean architecture

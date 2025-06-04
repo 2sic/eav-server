@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// Special tool just to create an app.

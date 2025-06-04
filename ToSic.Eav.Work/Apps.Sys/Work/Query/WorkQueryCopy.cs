@@ -3,17 +3,14 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Json.Sys;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Sys.Utils;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>

@@ -1,5 +1,5 @@
 ﻿
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// Base class for all app-work helpers.

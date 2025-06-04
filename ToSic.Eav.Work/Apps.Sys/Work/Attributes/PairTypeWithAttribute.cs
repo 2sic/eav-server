@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Internal.Work;
+﻿namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PairTypeWithAttribute

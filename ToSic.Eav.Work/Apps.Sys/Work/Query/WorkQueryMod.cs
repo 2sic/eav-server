@@ -7,7 +7,7 @@ using static System.StringComparer;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkQueryMod(

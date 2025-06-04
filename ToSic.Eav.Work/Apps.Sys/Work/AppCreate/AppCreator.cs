@@ -1,12 +1,9 @@
 ﻿using System.Text.RegularExpressions;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
-using ToSic.Eav.Repositories;
-using ToSic.Eav.Repository.Efc;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// Special tool just to create an app.

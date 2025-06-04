@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Apps.Sys.State;
-using Callback = System.Func<ToSic.Eav.Apps.Internal.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
+using Callback = System.Func<ToSic.Eav.Apps.Sys.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
 
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate)

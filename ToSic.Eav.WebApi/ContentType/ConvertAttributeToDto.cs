@@ -6,8 +6,8 @@ using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Sys;
-using ToSic.Metadata.Recommendations.Sys;
 using static ToSic.Eav.Data.Attributes.Sys.AttributeMetadataConstants;
 
 

@@ -1,7 +1,7 @@
 ﻿using ListIntNull = System.Collections.Generic.List<int?>;
 using DicNameInt = System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<int?>>>;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 // todo: maybe move to something like ToSic.Eav.Generics
 internal static class ListExtensions

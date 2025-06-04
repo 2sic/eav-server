@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.EntityBased.Sys;
 
-namespace ToSic.Metadata.Requirements.Sys;
+namespace ToSic.Eav.Metadata.Requirements.Sys;
 
 internal class RequirementDecorator(IEntity entity) : EntityBasedType(entity)
 {

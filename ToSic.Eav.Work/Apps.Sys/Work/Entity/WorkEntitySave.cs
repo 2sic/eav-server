@@ -1,23 +1,20 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Attributes.Sys;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Data.Entities.Sys.Sources;
 using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Relationships.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
-using ToSic.Eav.Persistence;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntitySave(
@@ -75,7 +72,7 @@ public class WorkEntitySave(
                 .Select(pair =>
                 {
                     // If not Entity, or isDynamic, or no attributes (in-memory) leaves as is
-                    if (pair.Entity is not Entity e2 || e2.Type.IsDynamic || e2.Type.Attributes != null)
+                    if (pair.Entity is not Data.Entities.Sys.Entity e2 || e2.Type.IsDynamic || e2.Type.Attributes != null)
                         return pair;
 
                     // Check if the attached type exists, if not, leave, otherwise ensure the type is attached

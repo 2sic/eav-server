@@ -1,7 +1,7 @@
 ﻿using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
 
-namespace ToSic.Metadata.Requirements.Sys;
+namespace ToSic.Eav.Metadata.Requirements.Sys;
 
 public interface IRequirementsService
 {

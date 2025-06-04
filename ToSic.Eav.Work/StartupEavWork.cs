@@ -1,27 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Apps.Sys.Initializers;
-using ToSic.Eav.ImportExport.Internal.XmlList;
-using ToSic.Metadata.Recommendations.Sys;
-using ToSic.Metadata.Requirements.Sys;
+using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.ImportExport.Sys.XmlList;
+using ToSic.Eav.Metadata.Recommendations.Sys;
+using ToSic.Eav.Metadata.Requirements.Sys;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavWork
 {
     public static IServiceCollection AddEavWork(this IServiceCollection services)
     {
-        //// Context
-        //services.TryAddTransient<IContextOfSite, ContextOfSite>();
-        //services.TryAddTransient<ContextOfSite>();
-
         // Runtimes and Managers
         services.TryAddTransient<ZoneManager>();
-        //services.TryAddTransient<AppCachePurger>();
-        //services.TryAddTransient<AppFinder>();
 
         // Runtime parts
         services.TryAddTransient<RecommendedMetadataService>(); // new v13

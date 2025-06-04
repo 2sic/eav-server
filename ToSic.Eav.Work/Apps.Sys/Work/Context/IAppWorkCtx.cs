@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Internal.Work;
+﻿namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// Basic context for working with data at App level.

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Metadata.Recommendations.Sys;
+﻿namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
 internal class MetadataForDecorator(IEntity entity) : ForExpectedBase(entity)
 {

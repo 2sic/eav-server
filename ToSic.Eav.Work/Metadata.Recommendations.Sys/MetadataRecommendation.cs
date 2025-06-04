@@ -3,7 +3,7 @@ using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Metadata.Recommendations.Sys;
+namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
 /// <summary>
 /// Important: also used as DTO, so don't just rename the parameters

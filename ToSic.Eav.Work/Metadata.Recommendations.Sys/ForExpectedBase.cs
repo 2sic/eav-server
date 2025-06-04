@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data.EntityBased.Sys;
-using ToSic.Eav.Metadata;
 
-namespace ToSic.Metadata.Recommendations.Sys;
+namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
 internal abstract class ForExpectedBase(IEntity entity) : EntityBasedType(entity)
 {

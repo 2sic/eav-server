@@ -1,11 +1,9 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.Persistence;
 using UpdateList = System.Collections.Generic.Dictionary<string, object>;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityUpdate(
@@ -77,9 +75,9 @@ public class WorkEntityUpdate(
 
 
 
-    private Entity CreatePartialEntityOld(IEntity orig, UpdateList values)
+    private Data.Entities.Sys.Entity CreatePartialEntityOld(IEntity orig, UpdateList values)
     {
-        var l = Log.Fn<Entity>();
+        var l = Log.Fn<Data.Entities.Sys.Entity>();
         if (values == null || !values.Any())
             return l.ReturnNull("nothing to save");
 

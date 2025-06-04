@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Metadata.Recommendations.Sys;
+using ToSic.Eav.Metadata.Recommendations.Sys;
 
 namespace ToSic.Eav.WebApi.Admin.Metadata;
 

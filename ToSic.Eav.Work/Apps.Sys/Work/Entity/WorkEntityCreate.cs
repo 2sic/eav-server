@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave)

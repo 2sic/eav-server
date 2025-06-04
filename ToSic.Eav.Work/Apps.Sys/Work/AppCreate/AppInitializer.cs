@@ -1,17 +1,15 @@
 ﻿using System.Text.RegularExpressions;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Eav.Repositories;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Utils;
 using static ToSic.Eav.Apps.Sys.AppLoadConstants;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// The AppInitializer is responsible for ensuring that an App-object has all the properties / metadata it needs. Specifically:
