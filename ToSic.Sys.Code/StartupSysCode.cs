@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Code.InfoSystem;
-
 using CodeInfoService = ToSic.Sys.Code.InfoSystem.CodeInfoService;
 
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupSysCode
