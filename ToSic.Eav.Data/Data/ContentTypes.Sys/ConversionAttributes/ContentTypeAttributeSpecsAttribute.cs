@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Internal;
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 [PrivateApi("WIP")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

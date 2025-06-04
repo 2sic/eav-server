@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Entities.Sys;
+using ToSic.Eav.Data.Entities.Sys.Lists;
 
 namespace ToSic.Eav.Metadata;
 

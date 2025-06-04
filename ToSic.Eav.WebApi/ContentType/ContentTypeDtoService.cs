@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.WebApi;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
+
+namespace ToSic.Eav.WebApi;
 
 /// <inheritdoc />
 /// <summary>

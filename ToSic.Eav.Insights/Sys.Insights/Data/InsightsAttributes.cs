@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;

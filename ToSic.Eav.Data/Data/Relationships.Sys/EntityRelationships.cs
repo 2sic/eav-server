@@ -1,4 +1,6 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Data.Entities.Sys;
+using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Sys.Caching.Synchronized;
 
 namespace ToSic.Eav.Data;

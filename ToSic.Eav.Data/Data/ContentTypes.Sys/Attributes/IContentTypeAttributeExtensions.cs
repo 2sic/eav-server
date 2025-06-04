@@ -1,6 +1,8 @@
-﻿using static ToSic.Eav.Data.AttributeMetadataConstants;
+﻿using ToSic.Eav.Data.Attributes.Sys;
+using ToSic.Eav.Data.Entities.Sys.Lists;
+using static ToSic.Eav.Data.Attributes.Sys.AttributeMetadataConstants;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 [PrivateApi]
 // ReSharper disable once InconsistentNaming

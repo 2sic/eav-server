@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Entities.Sys;
+
+namespace ToSic.Eav.Data.Build;
 
 /// <summary>
 /// Helper commands to build an entity

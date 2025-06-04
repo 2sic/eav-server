@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Persistence.Efc;
+﻿using ToSic.Eav.Data.Dimensions.Sys;
+
+namespace ToSic.Eav.Persistence.Efc;
 
 internal class DataRepair
 {

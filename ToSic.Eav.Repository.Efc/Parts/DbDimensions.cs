@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repository.Efc.Parts;
+﻿using ToSic.Eav.Data.Dimensions.Sys;
+
+namespace ToSic.Eav.Repository.Efc.Parts;
 
 internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
 {

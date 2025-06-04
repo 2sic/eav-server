@@ -1,6 +1,8 @@
 ﻿using System.Xml.XPath;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.State;
+using ToSic.Eav.Data.Ancestors.Sys;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Shared;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Internal.Features;

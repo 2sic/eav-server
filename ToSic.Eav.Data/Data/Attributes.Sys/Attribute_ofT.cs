@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Attributes.Sys;
 
 /// <summary>
 /// Represents an Attribute / Property of an Entity with Values of a Generic Type.

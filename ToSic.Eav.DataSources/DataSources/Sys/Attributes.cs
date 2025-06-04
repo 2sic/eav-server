@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Internal;
+using ToSic.Eav.Data.Attributes.Sys;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;

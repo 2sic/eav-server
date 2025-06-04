@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Internal;
-
-namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
+﻿namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 internal class TestTypeWithSpecs: TestTypeWithSpecsEmpty

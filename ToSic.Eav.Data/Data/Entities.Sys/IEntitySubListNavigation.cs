@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Entities.Sys;
 
 // ReSharper disable once InconsistentNaming
 static class IEntitySubListNavigation

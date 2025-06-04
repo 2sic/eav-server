@@ -1,7 +1,9 @@
-﻿namespace ToSic.Eav.Persistence.Efc.Models;
+﻿using ToSic.Eav.Data.Dimensions.Sys;
+
+namespace ToSic.Eav.Persistence.Efc.Models;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class TsDynDataDimension : Data.DimensionDefinition
+public partial class TsDynDataDimension : DimensionDefinition
 {
     public TsDynDataDimension()
     {

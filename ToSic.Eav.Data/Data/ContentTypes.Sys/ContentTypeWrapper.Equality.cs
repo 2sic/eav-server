@@ -1,7 +1,7 @@
 ﻿using ToSic.Lib.Helpers;
 using static ToSic.Eav.Data.MultiWrapperEquality;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 partial class ContentTypeWrapper : IEquatable<ContentTypeWrapper>, IEquatable<IMultiWrapper<IContentType>>
 {

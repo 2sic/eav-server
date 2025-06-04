@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json;

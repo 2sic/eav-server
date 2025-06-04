@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Persistence;
+﻿using ToSic.Eav.Data.Dimensions.Sys;
+
+namespace ToSic.Eav.Persistence;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

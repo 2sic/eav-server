@@ -1,7 +1,7 @@
 ﻿using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.Data.Source;
+namespace ToSic.Eav.Data.Entities.Sys.Sources;
 
 [PrivateApi("keep secret for now, only used in Metadata and it's not sure if we should re-use this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

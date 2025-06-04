@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ToSic.Eav.Data.Source;
+namespace ToSic.Eav.Data.Entities.Sys.Sources;
 
 /// <summary>
 /// WIP 2dm - experimental - need a lookup table that can be updated later on

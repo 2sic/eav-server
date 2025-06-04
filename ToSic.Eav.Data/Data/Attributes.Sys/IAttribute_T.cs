@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data.Attributes.Sys;
 
 /// <summary>
 /// Represents an Attribute (Property), but strongly typed

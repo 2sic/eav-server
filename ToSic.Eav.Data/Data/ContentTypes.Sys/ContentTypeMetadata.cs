@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 /// <summary>
 /// Provides metadata for a content type. This can be very special, because ContentTypes can be shared (ghosts),

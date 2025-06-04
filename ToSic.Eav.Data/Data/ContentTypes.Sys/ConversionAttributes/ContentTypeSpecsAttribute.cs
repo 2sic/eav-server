@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Internal;
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 /// <summary>
 /// Content type information for use when converting a POCO to a Content Type.

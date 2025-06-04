@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repository.Efc.Parts;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
+
+namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbContentType
 {

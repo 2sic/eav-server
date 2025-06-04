@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Razor.Markup;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;

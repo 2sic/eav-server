@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Json.V1;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json;
 

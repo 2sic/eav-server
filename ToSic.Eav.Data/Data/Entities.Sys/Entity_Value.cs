@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Lib.Coding;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Entities.Sys;
 partial record Entity
 {
     /// <inheritdoc />

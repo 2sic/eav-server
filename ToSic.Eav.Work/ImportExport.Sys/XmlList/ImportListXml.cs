@@ -2,11 +2,12 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Dimensions.Sys;
 using ToSic.Eav.ImportExport.Internal.ImportHelpers;
 using ToSic.Eav.ImportExport.Internal.Options;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.Persistence.Logging;
-using Entity = ToSic.Eav.Data.Entity;
+using Entity = ToSic.Eav.Data.Entities.Sys.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Internal.XmlList;

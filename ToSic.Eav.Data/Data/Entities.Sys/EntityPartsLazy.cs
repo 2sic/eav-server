@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Entities.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityPartsLazy

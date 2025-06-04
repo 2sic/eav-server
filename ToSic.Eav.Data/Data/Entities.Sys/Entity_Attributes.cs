@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Entities.Sys;
 
 partial record Entity
 {

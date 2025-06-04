@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Internal;
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 /// <summary>
 /// Special Decorator for Content-Types.

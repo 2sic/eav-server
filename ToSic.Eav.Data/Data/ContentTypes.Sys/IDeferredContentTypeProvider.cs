@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.ContentTypes;
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 public interface IDeferredContentTypeProvider
 {

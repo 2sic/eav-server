@@ -5,7 +5,7 @@ using ToSic.Lib.Data;
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching.PiggyBack;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType, IHasDecorators<IContentType>, IMultiWrapper<IContentType>

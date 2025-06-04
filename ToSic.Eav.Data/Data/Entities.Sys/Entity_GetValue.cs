@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
 using static ToSic.Eav.Data.AttributeNames;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Entities.Sys;
 
 partial record Entity
 {

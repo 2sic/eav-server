@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
-using ToSic.Eav.Data.Internal;
+using ToSic.Eav.Data.Attributes.Sys;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
@@ -71,11 +72,11 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             return l.ReturnNull("no description");
 
         // All props
-        var dic = new Dictionary<string, object> { { nameof(Data.ContentTypeDetails.Description), description } };
+        var dic = new Dictionary<string, object> { { nameof(ContentTypes.Sys.ContentTypeDetails.Description), description } };
         var attributes = attributeBuilder.Create(dic);
 
         // Create a Description entity
-        var entity = entityBuilder.Create(NoAppId, ctBuilder.Transient(NoAppId, Data.ContentTypeDetails.ContentTypeTypeName, Data.ContentTypeDetails.ContentTypeTypeName), attributes: attributes);
+        var entity = entityBuilder.Create(NoAppId, ctBuilder.Transient(NoAppId, ContentTypes.Sys.ContentTypeDetails.ContentTypeTypeName, ContentTypes.Sys.ContentTypeDetails.ContentTypeTypeName), attributes: attributes);
         return l.Return(entity, "created");
     }
 

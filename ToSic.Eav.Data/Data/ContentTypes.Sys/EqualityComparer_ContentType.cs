@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 // TODO: V11 move to ContentType itself
 [ShowApiWhenReleased(ShowApiMode.Never)]

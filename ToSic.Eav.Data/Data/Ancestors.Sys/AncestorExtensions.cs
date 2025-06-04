@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Shared;
+﻿namespace ToSic.Eav.Data.Ancestors.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class AncestorExtensions
