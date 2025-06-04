@@ -11,14 +11,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Apps.Sys\Languages\**" />
+    <EmbeddedResource Remove="Apps.Sys\Languages\**" />
+    <None Remove="Apps.Sys\Languages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Apps.Sys\Languages\" />
   </ItemGroup>
 
 </Project>
