@@ -1,4 +1,6 @@
-﻿#pragma warning disable xUnit1026
+﻿using ToSic.Eav.Data.Sys;
+
+#pragma warning disable xUnit1026
 namespace ToSic.Eav.Data.PropertyLookup;
 
 public class PropertyRequestSpecsTests

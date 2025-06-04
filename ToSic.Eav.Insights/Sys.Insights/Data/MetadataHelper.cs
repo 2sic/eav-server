@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Data.Sys;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
@@ -12,7 +13,7 @@ internal class MetadataHelper
         {
             msg += P($"Assigned Items: {metadata.Count}\n");
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields( "#", "Id", Eav.Data.AttributeNames.TitleNiceName, "Content-Type", "Target", "Key" )
+                   + InsightsHtmlTable.HeadFields( "#", "Id", AttributeNames.TitleNiceName, "Content-Type", "Target", "Key" )
                    + "<tbody>";
             var count = 0;
             foreach (var md in metadata)

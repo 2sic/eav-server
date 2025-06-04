@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources.Internal;
+﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.DataSources.Internal;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -119,10 +120,10 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
             // get attribute-name and type; set type=id|title for special cases
             var a = sortAttributes[i];
             var aLow = a.ToLowerInvariant();
-            var specAttr = aLow == Data.AttributeNames.EntityFieldId ? FieldId
-                : aLow == Data.AttributeNames.EntityFieldTitle ? FieldTitle 
-                : aLow == Data.AttributeNames.EntityFieldModified ? FieldMod
-                : aLow == Data.AttributeNames.EntityFieldCreated ? FieldCreate
+            var specAttr = aLow == AttributeNames.EntityFieldId ? FieldId
+                : aLow == AttributeNames.EntityFieldTitle ? FieldTitle 
+                : aLow == AttributeNames.EntityFieldModified ? FieldMod
+                : aLow == AttributeNames.EntityFieldCreated ? FieldCreate
                 : FieldNormal;
             var isAscending = true;			// default
             if (sortDirections.Length - 1 >= i)	// if this value has a direction specified, use that...

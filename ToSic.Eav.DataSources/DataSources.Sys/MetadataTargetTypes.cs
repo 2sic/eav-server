@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -60,7 +61,7 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
         var dataFactory = DataFactory.SpawnNew(options: new()
         {
             AppId = 0,
-            TitleField = Data.AttributeNames.TitleNiceName,
+            TitleField = AttributeNames.TitleNiceName,
             TypeName = "MetadataTargetTypes",
         });
 
@@ -69,8 +70,8 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
             .Select(set => dataFactory.Create(
                     new Dictionary<string, object>
                     {
-                        { Data.AttributeNames.TitleNiceName, set.Title },
-                        { Data.AttributeNames.NameIdNiceName, set.TargetType.ToString() }
+                        { AttributeNames.TitleNiceName, set.Title },
+                        { AttributeNames.NameIdNiceName, set.TargetType.ToString() }
                     },
                     id: (int)set.TargetType
                 )

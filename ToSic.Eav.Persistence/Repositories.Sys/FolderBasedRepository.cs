@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repositories;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav.Repositories;
 
 /// <summary>
 /// Use this to tell the EAV at boot time that there is another folder based repository.

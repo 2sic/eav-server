@@ -1,5 +1,8 @@
 ﻿
 // ReSharper disable once CheckNamespace
+
+using ToSic.Eav.Data.Sys;
+
 namespace ToSic.Eav.DataFormats.EavLight;
 
 partial class ConvertToEavLight

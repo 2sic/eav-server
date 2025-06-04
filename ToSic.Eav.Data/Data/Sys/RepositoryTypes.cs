@@ -1,4 +1,4 @@
-namespace ToSic.Eav.Repositories;
+namespace ToSic.Eav.Data.Sys;
 
 /// <summary>
 /// repositories which can contain content-types or entities

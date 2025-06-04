@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Attributes.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.EntityDecorators.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Values.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 using static ToSic.Eav.DataSource.DataSourceConstants;
@@ -166,7 +167,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
     {
         // New 2022-10-17 2dm - Add System fields such as Id, Created, Modified etc.
         // But only if they weren't already added by the content type, so if the ContentType had an "Id" field, we shouldn't override it here.
-        var sysFieldsWhichWereNotAdded = Data.AttributeNames.SystemFields
+        var sysFieldsWhichWereNotAdded = AttributeNames.SystemFields
             .Where(sysField => !foundFieldNames.Any(f => f.EqualsInsensitive(sysField.Key)))
             .ToList();
 
@@ -184,7 +185,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
                 var descriptionProvider = sysFieldAttributes
                     .FirstOrDefault(x => x.Key == sysField.Key).Value;
                 var description = descriptionProvider?.Metadata.GetBestValue<string>(AttributeMetadataConstants.DescriptionField)
-                                  ?? (Data.AttributeNames.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
+                                  ?? (AttributeNames.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
                                       ? desc
                                       : default);
                 return AsDic(

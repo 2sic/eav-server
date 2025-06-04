@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Entities.Sys.Lists;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav.Data.Entities.Sys.Lists;
 
 [PrivateApi]
 // ReSharper disable once InconsistentNaming

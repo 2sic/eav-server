@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.PropertyLookup;
+﻿using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Entities.Sys;
 

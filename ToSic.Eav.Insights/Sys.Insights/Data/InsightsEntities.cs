@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Globalization;
 using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Data.Sys;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 
@@ -31,7 +32,7 @@ internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities) : Insigh
                 : appEntities.Get(Type).ToImmutableList();
             msg += P($"entities: {entities.Count}\n");
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields("#", "Id", AttributeNames.GuidNiceName, Eav.Data.AttributeNames.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
+                   + InsightsHtmlTable.HeadFields("#", "Id", AttributeNames.GuidNiceName, AttributeNames.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
                    + "<tbody>";
             var count = 0;
             foreach (var ent in entities)

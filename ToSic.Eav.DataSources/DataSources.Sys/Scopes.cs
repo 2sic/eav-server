@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -49,7 +50,7 @@ public sealed class Scopes : CustomDataSource
         var list = scopes
             .Select(s => new RawEntity(new()
             {
-                { Data.AttributeNames.NameIdNiceName, s.Key },
+                { AttributeNames.NameIdNiceName, s.Key },
                 { "Name", s.Value }
             }))
             .ToList();

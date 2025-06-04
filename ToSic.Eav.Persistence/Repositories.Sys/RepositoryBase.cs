@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repositories;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav.Repositories;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class RepositoryBase(bool global, bool readOnly, RepositoryTypes type) : ServiceBase("RP.Info")

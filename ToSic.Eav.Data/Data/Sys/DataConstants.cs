@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Sys;
 
 /// <summary>
 /// Constants for general data creation, manipulation etc.

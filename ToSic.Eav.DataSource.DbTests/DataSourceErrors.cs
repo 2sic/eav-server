@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource.DbTests;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav.DataSource.DbTests;
 
 // NOTE: This exists in 2 copies on 2 test projects
 // This is because the shared testing project does not currently reference

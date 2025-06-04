@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource.Internal.Errors;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav.DataSource.Internal.Errors;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ErrorExtensions

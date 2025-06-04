@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.PropertyLookup;
+﻿namespace ToSic.Eav.Data.Sys;
 
 /// <summary>
 /// Property Request Specifications - to ask an object such as an IEntity for a property with additional specs such as languages.

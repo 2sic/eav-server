@@ -8,5 +8,5 @@ global using ToSic.Lib.DI;
 global using ToSic.Testing.Shared;
 global using Xunit;
 global using Xunit.DependencyInjection;
-global using static ToSic.Eav.Data.AttributeNames;
+global using static ToSic.Eav.Data.Sys.AttributeNames;
 global using static Xunit.Assert;

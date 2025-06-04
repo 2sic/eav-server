@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
@@ -18,7 +19,7 @@ internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IApp
         var zones = appsCatalog.Value.Zones.OrderBy(z => z.Key);
 
         msg += "<table id='table'>"
-               + InsightsHtmlTable.HeadFields("Zone ↕", "App ↕", Eav.Data.AttributeNames.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")
+               + InsightsHtmlTable.HeadFields("Zone ↕", "App ↕", AttributeNames.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")
                + "<tbody>";
 
         foreach (var zone in zones)

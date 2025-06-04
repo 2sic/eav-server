@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.PropertyLookup;
+﻿namespace ToSic.Eav.Data.Sys;
 
 /// <summary>
 /// Internal intermediate object when retrieving an Entity property.

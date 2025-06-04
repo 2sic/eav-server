@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Entities.Sys;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav.Data.Entities.Sys;
 
 partial record Entity
 {
@@ -20,7 +22,7 @@ partial record Entity
         // wrap it try-catch, because in rare cases the title may not be set or something else could break
         try
         {
-            var bestTitle = Get(Data.AttributeNames.EntityFieldTitle, languages: dimensions);
+            var bestTitle = Get(AttributeNames.EntityFieldTitle, languages: dimensions);
 
             // in case the title is an entity-picker and has items, try to ask it for the title
             // note that we're counting recursions, just to be sure it won't loop forever
