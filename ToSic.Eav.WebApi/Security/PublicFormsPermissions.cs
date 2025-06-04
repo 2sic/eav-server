@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Security.Internal;
 using ToSic.Eav.WebApi.Errors;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.WebApi.Security;

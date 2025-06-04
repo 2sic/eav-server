@@ -1,6 +1,4 @@
-﻿using ToSic.Sys.Capabilities.Features;
-
-namespace ToSic.Eav.Internal.Features;
+﻿namespace ToSic.Sys.Capabilities.Features;
 
 public partial class BuiltInFeatures
 {

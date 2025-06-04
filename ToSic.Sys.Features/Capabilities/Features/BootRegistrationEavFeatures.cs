@@ -1,7 +1,6 @@
 ﻿using ToSic.Sys.Boot;
-using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Sys.Capabilities.Features;
 
 internal class BootRegistrationEavFeatures(FeaturesCatalog featuresCatalog)
     : BootProcessBase("EavFts", bootPhase: BootPhase.Registrations, connect: [featuresCatalog])

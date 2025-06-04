@@ -1,7 +1,6 @@
 ﻿using ToSic.Sys.Boot;
-using ToSic.Sys.Capabilities.Licenses;
 
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Sys.Capabilities.Licenses;
 
 internal class BootRegistrationEavLicenses(LicenseCatalog licenseCatalog)
     : BootProcessBase("EavLic", bootPhase: BootPhase.Registrations, connect: [licenseCatalog])

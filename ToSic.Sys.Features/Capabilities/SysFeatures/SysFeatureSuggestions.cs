@@ -1,7 +1,6 @@
 ﻿using ToSic.Sys.Capabilities.Features;
-using ToSic.Sys.Capabilities.SysFeatures;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.SysFeatures;
 
 public static class SysFeatureSuggestions
 {

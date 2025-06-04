@@ -1,8 +1,7 @@
 ﻿#if DEBUG
-using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
 
-namespace ToSic.Eav.Internal.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 public partial class BuiltInFeatures
 {
