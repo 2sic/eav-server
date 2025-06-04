@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 
-namespace ToSic.Lib.Logging.Internals;
+namespace ToSic.Lib.Logging;
+
 // code found here https://stackoverflow.com/questions/5852863/fixed-size-queue-which-automatically-dequeues-old-values-upon-new-enques
 
 [ShowApiWhenReleased(ShowApiMode.Never)]

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Internal.Unknown;
+﻿namespace ToSic.Lib.Services;
 
 public class WarnUseOfUnknown<T>
 {

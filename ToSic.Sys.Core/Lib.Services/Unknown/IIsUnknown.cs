@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Internal.Unknown;
+﻿namespace ToSic.Lib.Services;
 
 /// <summary>
 /// Marks un-implemented objects like SiteUnknown etc.

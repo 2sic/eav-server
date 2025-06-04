@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Work;
+﻿namespace ToSic.Sys.Work;
 
 /// <summary>
 /// WIP v19.01

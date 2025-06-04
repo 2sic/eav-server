@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace ToSic.Eav.Caching;
+namespace ToSic.Sys.Locking;
 
 /// <summary>
 /// Very simple helper to manage locks - typically for caching or resource intensive generation operations.

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.StartUp;
+﻿namespace ToSic.Lib.Logging;
 
 /// <summary>
 /// Experimental special logger during booting to see if we have any extreme issues.

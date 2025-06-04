@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Internal.Unknown;
-
-namespace ToSic.Eav.Internal.Environment;
+﻿namespace ToSic.Eav.Internal.Environment;
 
 public sealed class ServerPathsUnknown(WarnUseOfUnknown<ServerPathsUnknown> _): ServerPathsBase, IIsUnknown
 {

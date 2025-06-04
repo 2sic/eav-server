@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Internal.Unknown;
-
-namespace ToSic.Eav.Integration.Environment;
+﻿namespace ToSic.Eav.Integration.Environment;
 
 internal sealed class EnvironmentLoggerUnknown: IEnvironmentLogger, IIsUnknown
 {

@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using ToSic.Eav.StartUp;
 using static System.StringComparison;
 
 namespace ToSic.Sys.Utils.Assemblies;
