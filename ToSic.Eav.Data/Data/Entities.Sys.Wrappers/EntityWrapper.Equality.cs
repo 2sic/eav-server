@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Entities.Sys.Wrappers;
+﻿using ToSic.Lib.Wrappers;
+
+namespace ToSic.Eav.Data.Entities.Sys.Wrappers;
 
 partial class EntityWrapper: IEquatable<IEntityWrapper>, IEquatable<IMultiWrapper<IEntity>>
 {

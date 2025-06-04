@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Data;
+﻿namespace ToSic.Lib.Wrappers;
 
 /// <summary>
 /// This is for any object which does something, but caries with it an original object which is the type

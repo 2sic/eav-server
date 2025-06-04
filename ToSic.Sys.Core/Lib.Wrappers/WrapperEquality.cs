@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Data;
-
-namespace ToSic.Eav.Data.Shared;
+﻿namespace ToSic.Lib.Wrappers;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class WrapperEquality

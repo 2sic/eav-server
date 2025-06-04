@@ -1,5 +1,5 @@
 ﻿
-namespace ToSic.Eav.Data;
+namespace ToSic.Lib.Wrappers;
 
 /// <summary>
 /// Contains comparison methods for all Entity Wrappers

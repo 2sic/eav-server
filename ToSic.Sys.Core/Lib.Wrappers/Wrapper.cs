@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Data;
+﻿namespace ToSic.Lib.Wrappers;
 
 /// <summary>
 /// Helper base class for all wrappers

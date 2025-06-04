@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Lib.Wrappers;
 
 /// <summary>
 /// Marks items which can be rewrapped multiple times.
