@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Entities.Sys;
+using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;

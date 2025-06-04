@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Raw;
+﻿using ToSic.Eav.Data.Raw.Sys;
+
+namespace ToSic.Eav.Data.Raw;
 
 /// <summary>
 /// Marks objects which are not <see cref="IRawEntity"/>

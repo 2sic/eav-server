@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Raw;
+﻿namespace ToSic.Eav.Data.Raw.Sys;
 
 /// <summary>
 /// Base class for raw entities which makes implementations a bit simpler when not much is needed.

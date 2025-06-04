@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Build;
+﻿namespace ToSic.Eav.Data.EntityPair.Sys;
 
 /// <summary>
 /// Interface marking <see cref="EntityPair{TPartner}"/>s.

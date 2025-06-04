@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.Data.Raw;
+﻿using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.EntityPair.Sys;
 
 /// <summary>
 /// Special object to carry an IEntity and another object which belong together.

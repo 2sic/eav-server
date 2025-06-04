@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Metadata;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Data.Raw;
+namespace ToSic.Eav.Data.Raw.Sys;
 
 /// <summary>
 /// A ready-to-use <see cref="IRawEntity"/> which receives all the data in the constructor.

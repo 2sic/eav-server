@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Raw;
+﻿namespace ToSic.Eav.Data.Raw.Sys;
 
 /// <summary>
 /// Marks raw relationships.

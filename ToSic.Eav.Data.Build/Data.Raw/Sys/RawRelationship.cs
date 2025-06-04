@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Coding;
 
-namespace ToSic.Eav.Data.Raw;
+namespace ToSic.Eav.Data.Raw.Sys;
 
 /// <summary>
 /// Represents a relationship in a RawEntity.
