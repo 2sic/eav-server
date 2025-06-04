@@ -1,8 +1,9 @@
 ﻿using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.InputTypes.Sys;
 using ToSic.Sys.Utils;
-using static ToSic.Eav.Data.InputTypes;
+using static ToSic.Eav.Data.InputTypes.Sys.InputTypeDefinition;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
@@ -109,7 +110,7 @@ public class WorkInputTypes(
             .Get(TypeForInputTypeDefinition);
 
         return list
-            .Select(e => new InputTypes(e))
+            .Select(e => new InputTypeDefinition(e))
             .Select(e => new InputTypeInfo(
                 e.Type,
                 e.Label,
@@ -175,15 +176,15 @@ public class WorkInputTypes(
                 return new InputTypeInfo(
                     // 2023-11-10 2dm - changed this to support new input-types based on guid-content-types
                     //it.NameId.TrimStart(FieldTypePrefix[0]),
-                    md.GetBestValue<string>(nameof(InputTypes.Type), TypeForInputTypeDefinition)
+                    md.GetBestValue<string>(nameof(InputTypeDefinition.Type), TypeForInputTypeDefinition)
                         .UseFallbackIfNoValue(GetTypeName(it))
                         .TrimStart(FieldTypePrefix[0]),
-                    md.GetBestValue<string>(nameof(InputTypes.Label), typesToCheckInThisOrder),
-                    md.GetBestValue<string>(nameof(InputTypes.Description), typesToCheckInThisOrder),
-                    md.GetBestValue<string>(nameof(InputTypes.Assets), TypeForInputTypeDefinition),
-                    md.GetBestValue<bool>(nameof(InputTypes.DisableI18n), TypeForInputTypeDefinition),
-                    md.GetBestValue<string>(nameof(InputTypes.AngularAssets), TypeForInputTypeDefinition),
-                    md.GetBestValue<bool>(nameof(InputTypes.UseAdam), TypeForInputTypeDefinition),
+                    md.GetBestValue<string>(nameof(InputTypeDefinition.Label), typesToCheckInThisOrder),
+                    md.GetBestValue<string>(nameof(InputTypeDefinition.Description), typesToCheckInThisOrder),
+                    md.GetBestValue<string>(nameof(InputTypeDefinition.Assets), TypeForInputTypeDefinition),
+                    md.GetBestValue<bool>(nameof(InputTypeDefinition.DisableI18n), TypeForInputTypeDefinition),
+                    md.GetBestValue<string>(nameof(InputTypeDefinition.AngularAssets), TypeForInputTypeDefinition),
+                    md.GetBestValue<bool>(nameof(InputTypeDefinition.UseAdam), TypeForInputTypeDefinition),
                     "preset",
                     md
                 );

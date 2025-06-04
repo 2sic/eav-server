@@ -2,7 +2,7 @@
 
 
 // Old stuff for compatibility with DNN, should not bleed into Oqtane
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Entities.Sys.Wrappers;
 
 partial class EntityWrapper
 {

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Attributes.Sys;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Relationships.Sys;
 
 /// <summary>
 /// A dictionary-style children accessor containing all fields which have child-entities. <br/>

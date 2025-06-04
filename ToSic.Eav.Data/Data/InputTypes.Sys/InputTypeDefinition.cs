@@ -1,11 +1,13 @@
-﻿namespace ToSic.Eav.Data;
+﻿using ToSic.Eav.Data.EntityBased.Sys;
+
+namespace ToSic.Eav.Data.InputTypes.Sys;
 
 /// <summary>
 /// Constants related to Input Types
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InputTypes(IEntity entity) : EntityBasedType(entity)
+public class InputTypeDefinition(IEntity entity) : EntityBasedType(entity)
 {
     /// <summary>
     /// Name of the content-type which describes Input-Types

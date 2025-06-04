@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Data.Attributes.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
+using ToSic.Eav.Data.InputTypes.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
@@ -31,8 +32,8 @@ public class InputTypeInfo(string type, string label, string description, string
 
         if (metadata.HasType(IsDefaultDecorator)) IsDefault = true;
 
-        var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypes.TypeForInputTypeDefinition);
-        if (typeInputTypeDef != null) ConfigTypes = new InputTypes(typeInputTypeDef).ConfigTypes;
+        var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypeDefinition.TypeForInputTypeDefinition);
+        if (typeInputTypeDef != null) ConfigTypes = new InputTypeDefinition(typeInputTypeDef).ConfigTypes;
     }
 
     /// <summary>

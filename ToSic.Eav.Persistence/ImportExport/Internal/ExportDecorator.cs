@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.ImportExport.Internal;
+﻿using ToSic.Eav.Data.EntityBased.Sys;
+
+namespace ToSic.Eav.ImportExport.Internal;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportDecorator(IEntity entity) : EntityBasedType(entity)

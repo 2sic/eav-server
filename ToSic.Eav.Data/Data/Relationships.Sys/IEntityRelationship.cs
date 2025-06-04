@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data.Relationships.Sys;
 
 public interface IEntityRelationship
 {

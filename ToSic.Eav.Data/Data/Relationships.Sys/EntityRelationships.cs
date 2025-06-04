@@ -3,7 +3,7 @@ using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Sys.Caching.Synchronized;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Relationships.Sys;
 
 /// <summary>
 /// Used to get relationships between entities.

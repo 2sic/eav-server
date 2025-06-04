@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Capabilities.Fingerprints;
+﻿using ToSic.Eav.Data.EntityBased.Sys;
+using ToSic.Sys.Capabilities.Fingerprints;
 
 namespace ToSic.Eav.Configuration.Sys.Loaders;
 

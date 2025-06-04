@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Data.Entities.Sys.Wrappers;
+using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.EntityBased.Sys;
 
 /// <summary>
 /// Foundation for interfaces which will enhance <see cref="EntityBasedType"/> which gets its data from an Entity. <br/>

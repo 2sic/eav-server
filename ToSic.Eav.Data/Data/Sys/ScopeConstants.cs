@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data.Sys;
 
 /// <summary>
 /// Contains all the common constants etc. for Data-Scopes

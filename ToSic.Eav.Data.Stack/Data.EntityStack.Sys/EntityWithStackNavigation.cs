@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.PropertyLookup;
+﻿using ToSic.Eav.Data.Entities.Sys.Wrappers;
+using ToSic.Eav.Data.PropertyLookup;
 
 namespace ToSic.Eav.Data;
 

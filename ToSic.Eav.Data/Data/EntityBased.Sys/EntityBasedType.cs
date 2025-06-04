@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using ToSic.Eav.Data.Entities.Sys.Wrappers;
 using ToSic.Eav.Metadata;
 
-
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.EntityBased.Sys;
 
 /// <summary>
 /// Foundation for a class which gets its data from an Entity. <br/>

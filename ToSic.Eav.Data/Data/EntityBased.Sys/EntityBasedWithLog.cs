@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data.EntityBased.Sys;
 
 /// <summary>
 /// A strongly typed object which gets its data from an entity, and also logs what it does.

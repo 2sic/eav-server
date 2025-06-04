@@ -2,6 +2,8 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Attributes.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.EntityDecorators.Sys;
+using ToSic.Eav.Data.Values.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using IEntity = ToSic.Eav.Data.IEntity;

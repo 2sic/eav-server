@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
+﻿using ToSic.Eav.Data.EntityBased.Sys;
+
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 /// <summary>
 /// 

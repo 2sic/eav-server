@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repository.Efc.Parts;
+﻿using ToSic.Eav.Data.Relationships.Sys;
+
+namespace ToSic.Eav.Repository.Efc.Parts;
 
 internal class DbRelationship(DbDataController db) : DbPartBase(db, "Db.Rels")
 {

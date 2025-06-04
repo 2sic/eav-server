@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data;
+﻿using ToSic.Eav.Data.Entities.Sys.Wrappers;
+
+namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Convert an entity into another format

@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Values.Sys;
+
+namespace ToSic.Eav.Data.Build;
 
 public static class ContentTypeTestAccessors
 {

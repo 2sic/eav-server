@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ContentTypeListExtensions

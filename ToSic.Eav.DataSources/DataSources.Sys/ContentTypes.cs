@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -74,7 +75,7 @@ public sealed class ContentTypes: CustomDataSource
         var l = Log.Fn<IEnumerable<IRawEntity>>();
 
         var appId = OfAppId;
-        var scp = Scope.UseFallbackIfNoValue(Data.ScopeConstants.Default);
+        var scp = Scope.UseFallbackIfNoValue(ScopeConstants.Default);
 
         var types = _appReaders.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
 
