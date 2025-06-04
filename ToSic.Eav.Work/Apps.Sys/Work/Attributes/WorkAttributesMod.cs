@@ -30,7 +30,7 @@ public class WorkAttributesMod(
     public string[] DataTypes()
     {
         var l = Log.Fn<string[]>();
-        var result = AppWorkCtx.DataController.Attributes.DataTypeNames();
+        var result = AppWorkCtx.DbStorage.Attributes.DataTypeNames();
         return l.Return(result, $"{result?.Length ?? 0}");
     }
 
@@ -55,7 +55,7 @@ public class WorkAttributesMod(
     private int AddField(int contentTypeId, IContentTypeAttribute attDef, string inputType)
     {
         var l = Log.Fn<int>($"type:{contentTypeId}, input:{inputType}");
-        var newAttribute = AppWorkCtx.DataController.Attributes.AddAttributeAndSave(contentTypeId, attDef);
+        var newAttribute = AppWorkCtx.DbStorage.Attributes.AddAttributeAndSave(contentTypeId, attDef);
 
         // set the nice name and input type, important for newly created attributes
         InitializeNameAndInputType(attDef.Name, inputType, newAttribute);
@@ -95,7 +95,7 @@ public class WorkAttributesMod(
     public bool Rename(int contentTypeId, int attributeId, string newName)
     {
         var l = Log.Fn<bool>($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
-        AppWorkCtx.DataController.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
+        AppWorkCtx.DbStorage.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
         return l.ReturnTrue();
     }
 
@@ -103,7 +103,7 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{orderCsv}");
         var sortOrderList = orderCsv.Split(',').Select(int.Parse).ToList();
-        AppWorkCtx.DataController.ContentType.SortAttributes(contentTypeId, sortOrderList);
+        AppWorkCtx.DbStorage.ContentType.SortAttributes(contentTypeId, sortOrderList);
         return l.ReturnTrue();
     }
 
@@ -111,7 +111,7 @@ public class WorkAttributesMod(
     public bool Delete(int contentTypeId, int attributeId)
     {
         var l = Log.Fn<bool>($"delete field type#{contentTypeId}, attrib:{attributeId}");
-        return l.Return(AppWorkCtx.DataController.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId));
+        return l.Return(AppWorkCtx.DbStorage.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId));
     }
 
 
@@ -127,7 +127,7 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         // get field attributeId
-        var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId)
+        var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId)
             /*?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.")*/;
 
         // update with the Share = share (hide we'll ignore for now, it's for future needs)
@@ -140,7 +140,7 @@ public class WorkAttributesMod(
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other attribute change
-        AppWorkCtx.DataController.DoAndSave(() =>
+        AppWorkCtx.DbStorage.DoAndSave(() =>
         {
             // ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
             if (attribute.Guid.HasValue == false) attribute.Guid = Guid.NewGuid();
@@ -159,7 +159,7 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         // get field attributeId
-        var attribute = AppWorkCtx.DataController.Attributes.Get(attributeId);
+        var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId);
 
         // set InheritMetadataOf to the guid above(as string)
         var newSysSettings = new ContentTypeAttributeSysSettings
@@ -174,7 +174,7 @@ public class WorkAttributesMod(
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other attribute change
-        AppWorkCtx.DataController.DoAndSave(() => attribute.SysSettings = serializer.Serialize(newSysSettings));
+        AppWorkCtx.DbStorage.DoAndSave(() => attribute.SysSettings = serializer.Serialize(newSysSettings));
 
         return l.ReturnTrue();
     }

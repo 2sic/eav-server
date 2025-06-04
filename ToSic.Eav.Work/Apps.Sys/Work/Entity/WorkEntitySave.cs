@@ -104,7 +104,7 @@ public class WorkEntitySave(
             //entities = AttachRelationshipResolver(entities, appReader.GetCache());
 
             List<int> intIds = null;
-            var dc = AppWorkCtx.DataController;
+            var dc = AppWorkCtx.DbStorage;
             dc.DoButSkipAppCachePurge(() => intIds = dc.Save(pairsToSave));
 
             // Tell the cache to do a partial update

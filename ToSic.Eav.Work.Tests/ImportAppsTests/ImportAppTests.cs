@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Apps.Internal.Work;
 using ToSic.Eav.ImportExport.Sys.Zip;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.ImportAppsTests;
 
-public class ImportAppTests(ZipImport zipImport, DbDataController dbData, ZoneManager zoneManager)
+public class ImportAppTests(ZipImport zipImport, DbStorage dbData, ZoneManager zoneManager)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     #region Test Data

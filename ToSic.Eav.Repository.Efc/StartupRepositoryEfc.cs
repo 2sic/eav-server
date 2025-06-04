@@ -5,7 +5,8 @@ using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories.Sys;
-using ToSic.Eav.StartUp;
+using ToSic.Eav.Repository.Efc.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.Repository.Efc;
@@ -15,7 +16,7 @@ public static class StartupRepositoryEfc
 {
     public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services)
     {
-        services.TryAddTransient<DbDataController>();
+        services.TryAddTransient<DbStorage>();
         services.TryAddTransient<ITargetTypesLoader, EfcMetadataTargetTypesLoaderService>();
 
         // transient lifetime is important, otherwise 2-3x slower!

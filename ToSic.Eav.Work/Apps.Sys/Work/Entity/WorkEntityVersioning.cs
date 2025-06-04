@@ -27,7 +27,7 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     }
 
 
-    public List<ItemHistory> VersionHistory(int id, bool includeData = true) => AppWorkCtx.DataController.Versioning.GetHistoryList(id, includeData);
+    public List<ItemHistory> VersionHistory(int id, bool includeData = true) => AppWorkCtx.DbStorage.Versioning.GetHistoryList(id, includeData);
 
     /// <summary>
     /// Restore an Entity to the specified Version by creating a new Version using the Import
@@ -41,9 +41,9 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
         _import.Value.ImportIntoDb(null, new List<Entity> { newVersion as Entity });
 
         // Delete Draft (if any)
-        var entityDraft = AppWorkCtx.DataController.Publishing.GetDraftBranchEntityId(entityId);
+        var entityDraft = AppWorkCtx.DbStorage.Publishing.GetDraftBranchEntityId(entityId);
         if (entityDraft.HasValue)
-            AppWorkCtx.DataController.Entities.DeleteEntity(entityDraft.Value);
+            AppWorkCtx.DbStorage.Entities.DeleteEntity(entityDraft.Value);
 
         AppCachePurger.Purge(AppWorkCtx);
     }
@@ -68,7 +68,7 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     {
         try
         {
-            var timelineItem = AppWorkCtx.DataController.Versioning.GetItem(entityId, transactionId).Json;
+            var timelineItem = AppWorkCtx.DbStorage.Versioning.GetItem(entityId, transactionId).Json;
             if (timelineItem != null) return timelineItem;
             throw new InvalidOperationException(
                 $"EntityId {entityId} with TransactionId {transactionId} not found in History.");

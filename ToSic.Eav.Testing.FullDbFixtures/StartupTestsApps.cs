@@ -3,7 +3,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Repository.Efc;
-using ToSic.Eav.StartUp;
 using ToSic.Eav.Testing;
 
 #pragma warning disable CA1822

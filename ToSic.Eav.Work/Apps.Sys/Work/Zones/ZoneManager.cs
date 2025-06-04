@@ -1,10 +1,11 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZoneManager(LazySvc<DbDataController> dbLazy, LazySvc<AppCachePurger> appCachePurger)
+public class ZoneManager(LazySvc<DbStorage> dbLazy, LazySvc<AppCachePurger> appCachePurger)
     : ServiceBase("App.Zone", connect: [dbLazy, appCachePurger]), IZoneIdentity
 {
 
@@ -16,13 +17,13 @@ public class ZoneManager(LazySvc<DbDataController> dbLazy, LazySvc<AppCachePurge
         return this;
     }
 
-    internal DbDataController DataController => field ??= dbLazy.Value.Init(ZoneId, null);
+    internal DbStorage DbStorage => field ??= dbLazy.Value.Init(ZoneId, null);
 
 
     #region App management
 
     public void DeleteApp(int appId, bool fullDelete)
-        => appCachePurger.Value.DoAndPurge(ZoneId, appId, () => DataController.App.DeleteApp(appId, fullDelete), true);
+        => appCachePurger.Value.DoAndPurge(ZoneId, appId, () => DbStorage.App.DeleteApp(appId, fullDelete), true);
 
 
     #endregion
@@ -32,7 +33,7 @@ public class ZoneManager(LazySvc<DbDataController> dbLazy, LazySvc<AppCachePurge
     public void SaveLanguage(string cultureCode, string cultureText, bool active)
     {
         var l = Log.Fn($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
-        DataController.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
+        DbStorage.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
         appCachePurger.Value.PurgeZoneList();
         l.Done();
     }

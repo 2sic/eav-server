@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
@@ -8,7 +9,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// It's not part of the normal AppManager / ZoneManager, because when it's initialized it doesn't yet have a real app identity
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZoneCreator(DbDataController db, AppCachePurger appCachePurger)
+public class ZoneCreator(DbStorage db, AppCachePurger appCachePurger)
     : ServiceBase("Eav.AppBld", connect: [db, appCachePurger])
 {
 

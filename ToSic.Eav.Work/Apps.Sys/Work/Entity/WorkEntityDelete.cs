@@ -12,7 +12,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     {
         var l = Log.Fn<bool>($"delete guid:{guid}");
         // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
-        var idToDelete = AppWorkCtx.DataController.Entities.GetStandaloneDbEntityStub(guid).EntityId;
+        var idToDelete = AppWorkCtx.DbStorage.Entities.GetStandaloneDbEntityStub(guid).EntityId;
         return l.Return(Delete(idToDelete, force: force));
     }
 
@@ -56,7 +56,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         // then delete entities with metadata without app cache purge
         var repositoryIds = deleteIds.ToArray();
         var ok = false;
-        var dc = AppWorkCtx.DataController;
+        var dc = AppWorkCtx.DbStorage;
         dc.DoButSkipAppCachePurge(() => ok = dc.Entities.DeleteEntity(repositoryIds, true, true));
 
         // remove entity from cache

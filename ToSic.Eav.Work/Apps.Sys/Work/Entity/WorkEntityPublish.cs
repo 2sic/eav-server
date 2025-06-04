@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Entities.Sys.Lists;
+using ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
@@ -25,7 +26,7 @@ public class WorkEntityPublish(AppsCacheSwitch appsCache)
             {
                 PublishWithoutPurge(eid);
             }
-            catch (Repository.Efc.Parts.EntityAlreadyPublishedException) { /* ignore */ }
+            catch (EntityAlreadyPublishedException) { /* ignore */ }
         // Tell the cache to do a partial update
         appsCache.Update(AppWorkCtx, entityIds);
         l.Done();
@@ -55,7 +56,7 @@ public class WorkEntityPublish(AppsCacheSwitch appsCache)
                 $"will publish: {repoId} if published false (it's: {maybeDraft.IsPublished})");
 
             if (!maybeDraft.IsPublished)
-                AppWorkCtx.DataController.Publishing.PublishDraftInDbEntity(repoId, maybeDraft);
+                AppWorkCtx.DbStorage.Publishing.PublishDraftInDbEntity(repoId, maybeDraft);
         }
 
         l.Done($"/PublishWithoutPurge({entityId})");

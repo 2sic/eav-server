@@ -6,6 +6,7 @@ using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Testing.Scenarios;
 using ToSic.Lib.DI;
 using Xunit.DependencyInjection;
@@ -16,7 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.SaveData;
 /// Make various changes and see if they worked - but rollback any changes afterward using transactions.
 /// </summary>
 [Startup(typeof(StartupTestsApps))]
-public class SaveDataToDbTests(DbDataController dbData, Generator<EfcAppLoaderService> appLoadGenerator, IImportExportEnvironment environment, EntitySaver entitySaver, DataBuilder dataBuilder)
+public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> appLoadGenerator, IImportExportEnvironment environment, EntitySaver entitySaver, DataBuilder dataBuilder)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 

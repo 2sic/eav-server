@@ -18,7 +18,7 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
 
         var entSaver = workEntSave.New(AppWorkCtx);
         var eid = entSaver.Save(newEnt, entSaver.SaveOptions());
-        var guid = AppWorkCtx.DataController.Entities.TempLastSaveGuid;
+        var guid = AppWorkCtx.DbStorage.Entities.TempLastSaveGuid;
 
         return l.Return((eid, guid), $"id:{eid}, guid:{guid}");
     }
@@ -34,12 +34,12 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
     public int GetOrCreate(Guid newGuid, string typeName, Dictionary<string, object> values)
     {
         Log.A($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
-        if (AppWorkCtx.DataController.Entities.EntityExists(newGuid))
+        if (AppWorkCtx.DbStorage.Entities.EntityExists(newGuid))
         {
             // check if it's deleted - if yes, resurrect
             // 2025-04-29 2dm code changed a bit for 2sxc v20.0, but couldn't see how to test it / when this scenario pops up
             // remove this comment if everything is ok by 2026-04
-            var existingEnt = AppWorkCtx.DataController.Entities.GetEntityStubsByGuid(newGuid).First();
+            var existingEnt = AppWorkCtx.DbStorage.Entities.GetEntityStubsByGuid(newGuid).First();
             if (existingEnt.TransDeletedId != null)
                 existingEnt.TransDeletedId = null;
 

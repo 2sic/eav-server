@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppCreator(
-    DbDataController db,
+    DbStorage db,
     IAppsAndZonesLoaderWithRaw appsAndZonesLoader,
     AppCachePurger appCachePurger,
     Generator<AppInitializer> appInitGenerator)

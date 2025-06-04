@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.Repository.Efc;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Services;
 
 namespace ToSic.Eav.Apps.Internal.Work;
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 public class AppWorkContextService(
     LazySvc<IDataSourcesService> dataSourceSvc,
     LazySvc<IAppReaderFactory> appReaders,
-    Generator<LazySvc<DbDataController>> dbGen)
+    Generator<LazySvc<DbStorage>> dbGen)
     : ServiceBase("App.WrkCtx", connect: [appReaders, dataSourceSvc, dbGen])
 {
     /// <summary>
@@ -37,7 +38,7 @@ public class AppWorkContextService(
 
     public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity) => CtxWithDb(Context(identity).AppReader);
 
-    public IAppWorkCtxWithDb CtxWithDb(IAppReader appReader, DbDataController existingDb = default)
+    public IAppWorkCtxWithDb CtxWithDb(IAppReader appReader, DbStorage existingDb = default)
         => existingDb == null
             ? new(dbGen.New().SetInit(dc => dc.Init(appReader)), appReader)
             : new AppWorkCtxWithDb(existingDb, appReader);
