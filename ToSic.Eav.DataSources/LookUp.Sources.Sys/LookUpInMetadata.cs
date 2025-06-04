@@ -2,7 +2,7 @@
 using ToSic.Eav.Metadata.Sys;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.LookUp.Sources;
+namespace ToSic.Eav.LookUp.Sources.Sys;
 
 /// <summary>
 /// LookUp things from metadata. This uses EAV Metadata system and will look up Metadata for something.

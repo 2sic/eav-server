@@ -1,10 +1,8 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.Context.Sys.ZoneCulture;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.PropertyStack.Sys;
 using ToSic.Lib.LookUp.Sources;
 
-namespace ToSic.Eav.LookUp.Sources;
+namespace ToSic.Eav.LookUp.Sources.Sys;
 
 /// <summary>
 /// TODO

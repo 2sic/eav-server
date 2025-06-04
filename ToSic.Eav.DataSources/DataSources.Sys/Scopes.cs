@@ -1,11 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.ContentTypes.Sys;
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSource.VisualQuery;
 
 namespace ToSic.Eav.DataSources.Sys;
 
