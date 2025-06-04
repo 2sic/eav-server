@@ -9,7 +9,7 @@
   <!--<Import Project="../SharedImports/CsProj.Props/Nullable.props" />-->
 
   <PropertyGroup>
-    <RootNamespace>ToSic.Eav.WebApi</RootNamespace>
+    <RootNamespace>ToSic.Eav</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
