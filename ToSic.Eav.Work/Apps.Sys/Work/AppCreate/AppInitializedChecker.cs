@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Apps.Sys.Initializers;
+using ToSic.Eav.Metadata;
 using static ToSic.Eav.Apps.Sys.AppLoadConstants;
 
 namespace ToSic.Eav.Apps.Internal.Work;

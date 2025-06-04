@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
-
-namespace ToSic.Eav.Apps.Integration;
+﻿namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppInputTypesLoader: IHasLog

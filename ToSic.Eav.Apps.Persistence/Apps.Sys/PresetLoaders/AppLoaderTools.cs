@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys.Loaders;
-using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.Caching;
+namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
 /// <summary>
 /// Tools for loading Apps from repositories.

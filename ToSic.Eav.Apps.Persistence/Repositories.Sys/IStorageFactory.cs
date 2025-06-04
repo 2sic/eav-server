@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Persistence.Interfaces;
-
-namespace ToSic.Eav.Repositories.Sys;
+﻿namespace ToSic.Eav.Repositories.Sys;
 
 public interface IStorageFactory
 {

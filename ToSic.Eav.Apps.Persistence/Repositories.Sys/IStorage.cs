@@ -1,9 +1,9 @@
-﻿using ToSic.Eav.Data.Sys.Save;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Persistence.Sys.Logging;
-using ToSic.Eav.Repositories;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Persistence.Interfaces;
+namespace ToSic.Eav.Repositories.Sys;
 
 /// <summary>
 /// This interface should ensure that storage layers can be swapped out as is necessary

@@ -1,11 +1,10 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Sys;
+﻿using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Context;
 using ToSic.Eav.Integration;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.Apps.Integration;
+namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)

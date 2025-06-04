@@ -1,11 +1,9 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
-using ToSic.Eav.Caching;
-using ToSic.Eav.Configuration.Sys.Loaders;
-using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Sys.Boot;
 using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
 /// <summary>
 /// Load the preset app.

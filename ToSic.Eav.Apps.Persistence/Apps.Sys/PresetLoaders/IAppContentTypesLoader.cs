@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps;
-
-namespace ToSic.Eav.Internal.Loaders;
+﻿namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
 /// <summary>
 /// Minimal state loader - can only load parts that an app can load, so content-types and entities

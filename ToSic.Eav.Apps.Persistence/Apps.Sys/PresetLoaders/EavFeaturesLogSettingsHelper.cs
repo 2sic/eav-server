@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Sys.Capabilities.Features;
+﻿using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Configuration.Sys.Loaders;
+namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
 internal class EavFeaturesLogSettingsHelper(EavFeaturesLoader featuresLoader, ILog parentLog): HelperBase(parentLog, "Ldr.LogSet")
 {

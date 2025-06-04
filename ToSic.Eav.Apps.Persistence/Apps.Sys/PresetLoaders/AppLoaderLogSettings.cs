@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Apps.Internal;
+namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
 public class AppLoaderLogSettings(ISysFeaturesService featuresSvc): ServiceBase("Ldr.LogSet")
 {

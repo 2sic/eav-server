@@ -18,8 +18,4 @@
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Apps.Sys\Creation\" />
-  </ItemGroup>
-
 </Project>

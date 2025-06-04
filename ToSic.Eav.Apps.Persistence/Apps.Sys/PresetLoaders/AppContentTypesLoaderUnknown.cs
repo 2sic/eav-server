@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps;
-
-namespace ToSic.Eav.Internal.Loaders;
+﻿namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
 internal class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader, IIsUnknown
 {

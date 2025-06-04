@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys.Loaders;
-using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
+﻿using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 
-namespace ToSic.Eav.Repositories;
+namespace ToSic.Eav.Apps.Sys.Loaders;
 
 public interface IAppsAndZonesLoaderWithRaw: IAppsAndZonesLoader
 {

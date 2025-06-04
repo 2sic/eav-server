@@ -3,7 +3,6 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Integration;
-using ToSic.Eav.StartUp;
 
 
 namespace ToSic.Eav;
