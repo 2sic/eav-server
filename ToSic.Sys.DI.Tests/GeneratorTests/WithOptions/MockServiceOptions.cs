@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-
-namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
+﻿namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 
 public record MockServiceOptions
 {
