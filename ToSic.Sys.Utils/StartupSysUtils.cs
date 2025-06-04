@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Security.Encryption;
+using ToSic.Sys.Security.Encryption;
 
-
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupSysUtils

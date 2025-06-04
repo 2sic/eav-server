@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using ToSic.Eav.Security.Encryption;
+using ToSic.Sys.Security.Encryption;
+
 #pragma warning disable xUnit1026
 
 namespace ToSic.Eav.Core.Tests.Signature;

@@ -2,7 +2,7 @@
 using System.Text;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Security.Encryption;
+namespace ToSic.Sys.Security.Encryption;
 
 /// <summary>
 /// AES Cryptography

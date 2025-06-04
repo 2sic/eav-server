@@ -1,5 +1,6 @@
 using System.Text;
 using ToSic.Lib.Helpers;
+using ToSic.Sys.Security.Encryption;
 
 namespace ToSic.Sys.Utils.Tests.Security.Encryption;
 

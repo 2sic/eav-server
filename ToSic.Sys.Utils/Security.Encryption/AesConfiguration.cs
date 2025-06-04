@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ToSic.Eav.Security.Encryption;
+namespace ToSic.Sys.Security.Encryption;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

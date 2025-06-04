@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Configuration;
 
-namespace ToSic.Eav.Internal.Configuration;
+namespace ToSic.Sys.Security.Encryption;
 
 public static class GlobalConfigCryptoExtensions
 {

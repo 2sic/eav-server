@@ -1,4 +1,5 @@
 using ToSic.Sys.Configuration;
+using ToSic.Sys.Security.Encryption;
 
 namespace ToSic.Sys.Utils.Tests.Security.Encryption;
 

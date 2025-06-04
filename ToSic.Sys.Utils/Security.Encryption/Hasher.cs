@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace ToSic.Eav.Security.Encryption;
+namespace ToSic.Sys.Security.Encryption;
 
 internal class Hasher
 {

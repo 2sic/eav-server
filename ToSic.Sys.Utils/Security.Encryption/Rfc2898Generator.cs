@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace ToSic.Eav.Security.Encryption;
+namespace ToSic.Sys.Security.Encryption;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class Rfc2898Generator

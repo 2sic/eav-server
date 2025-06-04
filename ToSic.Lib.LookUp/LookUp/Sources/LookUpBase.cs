@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
-using ToSic.Eav.Context;
+using ToSic.Sys.Utils.Culture;
 
 namespace ToSic.Lib.LookUp.Sources;
 

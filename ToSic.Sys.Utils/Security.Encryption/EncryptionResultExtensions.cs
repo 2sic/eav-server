@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Security.Encryption;
+﻿namespace ToSic.Sys.Security.Encryption;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class EncryptionResultExtensions

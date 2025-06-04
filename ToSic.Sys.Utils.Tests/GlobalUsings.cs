@@ -15,5 +15,3 @@ global using static Xunit.Assert;
 global using System.ComponentModel;
 
 // Custom Test helpers
-global using ToSic.Eav.Internal.Configuration;
-global using ToSic.Eav.Security.Encryption;

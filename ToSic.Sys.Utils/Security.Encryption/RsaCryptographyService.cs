@@ -1,9 +1,8 @@
 ﻿using System.Security.Cryptography;
-using ToSic.Eav.Internal.Configuration;
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Configuration;
 
-namespace ToSic.Eav.Security.Encryption
+namespace ToSic.Sys.Security.Encryption
 {
     public class RsaCryptographyService(IGlobalConfiguration globalConfiguration)
     {

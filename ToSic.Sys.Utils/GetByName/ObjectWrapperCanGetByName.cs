@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Utils;
 
-namespace ToSic.Lib.GetByName;
+namespace ToSic.Sys.GetByName;
 
 public class ObjectWrapperCanGetByName(object? source): ICanGetByName
 {

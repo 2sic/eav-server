@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Security.Encryption;
+﻿using ToSic.Sys.Security.Encryption;
 
 namespace ToSic.Eav.Core.Tests.Signature;
 

@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Sys.Utils.Culture;
 
 public static class CultureHelpers
 {

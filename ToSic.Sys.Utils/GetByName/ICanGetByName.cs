@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.GetByName;
+﻿namespace ToSic.Sys.GetByName;
 
 /// <summary>
 /// General property to get any kind of value by name only.

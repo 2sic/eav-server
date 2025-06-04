@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Security.Encryption;
+﻿namespace ToSic.Sys.Security.Encryption;
 
 // TODO: @STV: Can we use more generic EncryptionResult
 public class EncryptedData
