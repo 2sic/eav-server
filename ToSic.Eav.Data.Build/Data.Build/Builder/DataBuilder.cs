@@ -36,9 +36,9 @@ public class DataBuilder(
     public IEntity FakeEntity(int appId)
         => entityBuilder.Value.Create(
             appId: appId,
-            attributes: Attribute.Create(new Dictionary<string, object> { { Attributes.TitleNiceName, "" } }),
+            attributes: Attribute.Create(new Dictionary<string, object> { { AttributeNames.TitleNiceName, "" } }),
             contentType: ContentType.Transient("FakeEntity"),
-            titleField: Attributes.TitleNiceName
+            titleField: AttributeNames.TitleNiceName
         );
 
 

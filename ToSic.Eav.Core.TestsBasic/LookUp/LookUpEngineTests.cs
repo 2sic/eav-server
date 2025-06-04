@@ -29,7 +29,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     {
         var settings = Settings();
         True(lookUpEngine.Sources.Count() == 2, "Should have 2 sources");
-        Equal("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").GetTac(Attributes.TitleNiceName));
+        Equal("App Settings", lookUpEngine.Sources.ToList().GetSource("appsettings").GetTac(AttributeNames.TitleNiceName));
         Equal(LookUpTestConstants.OriginalSettingDefaultCat, settings["DefaultCategory"]);
         Equal(OriginalSettingMaxItems, settings["MaxItems"]);
     }
@@ -69,7 +69,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
         const string overridenTitle = "overriden Title";
         var overrideDic = new Dictionary<string, string>
         {
-            {Attributes.TitleNiceName, overridenTitle}
+            {AttributeNames.TitleNiceName, overridenTitle}
         };
         var appSettingsSource = new LookUpInDictionary(LookUpTestConstants.KeyAppSettings, overrideDic);
         // test before override
@@ -92,7 +92,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     private IDictionary<string, string> Settings() =>
         new Dictionary<string, string>
         {
-            { Attributes.TitleNiceName, "Settings" },
+            { AttributeNames.TitleNiceName, "Settings" },
             { "DefaultCategory", LookUpTestConstants.OriginalSettingDefaultCat },
             { "MaxItems", OriginalSettingMaxItems },
             { "PicsPerRow", "3" }

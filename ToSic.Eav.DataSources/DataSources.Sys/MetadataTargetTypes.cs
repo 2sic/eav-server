@@ -60,7 +60,7 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
         var dataFactory = DataFactory.SpawnNew(options: new()
         {
             AppId = 0,
-            TitleField = Data.Attributes.TitleNiceName,
+            TitleField = Data.AttributeNames.TitleNiceName,
             TypeName = "MetadataTargetTypes",
         });
 
@@ -69,8 +69,8 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
             .Select(set => dataFactory.Create(
                     new Dictionary<string, object>
                     {
-                        { Data.Attributes.TitleNiceName, set.Title },
-                        { Data.Attributes.NameIdNiceName, set.TargetType.ToString() }
+                        { Data.AttributeNames.TitleNiceName, set.Title },
+                        { Data.AttributeNames.NameIdNiceName, set.TargetType.ToString() }
                     },
                     id: (int)set.TargetType
                 )

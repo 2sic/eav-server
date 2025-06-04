@@ -163,7 +163,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
     {
         // New 2022-10-17 2dm - Add System fields such as Id, Created, Modified etc.
         // But only if they weren't already added by the content type, so if the ContentType had an "Id" field, we shouldn't override it here.
-        var sysFieldsWhichWereNotAdded = Data.Attributes.SystemFields
+        var sysFieldsWhichWereNotAdded = Data.AttributeNames.SystemFields
             .Where(sysField => !foundFieldNames.Any(f => f.EqualsInsensitive(sysField.Key)))
             .ToList();
 
@@ -181,7 +181,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
                 var descriptionProvider = sysFieldAttributes
                     .FirstOrDefault(x => x.Key == sysField.Key).Value;
                 var description = descriptionProvider?.Metadata.GetBestValue<string>(AttributeMetadataConstants.DescriptionField)
-                                  ?? (Data.Attributes.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
+                                  ?? (Data.AttributeNames.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
                                       ? desc
                                       : default);
                 return AsDic(

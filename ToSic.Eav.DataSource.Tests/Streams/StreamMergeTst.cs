@@ -100,7 +100,7 @@ public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePers
     private ValueFilter GenerateSecondStreamWithSomeResults(StreamMerge sf, int itemsInSecondStream)
     {
         var secondSf = DsSvc.CreateDataSource<ValueFilter>(sf.InTac().First().Value);
-        secondSf.Attribute = Attributes.EntityIdPascalCase;
+        secondSf.Attribute = AttributeNames.EntityIdPascalCase;
         secondSf.Operator = "<";
         secondSf.Value = (FirstId + itemsInSecondStream).ToString();
         Equal(itemsInSecondStream, secondSf.ListTac().Count()); //, $"For next test to work, we must be sure we have {itemsInSecondStream} items here");

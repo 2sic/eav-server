@@ -7,7 +7,7 @@ public class XmlConstants
     public const string Root = "SexyContentData";
     public const string Root97 = "ContentData"; // import supports new name in 2sxc 9.7, but we won't export it with this name yet
 
-    public const string EntityGuid = Data.Attributes.GuidNiceName;
+    public const string EntityGuid = Data.AttributeNames.GuidNiceName;
 
     public const string EntityLanguage = "Language";
 
@@ -37,7 +37,7 @@ public class XmlConstants
     public const string AppId = "AppId";
     public const string ParentApp = "ParentApp";
     public const string AppContentGuid = "Default";
-    public const string Guid = Data.Attributes.GuidNiceName;
+    public const string Guid = Data.AttributeNames.GuidNiceName;
     public const string GuidNode = "EntityGUID";
 
     // attributes / sets

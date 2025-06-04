@@ -129,7 +129,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // Case 3: Real filter
         // Find first Entity which has this property being not null to detect type
-        var (isSpecial, fieldType) = Attributes.InternalOnlyIsSpecialEntityProperty(fieldName);
+        var (isSpecial, fieldType) = AttributeNames.InternalOnlyIsSpecialEntityProperty(fieldName);
         var firstEntity = isSpecial
             ? source.FirstOrDefault()
             : source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Get(fieldName) != null)

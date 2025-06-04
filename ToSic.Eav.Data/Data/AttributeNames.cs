@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data;
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class Attributes
+public class AttributeNames
 {
     #region Special Virtual-Attribute Names
 

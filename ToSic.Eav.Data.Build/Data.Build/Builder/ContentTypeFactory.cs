@@ -90,7 +90,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
 
         var propsGrouped = properties
             .GroupBy(p =>
-                p.Name is (Attributes.IdNiceName or Attributes.GuidNiceName or Attributes.CreatedNiceName or Attributes.ModifiedNiceName)
+                p.Name is (AttributeNames.IdNiceName or AttributeNames.GuidNiceName or AttributeNames.CreatedNiceName or AttributeNames.ModifiedNiceName)
                     ? "system"
                     : p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() == null
                         ? "default"

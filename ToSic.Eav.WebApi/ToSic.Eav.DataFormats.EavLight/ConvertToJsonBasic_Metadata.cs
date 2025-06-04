@@ -12,13 +12,13 @@ partial class ConvertToEavLight
         var itemForRules = MetadataForSerialization.Stabilize(rules.SerializeMetadataFor, MetadataFor);
         if (itemForRules.Serialize /*?? MetadataFor.Serialize*/ ?? false)
             if (entity.MetadataFor.IsMetadata)
-                entityValues.Add(Attributes.JsonKeyMetadataFor, entity.MetadataFor);
+                entityValues.Add(AttributeNames.JsonKeyMetadataFor, entity.MetadataFor);
         
         var itemMdRules = SubEntitySerialization.Stabilize(rules.SerializeMetadata, Metadata);
             
         if (itemMdRules.Serialize != true || !entity.Metadata.Any()) return;
 
-        entityValues.Add(Attributes.JsonKeyMetadata, SubConverter.CreateListOfSubEntities(entity.Metadata, itemMdRules));
+        entityValues.Add(AttributeNames.JsonKeyMetadata, SubConverter.CreateListOfSubEntities(entity.Metadata, itemMdRules));
     }
 
 

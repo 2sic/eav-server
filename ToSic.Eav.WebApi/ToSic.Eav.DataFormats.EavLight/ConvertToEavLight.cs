@@ -207,7 +207,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         // Include title field, if there is not already one in the dictionary
         // - If forced, always set/override
         // - if the rules say to include (or no rules), only replace if not already set
-        var titleFieldName = rules.CustomTitleName ?? Attributes.TitleNiceName;
+        var titleFieldName = rules.CustomTitleName ?? AttributeNames.TitleNiceName;
         if ((rules.SerializeTitleForce ?? DefaultSerializeTitleForce) || ((rules.SerializeTitle ?? DefaultSerializeTitle) && !entityValues.ContainsKey(titleFieldName)))
             entityValues[titleFieldName] = entity.GetBestTitle(Languages);
 

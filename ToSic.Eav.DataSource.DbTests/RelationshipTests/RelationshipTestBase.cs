@@ -61,7 +61,7 @@ public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataB
         string? separator = null,
         string? direction = null)
     {
-        var settings = new Dictionary<string, object> { { Attributes.TitleNiceName, "..." } };
+        var settings = new Dictionary<string, object> { { AttributeNames.TitleNiceName, "..." } };
 
         MaybeAddValueStr(nameof(RelationshipFilter.Relationship), relationship);
         MaybeAddValueStr(nameof(RelationshipFilter.Filter), filter);

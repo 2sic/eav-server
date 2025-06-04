@@ -6,11 +6,11 @@ partial class ConvertToEavLight
 {
     private static void AddPublishingInformation(IEntity entity, IDictionary<string, object> entityValues, IAppReadEntities appState)
     {
-        entityValues.Add(Attributes.RepoIdInternalField, entity.RepositoryId);
-        entityValues.Add(Attributes.IsPublishedField, entity.IsPublished);
+        entityValues.Add(AttributeNames.RepoIdInternalField, entity.RepositoryId);
+        entityValues.Add(AttributeNames.IsPublishedField, entity.IsPublished);
         if (entity.IsPublished && appState.GetDraft(entity) != null)
         {
-            entityValues[Attributes.DraftEntityField] = new
+            entityValues[AttributeNames.DraftEntityField] = new
             {
                 appState.GetDraft(entity).RepositoryId,
             };
@@ -18,7 +18,7 @@ partial class ConvertToEavLight
 
         if (!entity.IsPublished && appState.GetPublished(entity) != null)
         {
-            entityValues[Attributes.PublishedEntityField] = new
+            entityValues[AttributeNames.PublishedEntityField] = new
             {
                 appState.GetPublished(entity).RepositoryId,
             };

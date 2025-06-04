@@ -14,7 +14,7 @@ public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataBuilder dataBuild
     {
         var dataTable = new System.Data.DataTable();
         dataTable.Columns.AddRange([
-            new(Attributes.EntityFieldId, typeof (int)),
+            new(AttributeNames.EntityFieldId, typeof (int)),
             new("EntityTitle"),
             new(PersonSpecs.FieldFirstName),
             new(PersonSpecs.FieldLastName),

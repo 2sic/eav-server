@@ -88,7 +88,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     /// <summary>
     /// The attribute we're looking into, in this case it would be 'Country' because we're checking what Authors are from Switzerland.
     /// </summary>
-    [Configuration(Field = FieldAttributeOnRelationship, Fallback = Attributes.EntityFieldTitle)]
+    [Configuration(Field = FieldAttributeOnRelationship, Fallback = AttributeNames.EntityFieldTitle)]
     public string CompareAttribute
     {
         get => Configuration.GetThis();
@@ -197,11 +197,11 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         if (source is null)
             return l.ReturnAsError(Error.TryGetInFailed());
 
-        var compType = lowAttribName == Attributes.EntityFieldAutoSelect
+        var compType = lowAttribName == AttributeNames.EntityFieldAutoSelect
             ? CompareType.Auto
-            : lowAttribName == Attributes.EntityFieldId
+            : lowAttribName == AttributeNames.EntityFieldId
                 ? CompareType.Id
-                : lowAttribName == Attributes.EntityFieldTitle
+                : lowAttribName == AttributeNames.EntityFieldTitle
                     ? CompareType.Title
                     : CompareType.Any;
 

@@ -14,7 +14,7 @@ public static class FeaturesToRawEntity
             Values = new Dictionary<string, object>
             {
                 { nameof(state.NameId), state.NameId },
-                { Attributes.TitleNiceName, state.Aspect.Name },
+                { AttributeNames.TitleNiceName, state.Aspect.Name },
                 { nameof(Aspect.Description), state.Aspect.Description },
                 { nameof(state.IsEnabled), state.IsEnabled },
                 { nameof(state.EnabledByDefault), state.EnabledByDefault },
@@ -50,7 +50,7 @@ public static class FeaturesToRawEntity
             {
                 // Properties describing the License
                 // { Attributes.NameIdNiceName, License.Name },
-                { Attributes.TitleNiceName, state.Aspect.Name },
+                { AttributeNames.TitleNiceName, state.Aspect.Name },
                 { nameof(state.Aspect.NameId), state.Aspect.NameId },
                 { nameof(state.LicenseKey), state.LicenseKey },
                 { nameof(state.Aspect.Description), state.Aspect.Description },

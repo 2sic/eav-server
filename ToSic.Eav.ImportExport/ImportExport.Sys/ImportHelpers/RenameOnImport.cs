@@ -28,7 +28,7 @@ internal class RenameOnImport: HelperBase
         var originalFolder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder").Attribute(XmlConstants.ValueAttr)?.Value;
 
         // save original AppId (because soon will be rewritten with empty string)
-        var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute(Attributes.GuidNiceName);
+        var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute(AttributeNames.GuidNiceName);
         if(appGuidNode == null) throw new("app guid node not found - totally unexpected");
         var originalAppId = appGuidNode.Value;
         Log.A($"original AppID:{originalAppId}");

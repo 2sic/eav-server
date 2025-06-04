@@ -71,7 +71,7 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name) : Insigh
                     type.NameId,
                     HtmlEncode(type.Name),
                     //type.Name,
-                    Linker.LinkTo($"{type.Attributes.Count()}", nameof(Attributes), appId, type: type.NameId),
+                    Linker.LinkTo($"{type.Attributes.Count()}", nameof(AttributeNames), appId, type: type.NameId),
                     Linker.LinkTo($"{type.Metadata.Count()}", InsightsTypeMetadata.Link, appId, type: type.NameId),
                     Linker.LinkTo($"{type.Metadata.Permissions.Count()}", InsightsTypePermissions.Link, appId, type: type.NameId),
                     type.IsDynamic.ToString(),

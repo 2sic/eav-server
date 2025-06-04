@@ -82,7 +82,7 @@ public class Sql : CustomDataSourceAdvanced
     /// <summary>
     /// Name of the Title Attribute of the Source DataTable
     /// </summary>
-    [Configuration(Field = "EntityTitleField", Fallback = Attributes.EntityFieldTitle)]
+    [Configuration(Field = "EntityTitleField", Fallback = AttributeNames.EntityFieldTitle)]
     public string TitleField
     {
         get => Configuration.GetThis();
@@ -92,7 +92,7 @@ public class Sql : CustomDataSourceAdvanced
     /// <summary>
     /// Name of the Column used as EntityId
     /// </summary>
-    [Configuration(Fallback = Attributes.EntityFieldId)]
+    [Configuration(Fallback = AttributeNames.EntityFieldId)]
     public string EntityIdField
     {
         get => Configuration.GetThis();
@@ -159,8 +159,8 @@ public class Sql : CustomDataSourceAdvanced
         ConnectionString = connectionString;
         SelectCommand = selectCommand;
         ContentType = contentType;
-        EntityIdField = entityIdField ?? Attributes.EntityFieldId;
-        TitleField = titleField ?? Attributes.EntityFieldTitle;
+        EntityIdField = entityIdField ?? AttributeNames.EntityFieldId;
+        TitleField = titleField ?? AttributeNames.EntityFieldTitle;
         return this;
     }
 

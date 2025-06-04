@@ -32,7 +32,7 @@ public class LookUpTestData(DataBuilder builder)
     private LookUpInEntity AppSettings(int appId) =>
         BuildLookUpEntity(LookUpTestConstants.KeyAppSettings, new()
         {
-            { Attributes.TitleNiceName, "App Settings" },
+            { AttributeNames.TitleNiceName, "App Settings" },
             { "DefaultCategoryName", LookUpTestConstants.DefaultCategory },
             { "MaxPictures", LookUpTestConstants.MaxPictures },
             { "PicsPerRow", "3" }
@@ -41,7 +41,7 @@ public class LookUpTestData(DataBuilder builder)
     private LookUpInEntity AppResources(int appId) =>
         BuildLookUpEntity(LookUpTestConstants.KeyAppResources, new()
         {
-            { Attributes.TitleNiceName, "Resources" },
+            { AttributeNames.TitleNiceName, "Resources" },
             { "Greeting", "Hello there!" },
             { "Introduction", "Welcome to this" }
         }, appId);

@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using static ToSic.Eav.Data.Attributes;
+using static ToSic.Eav.Data.AttributeNames;
 
 namespace ToSic.Eav.Serialization;
 

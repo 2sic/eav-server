@@ -37,7 +37,7 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
     /// This determines what property is used as ID on the parent.
     /// Currently only allows "EntityId" and "EntityGuid"
     /// </summary>
-    [Configuration(Field = "ParentIdentifierAttribute", Fallback = Attributes.EntityFieldId)]
+    [Configuration(Field = "ParentIdentifierAttribute", Fallback = AttributeNames.EntityFieldId)]
     public string Identifier => Configuration.GetThis();
 
     /// <summary>
@@ -85,12 +85,12 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
 
         switch (Identifier)
         {
-            case Attributes.EntityGuidPascalCase:
+            case AttributeNames.EntityGuidPascalCase:
                 var resultGuid = _treeMapper.AddParentChild(
                     source, Identifier, ParentReferenceField,
                     NewChildrenField, NewParentField);
                 return l.Return(resultGuid, $"Guid: {resultGuid.Count}");
-            case Attributes.EntityIdPascalCase:
+            case AttributeNames.EntityIdPascalCase:
                 var resultInt = _treeMapper.AddParentChild(
                     source, Identifier, ParentReferenceField,
                     NewChildrenField, NewParentField);

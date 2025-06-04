@@ -26,7 +26,7 @@ public class FieldControllerReal(
         => inputTypes.New(appId).GetInputTypes();
 
     public Dictionary<string, string> ReservedNames()
-        => Attributes.ReservedNames;
+        => AttributeNames.ReservedNames;
 
     public int Add(int appId, int contentTypeId, string staticName, string type, string inputType, int index)
         => attributesMod.New(appId).AddField(contentTypeId, staticName, type, inputType, index);

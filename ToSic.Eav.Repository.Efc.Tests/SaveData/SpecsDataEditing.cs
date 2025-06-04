@@ -10,7 +10,7 @@ public class SpecsDataEditing : IAppIdentity
 
     public string ContentTypeName = "DataToModify";
 
-    public string TitleField = Attributes.TitleNiceName;
+    public string TitleField = AttributeNames.TitleNiceName;
 
     public int ExistingItem = 20980;
 

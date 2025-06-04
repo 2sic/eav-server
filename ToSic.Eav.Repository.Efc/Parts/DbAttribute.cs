@@ -99,8 +99,8 @@ internal partial class DbAttribute(DbDataController db) : DbPartBase(db, "Db.Att
 
         var contentType = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentTypeId);
 
-        if (!Attributes.StaticNameValidation.IsMatch(staticName))
-            throw new("Attribute static name \"" + staticName + "\" is invalid. " + Attributes.StaticNameErrorMessage);
+        if (!AttributeNames.StaticNameValidation.IsMatch(staticName))
+            throw new("Attribute static name \"" + staticName + "\" is invalid. " + AttributeNames.StaticNameErrorMessage);
 
         // Prevent Duplicate Name
         if (AttributeExistsInSet(contentType.ContentTypeId, staticName))

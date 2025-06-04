@@ -31,7 +31,7 @@ internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities) : Insigh
                 : appEntities.Get(Type).ToImmutableList();
             msg += P($"entities: {entities.Count}\n");
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields("#", "Id", Attributes.GuidNiceName, Eav.Data.Attributes.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
+                   + InsightsHtmlTable.HeadFields("#", "Id", AttributeNames.GuidNiceName, Eav.Data.AttributeNames.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
                    + "<tbody>";
             var count = 0;
             foreach (var ent in entities)

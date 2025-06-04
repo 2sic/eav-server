@@ -53,7 +53,7 @@ public record DataFactoryOptions
     [field: AllowNull, MaybeNull]
     public string TitleField
     {
-        get => field.UseFallbackIfNoValue(Attributes.TitleNiceName);
+        get => field.UseFallbackIfNoValue(AttributeNames.TitleNiceName);
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
         set;
 #else

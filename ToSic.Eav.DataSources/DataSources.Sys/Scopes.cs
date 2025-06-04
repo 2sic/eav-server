@@ -48,7 +48,7 @@ public sealed class Scopes : CustomDataSource
         var list = scopes
             .Select(s => new RawEntity(new()
             {
-                { Data.Attributes.NameIdNiceName, s.Key },
+                { Data.AttributeNames.NameIdNiceName, s.Key },
                 { "Name", s.Value }
             }))
             .ToList();

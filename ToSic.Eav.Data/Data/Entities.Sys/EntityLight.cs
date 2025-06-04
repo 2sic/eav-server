@@ -78,14 +78,14 @@ public abstract record EntityLight //: IEntityLight
     protected virtual object GetInternalPropertyByName(string attributeNameLowerInvariant) =>
         attributeNameLowerInvariant switch
         {
-            Attributes.EntityFieldId => EntityId,
-            Attributes.EntityFieldGuid => EntityGuid,
-            Attributes.EntityFieldType => Type.Name,
-            Attributes.EntityFieldCreated => Created,
-            Attributes.EntityFieldOwner => Owner, // added in v15, was missing before
-            Attributes.EntityFieldOwnerId => OwnerId, // new v15.03
-            Attributes.EntityFieldModified => Modified,
-            Attributes.EntityAppId => AppId,
+            AttributeNames.EntityFieldId => EntityId,
+            AttributeNames.EntityFieldGuid => EntityGuid,
+            AttributeNames.EntityFieldType => Type.Name,
+            AttributeNames.EntityFieldCreated => Created,
+            AttributeNames.EntityFieldOwner => Owner, // added in v15, was missing before
+            AttributeNames.EntityFieldOwnerId => OwnerId, // new v15.03
+            AttributeNames.EntityFieldModified => Modified,
+            AttributeNames.EntityAppId => AppId,
             _ => null
         };
 

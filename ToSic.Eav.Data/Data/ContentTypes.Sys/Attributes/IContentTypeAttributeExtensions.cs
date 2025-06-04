@@ -34,7 +34,7 @@ public static class IContentTypeAttributeExtensions
 
     public static string EntityFieldItemTypePrimary(this IContentTypeAttribute attribute)
     {
-        var itemTypeName = attribute.Metadata.GetBestValue<string>(Attributes.EntityFieldType) ?? "";
+        var itemTypeName = attribute.Metadata.GetBestValue<string>(AttributeNames.EntityFieldType) ?? "";
         var typeName = itemTypeName.Split(',').First().Trim();
         return typeName;
     }

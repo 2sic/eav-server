@@ -80,12 +80,12 @@ public class MetadataControllerReal(
 
         // Special case for content-types without fields, ensure there is still a title
         foreach (var item in result.Items)
-            if (item.TryGetValue(Attributes.TitleNiceName, out var title)
+            if (item.TryGetValue(AttributeNames.TitleNiceName, out var title)
                 && title == null
                 && item.TryGetValue(ConvertToEavLight.InternalTypeField, out var typeInfo))
             {
                 if (typeInfo is JsonType { Name: not null } typeDic) 
-                    item[Attributes.TitleNiceName] = typeDic.Name;
+                    item[AttributeNames.TitleNiceName] = typeDic.Name;
             }
 
         return l.ReturnAsOk(result);

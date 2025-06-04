@@ -64,8 +64,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         {
             var keys = ct.Attributes.Select(a => a.Name).ToList();
 
-            keys.Add(Attributes.EntityFieldGuid);
-            keys.Add(Attributes.EntityFieldIsPublished);
+            keys.Add(AttributeNames.EntityFieldGuid);
+            keys.Add(AttributeNames.EntityFieldIsPublished);
 
             // TODO: NOTE this looks wrong - as it would null-error if origAttributes were null
             // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
@@ -126,15 +126,15 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
     private void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool? isPublished) 
     {
-        if (isPublished.HasValue && !attributes.ContainsKey(Attributes.EntityFieldIsPublished)) 
-            attributes.Add(Attributes.EntityFieldIsPublished, CreateIsPublishedAttribute(isPublished.Value));
+        if (isPublished.HasValue && !attributes.ContainsKey(AttributeNames.EntityFieldIsPublished)) 
+            attributes.Add(AttributeNames.EntityFieldIsPublished, CreateIsPublishedAttribute(isPublished.Value));
     }
 
 
     private IAttribute CreateIsPublishedAttribute(bool isPublished)
     {
         var values = new List<IValue> { dataBuilder.Value.Bool(isPublished, []) };
-        var attribute = dataBuilder.Attribute.Create(Attributes.EntityFieldIsPublished, ValueTypes.Boolean, values);
+        var attribute = dataBuilder.Attribute.Create(AttributeNames.EntityFieldIsPublished, ValueTypes.Boolean, values);
         return attribute;
     }
 
@@ -258,13 +258,13 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         var l = (logDetails ? Log : null)
             .Fn<(IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)>();
         // check IsPublished
-        values.TryGetValue(Attributes.EntityFieldIsPublished, out var isPublishedAttr);
+        values.TryGetValue(AttributeNames.EntityFieldIsPublished, out var isPublishedAttr);
         var isPublished = isPublishedAttr?.Values.FirstOrDefault()?.ObjectContents;
         bool? newIsPublished = null;
         if (isPublished != null)
         {
             l.A("Found property for published, will move");
-            values.Remove(Attributes.EntityFieldIsPublished);
+            values.Remove(AttributeNames.EntityFieldIsPublished);
 
             if (isPublished is bool b)
                 newIsPublished = b;
@@ -273,13 +273,13 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         }
 
         // check EntityGuid
-        values.TryGetValue(Attributes.EntityFieldGuid, out var probablyGuidAttr);
+        values.TryGetValue(AttributeNames.EntityFieldGuid, out var probablyGuidAttr);
         var probablyGuid = probablyGuidAttr?.Values.FirstOrDefault()?.ObjectContents;
         Guid? newGuid = null;
         if (probablyGuid != null)
         {
             l.A("Found property for published, will move");
-            values.Remove(Attributes.EntityFieldGuid);
+            values.Remove(AttributeNames.EntityFieldGuid);
             if (Guid.TryParse(probablyGuid.ToString(), out var eGuid))
                 newGuid = eGuid;
         }

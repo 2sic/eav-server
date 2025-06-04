@@ -18,7 +18,7 @@ public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilde
 
         var dataTable = new System.Data.DataTable();
         dataTable.Columns.AddRange([
-            new(Attributes.EntityFieldId, typeof (int)),
+            new(AttributeNames.EntityFieldId, typeof (int)),
             new(PersonSpecs.FieldFullName),
             new(PersonSpecs.FieldFirstName),
             new(PersonSpecs.FieldLastName),

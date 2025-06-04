@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSources.Sys.Internal;
 public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
 {
     public const string TypeName = "AppStack";
-    public const string TitleFieldName = Data.Attributes.TitleNiceName;
+    public const string TitleFieldName = Data.AttributeNames.TitleNiceName;
 
     public static DataFactoryOptions Options = new()
     {
@@ -34,7 +34,7 @@ public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
     {
         var attributes = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase)
         {
-            { Data.Attributes.TitleNiceName, Path },
+            { Data.AttributeNames.TitleNiceName, Path },
             { nameof(Source), Source },
             { nameof(Priority), Priority },
             { nameof(Type), Type },

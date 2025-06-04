@@ -116,8 +116,8 @@ public static class IEntityExtensions
             k => k.Value.Name,
             v => v.Value[0]
         );
-        attributes.Add(Attributes.EntityIdPascalCase, entity.EntityId);
-        attributes.Add(Attributes.EntityGuidPascalCase, entity.EntityGuid);
+        attributes.Add(AttributeNames.EntityIdPascalCase, entity.EntityId);
+        attributes.Add(AttributeNames.EntityGuidPascalCase, entity.EntityGuid);
         return attributes;
     }
 

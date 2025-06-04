@@ -12,7 +12,7 @@ internal class MetadataHelper
         {
             msg += P($"Assigned Items: {metadata.Count}\n");
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields( "#", "Id", Eav.Data.Attributes.TitleNiceName, "Content-Type", "Target", "Key" )
+                   + InsightsHtmlTable.HeadFields( "#", "Id", Eav.Data.AttributeNames.TitleNiceName, "Content-Type", "Target", "Key" )
                    + "<tbody>";
             var count = 0;
             foreach (var md in metadata)

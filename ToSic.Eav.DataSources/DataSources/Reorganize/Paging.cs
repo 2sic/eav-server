@@ -100,7 +100,7 @@ public sealed class Paging: CustomDataSourceAdvanced
         // Assemble the entity
         var paging = new Dictionary<string, object>
         {
-            { Attributes.TitleNiceName, "Paging Information" },
+            { AttributeNames.TitleNiceName, "Paging Information" },
             { nameof(PageSize), PageSize },
             { nameof(PageNumber), PageNumber },
             { "ItemCount", itemCount },

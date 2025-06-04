@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
-using static ToSic.Eav.Data.Attributes;
+using static ToSic.Eav.Data.AttributeNames;
 
 namespace ToSic.Eav.Data;
 

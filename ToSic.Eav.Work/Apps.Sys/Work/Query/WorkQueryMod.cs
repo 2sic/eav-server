@@ -94,8 +94,8 @@ public class WorkQueryMod(
             // go case insensitive...
             var dataSource = new Dictionary<string, object>(ds, InvariantCultureIgnoreCase);
             // Skip Out-DataSource
-            var originalIdentity = dataSource[Attributes.EntityFieldGuid].ToString();
-            dataSource.TryGetValue(Attributes.EntityFieldId, out var entityId);
+            var originalIdentity = dataSource[AttributeNames.EntityFieldGuid].ToString();
+            dataSource.TryGetValue(AttributeNames.EntityFieldId, out var entityId);
 
             // remove key-fields, as we cannot save them (would cause error)
             RemoveIdAndGuidFromValues(dataSource);
@@ -126,8 +126,8 @@ public class WorkQueryMod(
     /// <param name="values"></param>
     private static void RemoveIdAndGuidFromValues(Dictionary<string, object> values)
     {
-        values.Remove(Attributes.EntityFieldGuid);
-        values.Remove(Attributes.EntityFieldId);
+        values.Remove(AttributeNames.EntityFieldGuid);
+        values.Remove(AttributeNames.EntityFieldId);
     }
 
     /// <summary>

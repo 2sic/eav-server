@@ -37,17 +37,17 @@ public class DataTable : CustomDataSourceAdvanced
     /// <summary>
     /// Name of the Title Attribute of the Source DataTable
     /// </summary>
-    [Configuration(Fallback = Attributes.EntityFieldTitle)]
+    [Configuration(Fallback = AttributeNames.EntityFieldTitle)]
     public string TitleField
     {
-        get => Configuration.GetThis(fallback: Attributes.EntityFieldTitle);
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldTitle);
         set => Configuration.SetThisObsolete(value);
     }
 
     /// <summary>
     /// Name of the Column used as EntityId
     /// </summary>
-    [Configuration(Fallback = Attributes.EntityFieldId)]
+    [Configuration(Fallback = AttributeNames.EntityFieldId)]
     public string EntityIdField
     {
         get => Configuration.GetThis();

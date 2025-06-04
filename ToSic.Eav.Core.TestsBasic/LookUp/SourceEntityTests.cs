@@ -15,10 +15,10 @@ public class SourceEntityTests(DataBuilder dataBuilder)
     public void FirstNameNotEmpty() => NotEqual(string.Empty, _person.GetTac("FirstName"));
 
     [Fact]
-    public void EntityIdNotEmpty() => NotEqual(string.Empty, _person.GetTac(Attributes.EntityIdPascalCase));
+    public void EntityIdNotEmpty() => NotEqual(string.Empty, _person.GetTac(AttributeNames.EntityIdPascalCase));
 
     [Fact]
-    public void EntityTitleNotEmpty() => NotEqual(string.Empty, _person.GetTac(Attributes.EntityFieldTitle));
+    public void EntityTitleNotEmpty() => NotEqual(string.Empty, _person.GetTac(AttributeNames.EntityFieldTitle));
 
     [Fact]
     public void LastNameIsMettler() => Equal("Mettler", _person.GetTac("LastName", ""));
@@ -27,13 +27,13 @@ public class SourceEntityTests(DataBuilder dataBuilder)
     public void LastNameIsMettlerWithoutDefault() => Equal("Mettler", _person.GetTac("LastName"));
 
     [Fact]
-    public void EntityIdIs1() => Equal(1.ToString(), _person.GetTac(Attributes.EntityIdPascalCase));
+    public void EntityIdIs1() => Equal(1.ToString(), _person.GetTac(AttributeNames.EntityIdPascalCase));
 
     [Fact]
-    public void EntityTitleIsDaniel() => Equal("Daniel", _person.GetTac(Attributes.EntityFieldTitle));
+    public void EntityTitleIsDaniel() => Equal("Daniel", _person.GetTac(AttributeNames.EntityFieldTitle));
 
     [Fact]
-    public void EntityGuidIsEmpty() => Equal(Guid.Empty, Guid.Parse(_person.GetTac(Attributes.EntityGuidPascalCase)));
+    public void EntityGuidIsEmpty() => Equal(Guid.Empty, Guid.Parse(_person.GetTac(AttributeNames.EntityGuidPascalCase)));
 
     [Fact]
     public void EntityTypeIsTestType() => Equal("TestType", _person.GetTac("EntityType"));
