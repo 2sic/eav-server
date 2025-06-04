@@ -1,12 +1,12 @@
 ﻿using System.Runtime.Caching;
 using ToSic.Eav.Apps.Assets.Internal;
-using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Lib.Memory;
 using ToSic.Razor.Blade;
 using ToSic.Sys.Caching;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Sys;
 
 internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Cache Analysis", helpCategory: "Performance")
 {

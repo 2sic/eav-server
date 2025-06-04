@@ -1,9 +1,13 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
+﻿using ToSic.Eav.Sys.Insights.App;
+using ToSic.Eav.Sys.Insights.Data;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
+using ToSic.Eav.Sys.Insights.Logs;
+using ToSic.Eav.Sys.Insights.Sys;
 using ToSic.Lib.Coding;
 using ToSic.Razor.Html5;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights;
 
 /// <summary>
 /// Home / Help screen for insights

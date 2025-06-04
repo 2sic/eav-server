@@ -1,11 +1,11 @@
 ﻿using System.Collections.Immutable;
 using System.Globalization;
-using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.Data.Sys;
-using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
+using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [workEntities])
 {

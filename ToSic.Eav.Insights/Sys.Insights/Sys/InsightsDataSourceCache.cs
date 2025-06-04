@@ -1,11 +1,12 @@
 ﻿using System.Text;
 using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Blade;
 using ToSic.Sys.Security.Encryption;
-using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
+using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class InsightsDataSourceCache(

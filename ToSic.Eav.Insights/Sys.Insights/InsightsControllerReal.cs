@@ -1,10 +1,11 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
+﻿using ToSic.Eav.Sys.Insights.HtmlHelpers;
+using ToSic.Eav.Sys.Insights.Sys;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Razor.Blade;
 using ToSic.Sys.Users;
 using static System.StringComparer;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders)

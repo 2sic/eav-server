@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
+﻿using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Logs;
 
 internal class InsightsLogs : InsightsProvider
 {

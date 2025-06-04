@@ -1,9 +1,9 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
-using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
+using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsTypes(IAppReaderFactory appReadFac, string name) : InsightsProvider(name, helpCategory: HiddenFromAutoDisplay)
 {

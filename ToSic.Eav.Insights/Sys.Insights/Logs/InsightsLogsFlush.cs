@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-
-namespace ToSic.Eav.WebApi.Sys.Insights;
+﻿namespace ToSic.Eav.Sys.Insights.Logs;
 
 internal class InsightsLogsFlush(LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [logStore])
 {

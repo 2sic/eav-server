@@ -1,7 +1,7 @@
 ﻿using ToSic.Razor.Blade;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.HtmlHelpers;
 
 public class InsightsHtmlTable: InsightsHtmlBase
 {

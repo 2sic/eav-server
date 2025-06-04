@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Apps.Sys.State;
+﻿using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
+using ToSic.Eav.Sys.Insights.Logs;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.App;
 
 internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates, LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates, logStore])
 {

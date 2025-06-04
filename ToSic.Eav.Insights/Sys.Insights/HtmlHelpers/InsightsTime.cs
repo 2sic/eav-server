@@ -1,6 +1,6 @@
 ﻿using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.HtmlHelpers;
 
 internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
 {

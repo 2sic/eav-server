@@ -1,14 +1,14 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Apps.Sys;
+﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Entities.Sys;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Markup;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
-using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
-using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlTable;
+using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
+using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Sys;
 
 internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
     LazySvc<ILicenseService> licenseServiceLazy,

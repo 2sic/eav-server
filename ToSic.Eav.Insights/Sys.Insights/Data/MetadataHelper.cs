@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class MetadataHelper
 {

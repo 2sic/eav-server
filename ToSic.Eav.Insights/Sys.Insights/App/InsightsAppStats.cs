@@ -1,11 +1,9 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Apps.Sys.State;
+﻿using ToSic.Eav.Apps.Sys.State;
 using ToSic.Razor.Blade;
 using ToSic.Sys.Caching;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.App;
 
 internal class InsightsAppStats(IAppStateCacheService appStates) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appStates])
 {

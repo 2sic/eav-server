@@ -1,12 +1,13 @@
 ﻿using System.Text;
 using ToSic.Eav.Apps.Assets.Internal;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Lib.Memory;
 using ToSic.Razor.Blade;
-using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
-using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlTable;
+using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
+using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Logs;
 
 internal class InsightsLogsHelper(ILogStoreLive logStore)
 {

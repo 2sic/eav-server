@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Insights;
+﻿namespace ToSic.Eav.Sys.Insights.HtmlHelpers;
 
 internal class SpecialField(object value, string styles = default, string tooltip = default, bool isEncoded = default)
 {

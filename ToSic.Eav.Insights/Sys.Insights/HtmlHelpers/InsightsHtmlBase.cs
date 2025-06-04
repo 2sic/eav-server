@@ -1,12 +1,11 @@
 ﻿using System.Text;
 using System.Text.Encodings.Web;
 using System.Web;
-using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Lib.Coding;
 using ToSic.Razor.Blade;
 using ToSic.Razor.Html5;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.HtmlHelpers;
 
 public class InsightsHtmlBase: IInsightsLinker
 {

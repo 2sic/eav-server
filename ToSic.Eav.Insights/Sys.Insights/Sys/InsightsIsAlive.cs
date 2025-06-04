@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-
-namespace ToSic.Eav.WebApi.Sys.Insights;
+﻿namespace ToSic.Eav.Sys.Insights.Sys;
 
 internal class InsightsIsAlive(): InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay)
 {

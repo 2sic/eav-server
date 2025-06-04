@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-using static ToSic.Razor.Blade.Tag;
+﻿using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsTypeMetadata(LazySvc<IAppReaderFactory> appReaders) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
 {

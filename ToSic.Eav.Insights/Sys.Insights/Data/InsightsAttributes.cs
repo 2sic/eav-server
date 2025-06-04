@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Data.ContentTypes.Sys;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
 {

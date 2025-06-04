@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsGlobalTypes(IAppReaderFactory appReadFac) : InsightsTypes(appReadFac, "GlobalTypes")
 {

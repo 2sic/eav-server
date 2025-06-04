@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.Apps.Sys.Caching;
+﻿using ToSic.Eav.Apps.Sys.Caching;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.App;
 
 internal class InsightsPurgeApp(LazySvc<AppCachePurger> appCachePurger) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appCachePurger])
 {

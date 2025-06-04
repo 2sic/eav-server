@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.WebApi.Sys.Insights;
-using InsightsControllerReal = ToSic.Eav.WebApi.Sys.Insights.InsightsControllerReal;
+using ToSic.Eav.Sys.Insights;
+using ToSic.Eav.Sys.Insights.App;
+using ToSic.Eav.Sys.Insights.Data;
+using ToSic.Eav.Sys.Insights.Logs;
+using ToSic.Eav.Sys.Insights.Sys;
+using InsightsControllerReal = ToSic.Eav.Sys.Insights.InsightsControllerReal;
 
-namespace ToSic.Eav.WebApi;
+namespace ToSic.Eav;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavInsights

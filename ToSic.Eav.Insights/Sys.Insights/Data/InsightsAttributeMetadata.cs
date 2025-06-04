@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.WebApi.Errors;
+﻿using ToSic.Eav.WebApi.Errors;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributeMetadata(LazySvc<IAppReaderFactory> appReaders) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
 {

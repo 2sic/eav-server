@@ -1,13 +1,11 @@
-﻿using ToSic.Eav.Apps.Internal.Insights;
-using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.ImportExport.Json.Sys;
+﻿using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Razor.Blade;
-using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;
+using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntity(GenWorkPlus<WorkEntities> workEntities, Generator<JsonSerializer> jsonSerializer) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [workEntities, jsonSerializer])
 {

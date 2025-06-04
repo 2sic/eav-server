@@ -1,6 +1,6 @@
 ﻿using ToSic.Razor.Blade;
 
-namespace ToSic.Eav.WebApi.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights.HtmlHelpers;
 
 internal class InsightsHtmlParts
 {

@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Coding;
 
-namespace ToSic.Eav.Apps.Internal.Insights;
+namespace ToSic.Eav.Sys.Insights;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IInsightsLinker
