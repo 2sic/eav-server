@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.WebApi.Formats;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Cms;
+namespace ToSic.Eav.WebApi.Sys.Cms;
 
 /// <summary>
 /// This is the Contract / Interface for the edit controller.

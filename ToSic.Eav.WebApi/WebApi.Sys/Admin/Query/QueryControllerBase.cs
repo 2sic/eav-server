@@ -10,11 +10,12 @@ using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Serialization.Sys.Json;
+using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Lib.LookUp.Engines;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using SystemJsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace ToSic.Eav.WebApi.Admin.Query;
+namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 
 /// <inheritdoc />
 /// <summary>

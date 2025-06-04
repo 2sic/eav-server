@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.WebApi.Context;
+﻿using ToSic.Eav.WebApi.Sys.Context;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.WebApi.Cms;
+namespace ToSic.Eav.WebApi.Sys.Cms;
 
 /// <summary>
 /// Helper service to retrieve all the UI features for the edit UI

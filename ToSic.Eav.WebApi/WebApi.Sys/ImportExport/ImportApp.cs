@@ -6,12 +6,13 @@ using ToSic.Eav.ImportExport.Sys.XmlImport;
 using ToSic.Eav.ImportExport.Sys.Zip;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
+using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Configuration;
 using ToSic.Sys.Users;
 using ISite = ToSic.Eav.Context.ISite;
 
-namespace ToSic.Eav.WebApi.ImportExport;
+namespace ToSic.Eav.WebApi.Sys.ImportExport;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportApp(

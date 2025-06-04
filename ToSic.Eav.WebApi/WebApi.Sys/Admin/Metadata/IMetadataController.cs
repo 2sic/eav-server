@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Admin.Metadata;
+﻿namespace ToSic.Eav.WebApi.Sys.Admin.Metadata;
 
 /// <summary>
 /// Metadata Controller to get Entities assigned to something

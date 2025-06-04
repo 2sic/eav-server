@@ -1,9 +1,9 @@
-﻿using ToSic.Eav.WebApi.Context;
+﻿using ToSic.Eav.WebApi.Sys.Context;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Cms;
+namespace ToSic.Eav.WebApi.Sys.Cms;
 
 internal class UiData(ISysFeaturesService features, IUser user) : IUiData
 {

@@ -1,9 +1,10 @@
 ﻿using System.Globalization;
-using ToSic.Eav.WebApi.Languages;
-using ToSic.Eav.WebApi.Zone;
+using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Eav.WebApi.Sys.Languages;
+using ToSic.Eav.WebApi.Sys.Zone;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
-namespace ToSic.Eav.WebApi.Admin;
+namespace ToSic.Eav.WebApi.Sys.Admin;
 
 /// <summary>
 /// This one supplies portal-wide (or cross-portal) settings / configuration

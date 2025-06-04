@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Routing;
+﻿namespace ToSic.Eav.WebApi.Sys.Routing;
 
 /// <summary>
 /// These are all the root paths used in the API

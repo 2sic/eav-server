@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace ToSic.Eav.WebApi.Infrastructure;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 /// <summary>
 /// Helper to get header, query string and route information from current request.

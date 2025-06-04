@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataFormats.EavLight;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
+
+namespace ToSic.Eav.DataFormats.EavLight;
 
 partial class ConvertToEavLight
 {

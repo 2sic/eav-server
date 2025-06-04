@@ -6,7 +6,7 @@ using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Capabilities.Platform;
 using ToSic.Sys.Code.InfoSystem;
 
-namespace ToSic.Eav.WebApi.Zone;
+namespace ToSic.Eav.WebApi.Sys.Zone;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneBackend(

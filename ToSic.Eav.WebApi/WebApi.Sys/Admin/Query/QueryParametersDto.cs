@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Admin.Query;
+﻿namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 
 /// <summary>
 /// Optional additional parameters in a query post body

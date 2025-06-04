@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Admin;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
+
+namespace ToSic.Eav.WebApi.Sys.Admin;
 
 public interface IAppInternalsController
 {

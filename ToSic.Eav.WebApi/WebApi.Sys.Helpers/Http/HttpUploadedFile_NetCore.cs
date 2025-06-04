@@ -1,10 +1,9 @@
 ﻿#if !NETFRAMEWORK
-using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using ToSic.Eav.Security.Files;
 
-namespace ToSic.Eav.WebApi.Adam;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class HttpUploadedFile(HttpRequest request)

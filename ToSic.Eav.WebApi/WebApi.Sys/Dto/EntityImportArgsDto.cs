@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class EntityImportDto
 {

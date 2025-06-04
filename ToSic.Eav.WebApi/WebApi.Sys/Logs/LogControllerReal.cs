@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.WebApi.Sys;
+namespace ToSic.Eav.WebApi.Sys.Logs;
 // Release routes
 
 [ShowApiWhenReleased(ShowApiMode.Never)]

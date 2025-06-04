@@ -2,7 +2,7 @@
 using System.Text.Json.Nodes;
 using ToSic.Eav.Serialization.Sys.Json;
 
-namespace ToSic.Eav.WebApi.Validation;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Validation;
 
 internal class Json
 {

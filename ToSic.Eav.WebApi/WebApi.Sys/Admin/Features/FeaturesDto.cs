@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Admin.Features;
+﻿namespace ToSic.Eav.WebApi.Sys.Admin.Features;
 
 public class FeaturesDto
 {

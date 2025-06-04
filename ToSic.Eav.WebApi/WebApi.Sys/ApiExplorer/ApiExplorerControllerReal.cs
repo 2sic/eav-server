@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Admin;
-using ToSic.Eav.WebApi.Infrastructure;
+using ToSic.Eav.WebApi.Sys.Admin;
+using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Sys.Users;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
@@ -9,7 +9,7 @@ using THttpResponseType = System.Net.Http.HttpResponseMessage;
 using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 #endif
 
-namespace ToSic.Eav.WebApi.ApiExplorer;
+namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IResponseMaker responseMaker, LazySvc<IAppExplorerControllerDependency> appFileController)

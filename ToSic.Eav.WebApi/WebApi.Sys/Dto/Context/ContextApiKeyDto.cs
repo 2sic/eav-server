@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Data;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 /// <summary>
 /// API Keys to use in the UI - such as Google Maps, Google Translate etc.

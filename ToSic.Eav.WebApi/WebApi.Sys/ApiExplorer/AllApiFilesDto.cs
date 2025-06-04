@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.WebApi.Assets;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.ApiExplorer;
+namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 public class AllApiFilesDto
 {

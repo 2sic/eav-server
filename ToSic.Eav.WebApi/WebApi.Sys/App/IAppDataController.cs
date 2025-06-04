@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.App;
+﻿namespace ToSic.Eav.WebApi.Sys.App;
 
 /// <summary>
 /// Direct access to app-content items, simple manipulations etc.

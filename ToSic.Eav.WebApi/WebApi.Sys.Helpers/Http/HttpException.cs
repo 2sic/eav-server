@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.WebApi.Errors;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class HttpException

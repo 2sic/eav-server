@@ -1,7 +1,9 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Sys.Options;
-using ToSic.Eav.WebApi.ImportExport;
-using ToSic.Eav.WebApi.Infrastructure;
+using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Eav.WebApi.Sys.Entities;
+using ToSic.Eav.WebApi.Sys.Helpers.Http;
+using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
@@ -11,7 +13,7 @@ using THttpResponseType = System.Net.Http.HttpResponseMessage;
 using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 #endif
 
-namespace ToSic.Eav.WebApi.Admin;
+namespace ToSic.Eav.WebApi.Sys.Admin;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityControllerReal(

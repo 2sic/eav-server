@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Context;
+﻿namespace ToSic.Eav.WebApi.Sys.Context;
 
 [Flags] public enum CtxEnable
 {

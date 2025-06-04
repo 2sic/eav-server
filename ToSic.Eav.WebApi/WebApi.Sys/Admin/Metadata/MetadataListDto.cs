@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 
-namespace ToSic.Eav.WebApi.Admin.Metadata;
+namespace ToSic.Eav.WebApi.Sys.Admin.Metadata;
 
 public class MetadataListDto
 {

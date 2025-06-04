@@ -1,10 +1,10 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Sys.Dto;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.WebApi.SaveHelpers;
+namespace ToSic.Eav.WebApi.Sys.Cms;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave> workEntSave)

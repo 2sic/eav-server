@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Apps.Sys.Permissions;
-using ToSic.Eav.WebApi.Errors;
+using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.WebApi.Security;
+namespace ToSic.Eav.WebApi.Sys.Security;
 
 internal static class PublicFormsPermissions
 {

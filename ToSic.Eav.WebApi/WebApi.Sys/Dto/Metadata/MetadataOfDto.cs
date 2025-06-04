@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
 
-namespace ToSic.Eav.WebApi.Dto.Metadata;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class MetadataOfDto
 {

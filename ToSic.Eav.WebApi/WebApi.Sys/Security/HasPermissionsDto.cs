@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Security;
+﻿namespace ToSic.Eav.WebApi.Sys.Security;
 
 public class HasPermissionsDto
 {

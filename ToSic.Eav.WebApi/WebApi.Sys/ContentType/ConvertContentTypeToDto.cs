@@ -3,8 +3,9 @@ using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Serialization.Sys.Options;
+using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi;
+namespace ToSic.Eav.WebApi.Sys;
 
 public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLight)
     : ServiceBase("Cnv.TypDto", connect: [convertToEavLight]), IConvert<IContentType, ContentTypeDto>

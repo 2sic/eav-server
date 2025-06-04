@@ -2,7 +2,7 @@
 
 // ReSharper disable InconsistentNaming
 
-namespace ToSic.Eav.WebApi.ApiExplorer;
+namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 class ApiControllerDto
 {

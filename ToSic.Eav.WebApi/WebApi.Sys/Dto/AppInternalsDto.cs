@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.WebApi.Admin.Metadata;
+﻿using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class AppInternalsDto
 {

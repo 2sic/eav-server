@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Routing;
+﻿namespace ToSic.Eav.WebApi.Sys.Routing;
 
 /// <summary>
 /// These are the keys / names of fields we use in rout parts

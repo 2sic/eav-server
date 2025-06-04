@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
 
-namespace ToSic.Eav.WebApi.Formats;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class ItemIdentifier
 {

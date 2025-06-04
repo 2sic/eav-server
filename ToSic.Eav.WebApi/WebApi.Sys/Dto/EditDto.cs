@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.WebApi.Formats;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class EditDto
 {

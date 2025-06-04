@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys;
+﻿namespace ToSic.Eav.WebApi.Sys.Logs;
 
 public interface ILogController
 {

@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.WebApi.Context;
+﻿using ToSic.Eav.WebApi.Sys.Context;
 using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class ContextDto
 {

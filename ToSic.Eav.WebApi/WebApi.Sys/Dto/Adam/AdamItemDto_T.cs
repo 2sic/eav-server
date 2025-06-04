@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Dto;
+﻿namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class AdamItemDto<TFolderId, TItemId>(
     bool isFolder,

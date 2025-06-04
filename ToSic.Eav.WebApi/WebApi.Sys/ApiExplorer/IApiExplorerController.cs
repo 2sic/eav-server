@@ -4,7 +4,7 @@ using THttpResponseType = System.Net.Http.HttpResponseMessage;
 using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 #endif
 
-namespace ToSic.Eav.WebApi.ApiExplorer;
+namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 public interface IApiExplorerController
 {

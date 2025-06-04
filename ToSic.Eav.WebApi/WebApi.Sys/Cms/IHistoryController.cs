@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Persistence.Versions;
-using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Cms;
+namespace ToSic.Eav.WebApi.Sys.Cms;
 
 public interface IHistoryController
 {

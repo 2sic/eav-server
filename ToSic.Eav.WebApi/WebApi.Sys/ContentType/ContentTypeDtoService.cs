@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi;
+namespace ToSic.Eav.WebApi.Sys;
 
 /// <inheritdoc />
 /// <summary>

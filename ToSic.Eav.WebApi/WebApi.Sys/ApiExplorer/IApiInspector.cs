@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ToSic.Eav.WebApi.ApiExplorer;
+namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 public interface IApiInspector: IHasLog
 {

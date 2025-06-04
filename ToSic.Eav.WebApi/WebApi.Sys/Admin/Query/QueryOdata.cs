@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource;
 
-namespace ToSic.Eav.WebApi.Admin.Query;
+namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 
 internal class QueryODataParams
 {
@@ -8,7 +8,7 @@ internal class QueryODataParams
     {
         if (config == null) return;
         var extraParams = config.Parse(ODataParams);
-        SelectFields = (extraParams[EavWebApiConstants.ODataSelect]?.CsvToArrayWithoutEmpty() ?? []).ToList();
+        SelectFields = (extraParams[EavWebApiConstants.ODataSelectParamName]?.CsvToArrayWithoutEmpty() ?? []).ToList();
 
     }
 
@@ -17,6 +17,6 @@ internal class QueryODataParams
     public static Dictionary<string, string> ODataParams =
         new(StringComparer.InvariantCultureIgnoreCase)
         {
-            [EavWebApiConstants.ODataSelect] = $"[QueryString:{EavWebApiConstants.ODataSelect}]"
+            [EavWebApiConstants.ODataSelectParamName] = $"[QueryString:{EavWebApiConstants.ODataSelectParamName}]"
         };
 }

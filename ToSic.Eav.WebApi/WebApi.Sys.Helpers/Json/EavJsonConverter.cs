@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using ToSic.Eav.DataFormats.EavLight;
 
-namespace ToSic.Eav.WebApi.Serialization;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Json;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavJsonConverter(IConvertToEavLight convertToEavLight) : JsonConverter<IEntity>

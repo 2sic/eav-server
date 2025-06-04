@@ -1,13 +1,11 @@
 ﻿#if NETFRAMEWORK
 
-using System;
-using System.IO;
 using System.Net.Http;
 using System.Web;
 using Microsoft.EntityFrameworkCore.Internal;
 using ToSic.Eav.Security.Files;
 
-namespace ToSic.Eav.WebApi.Adam;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class HttpUploadedFile(HttpRequestMessage requestMessage, HttpRequest request)

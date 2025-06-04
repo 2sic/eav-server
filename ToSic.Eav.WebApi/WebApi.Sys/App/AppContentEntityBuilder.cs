@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Apps.Sys.Api01;
 
-namespace ToSic.Eav.WebApi.App;
+namespace ToSic.Eav.WebApi.Sys.App;
 
 internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "Api.Bldr")
 {

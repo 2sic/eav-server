@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.WebApi.Security;
+using ToSic.Eav.WebApi.Sys.Security;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class ContentTypeDto: IdNameDto
 {

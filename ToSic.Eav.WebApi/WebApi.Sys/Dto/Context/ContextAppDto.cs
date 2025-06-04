@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.WebApi.Security;
+﻿using ToSic.Eav.WebApi.Sys.Security;
 using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class ContextAppDto: WebResourceDto
 {

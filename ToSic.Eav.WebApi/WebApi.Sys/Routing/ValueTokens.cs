@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Routing;
+﻿namespace ToSic.Eav.WebApi.Sys.Routing;
 
 /// <summary>
 /// These are tokens in the format {xyz} used in routes to identify a part

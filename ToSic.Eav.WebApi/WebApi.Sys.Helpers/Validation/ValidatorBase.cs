@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.WebApi.Errors;
+﻿using ToSic.Eav.WebApi.Sys.Helpers.Http;
 
-namespace ToSic.Eav.WebApi.Validation;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Validation;
 
 public abstract class ValidatorBase(ILog parentLog, string logName) : HelperBase(parentLog, logName)
 {

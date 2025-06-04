@@ -1,12 +1,10 @@
-﻿#if !NETFRAMEWORK
-using System.IO;
+﻿#if NETCOREAPP
 using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using ToSic.Eav.Internal;
 
-namespace ToSic.Eav.WebApi.Infrastructure;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 /// <summary>
 /// Net Core implementation of the Response Maker

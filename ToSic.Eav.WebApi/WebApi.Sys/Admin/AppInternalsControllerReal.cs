@@ -3,11 +3,13 @@ using ToSic.Eav.Apps.Sys.AppStack;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.WebApi.Admin.Metadata;
+using ToSic.Eav.WebApi.Sys.Admin.Metadata;
+using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Sys.Security.Permissions;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
-namespace ToSic.Eav.WebApi.Admin;
+namespace ToSic.Eav.WebApi.Sys.Admin;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppInternalsControllerReal(

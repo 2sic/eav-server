@@ -1,7 +1,7 @@
 ﻿using System.Security.Authentication;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.Security;
+namespace ToSic.Eav.WebApi.Sys.Security;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SecurityHelpers

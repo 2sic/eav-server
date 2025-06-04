@@ -1,6 +1,6 @@
 ﻿using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class ContextEnableDto
 {

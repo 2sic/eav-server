@@ -3,11 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using ToSic.Eav.Internal;
-using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys.Json;
 
-namespace ToSic.Eav.WebApi.Infrastructure;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 /// <summary>
 /// Net Framework implementation of the ResponseMaker

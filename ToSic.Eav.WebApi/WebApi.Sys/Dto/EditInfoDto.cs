@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Ancestors.Sys;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 /// <summary>
 /// Extends common DTOs to inform about it being read-only, and why

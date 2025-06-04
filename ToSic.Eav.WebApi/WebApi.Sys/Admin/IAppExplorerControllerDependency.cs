@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.WebApi.ApiExplorer;
+﻿using ToSic.Eav.WebApi.Sys.ApiExplorer;
 
-namespace ToSic.Eav.WebApi.Admin;
+namespace ToSic.Eav.WebApi.Sys.Admin;
 
 public interface IAppExplorerControllerDependency
 {

@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.DataSources.Sys.Internal;
+using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Admin;
+namespace ToSic.Eav.WebApi.Sys.Admin;
 
 public interface IAppController<out THttpResponse>
 {

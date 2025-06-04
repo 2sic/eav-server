@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Text;
 
-namespace ToSic.Eav.WebApi.ImportExport;
+namespace ToSic.Eav.WebApi.Sys.ImportExport;
 
 internal static class HttpFileHelper
 {

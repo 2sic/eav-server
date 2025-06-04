@@ -6,7 +6,7 @@ using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
 using TController = Microsoft.AspNetCore.Mvc.ControllerBase;
 #endif
 
-namespace ToSic.Eav.WebApi.Infrastructure;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 
 [ShowApiWhenReleased(ShowApiMode.Never)]

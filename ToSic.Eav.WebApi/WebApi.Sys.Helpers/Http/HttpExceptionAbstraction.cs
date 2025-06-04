@@ -1,11 +1,11 @@
 ﻿using System.Net;
-#if NETFRAMEWORK
 using System.Net.Http;
+#if NETFRAMEWORK
 using BaseType = System.Web.Http.HttpResponseException;
 #else
 using BaseType = System.Exception;
 #endif
-namespace ToSic.Eav.WebApi.Errors;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class HttpExceptionAbstraction: BaseType

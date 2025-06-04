@@ -1,7 +1,7 @@
 ﻿
 // ReSharper disable InconsistentNaming
 
-namespace ToSic.Eav.WebApi.Sys;
+namespace ToSic.Eav.WebApi.Sys.Install;
 
 public class InstallAppsDto
 {

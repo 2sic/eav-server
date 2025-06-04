@@ -10,7 +10,7 @@ using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
-namespace ToSic.Eav.WebApi.Admin.Metadata;
+namespace ToSic.Eav.WebApi.Sys.Admin.Metadata;
 
 /// <summary>
 /// Web API Controller for MetaData

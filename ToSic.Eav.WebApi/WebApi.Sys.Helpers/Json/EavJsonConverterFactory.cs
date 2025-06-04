@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Text.Json;
 
-namespace ToSic.Eav.WebApi.Serialization;
+namespace ToSic.Eav.WebApi.Sys.Helpers.Json;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavJsonConverterFactory(

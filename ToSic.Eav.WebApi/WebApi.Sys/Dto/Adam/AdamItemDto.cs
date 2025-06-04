@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Dto.Metadata;
 
-namespace ToSic.Eav.WebApi.Dto;
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class AdamItemDto
 {

@@ -8,10 +8,11 @@ using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Sys;
+using ToSic.Eav.WebApi.Sys.Dto;
 using static ToSic.Eav.Data.Attributes.Sys.AttributeMetadataConstants;
 
 
-namespace ToSic.Eav.WebApi;
+namespace ToSic.Eav.WebApi.Sys;
 
 public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes, IAppReaderFactory appReaders, LazySvc<RecommendedMetadataService> mdRead)
     : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight, mdRead]),

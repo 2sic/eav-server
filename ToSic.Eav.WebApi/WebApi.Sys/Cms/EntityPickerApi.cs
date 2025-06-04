@@ -1,9 +1,10 @@
 ﻿using ToSic.Eav.Context.Sys.ZoneCulture;
+using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Users;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.WebApi;
+namespace ToSic.Eav.WebApi.Sys.Cms;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user)

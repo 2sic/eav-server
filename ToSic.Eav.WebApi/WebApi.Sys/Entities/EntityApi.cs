@@ -4,12 +4,12 @@ using ToSic.Eav.Data.Ancestors.Sys;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.WebApi.Errors;
-using ToSic.Eav.WebApi.Formats;
+using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Sys.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.WebApi;
+namespace ToSic.Eav.WebApi.Sys.Entities;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityApi(

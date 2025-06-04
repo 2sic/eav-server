@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Dto;
+﻿namespace ToSic.Eav.WebApi.Sys.Dto;
 
 /// <summary>
 /// Idea: Most WebAPIs should return something, but it's better to return the data as a property of an envelope - like this.

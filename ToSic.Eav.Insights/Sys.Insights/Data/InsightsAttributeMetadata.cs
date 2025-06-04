@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.WebApi.Errors;
+﻿using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Zone;
+﻿namespace ToSic.Eav.WebApi.Sys.Zone;
 
 public class SystemInfoSetDto
 {
