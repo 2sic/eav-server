@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps.Sys.Stack;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public struct AppThingsIdentifiers

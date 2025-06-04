@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.Stack;
+
+namespace ToSic.Eav.Apps;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppStackConstants

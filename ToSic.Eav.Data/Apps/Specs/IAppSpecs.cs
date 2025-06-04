@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Data;
 
-namespace ToSic.Eav.Apps.Internal.Specs;
+namespace ToSic.Eav.Apps;
 
 /// <summary>
 /// This interface says this object knows all the specs of an App.

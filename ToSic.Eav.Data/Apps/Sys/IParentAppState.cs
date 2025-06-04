@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys;
 
 public interface IParentAppState
 {
