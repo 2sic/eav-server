@@ -42,6 +42,7 @@ public static class StartupEav
             .AddEavPersistence()
             // DataSources
             .AddDataSources()
+            .AddDataSourceSystem()
             // EAV Core
             .AddEavDataBuild()
             .AddEavDataStack()

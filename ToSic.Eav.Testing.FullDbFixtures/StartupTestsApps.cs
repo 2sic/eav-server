@@ -40,6 +40,7 @@ public class StartupTestsApps
             .AddEavPersistence()
             // DataSources
             .AddDataSources()
+            .AddDataSourceSystem()
             // EAV Core
             //.AddEavDataBuild()
             //.AddEavCoreLibAndSys()

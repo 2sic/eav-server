@@ -24,7 +24,8 @@ public class StartupCoreDataSourcesAndTestData
             .AddDataSourceTestHelpers()
             .AddTransient<DataTableTrivial>()
             .AddTransient<DataTablePerson>()
-            .AddDataSources();
+            .AddDataSources()
+            .AddDataSourceSystem();
 
         StartupTestsAppsPersistence.StartupTestsAppsPersistenceAndBelow(services);
     }
