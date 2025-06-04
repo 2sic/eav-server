@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Internal;
+﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Caching;
 using ToSic.Eav.Data.EntityPair.Sys;
@@ -307,7 +308,7 @@ public class DbDataController(
     /// The loader must use the same connection, to ensure it runs in existing transactions.
     /// Otherwise, the loader would be blocked from getting intermediate data while we're running changes. 
     /// </summary>
-    public IRepositoryLoaderWithRaw Loader => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
+    public IAppsAndZonesLoaderWithRaw Loader => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
 
     public void DoWhileQueuingVersioning(Action action)
         => Versioning.DoAndSaveHistoryQueue(action);

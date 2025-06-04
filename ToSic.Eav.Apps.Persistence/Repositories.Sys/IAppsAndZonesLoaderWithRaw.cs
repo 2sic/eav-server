@@ -1,9 +1,10 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.State;
+using ToSic.Eav.Apps.Sys.Loaders;
 
 namespace ToSic.Eav.Repositories;
 
-public interface IRepositoryLoaderWithRaw: IRepositoryLoader
+public interface IAppsAndZonesLoaderWithRaw: IAppsAndZonesLoader
 {
     /// <summary>
     /// Special loader which won't initialize the state.

@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Entities.Sys;
@@ -38,7 +40,7 @@ public class EfcAppLoader(
         [
             context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, featuresSvc, dataBuilder,
             dataDeserializer, appFileContentTypesLoader, appStateBuilder
-        ]), IRepositoryLoaderWithRaw
+        ]), IAppsAndZonesLoaderWithRaw
 {
     #region Setup, SQL Timer, Primary Language
     
@@ -82,7 +84,7 @@ public class EfcAppLoader(
 
     #region IRepositoryLoader Zones and ContentTypes
 
-    IDictionary<int, Zone> IRepositoryLoader.Zones()
+    IDictionary<int, Zone> IAppsAndZonesLoader.Zones()
         => new ZoneLoader(this).LoadZones(logStore);
 
     /// <inheritdoc />
@@ -100,7 +102,7 @@ public class EfcAppLoader(
     #region AppPackage Loader
 
     /// <inheritdoc />
-    IAppStateBuilder IRepositoryLoaderWithRaw.AppStateRawBuilder(int appId, CodeRefTrail codeRefTrail)
+    IAppStateBuilder IAppsAndZonesLoaderWithRaw.AppStateRawBuilder(int appId, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<IAppStateBuilder>($"{appId}", timer: true);
         codeRefTrail.WithHere();
@@ -108,11 +110,11 @@ public class EfcAppLoader(
         return l.ReturnAsOk(builder);
     }
 
-    IAppReader IRepositoryLoaderWithRaw.AppReaderRaw(int appId, CodeRefTrail codeRefTrail)
+    IAppReader IAppsAndZonesLoaderWithRaw.AppReaderRaw(int appId, CodeRefTrail codeRefTrail)
         => LoadAppStateRawFromDb(appId, codeRefTrail).Reader;
 
     /// <inheritdoc />
-    IAppStateCache IRepositoryLoader.AppState(int appId, CodeRefTrail codeRefTrail)
+    IAppStateCache IAppsAndZonesLoader.AppState(int appId, CodeRefTrail codeRefTrail)
     {
         // Note: Ignore ensureInitialized on the content app
         // The reason is that this app - even when empty - is needed in the cache before data is imported

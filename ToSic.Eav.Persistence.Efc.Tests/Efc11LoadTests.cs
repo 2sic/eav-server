@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
@@ -73,5 +74,5 @@ public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGener
         output.WriteLine($"Loading {max} times took {timer.ElapsedMilliseconds}ms");
     }
 
-    private IList<IContentType> TestLoadCts(int appId) => (Loader as IRepositoryLoader).ContentTypes(appId, null);
+    private IList<IContentType> TestLoadCts(int appId) => (Loader as IAppsAndZonesLoader).ContentTypes(appId, null);
 }

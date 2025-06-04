@@ -6,7 +6,7 @@ using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.EntityBased.Sys;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.Apps.Internal.Specs;
+namespace ToSic.Eav.Apps.AppReader.Sys;
 
 /// <summary>
 /// The configuration of the app, as you can set it in the app-package definition.

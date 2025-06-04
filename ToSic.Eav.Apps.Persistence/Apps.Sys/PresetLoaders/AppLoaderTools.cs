@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Repositories;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.Caching;
 
@@ -10,9 +11,9 @@ namespace ToSic.Eav.Caching;
 /// so it needs to be handed this object for certain operations.
 /// </summary>
 /// <param name="repoFactory"></param>
-internal class AppLoaderTools(Generator<IRepositoryLoader> repoFactory)
+internal class AppLoaderTools(Generator<IAppsAndZonesLoader> repoFactory)
     : ServiceBase("Eav.LodTls", connect: [repoFactory]), IAppLoaderTools
 {
-    public IRepositoryLoader RepositoryLoader(ILog parentLog)
+    public IAppsAndZonesLoader RepositoryLoader(ILog parentLog)
         => repoFactory.New().LinkLog(parentLog ?? Log);
 }

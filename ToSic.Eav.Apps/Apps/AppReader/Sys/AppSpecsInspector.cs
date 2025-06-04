@@ -1,8 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Sys;
 
-namespace ToSic.Eav.Apps.Internal;
+namespace ToSic.Eav.Apps.AppReader.Sys;
 
 public static class AppSpecsInspector
 {

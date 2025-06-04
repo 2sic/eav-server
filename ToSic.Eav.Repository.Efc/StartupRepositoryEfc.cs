@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Repositories.Sys;
@@ -31,8 +32,8 @@ public static class StartupRepositoryEfc
 
         // Inner loader for use of the main RepositoryLoader
         services.TryAddTransient<EfcAppLoader>();
-        services.TryAddTransient<IRepositoryLoader, EfcRepositoryLoader>();
-        services.TryAddTransient<IRepositoryLoaderWithRaw, EfcRepositoryLoader>();
+        services.TryAddTransient<IAppsAndZonesLoader, EfcAppsAndZonesLoader>();
+        services.TryAddTransient<IAppsAndZonesLoaderWithRaw, EfcAppsAndZonesLoader>();
         services.AddTransient<IBootProcess, BootWarmUpEavSql>();
 
         services.TryAddTransient<IStorageFactory, StorageFactoryEfc>();

@@ -1,10 +1,7 @@
-using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Persistence.Sys.AppState;
 using ToSic.Eav.Persistence.Sys.Loaders;
 
-namespace ToSic.Eav.Repositories;
+namespace ToSic.Eav.Apps.Sys.Loaders;
 
 /// <summary>
 /// Core repository loader, used by the AppCache to self-load zones and apps.
@@ -13,7 +10,7 @@ namespace ToSic.Eav.Repositories;
 /// For more advanced operations, especially when creating new apps, use `IRepositoryLoaderAndCreator`.
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IRepositoryLoader: IHasLog, IContentTypeLoader
+public interface IAppsAndZonesLoader: IHasLog, IContentTypeLoader
 {
     /// <summary>
     /// will enforce that app settings etc. are created

@@ -1,12 +1,10 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.AppReader.Sys;
 
 public class AppReader() : ServiceBase("App.Reader"), IAppReader
 {

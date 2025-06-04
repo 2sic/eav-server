@@ -4,7 +4,7 @@ using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.Apps.Tests.AppXml;
 
-public class XmlTable(IRepositoryLoaderWithRaw loader, ExportListXml exportListXml)
+public class XmlTable(IAppsAndZonesLoaderWithRaw loader, ExportListXml exportListXml)
 {
 
     public new static ILog Log = new Log("TstXml");

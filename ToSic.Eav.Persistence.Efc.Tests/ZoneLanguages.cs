@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Testing;
@@ -28,7 +29,7 @@ public class ZoneLanguages(EavDbContext db, EfcAppLoader loader) : IClassFixture
 #if NETCOREAPP
     [field: AllowNull, MaybeNull]
 #endif
-    private IDictionary<int, Zone> Zones => field ??= ((IRepositoryLoader)loader.UseExistingDb(db)).Zones();
+    private IDictionary<int, Zone> Zones => field ??= ((IAppsAndZonesLoader)loader.UseExistingDb(db)).Zones();
 
     private int DefaultAppId => field != 0 ? field : field = Zones.First().Value.DefaultAppId;
 

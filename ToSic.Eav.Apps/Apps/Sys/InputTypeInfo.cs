@@ -5,7 +5,7 @@ using ToSic.Eav.Data.InputTypes.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
-using static ToSic.Eav.Metadata.KnownDecorators;
+using static ToSic.Eav.Metadata.Sys.KnownDecorators;
 
 namespace ToSic.Eav.Apps.Internal.Work;
 

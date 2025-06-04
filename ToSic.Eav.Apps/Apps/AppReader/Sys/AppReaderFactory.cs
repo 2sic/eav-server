@@ -1,10 +1,9 @@
 ﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.State;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Lib.Coding;
 using static ToSic.Eav.Apps.Sys.KnownAppsConstants;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.AppReader.Sys;
 
 internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCacheService appStates, Generator<AppReader> readerGenerator)
     : ServiceBase("Eav.AppRds"), IAppReaderFactory

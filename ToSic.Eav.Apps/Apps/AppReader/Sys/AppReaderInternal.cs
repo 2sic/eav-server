@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.State;
 using ToSic.Eav.Apps.Sys;
 
-namespace ToSic.Eav.Apps.Internal;
+namespace ToSic.Eav.Apps.AppReader.Sys;
 
 public static class AppReaderInternal
 {

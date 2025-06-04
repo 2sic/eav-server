@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Caching;
+using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Sys.Caching.Synchronized;
 
 namespace ToSic.Eav.Apps.State;

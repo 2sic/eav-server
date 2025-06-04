@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File;
 
 
-public class TypeExporter(ITestOutputHelper output, IRepositoryLoaderWithRaw loaderRaw, FileSystemLoader fsLoader) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
+public class TypeExporter(ITestOutputHelper output, IAppsAndZonesLoaderWithRaw loaderRaw, FileSystemLoader fsLoader) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
     [Fact]
     public void TypeExp_AllSharedFromInstallation()

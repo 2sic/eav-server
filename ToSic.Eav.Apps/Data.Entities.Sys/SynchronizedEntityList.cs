@@ -3,7 +3,7 @@ using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Caching.Synchronized;
 
-namespace ToSic.Eav.Caching;
+namespace ToSic.Eav.Data.Entities.Sys;
 
 /// <summary>
 /// Specialized form of SynchronizedList which only offers entities, but these

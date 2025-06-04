@@ -1,9 +1,7 @@
-﻿using ToSic.Eav.Repositories;
-
-namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Eav.Apps.Sys.Loaders;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppLoaderTools
 {
-    IRepositoryLoader RepositoryLoader(ILog parentLog);
+    IAppsAndZonesLoader RepositoryLoader(ILog parentLog);
 }

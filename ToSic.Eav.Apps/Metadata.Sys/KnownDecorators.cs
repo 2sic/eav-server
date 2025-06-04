@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Metadata;
+﻿namespace ToSic.Eav.Metadata.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class KnownDecorators

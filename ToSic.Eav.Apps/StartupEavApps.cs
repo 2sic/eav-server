@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Catalog;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Services;
@@ -15,7 +16,7 @@ public static class StartupEavApps
 {
     public static IServiceCollection AddEavApps(this IServiceCollection services)
     {
-        services.TryAddTransient<AppReader>();
+        services.TryAddTransient<AppReader.Sys.AppReader>();
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
 
         // Global Content Types - needed by the Persistence Layer

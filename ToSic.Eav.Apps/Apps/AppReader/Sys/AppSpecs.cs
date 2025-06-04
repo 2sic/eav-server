@@ -1,9 +1,9 @@
-﻿using ToSic.Eav.Apps.Internal.Specs;
+﻿using ToSic.Eav.Apps.State;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Caching.PiggyBack;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.AppReader.Sys;
 
 /// <summary>
 /// Special helper class to provide <see cref="IAppSpecs"/> for the AppState.

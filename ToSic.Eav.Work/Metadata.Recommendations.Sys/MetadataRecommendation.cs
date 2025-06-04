@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Metadata.Sys;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Metadata.Recommendations.Sys;
@@ -62,7 +63,7 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
         DeleteWarning = recDec.DeleteWarning;
 
         // Mark empty if possible - so it has no attributes, and it has a decorator to support this
-        if (!type.Attributes.Any() && type.Metadata.HasType(Eav.Metadata.KnownDecorators.SaveEmptyDecoratorId))
+        if (!type.Attributes.Any() && type.Metadata.HasType(KnownDecorators.SaveEmptyDecoratorId))
             CreateEmpty = true;
     }
 

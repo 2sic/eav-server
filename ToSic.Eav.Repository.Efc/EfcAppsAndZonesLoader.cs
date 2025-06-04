@@ -8,7 +8,7 @@ namespace ToSic.Eav.Repository.Efc;
 /// <summary>
 /// Wrapper for the EfcLoader, because we also need to do write operations on PrimaryApps, but the EFC loader cannot do that
 /// </summary>
-internal class EfcRepositoryLoader(DbDataController dataController) : IRepositoryLoaderWithRaw
+internal class EfcAppsAndZonesLoader(DbDataController dataController) : IAppsAndZonesLoaderWithRaw
 {
     private readonly DbDataController _dataController = dataController.Init(null, null);
 

@@ -21,7 +21,7 @@ namespace ToSic.Eav.Apps.Internal.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppInitializer(
     LazySvc<DataBuilder> builder,
-    Generator<IRepositoryLoaderWithRaw> repoLoader,
+    Generator<IAppsAndZonesLoaderWithRaw> repoLoader,
     GenWorkDb<WorkEntitySave> entitySave,
     GenWorkDb<WorkContentTypesMod> contentTypesMod,
     AppCachePurger cachePurger,

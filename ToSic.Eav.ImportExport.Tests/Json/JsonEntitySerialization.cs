@@ -6,7 +6,7 @@ using JsonSerializer = ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;
 namespace ToSic.Eav.ImportExport.Tests.Json;
 
 
-public class JsonEntitySerialization(JsonSerializer jsonSerializer, IRepositoryLoaderWithRaw loader, ITestOutputHelper output, JsonTestHelpers jsonTestHelpers)
+public class JsonEntitySerialization(JsonSerializer jsonSerializer, IAppsAndZonesLoaderWithRaw loader, ITestOutputHelper output, JsonTestHelpers jsonTestHelpers)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private static SpecsTestExportSerialize Specs => new();

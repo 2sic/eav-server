@@ -12,10 +12,10 @@ namespace ToSic.Eav.Apps.Internal.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppCreator(
     DbDataController db,
-    IRepositoryLoaderWithRaw repositoryLoader,
+    IAppsAndZonesLoaderWithRaw appsAndZonesLoader,
     AppCachePurger appCachePurger,
     Generator<AppInitializer> appInitGenerator)
-    : ServiceBase("Eav.AppBld", connect: [db, appInitGenerator, appCachePurger, repositoryLoader])
+    : ServiceBase("Eav.AppBld", connect: [db, appInitGenerator, appCachePurger, appsAndZonesLoader])
 {
     #region Constructor / DI
 
@@ -43,7 +43,7 @@ public class AppCreator(
         var appId = CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);
 
         // must get app from DB directly, not from cache, so no State.Get(...)
-        var appState = repositoryLoader.AppReaderRaw(appId, new());
+        var appState = appsAndZonesLoader.AppReaderRaw(appId, new());
 
         appInitGenerator.New().InitializeApp(appState, appName, new());
     }
