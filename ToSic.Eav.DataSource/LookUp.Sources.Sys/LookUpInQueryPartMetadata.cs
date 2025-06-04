@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.LookUp.Sources;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.DataSources.LookUp;
+namespace ToSic.Eav.LookUp.Sources.Sys;
 
 /// <summary>
 /// LookUp things from metadata. This uses EAV Metadata system and will look up Metadata for something.

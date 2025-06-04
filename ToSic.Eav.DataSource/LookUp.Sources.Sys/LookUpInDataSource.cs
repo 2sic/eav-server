@@ -1,9 +1,7 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.Context.Sys.ZoneCulture;
+﻿using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Lib.LookUp.Sources;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.LookUp.Sources;
+namespace ToSic.Eav.LookUp.Sources.Sys;
 
 /// <inheritdoc />
 /// <summary>
