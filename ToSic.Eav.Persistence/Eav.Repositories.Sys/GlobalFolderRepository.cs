@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Configuration;
 
-namespace ToSic.Eav.Repositories;
+namespace ToSic.Eav.Repositories.Sys;
 
 /// <summary>
 /// Provides global information about where the folders are which should be loaded in this environment

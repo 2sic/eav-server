@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Persistence.Logging;
+﻿namespace ToSic.Eav.Persistence.Sys.Logging;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record ImportError(

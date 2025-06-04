@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
-using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Persistence.Sys.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Internal.XmlList;

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ToSic.Eav.Persistence.Logging;
+namespace ToSic.Eav.Persistence.Sys.Logging;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportErrorLog(ILog parentLog) : HelperBase(parentLog, "Imp.ErrLog"), IEnumerable<ImportError>

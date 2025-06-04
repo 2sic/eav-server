@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Interfaces;
-using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Repositories.Sys;
 using Entity = ToSic.Eav.Data.Entities.Sys.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -279,7 +279,7 @@ public class ImportService(
 
         if (contentType == null) // not Found
         {
-            Storage.ImportLogToBeRefactored.Add(new($"ContentType not found for {update.Type.NameId}", Message.MessageTypes.Error));
+            Storage.ImportLogToBeRefactored.Add(new((string)$"ContentType not found for {update.Type.NameId}", (Message.MessageTypes)Message.MessageTypes.Error));
             return l.ReturnNull("error");
         }
 
@@ -299,7 +299,7 @@ public class ImportService(
         if (existingEntities == null || !existingEntities.Any())
             return l.Return(dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
-        Storage.ImportLogToBeRefactored.Add(new($"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}", Message.MessageTypes.Information));
+        Storage.ImportLogToBeRefactored.Add(new((string)$"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}", (Message.MessageTypes)Message.MessageTypes.Information));
 
         // now update (main) entity id from existing - since it already exists
         var original = existingEntities.First();

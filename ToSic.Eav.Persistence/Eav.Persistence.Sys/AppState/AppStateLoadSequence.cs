@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.State;
+﻿namespace ToSic.Eav.Persistence.Sys.AppState;
 
 [PrivateApi("don't publish this - too internal, special, complicated")]
 public enum AppStateLoadSequence

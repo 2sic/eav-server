@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repository.Efc.Parts;
+﻿using ToSic.Eav.Persistence.Sys.Logging;
+
+namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbContentType
 {

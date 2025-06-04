@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.ImportExport.Internal.ImportHelpers;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.ImportExport.Internal.Zip;

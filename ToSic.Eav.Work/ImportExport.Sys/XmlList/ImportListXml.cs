@@ -7,7 +7,7 @@ using ToSic.Eav.ImportExport.Internal.ImportHelpers;
 using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
-using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Persistence.Sys.Logging;
 using Entity = ToSic.Eav.Data.Entities.Sys.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 

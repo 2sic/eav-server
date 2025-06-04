@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Metadata.Sys;
 
-namespace ToSic.Eav.Internal.Loaders;
+namespace ToSic.Eav.Persistence.Sys.Loaders;
 
 public interface IContentTypeLoader
 {

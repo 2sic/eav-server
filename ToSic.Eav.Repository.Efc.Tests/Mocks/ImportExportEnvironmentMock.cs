@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks;

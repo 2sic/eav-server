@@ -11,7 +11,7 @@ using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
-using ToSic.Eav.Persistence.Logging;
+using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.ImportExport.Internal;

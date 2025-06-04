@@ -1,4 +1,4 @@
-namespace ToSic.Eav.Persistence.Logging;
+namespace ToSic.Eav.Persistence.Sys.Logging;
 
 /// <summary>
 /// Describes a Message while Exporting / Importing

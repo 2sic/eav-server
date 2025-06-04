@@ -10,7 +10,7 @@ using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Utils.Compression;
 
-namespace ToSic.Eav.Integration;
+namespace ToSic;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavPersistence

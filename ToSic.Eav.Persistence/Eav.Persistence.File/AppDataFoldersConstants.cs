@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Internal.Loaders;
+﻿namespace ToSic.Eav.Persistence.File;
 
 [PrivateApi]
 public class AppDataFoldersConstants

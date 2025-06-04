@@ -1,5 +1,5 @@
 ﻿
-namespace ToSic.Eav.Persistence.Logging;
+namespace ToSic.Eav.Persistence.Sys.Logging;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public enum ImportErrorCode

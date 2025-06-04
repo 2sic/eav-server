@@ -9,7 +9,6 @@ global using ToSic.Eav.Data.Build;
 global using ToSic.Eav.Metadata;
 global using ToSic.Eav.Persistence;
 global using ToSic.Eav.Persistence.Efc.Models;
-global using ToSic.Eav.Persistence.Logging;
 global using ToSic.Eav.Repositories;
 global using ToSic.Lib.DI;
 global using ToSic.Lib.Logging;
