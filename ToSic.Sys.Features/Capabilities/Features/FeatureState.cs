@@ -25,7 +25,7 @@ public record FeatureState(
 {
     public static FeatureState SysFeatureState(SysFeature definition, bool enabled)
         => new(definition, 
-            BuiltInLicenses.UnlimitedExpiry,
+            Licenses.LicenseConstants.UnlimitedExpiry,
             enabled,
             "System Feature",
             "System Feature, managed by the system; can't be changed interactively.",

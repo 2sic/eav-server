@@ -109,7 +109,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         var relationshipsSource = relationships;// new DirectEntitiesSource(relationships);
 
         // #3A. special case for entities in bundles.
-        if (folder == FsDataConstants.BundlesFolder)
+        if (folder == AppDataFoldersConstants.BundlesFolder)
         {
             // #3A.1 load entities from files in bundles folder
             var entitiesInBundle = EntitiesInBundles(relationshipsSource)
@@ -211,7 +211,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         return l.Return((contentTypes, entities), $"Content Types: {contentTypes.Count}; Entities: {entities.Count}");
     }
 
-    private string ContentTypePath => System.IO.Path.Combine(Path, FsDataConstants.TypesFolder);
+    private string ContentTypePath => System.IO.Path.Combine(Path, AppDataFoldersConstants.TypesFolder);
 
     /// <summary>
     /// Try to load a content-type file, but if anything fails, just return a null

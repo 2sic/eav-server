@@ -120,7 +120,7 @@ public static class GlobalConfigSysFolders
     /// Used for licenses and features.
     /// </summary>
     public static string ConfigFolder(this IGlobalConfiguration config)
-        => config.GetThisOrSet(() => Path.Combine(config.DataCustomFolder(), FsDataConstants.ConfigFolder));
+        => config.GetThisOrSet(() => Path.Combine(config.DataCustomFolder(), AppDataFoldersConstants.ConfigFolder));
 
     /// <summary>
     /// The absolute folder where the configurations are stored.

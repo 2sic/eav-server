@@ -126,7 +126,7 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
                 if (enabledRule != null)
                 {
                     licService.Enabled.TryGetValue(enabledRule.FeatureSet.Guid, out var licState);
-                    expiry = licState?.Expiration ?? BuiltInLicenses.UnlimitedExpiry;
+                    expiry = licState?.Expiration ?? Licenses.LicenseConstants.UnlimitedExpiry;
                     enabled = enabledRule.EnableFeatureByDefault;
                     licenseEnabled = true; // The license is active, so it's allowed to enable this
                     msgShort = "license ok";

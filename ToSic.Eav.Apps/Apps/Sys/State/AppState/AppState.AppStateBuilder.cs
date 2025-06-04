@@ -5,8 +5,6 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.StartUp;
 using ToSic.Lib.Caching;
 using ToSic.Sys.Utils;
-using static ToSic.Eav.Constants;
-
 
 namespace ToSic.Eav.Apps.State;
 
@@ -332,7 +330,7 @@ partial class AppState
                 // will filter out for now, because otherwise we get duplicate keys-errors
                 // believe this shouldn't be an issue, as it only seems to be used in fairly edge-case export/import
                 // situations which the static types shouldn't be used for, as they are json-typed
-                .Where(x => x.Id != 0 && x.Id < FsDataConstants.GlobalContentTypeMin)
+                .Where(x => x.Id != 0 && x.Id < GlobalAppIdConstants.GlobalContentTypeMin)
                 .ToImmutableDictionary(x => x.Id, x => x.NameId);
             
             st._appContentTypesFromRepository = RemoveAliasesForGlobalTypes(st, contentTypes);

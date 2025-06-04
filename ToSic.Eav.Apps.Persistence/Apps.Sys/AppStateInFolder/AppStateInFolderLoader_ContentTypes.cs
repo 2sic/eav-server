@@ -12,7 +12,7 @@ partial class AppStateInFolderLoader
 
         // 1. Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;
-        Loaders.ForEach(ldr => ldr.TypeIdSeed = FsDataConstants.GlobalContentTypeMin + FsDataConstants.GlobalContentTypeSourceSkip * loaderIndex++);
+        Loaders.ForEach(ldr => ldr.TypeIdSeed = GlobalAppIdConstants.GlobalContentTypeMin + GlobalAppIdConstants.GlobalContentTypeSourceSkip * loaderIndex++);
 
         // 2. Create a delayed content type provider, which will
         //    later on give the generated sub-entities their content type (which may not exist during deserialization)

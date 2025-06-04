@@ -25,7 +25,6 @@ public class BuiltInLicenses
     // The guids of these licenses must match the ones in the 2sxc.org license management list
     // So always create the definition there first, then use the GUID of that definition here
 
-    public static readonly DateTime UnlimitedExpiry = DateTime.MaxValue;
 
     public static readonly FeatureSet.FeatureSet System = new()
     {
@@ -172,5 +171,6 @@ public class BuiltInLicenses
         Guid = new("5c7b019d-3289-4d6e-bda1-6c165d3fa1e0"),
         Description = "This is just for testing - it doesn't do anything."
     };
+
 #endif
 }

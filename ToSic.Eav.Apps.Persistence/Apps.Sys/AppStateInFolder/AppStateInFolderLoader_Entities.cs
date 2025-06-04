@@ -10,13 +10,13 @@ partial class AppStateInFolderLoader
         var l = Log.Fn<List<IEntity>>($"appId:{appReader.AppId}", timer: true);
         // Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;
-        Loaders.ForEach(ldr => ldr.EntityIdSeed = FsDataConstants.GlobalEntityIdMin + FsDataConstants.GlobalEntitySourceSkip * loaderIndex++);
+        Loaders.ForEach(ldr => ldr.EntityIdSeed = GlobalAppIdConstants.GlobalEntityIdMin + GlobalAppIdConstants.GlobalEntitySourceSkip * loaderIndex++);
 
         // This will be the source of all relationships
         // In the end it must contain all entities - but not deleted ones...
         var final = DirectEntitiesSource.Using(relationships =>
         {
-            var entitySets = FsDataConstants.EntityItemFolders
+            var entitySets = AppDataFoldersConstants.EntityItemFolders
                 .Select(folder => new EntitySetsToLoad
                 {
                     Folder = folder,
@@ -74,9 +74,9 @@ partial class AppStateInFolderLoader
     private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
     {
         var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}", timer: true);
-        if (!FsDataConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
+        if (!AppDataFoldersConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
             throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
-                "atm we can only load items of type " + string.Join("/", FsDataConstants.EntityItemFolders));
+                "atm we can only load items of type " + string.Join("/", AppDataFoldersConstants.EntityItemFolders));
 
         // Get items
         var entities = new List<IEntity>();

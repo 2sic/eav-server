@@ -154,7 +154,7 @@ public class ContentExportApi(
 
         var appPaths = appPathSvc.Get(_appCtx.AppReader);
 
-        var appDataPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppDataProtectedFolder, FsDataConstants.BundlesFolder);
+        var appDataPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppDataProtectedFolder, AppDataFoldersConstants.BundlesFolder);
         l.A($"appDataPath:'{appDataPath}'");
 
         try

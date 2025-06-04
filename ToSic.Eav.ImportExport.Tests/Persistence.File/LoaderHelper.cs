@@ -18,7 +18,7 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         
         try
         {
-            return DirectEntitiesSource.Using(set => loader.Entities(FsDataConstants.QueriesFolder, /*0,*/ set.Source));
+            return DirectEntitiesSource.Using(set => loader.Entities(AppDataFoldersConstants.QueriesFolder, /*0,*/ set.Source));
         }
         finally
         {
