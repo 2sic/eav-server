@@ -5,7 +5,7 @@ using ToSic.Eav.Data.Relationships.Sys;
 using ToSic.Sys.Caching.Synchronized;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.State.Managers;
 
 [PrivateApi("don't publish this - too internal, special, complicated")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

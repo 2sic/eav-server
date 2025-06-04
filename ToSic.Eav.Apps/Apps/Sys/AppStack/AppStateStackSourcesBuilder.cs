@@ -1,11 +1,10 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Apps.Sys.Stack;
+﻿using ToSic.Eav.Apps.Sys.Stack;
 using ToSic.Eav.Data.Sys;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Caching.Synchronized;
-using static ToSic.Eav.Apps.AppStackConstants;
+using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.AppStack;
 
 /// <summary>
 /// This object creates caches for Settings or Resources

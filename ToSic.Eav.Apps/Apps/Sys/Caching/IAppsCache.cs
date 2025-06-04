@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Apps.Sys.Loaders;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
 
-namespace ToSic.Eav.Caching;
+namespace ToSic.Eav.Apps.Sys.Caching;
 
 /// <summary>
 /// Marks the objects which are responsible for caching <see cref="IAppStateCache"/> in memory. <br/>

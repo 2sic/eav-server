@@ -1,7 +1,8 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Apps.Sys.State.Managers;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.State;
 
 partial class AppState:
     IHasMetadata,

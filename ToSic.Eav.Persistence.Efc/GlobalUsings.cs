@@ -7,7 +7,6 @@ global using System.Diagnostics;
 global using System.Linq;
 global using Microsoft.EntityFrameworkCore;
 global using ToSic.Eav.Apps;
-global using ToSic.Eav.Apps.State;
 global using ToSic.Eav.Data;
 global using ToSic.Eav.Metadata;
 global using ToSic.Eav.Persistence.Efc.Models;

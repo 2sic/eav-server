@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Internal.Api01;
+﻿namespace ToSic.Eav.Apps.Sys.Api01;
 
 /// <summary>
 /// Special keys / values used in the dictionary to save, based on which the system will decide how to handle drafts/publishing

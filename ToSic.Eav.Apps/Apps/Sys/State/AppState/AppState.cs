@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Apps.Sys;
+﻿using ToSic.Eav.Apps.Sys.State.Managers;
 using ToSic.Eav.Data.Relationships.Sys;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.State;
 
 /// <summary>
 /// A complete App state - usually cached in memory. <br/>

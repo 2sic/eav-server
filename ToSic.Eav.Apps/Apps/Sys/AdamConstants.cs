@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Internal;
+﻿namespace ToSic.Eav.Apps.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AdamConstants

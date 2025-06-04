@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Sys.Caching.Synchronized;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.State;
 
 partial class AppState
 {

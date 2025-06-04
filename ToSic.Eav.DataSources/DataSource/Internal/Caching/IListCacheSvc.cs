@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Caching;
-using ToSic.Sys.Locking;
+﻿using ToSic.Sys.Locking;
 
 namespace ToSic.Eav.DataSource.Internal.Caching;
 

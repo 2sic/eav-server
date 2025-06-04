@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Caching;
+﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Sys.Loaders;
 using ToSic.Eav.Internal.Loaders;
 using ToSic.Sys.Boot;

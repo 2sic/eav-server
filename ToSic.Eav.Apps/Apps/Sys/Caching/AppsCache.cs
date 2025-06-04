@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Apps.Sys.Loaders;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
 
-namespace ToSic.Eav.Caching;
+namespace ToSic.Eav.Apps.Sys.Caching;
 
 /// <summary>
 /// The default Apps Cache system running on a normal environment. 

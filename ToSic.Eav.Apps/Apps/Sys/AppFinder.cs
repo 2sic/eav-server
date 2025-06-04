@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Sys.Utils;
+﻿using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Apps.Internal;
+namespace ToSic.Eav.Apps.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : ServiceBase("App.ZoneRt")

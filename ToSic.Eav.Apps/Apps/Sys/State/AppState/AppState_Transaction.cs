@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.State;
+﻿namespace ToSic.Eav.Apps.Sys.State;
 
 partial class AppState
 {

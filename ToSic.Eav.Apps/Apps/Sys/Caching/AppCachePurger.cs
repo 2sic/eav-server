@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Caching;
-
-namespace ToSic.Eav.Apps.Internal;
+﻿namespace ToSic.Eav.Apps.Sys.Caching;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppCachePurger(IAppsCatalog appsCatalog, AppsCacheSwitch appsCache) : ServiceBase("App.SysMng")

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps.Sys;
 
 // ReSharper disable once InconsistentNaming
 [ShowApiWhenReleased(ShowApiMode.Never)]

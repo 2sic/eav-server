@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps.Sys;
 
 /// <summary>
 /// Internal API to mark objects that can be updated with an AppIdentity

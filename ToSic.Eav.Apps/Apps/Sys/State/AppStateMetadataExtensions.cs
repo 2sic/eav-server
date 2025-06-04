@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Apps.Sys.State;
 
 [PrivateApi("WIP v13")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

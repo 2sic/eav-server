@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Admin;
+﻿using ToSic.Eav.Apps.Sys;
+
+namespace ToSic.Eav.WebApi.Admin;
 
 public interface IFieldController
 {

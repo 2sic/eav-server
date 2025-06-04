@@ -1,10 +1,8 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.State;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class AppStateExtensions

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
-
-namespace ToSic.Eav.Apps.State;
+﻿namespace ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 
 public interface IAppStateBuilder: IHasLog
 {

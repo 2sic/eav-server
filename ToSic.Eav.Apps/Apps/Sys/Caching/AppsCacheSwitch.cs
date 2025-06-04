@@ -1,11 +1,9 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Apps.Sys.Loaders;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Caching;
+namespace ToSic.Eav.Apps.Sys.Caching;
 
 /// <summary>
 /// This will retrieve the current AppCache.

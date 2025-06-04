@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Catalog;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Caching;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.AppStack;
+using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Catalog;
+using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Global.Sys;
 
 // ReSharper disable once CheckNamespace

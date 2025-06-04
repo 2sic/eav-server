@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Catalog;
+﻿namespace ToSic.Eav.Apps.Sys.Catalog;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class AppsCatalogExtensions

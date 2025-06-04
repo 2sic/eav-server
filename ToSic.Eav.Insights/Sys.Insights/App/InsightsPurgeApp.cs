@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Insights;
+using ToSic.Eav.Apps.Sys.Caching;
 
 namespace ToSic.Eav.WebApi.Sys.Insights;
 

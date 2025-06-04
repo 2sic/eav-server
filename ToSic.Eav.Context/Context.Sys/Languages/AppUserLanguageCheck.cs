@@ -5,7 +5,6 @@ using ToSic.Eav.Integration;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Security;
 using ToSic.Eav.Security.Internal;
-using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;

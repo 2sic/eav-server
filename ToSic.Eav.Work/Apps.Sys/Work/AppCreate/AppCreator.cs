@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repository.Efc;
 

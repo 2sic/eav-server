@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Apps.Sys\Creation\" />
-    <Folder Include="Configuration.Features.Sys\" />
   </ItemGroup>
 
 </Project>

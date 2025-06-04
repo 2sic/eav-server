@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.PropertyDump.Sys;
-using static ToSic.Eav.Apps.AppStackConstants;
+using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 
 namespace ToSic.Eav.DataSources.Sys.Internal;
 

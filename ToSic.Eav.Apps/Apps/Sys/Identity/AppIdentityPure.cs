@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps.Sys;
 
 /// <summary>
 /// A special AppIdentity which is pure and does not have any other data attached.

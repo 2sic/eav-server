@@ -1,12 +1,12 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.State;
 
 partial class AppState
 {

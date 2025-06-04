@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Context;
 using ToSic.Eav.Integration.Security;
 using ToSic.Sys.Security.Permissions;

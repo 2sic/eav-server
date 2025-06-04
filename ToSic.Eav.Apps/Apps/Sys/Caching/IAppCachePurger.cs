@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps;
-
-namespace ToSic.Eav.Caching;
+﻿namespace ToSic.Eav.Apps.Sys.Caching;
 
 /// <summary>
 /// Service which picks the current Apps Cache to use.

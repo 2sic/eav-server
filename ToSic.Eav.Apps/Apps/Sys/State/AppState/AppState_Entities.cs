@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Sources;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.State;
 
 partial class AppState: IEntitiesSource
 {

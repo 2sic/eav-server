@@ -7,7 +7,7 @@ using ToSic.Sys.Utils;
 using static System.StringComparer;
 using static ToSic.Eav.Metadata.Sys.KnownDecorators;
 
-namespace ToSic.Eav.Apps.Internal.Work;
+namespace ToSic.Eav.Apps.Sys;
 
 /// <summary>
 /// Describes an input field type with its labels, abilities etc. 

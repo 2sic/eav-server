@@ -1,11 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.Catalog;
 using ToSic.Eav.Apps.Integration;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.Services;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Caching;
 using ToSic.Eav.Cms.Internal.Languages;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Internal;

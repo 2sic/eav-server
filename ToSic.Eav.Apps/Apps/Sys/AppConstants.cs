@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.ImportExport.Sys;
+﻿using ToSic.Eav.ImportExport.Sys;
 
-namespace ToSic.Eav.Apps.Internal;
+namespace ToSic.Eav.Apps.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppConstants

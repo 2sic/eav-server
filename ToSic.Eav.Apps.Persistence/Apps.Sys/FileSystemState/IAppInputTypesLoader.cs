@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Internal.Work;
+﻿using ToSic.Eav.Apps.Sys;
 
 namespace ToSic.Eav.Apps.Integration;
 

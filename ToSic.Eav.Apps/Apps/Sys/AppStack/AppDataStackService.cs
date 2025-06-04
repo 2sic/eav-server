@@ -1,13 +1,10 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.State;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Stack;
 using ToSic.Eav.Data.PropertyStack.Sys;
 using ToSic.Eav.Data.Sys;
-using static ToSic.Eav.Apps.AppStackConstants;
+using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 
-namespace ToSic.Eav.Apps.Services;
+namespace ToSic.Eav.Apps.Sys.AppStack;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

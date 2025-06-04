@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Sys.Caching;
+﻿using ToSic.Sys.Caching;
 using ToSic.Sys.Caching.PiggyBack;
 using ToSic.Sys.Caching.Statistics;
 
-namespace ToSic.Eav.Apps.State;
+namespace ToSic.Eav.Apps.Sys.State;
 
 partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, ICanBeCacheDependency
 {
