@@ -8,7 +8,7 @@ using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
 internal class EfcContentTypeLoaderService(
     EfcAppLoaderService efcAppLoader,

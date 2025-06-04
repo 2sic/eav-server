@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Dimensions.Sys;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 
 internal class ValueLanguageRepairHelper
 {

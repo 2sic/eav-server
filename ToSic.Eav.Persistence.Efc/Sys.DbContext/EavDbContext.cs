@@ -1,14 +1,16 @@
-﻿using ToSic.Sys.Configuration;
-#if NETFRAMEWORK
+﻿#if NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Metadata;
 #else
 using Microsoft.EntityFrameworkCore.Diagnostics;
 #endif
-namespace ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Sys.Configuration;
+
+namespace ToSic.Eav.Persistence.Efc.Sys.DbContext;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGlobalConfiguration globalConfig, ILogStore logStore)
-    : DbContext(options)
+    : Microsoft.EntityFrameworkCore.DbContext(options)
 {
     private ILog Log { get; } = new Log("EF.DbCtx");
 

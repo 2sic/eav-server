@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.Persistence.Efc.Intermediate;
+﻿using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 
 internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog): HelperBase(parentLog, "Sql.CnvV2A")
 {

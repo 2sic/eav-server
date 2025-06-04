@@ -1,7 +1,10 @@
 ﻿using ToSic.Eav.Data.Dimensions.Sys;
-using ToSic.Eav.Persistence.Efc.Intermediate;
+using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Persistence.Efc.Sys.Entities;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
+using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 
 internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs, string logName = default)
     : HelperBase(appLoader.Log, logName ?? "Efc.VlLdSt")

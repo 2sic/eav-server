@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.Persistence.Efc.Intermediate;
+﻿using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityDetailsLoadSpecs(int appId, bool loadAll, List<TempEntity> entities, ISysFeaturesService features, ILog parentLog)
     : HelperBase(parentLog, "Sql.DetLSp")

@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Entities.Sys;
-using ToSic.Eav.Persistence.Efc.Intermediate;
+using ToSic.Eav.Persistence.Efc.Sys.TempModels;
+using ToSic.Eav.Persistence.Efc.Sys.Values;
 using ToSic.Eav.Serialization;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityBuildHelper
 {

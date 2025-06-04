@@ -1,9 +1,12 @@
-﻿using ToSic.Eav.Persistence.Efc.Intermediate;
+﻿using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Persistence.Efc.Sys.Entities;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
+using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 #if NETFRAMEWORK
 using ToSic.Sys.Utils;
 #endif
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Relationships;
 
 internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs) : HelperBase(appLoader.Log, "Efc.ValLdr")
 {

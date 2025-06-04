@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Persistence.Efc.Intermediate;
+﻿namespace ToSic.Eav.Persistence.Efc.Sys.TempModels;
 
 internal record LoadingValue(
     int EntityId,

@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Dimensions.Sys;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
 internal class EfcZoneLoaderService(EfcAppLoaderService appLoader): HelperBase(appLoader.Log, "Efc.ZoneLoader")
 {

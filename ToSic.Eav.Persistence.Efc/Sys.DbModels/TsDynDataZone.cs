@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Persistence.Efc.Models;
+﻿namespace ToSic.Eav.Persistence.Efc.Sys.DbModels;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class TsDynDataZone//: RepoZone

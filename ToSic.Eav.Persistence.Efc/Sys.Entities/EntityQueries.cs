@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Persistence.Efc;
+﻿using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
+
+namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(parentLog, "Efc.EntQry")
 {

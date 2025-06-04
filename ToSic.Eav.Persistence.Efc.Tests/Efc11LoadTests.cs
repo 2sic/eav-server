@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Data;
-using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.Abstractions;
+using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
 
 namespace ToSic.Eav.Persistence.Efc.Tests;
 

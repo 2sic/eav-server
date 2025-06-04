@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Internal.Specs;
+﻿namespace ToSic.Eav.Persistence.Efc.Sys.DbContext;
 
 /// <summary>
 /// This contains system level settings for an app.

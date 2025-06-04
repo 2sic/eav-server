@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Metadata;
-using ToSic.Eav.Metadata.Targets;
+﻿using ToSic.Eav.Metadata.Targets;
 using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.StartUp;

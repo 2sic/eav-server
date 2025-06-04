@@ -1,10 +1,13 @@
 ﻿using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Persistence.Efc.Intermediate;
+using ToSic.Eav.Persistence.Efc.Sys.Relationships;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
+using ToSic.Eav.Persistence.Efc.Sys.TempModels;
+using ToSic.Eav.Persistence.Efc.Sys.Values;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.EntLdr")

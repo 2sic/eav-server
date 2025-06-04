@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Loaders;
@@ -11,14 +10,17 @@ using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Metadata.Sys;
+using ToSic.Eav.Persistence.Efc.Sys.DbContext;
+using ToSic.Eav.Persistence.Efc.Sys.Entities;
 using ToSic.Eav.Persistence.Sys.AppState;
 using ToSic.Eav.Persistence.Sys.Loaders;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
+using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
 
-namespace ToSic.Eav.Persistence.Efc;
+namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
 /// <summary>
 /// Loader of an App, it's ContentTypes, Entities etc. from SQL using Entity Framework Core.

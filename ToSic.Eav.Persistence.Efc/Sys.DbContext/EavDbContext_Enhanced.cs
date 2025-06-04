@@ -1,8 +1,6 @@
 ﻿
 
-// ReSharper disable once CheckNamespace
-
-namespace ToSic.Eav.Persistence.Efc.Models;
+namespace ToSic.Eav.Persistence.Efc.Sys.DbContext;
 
 partial class EavDbContext 
 {
