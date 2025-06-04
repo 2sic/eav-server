@@ -3,7 +3,7 @@ using ToSic.Lib;
 using ToSic.Lib.LookUp;
 using ToSic.Sys;
 
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Eav;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupLibAndSys

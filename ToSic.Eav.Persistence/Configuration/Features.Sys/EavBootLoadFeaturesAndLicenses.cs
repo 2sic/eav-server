@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.StartUp;
-using ToSic.Sys.Boot;
+﻿using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.Configuration.Sys.Loaders;
 

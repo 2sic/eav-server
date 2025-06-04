@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Eav;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static partial class StartupEavData

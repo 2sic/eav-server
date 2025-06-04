@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Data.Global.Sys;
-using ToSic.Lib.LookUp;
-using ToSic.Sys;
 
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Eav;
 
 public static partial class StartupEavData
 {
