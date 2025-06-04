@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Code.Help;
+﻿using System.Xml.Linq;
+using ToSic.Sys.Code.Help;
 
 namespace ToSic.Sys.Exceptions;
 
@@ -6,11 +7,12 @@ namespace ToSic.Sys.Exceptions;
 public class ExceptionSuperUserOnly(Exception? inner = null) : ExceptionWithHelp(SuperUserHelp(null), inner)
 {
     private static CodeHelp SuperUserHelp(string? message)
-        => new(
-            name: "super-user-help",
-            detect: null,
-            uiMessage: message ?? "Dev/SuperUser 👨🏽‍💻 ERROR INFORMATION",
-            detailsHtml: "Only SuperUsers and Devs 👨🏽‍💻 see this message. Normal users won't see it"
-        );
+        => new()
+        {
+            Name = "super-user-help",
+            Detect = null,
+            UiMessage = message ?? "Dev/SuperUser 👨🏽‍💻 ERROR INFORMATION",
+            DetailsHtml = "Only SuperUsers and Devs 👨🏽‍💻 see this message. Normal users won't see it."
+        };
 
 }

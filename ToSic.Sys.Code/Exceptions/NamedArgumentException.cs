@@ -13,11 +13,15 @@ public class NamedArgumentException : ArgumentException, IExceptionWithHelp
         ParamNames = paramNames;
         ParamsText = paramsText;
 
-        var help = new CodeHelp("named-parameters", null,
-            NoParamOrder.HelpLink,
-            uiMessage: " ",
-            detailsHtml: intro.Replace("\n", "<br>") +
-                         (paramNames.HasValue() ? $"<br>Param Names: <code>{paramNames}</code>" : ""));
+        var help = new CodeHelp
+        {
+            Name = "named-parameters",
+            Detect = null,
+            LinkCode = NoParamOrder.HelpLink,
+            UiMessage = " ",
+            DetailsHtml = intro.Replace("\n", "<br>") +
+                          (paramNames.HasValue() ? $"<br>Param Names: <code>{paramNames}</code>" : ""),
+        };
         Helps = [help];
     }
 

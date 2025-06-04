@@ -1,14 +1,7 @@
 ﻿namespace ToSic.Sys.Code.Help;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class CodeHelp(
-    CodeHelp? original,
-    string? name = default,
-    string? detect = default,
-    string? linkCode = default,
-    bool? detectRegex = default,
-    string? uiMessage = default,
-    string? detailsHtml = default)
+public record CodeHelp
 {
     public const string ErrHelpPre = "Error in your code. ";
     private const string ErrHelpLink = "https://go.2sxc.org/{0}";
@@ -16,21 +9,17 @@ public class CodeHelp(
     private const string ErrHasDetails = "***** You can see more help in the toolbar. ***** \n ";
     private const string ErrHelpSuf = "What follows is the internal error: -------------------------";
 
-    public CodeHelp(string name, string? detect, string? linkCode = default, bool detectRegex = default, string? uiMessage = default, string? detailsHtml = default)
-        : this(original: null, name: name, detect: detect, linkCode: linkCode, detectRegex: detectRegex, uiMessage: uiMessage, detailsHtml: detailsHtml)
-    { }
-
     /// <summary>
-    /// Name for internal use to better understand what this is for
+    /// Name for internal use to better understand what this is for. Can be anything, it's just to self-document what the help is about.
     /// </summary>
-    public string? Name { get; init; } = name ?? original?.Name;
+    public required string? Name { get; init; }
 
-    public string? Detect { get; init; } = detect ?? original?.Detect;
-    public bool DetectRegex { get; init; } = detectRegex ?? original?.DetectRegex ?? false;
-    public string? UiMessage { get; init; } = uiMessage ?? original?.UiMessage;
-    public string? DetailsHtml { get; init; } = detailsHtml ?? original?.DetailsHtml;
+    public required string? Detect { get; init; }
+    public bool DetectRegex { get; init; }
+    public string? UiMessage { get; init; }
+    public string? DetailsHtml { get; init; }
 
-    public readonly string? LinkCode = linkCode ?? original?.LinkCode;
+    public string? LinkCode { get; init; }
 
     public string? Link
         => LinkCode.HasValue()
