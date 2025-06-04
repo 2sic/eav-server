@@ -2,10 +2,11 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Entities.Sys.Sources;
+using ToSic.Eav.Metadata.Targets;
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Sys;
 
 /// <summary>
 /// Metadata of an item (a content-type or another entity). <br/>

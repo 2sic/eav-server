@@ -4,7 +4,7 @@ using ToSic.Lib.Services;
 #if NETFRAMEWORK
 #endif
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Targets;
 internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBase("MDa.TTSvc", connect: [loader]), ITargetTypeService
 {
     private const string ReservedType = "Reserved";

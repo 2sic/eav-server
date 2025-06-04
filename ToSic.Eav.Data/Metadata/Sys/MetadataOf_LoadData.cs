@@ -3,7 +3,7 @@ using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Locking;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Sys;
 
 partial class MetadataOf<T>
 {

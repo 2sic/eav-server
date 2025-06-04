@@ -1,2 +1,2 @@
-﻿namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Metadata;
 internal class Dummy;

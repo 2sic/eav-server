@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Sys;
 
 /// <summary>
 /// This interface provides a standard for accessing hidden metadata items

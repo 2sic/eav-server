@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.Data.EntityBased.Sys;
+﻿using ToSic.Eav.Data.EntityBased.Sys;
 using ToSic.Sys.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Security;
+namespace ToSic.Eav.Metadata.Sys;
 
 /// <summary>
 /// Helper object for constants related to the permissions-type

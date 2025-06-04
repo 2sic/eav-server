@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Metadata;
+using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 

@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Sys;
 
 /// <summary>
 /// For querying metadata from the data source.

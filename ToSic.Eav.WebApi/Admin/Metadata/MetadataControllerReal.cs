@@ -3,6 +3,8 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Metadata.Sys;
+using ToSic.Eav.Metadata.Targets;
 using ToSic.Metadata.Recommendations.Sys;
 using static System.String;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -46,7 +48,7 @@ public class MetadataControllerReal(
         // When retrieving all items, make sure that permissions are _not_ included
         if (IsNullOrEmpty(contentType))
         {
-            entityList = entityList.Where(e => !Eav.Security.Permission.IsPermission(e)).ToList();
+            entityList = entityList.Where(e => !Permission.IsPermission(e)).ToList();
             l.A($"Filtered for ContentType '{contentType}' - count: {entityList.Count}");
         }
 

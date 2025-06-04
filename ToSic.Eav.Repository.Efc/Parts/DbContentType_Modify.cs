@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Metadata.Sys;
+using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Targets;
 
 /// <summary>
 /// This interface allows objects to lookup metadata-target id / name of the system. 

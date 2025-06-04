@@ -3,7 +3,7 @@ using ToSic.Eav.Data;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Sys;
 
 /// <summary>
 /// Metadata of an item (a content-type or another entity). <br/>

@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.Metadata.Targets;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Serialization.Internal;

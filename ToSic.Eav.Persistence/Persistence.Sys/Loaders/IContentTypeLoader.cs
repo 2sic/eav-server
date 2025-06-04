@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Internal.Loaders;
+﻿using ToSic.Eav.Metadata.Sys;
+
+namespace ToSic.Eav.Internal.Loaders;
 
 public interface IContentTypeLoader
 {

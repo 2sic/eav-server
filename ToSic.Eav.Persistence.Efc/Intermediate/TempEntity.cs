@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Persistence.Efc.Intermediate;
+﻿using ToSic.Eav.Metadata.Targets;
+
+namespace ToSic.Eav.Persistence.Efc.Intermediate;
 
 internal class TempEntity
 {

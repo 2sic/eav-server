@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Targets;
 
 /// <summary>
 /// Reference to target. Usually used on <see cref="IEntity"/> to define what thing it provides additional metadata for.

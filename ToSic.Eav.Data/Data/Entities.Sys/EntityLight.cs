@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Metadata.Targets;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data.Entities.Sys;

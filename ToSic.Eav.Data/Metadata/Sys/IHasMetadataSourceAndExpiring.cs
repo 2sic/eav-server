@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Sys;
 
 /// <summary>
 /// Marks metadata providers.

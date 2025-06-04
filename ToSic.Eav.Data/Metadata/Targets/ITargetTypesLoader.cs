@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace ToSic.Eav.Metadata;
+namespace ToSic.Eav.Metadata.Targets;
 
 /// <summary>
 /// This loads the TargetTypes from the DB or wherever they are stored.

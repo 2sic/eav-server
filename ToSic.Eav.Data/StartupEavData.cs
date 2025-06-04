@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.StartUp;
 

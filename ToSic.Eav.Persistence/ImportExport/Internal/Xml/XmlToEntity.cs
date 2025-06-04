@@ -6,6 +6,7 @@ using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Values.Sys;
+using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Repositories;
 
 namespace ToSic.Eav.ImportExport.Internal.Xml;
@@ -118,7 +119,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
     /// </summary>
     /// <param name="xEntity">xEntity to parse</param>
     /// <param name="metadataForFor"></param>
-    public Entity BuildEntityFromXml(XElement xEntity, Metadata.Target metadataForFor)
+    public Entity BuildEntityFromXml(XElement xEntity, Target metadataForFor)
     {
         var wrap = Log.Fn<Entity>();
         var finalAttributes = new Dictionary<string, IAttribute>();

@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Persistence.Efc;
+﻿using ToSic.Eav.Metadata.Targets;
+
+namespace ToSic.Eav.Persistence.Efc;
 
 public class EfcMetadataTargetTypes(LazySvc<EavDbContext> dbLazy) : ServiceBase("Eav.MdTTyp"), ITargetTypesLoader
 {
