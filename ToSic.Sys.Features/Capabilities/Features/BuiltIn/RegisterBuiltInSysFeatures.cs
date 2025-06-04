@@ -1,7 +1,7 @@
 ﻿using ToSic.Sys.Capabilities.Features;
 using static ToSic.Eav.Internal.Features.BuiltInFeatures;
 
-internal class RegisterEavFeatures
+internal class RegisterBuiltInSysFeatures
 {
     public static void Register(FeaturesCatalog cat)
         => cat.Register(

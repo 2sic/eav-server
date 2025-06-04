@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Internal.Features;
 
-public static class EavFeaturesServiceExtensions
+public static class SysFeaturesServiceExtensions
 {
     public static void ThrowIfNotEnabled(this ISysFeaturesService featSer, string message, params Guid[] featureGuid)
     {

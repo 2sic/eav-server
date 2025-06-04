@@ -8,4 +8,7 @@ public class LicenseConstants
     public const string LicenseCustom = LicensePrefix + "Custom";
     public const string FeatureSetSystem = "System";   // Feature Set "System"
     public const string FeatureSetExtension = "Extension";
+
+    public static readonly DateTime UnlimitedExpiry = DateTime.MaxValue;
+
 }

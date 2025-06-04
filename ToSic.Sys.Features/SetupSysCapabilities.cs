@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.StartUp;
+using ToSic.Sys.Boot;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
@@ -36,6 +38,11 @@ public static class SetupSysCapabilities
         // As that would allow replacing the finger-printer with something else
         // We actually only use the direct object in DI
         services.TryAddTransient<SystemFingerprint>();
+
+        // v20 Startup - Registration of Licenses and Features
+        services.AddTransient<IBootProcess, BootRegistrationEavFeatures>();
+        services.AddTransient<IBootProcess, BootRegistrationEavLicenses>();
+
 
         return services;
     }

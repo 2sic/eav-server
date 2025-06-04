@@ -9,5 +9,5 @@ internal class BootRegistrationEavFeatures(FeaturesCatalog featuresCatalog)
     /// <summary>
     /// Register Dnn features before loading
     /// </summary>
-    public override void Run() => RegisterEavFeatures.Register(featuresCatalog);
+    public override void Run() => RegisterBuiltInSysFeatures.Register(featuresCatalog);
 }
