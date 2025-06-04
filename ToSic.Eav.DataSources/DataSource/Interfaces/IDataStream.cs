@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Streams.Internal;
-using ToSic.Lib.Caching;
+using ToSic.Sys.Caching;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource;

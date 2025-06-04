@@ -1,4 +1,4 @@
-﻿using ToSic.Lib.Caching;
+﻿using ToSic.Sys.Caching;
 
 namespace ToSic.Eav.Metadata;
 

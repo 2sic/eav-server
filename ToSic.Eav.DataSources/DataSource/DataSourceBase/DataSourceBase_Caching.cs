@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Lib.Caching.Keys;
+using ToSic.Sys.Caching.Keys;
 
 namespace ToSic.Eav.DataSource;
 

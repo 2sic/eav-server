@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Caching;
+﻿namespace ToSic.Sys.Caching;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

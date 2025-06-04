@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Caching.Statistics;
+﻿namespace ToSic.Sys.Caching.Statistics;
 
 /// <summary>
 /// WIP - trying to keep more information about cache changes

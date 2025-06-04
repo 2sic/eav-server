@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Caching.Monitors;
+﻿namespace ToSic.Sys.Caching.Monitors;
 
 internal class DirectoryMonitor
 {

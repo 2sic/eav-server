@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Lib.Caching.Keys;
 using ToSic.Lib.Helpers;
+using ToSic.Sys.Caching.Keys;
 
 namespace ToSic.Eav.DataSources;
 

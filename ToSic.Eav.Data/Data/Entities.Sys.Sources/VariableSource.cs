@@ -1,5 +1,5 @@
-﻿using ToSic.Lib.Caching;
-using ToSic.Lib.Helpers;
+﻿using ToSic.Lib.Helpers;
+using ToSic.Sys.Caching;
 
 namespace ToSic.Eav.Data.Source;
 

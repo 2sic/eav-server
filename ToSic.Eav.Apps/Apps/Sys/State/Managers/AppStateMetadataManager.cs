@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Metadata;
-using ToSic.Lib.Caching;
 using ToSic.Lib.Coding;
+using ToSic.Sys.Caching;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.State;

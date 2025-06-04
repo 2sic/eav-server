@@ -1,4 +1,4 @@
-﻿using ToSic.Lib.Caching;
+﻿using ToSic.Sys.Caching;
 using ToSic.Sys.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 

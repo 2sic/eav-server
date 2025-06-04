@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Lib.Caching;
+using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.StartUp;
+namespace ToSic.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupSysCaching

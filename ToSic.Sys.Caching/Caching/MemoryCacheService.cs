@@ -1,8 +1,8 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Lib.Caching.Policies;
 using ToSic.Lib.Services;
+using ToSic.Sys.Caching.Policies;
 
-namespace ToSic.Lib.Caching;
+namespace ToSic.Sys.Caching;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

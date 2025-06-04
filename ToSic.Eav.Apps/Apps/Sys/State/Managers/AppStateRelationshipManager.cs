@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Source;
-using ToSic.Lib.Caching.Synchronized;
+using ToSic.Sys.Caching.Synchronized;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.Apps.State;

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Runtime.Caching;
 using System.Text;
 
-namespace ToSic.Lib.Caching.Monitors;
+namespace ToSic.Sys.Caching.Monitors;
 
 // based on https://raw.githubusercontent.com/microsoft/referencesource/master/System.Runtime.Caching/System/Caching/HostFileChangeMonitor.cs
 [ShowApiWhenReleased(ShowApiMode.Never)]

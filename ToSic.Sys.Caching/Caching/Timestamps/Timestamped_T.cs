@@ -1,6 +1,6 @@
 ﻿
 
-namespace ToSic.Lib.Caching;
+namespace ToSic.Sys.Caching;
 
 /// <summary>
 /// Object container with additional timestamp

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Caching.Keys;
+﻿namespace ToSic.Sys.Caching.Keys;
 
 /// <summary>
 /// Generates cache-keys for certain objects and combines them with CacheKeys of parent-objects which this object relies on.  

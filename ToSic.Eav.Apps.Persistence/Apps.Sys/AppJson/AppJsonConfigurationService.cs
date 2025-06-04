@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.Integration;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Sys.Configuration;
-using ToSic.Lib.Caching;
+using ToSic.Sys.Caching;
 using ToSic.Sys.Configuration;
 using ToSic.Sys.Utils;
 

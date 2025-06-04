@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Lib.Caching;
-using ToSic.Lib.Caching.Synchronized;
+using ToSic.Sys.Caching;
+using ToSic.Sys.Caching.Synchronized;
 using static ToSic.Eav.Apps.AppStackConstants;
 
 namespace ToSic.Eav.Apps.State;

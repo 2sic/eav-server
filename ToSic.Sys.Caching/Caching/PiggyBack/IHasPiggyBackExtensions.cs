@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Caching.PiggyBack;
+﻿namespace ToSic.Sys.Caching.PiggyBack;
 
 [PrivateApi]
 // ReSharper disable once InconsistentNaming

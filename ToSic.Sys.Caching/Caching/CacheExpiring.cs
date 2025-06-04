@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Caching;
+﻿namespace ToSic.Sys.Caching;
 
 /// <summary>
 /// Very simple timestamp holder, mainly for Delegated Cache-Expiry to hold the private cache timestamp.

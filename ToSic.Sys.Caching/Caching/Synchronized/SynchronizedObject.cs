@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Caching.Synchronized;
+﻿namespace ToSic.Sys.Caching.Synchronized;
 
 /// <summary>
 /// WIP 12.03

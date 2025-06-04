@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace ToSic.Lib.Caching.PiggyBack;
+namespace ToSic.Sys.Caching.PiggyBack;
 
 /// <summary>
 /// Experimental: Goal is to provide a simple value cache to certain objects like AppState

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Caching;
-using ToSic.Lib.Caching.Synchronized;
+using ToSic.Sys.Caching.Synchronized;
 
 namespace ToSic.Eav.Apps.State;
 

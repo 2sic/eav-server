@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
 
-namespace ToSic.Lib.Caching.Synchronized;
+namespace ToSic.Sys.Caching.Synchronized;
 
 /// <summary>
 /// This is an IEnumerable which relies on an up-stream cache, which may change. That would require this IEnumerable to update what it delivers.
