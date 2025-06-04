@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Context;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Integration;
 
@@ -16,11 +17,11 @@ public static class ZoneMapperExtensions
     /// <returns></returns>
     internal static ISite SiteOfAppIfSiteInvalid(this LazySvc<IZoneMapper> zoneMapperLazy, ISite siteFromDi, int appId)
     {
-        if (siteFromDi.Id != Eav.Constants.NullId)
+        if (siteFromDi.Id != EavConstants.NullId)
             return siteFromDi;
 
         var zoneMapper = zoneMapperLazy.Value;
-        var l = zoneMapper.Log.Fn<ISite>($"Trying to build path based on tenant. If it's in search mode, the {nameof(ISite)} would be {Eav.Constants.NullId}. Id: {siteFromDi.Id}");
+        var l = zoneMapper.Log.Fn<ISite>($"Trying to build path based on tenant. If it's in search mode, the {nameof(ISite)} would be {EavConstants.NullId}. Id: {siteFromDi.Id}");
         try
         {
             //if (siteFromDi.Id != Eav.Constants.NullId)

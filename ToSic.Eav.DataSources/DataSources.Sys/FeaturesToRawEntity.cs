@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.FeatureSet;
@@ -27,7 +28,7 @@ public static class FeaturesToRawEntity
                 { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
                 { nameof(state.Expiration), state.Expiration },
                 { nameof(state.IsForEditUi), state.IsForEditUi },
-                { $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? Constants.NullNameId },
+                { $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? EavConstants.NullNameId },
                 { $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
                 { nameof(state.AllowedByLicense), state.AllowedByLicense },
                 { nameof(state.Aspect.Link), state.Aspect.Link },

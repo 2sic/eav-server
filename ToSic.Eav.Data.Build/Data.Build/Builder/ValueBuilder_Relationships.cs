@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using ToSic.Eav.Data.Entities.Sys.Sources;
 using ToSic.Eav.Data.Relationships.Sys;
 using ToSic.Eav.Data.Values.Sys;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -58,7 +59,7 @@ partial class ValueBuilder
                               {
                                   var v = x?.ToString().Trim();
                                   // this is the case when an export contains a list with nulls as a special code
-                                  if (v is null or Constants.EmptyRelationship)
+                                  if (v is null or EavConstants.EmptyRelationship)
                                       return new();
                                   var guid = Guid.Parse(v);
                                   return guid == Guid.Empty ? new Guid?() : guid;

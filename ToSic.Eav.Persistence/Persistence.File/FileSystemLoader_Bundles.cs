@@ -2,6 +2,7 @@
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Sys;
 using static ToSic.Eav.ImportExport.Internal.ImpExpConstants;
 
 namespace ToSic.Eav.Persistence.File;
@@ -113,7 +114,7 @@ partial class FileSystemLoader
                     var typeWithOrigin = dataBuilder.ContentType.CreateFrom(ct.ContentType, id: ++TypeIdSeed,
                         repoType: RepoType,
                         repoAddress: path,
-                        parentTypeId: Constants.PresetContentTypeFakeParent,
+                        parentTypeId: EavConstants.PresetContentTypeFakeParent,
                         configZoneId: KnownAppsConstants.PresetZoneId,
                         configAppId: KnownAppsConstants.PresetAppId);
                     return new ContentTypeWithEntities { ContentType = typeWithOrigin, Entities = ct.Entities };

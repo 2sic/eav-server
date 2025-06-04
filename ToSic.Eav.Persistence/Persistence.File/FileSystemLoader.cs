@@ -5,6 +5,7 @@ using ToSic.Eav.Internal.Loaders;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Internal;
+using ToSic.Eav.Sys;
 using static ToSic.Eav.ImportExport.Internal.ImpExpConstants;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -230,7 +231,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             var ct = ser.DeserializeContentType(json);
 
             infoIfError = "couldn't set source/parent";
-            ct = dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: Constants.PresetContentTypeFakeParent, repoAddress: path);
+            ct = dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
             return l.Return(ct, $"file size was: {json.Length}");
         }
         catch (IOException e)

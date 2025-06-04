@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Persistence.Versions;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
@@ -43,7 +44,7 @@ partial class DbVersioning
         var rootQuery = DbContext.SqlDb.TsDynDataHistories
             .Where(t =>
                 t.SourceTable == EntitiesTableName
-                && t.Operation == Constants.HistoryEntityJson
+                && t.Operation == EavConstants.HistoryEntityJson
                 && t.SourceId == entityId
             );
         if (historyId > 0)

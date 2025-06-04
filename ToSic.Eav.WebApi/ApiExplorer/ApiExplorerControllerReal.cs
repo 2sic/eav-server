@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Admin;
 using ToSic.Eav.WebApi.Infrastructure;
 using ToSic.Sys.Users;
@@ -151,7 +152,7 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
     {
         var l = Log.Fn<AllApiFilesDto>($"list all api files a#{appId}");
 
-        var mask = $"*{Constants.ApiControllerSuffix}.cs";
+        var mask = $"*{EavConstants.ApiControllerSuffix}.cs";
 
         var localFiles =
             AppFileController.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
@@ -173,10 +174,10 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
     private IAppExplorerControllerDependency AppFileController => appFileController.Value;
 
     private static string ApiFileEndpointPath(string relativePath)
-        => AdjustControllerName(relativePath, $"{Constants.ApiControllerSuffix}.cs").ForwardSlash();
+        => AdjustControllerName(relativePath, $"{EavConstants.ApiControllerSuffix}.cs").ForwardSlash();
 
     public static string AppCodeEndpointPath(string edition, string controller)
-        => Path.Combine(edition, Constants.Api, AdjustControllerName(controller, Constants.ApiControllerSuffix)).ForwardSlash();
+        => Path.Combine(edition, EavConstants.Api, AdjustControllerName(controller, EavConstants.ApiControllerSuffix)).ForwardSlash();
 
     private static string AdjustControllerName(string controllerName, string suffix)
         => controllerName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)
@@ -196,7 +197,7 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
     }
 
     private static bool IsRootEdition(string path, string edition)
-        => edition.Equals(Constants.Api, StringComparison.OrdinalIgnoreCase) // <root>/api/
+        => edition.Equals(EavConstants.Api, StringComparison.OrdinalIgnoreCase) // <root>/api/
            || edition.Equals(FolderConstants.AppCode, StringComparison.OrdinalIgnoreCase) // <root>/AppCode/
            || edition.Equals(FolderConstants.AppDataProtectedFolder, StringComparison.OrdinalIgnoreCase) // <root>/App_Data/
            || edition.Equals(path, StringComparison.OrdinalIgnoreCase); // path is only file without folder

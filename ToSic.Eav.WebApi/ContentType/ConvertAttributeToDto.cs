@@ -6,6 +6,7 @@ using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Sys;
 using ToSic.Metadata.Recommendations.Sys;
 using static ToSic.Eav.Data.Attributes.Sys.AttributeMetadataConstants;
 
@@ -187,7 +188,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         var inputType = attribute.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeGeneral);
 
         // unknown will let the UI fallback on other mechanisms
-        return string.IsNullOrEmpty(inputType) ? Constants.NullNameId : inputType;
+        return string.IsNullOrEmpty(inputType) ? EavConstants.NullNameId : inputType;
     }
 
     /// <summary>

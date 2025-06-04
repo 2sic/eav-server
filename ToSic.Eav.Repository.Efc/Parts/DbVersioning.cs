@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
 #endif
 using ToSic.Eav.Internal.Compression;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
@@ -67,7 +68,7 @@ internal  partial class DbVersioning: DbPartBase
         => _queue.Add(new()
         {
             SourceTable = EntitiesTableName,
-            Operation = Constants.HistoryEntityJson,
+            Operation = EavConstants.HistoryEntityJson,
             Json = _compressor.Value.IsEnabled ? null : serialized,
             CJson = _compressor.Value.Compress(serialized),
             SourceGuid = entityGuid,

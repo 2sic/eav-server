@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Sys;
+﻿using ToSic.Eav.Sys;
+
+namespace ToSic.Eav.WebApi.Sys;
 // Release routes
 
 [ShowApiWhenReleased(ShowApiMode.Never)]

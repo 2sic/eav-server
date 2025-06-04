@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav;
+﻿namespace ToSic.Eav.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavLogs

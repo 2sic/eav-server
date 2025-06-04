@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Security;
+using ToSic.Eav.Sys;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 
@@ -101,7 +102,7 @@ public abstract class EnvironmentPermission(string logPrefix, object[] connect =
     {
         var l = Log.Fn<bool>();
         // Check if we are running out-of http-context
-        if (SiteOrNull == null || SiteOrNull.Id == Constants.NullId)
+        if (SiteOrNull == null || SiteOrNull.Id == EavConstants.NullId)
             return l.ReturnFalse("no");
 
         // Check if no app is provided, like when an app hasn't been selected yet, so it's an empty module, must be on current portal

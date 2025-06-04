@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Sys;
 using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Data.Build;
@@ -14,7 +15,7 @@ public static class BuildTestAccessors
         Dictionary<string, object>? values = default,
         Dictionary<string, IAttribute>? typedValues = default,
         int entityId = default,
-        int repositoryId = Constants.NullId,
+        int repositoryId = EavConstants.NullId,
         Guid guid = default,
         string? titleField = default,
         DateTime? created = default,

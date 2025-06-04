@@ -44,7 +44,7 @@ public class RequestHelper(IHttpContextAccessor httpContextAccessor)
         }
     }
 
-    public int TryGetId(string key) => GetTypedHeader(key, GetQueryString(key, GetRouteValuesString(key, Eav.Constants.NullId)));
+    public int TryGetId(string key) => GetTypedHeader(key, GetQueryString(key, GetRouteValuesString(key, Eav.Sys.EavConstants.NullId)));
 
 }
 

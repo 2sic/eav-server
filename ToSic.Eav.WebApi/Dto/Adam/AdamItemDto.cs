@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.WebApi.Dto.Metadata;
+﻿using ToSic.Eav.Sys;
+using ToSic.Eav.WebApi.Dto.Metadata;
 
 namespace ToSic.Eav.WebApi.Dto;
 
@@ -63,7 +64,7 @@ public class AdamItemDto
     {
         IsFolder = isFolder;
         // note that the type will be set by other code later on if it's a file
-        Type = isFolder ? "folder" : Constants.NullNameId;
+        Type = isFolder ? "folder" : EavConstants.NullNameId;
         Name = name;
         Size = size;
         Created = created;

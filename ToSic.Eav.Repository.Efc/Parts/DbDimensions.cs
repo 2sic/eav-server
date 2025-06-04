@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Dimensions.Sys;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
@@ -74,7 +75,7 @@ internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
     {
         return DbContext.SqlDb.TsDynDataDimensions.ToList().Where(d =>
             d.Parent.HasValue
-            && d.ParentNavigation.Key == Constants.CultureSystemKey
+            && d.ParentNavigation.Key == EavConstants.CultureSystemKey
             && d.ZoneId == DbContext.ZoneId
             && (includeInactive || d.Active)
         ).Cast<DimensionDefinition>().ToList();
@@ -89,7 +90,7 @@ internal class DbDimensions(DbDataController db) : DbPartBase(db, "Db.Dims")
         {
             Name = name,
             EnvironmentKey = externalKey,
-            Parent = GetDimensionId(Constants.CultureSystemKey, null),
+            Parent = GetDimensionId(EavConstants.CultureSystemKey, null),
             ZoneId = DbContext.ZoneId,
             Active = true
         };

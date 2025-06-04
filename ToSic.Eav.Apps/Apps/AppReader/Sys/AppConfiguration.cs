@@ -4,6 +4,7 @@
 
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.EntityBased.Sys;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Apps.Internal.Specs;
 
@@ -24,7 +25,7 @@ internal class AppConfiguration(IEntity entity) : EntityBasedType(entity), IAppC
 
     public Version Version => GetVersionOrDefault(nameof(Version));
 
-    public string Name => Get(AppLoadConstants.FieldName, Constants.NullNameId);
+    public string Name => Get(AppLoadConstants.FieldName, EavConstants.NullNameId);
 
     public string Description => GetThis("");
 

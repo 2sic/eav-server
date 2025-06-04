@@ -3,6 +3,7 @@ using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Relationships.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
+using ToSic.Eav.Sys;
 using ToSic.Lib.Coding;
 
 
@@ -22,7 +23,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         NoParamOrder noParamOrder = default,
         IImmutableDictionary<string, IAttribute>? attributes = default,
         int entityId = default,
-        int repositoryId = Constants.NullId,
+        int repositoryId = EavConstants.NullId,
         Guid guid = default,
         string? titleField = default,
         DateTime? created = default,
@@ -52,7 +53,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
 
             // *** Entity stuff ***
             // RepositoryId should default to EntityId, if not provided
-            RepositoryId = repositoryId == Constants.NullId ? entityId : repositoryId,
+            RepositoryId = repositoryId == EavConstants.NullId ? entityId : repositoryId,
             // Version should always default to 1, if not provided
             Version = version == default ? 1 : version,
             IsPublished = isPublished,

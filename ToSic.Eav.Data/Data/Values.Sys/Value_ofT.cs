@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Data.Values.Sys;
 
@@ -57,7 +58,7 @@ public record Value<T> : IValue<T>
         {
             var obj = SerializableObject;
             if (obj is List<Guid?> list)
-                return string.Join(",", list.Select(y => y?.ToString() ?? Constants.EmptyRelationship));
+                return string.Join(",", list.Select(y => y?.ToString() ?? EavConstants.EmptyRelationship));
 
             return (obj as DateTime?)?.ToString("yyyy-MM-ddTHH:mm:ss") 
                    ?? (obj as bool?)?.ToString() 

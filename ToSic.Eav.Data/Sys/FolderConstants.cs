@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav;
+﻿namespace ToSic.Eav.Sys;
 public class FolderConstants
 {
     /// <summary>

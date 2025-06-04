@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 
@@ -12,7 +13,7 @@ internal class DbZone(DbDataController db) : DbPartBase(db, "Db.Zone")
         var newZone = new TsDynDataZone { Name = name };
         DbContext.SqlDb.Add(newZone);
 
-        DbContext.Dimensions.AddRootCultureNode(Constants.CultureSystemKey, "Culture Root", newZone);
+        DbContext.Dimensions.AddRootCultureNode(EavConstants.CultureSystemKey, "Culture Root", newZone);
 
         DbContext.App.AddApp(newZone, KnownAppsConstants.DefaultAppGuid);
 

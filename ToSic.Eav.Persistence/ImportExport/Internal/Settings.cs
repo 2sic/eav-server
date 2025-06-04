@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.ImportExport.Internal;
+﻿using ToSic.Eav.Sys;
+
+namespace ToSic.Eav.ImportExport.Internal;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class Settings

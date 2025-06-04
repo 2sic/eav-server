@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.Sys;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json;
@@ -140,7 +141,7 @@ partial class JsonSerializer
             .ForEach(jsonEntity => jsonEntity.For = null);
 
         var ancestorDecorator = contentType.GetDecorator<IAncestor>();
-        var isSharedNew = ancestorDecorator is { Id: not Constants.PresetContentTypeFakeParent };
+        var isSharedNew = ancestorDecorator is { Id: not EavConstants.PresetContentTypeFakeParent };
 
         // Note 2021-11-22 2dm - AFAIK this is skipped when creating a JSON for edit-UI
         if (isSharedNew && !settings.CtIncludeInherited)

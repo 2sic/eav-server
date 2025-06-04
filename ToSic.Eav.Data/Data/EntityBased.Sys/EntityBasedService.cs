@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.EntityBased.Sys;
+﻿using ToSic.Eav.Sys;
+
+namespace ToSic.Eav.Data.EntityBased.Sys;
 
 /// <summary>
 /// Experimental type for a thing which needs services to work, but has all the data from a Entity.
