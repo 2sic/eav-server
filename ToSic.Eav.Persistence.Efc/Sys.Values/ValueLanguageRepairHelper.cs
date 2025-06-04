@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class DataRepair
+internal class ValueLanguageRepairHelper
 {
     /// <summary>
     /// Background: there are rare cases, where data was stored incorrectly
@@ -15,13 +15,18 @@ internal class DataRepair
     {
         //var values = attrib.Values;
         // Case 1 ok: Value has max 1 real value, so no risk
-        if (values.Count <= 1) return values;
+        if (values.Count <= 1)
+            return values;
         // Case 2 ok: All values have languages assigned
-        if (values.All(v => v.Languages.Any())) return values;
+        if (values.All(v => v.Languages.Any()))
+            return values;
 
 
-        var badValuesWithoutLanguage = values.Where(v => !v.Languages.Any()).ToList();
-        if (!badValuesWithoutLanguage.Any()) return values;
+        var badValuesWithoutLanguage = values
+            .Where(v => !v.Languages.Any())
+            .ToList();
+        if (!badValuesWithoutLanguage.Any())
+            return values;
 
         // *** This section is to do corrections if necessary ***
 

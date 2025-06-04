@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Internal.Configuration;
-using ToSic.Eav.Testing.Scenarios;
+﻿using ToSic.Eav.Testing.Scenarios;
 using ToSic.Sys.Configuration;
 
 namespace ToSic.Eav.Testing;
@@ -10,7 +9,9 @@ namespace ToSic.Eav.Testing;
 /// </summary>
 /// <param name="globalConfig"></param>
 public class FixtureStartupWithDb(IGlobalConfiguration globalConfig)
+#pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
     : FixtureStartupNoDb(globalConfig)
+#pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
 {
 
     public override void SetupFixtureConfiguration(TestScenario testScenario)

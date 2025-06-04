@@ -15,7 +15,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.SaveData;
 /// Make various changes and see if they worked - but rollback any changes afterward using transactions.
 /// </summary>
 [Startup(typeof(StartupTestsApps))]
-public class SaveDataToDbTests(DbDataController dbData, Generator<EfcAppLoader> appLoadGenerator, IImportExportEnvironment environment, EntitySaver entitySaver, DataBuilder dataBuilder)
+public class SaveDataToDbTests(DbDataController dbData, Generator<EfcAppLoaderService> appLoadGenerator, IImportExportEnvironment environment, EntitySaver entitySaver, DataBuilder dataBuilder)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 

@@ -3,10 +3,10 @@ using ToSic.Eav.Persistence.Efc.Intermediate;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class ValueLoaderStandard(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs, string logName = default)
+internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs, string logName = default)
     : HelperBase(appLoader.Log, logName ?? "Efc.VlLdSt")
 {
-    protected readonly EfcAppLoader AppLoader = appLoader;
+    protected readonly EfcAppLoaderService AppLoader = appLoader;
     protected readonly EntityDetailsLoadSpecs Specs = specs;
 
     private ValueQueries ValueQueries => field ??= new(AppLoader.Context, Log);

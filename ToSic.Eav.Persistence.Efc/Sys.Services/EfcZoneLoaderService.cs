@@ -4,7 +4,7 @@ using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Efc.ZoneLoader")
+internal class EfcZoneLoaderService(EfcAppLoaderService appLoader): HelperBase(appLoader.Log, "Efc.ZoneLoader")
 {
     internal IDictionary<int, Zone> LoadZones(ILogStore logStore)
     {
@@ -39,7 +39,8 @@ internal class ZoneLoader(EfcAppLoader appLoader): HelperBase(appLoader.Log, "Ef
 
                     var languages = z.TsDynDataDimensions
                         .Where(d => d.ParentNavigation?.Key == EavConstants.CultureSystemKey)
-                        .Cast<DimensionDefinition>().ToList();
+                        .Cast<DimensionDefinition>()
+                        .ToList();
 
                     return new Zone(z.ZoneId, primary, content, appDictionary, languages);
                 });

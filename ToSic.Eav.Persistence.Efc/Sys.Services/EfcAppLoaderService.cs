@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Internal.Specs;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
@@ -8,14 +7,12 @@ using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
-using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Sys.AppState;
 using ToSic.Eav.Persistence.Sys.Loaders;
-using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
@@ -27,7 +24,7 @@ namespace ToSic.Eav.Persistence.Efc;
 /// Loader of an App, it's ContentTypes, Entities etc. from SQL using Entity Framework Core.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EfcAppLoader(
+public class EfcAppLoaderService(
     EavDbContext context,
     LazySvc<IZoneCultureResolver> environmentLazy,
     IAppInitializedChecker initializedChecker,
@@ -48,7 +45,7 @@ public class EfcAppLoader(
 {
     #region Setup, SQL Timer, Primary Language
     
-    public EfcAppLoader UseExistingDb(EavDbContext dbContext)
+    public EfcAppLoaderService UseExistingDb(EavDbContext dbContext)
     {
         Context = dbContext;
         return this;
@@ -89,7 +86,7 @@ public class EfcAppLoader(
     #region IRepositoryLoader Zones and ContentTypes
 
     IDictionary<int, Zone> IAppsAndZonesLoader.Zones()
-        => new ZoneLoader(this).LoadZones(logStore);
+        => new EfcZoneLoaderService(this).LoadZones(logStore);
 
     /// <inheritdoc />
     /// <summary>
@@ -97,7 +94,7 @@ public class EfcAppLoader(
     /// It uses temporary caching, so if called multiple times it loads from a private field.
     /// </summary>
     IList<IContentType> IContentTypeLoader.ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
-        => new ContentTypeLoader(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, featuresSvc)
+        => new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, featuresSvc)
             .LoadContentTypesFromDb(appId, source);
 
     #endregion
@@ -220,7 +217,7 @@ public class EfcAppLoader(
             if (startAt <= AppStateLoadSequence.ContentTypeLoad)
             {
                 var typeTimer = Stopwatch.StartNew();
-                var loader = new ContentTypeLoader(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, featuresSvc);
+                var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, featuresSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
                 var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge);
                 builder.InitContentTypes(dbTypes);

@@ -1,6 +1,5 @@
-﻿using ToSic.Sys.Configuration;
-
-namespace ToSic.Eav.Internal.Configuration;
+﻿// ReSharper disable once CheckNamespace
+namespace ToSic.Sys.Configuration;
 public static class GlobalConfigDb
 {
     /// <summary>

@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Build;
@@ -11,8 +10,8 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class ContentTypeLoader(
-    EfcAppLoader efcAppLoader,
+internal class EfcContentTypeLoaderService(
+    EfcAppLoaderService efcAppLoader,
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
     Generator<IDataDeserializer> dataDeserializer,
     DataBuilder dataBuilder,

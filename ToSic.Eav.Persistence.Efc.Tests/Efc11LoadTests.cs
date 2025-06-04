@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 namespace ToSic.Eav.Persistence.Efc.Tests;
 
 [Startup(typeof(StartupTestsApps))]
-public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGenerator, ITestOutputHelper output)
+public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoaderService> loaderGenerator, ITestOutputHelper output)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     /// <summary>
@@ -22,7 +22,7 @@ public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGener
 #if NETCOREAPP
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
 #endif
-    private EfcAppLoader Loader => field ??= loaderGenerator.New().UseExistingDb(db);
+    private EfcAppLoaderService Loader => field ??= loaderGenerator.New().UseExistingDb(db);
 
     [Fact]
     public void GetSomething()

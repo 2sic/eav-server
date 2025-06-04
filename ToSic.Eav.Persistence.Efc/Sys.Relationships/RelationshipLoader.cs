@@ -5,7 +5,7 @@ using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class RelationshipLoader(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs) : HelperBase(appLoader.Log, "Efc.ValLdr")
+internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs) : HelperBase(appLoader.Log, "Efc.ValLdr")
 {
     internal RelationshipQueries RelationshipQueries => field ??= new(appLoader.Context, Log);
 

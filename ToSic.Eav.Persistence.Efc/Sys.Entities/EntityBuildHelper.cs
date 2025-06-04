@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Persistence.Efc.Intermediate;
@@ -60,7 +59,7 @@ internal class EntityBuildHelper
                     var results = a.Values
                         .Select(v => dataBuilder.Value.Build(a.CtAttribute.Type, v.Value, v.Languages))
                         .ToList();
-                    var final = DataRepair.FixIncorrectLanguageDefinitions(results, primaryLanguage);
+                    var final = ValueLanguageRepairHelper.FixIncorrectLanguageDefinitions(results, primaryLanguage);
                     return final.Select(r => (a.Name, r));
                 })
                 .ToList();

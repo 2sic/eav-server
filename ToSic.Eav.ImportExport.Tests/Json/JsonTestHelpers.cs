@@ -6,12 +6,12 @@ using ToSic.Eav.Serialization.Sys;
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 
-public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoader loader, Generator<JsonSerializer> jsonSerializerGenerator)
+public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoaderService loader, Generator<JsonSerializer> jsonSerializerGenerator)
 {
 #if NETCOREAPP
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
 #endif
-    private EfcAppLoader Loader => field ??= loader.UseExistingDb(dbContext);
+    private EfcAppLoaderService Loader => field ??= loader.UseExistingDb(dbContext);
 
     public JsonSerializer SerializerOfApp(int appId)
     {

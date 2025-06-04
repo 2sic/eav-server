@@ -3,7 +3,7 @@ using ToSic.Eav.Persistence.Efc.Intermediate;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class ValueLoaderPro(EfcAppLoader appLoader, EntityDetailsLoadSpecs specs)
+internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs)
     : ValueLoaderStandard(appLoader, specs, "Efc.VlLdPr")
 {
     private ValueQueriesPro ValueQueries => field ??= new(AppLoader.Context, Log);

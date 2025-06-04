@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Persistence.Efc;
 
-public class EfcMetadataTargetTypes(LazySvc<EavDbContext> dbLazy) : ServiceBase("Eav.MdTTyp"), ITargetTypesLoader
+public class EfcMetadataTargetTypesLoaderService(LazySvc<EavDbContext> dbLazy) : ServiceBase("Eav.MdTTyp"), ITargetTypesLoader
 {
     /// <summary>
     /// this is only needed once per application cycle, as the result is fully cached

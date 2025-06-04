@@ -6,7 +6,7 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Persistence.Efc;
 
-internal class EntityLoader(EfcAppLoader efcAppLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, ISysFeaturesService featuresSvc)
+internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.EntLdr")
 {
     public const int IdChunkSize = 5000;

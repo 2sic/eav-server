@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Diagnostics;
-using ToSic.Eav.Internal.Configuration;
-using ToSic.Sys.Configuration;
+﻿using ToSic.Sys.Configuration;
 #if NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Metadata;
+#else
+using Microsoft.EntityFrameworkCore.Diagnostics;
 #endif
 namespace ToSic.Eav.Persistence.Efc.Models;
 

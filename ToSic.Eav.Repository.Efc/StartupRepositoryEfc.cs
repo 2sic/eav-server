@@ -15,7 +15,7 @@ public static class StartupRepositoryEfc
     public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services)
     {
         services.TryAddTransient<DbDataController>();
-        services.TryAddTransient<ITargetTypesLoader, EfcMetadataTargetTypes>();
+        services.TryAddTransient<ITargetTypesLoader, EfcMetadataTargetTypesLoaderService>();
 
         // transient lifetime is important, otherwise 2-3x slower!
         // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient
@@ -31,7 +31,7 @@ public static class StartupRepositoryEfc
 #endif
 
         // Inner loader for use of the main RepositoryLoader
-        services.TryAddTransient<EfcAppLoader>();
+        services.TryAddTransient<EfcAppLoaderService>();
         services.TryAddTransient<IAppsAndZonesLoader, EfcAppsAndZonesLoader>();
         services.TryAddTransient<IAppsAndZonesLoaderWithRaw, EfcAppsAndZonesLoader>();
         services.AddTransient<IBootProcess, BootWarmUpEavSql>();
