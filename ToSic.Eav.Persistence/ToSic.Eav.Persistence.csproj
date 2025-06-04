@@ -8,6 +8,10 @@
 
   <Import Project="../SharedImports/CsProj.Props/Nullable.props" />
 
+  <PropertyGroup>
+    <RootNamespace>ToSic.Eav</RootNamespace>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Data.Build\ToSic.Eav.Data.Build.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Data\ToSic.Eav.Data.csproj" />

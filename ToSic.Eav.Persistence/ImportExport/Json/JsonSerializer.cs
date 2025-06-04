@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Data.ValueConverter.Sys;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Eav.Serialization.Internal;
+using ToSic.Eav.Serialization.Sys;
 
 
 namespace ToSic.Eav.ImportExport.Json;

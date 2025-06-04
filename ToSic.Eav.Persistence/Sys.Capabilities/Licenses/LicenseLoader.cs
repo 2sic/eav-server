@@ -17,7 +17,6 @@
 
 using System.Text;
 using System.Text.Json;
-using ToSic.Eav.Sys;
 using ToSic.Eav.Sys.Configuration;
 using ToSic.Sys.Capabilities;
 using ToSic.Sys.Capabilities.FeatureSet;
@@ -27,7 +26,7 @@ using ToSic.Sys.Configuration;
 using ToSic.Sys.Security.Encryption;
 using ToSic.Sys.Startup;
 
-namespace ToSic.Eav.Configuration.Sys.Loaders;
+namespace ToSic.Eav.Sys.Capabilities.Licenses;
 
 /// <summary>
 /// Will check the loaded licenses and prepare validity information for use during system runtime

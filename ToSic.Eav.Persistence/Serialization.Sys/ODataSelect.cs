@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Serialization;
+﻿namespace ToSic.Eav.Serialization.Sys;
 
 /// <summary>
 /// Create a new EntitySerializationDecorator based on the $select parameters in the URL to filter the fields

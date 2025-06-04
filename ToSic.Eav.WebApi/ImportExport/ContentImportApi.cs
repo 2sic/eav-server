@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.ImportExport.Internal.XmlList;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Serialization.Internal;
+using ToSic.Eav.Serialization.Sys;
 
 #if NETFRAMEWORK
 using System.Web.Http;

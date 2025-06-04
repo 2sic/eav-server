@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.EntityDecorators.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Serialization;
 
 // ReSharper disable once CheckNamespace

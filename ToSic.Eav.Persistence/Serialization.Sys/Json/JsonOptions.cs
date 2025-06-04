@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 using System.Text.Unicode;
 
-namespace ToSic.Eav.Serialization;
+namespace ToSic.Eav.Serialization.Sys.Json;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class JsonOptions

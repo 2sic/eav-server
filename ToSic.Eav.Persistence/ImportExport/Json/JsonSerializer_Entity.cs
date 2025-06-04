@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata.Sys;
+using ToSic.Eav.Serialization.Sys.Json;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.ImportExport.Json;

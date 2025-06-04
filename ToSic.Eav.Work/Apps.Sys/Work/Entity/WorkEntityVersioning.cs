@@ -2,7 +2,7 @@
 using ToSic.Eav.ImportExport.Internal;
 using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.Persistence.Versions;
-using ToSic.Eav.Serialization.Internal;
+using ToSic.Eav.Serialization.Sys;
 using IEntity = ToSic.Eav.Data.IEntity;
 
 

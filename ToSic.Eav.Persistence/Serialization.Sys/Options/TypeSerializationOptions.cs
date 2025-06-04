@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Serialization;
+﻿namespace ToSic.Eav.Serialization.Sys.Options;
 
 /// <summary>
 /// Specs for serializing the type. ATM only used for Metadata!

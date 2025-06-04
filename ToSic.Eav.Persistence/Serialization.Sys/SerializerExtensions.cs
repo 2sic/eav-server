@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Serialization.Internal;
+﻿namespace ToSic.Eav.Serialization.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SerializerExtensions

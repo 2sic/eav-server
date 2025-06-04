@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 
 // Based on https://github.com/dotnet/runtime/issues/43026#issuecomment-949966701
-namespace ToSic.Eav.Serialization;
+namespace ToSic.Eav.Serialization.Sys.Json;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class JsonExceptionConverter<TExceptionType> : JsonConverter<TExceptionType>

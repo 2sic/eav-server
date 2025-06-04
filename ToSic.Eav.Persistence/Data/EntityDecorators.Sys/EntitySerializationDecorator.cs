@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Serialization;
+﻿using ToSic.Eav.Serialization.Sys.Options;
+
+namespace ToSic.Eav.Data.EntityDecorators.Sys;
 
 /// <summary>
 /// An entity should be able to specify if some properties should not be included

@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Caching;
 using ToSic.Eav.Configuration.Sys.Loaders;
 using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Sys.Capabilities.Features;
 using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.StartUp;

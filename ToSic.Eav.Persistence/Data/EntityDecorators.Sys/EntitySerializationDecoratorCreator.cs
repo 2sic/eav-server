@@ -1,7 +1,8 @@
 ﻿using System.Text.Json;
+using ToSic.Eav.Serialization.Sys;
 using static ToSic.Eav.Data.Sys.AttributeNames;
 
-namespace ToSic.Eav.Serialization;
+namespace ToSic.Eav.Data.EntityDecorators.Sys;
 
 /// <summary>
 /// Create a new EntitySerializationDecorator based on the $select parameters in the URL to filter the fields

@@ -1,11 +1,9 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Sys;
 using ToSic.Lib.Coding;
 using static System.StringComparer;
-using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Persistence;
+namespace ToSic.Eav.Data.Sys.Save;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", connect: [dataBuilder])

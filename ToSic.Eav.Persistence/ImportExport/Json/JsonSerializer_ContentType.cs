@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
 
 // ReSharper disable once CheckNamespace

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Context;
-using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 using ToSic.Sys.Capabilities.Features;

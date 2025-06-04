@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace ToSic.Eav.Serialization;
+namespace ToSic.Eav.Serialization.Sys.Json;
 
 /// <summary>
 /// Deserialize inferred types to .NET types

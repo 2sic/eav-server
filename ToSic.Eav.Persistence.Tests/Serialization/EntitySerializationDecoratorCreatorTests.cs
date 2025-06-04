@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Serialization;
+﻿using ToSic.Eav.Data.EntityDecorators.Sys;
+
+namespace ToSic.Eav.Serialization;
 
 public class EntitySerializationDecoratorCreatorTests
 {

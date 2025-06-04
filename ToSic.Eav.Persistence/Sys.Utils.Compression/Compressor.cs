@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using ToSic.Eav.Internal.Features;
 using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Internal.Compression;

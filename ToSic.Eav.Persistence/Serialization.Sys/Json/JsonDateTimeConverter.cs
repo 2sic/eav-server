@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace ToSic.Eav.Serialization;
+namespace ToSic.Eav.Serialization.Sys.Json;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class JsonDateTimeConverter : JsonConverter<DateTime>

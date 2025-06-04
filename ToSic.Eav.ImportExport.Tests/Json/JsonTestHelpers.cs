@@ -2,7 +2,7 @@
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Efc.Models;
 using ToSic.Eav.Repositories;
-using ToSic.Eav.Serialization.Internal;
+using ToSic.Eav.Serialization.Sys;
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 

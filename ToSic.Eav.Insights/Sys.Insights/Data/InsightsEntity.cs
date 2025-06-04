@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Serialization.Internal;
+using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.WebApi.Errors;
 using ToSic.Razor.Blade;
 using static ToSic.Eav.WebApi.Sys.Insights.InsightsHtmlBase;

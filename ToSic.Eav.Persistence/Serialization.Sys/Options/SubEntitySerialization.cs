@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Serialization;
+﻿namespace ToSic.Eav.Serialization.Sys.Options;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SubEntitySerialization: ISubEntitySerialization

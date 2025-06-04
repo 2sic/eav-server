@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Dimensions.Sys;
 
-namespace ToSic.Eav.Persistence;
+namespace ToSic.Eav.Data.Sys.Save;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Repository.Efc.Parts;
+﻿using ToSic.Eav.Data.Sys.Save;
+
+namespace ToSic.Eav.Repository.Efc.Parts;
 
 partial class DbEntity
 {
