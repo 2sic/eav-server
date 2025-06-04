@@ -1,10 +1,11 @@
 ﻿using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Identity;
+using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Internal;
-using ToSic.Eav.ImportExport.Internal.ImportHelpers;
-using ToSic.Eav.ImportExport.Internal.Zip;
-using ToSic.Eav.Integration.Environment;
+using ToSic.Eav.ImportExport.Sys.ImportHelpers;
+using ToSic.Eav.ImportExport.Sys.XmlImport;
+using ToSic.Eav.ImportExport.Sys.Zip;
 using ToSic.Eav.Internal.Configuration;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;

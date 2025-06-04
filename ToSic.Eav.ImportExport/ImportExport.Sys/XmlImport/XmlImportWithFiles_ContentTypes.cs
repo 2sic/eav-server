@@ -1,6 +1,5 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.Data.Values.Sys;
-using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
 
@@ -8,7 +7,7 @@ using ToSic.Eav.ImportExport.Sys.Xml;
 // ...and these are real errors which should blow
 // ReSharper disable PossibleNullReferenceException
 
-namespace ToSic.Eav.ImportExport.Internal;
+namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 
 partial class XmlImportWithFiles
 {

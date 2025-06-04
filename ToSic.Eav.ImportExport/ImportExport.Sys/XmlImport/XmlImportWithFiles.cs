@@ -1,11 +1,11 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Dimensions.Sys;
+using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Xml;
-using ToSic.Eav.Internal.Environment;
 using ToSic.Eav.Repositories.Sys;
 
-namespace ToSic.Eav.ImportExport.Internal;
+namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)

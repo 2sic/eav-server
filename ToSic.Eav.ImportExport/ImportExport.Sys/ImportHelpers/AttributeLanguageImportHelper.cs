@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
+namespace ToSic.Eav.ImportExport.Sys.ImportHelpers;
 
 /// <summary>
 /// Helpers to handle attribute languages during the import

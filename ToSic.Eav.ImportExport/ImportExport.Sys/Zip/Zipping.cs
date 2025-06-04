@@ -1,7 +1,7 @@
 ﻿using System.IO.Compression;
 using ToSic.Eav.Security.Files;
 
-namespace ToSic.Eav.ImportExport.Internal.Zip;
+namespace ToSic.Eav.ImportExport.Sys.Zip;
 
 internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 {

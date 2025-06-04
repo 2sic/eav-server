@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.Repository.Efc.Tests.Mocks;
 
 #pragma warning disable CA1822

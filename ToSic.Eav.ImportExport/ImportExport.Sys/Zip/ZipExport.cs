@@ -4,13 +4,14 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Ancestors.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
+using ToSic.Eav.ImportExport.Sys.XmlExport;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Configuration;
 
-namespace ToSic.Eav.ImportExport.Internal.Zip;
+namespace ToSic.Eav.ImportExport.Sys.Zip;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipExport(

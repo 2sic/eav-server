@@ -1,11 +1,9 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.Apps.Integration;
+namespace ToSic.Eav.ImportExport.Integration;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class EavImportExportEnvironmentBase(ISite site, IAppsCatalog appsCatalog, string logName)

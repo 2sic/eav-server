@@ -1,10 +1,9 @@
-﻿using ToSic.Eav.Apps.Integration;
-using ToSic.Eav.Context;
+﻿using ToSic.Eav.Context;
 using ToSic.Eav.Persistence.Sys.Logging;
 
 #pragma warning disable CS9113 // Parameter is unread.
 
-namespace ToSic.Eav.Integration;
+namespace ToSic.Eav.ImportExport.Integration;
 
 internal class ImportExportEnvironmentUnknown(ISite site, IAppsCatalog appsCatalog, WarnUseOfUnknown<ImportExportEnvironmentUnknown> _)
     : EavImportExportEnvironmentBase(site, appsCatalog, $"{LogScopes.NotImplemented}.IExEnv"), IIsUnknown

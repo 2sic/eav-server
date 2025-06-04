@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.ImportExport.Internal;
+﻿namespace ToSic.Eav.ImportExport.Sys;
 
 public record AppExportSpecs(
     int ZoneId,

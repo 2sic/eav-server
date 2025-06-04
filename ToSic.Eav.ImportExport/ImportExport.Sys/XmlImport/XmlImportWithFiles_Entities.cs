@@ -8,7 +8,7 @@ using IEntity = ToSic.Eav.Data.IEntity;
 // ...and these are real errors which should blow
 // ReSharper disable PossibleNullReferenceException
 
-namespace ToSic.Eav.ImportExport.Internal;
+namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 
 partial class XmlImportWithFiles
 {

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.ImportExport.Internal;
-using ToSic.Eav.ImportExport.Internal.Zip;
-using ToSic.Eav.Integration;
-using ToSic.Eav.Integration.Environment;
-using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.ImportExport.Integration;
+using ToSic.Eav.ImportExport.Sys;
+using ToSic.Eav.ImportExport.Sys.XmlExport;
+using ToSic.Eav.ImportExport.Sys.XmlImport;
+using ToSic.Eav.ImportExport.Sys.Zip;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Apps;

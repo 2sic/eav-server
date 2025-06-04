@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.ImportExport.Internal;
+using ToSic.Eav.ImportExport.Sys;
+using ToSic.Eav.ImportExport.Sys.XmlExport;
 using ToSic.Eav.Testing.Scenarios;
 using ToSic.Lib.Logging;
 using Xunit.DependencyInjection;

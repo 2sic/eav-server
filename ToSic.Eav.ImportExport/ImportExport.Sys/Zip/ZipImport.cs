@@ -1,10 +1,11 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
-using ToSic.Eav.ImportExport.Internal.ImportHelpers;
-using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.ImportExport.Integration;
+using ToSic.Eav.ImportExport.Sys.ImportHelpers;
+using ToSic.Eav.ImportExport.Sys.XmlImport;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.ImportExport.Internal.Zip;
+namespace ToSic.Eav.ImportExport.Sys.Zip;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.MyServices>(services, "Zip.Imp")

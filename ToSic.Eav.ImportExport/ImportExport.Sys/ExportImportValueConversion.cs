@@ -2,7 +2,7 @@
 using ToSic.Eav.ImportExport.Sys.Xml;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.ImportExport.Internal;
+namespace ToSic.Eav.ImportExport.Sys;
 
 /// <summary>
 /// For exporting a content-type into xml, either just the schema or with data

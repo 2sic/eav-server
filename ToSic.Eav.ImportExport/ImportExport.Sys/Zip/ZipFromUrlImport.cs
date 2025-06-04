@@ -2,7 +2,7 @@
 using ToSic.Eav.Identity;
 using ToSic.Sys.Configuration;
 
-namespace ToSic.Eav.ImportExport.Internal.Zip;
+namespace ToSic.Eav.ImportExport.Sys.Zip;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipFromUrlImport: ZipImport

@@ -7,14 +7,12 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Ancestors.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Identity;
-using ToSic.Eav.ImportExport.Json;
 using ToSic.Eav.ImportExport.Json.Sys;
-using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.ImportExport.Internal;
+namespace ToSic.Eav.ImportExport.Sys.XmlExport;
 // this has a minimal risk of being different!
 // should all get it from cache only!
 

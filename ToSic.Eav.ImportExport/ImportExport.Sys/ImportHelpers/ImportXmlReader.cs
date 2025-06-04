@@ -1,8 +1,9 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
+using ToSic.Eav.ImportExport.Sys.XmlImport;
 
-namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
+namespace ToSic.Eav.ImportExport.Sys.ImportHelpers;
 
 /// <summary>
 /// Read an xml file, check for headers and verify all the parts to better process the import

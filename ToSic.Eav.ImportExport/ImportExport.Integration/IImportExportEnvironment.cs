@@ -1,8 +1,7 @@
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.Persistence;
 using ToSic.Eav.Persistence.Sys.Logging;
 
-namespace ToSic.Eav.Internal.Environment;
+namespace ToSic.Eav.ImportExport.Integration;
 
 public interface IImportExportEnvironment: IHasLog
 {

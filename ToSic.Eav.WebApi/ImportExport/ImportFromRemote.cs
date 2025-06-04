@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Internal.Zip;
-using ToSic.Eav.Integration.Environment;
+﻿using ToSic.Eav.ImportExport.Integration;
+using ToSic.Eav.ImportExport.Sys.Zip;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Sys.Users;
 
