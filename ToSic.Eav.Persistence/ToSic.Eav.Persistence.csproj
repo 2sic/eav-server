@@ -9,7 +9,7 @@
   <Import Project="../SharedImports/CsProj.Props/Nullable.props" />
 
   <PropertyGroup>
-    <RootNamespace>ToSic.Eav</RootNamespace>
+    <RootNamespace>ToSic</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,10 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Persistence.Sys\Logging\ImportErrorCode.de-DE.resx">
+    <EmbeddedResource Update="Eav.Persistence.Sys\Logging\ImportErrorCode.de-DE.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Update="Persistence.Sys\Logging\ImportErrorCode.resx">
+    <EmbeddedResource Update="Eav.Persistence.Sys\Logging\ImportErrorCode.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

@@ -13,38 +13,6 @@ partial class FileSystemLoader
 
 
     public Dictionary<string, JsonFormat> JsonBundleBundles => field ??= GetJsonBundleBundles();
-    //public Dictionary<string, JsonFormat> JsonBundleBundles => _jsonBundles.GetM(Log, l =>
-    //{
-    //    // #1. check that folder exists
-    //    if (!CheckPathExists(Path) || !CheckPathExists(BundlesPath))
-    //        return ([], "path doesn't exist");
-
-    //    const string infoIfError = "couldn't read bundle-file";
-    //    try
-    //    {
-    //        // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
-    //        var jsonBundles = new Dictionary<string, JsonFormat>();
-    //        Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
-    //            .ForEach(p =>
-    //            {
-    //                l.A("Loading json bundle" + p);
-    //                jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p));
-    //            });
-    //        return (jsonBundles, $"found {jsonBundles.Count}");
-    //    }
-    //    catch (IOException e)
-    //    {
-    //        l.Ex("Failed loading type - couldn't import bundle-file, IO exception", e);
-    //        return ([], "IOException");
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        l.Ex($"Failed loading bundle - {infoIfError}", e);
-    //        return ([], "error");
-    //    }
-    //});
-    //private readonly GetOnce<Dictionary<string, JsonFormat>> _jsonBundles = new();
-
 
     public Dictionary<string, JsonFormat> GetJsonBundleBundles()
     {
