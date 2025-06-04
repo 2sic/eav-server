@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Data.Debug;
-using ToSic.Eav.Data.Sys;
-using ToSic.Lib.Data;
+﻿using ToSic.Lib.Data;
 
-namespace ToSic.Eav.Data.PropertyLookup;
+namespace ToSic.Eav.Data.Sys;
 
 /// <summary>
 /// Internal class to do a PropertyLookup using dictionary values.

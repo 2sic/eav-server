@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.PropertyStack.Sys;
 
 /// <summary>
 /// Should be an entity-reader which has a stack of entities it tries to access and prioritize which ones are to be asked first.

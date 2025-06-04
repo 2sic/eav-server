@@ -1,9 +1,6 @@
-﻿using ToSic.Eav.Data.Debug;
-using ToSic.Eav.Data.PropertyDump.Sys;
-using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.PropertyDump.Sys;
 
 public class PropertyStackDump: IPropertyDumper
 {
@@ -20,12 +17,12 @@ public class PropertyStackDump: IPropertyDumper
 
 
     public int IsCompatible(object target)
-        => target is PropertyStack ? 100 : 0;
+        => target is PropertyStack.Sys.PropertyStack ? 100 : 0;
 
     public List<PropertyDumpItem> Dump(object stack, PropReqSpecs specs, string path, IPropertyDumpService dumpService)
-        => DumpTyped((PropertyStack)stack, specs, path, dumpService);
+        => DumpTyped((PropertyStack.Sys.PropertyStack)stack, specs, path, dumpService);
 
-    private List<PropertyDumpItem> DumpTyped(PropertyStack stack, PropReqSpecs specs, string path, IPropertyDumpService dumpService)
+    private List<PropertyDumpItem> DumpTyped(PropertyStack.Sys.PropertyStack stack, PropReqSpecs specs, string path, IPropertyDumpService dumpService)
     {
         // No sources - return empty
         if (stack.Sources.SafeNone())

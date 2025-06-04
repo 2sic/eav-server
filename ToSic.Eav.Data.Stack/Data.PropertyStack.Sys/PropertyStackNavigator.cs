@@ -1,10 +1,8 @@
-﻿using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys;
-using ToSic.Lib.Data;
 using ToSic.Lib.Wrappers;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.PropertyStack.Sys;
 
 /// <summary>
 /// This is an internal object and it does quite some complex stuff, so we must document it.

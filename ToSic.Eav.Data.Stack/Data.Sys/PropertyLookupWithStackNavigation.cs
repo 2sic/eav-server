@@ -1,10 +1,8 @@
-﻿using ToSic.Eav.Data.Debug;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.PropertyStack.Sys;
 using ToSic.Eav.Sys;
-using ToSic.Lib.Data;
 using ToSic.Lib.Wrappers;
 
-namespace ToSic.Eav.Data.PropertyLookup;
+namespace ToSic.Eav.Data.Sys;
 
 /// <summary>
 /// Test code!

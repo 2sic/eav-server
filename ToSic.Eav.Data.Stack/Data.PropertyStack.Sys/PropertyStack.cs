@@ -1,10 +1,9 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Lib.Data;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.PropertyStack.Sys;
 
 [PrivateApi("Hide implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

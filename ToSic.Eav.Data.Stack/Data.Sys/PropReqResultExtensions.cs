@@ -1,7 +1,6 @@
 ﻿using System.Collections;
-using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.Data.PropertyLookup;
+namespace ToSic.Eav.Data.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PropReqResultExtensions

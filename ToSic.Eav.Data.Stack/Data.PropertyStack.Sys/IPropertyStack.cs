@@ -1,9 +1,8 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Sys;
 using ToSic.Lib.Data;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.PropertyStack.Sys;
 
 /// <summary>
 /// This is an entity-reader which has a stack of entities it tries to access and prioritize which ones are to be asked first.

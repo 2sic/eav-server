@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Debug;
-using ToSic.Eav.Data.PropertyDump.Sys;
-using ToSic.Eav.Data.PropertyLookup;
+﻿using ToSic.Eav.Data.PropertyDump.Sys;
 using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Stack.DumpTests.CustomSetup;

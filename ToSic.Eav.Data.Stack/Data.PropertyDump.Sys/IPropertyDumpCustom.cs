@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Data.Debug;
-using ToSic.Eav.Data.PropertyDump.Sys;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.Data.PropertyLookup;
+namespace ToSic.Eav.Data.PropertyDump.Sys;
 
 /// <summary>
 /// Describes objects which will themselves implement property dumping.

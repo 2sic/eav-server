@@ -1,10 +1,8 @@
-﻿using ToSic.Eav.Data.Debug;
+﻿using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Wrappers;
-using ToSic.Eav.Data.PropertyDump.Sys;
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.PropertyDump.Sys;
 
 public class EntityDump : IPropertyDumper
 {

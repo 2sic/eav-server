@@ -1,7 +1,8 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.EntityStack.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Data.PropertyLookup;
+namespace ToSic.Eav.Data.PropertyStack.Sys;
 
 /// <summary>
 /// Code to re-wrap stuff inside a stack, so it could navigate through stacks again if necessary

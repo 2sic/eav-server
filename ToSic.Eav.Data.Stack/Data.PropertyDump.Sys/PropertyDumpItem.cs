@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Data.PropertyLookup;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.Data.Debug;
+namespace ToSic.Eav.Data.PropertyDump.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

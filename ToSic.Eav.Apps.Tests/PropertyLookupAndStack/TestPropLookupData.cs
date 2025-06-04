@@ -1,5 +1,4 @@
 ﻿using System;
-using ToSic.Eav.Data.PropertyLookup;
 using ToSic.Eav.Data.Sys;
 using ToSic.Lib.Helpers;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
