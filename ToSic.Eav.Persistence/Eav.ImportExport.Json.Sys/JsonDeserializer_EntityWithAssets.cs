@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.ImportExport.Internal.Xml;
+﻿using ToSic.Eav.ImportExport.Sys.Xml;
 
-
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Json;
+namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer
 {

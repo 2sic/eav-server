@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Attributes.Sys;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Dimensions.Sys;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Sys;
@@ -10,8 +9,7 @@ using ToSic.Eav.Serialization.Sys.Json;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Json;
+namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer
 {

@@ -4,12 +4,13 @@ using ToSic.Eav.Caching;
 using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Internal.Compression;
+using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Persistence.Efc;
 using ToSic.Eav.Persistence.Interfaces;
 using ToSic.Eav.Repository.Efc.Parts;
 using ToSic.Eav.StartUp;
 using ToSic.Sys.Users;
+using ToSic.Sys.Utils.Compression;
 
 namespace ToSic.Eav.Repository.Efc;
 

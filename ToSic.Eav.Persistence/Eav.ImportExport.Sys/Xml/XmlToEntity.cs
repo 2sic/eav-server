@@ -7,9 +7,8 @@ using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Values.Sys;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Eav.Repositories;
 
-namespace ToSic.Eav.ImportExport.Internal.Xml;
+namespace ToSic.Eav.ImportExport.Sys.Xml;
 
 /// <summary>
 /// Import EAV Data from XML Format

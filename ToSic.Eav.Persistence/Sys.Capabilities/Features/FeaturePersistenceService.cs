@@ -1,11 +1,10 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Serialization.Sys.Json;
-using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Configuration;
 
-namespace ToSic.Eav.Sys.Capabilities.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 public class FeaturePersistenceService(
     LazySvc<IGlobalConfiguration> globalConfiguration,

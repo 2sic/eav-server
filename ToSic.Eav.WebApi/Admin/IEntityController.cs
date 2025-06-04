@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Internal.Options;
+﻿using ToSic.Eav.ImportExport.Sys.Options;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
 #else

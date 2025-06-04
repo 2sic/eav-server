@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Sys.Configuration;
-using ToSic.Sys.Capabilities;
-using ToSic.Sys.Configuration;
+﻿using ToSic.Sys.Configuration;
 
-namespace ToSic.Eav.Sys.Capabilities.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 public class FeaturesIoHelper(IGlobalConfiguration globalConfiguration) : ServiceBase("FeatCfgMng")
 {

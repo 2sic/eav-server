@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Xml.Linq;
 using ToSic.Eav.Data.Entities.Sys;
-using ToSic.Eav.ImportExport.Internal.Options;
 using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.ImportExport.Sys.Options;
+using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.Logging;
 using IEntity = ToSic.Eav.Data.IEntity;
 

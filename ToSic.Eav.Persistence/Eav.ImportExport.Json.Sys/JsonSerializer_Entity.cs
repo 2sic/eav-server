@@ -3,7 +3,7 @@ using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Serialization.Sys.Json;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.ImportExport.Json;
+namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer
 {

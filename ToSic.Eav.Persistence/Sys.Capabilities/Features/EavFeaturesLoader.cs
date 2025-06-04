@@ -2,11 +2,11 @@
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Serialization.Sys.Json;
-using ToSic.Eav.Sys.Capabilities.Licenses;
-using ToSic.Sys.Capabilities.Features;
+using ToSic.Eav.Sys;
+using ToSic.Sys.Capabilities.Licenses;
 using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
-namespace ToSic.Eav.Sys.Capabilities.Features;
+namespace ToSic.Sys.Capabilities.Features;
 
 [PrivateApi]
 public class EavFeaturesLoader(

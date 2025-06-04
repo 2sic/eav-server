@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Internal.Options;
+﻿using ToSic.Eav.ImportExport.Sys.Options;
 
 namespace ToSic.Eav.WebApi.Dto;
 

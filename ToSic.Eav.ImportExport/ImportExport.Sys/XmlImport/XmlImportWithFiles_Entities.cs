@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Metadata.Targets;
 using IEntity = ToSic.Eav.Data.IEntity;
 

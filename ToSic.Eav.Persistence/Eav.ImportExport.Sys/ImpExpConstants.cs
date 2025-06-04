@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.ImportExport.Internal;
+﻿namespace ToSic.Eav.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImpExpConstants

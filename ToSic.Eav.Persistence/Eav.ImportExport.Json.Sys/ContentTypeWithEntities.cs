@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.ImportExport.Json;
+﻿namespace ToSic.Eav.ImportExport.Json.Sys;
 
 /// <summary>
 /// WIP

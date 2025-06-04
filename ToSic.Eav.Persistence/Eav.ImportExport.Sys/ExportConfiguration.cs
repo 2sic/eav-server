@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.EntityBased.Sys;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.ImportExport.Internal;
+namespace ToSic.Eav.ImportExport.Sys;
 
 /// <summary>
 /// Metadata decorator for entities / content-types to mark them for export in a bundle

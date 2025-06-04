@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.ImportExport.Sys.Xml;
 
 namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;
 

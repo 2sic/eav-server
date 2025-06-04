@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
 
-namespace ToSic.Eav.ImportExport.Internal.Xml;
+namespace ToSic.Eav.ImportExport.Sys.Xml;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class BundleEntityWithAssets

@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Metadata.Sys;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Json;
+namespace ToSic.Eav.ImportExport.Json.Sys;
 
 /// <summary>
 /// Controls how serialization should happen, as different scenarios require different parts to be included or not.

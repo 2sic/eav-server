@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.ImportExport.Internal.Xml;
+namespace ToSic.Eav.ImportExport.Sys.Xml;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class XmlConstants

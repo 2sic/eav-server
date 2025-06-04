@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.ImportExport.Internal.Options;
+﻿namespace ToSic.Eav.ImportExport.Sys.Options;
 
 public enum ExportSelection
 {

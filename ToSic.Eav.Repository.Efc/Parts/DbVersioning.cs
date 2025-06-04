@@ -5,8 +5,8 @@ using System.Data.SqlClient;
 #else
 using Microsoft.Data.SqlClient;
 #endif
-using ToSic.Eav.Internal.Compression;
 using ToSic.Eav.Sys;
+using ToSic.Sys.Utils.Compression;
 
 namespace ToSic.Eav.Repository.Efc.Parts;
 

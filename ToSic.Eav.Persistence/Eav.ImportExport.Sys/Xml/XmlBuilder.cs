@@ -1,7 +1,6 @@
 ﻿using System.Xml.Linq;
-using ToSic.Eav.ImportExport.Validation;
 
-namespace ToSic.Eav.ImportExport.Internal.Xml;
+namespace ToSic.Eav.ImportExport.Sys.Xml;
 
 public class XmlBuilder
 {

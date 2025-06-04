@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
 
-namespace ToSic.Eav.Internal.Compression;
+namespace ToSic.Sys.Utils.Compression;
 
 public class DeflateCompressor : ICompressor
 {

@@ -1,5 +1,6 @@
-﻿using ToSic.Eav.ImportExport.Internal.Options;
-using ToSic.Eav.ImportExport.Internal.Xml;
+﻿using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.ImportExport.Sys.Options;
+using ToSic.Eav.ImportExport.Sys.Xml;
 
 namespace ToSic.Eav.ImportExport.Internal.XmlList;
 

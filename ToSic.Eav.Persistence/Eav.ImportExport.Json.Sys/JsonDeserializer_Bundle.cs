@@ -2,9 +2,7 @@
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization.Sys.Json;
 
-
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Json;
+namespace ToSic.Eav.ImportExport.Json.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class JsonSerializer

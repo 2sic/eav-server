@@ -1,16 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.ImportExport.Internal.Xml;
-using ToSic.Eav.ImportExport.Json;
-using ToSic.Eav.Internal.Compression;
-using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Persistence;
+using ToSic.Eav.ImportExport.Json.Sys;
+using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Serialization.Sys;
-using ToSic.Eav.Sys.Capabilities.Features;
-using ToSic.Eav.Sys.Capabilities.Licenses;
 using ToSic.Sys.Boot;
+using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Licenses;
+using ToSic.Sys.Utils.Compression;
 
 namespace ToSic.Eav.Integration;
 

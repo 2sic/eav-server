@@ -3,8 +3,7 @@ using ToSic.Eav.Data.Values.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Json;
+namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer
 {

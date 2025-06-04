@@ -2,7 +2,7 @@
 using System.Xml.XPath;
 using ToSic.Eav.Apps.Internal;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.ImportExport.Internal.Xml;
+using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.ImportExport.Internal.ImportHelpers;

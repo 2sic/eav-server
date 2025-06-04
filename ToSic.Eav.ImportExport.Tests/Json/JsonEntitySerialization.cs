@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Sys;
 using Xunit.Abstractions;
-using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
+using JsonSerializer = ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 

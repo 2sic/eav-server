@@ -17,16 +17,14 @@
 
 using System.Text;
 using System.Text.Json;
-using ToSic.Eav.Sys.Configuration;
-using ToSic.Sys.Capabilities;
+using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.FeatureSet;
 using ToSic.Sys.Capabilities.Fingerprints;
-using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Configuration;
 using ToSic.Sys.Security.Encryption;
 using ToSic.Sys.Startup;
 
-namespace ToSic.Eav.Sys.Capabilities.Licenses;
+namespace ToSic.Sys.Capabilities.Licenses;
 
 /// <summary>
 /// Will check the loaded licenses and prepare validity information for use during system runtime

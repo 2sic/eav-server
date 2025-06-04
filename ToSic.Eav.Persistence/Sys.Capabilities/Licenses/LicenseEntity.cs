@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.EntityBased.Sys;
 using ToSic.Sys.Capabilities.Fingerprints;
 
-namespace ToSic.Eav.Sys.Capabilities.Licenses;
+namespace ToSic.Sys.Capabilities.Licenses;
 
 /// <summary>
 /// License entity - usually stored in the global / preset App.

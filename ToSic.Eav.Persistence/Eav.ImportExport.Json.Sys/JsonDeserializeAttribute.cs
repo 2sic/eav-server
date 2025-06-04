@@ -2,7 +2,7 @@
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization.Sys.Json;
 
-namespace ToSic.Eav.ImportExport.Json;
+namespace ToSic.Eav.ImportExport.Json.Sys;
 
 internal class JsonDeserializeAttribute
 {

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Internal.Compression;
+namespace ToSic.Sys.Utils.Compression;
 
 public class Compressor(ISysFeaturesService features = null)
 {

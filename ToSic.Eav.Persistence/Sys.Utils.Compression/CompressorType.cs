@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Internal.Compression;
+﻿namespace ToSic.Sys.Utils.Compression;
 
 public enum CompressorType
 {

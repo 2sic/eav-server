@@ -4,8 +4,7 @@ using ToSic.Eav.Data.ValueConverter.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization.Sys;
 
-
-namespace ToSic.Eav.ImportExport.Json;
+namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer(JsonSerializer.MyServices services, string logName = "Jsn.Serlzr"): SerializerBase(services, logName), IDataDeserializer
 {

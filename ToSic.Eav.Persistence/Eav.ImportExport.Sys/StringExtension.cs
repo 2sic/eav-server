@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ToSic.Eav.ImportExport.Validation;
+namespace ToSic.Eav.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StringExtension

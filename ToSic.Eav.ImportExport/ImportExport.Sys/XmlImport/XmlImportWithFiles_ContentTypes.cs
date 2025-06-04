@@ -1,7 +1,8 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.Data.Values.Sys;
-using ToSic.Eav.ImportExport.Internal.Xml;
 using ToSic.Eav.ImportExport.Json;
+using ToSic.Eav.ImportExport.Json.Sys;
+using ToSic.Eav.ImportExport.Sys.Xml;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow

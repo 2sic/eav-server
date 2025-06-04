@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Configuration.Sys.Loaders;

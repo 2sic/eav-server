@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.Internal.Compression;
+using ToSic.Sys.Utils.Compression;
 using Xunit.Abstractions;
 
 namespace ToSic.Eav.Compression;

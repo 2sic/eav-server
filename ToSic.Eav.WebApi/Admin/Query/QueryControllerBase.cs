@@ -6,6 +6,7 @@ using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.Internal.Inspect;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSources;
+using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys;
@@ -38,7 +39,7 @@ public abstract class QueryControllerBase<TImplementation>(
         LazySvc<ConvertToEavLight> entToDicLazy,
         LazySvc<InspectQuery> queryInfoLazy,
         LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
-        Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> jsonSerializer,
+        Generator<JsonSerializer> jsonSerializer,
         Generator<PassThrough> passThrough,
         LazySvc<QueryManager> queryManager,
         Generator<IAppReaderFactory> appStates,
@@ -65,7 +66,7 @@ public abstract class QueryControllerBase<TImplementation>(
         public LazySvc<ConvertToEavLight> EntToDicLazy { get; } = entToDicLazy;
         public LazySvc<InspectQuery> QueryInfoLazy { get; } = queryInfoLazy;
         public LazySvc<DataSourceCatalog> DataSourceCatalogLazy { get; } = dataSourceCatalogLazy;
-        public Generator<ToSic.Eav.ImportExport.Json.JsonSerializer> JsonSerializer { get; } = jsonSerializer;
+        public Generator<JsonSerializer> JsonSerializer { get; } = jsonSerializer;
         public Generator<PassThrough> PassThrough { get; } = passThrough;
     }
 

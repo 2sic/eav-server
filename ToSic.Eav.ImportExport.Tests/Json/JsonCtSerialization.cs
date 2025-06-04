@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using Xunit.Abstractions;
-using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
+using JsonSerializer = ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 
