@@ -5,11 +5,11 @@ using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.FeatureSet;
 
-namespace ToSic.Eav.SysData;
+namespace ToSic.Eav.DataSources.Sys;
 
 public static class FeaturesToRawEntity
 {
-    public static IRawEntity ToRawEntity2(this FeatureState state)
+    public static IRawEntity ToRawEntity(this FeatureState state)
         => new RawEntity
         {
             Guid = state.Aspect.Guid,
@@ -44,7 +44,7 @@ public static class FeaturesToRawEntity
     /// But basically it should be the License + State information.
     /// </summary>
 
-    public static IRawEntity ToRawEntity2(this FeatureSetState state)
+    public static IRawEntity ToRawEntity(this FeatureSetState state)
         => new RawEntity
         {
             Guid = state.Aspect.Guid,

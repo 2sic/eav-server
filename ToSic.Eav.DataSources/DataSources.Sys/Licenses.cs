@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.SysData;
-using ToSic.Sys.Capabilities.Licenses;
+﻿using ToSic.Sys.Capabilities.Licenses;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -31,7 +30,7 @@ public sealed class Licenses : CustomDataSource
         ProvideOutRaw(
             () => licenseService.All
                 .OrderBy(l => l.Aspect?.Priority ?? 0)
-                .Select(l => l.ToRawEntity2()),
+                .Select(l => l.ToRawEntity()),
             options: () => new() { TypeName = "License" }
         );
     }

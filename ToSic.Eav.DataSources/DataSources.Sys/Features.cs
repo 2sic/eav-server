@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.SysData;
-using ToSic.Sys.Capabilities.Features;
+﻿using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -31,7 +30,7 @@ public sealed class Features : CustomDataSource
         ProvideOutRaw(
             () => featuresService.All
                 .OrderBy(f => f.NameId)
-                .Select(f => f.ToRawEntity2()),
+                .Select(f => f.ToRawEntity()),
             options: () => new() { TypeName = "Feature" }
         );
     }
