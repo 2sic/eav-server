@@ -4,7 +4,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Core.TestHelpers\ToSic.Eav.Core.TestHelpers.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,7 +10,6 @@
     <ProjectReference Include="..\ToSic.Eav.Apps.Persistence\ToSic.Eav.Apps.Persistence.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core.TestHelpers\ToSic.Eav.Core.TestHelpers.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />
   </ItemGroup>
 
