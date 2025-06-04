@@ -20,7 +20,7 @@ public interface IMetadataGet
     /// <param name="targetType">The type-id of the target we're accessing, like 10=cms-object, 4=entity</param>
     /// <param name="key">The key which is used for lookup</param>
     /// <param name="contentTypeName">Optional content-type name, to only retrieve metadata of that type</param>
-    /// <returns>A list (may be empty) of metadata items found for this target</returns>
+    /// <returns>A list (can be empty) of metadata items found for this target</returns>
     IEnumerable<IEntity> GetMetadata<TKey>(int targetType, TKey key, string contentTypeName = null);
 
     /// <summary>
@@ -33,7 +33,7 @@ public interface IMetadataGet
     /// <param name="targetType">The TargetTypes constant of the target we're accessing, like TargetTypes.Entity</param>
     /// <param name="key">The key which is used for lookup</param>
     /// <param name="contentTypeName">Optional content-type name, to only retrieve metadata of that type</param>
-    /// <returns>A list (may be empty) of metadata items found for this target</returns>
+    /// <returns>A list (can be empty) of metadata items found for this target</returns>
     IEnumerable<IEntity> GetMetadata<TKey>(TargetTypes targetType, TKey key, string contentTypeName = null);
 
 }
