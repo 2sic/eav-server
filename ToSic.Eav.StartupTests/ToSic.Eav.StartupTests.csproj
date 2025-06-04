@@ -9,6 +9,7 @@
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Testing.FullDbFixtures\ToSic.Eav.Testing.FullDbFixtures.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
