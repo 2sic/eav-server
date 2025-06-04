@@ -43,7 +43,7 @@ public class StartupTestsAppsPersistence
             .AddAppFallbackServices()
             .AddEavDataBuildFallbacks()
             .AddEavDataFallbacks()
-            .AddEavCoreLibAndSysFallbackServices();
+            .AddAllLibAndSysFallbacks();
 
         return services;
     }

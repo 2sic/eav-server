@@ -65,7 +65,7 @@ public static class StartupEav
             .AddEavImportExportFallback()
             .AddEavDataBuildFallbacks()
             .AddEavDataFallbacks()
-            .AddEavCoreLibAndSysFallbackServices();
+            .AddAllLibAndSysFallbacks();
         return services;
     }
 }

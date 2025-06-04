@@ -11,6 +11,6 @@ public static class EavSharedAssemblyInfo
     // If it's a constant, the value will be added to the compiled code, so no real dependency will exist at runtime
     public const string AssemblyVersion = "19.99.00";
     public const string Company = "2sic internet solutions GmbH, Switzerland";
-    public const string EavProduct = "2sic EAV System";
+    public const string EavProduct = "2sic EAV (Entity, Attribute, Value) System";
     public const string EavCopyright = "Copyright AGPL © 2sic 2025";
 }

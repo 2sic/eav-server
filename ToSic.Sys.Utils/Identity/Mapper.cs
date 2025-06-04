@@ -1,4 +1,9 @@
-﻿namespace ToSic.Eav.Identity;
+﻿// Keep this in the EAV.Identity namespace,
+// Since we use it in some of our projects and that would be breaking otherwise.
+// In future, we should provide this on a service and then hide this...
+
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Identity;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class Mapper
