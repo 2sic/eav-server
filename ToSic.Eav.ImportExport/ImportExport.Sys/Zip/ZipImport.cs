@@ -177,7 +177,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             MigrateForImportAppDataFile(appDirectory);
 
             // Import app.xml file(s) when is located in appDirectory/2sexy/App_Data
-            foreach (var _ in Directory.GetFiles(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile))
+            foreach (var _ in Directory.GetFiles(AppDataProtectedFolderPath(appDirectory, pendingApp), FolderConstants.AppDataFile))
                 ImportAppXmlAndFiles(rename, appDirectory, importMessages, pendingApp, inheritAppId);
         }
         catch (Exception e)
@@ -197,7 +197,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         var importer = Services.XmlImpExpFiles.New().Init(null, false);
 
         var imp = new ImportXmlReader(
-            Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), Constants.AppDataFile), importer,
+            Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), FolderConstants.AppDataFile), importer,
             l);
 
         if (imp.IsAppImport)
@@ -247,7 +247,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         importMessages.AddRange(importer.Messages);
         if (!pendingApp) CopyAppFiles(importMessages, appId, appDirectory);
 
-        var tmpAppGlobalFilesRoot = pendingApp ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder) : appDirectory;
+        var tmpAppGlobalFilesRoot = pendingApp ? Path.Combine(appDirectory, FolderConstants.AppDataProtectedFolder) : appDirectory;
         CopyAppGlobalFiles(importMessages, appId, tmpAppGlobalFilesRoot, deleteGlobalTemplates: false, overwriteFiles: true);
         // New in V11 - now that we just imported content types into the /system folder
         // the App must be refreshed to ensure these are available for working
@@ -259,8 +259,8 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
 
     private static string AppDataProtectedFolderPath(string appDirectory, bool pendingApp)
         => pendingApp
-            ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder)
-            : Path.Combine(appDirectory, Constants.ToSxcFolder, Constants.AppDataProtectedFolder);
+            ? Path.Combine(appDirectory, FolderConstants.AppDataProtectedFolder)
+            : Path.Combine(appDirectory, FolderConstants.ToSxcFolder, FolderConstants.AppDataProtectedFolder);
 
     /// <summary>
     /// Copy all files in 2sexy folder to (portal file system) 2sexy folder
@@ -273,7 +273,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     {
         var l = Log.Fn($"..., {appId}, {tempFolder}");
         var templateRoot = Services.Environment.TemplatesRoot(_zoneId, appId);
-        var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForAppStuff);
+        var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForAppStuff);
         if (Directory.Exists(appTemplateRoot))
             base.Services.FileManagerGenerator.New().SetFolder(appId, appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
         l.Done("ok");
@@ -292,7 +292,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     {
         var l = Log.Fn($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}");
         var globalTemplatesRoot = Services.Environment.GlobalTemplatesRoot(_zoneId, appId);
-        var appTemplateRoot = Path.Combine(tempFolder, Constants.ZipFolderForGlobalAppStuff);
+        var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForGlobalAppStuff);
         if (Directory.Exists(appTemplateRoot))
         {
             if (deleteGlobalTemplates)
@@ -311,9 +311,9 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         var l = Log.Fn($"{nameof(appDirectory)}:'{appDirectory}', {nameof(pendingApp)}:{pendingApp}");
         // Handle PortalFiles/SiteFiles folder
         var portalTempRoot = pendingApp
-            ? Path.Combine(appDirectory, Constants.AppDataProtectedFolder, Constants.ZipFolderForSiteFiles)
+            ? Path.Combine(appDirectory, FolderConstants.AppDataProtectedFolder, FolderConstants.ZipFolderForSiteFiles)
             : Path.Combine(appDirectory,
-                Constants.ZipFolderForPortalFiles); // TODO: probably replace with Constants.ZipFolderForSiteFiles
+                FolderConstants.ZipFolderForPortalFiles); // TODO: probably replace with Constants.ZipFolderForSiteFiles
         l.A($"{nameof(portalTempRoot)}:{portalTempRoot}");
 
         if (Directory.Exists(portalTempRoot))
@@ -332,12 +332,12 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// <param name="xmlFileName"></param>
     public static void MigrateForImportAppDataFile(string appRootPath)
     {
-        var oldAppFilePath = Path.Combine(appRootPath, Constants.AppDataFile);
-        var oldDataAppFilePath = Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.FolderOldDotData, Constants.AppDataFile);
+        var oldAppFilePath = Path.Combine(appRootPath, FolderConstants.AppDataFile);
+        var oldDataAppFilePath = Path.Combine(appRootPath, FolderConstants.ToSxcFolder, FolderConstants.FolderOldDotData, FolderConstants.AppDataFile);
         if (!File.Exists(oldAppFilePath) && !File.Exists(oldDataAppFilePath)) return;
 
-        Directory.CreateDirectory(Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.AppDataProtectedFolder));
-        var newFilePath = Path.Combine(appRootPath, Constants.ToSxcFolder, Constants.AppDataProtectedFolder, Constants.AppDataFile);
+        Directory.CreateDirectory(Path.Combine(appRootPath, FolderConstants.ToSxcFolder, FolderConstants.AppDataProtectedFolder));
+        var newFilePath = Path.Combine(appRootPath, FolderConstants.ToSxcFolder, FolderConstants.AppDataProtectedFolder, FolderConstants.AppDataFile);
 
         if (File.Exists(oldDataAppFilePath))
         {
@@ -359,11 +359,11 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// <param name="appRootPath"></param>
     public static void MigrateOldAppDataFile(string appRootPath)
     {
-        var oldDataAppFilePath = Path.Combine(appRootPath, Constants.FolderOldDotData, Constants.AppDataFile);
+        var oldDataAppFilePath = Path.Combine(appRootPath, FolderConstants.FolderOldDotData, FolderConstants.AppDataFile);
         if (!File.Exists(oldDataAppFilePath)) return;
 
-        Directory.CreateDirectory(Path.Combine(appRootPath, Constants.AppDataProtectedFolder));
-        var newFilePath = Path.Combine(appRootPath, Constants.AppDataProtectedFolder, Constants.AppDataFile);
+        Directory.CreateDirectory(Path.Combine(appRootPath, FolderConstants.AppDataProtectedFolder));
+        var newFilePath = Path.Combine(appRootPath, FolderConstants.AppDataProtectedFolder, FolderConstants.AppDataFile);
 
         if (File.Exists(newFilePath)) File.Delete(newFilePath);
         File.Move(oldDataAppFilePath, newFilePath);

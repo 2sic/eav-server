@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class Constants
+public class Constants
 {
     public const int NullId = -2742;
     public const string NullNameId = "unknown";

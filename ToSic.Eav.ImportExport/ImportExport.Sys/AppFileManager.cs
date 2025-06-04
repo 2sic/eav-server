@@ -85,7 +85,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
         var files = usingAppJson 
             ? ExcludeFilesBasedOnExcludeInDotAppJson(_root, specs) // based on app.json
             : AllFiles(specs); // old way
-        l.A($"Exclude files {(usingAppJson ? $"based on {Constants.AppJson}" : "using old way")}");
+        l.A($"Exclude files {(usingAppJson ? $"based on {FolderConstants.AppJson}" : "using old way")}");
 
         l.A("Process excluding files based on hardcoded exclusions");
         var filteredFiles = files
@@ -126,10 +126,10 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     {
         var l = Log.Fn<IEnumerable<string>>();
         if (appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId).Any()) // exclude files based on app.json from v14.08
-            return l.Return(ExcludeFoldersBasedOnExcludeInDotAppJson(_root, specs).ToList(), $"ok, exclude folders based on {Constants.AppJson}");
+            return l.Return(ExcludeFoldersBasedOnExcludeInDotAppJson(_root, specs).ToList(), $"ok, exclude folders based on {FolderConstants.AppJson}");
 
         // old hardcoded way of excluding files
-        l.A($"can't find ExcludeSearchPatterns in {Constants.AppJson}, exclude folders on old way");
+        l.A($"can't find ExcludeSearchPatterns in {FolderConstants.AppJson}, exclude folders on old way");
         // add folder slashes to ensure the term is part of a folder, not within a file-name
         var exclAnyFolder = Settings.ExcludeFolders
             .Select(f => $"{Path.DirectorySeparatorChar}{f}{Path.DirectorySeparatorChar}")
@@ -189,7 +189,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
             var allFiles = specs.FileSearchPatterns
                 .SelectMany(s => Directory.EnumerateFiles(root, s, SearchOption.AllDirectories))
                 .ToList();
-            return l.Return(allFiles, $"warning, can't find 2sxc exclude in '{Constants.AppJson}'");
+            return l.Return(allFiles, $"warning, can't find 2sxc exclude in '{FolderConstants.AppJson}'");
         }
 
         // prepare list of files to exclude using simple wildcard patterns
@@ -224,7 +224,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
             var allFolders = specs.FileSearchPatterns
                 .SelectMany(s => Directory.EnumerateDirectories(_root, s, SearchOption.AllDirectories))
                 .ToList();
-            return l.Return(allFolders, $"warning, can't find 2sxc exclude in '{Constants.AppJson}'");
+            return l.Return(allFolders, $"warning, can't find 2sxc exclude in '{FolderConstants.AppJson}'");
         }
 
         // prepare list of files to exclude using simple wildcard patterns

@@ -197,8 +197,8 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
 
     private static bool IsRootEdition(string path, string edition)
         => edition.Equals(Constants.Api, StringComparison.OrdinalIgnoreCase) // <root>/api/
-           || edition.Equals(Constants.AppCode, StringComparison.OrdinalIgnoreCase) // <root>/AppCode/
-           || edition.Equals(Constants.AppDataProtectedFolder, StringComparison.OrdinalIgnoreCase) // <root>/App_Data/
+           || edition.Equals(FolderConstants.AppCode, StringComparison.OrdinalIgnoreCase) // <root>/AppCode/
+           || edition.Equals(FolderConstants.AppDataProtectedFolder, StringComparison.OrdinalIgnoreCase) // <root>/App_Data/
            || edition.Equals(path, StringComparison.OrdinalIgnoreCase); // path is only file without folder
 }
 

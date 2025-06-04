@@ -56,10 +56,10 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
         var sub = dir.GetDirectories();
         var subDirs = sub
             .SelectMany(s => s
-                .GetDirectories(Constants.AppDataProtectedFolder)
+                .GetDirectories(FolderConstants.AppDataProtectedFolder)
                 .Where(d => d.Exists)
-                .SelectMany(a => a.GetDirectories(Constants.FolderSystem))
-                .Union(s.GetDirectories(Constants.FolderOldDotData))
+                .SelectMany(a => a.GetDirectories(FolderConstants.FolderSystem))
+                .Union(s.GetDirectories(FolderConstants.FolderOldDotData))
             );
         var paths = subDirs
             .Where(d => d.Exists)

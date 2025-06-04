@@ -45,7 +45,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
                 var niceName = InputTypeNiceName(name);
                 // TODO: use metadata information if available
                 return new InputTypeInfo(fullName, niceName, "Extension Field", "", false,
-                    $"{placeholder}/{Constants.FolderAppExtensions}/{name}/{JsFile}", false, "file-system");
+                    $"{placeholder}/{FolderConstants.FolderAppExtensions}/{name}/{JsFile}", false, "file-system");
             })
             .ToList();
         return l.Return(types, $"{types.Count}");

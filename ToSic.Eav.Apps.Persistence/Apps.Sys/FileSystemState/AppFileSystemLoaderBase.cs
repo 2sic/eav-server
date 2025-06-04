@@ -48,8 +48,8 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     protected bool InitPathAfterAppId()
     {
         var l = Log.Fn<bool>();
-        Path = System.IO.Path.Combine(_appPaths.PhysicalPath, Constants.FolderAppExtensions);
-        PathShared = System.IO.Path.Combine(_appPaths.PhysicalPathShared, Constants.FolderAppExtensions);
+        Path = System.IO.Path.Combine(_appPaths.PhysicalPath, FolderConstants.FolderAppExtensions);
+        PathShared = System.IO.Path.Combine(_appPaths.PhysicalPathShared, FolderConstants.FolderAppExtensions);
         return l.ReturnTrue($"p:{Path}, ps:{PathShared}");
     }
 

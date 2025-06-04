@@ -107,7 +107,7 @@ public class ImportApp(
             }
 
             // skip folder when App_Data/app.xml is missing
-            var appXml = Path.Combine(directoryPath, Constants.AppDataProtectedFolder, Constants.AppDataFile);
+            var appXml = Path.Combine(directoryPath, FolderConstants.AppDataProtectedFolder, FolderConstants.AppDataFile);
             if (!File.Exists(appXml))
             {
                 l.A($"skip, App_Data/app.xml is missing");

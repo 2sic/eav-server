@@ -1,6 +1,5 @@
 ﻿namespace ToSic.Eav;
-
-partial class Constants
+public class FolderConstants
 {
     /// <summary>
     /// Folder inside an App-folder, containing extensions and other system features
@@ -11,18 +10,21 @@ partial class Constants
     /// Data folder - either in the global environment, in plugins or in app-extensions
     /// </summary>
     public const string FolderOldDotData = ".data";
+
     public const string FolderSystem = "system"; // ex: ".data";
 
     /// <summary>
     /// the .databeta (this is for testing only, will never be in the distribution)
     /// </summary>
     public const string FolderOldDotDataBeta = ".databeta";
+
     public const string FolderSystemBeta = "system-beta"; // ex. ".databeta";
 
     /// <summary>
     /// This is for data-customizations on global 2sxc/environment, which won't get replaced on updates
     /// </summary>
     public const string FolderOldDotDataCustom = ".data-custom";
+
     public const string FolderSystemCustom = "system-custom"; // ".data-custom";
 
     /// <summary>
@@ -62,6 +64,7 @@ partial class Constants
     /// Name of folder that should contain portal files in export zip or App_Data
     /// </summary>
     public const string ZipFolderForPortalFiles = "PortalFiles"; // used in v14
+
     public const string ZipFolderForSiteFiles = "SiteFiles"; // replace "PortalFiles" in v15
 
     /// <summary>

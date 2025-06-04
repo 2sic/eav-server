@@ -9,7 +9,7 @@ public class GlobalConfigHelpers
         value?.Backslash().TrimLastSlash() ?? throw new(ErrorMessageNullNotAllowed(fieldName));
 
     public static string GetDataRoot(string dataFolder) =>
-        dataFolder?.EndsWith(Constants.FolderSystem) ?? false
-            ? dataFolder.Substring(0, dataFolder.Length - Constants.FolderSystem.Length).TrimLastSlash()
+        dataFolder?.EndsWith(FolderConstants.FolderSystem) ?? false
+            ? dataFolder.Substring(0, dataFolder.Length - FolderConstants.FolderSystem.Length).TrimLastSlash()
             : dataFolder ?? string.Empty;
 }

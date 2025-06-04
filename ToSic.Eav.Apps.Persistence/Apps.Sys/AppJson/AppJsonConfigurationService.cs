@@ -27,11 +27,11 @@ public class AppJsonConfigurationService(
     /// <inheritdoc />
     public void MoveAppJsonTemplateFromOldToNewLocation()
     {
-        var appDataProtectedFolder = new DirectoryInfo(Path.Combine(globalConfiguration.Value.GlobalFolder(), Constants.AppDataProtectedFolder));
+        var appDataProtectedFolder = new DirectoryInfo(Path.Combine(globalConfiguration.Value.GlobalFolder(), FolderConstants.AppDataProtectedFolder));
         var appDataTemplateFolder = globalConfiguration.Value.AppDataTemplateFolder();
         Directory.CreateDirectory(appDataTemplateFolder);
-        var oldAppJsonTemplateFilePath = Path.Combine(appDataProtectedFolder.FullName, Constants.AppJson);
-        var appJsonTemplateFilePath = Path.Combine(appDataTemplateFolder, Constants.AppJson);
+        var oldAppJsonTemplateFilePath = Path.Combine(appDataProtectedFolder.FullName, FolderConstants.AppJson);
+        var appJsonTemplateFilePath = Path.Combine(appDataTemplateFolder, FolderConstants.AppJson);
         if (File.Exists(oldAppJsonTemplateFilePath) && !File.Exists(appJsonTemplateFilePath))
             File.Move(oldAppJsonTemplateFilePath, appJsonTemplateFilePath);
     }
@@ -48,7 +48,7 @@ public class AppJsonConfigurationService(
             return l.Return(appJson, "ok, cache hit");
 
         var pathToAppJson = GetPathToAppJson(appId, useShared);
-        l.A($"path to '{Constants.AppJson}':'{pathToAppJson}'");
+        l.A($"path to '{FolderConstants.AppJson}':'{pathToAppJson}'");
 
         appJson = GetAppJsonInternal(pathToAppJson);
         if (appJson != null)
@@ -85,7 +85,7 @@ public class AppJsonConfigurationService(
     }
 
     private string GetPathToAppJson(int appId, bool useShared)
-        => Path.Combine(GetAppFullPath(appId, useShared), Constants.AppDataProtectedFolder, Constants.AppJson);
+        => Path.Combine(GetAppFullPath(appId, useShared), FolderConstants.AppDataProtectedFolder, FolderConstants.AppJson);
 
     private string GetAppFullPath(int appId, bool useShared)
     {
@@ -99,7 +99,7 @@ public class AppJsonConfigurationService(
         var l = Log.Fn<AppJsonConfiguration>($"{nameof(pathToAppJson)}:'{pathToAppJson}'");
 
         if (!File.Exists(pathToAppJson))
-            return l.ReturnNull($"file '{Constants.AppJson}' not found");
+            return l.ReturnNull($"file '{FolderConstants.AppJson}' not found");
 
         try
         {
@@ -129,7 +129,7 @@ public class AppJsonConfigurationService(
 
         var appJson = GetAppJson(appId, useShared);
         if (appJson?.Export?.Exclude == null)
-            return l.Return([], $"warning, '{Constants.AppJson}' is missing.");  // return result; never return null, as we have a lot of .Any() checks which fail otherwise
+            return l.Return([], $"warning, '{FolderConstants.AppJson}' is missing.");  // return result; never return null, as we have a lot of .Any() checks which fail otherwise
 
         try
         {
@@ -143,7 +143,7 @@ public class AppJsonConfigurationService(
         catch (Exception e)
         {
             l.Ex(e);
-            return l.Return([], $"warning, json is not valid in '{Constants.AppJson}'");
+            return l.Return([], $"warning, json is not valid in '{FolderConstants.AppJson}'");
         }
     }
 }

@@ -25,8 +25,8 @@ public class ZipExport(
     private int _appId;
     private int _zoneId;
     private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
-    private const string SourceControlDataFolder = Constants.AppDataProtectedFolder;
-    private const string SourceControlDataFile = Constants.AppDataFile;
+    private const string SourceControlDataFolder = FolderConstants.AppDataProtectedFolder;
+    private const string SourceControlDataFile = FolderConstants.AppDataFile;
     private readonly string _blankGuid = Guid.Empty.ToString();
 
     public AppFileManager AppFileManager;
@@ -82,10 +82,10 @@ public class ZipExport(
                 try
                 {
                     // Empty older version of app global templates state in App_Data
-                    var globalTemplatesStatePath = Path.Combine(appDataPath, Constants.ZipFolderForGlobalAppStuff);
+                    var globalTemplatesStatePath = Path.Combine(appDataPath, FolderConstants.ZipFolderForGlobalAppStuff);
                     ZipImport.TryToDeleteDirectory(globalTemplatesStatePath, Log);
                     // Version control folder to preserve copy of app global templates
-                    var globalTemplatesStateFolder = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
+                    var globalTemplatesStateFolder = appDataDirectory.CreateSubdirectory(FolderConstants.ZipFolderForGlobalAppStuff);
 
                     // Copy app global templates for version control
                     var _ = new List<Message>();
@@ -101,11 +101,11 @@ public class ZipExport(
             try
             {
                 // Empty older version of SiteFiles state in App_Data
-                var portalFilesPath = Path.Combine(appDataPath, Constants.ZipFolderForSiteFiles);
+                var portalFilesPath = Path.Combine(appDataPath, FolderConstants.ZipFolderForSiteFiles);
                 ZipImport.TryToDeleteDirectory(portalFilesPath, Log);
 
                 // Version control folder to preserve copy of SiteFiles
-                var portalFilesDirectory = appDataDirectory.CreateSubdirectory(Constants.ZipFolderForSiteFiles);
+                var portalFilesDirectory = appDataDirectory.CreateSubdirectory(FolderConstants.ZipFolderForSiteFiles);
 
                 // Copy SiteFiles for version control
                 CopyPortalFiles(xmlExport, portalFilesDirectory, specs.AssetsAdam, specs.AssetsSite);
@@ -147,9 +147,9 @@ public class ZipExport(
         var tempDirectory = new DirectoryInfo(temporaryDirectoryPath);
         var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + _appFolder + "/");
 
-        var sexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForAppStuff);
-        var globalSexyDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForGlobalAppStuff);
-        var siteFilesDirectory = appDirectory.CreateSubdirectory(Constants.ZipFolderForPortalFiles);
+        var sexyDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForAppStuff);
+        var globalSexyDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForGlobalAppStuff);
+        var siteFilesDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForPortalFiles);
 
         // Copy app folder
         if (Directory.Exists(_physicalAppPath))
@@ -166,12 +166,12 @@ public class ZipExport(
         #endregion
 
         // create tmp App_Data unless exists
-        var tmpAppDataProtectedFolder = Path.Combine(appDirectory.FullName, Constants.ToSxcFolder, Constants.AppDataProtectedFolder);
+        var tmpAppDataProtectedFolder = Path.Combine(appDirectory.FullName, FolderConstants.ToSxcFolder, FolderConstants.AppDataProtectedFolder);
         Directory.CreateDirectory(tmpAppDataProtectedFolder);
 
         // Save export xml
         var xml = xmlExport.GenerateNiceXml();
-        File.WriteAllText(Path.Combine(tmpAppDataProtectedFolder, Constants.AppDataFile), xml);
+        File.WriteAllText(Path.Combine(tmpAppDataProtectedFolder, FolderConstants.AppDataFile), xml);
 
         // Zip directory and return as stream
         var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
