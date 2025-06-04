@@ -7,7 +7,7 @@ public class EavSystemInfo
 {
     public static Version Version => field ??= Assembly.GetExecutingAssembly().GetName().Version;
 
-    public static readonly string VersionString = VersionToNiceFormat(Version);
+    public static string VersionString { get; }= VersionToNiceFormat(Version);
 
     // Todo: probably move to plumbing or extension method?
     public static string VersionToNiceFormat(Version version)
@@ -17,8 +17,7 @@ public class EavSystemInfo
     // Version is used also as cache-break for js assets.
     // In past build revision was good cache-break value, but since assemblies are deterministic 
     // we use application start unix time as slow changing revision value for cache-break purpose. 
-    //public static readonly Version Version = Assembly.GetExecutingAssembly().GetName().Version;
-    public static readonly string VersionWithStartUpBuild =
+    public static string VersionWithStartUpBuild { get; }=
         VersionWithFakeBuildNumber(Assembly.GetExecutingAssembly().GetName().Version).ToString();
 
     /// <summary>

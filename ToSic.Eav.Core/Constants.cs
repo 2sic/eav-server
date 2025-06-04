@@ -15,10 +15,8 @@ public partial class Constants
     /// </summary>
     public const string HistoryEntityJson = "e";
 
-
     /// <summary>
     /// Mark system / preset content types as having a parent, so they don't get used / exported in the wrong places
-    /// TODO: rename to Preset...
     /// </summary>
     public const int PresetContentTypeFakeParent = -42000001; // just a very strange, dummy number
 
