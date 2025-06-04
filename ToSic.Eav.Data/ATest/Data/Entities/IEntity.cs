@@ -9,12 +9,10 @@ namespace ToSic.Eav.Data;
 
 /// <summary>
 /// The primary data-item in the system, IEntity is a generic data-item for any kind of information.
-/// Note that it inherits <see cref="IEntityLight"/> which is the basic definition without languages,
-/// versioning, publishing etc.
 /// > We recommend you read about the [](xref:Basics.Data.Index)
 /// </summary>
 [PublicApi]
-public partial interface IEntity: IAppIdentityLight, /*IEntityLight,*/ IPublish, IHasPermissions, IPropertyLookup, IHasMetadata, ICanBeEntity
+public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropertyLookup, IHasMetadata, ICanBeEntity
 {
     #region Identifiers and simple Properties: EntityId, EntityGuid, EntityType, Modified, Created
 
@@ -184,10 +182,7 @@ public partial interface IEntity: IAppIdentityLight, /*IEntityLight,*/ IPublish,
     /// <param name="field">Optional field name to access</param>
     /// <param name="type">Optional type to filter for</param>
     /// <returns>List of children, or empty list if not found</returns>
-#if NETFRAMEWORK
-    new
-#endif
-        List<IEntity> Children(string field = null, string type = null);
+    List<IEntity> Children(string field = null, string type = null);
 
     /// <summary>
     /// Get all the parent <see cref="IEntity"/> items - optionally only of a specific type and/or referenced in a specific field
@@ -195,10 +190,7 @@ public partial interface IEntity: IAppIdentityLight, /*IEntityLight,*/ IPublish,
     /// <param name="type">The type name to filter for</param>
     /// <param name="field">The field name where a parent references this item</param>
     /// <returns>List of children, or empty list if not found</returns>
-#if NETFRAMEWORK
-    new
-#endif
-        List<IEntity> Parents(string type = null, string field = null);
+    List<IEntity> Parents(string type = null, string field = null);
 
     /// <summary>
     /// Get the value of this field as an object.
@@ -211,6 +203,8 @@ public partial interface IEntity: IAppIdentityLight, /*IEntityLight,*/ IPublish,
     /// </remarks>
     /// <param name="fieldName"></param>
     /// <returns>The value or null if not found</returns>
+    [PrivateApi("Hidden in v20 as devs should prefer simple Get(...)")]
+    [Obsolete("Should not be used anymore, use Get<T> instead. Planned for removal ca. v24 (2 years later)")]
     object Value(string fieldName);
 
     /// <summary>
@@ -225,6 +219,8 @@ public partial interface IEntity: IAppIdentityLight, /*IEntityLight,*/ IPublish,
     /// <typeparam name="T">The type, usually string, int, bool, etc.</typeparam>
     /// <param name="fieldName"></param>
     /// <returns>The typed value or the (default) value - so a null for strings, false for boolean etc.</returns>
+    [PrivateApi("Hidden in v20 as devs should prefer simple Get(...)")]
+    [Obsolete("Should not be used anymore, use Get<T> instead. Planned for removal ca. v24 (2 years later)")]
     T Value<T>(string fieldName);
 
     #endregion
@@ -288,8 +284,6 @@ public partial interface IEntity: IAppIdentityLight, /*IEntityLight,*/ IPublish,
     [PublicApi]
     // ReSharper disable once MethodOverloadWithOptionalParameter
     TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default);
-
-
 
     #endregion
 
