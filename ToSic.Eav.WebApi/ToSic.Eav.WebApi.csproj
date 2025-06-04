@@ -35,6 +35,7 @@
     <ProjectReference Include="..\ToSic.Eav.Context\ToSic.Eav.Context.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Insights\ToSic.Eav.Insights.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Work\ToSic.Eav.Work.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />

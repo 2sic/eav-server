@@ -8,7 +8,7 @@ using static System.StringComparer;
 namespace ToSic.Eav.Sys.Insights;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders)
+public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders, IHttpExceptionMaker exceptionMaker)
     : ServiceBase("Api.SysIns", connect: [user, dsCache, insightsProviders])
 {
     public const string LogSuffix = "Insight";
@@ -68,7 +68,7 @@ public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache>
 
     private void ThrowIfNotSystemAdmin()
     {
-        if (!user.IsSystemAdmin) throw HttpException.PermissionDenied("requires Superuser permissions");
+        if (!user.IsSystemAdmin) throw exceptionMaker.PermissionDenied("requires Superuser permissions");
     }
     
 }

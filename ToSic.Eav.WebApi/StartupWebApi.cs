@@ -68,6 +68,9 @@ public static class StartupWebApi
         // This ensures that generic backends (.net framework/core) can create a response object
         services.TryAddScoped<IResponseMaker, ResponseMaker>();
 
+        // Helper to decouple Insights from WebApi
+        services.TryAddTransient<IHttpExceptionMaker, HttpExceptionMaker>();
+
         services.AddNetInfrastructure();
 
         return services;

@@ -8,7 +8,8 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsEntity(GenWorkPlus<WorkEntities> workEntities, Generator<JsonSerializer> jsonSerializer) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [workEntities, jsonSerializer])
+internal class InsightsEntity(GenWorkPlus<WorkEntities> workEntities, Generator<JsonSerializer> jsonSerializer, IHttpExceptionMaker exceptionMaker)
+    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [workEntities, jsonSerializer])
 {
     public static string Link = "Entity";
 
@@ -28,7 +29,7 @@ internal class InsightsEntity(GenWorkPlus<WorkEntities> workEntities, Generator<
         else if (Guid.TryParse(NameId, out var entityGuid))
             ent = entities.Get(entityGuid);
         else
-            throw HttpException.BadRequest("can't use entityid - must be number or guid");
+            throw exceptionMaker.BadRequest("can't use entityid - must be number or guid");
 
         var ser = jsonSerializer.New().SetApp(entities.AppWorkCtx.AppReader);
         var json = ser.Serialize(ent);
