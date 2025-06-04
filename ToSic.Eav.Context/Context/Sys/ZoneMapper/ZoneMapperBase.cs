@@ -1,8 +1,6 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Cms.Internal.Languages;
-using ToSic.Eav.Context;
 
-namespace ToSic.Eav.Integration;
+namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
 /// <summary>
 /// Base class for other zone mappers.

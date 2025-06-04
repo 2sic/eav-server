@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Context;
+﻿namespace ToSic.Eav.Context.Sys.ZoneCulture;
 
 internal sealed class ZoneCultureResolverUnknown: IZoneCultureResolver, IIsUnknown
 {

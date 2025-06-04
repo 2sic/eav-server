@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
-using ToSic.Eav.Security;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.Integration.Security;
+namespace ToSic.Eav.Environment.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class EnvironmentPermission(string logPrefix, object[] connect = default)

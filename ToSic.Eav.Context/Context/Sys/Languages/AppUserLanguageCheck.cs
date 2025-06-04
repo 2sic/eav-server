@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Context;
-using ToSic.Eav.Integration;
+using ToSic.Eav.Apps.Sys.Permissions;
+using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Security.Internal;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
@@ -11,7 +10,7 @@ using ToSic.Sys.Security.Permissions;
 using static System.StringComparison;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
-namespace ToSic.Eav.Cms.Internal.Languages;
+namespace ToSic.Eav.Context.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppUserLanguageCheck(

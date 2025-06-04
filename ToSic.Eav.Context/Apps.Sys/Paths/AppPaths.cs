@@ -1,14 +1,13 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Context;
-using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.Environment.Sys.ServerPaths;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Caching.PiggyBack;
 using ToSic.Sys.Configuration;
 using ToSic.Sys.Utils;
 using static System.IO.Path;
 
-namespace ToSic.Eav.Apps.Integration;
+namespace ToSic.Eav.Apps.Sys.Paths;
 
 /// <summary>
 /// Find the App Paths for a specific App in a site

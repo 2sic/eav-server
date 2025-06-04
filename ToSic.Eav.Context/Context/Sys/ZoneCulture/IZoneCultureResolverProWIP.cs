@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Context;
+﻿namespace ToSic.Eav.Context.Sys.ZoneCulture;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IZoneCultureResolverProWIP

@@ -1,5 +1,5 @@
 ﻿
-namespace ToSic.Eav.Internal.Environment;
+namespace ToSic.Eav.Environment.Sys.ServerPaths;
 
 /// <summary>
 /// Goal is that anything on this will be able to provide HttpContext operations as needed

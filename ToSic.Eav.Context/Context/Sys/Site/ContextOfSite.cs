@@ -1,9 +1,9 @@
-﻿using ToSic.Eav.Security.Internal;
+﻿using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Sys.Users;
 using ToSic.Sys.Users.Permissions;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Context.Internal;
+namespace ToSic.Eav.Context.Sys.Site;
 
 /// <summary>
 /// Context of site - fully DI compliant

@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.Sys;
+﻿using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.Integration;
+namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
 public static class ZoneMapperExtensions
 {

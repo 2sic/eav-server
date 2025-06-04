@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Context;
+﻿using ToSic.Eav.Context;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.Security.Internal;
+namespace ToSic.Eav.Apps.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MultiPermissionsTypes(MultiPermissionsApp.MyServices services, LazySvc<IAppReaderFactory> appReaderFactory)

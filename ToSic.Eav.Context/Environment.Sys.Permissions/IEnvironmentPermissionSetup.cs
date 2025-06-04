@@ -2,7 +2,7 @@
 using ToSic.Eav.Context;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.Security;
+namespace ToSic.Eav.Environment.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IEnvironmentPermissionSetup : IEnvironmentPermission

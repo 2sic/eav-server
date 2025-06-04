@@ -2,7 +2,7 @@
 
 #pragma warning disable CS9113 // Parameter is unread.
 
-namespace ToSic.Eav.Integration.Security;
+namespace ToSic.Eav.Environment.Sys.Permissions;
 
 internal class EnvironmentPermissionUnknown(WarnUseOfUnknown<EnvironmentPermissionUnknown> _) : EnvironmentPermission(LogScopes.NotImplemented)
 {

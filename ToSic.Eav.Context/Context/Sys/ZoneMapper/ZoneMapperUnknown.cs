@@ -1,10 +1,8 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Cms.Internal.Languages;
-using ToSic.Eav.Context;
 
 #pragma warning disable CS9113 // Parameter is unread.
 
-namespace ToSic.Eav.Integration;
+namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
 internal class ZoneMapperUnknown(IAppsCatalog appsCatalog, WarnUseOfUnknown<ZoneMapperUnknown> _, Generator<ISite> site)
     : ZoneMapperBase(appsCatalog, $"{LogScopes.NotImplemented}.ZonMap", connect: []), IIsUnknown

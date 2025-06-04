@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Cms.Internal.Languages;
+﻿namespace ToSic.Eav.Context.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ISiteLanguageState

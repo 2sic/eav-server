@@ -1,12 +1,10 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Context;
-using ToSic.Eav.Integration;
+﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
 using IEntity = ToSic.Eav.Data.IEntity;
 
-namespace ToSic.Eav.Security.Internal;
+namespace ToSic.Eav.Apps.Sys.Permissions;
 
 /// <summary>
 /// Do consolidate permission checks on a set of permissions

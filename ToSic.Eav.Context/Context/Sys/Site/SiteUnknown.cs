@@ -2,7 +2,7 @@
 
 #pragma warning disable CS9113 // Parameter is unread.
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Eav.Context.Sys.Site;
 
 internal class SiteUnknown(WarnUseOfUnknown<SiteUnknown> _) : ISite, IIsUnknown
 {

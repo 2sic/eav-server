@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Cms.Internal.Languages;
+﻿namespace ToSic.Eav.Context.Sys;
 
 /// <summary>
 /// Language information specific to one language in this App for this User.

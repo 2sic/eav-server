@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Context;
 
-namespace ToSic.Eav.Apps.Integration;
+namespace ToSic.Eav.Apps.Sys.Paths;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppPathsMicroSvc

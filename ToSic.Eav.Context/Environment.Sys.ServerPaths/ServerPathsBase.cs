@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.ValueConverter.Sys;
 
-namespace ToSic.Eav.Internal.Environment;
+namespace ToSic.Eav.Environment.Sys.ServerPaths;
 
 public abstract class ServerPathsBase: IServerPaths
 {

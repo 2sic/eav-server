@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace ToSic.Eav.Context;
+namespace ToSic.Eav.Context.Sys.ZoneCulture;
 
 // ReSharper disable once InconsistentNaming
 [PrivateApi("this is all very internal, and names may still change")]

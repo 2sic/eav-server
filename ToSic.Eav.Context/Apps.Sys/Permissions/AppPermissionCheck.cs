@@ -1,11 +1,9 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Context;
-using ToSic.Eav.Integration.Security;
+﻿using ToSic.Eav.Context;
+using ToSic.Eav.Environment.Sys.Permissions;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.Security.Internal;
+namespace ToSic.Eav.Apps.Sys.Permissions;
 
 /// <summary>
 /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.

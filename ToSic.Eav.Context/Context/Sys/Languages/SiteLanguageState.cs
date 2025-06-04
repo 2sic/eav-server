@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Cms.Internal.Languages;
+﻿namespace ToSic.Eav.Context.Sys;
 
 /// <summary>
 /// Information about a language in the site - if it's enabled etc.

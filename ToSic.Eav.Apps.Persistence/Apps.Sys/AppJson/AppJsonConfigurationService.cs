@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using ToSic.Eav.Apps.Integration;
+using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Caching;
