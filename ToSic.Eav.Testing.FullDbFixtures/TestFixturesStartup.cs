@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.Testing;
 
@@ -11,6 +12,8 @@ public static class TestFixturesStartup
     /// <returns></returns>
     public static IServiceCollection AddFixtureHelpers(this IServiceCollection services) =>
         services
+            .AddTransient(typeof(DoFixtureStartup<>))
+            .AddTransient<ScenarioBasic>()
             .AddTransient<FixtureStartupNoDb>()
             .AddTransient<FixtureStartupWithDb>();
 }
