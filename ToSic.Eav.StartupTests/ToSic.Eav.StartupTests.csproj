@@ -16,8 +16,8 @@
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 
+  <!-- Copy ScenarioData to bin folder for reviewing during tests -->
   <ItemGroup>
-    <!-- Copy ScenarioData to bin folder for reviewing during tests -->
     <None Include="ScenarioData\**" CopyToOutputDirectory="PreserveNewest" LinkBase="ScenarioData\" />
   </ItemGroup>
 </Project>
