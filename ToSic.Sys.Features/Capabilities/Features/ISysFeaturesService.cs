@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Caching;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Sys.Caching;
 
 namespace ToSic.Sys.Capabilities.Features;
 
@@ -40,7 +41,7 @@ public interface ISysFeaturesService: ICacheExpiring, ICanBeCacheDependency
 
 
     [PrivateApi]
-    bool IsEnabled(IEnumerable<Guid> features, string message, out FeaturesDisabledException? exception);
+    bool IsEnabled(IEnumerable<Guid> features, string message, [NotNullWhen(true)] out FeaturesDisabledException? exception);
 
     [PrivateApi]
     string MsgMissingSome(params Guid[] ids);

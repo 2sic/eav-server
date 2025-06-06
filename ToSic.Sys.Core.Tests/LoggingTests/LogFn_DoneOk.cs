@@ -4,7 +4,7 @@
 // ReSharper disable once InconsistentNaming
 public class LogFn_DoneOk : LogFn
 {
-    protected override void Finish((ILog LogForAdd, Log RealLog) log)
+    protected override void Finish((ILog? LogForAdd, Log? RealLog) log)
     {
         (log.LogForAdd as ILogCall).Done(ExpectedResult);
     }

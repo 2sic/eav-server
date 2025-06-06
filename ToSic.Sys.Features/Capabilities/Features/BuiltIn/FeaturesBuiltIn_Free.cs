@@ -72,6 +72,8 @@ public partial class BuiltInFeatures
         public bool LoadApp;
         public bool LoadAppDetails;
         public bool LoadAppSummary;
-        public string LoadAppIdCsv;
+
+        // Future idea: limit which apps we want to log in detail
+        //public string LoadAppIdCsv;
     }
 }

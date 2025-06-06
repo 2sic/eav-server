@@ -46,6 +46,7 @@ partial class ILogExtensions
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [ShowApiWhenReleased(ShowApiMode.Never)]
+    [return: NotNullIfNotNull(nameof(log))] // not completely true, also depends on enabled, but this is the best we can do
     public static ILogCall? Fn(this ILog? log,
         string? parameters = default,
         string? message = default,

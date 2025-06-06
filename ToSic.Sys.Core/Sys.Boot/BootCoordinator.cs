@@ -36,10 +36,6 @@ public class BootCoordinator : ServiceBase
             .OrderBy(p => p.Phase)
              .ThenBy(p => p.Priority)
             .ToList();
-        //var ordered = _bootProcesses
-        //    .OrderBy(p => (int)p.Phase * 10000 + p.Priority)
-        //    // .ThenBy(p => p.Priority)
-        //    .ToList();
 
         foreach (var registration in ordered)
             BootOneProcess(registration);

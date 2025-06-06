@@ -6,20 +6,19 @@ using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Sys;
-using ToSic.Eav.Testing;
 using ToSic.Lib.DI;
 
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ToSic.Testing.Performance.json;
 
-public class GenerateJsonForApps(EavDbContext Db, Generator<JsonSerializer> jsonSerializerGen, Generator<EfcAppLoaderService> loaderGenerator)
+public class TestGenerateJsonForApps(EavDbContext db, Generator<JsonSerializer> jsonSerializerGen, Generator<EfcAppLoaderService> loaderGenerator)
 {
     public const int OldTestAppOn2dmDnn = 269; // app on 2dms DNN previously - the tractor app on http://2sexycontent.2dm.2sic/owner-filter/tractor-app;
 
     public List<string> LoadJsonsFromSql(int appId)
     {
-        var entitiesAsJson = Db.TsDynDataEntities
+        var entitiesAsJson = db.TsDynDataEntities
             .Where(e => e.AppId == appId && e.Json != null)
             .Select(e => e.Json)
             .ToList();
@@ -59,7 +58,7 @@ public class GenerateJsonForApps(EavDbContext Db, Generator<JsonSerializer> json
         var ser = jsonSerializerGen.New().SetApp(package);
         var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 
-        var dbEnts = Db.TsDynDataEntities
+        var dbEnts = db.TsDynDataEntities
             .Where(e => e.AppId == appid)
             .ToList();
         foreach (var dbEnt in dbEnts)
@@ -69,8 +68,8 @@ public class GenerateJsonForApps(EavDbContext Db, Generator<JsonSerializer> json
             dbEnt.Json = value;
         }
 
-        Db.UpdateRange(dbEnts);
-        Db.SaveChanges("testingOnly", true);
+        db.UpdateRange(dbEnts);
+        db.SaveChanges("testingOnly", true);
     }
 
 
