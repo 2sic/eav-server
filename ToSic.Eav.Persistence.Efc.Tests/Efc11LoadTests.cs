@@ -17,12 +17,10 @@ public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoaderService> load
     /// <summary>
     /// AppId of the Blog App in the eav-testing DB
     /// </summary>
-    private const int BlogAppId = 5260;
-    private const int ExpectedContentTypesOnBlog = 7;
+    private const int BlogAppId = ScenarioConstants.AppBlogId;
+    private const int ExpectedContentTypesOnBlog = ScenarioConstants.AppBlogOwnContentTypeCount;
 
-#if NETCOREAPP
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
-#endif
     private EfcAppLoaderService Loader => field ??= loaderGenerator.New().UseExistingDb(db);
 
     [Fact]

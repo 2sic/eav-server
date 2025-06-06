@@ -14,28 +14,24 @@ class Program
 {
     static void Main(string[] args)
     {
-        var sc = new ServiceCollection();
-        new StartupTestsApps().ConfigureServices(sc);
-        sc.TryAddTransient<GenerateJsonForApps>();
-        sc.AddFixtureHelpers();
-        var serviceProvider = sc.BuildServiceProvider();
+        var serviceProvider = SetupServiceProvider();
         serviceProvider.Build<DoFixtureStartup<ScenarioBasic>>();
 
         var tester = serviceProvider.GetRequiredService<GenerateJsonForApps>(); 
         
         // time initial sql
-        tester.LoadFromSql();   // first time, to establish connection
+        tester.LoadJsonsFromSql(ScenarioConstants.AppEmptyId);   // first time, to establish connection
         var sqlTime1 = Stopwatch.StartNew();
-        tester.LoadFromSql();   // second time, now with timer
+        var jsonList = tester.LoadJsonsFromSql(ScenarioConstants.AppBig4000Id);   // second time, now with timer
         sqlTime1.Stop();
 
         var appTime = Stopwatch.StartNew();
-        tester.LoadApp();
+        tester.LoadApp(ScenarioConstants.AppBig4000Id);
         appTime.Stop();
 
         // start timer
         var serTime = Stopwatch.StartNew();
-        var count = tester.SerializeAll(25);
+        var count = tester.SerializeAll(25, jsonList);
         serTime.Stop();
 
         // output
@@ -45,5 +41,15 @@ class Program
         Console.WriteLine();
         //tester.LogItems.ToList().ForEach(Console.WriteLine);
         Console.ReadKey();
+    }
+
+    private static ServiceProvider SetupServiceProvider()
+    {
+        var sc = new ServiceCollection();
+        new StartupTestsApps().ConfigureServices(sc);
+        sc.TryAddTransient<GenerateJsonForApps>();
+        sc.AddFixtureHelpers();
+        var serviceProvider = sc.BuildServiceProvider();
+        return serviceProvider;
     }
 }

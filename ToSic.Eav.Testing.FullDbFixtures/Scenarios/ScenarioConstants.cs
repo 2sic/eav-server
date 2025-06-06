@@ -16,4 +16,10 @@ public class ScenarioConstants
 
     public const string DevMaterialsRoot = "C:\\Projects\\2sxc\\2sxc-dev-materials\\";
     public const string DevMaterialsEnd = "App_Data\\system-custom\\";
+
+    public const int AppEmptyId = 3010;
+    public const int AppBlogId = 5260; // Blog App in the eav-testing DB
+    public const int AppBlogOwnContentTypeCount = 7;
+
+    public const int AppBig4000Id = 9;
 }
