@@ -14,6 +14,9 @@ public class ScenarioConstants
 
     public const string DefaultGlobalFolder = "c:\\Projects\\2sxc\\2sxc\\Src\\Data\\";
 
+    public const string TestAppsGlobalRoot = "C:\\Projects\\2sxc\\eav-server\\test-data\\mock-site-structure\\shared";
+    public const string TestAppsSite01Root = "C:\\Projects\\2sxc\\eav-server\\test-data\\mock-site-structure\\site-01\\";
+
     public const string DevMaterialsRoot = "C:\\Projects\\2sxc\\2sxc-dev-materials\\";
     public const string DevMaterialsEnd = "App_Data\\system-custom\\";
 

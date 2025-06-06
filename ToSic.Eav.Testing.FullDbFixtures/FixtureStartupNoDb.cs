@@ -9,6 +9,8 @@ public class FixtureStartupNoDb(IGlobalConfiguration globalConfig)
     public virtual void SetupFixtureConfiguration(TestScenario testScenario)
     {
         globalConfig.GlobalFolder(testScenario.GlobalFolder);
+        globalConfig.SharedAppsFolder(testScenario.AppsShared);
+        
         if (Directory.Exists(testScenario.GlobalDataCustomFolder))
             globalConfig.DataCustomFolder(testScenario.GlobalDataCustomFolder);
 
