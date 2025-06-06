@@ -334,8 +334,8 @@ partial class AppState
                 .ToImmutableDictionary(x => x.Id, x => x.NameId);
             
             st._appContentTypesFromRepository = RemoveAliasesForGlobalTypes(st, contentTypes);
-            // Reset the empty fallback list, so that if now the contentTypesFromRepository is null, it will throw an error
-            st._emptyContentTypeListDuringLoading = null;
+            // Set flag that content types have been loaded, enabling certain null-checks
+            st._appContentTypesShouldBeLoaded = true;
             
             // build types by name
             st._appTypesByName = BuildCacheForTypesByName(st._appContentTypesFromRepository, st.Log);
