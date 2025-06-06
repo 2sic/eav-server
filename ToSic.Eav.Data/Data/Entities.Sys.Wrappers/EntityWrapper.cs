@@ -131,9 +131,11 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     #endregion
 
     /// <inheritdoc />
+    [Obsolete]
     public object Value(string field) => Entity.Value(field);
 
     /// <inheritdoc />
+    [Obsolete]
     public T Value<T>(string field) => Entity.Value<T>(field);
 
     /// <inheritdoc />

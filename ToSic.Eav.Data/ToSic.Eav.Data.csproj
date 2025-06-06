@@ -6,6 +6,14 @@
 
   <Import Project="../SharedImports/CsProj.Props/Nullable.props" />
 
+  <!--<PropertyGroup Condition="$(TargetFramework) == 'net9.0'">
+    <Nullable>enable</Nullable>
+  </PropertyGroup>-->
+
+  <!--<Target Name="DebugMessage" AfterTargets="Build">
+    <Message Text="Nullable Test for '$(TargetFramework)' to output: '$(Nullable)'" Importance="high"/>
+  </Target>-->
+
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Lib.LookUp\ToSic.Lib.LookUp.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Caching\ToSic.Sys.Caching.csproj" />

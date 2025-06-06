@@ -45,47 +45,47 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
 
 
 
-    public int AppId => GetContents().AppId;
+    public int AppId => GetContents()!.AppId;
 
-    public string Name => GetContents().Name;
+    public string Name => GetContents()!.Name;
 
     [Obsolete("Deprecated in v13, please use NameId instead")]
-    public string StaticName => GetContents().NameId;
+    public string StaticName => GetContents()!.NameId;
 
-    public string NameId => GetContents().NameId;
+    public string NameId => GetContents()!.NameId;
 
-    public string Scope => GetContents().Scope;
+    public string Scope => GetContents()!.Scope;
 
-    public int Id => GetContents().Id;
+    public int Id => GetContents()!.Id;
 
     [Obsolete("Deprecated in V13, please use Id instead.")]
-    public int ContentTypeId => GetContents().Id;
+    public int ContentTypeId => GetContents()!.Id;
 
-    public IEnumerable<IContentTypeAttribute> Attributes => GetContents().Attributes;
+    public IEnumerable<IContentTypeAttribute> Attributes => GetContents()!.Attributes;
 
-    public IContentTypeAttribute this[string fieldName] => GetContents()[fieldName];
+    public IContentTypeAttribute this[string fieldName] => GetContents()![fieldName];
 
-    public RepositoryTypes RepositoryType => GetContents().RepositoryType;
+    public RepositoryTypes RepositoryType => GetContents()!.RepositoryType;
 
-    public string RepositoryAddress => GetContents().RepositoryAddress;
+    public string RepositoryAddress => GetContents()!.RepositoryAddress;
 
-    public bool IsDynamic => GetContents().IsDynamic;
+    public bool IsDynamic => GetContents()!.IsDynamic;
 
-    public IMetadataOf Metadata => GetContents().Metadata;
+    public IMetadataOf Metadata => GetContents()!.Metadata;
 
-    public bool Is(string name) => GetContents().Is(name);
+    public bool Is(string name) => GetContents()!.Is(name);
 
 
-    public string TitleFieldName => GetContents().TitleFieldName;
+    public string TitleFieldName => GetContents()!.TitleFieldName;
 
     [PrivateApi] // #SharedFieldDefinition
-    public ContentTypeSysSettings SysSettings => GetContents().SysSettings;
+    public ContentTypeSysSettings SysSettings => GetContents()!.SysSettings;
 
-    public string DynamicChildrenField => GetContents().DynamicChildrenField;
+    public string DynamicChildrenField => GetContents()!.DynamicChildrenField;
 
-    public bool AlwaysShareConfiguration => GetContents().AlwaysShareConfiguration;
+    public bool AlwaysShareConfiguration => GetContents()!.AlwaysShareConfiguration;
 
-    IMetadataOf IHasMetadata.Metadata => ((IHasMetadata)GetContents()).Metadata;
+    IMetadataOf IHasMetadata.Metadata => ((IHasMetadata)GetContents()!).Metadata;
 
-    public PiggyBack PiggyBack => GetContents().PiggyBack;
+    public PiggyBack PiggyBack => GetContents()!.PiggyBack;
 }
