@@ -2,6 +2,10 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Eav.props" />
 
+  <PropertyGroup>
+    <RootNamespace>ToSic.Eav.Testing</RootNamespace>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Apps.Persistence.Tests\ToSic.Eav.Apps.Persistence.Tests.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />

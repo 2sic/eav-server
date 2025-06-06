@@ -25,31 +25,14 @@ public class StartupTestsApps
     {
         services
             .AddFixtureHelpers()
-            // Apps
-            //.AddEavAppsPersistence()
-            //.AddEavContext()
-            //.AddEavApps()
 
             // SQL Server
             .AddRepositoryAndEfc()
             // Import/Export as well as File Based Json loading
             .AddEavImportExport()
-            .AddEavPersistence()
-            // DataSources
             .AddDataSources()
             .AddDataSourceSystem()
-            // EAV Core
-            //.AddEavDataBuild()
-            //.AddEavCoreLibAndSys()
-
-            // Fallbacks for services which were not implemented - must come last
-            //.AddContextFallbackServices()
-            //.AddAppPersistenceFallbackServices()
-            .AddAppFallbackServices()
-            .AddEavImportExportFallback()
-            //.AddEavDataBuildFallbacks()
-            //.AddEavCoreLibAndSysFallbackServices()
-            ;
+            .AddEavImportExportFallback();
 
         StartupTestsAppsPersistence.StartupTestsAppsPersistenceAndBelow(services);
     }
