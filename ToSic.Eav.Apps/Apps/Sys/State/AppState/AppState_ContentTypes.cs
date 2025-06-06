@@ -10,12 +10,24 @@ partial class AppState
     /// </summary>
     public IEnumerable<IContentType> ContentTypes => _contentTypesList
         ??= new(CacheTimestampDelegate,
-            () => _appContentTypesFromRepository.Union(ParentApp.ContentTypes).ToImmutableList()
-        );
+            () =>
+            {
+                var list = _appContentTypesFromRepository as IEnumerable<IContentType>
+                           ?? _emptyContentTypeListDuringLoading
+                           ?? throw new NullReferenceException($"Building {nameof(ContentTypes)} but base list is empty, even though loading has already happened");
+                return list.Union(ParentApp.ContentTypes).ToImmutableList();
+            });
     private SynchronizedList<IContentType> _contentTypesList;
 
     private IDictionary<string, IContentType> _appTypesByName;
     private IImmutableList<IContentType> _appContentTypesFromRepository;
+
+    /// <summary>
+    /// This is a temporary list which should exist before loading, but should be nulled after that.
+    /// It's to ensure that the ContentTypes can be accessed during loading (just returning the parents)
+    /// but that later would throw an exception if accessed, to avoid confusion.
+    /// </summary>
+    private List<IContentType> _emptyContentTypeListDuringLoading = [];
     private ImmutableDictionary<int, string> _appTypeMap;
 
     /// <summary>
