@@ -26,6 +26,6 @@ public class StartupCoreDataSourcesAndTestData
             .AddDataSources()
             .AddDataSourceSystem();
 
-        StartupTestsAppsPersistence.StartupTestsAppsPersistenceAndBelow(services);
+        services.StartupTestsAppsPersistenceAndBelow();
     }
 }

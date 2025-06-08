@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.Apps.Persistence.Tests\ToSic.Eav.Apps.Persistence.Tests.csproj" />
+    <Compile Include="..\ToSic.Eav.Apps.Persistence.Tests\StartupFromAppsPersistence.cs" Link="StartupFromAppsPersistence.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />

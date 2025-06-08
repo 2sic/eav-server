@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav;
@@ -14,7 +15,7 @@ namespace ToSic.Testing.Performance;
 class Program
 {
     public const bool RunGenerateJson = false;
-    public const int RunLoadPresets = 10;
+    public const int RunLoadPresets = 25;
 
     static void Main(string[] args)
     {
@@ -31,9 +32,9 @@ class Program
             for (var i = 0; i < RunLoadPresets; i++)
             {
                 var runTimer = Stopwatch.StartNew();
-                tester.Run();
+                var appState = tester.Run();
                 runTimer.Stop();
-                Console.WriteLine($@"Run {i + 1} done. Time taken: {runTimer.Elapsed}");
+                Console.WriteLine($@"Run {i + 1} done. Time taken: {runTimer.Elapsed}; found: ${appState.List.Count()} items");
             }
             timer.Stop();
             // calculate average time

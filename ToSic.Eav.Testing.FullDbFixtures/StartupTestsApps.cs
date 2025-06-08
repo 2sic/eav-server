@@ -34,6 +34,6 @@ public class StartupTestsApps
             .AddDataSourceSystem()
             .AddEavImportExportFallback();
 
-        StartupTestsAppsPersistence.StartupTestsAppsPersistenceAndBelow(services);
+        services.StartupTestsAppsPersistenceAndBelow();
     }
 }

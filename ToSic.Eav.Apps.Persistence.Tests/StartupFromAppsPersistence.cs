@@ -7,20 +7,13 @@ namespace ToSic.Eav;
 
 /// <summary>
 /// A Startup helper for tests which need Dependency-Injection setup for EAV Core.
+///
+/// IMPORTANT: This file is also included as an imports in the TestFixtures project.
+/// It's done that way, so that project can be decoupled from this project because sometimes we need to run tests in production builds.
 /// </summary>
-/// <remarks>
-/// Use by adding this kind of attribute to your test class:
-/// `[Startup(typeof(StartupCoreDataSourcesAndTestData))]`
-/// </remarks>
-public class StartupTestsAppsPersistence
+public static class StartupFromAppsPersistence
 {
-    /// <summary>
-    /// Startup helper
-    /// </summary>
-    public virtual void ConfigureServices(IServiceCollection services)
-        => StartupTestsAppsPersistenceAndBelow(services);
-
-    public static IServiceCollection StartupTestsAppsPersistenceAndBelow(IServiceCollection services)
+    public static IServiceCollection StartupTestsAppsPersistenceAndBelow(this IServiceCollection services)
     {
         // Register Main Services
         services
