@@ -10,9 +10,9 @@ public class ImportFromRemote(IEnvironmentLogger envLogger, ZipFromUrlImport zip
     : ServiceBase("Bck.Export", connect: [envLogger, zipImportFromUrl, user])
 {
 
-    public (bool, List<Message>) InstallPackage(int zoneId, int appId, bool isApp, string packageUrl)
+    public (bool, List<Message>) InstallPackage(int zoneId, int appId, bool isApp, string packageUrl, string newName = null)
     {
-        var l = Log.Fn<(bool, List<Message>)>($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:{packageUrl}");
+        var l = Log.Fn<(bool, List<Message>)>($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:'{packageUrl}', {nameof(newName)}:'{newName}'");
             
         l.A("install package:" + packageUrl);
         if (!user.IsSiteAdmin) throw new("must be admin");
@@ -22,12 +22,12 @@ public class ImportFromRemote(IEnvironmentLogger envLogger, ZipFromUrlImport zip
         try
         {
             success = importer.Init(zoneId, appId, user.IsSystemAdmin)
-                .ImportUrl(packageUrl, isApp);
+                .ImportUrl(packageUrl, isApp, newName);
         }
         catch (Exception ex)
         {
             envLogger.LogException(ex);
-            throw new("An error occurred while installing the app: " + ex.Message, ex);
+            throw new($"An error occurred while installing the app: {ex.Message}", ex);
         }
 
         return l.Return((success, importer.Messages), success.ToString());

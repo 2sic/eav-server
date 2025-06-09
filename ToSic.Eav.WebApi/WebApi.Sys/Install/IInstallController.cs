@@ -20,6 +20,7 @@ public interface IInstallController<out THttpResponseType>
     /// Before this was GET Installer/InstallPackage
     /// </summary>
     /// <param name="packageUrl"></param>
+    /// <param name="newName"></param>
     /// <returns></returns>
-    THttpResponseType RemotePackage(string packageUrl);
+    THttpResponseType RemotePackage(string packageUrl, string newName = null);
 }

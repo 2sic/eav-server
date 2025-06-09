@@ -46,25 +46,25 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// </summary>
     /// <param name="zipStream">zip file</param>
     /// <param name="temporaryDirectory">temporary storage</param>
-    /// <param name="rename">App rename</param>
+    /// <param name="newName">App rename</param>
     /// <returns></returns>
-    public bool ImportZip(Stream zipStream, string temporaryDirectory, string rename = null)
-        => ImportZipInternal(temporaryDirectory, rename, zipStream);
+    public bool ImportZip(Stream zipStream, string temporaryDirectory, string newName = null)
+        => ImportZipInternal(temporaryDirectory, newName, zipStream);
 
     /// <summary>
     /// Imports a ZIP file (from file)
     /// </summary>
     /// <param name="zipPath">path to ZIP file</param>
     /// <param name="temporaryDirectory">temporary storage</param>
-    /// <param name="rename">App rename</param>
+    /// <param name="newName">App rename</param>
     /// <param name="inheritAppId">optional inherit AppId</param>
     /// <returns></returns>
-    public bool ImportZip(string zipPath, string temporaryDirectory, string rename = null, int? inheritAppId = null)
-        => ImportZipInternal(temporaryDirectory, rename, null, zipPath, inheritAppId);
+    public bool ImportZip(string zipPath, string temporaryDirectory, string newName = null, int? inheritAppId = null)
+        => ImportZipInternal(temporaryDirectory, newName, null, zipPath, inheritAppId);
 
-    private bool ImportZipInternal(string temporaryDirectory, string rename = null, Stream zipStream = null, string zipPath = null, int? inheritAppId = null)
+    private bool ImportZipInternal(string temporaryDirectory, string newName = null, Stream zipStream = null, string zipPath = null, int? inheritAppId = null)
     {
-        var l = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(rename)}:{rename}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
+        var l = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(newName)}:{newName}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
         Exception finalException = null;
 
         try
@@ -95,7 +95,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
                 var packageDir = Path.Combine(temporaryDirectory, "Apps");
                 // Loop through each app directory
                 foreach (var appDirectory in Directory.GetDirectories(packageDir))
-                    ImportApp(rename, appDirectory, Messages, pendingApp: false, inheritAppId);
+                    ImportApp(newName, appDirectory, Messages, pendingApp: false, inheritAppId);
             }
         }
         catch (IOException e)
@@ -165,14 +165,14 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// Historical note: the xml file used to have a different rename
     /// but it's been app.xml since Oct 2016 so this is all we plan to support
     /// </remarks>
-    /// <param name="rename"></param>
+    /// <param name="newName"></param>
     /// <param name="appDirectory"></param>
     /// <param name="importMessages"></param>
     /// <param name="pendingApp"></param>
     /// <param name="inheritAppId">optional inherit appId</param>
-    public bool ImportApp(string rename, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
+    public bool ImportApp(string newName, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
     {
-        var l = Log.Fn<bool>($"{nameof(rename)}:'{rename}', {nameof(appDirectory)}:'{appDirectory}', ...");
+        var l = Log.Fn<bool>($"{nameof(newName)}:'{newName}', {nameof(appDirectory)}:'{appDirectory}', ...");
         try
         {
             // migrate old app.xml and 2sexy/.data/app.xml to 2sexy/App_Data
@@ -180,7 +180,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
 
             // Import app.xml file(s) when is located in appDirectory/2sexy/App_Data
             foreach (var _ in Directory.GetFiles(AppDataProtectedFolderPath(appDirectory, pendingApp), FolderConstants.AppDataFile))
-                ImportAppXmlAndFiles(rename, appDirectory, importMessages, pendingApp, inheritAppId);
+                ImportAppXmlAndFiles(newName, appDirectory, importMessages, pendingApp, inheritAppId);
         }
         catch (Exception e)
         {
@@ -191,9 +191,9 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         return l.ReturnTrue("ok");
     }
 
-    private void ImportAppXmlAndFiles(string rename, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
+    private void ImportAppXmlAndFiles(string newName, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
     {
-        var l = Log.Fn($"{nameof(rename)}:'{rename}' {nameof(appDirectory)}:'{appDirectory}', ...");
+        var l = Log.Fn($"{nameof(newName)}:'{newName}' {nameof(appDirectory)}:'{appDirectory}', ...");
 
         int appId;
         var importer = Services.XmlImpExpFiles.New().Init(null, false);
@@ -213,13 +213,13 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             var folder = imp.AppFolder;
 
             // user decided to install app in different folder, because same App is already installed
-            if (!string.IsNullOrEmpty(rename))
+            if (!string.IsNullOrEmpty(newName))
             {
-                l.A($"User rename to '{rename}'");
-                var renameHelper = new RenameOnImport(folder, rename, l);
+                l.A($"User rename to '{newName}'");
+                var renameHelper = new RenameOnImport(folder, newName, l);
                 renameHelper.FixAppXmlForImportAsDifferentApp(imp);
                 renameHelper.FixPortalFilesAdamAppFolderName(appDirectory, pendingApp);
-                folder = rename;
+                folder = newName;
             }
             else l.A("No rename of app requested");
 
