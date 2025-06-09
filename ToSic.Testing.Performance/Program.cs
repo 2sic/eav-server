@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
+using BenchmarkDotNet.Running;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav;
@@ -17,30 +17,48 @@ class Program
     public const bool RunGenerateJson = false;
     public const int RunLoadPresets = 25;
 
+    public const bool ModeBenchmark = false;
+
     static void Main(string[] args)
     {
         var serviceProvider = SetupServiceProvider();
         serviceProvider.Build<DoFixtureStartup<ScenarioBasic>>();
 
-        if (RunGenerateJson)
-            RunTestGenerateJson(serviceProvider);
 
-        if (RunLoadPresets > 0)
+        if (ModeBenchmark)
         {
-            var tester = serviceProvider.GetRequiredService<TestLoadPresetApp>();
-            var timer = Stopwatch.StartNew();
-            for (var i = 0; i < RunLoadPresets; i++)
-            {
-                var runTimer = Stopwatch.StartNew();
-                var appState = tester.Run();
-                runTimer.Stop();
-                Console.WriteLine($@"Run {i + 1} done. Time taken: {runTimer.Elapsed}; found: ${appState.List.Count()} items");
-            }
-            timer.Stop();
-            // calculate average time
-            var averageTime = TimeSpan.FromTicks(timer.Elapsed.Ticks / RunLoadPresets);
-            Console.WriteLine($@"Total time for {RunLoadPresets} runs: {timer.Elapsed}; Average: {averageTime}");
+            var summary = BenchmarkRunner.Run<BenchmarkPresetApp>();
         }
+        else
+        {
+            if (RunGenerateJson)
+                RunTestGenerateJson(serviceProvider);
+
+            if (RunLoadPresets > 0)
+            {
+                var x = new BenchmarkPresetApp();
+                x.Setup();
+                x.RunManyTimes(false, false);
+                //SysPerfSettings.PreferArray = true;
+                //SysPerfSettings.PreferFrozen = true;
+
+                //var tester = serviceProvider.GetRequiredService<TestLoadPresetApp>();
+                //var timer = Stopwatch.StartNew();
+                //for (var i = 0; i < RunLoadPresets; i++)
+                //{
+                //    var runTimer = Stopwatch.StartNew();
+                //    var appState = tester.Run();
+                //    runTimer.Stop();
+                //    Console.WriteLine($@"Run {i + 1} done. Time taken: {runTimer.Elapsed}; found: ${appState.List.Count()} items");
+                //}
+                //timer.Stop();
+                //// calculate average time
+                //var averageTime = TimeSpan.FromTicks(timer.Elapsed.Ticks / RunLoadPresets);
+                //Console.WriteLine($@"Total time for {RunLoadPresets} runs: {timer.Elapsed}; Average: {averageTime}");
+            }
+        }
+
+
 
         Console.WriteLine();
         //tester.LogItems.ToList().ForEach(Console.WriteLine);
@@ -74,7 +92,7 @@ class Program
         Console.WriteLine($"ser time: {serTime.Elapsed} for {count} items");
     }
 
-    private static ServiceProvider SetupServiceProvider()
+    public static ServiceProvider SetupServiceProvider()
     {
         var sc = new ServiceCollection();
         new StartupTestsApps().ConfigureServices(sc);
