@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace ToSic.Eav.Data.Entities.Sys.Sources;
+﻿namespace ToSic.Eav.Data.Entities.Sys.Sources;
 
 /// <summary>
 /// An entities source which directly delivers the given entities
@@ -8,19 +6,23 @@ namespace ToSic.Eav.Data.Entities.Sys.Sources;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DirectEntitiesSource : IEntitiesSource
 {
+    public IEnumerable<IEntity> List { get; private set; }
+
+    protected DirectEntitiesSource(IEnumerable<IEntity> entities)
+    {
+        List = entities;
+    }
+
     public static TResult Using<TResult>(Func<(DirectEntitiesSource Source, List<IEntity> List), TResult> action)
     {
         var list = new List<IEntity>();
         var directEntitiesSource = new DirectEntitiesSource(list);
         var result = action((directEntitiesSource, list));
-        directEntitiesSource.List = list.ToImmutableList();
+        directEntitiesSource.List = list.ToImmutableSafe();
         directEntitiesSource.CacheTimestamp = DateTime.Now.Ticks + 1; // just in case it's so fast that we would still get the same tick
         return result;
     }
 
-
-    protected DirectEntitiesSource(IEnumerable<IEntity> entities) => List = entities;
-    public IEnumerable<IEntity> List { get; private set; }
 
     public long CacheTimestamp { get; private set; } = DateTime.Now.Ticks;
 

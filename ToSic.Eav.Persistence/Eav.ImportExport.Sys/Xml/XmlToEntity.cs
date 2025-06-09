@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Dimensions.Sys;
 using ToSic.Eav.Data.Entities.Sys;
@@ -168,7 +167,9 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
                     ),
                     tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
                     throw new NullReferenceException("can't build attribute without value"),
-                    tempImportValue.Dimensions.ToImmutableList()))
+                    tempImportValue.Dimensions.ToImmutableSafe()
+                    )
+                )
                 .ToList();
 
             // construct the attribute with these value elements

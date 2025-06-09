@@ -64,7 +64,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public ITarget MetadataFor => Entity.MetadataFor;
 
     /// <inheritdoc />
-    public IImmutableDictionary<string, IAttribute> Attributes => Entity.Attributes;
+    public IReadOnlyDictionary<string, IAttribute> Attributes => Entity.Attributes;
 
     /// <inheritdoc />
     public IContentType Type => Entity.Type;

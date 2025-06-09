@@ -24,7 +24,8 @@ public partial class JsonSerializer
     public List<ContentTypeWithEntities> GetContentTypesFromBundles(JsonFormat package)
     {
         var l = LogDsSummary.Fn<List<ContentTypeWithEntities>>();
-        if (package.Bundles.SafeNone()) return l.Return([], "none found");
+        if (package.Bundles.SafeNone())
+            return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
         var bundlesWithTypes = package.Bundles

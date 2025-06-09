@@ -15,7 +15,8 @@ partial class AttributeBuilder
     public IAttribute Create(string name, ValueTypes type, IList<IValue> values)
     {
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-        var imValues = values?.ToImmutableList() ?? AttributeBase.EmptyValues;
+        var imValues = values.ToImmutableSafe();
+
         return type switch
         {
             ValueTypes.Boolean => new Attribute<bool?> { Name = name, Type = type, ValuesImmutable = imValues },

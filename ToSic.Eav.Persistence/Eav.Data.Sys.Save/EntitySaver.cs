@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Lib.Coding;
 using static System.StringComparer;
 
@@ -165,7 +164,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                     // create filtered list of languages
                     var newLangs = value.Languages?
                         .Where(l => languages.Any(sysLang => sysLang.Matches(l.Key)))
-                        .ToImmutableList();
+                        .ToImmutableSafe();
                     // only keep this value, if it is either the first (so contains primary or null-language)
                     // ...or that it still has a remaining language assignment
                     if (values.Any() && !(newLangs?.Any() ?? false)) continue;
@@ -173,7 +172,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                 }
 
                 //field.Value.Values = values;
-                return dataBuilder.Attribute.CreateFrom(field.Value, values.ToImmutableList());
+                return dataBuilder.Attribute.CreateFrom(field.Value, values.ToImmutableSafe());
             }, InvariantCultureIgnoreCase);
 
         return l.Return(modified);
@@ -195,7 +194,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                 var sortedLangs = value.Languages.OrderBy(l =>
                         (l.Key == saveOptions.PrimaryLanguage ? 0 : 1) // first sort-order: primary language yes/no
                         + (l.ReadOnly ? 20 : 10)) // then - place read-only at the end of the list
-                    .ToImmutableList();
+                    .ToImmutableSafe();
                 return value.With(sortedLangs);
             })
             .ToList();
@@ -233,11 +232,11 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
             if (remainingLanguages.Count == 0) continue;
 
             // Add the value with the remaining languages / relationships
-            var val = dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableList());
+            var val = dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableSafe());
             result.Add(val);
         }
 
-        var final = dataBuilder.Attribute.CreateFrom(update, result.ToImmutableList());
+        var final = dataBuilder.Attribute.CreateFrom(update, result.ToImmutableSafe());
         return l.Return(final);
     }
     

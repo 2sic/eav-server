@@ -138,7 +138,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <summary>
     /// All the attributes of the current Entity.
     /// </summary>
-    IImmutableDictionary<string, IAttribute> Attributes { get; }
+    IReadOnlyDictionary<string, IAttribute> Attributes { get; }
 
     /// <summary>
     /// Gets the "official" Title-Attribute <see cref="IAttribute{T}"/>

@@ -67,8 +67,9 @@ partial class JsonSerializer
             .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
             .ToList();
 
-        // build attributes - based on type definition
-        var attributes = Services.DataBuilder.Attribute.Empty();
+        // Fix for CS9174: Use a constructible type like ImmutableDictionary instead of IReadOnlyDictionary
+        IReadOnlyDictionary<string, IAttribute> attributes = ImmutableDictionary<string, IAttribute>.Empty;
+
         if (contentType.IsDynamic)
         {
             if (allowDynamic)
@@ -100,7 +101,8 @@ partial class JsonSerializer
             created: DateTime.MinValue,
             modified: DateTime.Now,
             owner: jEnt.Owner,
-            version: jEnt.Version);
+            version: jEnt.Version
+        );  
 
 
         return l.Return(newEntity, l.Try(() => $"'{newEntity?.GetBestTitle()}'", "can't get title"));
@@ -129,9 +131,9 @@ partial class JsonSerializer
         return l.Return(target, $"this is metadata; will construct 'For' object. Type: {mdFor.Target} ({mdFor.TargetType})");
     }
 
-    private IImmutableDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
+    private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
     {
-        var l = LogDsDetails.Fn<IImmutableDictionary<string, IAttribute>>(timer: true);
+        var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>(timer: true);
         var bld = Services.DataBuilder.Value;
         var attribs = new[]
         {
@@ -147,7 +149,7 @@ partial class JsonSerializer
         var final = attribs
             .Where(dic => dic != null)
             .SelectMany(pair => pair)
-            .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
+            .ToImmutableDicSafe(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
 
         return l.ReturnAsOk(final);
     }
@@ -172,10 +174,10 @@ partial class JsonSerializer
         return newAttributes;
     }
 
-    private IImmutableDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource relationshipsSource = null)
+    private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource relationshipsSource = null)
     {
-        var l = LogDsDetails.Fn<IImmutableDictionary<string, IAttribute>>();
-        return l.ReturnAsOk(contentType.Attributes.ToImmutableDictionary(
+        var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>();
+        return l.ReturnAsOk(contentType.Attributes.ToImmutableDicSafe(
             a => a.Name,
             a =>
             {
@@ -228,7 +230,7 @@ partial class JsonSerializer
             ? DataConstants.NoLanguages
             : languages.Split(',')
                 .Select(ILanguage (a) => new Language(a.Replace(ReadOnlyMarker, ""), a.StartsWith(ReadOnlyMarker)))
-                .ToImmutableList();
+                .ToImmutableSafe();
 
 
     private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid)

@@ -17,7 +17,7 @@ partial class AttributeBuilder
     public IImmutableDictionary<string, IAttribute> Empty() => EmptyList;
     public static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableDictionary();
     
-    public IImmutableDictionary<string, IAttribute> Create(IContentType contentType, ILookup<string, IValue>? preparedValues)
+    public IReadOnlyDictionary<string, IAttribute> Create(IContentType contentType, ILookup<string, IValue>? preparedValues)
     {
         var attributes = contentType
             .Attributes
@@ -37,10 +37,10 @@ partial class AttributeBuilder
     }
 
 
-    public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, IAttribute>? attributes)
+    public IReadOnlyDictionary<string, IAttribute> Create(IDictionary<string, IAttribute>? attributes)
         => attributes?.ToImmutableInvIgnoreCase() ?? Empty();
 
-    public IImmutableDictionary<string, IAttribute> Create(IDictionary<string, object>? attributes, IImmutableList<ILanguage>? languages = null) => 
+    public IReadOnlyDictionary<string, IAttribute> Create(IDictionary<string, object>? attributes, IImmutableList<ILanguage>? languages = null) => 
         attributes == null
             ? Empty()
             : CreateInternal(attributes, languages).ToImmutableInvIgnoreCase();

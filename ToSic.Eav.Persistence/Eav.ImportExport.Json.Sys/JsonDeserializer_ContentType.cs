@@ -32,11 +32,17 @@ partial class JsonSerializer
         var lMain = LogDsDetails.Fn<ContentTypeWithEntities>(timer: true);
         var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
-            var preferredSource = AppReaderOrNull?.AppState as IEntitiesSource;
+            IEntitiesSource preferredSource = AppReaderOrNull?.AppState;
             var sharedEntSource = DeserializationSettings?.RelationshipsSource;
-            var relationshipsSource = preferredSource ?? sharedEntSource ?? relationships.Source;
+            var relationshipsSource = preferredSource
+                                      ?? sharedEntSource
+                                      ?? relationships.Source;
             // 2024-09-30 2dm warning: ATM the code always seemed to use the relationships source, even if a shared source was available.
-            var preferredSourceMsg = preferredSource != null ? "AppReader" : sharedEntSource != null ? "Shared Entities" : "Standalone List";
+            var preferredSourceMsg = preferredSource != null
+                ? "AppReader"
+                : sharedEntSource != null
+                    ? "Shared Entities"
+                    : "Standalone List";
             lMain.A($"Will use relationship source {preferredSourceMsg}; current size: {relationshipsSource.List?.Count()}");
 
             IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
@@ -86,13 +92,16 @@ partial class JsonSerializer
                         // #SharedFieldDefinition
                         if (mdEntities != null)
                             relationships.List?.AddRange(mdEntities);
-                        return (IContentTypeAttribute)attDef;
+                        return attDef;
                     })
                     .ToList();
 
                 // Prepare Content-Type Metadata
                 l.A("deserialize metadata");
-                var ctMeta = jsonType.Metadata?.Select(ConvertPart).ToList() ?? [];
+                var ctMeta = jsonType.Metadata
+                                 ?.Select(ConvertPart)
+                                 .ToList()
+                             ?? [];
                 relationships.List?.AddRange(ctMeta);
 
                 // Create the Content Type
