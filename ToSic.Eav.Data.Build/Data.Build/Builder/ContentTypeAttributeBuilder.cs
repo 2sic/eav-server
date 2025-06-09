@@ -39,7 +39,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         Guid? guid = default,   // #SharedFieldDefinition
         ContentTypeAttributeSysSettings? sysSettings = default, // #SharedFieldDefinition
         IMetadataOf? metadata = default,
-        List<IEntity>? metadataItems = default,
+        IList<IEntity>? metadataItems = default,
         Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = null)
     {
         metadata ??= new ContentTypeAttributeMetadata(key: id, name: name, type: type,

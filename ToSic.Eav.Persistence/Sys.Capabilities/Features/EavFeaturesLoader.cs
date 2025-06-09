@@ -34,7 +34,7 @@ public class EavFeaturesLoader(
             var licEntities = list
                 .OfType(LicenseEntity.TypeNameId)
                 .Select(e => new LicenseEntity(e))
-                .ToList();
+                .ToListOpt();
             l.A($"licEnt:{licEntities.Count}");
 
             // Check all licenses and show extra message
@@ -45,7 +45,7 @@ public class EavFeaturesLoader(
                     l.A(entFp.ValidityMessage);
                     return entFp;
                 })
-                .ToList();
+                .ToListOpt();
             l.A($"entLic:{enterpriseLicenses.Count}");
 
             licenseLoader

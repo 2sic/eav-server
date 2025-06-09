@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Capabilities.Licenses;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
 
@@ -24,7 +25,7 @@ namespace ToSic.Sys.Capabilities.Features;
 public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeaturesService, ILibFeaturesService
 {
     public IEnumerable<FeatureState> All => _allStaticCache ??= Merge(Stored, featuresCatalog.List, _staticSysFeatures);
-    private static List<FeatureState>? _allStaticCache;
+    private static IList<FeatureState>? _allStaticCache;
 
     /// <summary>
     /// List of all enabled features with their guids and nameIds
@@ -92,9 +93,9 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
     public FeatureStatesPersisted? Stored => _staticStored;
 
     private static FeatureStatesPersisted? _staticStored;
-    private static List<FeatureState>? _staticSysFeatures;
+    private static IList<FeatureState>? _staticSysFeatures;
 
-    public bool UpdateFeatureList(FeatureStatesPersisted newList, List<FeatureState> sysFeatures)
+    public bool UpdateFeatureList(FeatureStatesPersisted newList, IList<FeatureState> sysFeatures)
     {
         _staticStored = newList;
         _staticSysFeatures = sysFeatures;
@@ -109,7 +110,7 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
     }
 
 
-    private static List<FeatureState> Merge(FeatureStatesPersisted? config, IReadOnlyCollection<Feature> featuresCat, List<FeatureState>? sysFeatureStates)
+    private static IList<FeatureState> Merge(FeatureStatesPersisted? config, IReadOnlyCollection<Feature> featuresCat, IList<FeatureState>? sysFeatureStates)
     {
         var licService = new LicenseService();
 
@@ -157,7 +158,7 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
                     Configuration: inConfig?.Configuration
                 );
             })
-            .ToList();
+            .ToListOpt();
 
         // Find additional, un matching features which are not known in the catalog
         var missingFeatures = config?.Features
@@ -178,10 +179,12 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
         var final = (missingFeatures == null
                 ? allFeats
                 : allFeats.Union(missingFeatures))
-            .ToList();
+            .ToListOpt();
 
         if (sysFeatureStates.SafeAny())
-            final = final.Union(sysFeatureStates).ToList();
+            final = final
+                .Union(sysFeatureStates)
+                .ToListOpt();
         return final;
     }
 

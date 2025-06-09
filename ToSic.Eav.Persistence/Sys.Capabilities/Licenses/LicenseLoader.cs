@@ -37,7 +37,7 @@ public sealed class LicenseLoader(
     LazySvc<IGlobalConfiguration> globalConfiguration)
     : LoaderBase(logStore, $"{EavLogs.Eav}LicLdr", connect: [licenseCatalog, fingerprint, globalConfiguration])
 {
-    internal LicenseLoader Init(List<EnterpriseFingerprint> entFingerprints)
+    internal LicenseLoader Init(IList<EnterpriseFingerprint> entFingerprints)
     {
         fingerprint.LoadEnterpriseFingerprints(entFingerprints);
         return this;
@@ -55,7 +55,7 @@ public sealed class LicenseLoader(
 
         var validEntFps = fingerprint.EnterpriseFingerprints
             .Where(e => e.Valid)
-            .ToList();
+            .ToListOpt();
         l.A($"validEntFps:{validEntFps.Count}");
 
         try
@@ -64,7 +64,7 @@ public sealed class LicenseLoader(
             l.A($"Found {licensesStored.Count} licenseStored in files");
             var licenses = licensesStored
                 .SelectMany(ls => LicensesStateBuilder(ls, fingerprint1, validEntFps))
-                .ToList();
+                .ToListOpt();
             var autoEnabled = AutoEnabledLicenses();
             LicenseService.Update(autoEnabled.Union(licenses).ToList());
             l.Done($"Found {licenses.Count} licenses");
@@ -81,9 +81,9 @@ public sealed class LicenseLoader(
     /// Load the license JSON files
     /// </summary>
     /// <returns></returns>
-    private List<LicensesPersisted> LoadLicensesInConfigFolder()
+    private IList<LicensesPersisted> LoadLicensesInConfigFolder()
     {
-        var l = Log.Fn<List<LicensesPersisted>>();
+        var l = Log.Fn<IList<LicensesPersisted>>();
         // ensure that path to store files already exits
         var configFolder = globalConfiguration.Value.ConfigFolder();
         Directory.CreateDirectory(configFolder);
@@ -93,14 +93,14 @@ public sealed class LicenseLoader(
             .Select(File.ReadAllText)
             .Select(j => JsonSerializer.Deserialize<LicensesPersisted>(j)) // should NOT use common SxcJsonSerializerOptions
             .Where(licenses => licenses != null)
-            .ToList();
+            .ToListOpt();
 
         return l.Return(licensesStored, $"licensesStored: {licensesStored.Count}");
     }
 
-    private List<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, List<EnterpriseFingerprint> validEntFps)
+    private IList<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, IList<EnterpriseFingerprint> validEntFps)
     {
-        var l = Log.Fn<List<FeatureSetState>>();
+        var l = Log.Fn<IList<FeatureSetState>>();
         if (licensesPersisted == null)
             return l.Return([], "null");
 
@@ -176,7 +176,7 @@ public sealed class LicenseLoader(
                     Owner = licensesPersisted.Owner,
                 };
             })
-            .ToList();
+            .ToListOpt();
 
         return l.Return(licenseStates, $"count: {licenseStates.Count}");
     }
@@ -188,7 +188,7 @@ public sealed class LicenseLoader(
     /// Get list of licenses which are always auto-enabled
     /// </summary>
     /// <returns></returns>
-    private List<FeatureSetState> AutoEnabledLicenses()
+    private IList<FeatureSetState> AutoEnabledLicenses()
     {
         var licenseStates = licenseCatalog.List
             .Where(ls => ls.AutoEnable)
@@ -203,7 +203,7 @@ public sealed class LicenseLoader(
                 SignatureIsValid = true,
                 VersionIsValid = true,
             })
-            .ToList();
+            .ToListOpt();
         return licenseStates;
     }
 }

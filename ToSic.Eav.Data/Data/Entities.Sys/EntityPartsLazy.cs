@@ -27,7 +27,7 @@ public class EntityPartsLazy
     /// <param name="source"></param>
     /// <param name="metadata"></param>
     /// <returns></returns>
-    public static EntityPartsLazy ForAppAndOptionalMetadata(IAppStateCache source = default, List<IEntity> metadata = default)
+    public static EntityPartsLazy ForAppAndOptionalMetadata(IAppStateCache source = default, IEnumerable<IEntity> metadata = default)
         => new(
             entity => new EntityRelationships(entity, source),
             getMetadataOf: metadata != default
@@ -42,7 +42,7 @@ public class EntityPartsLazy
         => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title,
             appSource: appSource);
 
-    private static Func<Guid, string, IMetadataOf> CreateMetadataOfItems(List<IEntity> items)
+    private static Func<Guid, string, IMetadataOf> CreateMetadataOfItems(IEnumerable<IEntity> items)
         => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, items: items);
 
     public static Func<TKey, string, IMetadataOf> ReUseMetadataFunc<TKey>(IMetadataOf original) 

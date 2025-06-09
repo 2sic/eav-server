@@ -1,5 +1,6 @@
 ﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
+using ToSic.Sys.Performance;
 
 namespace ToSic.Sys.Requirements;
 
@@ -22,7 +23,7 @@ public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> che
         var list = withRequirements
                        ?.SelectMany(Check)
                        .Distinct()
-                       .ToList()
+                       .ToListOpt()
                    ?? [];
         return l.Return(list, $"{list.Count} requirements failed");
     }
@@ -42,7 +43,7 @@ public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> che
     /// <returns>A list of error objects or an empty list if all is ok</returns>
     public IEnumerable<RequirementError> Check(IEnumerable<Requirement>? requirements)
     {
-        var list = requirements?.ToList();
+        var list = requirements?.ToListOpt();
         if (list == null || !list.Any())
             return [];
 
@@ -50,7 +51,7 @@ public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> che
             .Select(Check)
             .Where(c => c != null)
             .Distinct()
-            .ToList()!;
+            .ToListOpt()!;
     }
 
     /// <summary>

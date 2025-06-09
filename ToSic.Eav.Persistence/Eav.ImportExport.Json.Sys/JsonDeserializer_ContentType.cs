@@ -50,7 +50,10 @@ partial class JsonSerializer
             var l = LogDsDetails.Fn<ContentTypeWithEntities>();
             try
             {
-                var directEntities = json.Entities?.Select(ConvertPart).ToList() ?? [];
+                var directEntities = json.Entities
+                                         ?.Select(ConvertPart)
+                                         .ToListOpt()
+                                     ?? [];
                 relationships.List?.AddRange(directEntities);
 
                 // Verify that it has a Json ContentType
@@ -68,7 +71,10 @@ partial class JsonSerializer
                         var attrSysSettings = jsonAttr.SysSettings?.ToSysSettings();
                         var mdEntities = attrSysSettings?.InheritMetadata == true
                             ? null
-                            : jsonAttr.Metadata?.Select(ConvertPart).ToList() ?? [];
+                            : jsonAttr.Metadata
+                                  ?.Select(ConvertPart)
+                                  .ToListOpt()
+                              ?? [];
 
                         var appSourceForMd = DeserializationSettings?.MetadataSource;
 
@@ -94,13 +100,13 @@ partial class JsonSerializer
                             relationships.List?.AddRange(mdEntities);
                         return attDef;
                     })
-                    .ToList();
+                    .ToListOpt();
 
                 // Prepare Content-Type Metadata
                 l.A("deserialize metadata");
                 var ctMeta = jsonType.Metadata
                                  ?.Select(ConvertPart)
-                                 .ToList()
+                                 .ToListOpt()
                              ?? [];
                 relationships.List?.AddRange(ctMeta);
 

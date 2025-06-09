@@ -25,7 +25,7 @@ public class LicenseService : ILicenseService
     #region Public APIs
 
     /// <inheritdoc />
-    public List<FeatureSetState> All => AllCache;
+    public IList<FeatureSetState> All => AllCache;
 
     /// <inheritdoc />
     /// <remarks>
@@ -45,7 +45,7 @@ public class LicenseService : ILicenseService
 
     #region Internal stuff, caching, static
 
-    private static List<FeatureSetState> AllCache { get; set; } = [];
+    private static IList<FeatureSetState> AllCache { get; set; } = [];
 
 
     private static IImmutableDictionary<Guid, FeatureSetState> EnabledCache { get; set; } =
@@ -54,7 +54,7 @@ public class LicenseService : ILicenseService
     public static long CacheTimestamp;
 
 
-    public static void Update(List<FeatureSetState> licenses)
+    public static void Update(IList<FeatureSetState> licenses)
     {
         AllCache = licenses;
         EnabledCache = licenses

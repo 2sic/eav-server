@@ -25,7 +25,9 @@ partial class FileSystemLoader
         {
             // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
             var jsonBundles = new Dictionary<string, JsonFormat>();
-            Directory.GetFiles(BundlesPath, "*" + Extension(Files.json)).OrderBy(f => f).ToList()
+            Directory.GetFiles(BundlesPath, "*" + Extension(Files.json))
+                .OrderBy(f => f)
+                .ToList()
                 .ForEach(p =>
                 {
                     l.A("Loading json bundle" + p);
@@ -100,16 +102,17 @@ partial class FileSystemLoader
 
 
 
-    public List<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource)
+    public IEnumerable<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource)
     {
-        var l = Log.Fn<List<IEntity>>($"Entities in bundles");
+        var l = Log.Fn<IEnumerable<IEntity>>($"Entities in bundles");
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities.SafeAny()) != true))
             return l.Return([], "no bundles have entities, return none");
 
         var entities = JsonBundleBundles
             .SelectMany(json =>
                 BuildEntitiesInBundles(Serializer, json.Key, json.Value, relationshipSource))
-            .Where(entity => entity != null).ToList();
+            .Where(entity => entity != null)
+            .ToListOpt();
 
         return l.Return(entities, $"Entities in bundles: {entities.Count}");
     }
@@ -121,9 +124,9 @@ partial class FileSystemLoader
     /// Build entities from bundle json
     /// </summary>
     /// <returns></returns>
-    private List<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
+    private IEnumerable<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
     {
-        var l = Log.Fn<List<IEntity>>($"Build entities from bundle json: {path}.");
+        var l = Log.Fn<IEnumerable<IEntity>>($"Build entities from bundle json: {path}.");
         try
         {
             // WIP - Allow relationships between loaded items
@@ -136,7 +139,7 @@ partial class FileSystemLoader
                     var newId = ++EntityIdSeed;
                     return dataBuilder.Entity.CreateFrom(e, id: newId, repositoryId: newId);
                 })
-                .ToList();
+                .ToListOpt();
             return l.Return(entities, $"{entities.Count}");
         }
         catch (Exception e)

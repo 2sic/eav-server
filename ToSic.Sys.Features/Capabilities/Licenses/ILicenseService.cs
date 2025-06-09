@@ -25,7 +25,7 @@ public interface ILicenseService
     /// <summary>
     /// All licenses
     /// </summary>
-    List<FeatureSetState> All { get; }
+    IList<FeatureSetState> All { get; }
 
     /// <summary>
     /// Enabled licenses, in a dictionary to retrieve with the LicenseDefinition object

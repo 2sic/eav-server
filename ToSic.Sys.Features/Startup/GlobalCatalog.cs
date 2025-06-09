@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using ToSic.Lib.Data;
 using ToSic.Lib.Services;
+using ToSic.Sys.Performance;
 
 namespace ToSic.Sys.Startup;
 
@@ -38,7 +39,7 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
     public IReadOnlyCollection<T> List
     {
-        get => field ??= new ReadOnlyCollection<T>(_master.Values.ToList());
+        get => field ??= new ReadOnlyCollection<T>(_master.Values.ToListOpt());
         private set;
     }
 

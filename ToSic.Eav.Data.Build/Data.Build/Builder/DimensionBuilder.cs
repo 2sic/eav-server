@@ -8,14 +8,16 @@ public class DimensionBuilder
 {
     public Language CreateFrom(ILanguage orig, bool? readOnly) => new(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
 
-    public ImmutableList<ILanguage> Merge(IEnumerable<ILanguage> languages, List<ILanguage> updates)
+    public IImmutableList<ILanguage> Merge(IEnumerable<ILanguage> languages, List<ILanguage> updates)
     {
-        languages = languages.ToList();
-        languages = languages
+        var lngList = languages
             .Select(l => updates.FirstOrDefault(ul => ul.Key.EqualsInsensitive(l.Key)) ?? l)
-            .ToList();
-        var rest = updates.Where(ul => !languages.Any(l => l.Key.EqualsInsensitive(ul.Key)));
-        var final = languages.Concat(rest).ToImmutableList();
+            .ToListOpt();
+        var rest = updates
+            .Where(ul => !lngList.Any(l => l.Key.EqualsInsensitive(ul.Key)));
+        var final = lngList
+            .Concat(rest)
+            .ToImmutableSafe();
         return final;
     }
 

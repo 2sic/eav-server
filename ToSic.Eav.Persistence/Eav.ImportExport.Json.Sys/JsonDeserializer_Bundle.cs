@@ -21,46 +21,46 @@ public partial class JsonSerializer
         );
     }
 
-    public List<ContentTypeWithEntities> GetContentTypesFromBundles(JsonFormat package)
+    public IList<ContentTypeWithEntities> GetContentTypesFromBundles(JsonFormat package)
     {
-        var l = LogDsSummary.Fn<List<ContentTypeWithEntities>>();
+        var l = LogDsSummary.Fn<IList<ContentTypeWithEntities>>();
         if (package.Bundles.SafeNone())
             return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
         var bundlesWithTypes = package.Bundles
             .Where(b => b.ContentTypes.SafeAny())
-            .ToList();
+            .ToListOpt();
         var types = bundlesWithTypes
             .SelectMany(b => b.ContentTypes)
-            .ToList();
+            .ToListOpt();
         l.A($"Bundles: {package.Bundles.Count}; with Types {bundlesWithTypes.Count}; Types: {types.Count}");
 
         var result = types
             .Select(ConvertContentType)
-            .ToList();
+            .ToListOpt();
 
         return l.Return(result, $"{result.Count}");
     }
 
-    public List<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null)
+    public IList<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null)
     {
-        var l = LogDsDetails.Fn<List<IEntity>>();
+        var l = LogDsDetails.Fn<IList<IEntity>>();
         if (package.Bundles.SafeNone())
             return l.Return([], "none found");
 
         // Prepare step-by-step for better logs
         var bundlesWithEntities = package.Bundles
             .Where(b => b.Entities.SafeAny())
-            .ToList();
+            .ToListOpt();
         var jsonEntities = bundlesWithEntities
             .SelectMany(b => b.Entities)
-            .ToList();
+            .ToListOpt();
         l.A($"Bundles: {package.Bundles.Count}; with Entities {bundlesWithEntities.Count}; Entities: {jsonEntities.Count}");
 
         var result = jsonEntities
             .Select(e => Deserialize(e, true, false, relationshipSource))
-            .ToList();
+            .ToListOpt();
 
         return l.Return(result, $"{result.Count}");
     }

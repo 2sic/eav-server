@@ -50,7 +50,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         bool? removeBoolFalseValues = null,
         bool? removeNullValues = null,
         bool? removeZeroValues = null,
-        List<string> filterFields = null,
+        IList<string> filterFields = null,
         bool? filterFieldsEnabled = null,
         MetadataForSerialization serializeMetadataFor = null,
         ISubEntitySerialization serializeMetadata = null,
@@ -164,7 +164,7 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// Note: not in the entity config, but ATM added manually from the $select
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string> FilterFields { get; init; }
+    public IList<string> FilterFields { get; init; }
 
     #region Metadata & Relationships
 

@@ -1,4 +1,5 @@
 ﻿using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Requirements;
 
 namespace ToSic.Sys.Capabilities.Features;
@@ -11,7 +12,9 @@ public record Feature: Aspect
     
     private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule>? licRules, string nameId, Guid guid)
     {
-        var newRules = licRules?.ToList() ?? [];
+        var newRules = licRules
+                           ?.ToListOpt()
+                       ?? [];
         // Create virtual license rule, so it can be enabled by its own GUID
         var ownLicenseDefinition = new FeatureSet.FeatureSet
         {
@@ -23,7 +26,7 @@ public record Feature: Aspect
         };
         var ownRule = new FeatureLicenseRule(ownLicenseDefinition, true);
         newRules.Add(ownRule);
-        return newRules.AsReadOnly();
+        return newRules.ToImmutableSafe();
     }
 
 

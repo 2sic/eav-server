@@ -68,5 +68,5 @@ public interface ISysFeaturesService: ICacheExpiring, ICanBeCacheDependency
 
     FeatureStatesPersisted? Stored { get; }
 
-    bool UpdateFeatureList(FeatureStatesPersisted newList, List<FeatureState> sysFeatures);
+    bool UpdateFeatureList(FeatureStatesPersisted newList, IList<FeatureState> sysFeatures);
 }

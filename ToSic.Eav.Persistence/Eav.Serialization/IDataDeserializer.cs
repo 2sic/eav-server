@@ -44,12 +44,12 @@ public interface IDataDeserializer: IHasLog
     /// </summary>
     /// <param name="serialized">The original serialized entity</param>
     /// <param name="allowDynamic">
-    /// Determines if de-serialization may also work on entities without a known type in the app-state. <br/>
-    /// This is important for de-serializing objects without a pre-defined type. <br/>
-    /// This is used for the dynamic entities and global entities which are loaded before most types have been initialized. 
+    ///     Determines if de-serialization may also work on entities without a known type in the app-state. <br/>
+    ///     This is important for de-serializing objects without a pre-defined type. <br/>
+    ///     This is used for the dynamic entities and global entities which are loaded before most types have been initialized. 
     /// </param>
     /// <returns>A list of entity objects</returns>
-    List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false);
+    IList<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false);
 
 
     /// <summary>

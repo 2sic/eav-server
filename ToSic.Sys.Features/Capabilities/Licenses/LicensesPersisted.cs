@@ -18,6 +18,7 @@
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using ToSic.Sys.Capabilities.FeatureSet;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using static System.String;
 
@@ -114,7 +115,7 @@ public class LicensesPersisted
         var licenseExpiry = licenseList
             .Where(l => l.Expires != null && l.Expires != DateTime.MinValue)
             .Select(l => l.Expires?.ToString(dateFormat))
-            .ToList();
+            .ToListOpt();
 
         var parts = new[]
             {
@@ -129,7 +130,7 @@ public class LicensesPersisted
             }
             // Remove blank entries (usually the license-expiry) to ensure it's identical w/v13/15
             .Where(p => !IsNullOrEmpty(p))
-            .ToArray();
+            .ToListOpt();
 
         var licenseString = Join(";", parts);
         var licNoSpaces = Regex.Replace(licenseString, @"\s+", "");

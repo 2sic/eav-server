@@ -82,9 +82,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         return l.Return(entity, "created");
     }
 
-    private (List<IContentTypeAttribute> attributes, List<IContentTypeAttribute>? vAttributes) GenerateAttributes(Type type)
+    private (IList<IContentTypeAttribute> attributes, IList<IContentTypeAttribute>? vAttributes) GenerateAttributes(Type type)
     {
-        var l = Log.Fn<(List<IContentTypeAttribute>, List<IContentTypeAttribute>?)>(timer: true);
+        var l = Log.Fn<(IList<IContentTypeAttribute>, IList<IContentTypeAttribute>?)>(timer: true);
         // Get all properties of the type
         var properties = type.GetProperties();
 
@@ -99,9 +99,11 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                         ? "default"
                         : "ignore"
             )
-            .ToList();
+            .ToListOpt();
 
-        var gDefault = propsGrouped.FirstOrDefault(g => g.Key == "default")?.ToList();
+        var gDefault = propsGrouped
+            .FirstOrDefault(g => g.Key == "default")
+            ?.ToListOpt();
 
         // Generate list of attributes
         var attributes = gDefault == null || !gDefault.Any()
@@ -109,7 +111,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             : PropertiesToAttributes(gDefault, false);
 
         // Generate list of virtual attributes
-        var gSystem = propsGrouped.FirstOrDefault(g => g.Key == "system")?.ToList();
+        var gSystem = propsGrouped
+            .FirstOrDefault(g => g.Key == "system")
+            ?.ToList();
         var vAttributes = gSystem == null || !gSystem.Any()
             ? null
             : PropertiesToAttributes(gSystem, true);
@@ -118,7 +122,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         return l.Return((attributes, vAttributes), $"real: {attributes.Count}, virtual: {vAttributes?.Count}");
     }
 
-    private List<IContentTypeAttribute> PropertiesToAttributes(List<PropertyInfo> propsFiltered, bool skipNoMetadata)
+    private IList<IContentTypeAttribute> PropertiesToAttributes(IList<PropertyInfo> propsFiltered, bool skipNoMetadata)
     {
         var pairs = propsFiltered
             .Select(p =>
@@ -128,9 +132,10 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                     Specs = p.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault(),
                 })
             .Where(pair => !skipNoMetadata || pair.Specs != null)
-            .ToList();
+            .ToListOpt();
 
-        var attributes = pairs.Select(pair =>
+        var attributes = pairs
+            .Select(pair =>
             {
                 var specs = pair.Specs; //.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault();
                 var props = pair.Property;
@@ -152,7 +157,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                     metadataItems: attrMetadata
                 );
             })
-            .ToList();
+            .ToListOpt();
         return attributes;
     }
 

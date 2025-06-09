@@ -1,35 +1,37 @@
 ﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using ToSic.Sys.Utils.Assemblies;
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
-public class SysFeaturesService(IServiceProvider sp) : ServiceBase("Eav.SysCap", connect: [/* never! sp*/ ])
+public class SysFeaturesService(IServiceProvider sp)
+    : ServiceBase("Eav.SysCap", connect: [/* never! sp*/ ])
 {
-    public List<SysFeature> Definitions => _list ??= LoadCapabilities().Defs;
-    private static List<SysFeature>? _list;
+    public IList<SysFeature> Definitions => _list ??= LoadCapabilities().Defs;
+    private static IList<SysFeature>? _list;
 
-    public List<FeatureState> States => _listState ??= LoadCapabilities().States;
-    private static List<FeatureState>? _listState;
+    public IList<FeatureState> States => _listState ??= LoadCapabilities().States;
+    private static IList<FeatureState>? _listState;
 
 
-    private (List<SysFeature> Defs, List<FeatureState> States) LoadCapabilities()
+    private (IList<SysFeature> Defs, IList<FeatureState> States) LoadCapabilities()
     {
         var services = AssemblyHandling.FindInherited(typeof(ISysFeatureDetector));
 
         var featDetectors = services
             .Select(s => sp.Build<ISysFeatureDetector>(s))
-            .ToList();
+            .ToListOpt();
 
         var definitions = featDetectors
             .Select(fd => fd.Definition)
-            .ToList();
+            .ToListOpt();
 
         var states = featDetectors
             .Select(fd => fd.FeatState)
-            .ToList();
+            .ToListOpt();
 
         return (definitions, states);
     }

@@ -65,7 +65,7 @@ partial class JsonSerializer
         l.A($"found metadata: {jEnt.Metadata != null}, will deserialize");
         var mdItems = jEnt.Metadata?
             .Select(m => Deserialize(m, allowDynamic, skipUnknownType))
-            .ToList();
+            .ToListOpt();
 
         // Fix for CS9174: Use a constructible type like ImmutableDictionary instead of IReadOnlyDictionary
         IReadOnlyDictionary<string, IAttribute> attributes = ImmutableDictionary<string, IAttribute>.Empty;
@@ -164,10 +164,13 @@ partial class JsonSerializer
         var builder = Services.DataBuilder;
         var newAttributes = list.ToDictionary(
             a => a.Key,
-            attrib => builder.Attribute.Create(attrib.Key, type,
+            attrib => builder.Attribute.Create(
+                attrib.Key,
+                type,
                 attrib.Value
                     .Select(v => valueBuilder(v.Value, RecreateLanguageList(v.Key)))
-                    .ToList()),
+                    .ToListOpt()
+            ),
             InvariantCultureIgnoreCase);
 
 
@@ -201,7 +204,7 @@ partial class JsonSerializer
                     .Select(v => Services.DataBuilder.Value.Relationship(
                         v.Value,
                         relationshipsSource ?? LazyRelationshipLookupList))
-                    .ToList();
+                    .ToListOpt();
             case ValueTypes.Hyperlink: return BuildValues(jAtts.Hyperlink, a);
             case ValueTypes.Number: return BuildValues(jAtts.Number, a);
             case ValueTypes.String: return BuildValues(jAtts.String, a);
@@ -222,7 +225,7 @@ partial class JsonSerializer
         if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
         return list[attrDef.Name]
             .Select(IValue (v) => Services.DataBuilder.Value.Create(v.Value, RecreateLanguageList(v.Key)))
-            .ToList();
+            .ToListOpt();
     }
 
     private static IImmutableList<ILanguage> RecreateLanguageList(string languages) 
@@ -260,40 +263,49 @@ partial class JsonSerializer
     {
         var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, T>>>();
         var result = new Dictionary<string, Dictionary<string, T>>();
-        attribs.Cast<IAttribute<T>>().ToList().ForEach(a =>
-        {
-            Dictionary<string, T> dimensions;
-            try
+        attribs
+            .Cast<IAttribute<T>>()
+            .ToList()
+            .ForEach(a =>
             {
-                dimensions = a.Typed.ToDictionary(LanguageKey, v => v.TypedContents);
-            }
-            catch (Exception ex)
-            {
-                string langList = null;
+                Dictionary<string, T> dimensions;
                 try
                 {
-                    langList = string.Join(",", a.Typed.Select(LanguageKey));
+                    dimensions = a.Typed.ToDictionary(LanguageKey, v => v.TypedContents);
                 }
-                catch { /* ignore */ }
-                l.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
-                l.Done(ex);
-                throw;
-            }
+                catch (Exception ex)
+                {
+                    string langList = null;
+                    try
+                    {
+                        langList = string.Join(",", a.Typed.Select(LanguageKey));
+                    }
+                    catch
+                    {
+                        /* ignore */
+                    }
 
-            try
-            {
-                result.Add(a.Name, dimensions);
-            }
-            catch (Exception ex)
-            {
-                l.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
-                l.Done(ex);
-                throw;
-            }
-        });
+                    l.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
+                    l.Done(ex);
+                    throw;
+                }
+
+                try
+                {
+                    result.Add(a.Name, dimensions);
+                }
+                catch (Exception ex)
+                {
+                    l.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
+                    l.Done(ex);
+                    throw;
+                }
+            });
         return l.ReturnAsOk(result);
     }
 
-    public List<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false) 
-        => serialized.Select(s => Deserialize(s, allowDynamic)).ToList();
+    public IList<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false) 
+        => serialized
+            .Select(s => Deserialize(s, allowDynamic))
+            .ToListOpt();
 }

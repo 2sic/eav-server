@@ -33,7 +33,7 @@ public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamp
     /// <param name="items">A direct list of items to use as metadata - instead of lazy-loading from a source. If specified, auto-sync will be disabled.</param>
     /// <param name="appSource"></param>
     /// <param name="deferredSource"></param>
-    public MetadataOf(int targetType, T key, string title, IReadOnlyCollection<IEntity> items = default, IHasMetadataSourceAndExpiring appSource = default, Func<IHasMetadataSourceAndExpiring> deferredSource = default)
+    public MetadataOf(int targetType, T key, string title, IEnumerable<IEntity> items = default, IHasMetadataSourceAndExpiring appSource = default, Func<IHasMetadataSourceAndExpiring> deferredSource = default)
     {
         _targetType = targetType;
         Key = key;

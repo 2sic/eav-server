@@ -65,9 +65,9 @@ public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<I
 
     internal static void ResetForTest() => _fingerprintCache = null;
 
-    public List<EnterpriseFingerprint> EnterpriseFingerprints => _enterpriseFingerprintsStatic;
-    private static List<EnterpriseFingerprint> _enterpriseFingerprintsStatic = [];
+    public IList<EnterpriseFingerprint> EnterpriseFingerprints => _enterpriseFingerprintsStatic;
+    private static IList<EnterpriseFingerprint> _enterpriseFingerprintsStatic = [];
 
-    public void LoadEnterpriseFingerprints(List<EnterpriseFingerprint> enterpriseFingerprints) 
+    public void LoadEnterpriseFingerprints(IList<EnterpriseFingerprint> enterpriseFingerprints) 
         => _enterpriseFingerprintsStatic = enterpriseFingerprints;
 }

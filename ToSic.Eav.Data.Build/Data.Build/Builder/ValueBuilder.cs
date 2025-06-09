@@ -132,14 +132,14 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
 
     public IImmutableList<IValue> Replace(IEnumerable<IValue> values, IValue oldValue, IValue newValue)
     {
-        var editable = values.ToList();
+        var editable = values.ToListOpt();
         // note: should preserve order
         var index = editable.IndexOf(oldValue);
         if (index == -1)
             editable.Add(newValue);
         else
             editable[index] = newValue;
-        return editable.ToImmutableList();
+        return editable.ToImmutableSafe();
     }
 
 

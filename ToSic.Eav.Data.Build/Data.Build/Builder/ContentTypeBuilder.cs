@@ -39,7 +39,7 @@ public class ContentTypeBuilder
 
         // Metadata (2)
         ContentTypeMetadata? metadata = default,                 // for clone
-        List<IEntity>? metadataItems = default,
+        IEnumerable<IEntity>? metadataItems = default,
         Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = default,    // for find-it-yourself
 
         // Save Specs (2) Older stuff, should be removed some day
@@ -108,7 +108,7 @@ public class ContentTypeBuilder
 
         // Metadata (2)
         ContentTypeMetadata? metadata = default,                 // for clone
-        List<IEntity>? metadataItems = default
+        IEnumerable<IEntity>? metadataItems = default
         //Func<IHasMetadataSource> metaSourceFinder = default
 
         // Save Specs (2) Older stuff, should be removed some day - ATM not supported
@@ -143,7 +143,7 @@ public class ContentTypeBuilder
             scope: scope ?? original.Scope,
 
             // Contents
-            attributes: attributes ?? original.Attributes.ToList(),
+            attributes: attributes ?? original.Attributes.ToListOpt(),
 
             // Specs (2)
             isAlwaysShared: isAlwaysShared ?? original.AlwaysShareConfiguration,

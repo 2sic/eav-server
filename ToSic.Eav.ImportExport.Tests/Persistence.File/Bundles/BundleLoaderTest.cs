@@ -68,7 +68,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         return cts;
     }
         
-    private List<IEntity> LoadAllEntitiesInBundles()
+    private IEnumerable<IEntity> LoadAllEntitiesInBundles()
     {
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
         output.WriteLine($"path:'{testStorageRoot}'");

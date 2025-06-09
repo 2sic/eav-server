@@ -64,7 +64,7 @@ public class EntitySerializationDecoratorCreator(List<string>? rawFields, bool w
         // Remove all system field names, as they are handled separately
         var filterFields = myFields
             .Where(sf => !sysFieldsToDrop.Any(key => key.EqualsInsensitive(sf)))
-            .ToList();
+            .ToListOpt();
 
         var result = new EntitySerializationDecorator
         {

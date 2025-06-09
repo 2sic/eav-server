@@ -114,7 +114,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         {
             // #3A.1 load entities from files in bundles folder
             var entitiesInBundle = EntitiesInBundles(relationshipsSource)
-                .ToList();
+                .ToListOpt();
             l.A($"Found {entitiesInBundle.Count} Entities in Bundles");
 
             // #3A.2 put all found entities into the source
@@ -139,7 +139,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         var entities = jsons
             .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++EntityIdSeed, relationshipsSource))
             .Where(entity => entity != null)
-            .ToList();
+            .ToListOpt();
         l.A("found " + entities.Count + " entities in " + folder + " folder");
 
         // #3.3 put all found entities into the source
@@ -195,10 +195,12 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
         // #4 load content-types from files in bundles folder
         var bundlesCtAndEntities = ContentTypesInBundles();
-        var bundleCts = bundlesCtAndEntities.Select(set => set.ContentType).ToList();
+        var bundleCts = bundlesCtAndEntities
+            .Select(set => set.ContentType)
+            .ToListOpt();
         var bundleCtsWithoutDuplicates = bundleCts
             .Where(bundleCt => !contentTypes.Any(ct => ct.Is(bundleCt.NameId)))
-            .ToList();
+            .ToListOpt();
         contentTypes.AddRange(bundleCtsWithoutDuplicates);
 
         var entities = bundlesCtAndEntities

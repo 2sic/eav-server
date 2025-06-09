@@ -17,7 +17,7 @@ class Program
     public const bool RunGenerateJson = false;
     public const int RunLoadPresets = 25;
 
-    public const bool ModeBenchmark = false;
+    public const bool ModeBenchmark = true;
 
     static void Main(string[] args)
     {

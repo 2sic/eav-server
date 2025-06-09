@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace ToSic.Eav.Data.Entities.Sys.Sources;
+﻿namespace ToSic.Eav.Data.Entities.Sys.Sources;
 
 /// <summary>
 /// An entities source which directly delivers the given entities.
@@ -8,5 +6,5 @@ namespace ToSic.Eav.Data.Entities.Sys.Sources;
 /// this is an immutable list.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ImmutableEntitiesSource(IImmutableList<IEntity> entities = null)
-    : DirectEntitiesSource(entities ?? ImmutableList<IEntity>.Empty);
+public class ImmutableEntitiesSource(IReadOnlyCollection<IEntity> entities = null)
+    : DirectEntitiesSource(entities ?? []);

@@ -28,7 +28,7 @@ partial class AttributeBuilder
                     // It's important that we only get a list if there are values, otherwise we create empty lists
                     // which breaks other code
                     var values = preparedValues?.Contains(a.Name) == true
-                        ? preparedValues[a.Name].ToList()
+                        ? preparedValues[a.Name].ToListOpt()
                         : null;
                     var entityAttribute = Create(a.Name, a.Type, values ?? []);
                     return entityAttribute;
