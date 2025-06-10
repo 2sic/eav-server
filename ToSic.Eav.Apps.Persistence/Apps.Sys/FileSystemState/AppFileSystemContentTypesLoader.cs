@@ -27,7 +27,7 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
             var allTypes = extPaths
                 .SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
                 .Distinct(new EqualityComparer_ContentType())
-                .ToList();
+                .ToListOpt();
             return l.Return(allTypes, "ok");
         }
         catch (Exception e)
@@ -50,9 +50,9 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
 
     #region Helpers
 
-    private List<string> GetAllExtensionPaths()
+    private ICollection<string> GetAllExtensionPaths()
     {
-        var l = Log.IfSummary(LogSettings).Fn<List<string>>();
+        var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>();
         var dir = new DirectoryInfo(Path);
         if (!dir.Exists) return l.Return([], $"directory do not exist: {dir}");
         var sub = dir.GetDirectories();
@@ -66,7 +66,7 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
         var paths = subDirs
             .Where(d => d.Exists)
             .Select(s => s.FullName)
-            .ToList();
+            .ToListOpt();
         return l.Return(paths, $"OK, paths:{string.Join(";", paths)}");
     }
 

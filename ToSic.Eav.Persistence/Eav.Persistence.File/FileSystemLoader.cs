@@ -81,7 +81,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     internal void ResetSerializer(IAppReader appReader)
         => Serializer = NewSerializer().SetApp(appReader);
 
-    internal void ResetSerializer(List<IContentType> types)
+    internal void ResetSerializer(ICollection<IContentType> types)
     {
         var serializer = NewSerializer();
         serializer.Initialize(AppId, types, null);

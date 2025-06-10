@@ -12,5 +12,5 @@ internal sealed class AppInputTypesLoaderUnknown(WarnUseOfUnknown<AppInputTypesL
     public string PathShared { get; set; }
 
     // do nothing
-    public List<InputTypeInfo> InputTypes() => [];
+    public ICollection<InputTypeInfo> InputTypes() => [];
 }

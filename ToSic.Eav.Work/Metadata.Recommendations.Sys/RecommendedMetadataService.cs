@@ -50,7 +50,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 return r;
             })
             .Where(r => r.PushToUi)
-            .ToList();
+            .ToListOpt();
         return remaining;
     }
 
@@ -91,11 +91,16 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
         var initialTypes = typesForTheTarget?
             .Select(set =>
                 new MetadataRecommendation(set.Type, set.Decorator, null, "Self-Declaring", PrioMedium))
-            .ToList() ?? [];
+            .ToListOpt() ?? [];
 
-        attachedRecommendations.AddRange(initialTypes);
+        attachedRecommendations = attachedRecommendations
+            .Union(initialTypes)
+            .ToListOpt();
 
-        var distinct = attachedRecommendations.OrderByDescending(ar => ar.Priority).Distinct().ToList();
+        var distinct = attachedRecommendations
+            .OrderByDescending(ar => ar.Priority)
+            .Distinct()
+            .ToListOpt();
 
         return l.Return(distinct, $"final: {distinct.Count}");
     }
@@ -106,9 +111,9 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
         public MetadataForDecorator Decorator;
     }
 
-    private List<RecommendationInfos> TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey)
+    private ICollection<RecommendationInfos> TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey)
     {
-        var l = Log.Fn<List<RecommendationInfos>>();
+        var l = Log.Fn<ICollection<RecommendationInfos>>();
         // for type/attribute path comparisons, make sure we have the slashes cleaned
         var keyForward = (targetKey ?? "").ForwardSlash().Trim();
 
@@ -124,10 +129,10 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                     var allForDecors = ct.Metadata
                         .OfType(MetadataForDecorator.ContentTypeNameId)
                         .Select(e => new MetadataForDecorator(e))
-                        .ToList();
+                        .ToListOpt();
                     var allForThisTargetType = allForDecors
                         .Where(dec => dec.TargetType == targetType)
-                        .ToList();
+                        .ToListOpt();
                     l.A($"Found {allForDecors.Count} {nameof(MetadataForDecorator)}s " +
                         $"of which {allForThisTargetType.Count} for targetType {targetType} on {ct.Name}");
                     return allForThisTargetType.Select(decorator => new RecommendationInfos
@@ -143,12 +148,12 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                     return [];
                 }
             })
-            .ToList();
+            .ToListOpt();
 
         // Filter out these without recommendations
         recommendedTypes = recommendedTypes
             .Where(set => set?.Decorator != null)
-            .ToList();
+            .ToListOpt();
         l.A($"Found {recommendedTypes.Count} recommended Types");
 
         recommendedTypes = recommendedTypes
@@ -186,14 +191,14 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                         return false;
                 }
             })
-            .ToList();
+            .ToListOpt();
 
         return l.Return(recommendedTypes, $"{recommendedTypes.Count}");
     }
 
-    private List<MetadataRecommendation> GetTargetsExpectations(int targetType, string key)
+    private ICollection<MetadataRecommendation> GetTargetsExpectations(int targetType, string key)
     {
-        var l = Log.Fn<List<MetadataRecommendation>>($"targetType: {targetType}");
+        var l = Log.Fn<ICollection<MetadataRecommendation>>($"targetType: {targetType}");
         switch ((TargetTypes)targetType)
         {
             case TargetTypes.Undefined:
@@ -237,7 +242,9 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 // Now also ask the content-type for MD related to this
                 // So we ask the Type Metadata for all recommendations for Entities (since it will be attached to the entity of this type)
                 var onEntType = GetMetadataExpectedDecorators(entity.Type.Metadata, TargetTypes.Entity, "attached to entity-type", PrioHigh);
-                var merged = onEntity.Union(onEntType).ToList();
+                var merged = onEntity
+                    .Union(onEntType)
+                    .ToListOpt();
                 return l.Return(merged, $"entity {onEntity.Count} type {onEntType.Count} all {merged.Count}");
             case TargetTypes.ContentType:
                 var ct = AppReader.GetContentType(key);
@@ -256,13 +263,13 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     /// Will get the MetadataExpected decorators of a target.
     /// </summary>
     /// <param name="md">MD List</param>
-    /// <param name="meantFor">What it's for - to differentiate between MD on a Type which is for the type, or for the items of that type</param>
+    /// <param name="targetTypeFor">What it's for - to differentiate between MD on a Type which is for the type, or for the items of that type</param>
     /// <param name="debug"></param>
     /// <param name="priority"></param>
     /// <returns></returns>
-    private List<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf md, TargetTypes targetTypeFor, string debug, int priority)
+    private ICollection<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf md, TargetTypes targetTypeFor, string debug, int priority)
     {
-        var l = Log.Fn<List<MetadataRecommendation>>($"for {targetTypeFor}");
+        var l = Log.Fn<ICollection<MetadataRecommendation>>($"for {targetTypeFor}");
 
         // meta data is sometimes null
         if (md is null)
@@ -270,13 +277,13 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
         var all = md
             .OfType(MetadataExpectedDecorator.ContentTypeNameId)
-            .ToList();
+            .ToListOpt();
 
         // var meantFor = (int)targetTypeFor;
         if (targetTypeFor > 0)
             all = all
                 .Where(r => (int)targetTypeFor == new MetadataForDecorator(r).TargetType)
-                .ToList();
+                .ToListOpt();
         if (!all.Any())
             return l.Return([], "no recommendations");
 
@@ -292,9 +299,9 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                         .CsvToArrayWithoutEmpty()
                         .Select(name => TypeAsRecommendation(name, debug, priority, delWarning))
                         .Where(x => x != null)
-                        .ToList();
+                        .ToListOpt();
             })
-            .ToList();
+            .ToListOpt();
 
         return l.Return(resultAll, $"found {resultAll.Count}");
     }

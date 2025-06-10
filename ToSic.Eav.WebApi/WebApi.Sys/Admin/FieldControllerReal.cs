@@ -24,7 +24,7 @@ public class FieldControllerReal(
     public string[] DataTypes(int appId)
         => attributesMod.New(appId).DataTypes();
 
-    public List<InputTypeInfo> InputTypes(int appId)
+    public ICollection<InputTypeInfo> InputTypes(int appId)
         => inputTypes.New(appId).GetInputTypes();
 
     public Dictionary<string, string> ReservedNames()

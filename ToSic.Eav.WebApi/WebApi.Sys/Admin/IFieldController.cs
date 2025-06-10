@@ -52,7 +52,7 @@ public interface IFieldController
     /// <remarks>
     /// It's important to note that each app could have its own additional input types.
     /// </remarks>
-    List<InputTypeInfo> InputTypes(int appId);
+    ICollection<InputTypeInfo> InputTypes(int appId);
 
     /// <summary>
     /// Reserved field names which shouldn't be used in content-type fields. Also contains information why a name is reserved.

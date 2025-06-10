@@ -67,7 +67,7 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         return l.ReturnAsOk(final);
     }
 
-    public List<IContentType> SetTypesOfContentTypeParts()
+    public ICollection<IContentType> SetTypesOfContentTypeParts()
     {
         var l = Log.Fn<List<IContentType>>(timer: true);
         var changeCount = 0;
@@ -76,7 +76,7 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         {
             var entitiesToRetype = Source
                 .SelectMany(t => t.Metadata)
-                .ToList();
+                .ToListOpt();
             l.A($"Metadata found to retype: {entitiesToRetype.Count}");
             changeCount += UpdateTypes("ContentType Metadata", entitiesToRetype);
         }
@@ -89,7 +89,7 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         {
             var entitiesToRetype = Source
                 .SelectMany(t => t.Attributes.SelectMany(a => a.Metadata))
-                .ToList();
+                .ToListOpt();
             changeCount += UpdateTypes("Attribute Metadata", entitiesToRetype);
         }
         catch (Exception ex)
@@ -101,9 +101,9 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         return l.Return(Source, $"{changeCount}");
     }
 
-    public void SetTypesOfOtherEntities(List<IEntity> entities)
+    public void SetTypesOfOtherEntities(ICollection<IEntity> entities)
     {
-        var l = Log.Fn<List<IContentType>>(timer: true);
+        var l = Log.Fn(timer: true);
         var changeCount = 0;
         try
         {
@@ -118,11 +118,11 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         l.Done($"{changeCount} changed");
     }
 
-    private int UpdateTypes(string name, List<IEntity> entitiesToRetype)
+    private int UpdateTypes(string name, ICollection<IEntity> entitiesToRetype)
     {
         var l = Log.Fn<int>($"For {name}", timer: true);
         var changeCount = 0;
-        entitiesToRetype.ForEach(entity =>
+        foreach (var entity in entitiesToRetype)
         {
             if (entity.Type is ContentTypeWrapper { IsDeferred: true } wrapper)
             {
@@ -132,7 +132,7 @@ internal class DeferredContentTypeProvider(ILog parentLog)
             }
 
             l.A("TypeUnchanged:" + entity.Type.NameId);
-        });
+        }
 
         return l.ReturnAsOk(changeCount);
     }

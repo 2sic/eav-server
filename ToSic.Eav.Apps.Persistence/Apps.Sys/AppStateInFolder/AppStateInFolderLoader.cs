@@ -47,7 +47,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         // find all RepositoryInfoOfFolder and let them tell us what paths to use
         var types = AssemblyHandling
             .FindInherited(typeof(FolderBasedRepository), Log)
-            .ToList();
+            .ToListOpt();
         l.A($"found {types.Count} Path providers");
 
         foreach (var typ in types)
@@ -68,16 +68,16 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         return l.Return(all, $"{all.Count} paths");
     }
 
-    public List<FileSystemLoader> Loaders => field ??= BuildLoaders(null, LogSettings);
+    public ICollection<FileSystemLoader> Loaders => field ??= BuildLoaders(null, LogSettings);
     private LogSettings LogSettings { get; set; }
 
-    private List<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource, LogSettings logSettings)
+    private ICollection<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource, LogSettings logSettings)
         => Paths
             .Select(path => _fslGenerator
                 .New()
                 .Init(KnownAppsConstants.PresetAppId, path, Source, true, entitiesSource, logSettings)
             )
-            .ToList();
+            .ToListOpt();
 
 
     public IAppStateBuilder LoadFullAppState(LogSettings logSettings)
@@ -123,8 +123,9 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
                 // Update 2024-09-01 2dm: made some changes, ATM _some_ of it already uses a shared source for relationships, but
                 // only on content-type-sub-entities, and a separate source for the others...?
                 l.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
-                var appTypes = builder.Reader.ContentTypes.ToList();
-                Loaders.ForEach(ldr => ldr.ResetSerializer(appTypes));
+                var appTypes = builder.Reader.ContentTypes.ToListOpt();
+                foreach (var ldr in Loaders)
+                    ldr.ResetSerializer(appTypes);
 
                 l.A("Load items");
 

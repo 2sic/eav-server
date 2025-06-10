@@ -36,5 +36,5 @@ public interface IAppJsonConfigurationService
     /// <param name="appId"></param>
     /// <param name="useShared"></param>
     /// <returns>List&lt;string&gt; - never null</returns>
-    List<string> ExcludeSearchPatterns(string sourceFolder, int appId, bool useShared = false);
+    ICollection<string> ExcludeSearchPatterns(string sourceFolder, int appId, bool useShared = false);
 }

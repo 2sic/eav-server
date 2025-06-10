@@ -12,5 +12,5 @@ public interface IAppInputTypesLoader: IHasLog
     /// Load all the input types for this app from the folder
     /// </summary>
     /// <returns></returns>
-    List<InputTypeInfo> InputTypes();
+    ICollection<InputTypeInfo> InputTypes();
 }

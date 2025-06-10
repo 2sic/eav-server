@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.DataSource.Internal.Query;
@@ -75,7 +74,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         var entityList = newParts
             .Select(p => p.Value)
             .Concat(newMetadata)
-            .ToList();
+            .ToListOpt();
         entityList.Add(newQuery);
 
 

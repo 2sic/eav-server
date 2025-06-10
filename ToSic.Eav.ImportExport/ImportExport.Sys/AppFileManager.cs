@@ -290,7 +290,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// <param name="paths"></param>
     /// <param name="excludeList"></param>
     /// <returns></returns>
-    private static List<string> FilterList(List<string> paths, List<string> excludeList) =>
+    private static ICollection<string> FilterList(ICollection<string> paths, ICollection<string> excludeList) =>
         excludeList.Aggregate(
                 paths,
                 (current, ignore) => current
@@ -301,10 +301,10 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
 
     public record FileSearchSpecs
     {
-        public List<string> ExcludeSearchPatterns { get; init; } = [];
+        public ICollection<string> ExcludeSearchPatterns { get; init; } = [];
 
-        public List<string> FileSearchPatterns { get; init; } = ["*.*"];
+        public ICollection<string> FileSearchPatterns { get; init; } = ["*.*"];
 
-        public List<string> FolderSearchPatterns { get; init; } = ["*.*"];
+        public ICollection<string> FolderSearchPatterns { get; init; } = ["*.*"];
     }
 }

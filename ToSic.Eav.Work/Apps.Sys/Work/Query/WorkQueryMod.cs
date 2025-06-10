@@ -40,7 +40,7 @@ public class WorkQueryMod(
             .Select(ds => ds.Entity.Metadata.FirstOrDefault())
             .Where(md => md != null)
             .Select(md => md.EntityId)
-            .ToList();
+            .ToListOpt();
 
         // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
         entDelete.Delete(mdItems);

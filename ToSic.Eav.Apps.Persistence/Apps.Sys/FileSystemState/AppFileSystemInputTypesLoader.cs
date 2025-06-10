@@ -14,11 +14,13 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
         => base.Init(reader, logSettings) as IAppInputTypesLoader;
 
     /// <inheritdoc />
-    public List<InputTypeInfo> InputTypes()
+    public ICollection<InputTypeInfo> InputTypes()
     {
-        var l = Log.Fn<List<InputTypeInfo>>();
+        var l = Log.Fn<ICollection<InputTypeInfo>>();
         var types = GetInputTypes(Path, AppConstants.AppPathPlaceholder);
-        types.AddRange(GetInputTypes(PathShared, AppConstants.AppPathSharedPlaceholder));
+        types = types
+            .Union(GetInputTypes(PathShared, AppConstants.AppPathSharedPlaceholder))
+            .ToListOpt();
         return l.Return(types, $"{types.Count}");
     }
 
@@ -26,18 +28,19 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
 
     #region Helpers
 
-    private List<InputTypeInfo> GetInputTypes(string path, string placeholder)
+    private ICollection<InputTypeInfo> GetInputTypes(string path, string placeholder)
     {
-        var l = Log.Fn<List<InputTypeInfo>>();
+        var l = Log.Fn<ICollection<InputTypeInfo>>();
         var di = new DirectoryInfo(path);
-        if (!di.Exists) return l.Return([], "directory not found");
+        if (!di.Exists)
+            return l.Return([], "directory not found");
         var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
-        Log.A($"found {inputFolders.Length} field-directories");
+        l.A($"found {inputFolders.Length} field-directories");
 
         var withIndexJs = inputFolders
             .Where(fld => fld.GetFiles(JsFile).Any())
             .Select(fld => fld.Name).ToArray();
-        Log.A($"found {withIndexJs.Length} folders with {JsFile}");
+        l.A($"found {withIndexJs.Length} folders with {JsFile}");
 
         var types = withIndexJs.Select(name =>
             {
@@ -47,7 +50,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
                 return new InputTypeInfo(fullName, niceName, "Extension Field", "", false,
                     $"{placeholder}/{FolderConstants.FolderAppExtensions}/{name}/{JsFile}", false, "file-system");
             })
-            .ToList();
+            .ToListOpt();
         return l.Return(types, $"{types.Count}");
     }
 
@@ -57,13 +60,15 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
         if (nameStack.Length < 3)
             return "[Bad Name Format]";
         // drop "field-" and "string-" or whatever type name is used
-        nameStack = nameStack.Skip(2).ToArray();
-        var caps = nameStack.Select(n =>
-        {
-            if (string.IsNullOrWhiteSpace(n)) return "";
-            if (n.Length <= 1) return n;
-            return char.ToUpper(n[0]) + n.Substring(1);
-        });
+        nameStack = nameStack.Skip(2)
+            .ToArray();
+        var caps = nameStack
+            .Select(n =>
+            {
+                if (string.IsNullOrWhiteSpace(n)) return "";
+                if (n.Length <= 1) return n;
+                return char.ToUpper(n[0]) + n.Substring(1);
+            });
 
         var niceName = string.Join(" ", caps);
         return niceName;

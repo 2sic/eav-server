@@ -4,12 +4,13 @@ namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
 partial class AppStateInFolderLoader
 {
-    private List<IEntity> LoadGlobalEntities(IAppReader appReader)
+    private ICollection<IEntity> LoadGlobalEntities(IAppReader appReader)
     {
-        var l = Log.Fn<List<IEntity>>($"appId:{appReader.AppId}", timer: true);
+        var l = Log.Fn<ICollection<IEntity>>($"appId:{appReader.AppId}", timer: true);
         // Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;
-        Loaders.ForEach(ldr => ldr.EntityIdSeed = GlobalAppIdConstants.GlobalEntityIdMin + GlobalAppIdConstants.GlobalEntitySourceSkip * loaderIndex++);
+        foreach (var ldr in Loaders)
+            ldr.EntityIdSeed = GlobalAppIdConstants.GlobalEntityIdMin + GlobalAppIdConstants.GlobalEntitySourceSkip * loaderIndex++;
 
         // This will be the source of all relationships
         // In the end it must contain all entities - but not deleted ones...
@@ -21,7 +22,7 @@ partial class AppStateInFolderLoader
                     Folder = folder,
                     Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appReader) ?? []
                 })
-                .ToList();
+                .ToListOpt();
 
             l.A($"Found {entitySets.Count} sets");
 
@@ -36,21 +37,21 @@ partial class AppStateInFolderLoader
         return l.ReturnAsOk(final);
     }
 
-    private List<IEntity> DeduplicateAndLogStats(List<EntitySetsToLoad> entitySets)
+    private ICollection<IEntity> DeduplicateAndLogStats(ICollection<EntitySetsToLoad> entitySets)
     {
-        var l = Log.Fn<List<IEntity>>();
+        var l = Log.Fn<ICollection<IEntity>>();
         // Deduplicate entities 
         var entities = entitySets
             .SelectMany(es => es.Entities)
-            .ToList();
+            .ToListOpt();
         var entitiesGroupedByGuid = entities
             .GroupBy(x => x.EntityGuid)
-            .ToList();
+            .ToListOpt();
         var entitiesUnique = entitiesGroupedByGuid
             .Select(g => g.Last())
             // After Deduplicating we want to order them, in case we need to debug something
             .OrderBy(e => e.EntityId)
-            .ToList();
+            .ToListOpt();
 
         // Log duplicates if logging is active (Log != null)
         if (l != null)
@@ -70,9 +71,9 @@ partial class AppStateInFolderLoader
         return l.Return(entitiesUnique, $"final: {entitiesUnique.Count}");
     }
 
-    private List<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
+    private ICollection<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
     {
-        var l = Log.Fn<List<IEntity>>($"groupIdentifier:{groupIdentifier}", timer: true);
+        var l = Log.Fn<ICollection<IEntity>>($"groupIdentifier:{groupIdentifier}", timer: true);
         if (!AppDataFoldersConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
             throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
                 "atm we can only load items of type " + string.Join("/", AppDataFoldersConstants.EntityItemFolders));
@@ -93,6 +94,6 @@ partial class AppStateInFolderLoader
     internal class EntitySetsToLoad
     {
         public string Folder;
-        public List<IEntity> Entities;
+        public ICollection<IEntity> Entities;
     }
 }

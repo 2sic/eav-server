@@ -30,10 +30,10 @@ public class MetadataRequirementsService(
     : ServiceBase($"{AppConstants.LogName}.MdReq",
         connect: [licenseService, featsService, platInfo, licenseCatalog, sysCapSvc]), IRequirementsService
 {
-    public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements)
+    public ICollection<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements)
     {
-        var list = requirements?.ToList();
-        var l = Log.Fn<List<RequirementStatus>>();
+        var list = requirements?.ToListOpt();
+        var l = Log.Fn<ICollection<RequirementStatus>>();
         if (list.SafeNone())
             return l.Return([], "empty requirements");
 
@@ -41,18 +41,18 @@ public class MetadataRequirementsService(
             .Select(r => VerifySysCap(r.NameId))
             .Where(pair => !pair.IsOk)
             .Select(pair => new RequirementStatus(false, pair.Aspect, ""))
-            .ToList();
+            .ToListOpt();
         return l.Return(reqStatus, $"not ok count: {reqStatus.Count}");
     }
 
-    public List<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements)
+    public ICollection<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements)
     {
-        var l = Log.Fn<List<RequirementStatus>>();
+        var l = Log.Fn<ICollection<RequirementStatus>>();
 
         var (ok, notOk) = CheckRequirements(requirements);
         return ok 
             ? l.Return([], "all ok")
-            : l.Return(notOk.Cast<RequirementStatus>().ToList(), $"a few not ok: {notOk.Count}");
+            : l.Return(notOk.Cast<RequirementStatus>().ToListOpt(), $"a few not ok: {notOk.Count}");
     }
 
     public (bool Approved, string FeatureId) RequirementMet(IEnumerable<IEntity> requirement)
@@ -72,26 +72,26 @@ public class MetadataRequirementsService(
         return l.Return((false, featureName), $"not ok, because of feature {featureName}");
     }
 
-    private (bool AllOk, List<ReqStatusPrivate> Issues) CheckRequirements(IEnumerable<IEntity> requirement)
+    private (bool AllOk, ICollection<ReqStatusPrivate> Issues) CheckRequirements(IEnumerable<IEntity> requirement)
     {
-        var l = Log.Fn<(bool, List<ReqStatusPrivate>)>();
-        var entities = requirement?.ToList();
+        var l = Log.Fn<(bool, ICollection<ReqStatusPrivate>)>();
+        var entities = requirement?.ToListOpt();
         l.A($"entities: {entities?.Count}");
         if (entities == null || !entities.Any())
             return l.Return((true, null), "no metadata");
 
         // Preflight - ensure that they are of type RequirementDecorator
-        var reqList = entities.OfType(TypeName).ToList();
+        var reqList = entities.OfType(TypeName).ToListOpt();
         if (!reqList.Any())
             return l.Return((true, null), "no requirements");
 
         var reqStatus = reqList
             .Select(RequirementMet)
-            .ToList();
+            .ToListOpt();
 
         return reqStatus.All(rs => rs.IsOk)
             ? l.Return((true, null), "all ok")
-            : l.Return((false, reqStatus.Where(r => !r.IsOk).ToList()), "some didn't work");
+            : l.Return((false, reqStatus.Where(r => !r.IsOk).ToListOpt()), "some didn't work");
     }
 
     private record ReqStatusPrivate(RequirementDecorator Decorator, string NameId, bool Approved, Aspect Aspect = default)

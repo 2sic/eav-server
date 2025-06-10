@@ -5,8 +5,8 @@ namespace ToSic.Eav.Metadata.Requirements.Sys;
 
 public interface IRequirementsService
 {
-    List<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements);
+    ICollection<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements);
 
-    List<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements);
+    ICollection<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements);
 
 }

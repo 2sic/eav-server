@@ -123,9 +123,9 @@ public class AppJsonConfigurationService(
     }
 
     /// <inheritdoc />
-    public List<string> ExcludeSearchPatterns(string sourceFolder, int appId, bool useShared = false)
+    public ICollection<string> ExcludeSearchPatterns(string sourceFolder, int appId, bool useShared = false)
     {
-        var l = Log.Fn<List<string>>($"{nameof(sourceFolder)}:'{sourceFolder}', {nameof(appId)}:{appId}, {nameof(useShared)}:{useShared}");
+        var l = Log.Fn<ICollection<string>>($"{nameof(sourceFolder)}:'{sourceFolder}', {nameof(appId)}:{appId}, {nameof(useShared)}:{useShared}");
 
         var appJson = GetAppJson(appId, useShared);
         if (appJson?.Export?.Exclude == null)
@@ -133,12 +133,17 @@ public class AppJsonConfigurationService(
 
         try
         {
-            return l.Return(appJson.Export.Exclude
+            var excludeList = appJson.Export.Exclude
                 .Select(e => e.ToString().Trim().Backslash())
-                .Where(e => !string.IsNullOrEmpty(e) && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
-                .Select(e => e.StartsWith(@"\") ? Path.Combine(sourceFolder, e.Substring(1)) : e) // handle case with starting slash
+                .Where(e => !string.IsNullOrEmpty(e)
+                            && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
+                .Select(e =>
+                    e.StartsWith(@"\")
+                        ? Path.Combine(sourceFolder, e.Substring(1))
+                        : e) // handle case with starting slash
                 .Select(e => e.ToLowerInvariant())
-                .ToList(), "ok");
+                .ToListOpt();
+            return l.Return(excludeList, $"Found: {excludeList.Count}");
         }
         catch (Exception e)
         {

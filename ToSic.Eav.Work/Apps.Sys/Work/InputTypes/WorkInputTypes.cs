@@ -17,9 +17,9 @@ public class WorkInputTypes(
     /// Retrieve a list of all input types known to the current system
     /// </summary>
     /// <returns></returns>
-    public List<InputTypeInfo> GetInputTypes()
+    public ICollection<InputTypeInfo> GetInputTypes()
     {
-        var l = Log.Fn<List<InputTypeInfo>>();
+        var l = Log.Fn<ICollection<InputTypeInfo>>();
 
         // Initial list is the global, file-system based types
         var globalDef = GetPresetInputTypesBasedOnContentTypes();
@@ -34,11 +34,11 @@ public class WorkInputTypes(
 
         var inputTypes = extensionTypes;
         if (inputTypes.Count > 0)
-            AddMissingTypes(inputTypes, appTypes);
+            inputTypes = AddMissingTypes(inputTypes, appTypes);
         else
             inputTypes = appTypes;
 
-        AddMissingTypes(inputTypes, globalDef);
+        inputTypes = AddMissingTypes(inputTypes, globalDef);
         LogListOfInputTypes("Combined", inputTypes);
 
         // Merge input types registered in global metadata-app
@@ -46,7 +46,7 @@ public class WorkInputTypes(
         var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx);
         systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
         LogListOfInputTypes("System", systemAppInputTypes);
-        AddMissingTypes(inputTypes, systemAppInputTypes);
+        inputTypes = AddMissingTypes(inputTypes, systemAppInputTypes);
         LogListOfInputTypes("All combined", inputTypes);
 
         // Sort for better debugging
@@ -74,12 +74,16 @@ public class WorkInputTypes(
     /// </summary>
     /// <param name="target"></param>
     /// <param name="additional"></param>
-    private static void AddMissingTypes(List<InputTypeInfo> target, ICollection<InputTypeInfo> additional)
+    private static ICollection<InputTypeInfo> AddMissingTypes(ICollection<InputTypeInfo> target, ICollection<InputTypeInfo> additional)
     {
-        foreach (var sit in additional.Where(sit => target.FirstOrDefault(ait => ait.Type == sit.Type) == null))
-        {
-            target.Add(sit);
-        }
+        var toAdd = additional.Where(sit => target.FirstOrDefault(ait => ait.Type == sit.Type) == null);
+        return target
+            .Union(toAdd)
+            .ToListOpt();
+        //foreach (var sit in toAdd)
+        //{
+        //    target.Add(sit);
+        //}
     }
 
     /// <summary>
@@ -88,7 +92,7 @@ public class WorkInputTypes(
     /// </summary>
     /// <param name="oldGlobalTypes"></param>
     /// <returns></returns>
-    private List<InputTypeInfo> MarkOldGlobalInputTypesAsObsolete(List<InputTypeInfo> oldGlobalTypes) =>
+    private ICollection<InputTypeInfo> MarkOldGlobalInputTypesAsObsolete(ICollection<InputTypeInfo> oldGlobalTypes) =>
         oldGlobalTypes
             .Select(it =>
             {
@@ -96,7 +100,7 @@ public class WorkInputTypes(
                 it.ObsoleteMessage = "Old input type, will default to another one.";
                 return it;
             })
-            .ToList();
+            .ToListOpt();
 
 
     /// <summary>
@@ -104,7 +108,7 @@ public class WorkInputTypes(
     /// </summary>
     /// <param name="overrideCtx">App context to use. Often the current app, but can be a custom one.</param>
     /// <returns></returns>
-    private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus overrideCtx = default)
+    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus overrideCtx = default)
     {
         var list = workEntities
             .New(overrideCtx ?? AppWorkCtx)
@@ -123,7 +127,7 @@ public class WorkInputTypes(
                 "app-registered",
                 e.Metadata
             ))
-            .ToList();
+            .ToListOpt();
     }
 
 
@@ -131,9 +135,9 @@ public class WorkInputTypes(
     /// Experimental v11 - load input types based on folder
     /// </summary>
     /// <returns></returns>
-    private List<InputTypeInfo> GetAppExtensionInputTypes()
+    private ICollection<InputTypeInfo> GetAppExtensionInputTypes()
     {
-        var l = Log.Fn<List<InputTypeInfo>>();
+        var l = Log.Fn<ICollection<InputTypeInfo>>();
         try
         {
             var appLoader = appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppReader, new());
