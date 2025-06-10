@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
-using ToSic.Lib.DI;
 using ToSic.Testing.Performance.json;
 using ToSic.Testing.Performance.LoadPresetApp;
 

@@ -18,7 +18,6 @@
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using ToSic.Sys.Capabilities.FeatureSet;
-using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using static System.String;
 

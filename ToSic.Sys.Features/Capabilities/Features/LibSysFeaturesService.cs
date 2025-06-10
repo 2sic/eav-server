@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Capabilities.Licenses;
-using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
 

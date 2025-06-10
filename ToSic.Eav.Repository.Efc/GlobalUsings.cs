@@ -12,4 +12,5 @@ global using ToSic.Eav.Repositories;
 global using ToSic.Lib.DI;
 global using ToSic.Lib.Logging;
 global using ToSic.Lib.Services;
+global using ToSic.Sys.Performance;
 global using IEntity = ToSic.Eav.Data.IEntity;

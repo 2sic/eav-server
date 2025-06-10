@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.ImportExport.Json.Sys;
@@ -8,7 +7,6 @@ using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Serialization.Sys;
-using ToSic.Lib.DI;
 
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 

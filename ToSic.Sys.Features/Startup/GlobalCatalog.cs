@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using ToSic.Lib.Data;
 using ToSic.Lib.Services;
-using ToSic.Sys.Performance;
 
 namespace ToSic.Sys.Startup;
 

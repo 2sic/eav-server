@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
-using ToSic.Sys.Performance;
 
 namespace ToSic.Sys.Caching.Synchronized;
 

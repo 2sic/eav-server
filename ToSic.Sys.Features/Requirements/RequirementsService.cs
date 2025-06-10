@@ -1,6 +1,5 @@
 ﻿using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-using ToSic.Sys.Performance;
 
 namespace ToSic.Sys.Requirements;
 

@@ -2,12 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics;
-using System.Linq;
 using BenchmarkDotNet.Engines;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
-using ToSic.Lib.DI;
-using ToSic.Sys.Performance;
 
 namespace ToSic.Testing.Performance.LoadPresetApp;
 

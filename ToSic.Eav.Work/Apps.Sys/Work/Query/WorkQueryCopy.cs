@@ -6,7 +6,6 @@ using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization.Sys;
-using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
