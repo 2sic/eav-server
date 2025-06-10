@@ -10,8 +10,12 @@ partial class ConvertToEavLight
     public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> entities)
     {
         var l = Log.Fn<IEnumerable<EavLightEntity>>(timer: true);
-        var topEntities = MaxItems == 0 ? entities : entities.Take(MaxItems);
-        var result = topEntities.Select(GetDictionaryFromEntity).ToList();
+        var topEntities = MaxItems == 0
+            ? entities
+            : entities.Take(MaxItems);
+        var result = topEntities
+            .Select(GetDictionaryFromEntity)
+            .ToListOpt();
         return l.ReturnAsOk(result);
     }
 
@@ -19,7 +23,9 @@ partial class ConvertToEavLight
     public EavLightEntity Convert(IEntity entity)
     {
         var l = Log.Fn<EavLightEntity>(timer: true);
-        var result = entity == null ? null : GetDictionaryFromEntity(entity);
+        var result = entity == null
+            ? null
+            : GetDictionaryFromEntity(entity);
         return l.ReturnAsOk(result);
     }
 
@@ -46,16 +52,16 @@ partial class ConvertToEavLight
                     throw new("tried to convert an item, but it was not a known Entity-type");
                 return GetDictionaryFromEntity(entity);
             })
-            .ToList();
+            .ToListOpt();
     }
 
-    public virtual EavLightEntity Convert(object item)
-    {
-        if (item is IEntity ent) return Convert(ent);
-        if (item is ICanBeEntity dynEnt) return Convert(dynEnt.Entity);
-
-        throw new ArgumentException("expected an IEntity or IEntityWrapper like a DynamicEntity, but got something else", nameof(item));
-    }
+    public virtual EavLightEntity Convert(object item) =>
+        item switch
+        {
+            IEntity ent => Convert(ent),
+            ICanBeEntity dynEnt => Convert(dynEnt.Entity),
+            _ => throw new ArgumentException(@"expected an IEntity or IEntityWrapper like a DynamicEntity, but got something else", nameof(item))
+        };
 
     #endregion
 

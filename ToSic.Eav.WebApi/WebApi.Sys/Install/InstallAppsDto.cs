@@ -7,9 +7,9 @@ public class InstallAppsDto
 {
     public string remoteUrl { get; set; }
 
-    public List<AppInstallRuleDto> rules { get; set; }
+    public ICollection<AppInstallRuleDto> rules { get; set; }
 
-    public List<AppDtoLight> installedApps { get; set; }
+    public ICollection<AppDtoLight> installedApps { get; set; }
 }
 
 public class AppInstallRuleDto

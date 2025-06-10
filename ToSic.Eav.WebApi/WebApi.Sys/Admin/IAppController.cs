@@ -5,15 +5,15 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 
 public interface IAppController<out THttpResponse>
 {
-    List<AppDto> List(int zoneId);
+    ICollection<AppDto> List(int zoneId);
 
-    List<AppDto> InheritableApps();
+    ICollection<AppDto> InheritableApps();
 
     void App(int zoneId, int appId, bool fullDelete = true);
 
     void App(int zoneId, string name, int? inheritAppId = null, int templateId = 0);
 
-    List<SiteLanguageDto> Languages(int appId);
+    ICollection<SiteLanguageDto> Languages(int appId);
 
     AppExportInfoDto Statistics(int zoneId, int appId);
 

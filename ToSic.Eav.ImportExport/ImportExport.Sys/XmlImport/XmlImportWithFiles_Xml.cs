@@ -41,8 +41,8 @@ partial class XmlImportWithFiles
         if (sourceDimensions == null || sourceDefaultLanguage == null)
             return l.ReturnFalse(LogError("Can't find source dimensions or source-default language."));
 
-        var sourceDefaultDimensionId = sourceDimensions.Any() ?
-            sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
+        var sourceDefaultDimensionId = sourceDimensions.Any()
+            ? sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
             : new();
 
         l.A($"source def dim:{sourceDefaultDimensionId}");

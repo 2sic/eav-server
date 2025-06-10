@@ -18,40 +18,42 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
 {
     private class TargetLanguageToSourceLanguage: DimensionDefinition
     {
-        public List<DimensionDefinition> PrioritizedDimensions = [];
+        public ICollection<DimensionDefinition> PrioritizedDimensions = [];
     }
 
-    public XmlToEntity Init(int appId, List<DimensionDefinition> srcLanguages, int? srcDefLang, List<DimensionDefinition> envLanguages, string envDefLang)
+    public XmlToEntity Init(int appId, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang, ICollection<DimensionDefinition> envLanguages, string envDefLang)
     {
         AppId = appId;
         envLanguages = envLanguages
             .OrderByDescending(p => p.Matches(envDefLang))
             .ThenBy(p => p.EnvironmentKey)
-            .ToList();
+            .ToListOpt();
         _envLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
         _envDefLang = envDefLang;
-        _srcDefLang = srcDefLang?.ToString();
+        // seems unused 2025-06-10 2dm
+        //_srcDefLang = srcDefLang?.ToString();
         return this;
     }
 
     public int AppId { get; private set; }
 
 
-    private List<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(List<DimensionDefinition> envLanguages, string envDefLang, List<DimensionDefinition> srcLanguages, int? srcDefLang)
+    private ICollection<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(ICollection<DimensionDefinition> envLanguages, string envDefLang, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang)
     {
-        var l = Log.Fn<List<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
-        List<TargetLanguageToSourceLanguage> result;
+        var l = Log.Fn<ICollection<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
+        ICollection<TargetLanguageToSourceLanguage> result;
         // if the environment doesn't have languages defined, we'll create a temp-entry for the main language to allow mapping
         if (envLanguages.Any())
         {
-            result =
-                envLanguages.Select(el => new TargetLanguageToSourceLanguage
+            result = envLanguages
+                .Select(el => new TargetLanguageToSourceLanguage
                 {
                     Active = el.Active,
                     EnvironmentKey = el.EnvironmentKey,
                     DimensionId = el.DimensionId,
                     PrioritizedDimensions = FindPriorizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang)
-                }).ToList();
+                })
+                .ToListOpt();
         }
         else
         {
@@ -77,7 +79,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
         return l.Return(result, $"LanguageMap has {result.Count} items");
     }
 
-    private List<DimensionDefinition> FindPriorizedMatchingDimensions(DimensionDefinition targetLang, string envDefLang, List<DimensionDefinition> srcLangs, int? srcDefLang)
+    private List<DimensionDefinition> FindPriorizedMatchingDimensions(DimensionDefinition targetLang, string envDefLang, ICollection<DimensionDefinition> srcLangs, int? srcDefLang)
     {
         var languageMap = new List<DimensionDefinition>();
             
@@ -108,9 +110,9 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
     }
 
     //private readonly List<string> _relevantSrcLangsByPriority;
-    private List<TargetLanguageToSourceLanguage> _envLangs;
+    private ICollection<TargetLanguageToSourceLanguage> _envLangs;
     private string _envDefLang;
-    private string _srcDefLang;
+    //private string _srcDefLang;
         
     /// <summary>
     /// Returns an EAV import entity
@@ -124,13 +126,16 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
 
         // Group values by StaticName
         var valuesGroupedByStaticName = xEntity.Elements(XmlConstants.ValueNode)
-            .GroupBy(v => v.Attribute(XmlConstants.KeyAttr)?.Value, e => e, (key, e) => new { StaticName = key, Values = e.ToList() });
+            .GroupBy(
+                v => v.Attribute(XmlConstants.KeyAttr)?.Value,
+                e => e, (key, e) => new { StaticName = key, Values = e.ToListOpt() }
+            );
 
 
         var envLangsSortedByPriority = _envLangs
             .OrderByDescending(p => p.Matches(_envDefLang))
             .ThenBy(p => p.EnvironmentKey)
-            .ToList();
+            .ToListOpt();
 
         // Process each attribute (values grouped by StaticName)
         foreach (var sourceAttrib in valuesGroupedByStaticName) Log.Do(sourceAttrib.StaticName, () =>
@@ -170,7 +175,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
                     tempImportValue.Dimensions.ToImmutableSafe()
                     )
                 )
-                .ToList();
+                .ToListOpt();
 
             // construct the attribute with these value elements
             var newAttr = dataBuilder.Attribute.Create(
@@ -258,17 +263,18 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
         return logText;
     });
 
-    private XElement GetFallbackAttributeInXml(List<XElement> xmlValuesOfAttrib)
+    private XElement GetFallbackAttributeInXml(ICollection<XElement> xmlValuesOfAttrib)
     {
         var wrap = Log.Fn<XElement>();
         // First, try to take a fallback node without language assignments
         //var dimensionNodes = xmlValuesOfAttrib.Elements(XmlConstants.ValueDimNode);
-        var sourceValueNode = xmlValuesOfAttrib.FirstOrDefault(xv =>
-        {
-            var dimNodes = xv.Elements(XmlConstants.ValueDimNode).ToList();
-            // keep it if it has no dimensions, or if it has a dimensionId of 0
-            return !dimNodes.Any() || dimNodes.Any(x => x.Attribute(XmlConstants.DimId)?.Value == "0");
-        });
+        var sourceValueNode = xmlValuesOfAttrib
+            .FirstOrDefault(xv =>
+            {
+                var dimNodes = xv.Elements(XmlConstants.ValueDimNode).ToListOpt();
+                // keep it if it has no dimensions, or if it has a dimensionId of 0
+                return !dimNodes.Any() || dimNodes.Any(x => x.Attribute(XmlConstants.DimId)?.Value == "0");
+            });
 
         // todo: Otherwise, try to take the primary language in file for our primary language
         // 2019-01-30 2rm: This is not needed anymore as this will be checked earlier
@@ -291,7 +297,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
         return wrap.Return(sourceValueNode, (sourceValueNode != null).ToString());
     }
 
-    private (XElement Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, List<XElement> xmlValuesOfAttrib)
+    private (XElement Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, ICollection<XElement> xmlValuesOfAttrib)
     {
         var l = Log.Fn<(XElement Element, bool ReadOnly)>(envLang.EnvironmentKey);
         XElement sourceValueNode = null;

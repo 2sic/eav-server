@@ -60,9 +60,10 @@ public static class JsonOptions
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
-        if (jc == null) return op;
+        if (jc == null)
+            return op;
             
-        foreach (var j in op.Converters.ToList().Where(j => j.GetType() == jc.GetType())) 
+        foreach (var j in op.Converters.ToListOpt().Where(j => j.GetType() == jc.GetType())) 
             op.Converters.Remove(j);
 
         op.Converters.Add(jc);

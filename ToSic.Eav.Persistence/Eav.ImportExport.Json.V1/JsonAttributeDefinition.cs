@@ -38,5 +38,5 @@ public class JsonAttributeDefinition
     /// </summary>
     [JsonIgnore(Condition = WhenWritingNull)]
     [JsonPropertyOrder(100)]
-    public List<JsonEntity> Metadata;
+    public ICollection<JsonEntity> Metadata;
 }

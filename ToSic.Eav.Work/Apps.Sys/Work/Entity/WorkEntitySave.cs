@@ -9,6 +9,7 @@ using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Relationships.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -39,20 +40,21 @@ public class WorkEntitySave(
         var savePairs = newEntities
             .Select(e => Builder.Entity.CreateFrom(e, id: 0, repositoryId: 0))
             .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
-            .ToList();
+            .ToListOpt();
 
         Save(savePairs);
     }
 
-    public SaveOptions SaveOptions() => environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
+    public SaveOptions SaveOptions()
+        => environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
 
     public int Save(IEntity entity, SaveOptions saveOptions)
-        => Save([new EntityPair<SaveOptions>(entity, saveOptions)]).FirstOrDefault();
+        => Save([new(entity, saveOptions)]).FirstOrDefault();
 
 
-    public List<int> Save(List<EntityPair<SaveOptions>> entities)
+    public ICollection<int> Save(ICollection<EntityPair<SaveOptions>> entities)
     {
-        var l = Log.Fn<List<int>>($"save count:{entities.Count}");
+        var l = Log.Fn<ICollection<int>>($"save count:{entities.Count}");
 
         // Run the change in a lock/transaction
         // This is to avoid parallel creation of new entities
@@ -81,7 +83,7 @@ public class WorkEntitySave(
                         ? pair
                         : pair with { Entity = Builder.Entity.CreateFrom(pair.Entity, type: newType) };
                 })
-                .ToList();
+                .ToListOpt();
 
             // Clear Ephemeral attributes which shouldn't be saved (new in v12)
             entities = entities
@@ -92,12 +94,12 @@ public class WorkEntitySave(
                         ? pair
                         : pair with { Entity = Builder.Entity.CreateFrom(pair.Entity, attributes: attributes) };
                 })
-                .ToList();
+                .ToListOpt();
 
             // attach relationship resolver - important when saving data which doesn't yet have the guid
             var pairsToSave = entities
                 .Select(IEntityPair<SaveOptions> (p) => p with { Entity = AttachRelationshipResolver(p.Entity, appReader.GetCache()) })
-                .ToList();
+                .ToListOpt();
             //entities = AttachRelationshipResolver(entities, appReader.GetCache());
 
             List<int> intIds = null;
@@ -110,15 +112,6 @@ public class WorkEntitySave(
         }
     }
 
-
-    //[PrivateApi]
-    //public List<IEntity> AttachRelationshipResolver(List<IEntity> entities, IEntitiesSource appState)
-    //{
-    //    var updated = entities
-    //        .Select(e => AttachRelationshipResolver(e, appState))
-    //        .ToList();
-    //    return updated;
-    //}
 
     [PrivateApi]
     private IEntity AttachRelationshipResolver(IEntity entity, IEntitiesSource appState)
@@ -134,7 +127,7 @@ public class WorkEntitySave(
                 TypedContents = a.TypedContents as IRelatedEntitiesValue,
             })
             .Where(set => set.TypedContents?.Identifiers?.Count > 0)
-            .ToList();
+            .ToListOpt();
 
         // If none, exit early
         if (!relationshipAttributes.Any())
@@ -147,7 +140,7 @@ public class WorkEntitySave(
                 var newLazyEntities = Builder.Value.Relationships(a.TypedContents, appState);
                 return Builder.Attribute.CreateFrom(a.Attribute, newLazyEntities);
             })
-            .ToList();
+            .ToListOpt();
 
         // Assemble the attributes (replace the relationships)
         var attributes = Builder.Attribute.Replace(entity.Attributes, relationshipsUpdated);
@@ -164,13 +157,13 @@ public class WorkEntitySave(
     private IImmutableDictionary<string, IAttribute> AttributesWithEmptyEphemerals(IEntity entity)
     {
         var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
-        var attributes = entity.Type?.Attributes?.ToList();
+        var attributes = entity.Type?.Attributes?.ToListOpt();
         if (attributes == null || !attributes.Any())
             return l.ReturnNull("no attributes");
 
         var toClear = attributes
             .Where(a => a.Metadata.GetBestValue<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
-            .ToList();
+            .ToListOpt();
 
         if (!toClear.Any())
             return l.ReturnNull("no ephemeral attributes");
@@ -180,7 +173,7 @@ public class WorkEntitySave(
             {
                 if (!toClear.Any(tc => tc.Name.EqualsInsensitive(pair.Key)))
                     return pair.Value;
-                var empty = Builder.Attribute.CreateFrom(pair.Value, new List<IValue>().ToImmutableList());
+                var empty = Builder.Attribute.CreateFrom(pair.Value, []);
                 l.A("Cleared " + pair.Key);
                 return empty;
             }, InvariantCultureIgnoreCase);

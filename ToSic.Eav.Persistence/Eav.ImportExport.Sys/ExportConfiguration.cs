@@ -36,20 +36,26 @@ public class ExportConfiguration(IEntity entity) : EntityBasedType(entity)
     /// <summary>
     /// Find all decorator metadata of type SystemExportDecorator
     /// </summary>
-    public List<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity.Parents(ExportDecorator.TypeNameId).Select(e => new ExportDecorator(e)).ToList());
-    private readonly GetOnce<List<ExportDecorator>> _exportMarkers = new();
+    public ICollection<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity
+        .Parents(ExportDecorator.TypeNameId)
+        .Select(e => new ExportDecorator(e))
+        .ToListOpt()
+    );
+    private readonly GetOnce<ICollection<ExportDecorator>> _exportMarkers = new();
 
     /// <summary>
     /// Content Types to Export
     /// </summary>
-    public List<string> ContentTypes => ExportMarkers
+    public ICollection<string> ContentTypes => field ??= ExportMarkers
         .Where(e => e.IsContentType && !string.IsNullOrEmpty(e.KeyString))
-        .Select(et => et.KeyString).ToList();
+        .Select(et => et.KeyString)
+        .ToListOpt();
         
     /// <summary>
     /// Entities to Export
     /// </summary>
-    public List<Guid> Entities => ExportMarkers
+    public ICollection<Guid> Entities => field ??= ExportMarkers
         .Where(e => e.IsEntity && e.KeyGuid.HasValue)
-        .Select(et => et.KeyGuid.Value).ToList();
+        .Select(et => et.KeyGuid.Value)
+        .ToListOpt();
 }

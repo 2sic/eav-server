@@ -66,7 +66,7 @@ public sealed class LicenseLoader(
                 .SelectMany(ls => LicensesStateBuilder(ls, fingerprint1, validEntFps))
                 .ToListOpt();
             var autoEnabled = AutoEnabledLicenses();
-            LicenseService.Update(autoEnabled.Union(licenses).ToList());
+            LicenseService.Update(autoEnabled.Union(licenses).ToListOpt());
             l.Done($"Found {licenses.Count} licenses");
         }
         catch (Exception ex)

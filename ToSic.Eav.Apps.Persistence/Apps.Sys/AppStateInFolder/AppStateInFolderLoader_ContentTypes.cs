@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.ImportExport.Json.Sys;
+using ToSic.Sys.Performance;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
@@ -36,12 +37,12 @@ partial class AppStateInFolderLoader
                 ldr.Serializer.DeserializationSettings = null;
                 return ctWithEntities;
             })
-            .ToList();
+            .ToListOpt();
 
         // 5. Finalize all created entities to ensure they reference the newly created content-types
         var newTypes = newSets
             .SelectMany(set => set.ContentTypes)
-            .ToList();
+            .ToListOpt();
         var newEntities = newSets
             .SelectMany(set => set.Entities)
             .ToList();

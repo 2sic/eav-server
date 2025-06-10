@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.InputTypes.Sys;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using static ToSic.Eav.Data.InputTypes.Sys.InputTypeDefinition;
 
@@ -55,7 +56,7 @@ public class WorkInputTypes(
         return l.Return(inputTypes, $"found {inputTypes.Count}");
 
         // Inner helper to log each intermediate state
-        void LogListOfInputTypes(string title, List<InputTypeInfo> inputsToLog)
+        void LogListOfInputTypes(string title, ICollection<InputTypeInfo> inputsToLog)
         {
             var lInner = Log.Fn($"{title}, {inputsToLog.Count}");
             try
@@ -74,12 +75,13 @@ public class WorkInputTypes(
     /// </summary>
     /// <param name="target"></param>
     /// <param name="additional"></param>
-    private static void AddMissingTypes(List<InputTypeInfo> target, List<InputTypeInfo> additional)
-        => additional.ForEach(sit =>
+    private static void AddMissingTypes(List<InputTypeInfo> target, ICollection<InputTypeInfo> additional)
+    {
+        foreach (var sit in additional.Where(sit => target.FirstOrDefault(ait => ait.Type == sit.Type) == null))
         {
-            if (target.FirstOrDefault(ait => ait.Type == sit.Type) == null)
-                target.Add(sit);
-        });
+            target.Add(sit);
+        }
+    }
 
     /// <summary>
     /// Mark obsolete InputTypes which were previously part of the installation.
@@ -105,7 +107,8 @@ public class WorkInputTypes(
     /// <returns></returns>
     private List<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus overrideCtx = default)
     {
-        var list = workEntities.New(overrideCtx ?? AppWorkCtx)
+        var list = workEntities
+            .New(overrideCtx ?? AppWorkCtx)
             .Get(TypeForInputTypeDefinition);
 
         return list
@@ -151,10 +154,11 @@ public class WorkInputTypes(
     /// Build a list of global (json) Content-Types and their metadata
     /// </summary>
     /// <returns></returns>
-    private List<InputTypeInfo> GetPresetInputTypesBasedOnContentTypes()
+    private ICollection<InputTypeInfo> GetPresetInputTypesBasedOnContentTypes()
     {
-        var l = Log.Fn<List<InputTypeInfo>>(timer: true);
-        if (_presetInpTypeCache != null) return l.Return(_presetInpTypeCache, $"cached {_presetInpTypeCache.Count}");
+        var l = Log.Fn<ICollection<InputTypeInfo>>(timer: true);
+        if (_presetInpTypeCache != null)
+            return l.Return(_presetInpTypeCache, $"cached {_presetInpTypeCache.Count}");
 
         var presetApp = appReaders.Value.GetSystemPreset();
 
@@ -165,11 +169,12 @@ public class WorkInputTypes(
                         || p.Metadata.HasType(TypeForInputTypeDefinition) 
             )
             .Select(p => p)
-            .ToList();
+            .ToListOpt();
 
         // Define priority of metadata to check
         var typesToCheckInThisOrder = new[] { TypeForInputTypeDefinition, ContentTypeDetails.ContentTypeTypeName, null };
-        var inputsWithAt = types.Select(it =>
+        var inputsWithAt = types
+            .Select(it =>
             {
                 var md = it.Metadata;
                 return new InputTypeInfo(
@@ -188,13 +193,13 @@ public class WorkInputTypes(
                     md
                 );
             })
-            .ToList();
+            .ToListOpt();
 
         _presetInpTypeCache = inputsWithAt;
         return l.Return(_presetInpTypeCache, $"{_presetInpTypeCache.Count}");
     }
 
-    private static List<InputTypeInfo> _presetInpTypeCache;
+    private static ICollection<InputTypeInfo> _presetInpTypeCache;
 
     public static string GetTypeName(IContentType t)
         => (Guid.TryParse(t.NameId, out _)

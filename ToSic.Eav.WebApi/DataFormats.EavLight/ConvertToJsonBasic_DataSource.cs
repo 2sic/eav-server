@@ -44,7 +44,7 @@ partial class ConvertToEavLight
                 k => k,
                 s =>
                 {
-                    var list = source.Out[s].List.ToList();
+                    var list = source.Out[s].List.ToListOpt();
                     var filtered = realGuids.Any()
                         ? list.Where(e => realGuids.Contains(e.EntityGuid))
                         : list;

@@ -11,7 +11,7 @@ partial class DbEntity
     /// <param name="entityOptionPairs"></param>
     /// <param name="saveOptions"></param>
     /// <returns></returns>
-    internal List<int> SaveEntity(List<IEntityPair<SaveOptions>> entityOptionPairs/*, SaveOptions saveOptions*/)
+    internal List<int> SaveEntity(ICollection<IEntityPair<SaveOptions>> entityOptionPairs/*, SaveOptions saveOptions*/)
     {
         var l = Log.Fn<List<int>>($"count:{entityOptionPairs?.Count}");
 

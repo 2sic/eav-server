@@ -21,14 +21,18 @@ public class JsonEntity: IJsonWithAssets
     public JsonAttributes Attributes;
 
     /// <remarks>V 1.0</remarks>
-    [JsonIgnore(Condition = WhenWritingNull)] public string Owner;
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public string Owner;
 
     /// <remarks>V 1.0</remarks>
-    [JsonIgnore(Condition = WhenWritingNull)] public JsonMetadataFor For;
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public JsonMetadataFor For;
 
     /// <remarks>V 1.0</remarks>
-    [JsonIgnore(Condition = WhenWritingNull)] public List<JsonEntity> Metadata;
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public ICollection<JsonEntity> Metadata;
 
     /// <remarks>V 1.1</remarks>
-    [JsonIgnore(Condition = WhenWritingNull)] public List<JsonAsset> Assets { get; set; }
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public ICollection<JsonAsset> Assets { get; set; }
 }

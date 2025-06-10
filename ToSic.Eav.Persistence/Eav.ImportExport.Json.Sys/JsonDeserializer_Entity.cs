@@ -259,48 +259,51 @@ partial class JsonSerializer
         }
     }
 
-    private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(List<IAttribute> attribs)
+    private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(IEnumerable<IAttribute> attribs)
     {
         var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, T>>>();
         var result = new Dictionary<string, Dictionary<string, T>>();
-        attribs
+        var attribsGeneric = attribs
             .Cast<IAttribute<T>>()
-            .ToList()
-            .ForEach(a =>
+            .ToListOpt();
+
+        foreach (var a in attribsGeneric)
+        {
+
+            Dictionary<string, T> dimensions;
+            try
             {
-                Dictionary<string, T> dimensions;
+                dimensions = a.Typed.ToDictionary(LanguageKey, v => v.TypedContents);
+            }
+            catch (Exception ex)
+            {
+                string langList = null;
                 try
                 {
-                    dimensions = a.Typed.ToDictionary(LanguageKey, v => v.TypedContents);
+                    langList = string.Join(",", a.Typed.Select(LanguageKey));
                 }
-                catch (Exception ex)
+                catch
                 {
-                    string langList = null;
-                    try
-                    {
-                        langList = string.Join(",", a.Typed.Select(LanguageKey));
-                    }
-                    catch
-                    {
-                        /* ignore */
-                    }
-
-                    l.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
-                    l.Done(ex);
-                    throw;
+                    /* ignore */
                 }
 
-                try
-                {
-                    result.Add(a.Name, dimensions);
-                }
-                catch (Exception ex)
-                {
-                    l.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
-                    l.Done(ex);
-                    throw;
-                }
-            });
+                l.W($"Error building languages list on '{a.Name}', probably multiple identical keys: {langList}");
+                l.Done(ex);
+                throw;
+            }
+
+            try
+            {
+                result.Add(a.Name, dimensions);
+            }
+            catch (Exception ex)
+            {
+                l.W($"Error adding attribute '{a.Name}' to dictionary, probably multiple identical keys");
+                l.Done(ex);
+                throw;
+            }
+        }
+
         return l.ReturnAsOk(result);
     }
 

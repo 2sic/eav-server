@@ -3,6 +3,7 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
+using ToSic.Sys.Performance;
 using static System.StringComparer;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
@@ -44,7 +45,7 @@ public class WorkQueryMod(
 
         // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
         entDelete.Delete(mdItems);
-        entDelete.Delete(parts.Select(p => p.Id).ToList());
+        entDelete.Delete(parts.Select(p => p.Id).ToListOpt());
         entDelete.Delete(id);
 
         // flush cache
@@ -64,7 +65,7 @@ public class WorkQueryMod(
     /// <param name="newDsGuids"></param>
     /// <param name="headerValues"></param>
     /// <param name="wirings"></param>
-    public void Update(int queryId, List<Dictionary<string, object>> partDefs, List<Guid> newDsGuids, Dictionary<string, object> headerValues, List<Connection> wirings)
+    public void Update(int queryId, List<Dictionary<string, object>> partDefs, ICollection<Guid> newDsGuids, Dictionary<string, object> headerValues, ICollection<Connection> wirings)
     {
         // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
         var qdef = Get(queryId);
@@ -136,17 +137,19 @@ public class WorkQueryMod(
     /// <summary>
     /// Delete Query Parts (DataSources) that are not present
     /// </summary>
-    private void DeletedRemovedParts(List<Guid> newEntityGuids, IEnumerable<Guid> newDataSources, QueryDefinition qDef)
+    private void DeletedRemovedParts(IEnumerable<Guid> newEntityGuids, IEnumerable<Guid> newDataSources, QueryDefinition qDef)
     {
         var l = Log.Fn($"delete part a#{AppWorkCtx.AppId}, pipe:{qDef.Entity.EntityGuid}");
         // Get EntityGuids currently stored in EAV
         var existingEntityGuids = qDef.Parts.Select(e => e.Guid);
 
         // Get EntityGuids from the UI (except Out and unsaved)
-        newEntityGuids.AddRange(newDataSources);
+        var newGuidsWithMore = newEntityGuids
+            .Union(newDataSources)
+            .ToListOpt();
 
         var entDelete = delete.New(AppWorkCtx.AppReader);
-        foreach (var entToDel in existingEntityGuids.Where(guid => !newEntityGuids.Contains(guid)))
+        foreach (var entToDel in existingEntityGuids.Where(guid => !newGuidsWithMore.Contains(guid)))
             // force: true - force-delete the data-source part even if it still has metadata and stuff referencing it
             entDelete.Delete(entToDel, force: true);
         l.Done();
@@ -161,7 +164,7 @@ public class WorkQueryMod(
     /// <param name="values"></param>
     /// <param name="wirings"></param>
     /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
-    private void SaveHeader(int id, Dictionary<string, object> values, List<Connection> wirings, IDictionary<string, Guid> renamedDataSources)
+    private void SaveHeader(int id, Dictionary<string, object> values, ICollection<Connection> wirings, IDictionary<string, Guid> renamedDataSources)
     {
         var l = Log.Fn($"save pipe a#{AppWorkCtx.AppId}, pipe:{id}");
         wirings = RenameWiring(wirings, renamedDataSources, Log);
@@ -184,9 +187,9 @@ public class WorkQueryMod(
     /// <param name="renamedDataSources"></param>
     /// <param name="lg"></param>
     /// <returns></returns>
-    private static List<Connection> RenameWiring(List<Connection> wirings, IDictionary<string, Guid> renamedDataSources, ILog lg)
+    private static ICollection<Connection> RenameWiring(ICollection<Connection> wirings, IDictionary<string, Guid> renamedDataSources, ILog lg)
     {
-        var l = lg.Fn<List<Connection>>();
+        var l = lg.Fn<ICollection<Connection>>();
         if (renamedDataSources == null)
             return l.Return(wirings, "no renames, no changes");
 

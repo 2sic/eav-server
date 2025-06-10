@@ -257,7 +257,7 @@ public class ContentExportApi(
             : export.Entities
                 .Select(appState.List.One)
                 .Select(e => serializer.ToJson(e, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0))
-                .ToList();
+                .ToListOpt();
 
         // Find duplicate related entities
         // as there are various ways they can appear, but we really only need them once
@@ -266,7 +266,7 @@ public class ContentExportApi(
             .Concat((bundleList.Entities ?? []).Select(e => new { Entity = e, Type = null as JsonContentTypeSet, List = bundleList.Entities }))
             .GroupBy(e => e.Entity.Id)
             .Where(g => g.Count() > 1)
-            .ToList();
+            .ToListOpt();
 
         l.A($"Found {dupEntities.Count} duplicate entities in export.");
 

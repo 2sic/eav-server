@@ -25,10 +25,12 @@ public class JsonExceptionConverter<TExceptionType> : JsonConverter<TExceptionTy
 
         if (options?.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull)
         {
-            serializableProperties = serializableProperties.Where(uu => uu.Value != null);
+            serializableProperties = serializableProperties
+                .Where(uu => uu.Value != null);
         }
 
-        var propList = serializableProperties.ToList();
+        var propList = serializableProperties
+            .ToListOpt();
 
         if (propList.Count == 0)
         {

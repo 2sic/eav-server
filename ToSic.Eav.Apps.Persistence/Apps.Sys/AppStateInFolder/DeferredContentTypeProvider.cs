@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Sys.Performance;
+using ToSic.Sys.Utils;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
@@ -33,21 +35,21 @@ internal class DeferredContentTypeProvider(ILog parentLog)
         return delayedType;
     }
 
-    public void AddTypes(List<IContentType> list)
+    public void AddTypes(IEnumerable<IContentType> list)
     {
-        list = EliminateDuplicateTypes(list);
-        Source.AddRange(list);
+        var deduplicated = EliminateDuplicateTypes(list);
+        Source.AddRange(deduplicated);
         _lookup = null;
     }
 
-    private List<IContentType> EliminateDuplicateTypes(List<IContentType> types)
+    private IList<IContentType> EliminateDuplicateTypes(IEnumerable<IContentType> types)
     {
-        var l = Log.Fn<List<IContentType>>();
+        var l = Log.Fn<IList<IContentType>>();
 
         // In rare cases there can be a mistake and the same type may be duplicate!
         var typesGrouped = types
             .GroupBy(t => t.NameId.ToLowerInvariant())
-            .ToList();
+            .ToListOpt();
 
         var badGroups = typesGrouped
             .Where(g => g.Count() > 1);
@@ -62,7 +64,7 @@ internal class DeferredContentTypeProvider(ILog parentLog)
 
         var final = typesGrouped
             .Select(g => g.First())
-            .ToList();
+            .ToListOpt();
         return l.ReturnAsOk(final);
     }
 

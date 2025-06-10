@@ -21,18 +21,23 @@ partial class FileSystemLoader
             return l.Return([], "path doesn't exist");
 
         const string infoIfError = "couldn't read bundle-file";
+        var jsonBundles = new Dictionary<string, JsonFormat>();
         try
         {
             // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
-            var jsonBundles = new Dictionary<string, JsonFormat>();
-            Directory.GetFiles(BundlesPath, "*" + Extension(Files.json))
+            var bundleFiles = Directory.GetFiles(BundlesPath, "*" + Extension(Files.json))
                 .OrderBy(f => f)
-                .ToList()
-                .ForEach(p =>
-                {
-                    l.A("Loading json bundle" + p);
-                    jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p));
-                });
+                .ToListOpt();
+            //bundleFiles
+            //    .ForEach(p =>
+            //    {
+            //        l.A("Loading json bundle" + p);
+            //        jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p));
+            //    });
+            jsonBundles = bundleFiles.ToDictionary(
+                p => p,
+                p => Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p))
+            );
             return l.Return(jsonBundles, $"found {jsonBundles.Count}");
         }
         catch (IOException e)
@@ -49,16 +54,16 @@ partial class FileSystemLoader
 
 
 
-    public List<ContentTypeWithEntities> ContentTypesInBundles()
+    public ICollection<ContentTypeWithEntities> ContentTypesInBundles()
     {
-        var l = Log.Fn<List<ContentTypeWithEntities>>();
+        var l = Log.Fn<ICollection<ContentTypeWithEntities>>();
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes.SafeAny()) != true))
             return l.Return([]);
 
         var contentTypes = JsonBundleBundles
             .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value))
             //.Where(ct => ct != null)
-            .ToList();
+            .ToListOpt();
 
         l.A("ContentTypes in bundles: " + contentTypes.Count);
 
@@ -70,9 +75,9 @@ partial class FileSystemLoader
     /// Build contentTypes from bundle json
     /// </summary>
     /// <returns></returns>
-    private List<ContentTypeWithEntities> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
+    private ICollection<ContentTypeWithEntities> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
     {
-        var l = Log.Fn<List<ContentTypeWithEntities>>($"path: {path}");
+        var l = Log.Fn<ICollection<ContentTypeWithEntities>>($"path: {path}");
         try
         {
             var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
@@ -88,7 +93,7 @@ partial class FileSystemLoader
                         configAppId: KnownAppsConstants.PresetAppId);
                     return new ContentTypeWithEntities { ContentType = typeWithOrigin, Entities = ct.Entities };
                 })
-                .ToList();
+                .ToListOpt();
 
             return l.ReturnAsOk(newContentTypes);
         }

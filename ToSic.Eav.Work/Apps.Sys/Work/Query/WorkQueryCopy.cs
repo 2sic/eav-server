@@ -6,6 +6,7 @@ using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization.Sys;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Utils;
 using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
 using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
@@ -72,7 +73,10 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
         var newQuery = _builder.Value.Entity.CreateFrom(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));
 
-        var entityList = newParts.Select(p => p.Value).Concat(newMetadata).ToList();
+        var entityList = newParts
+            .Select(p => p.Value)
+            .Concat(newMetadata)
+            .ToList();
         entityList.Add(newQuery);
 
 
@@ -80,7 +84,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         var saveOptions = entSaver.SaveOptions();
         var saveList = entityList
             .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
-            .ToList();
+            .ToListOpt();
         entSaver.Save(saveList);
         l.Done();
     }
@@ -90,7 +94,8 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
     {
         var wiringsClone = new List<Connection>();
-        if (origWiring == null) return Connections.Serialize(wiringsClone);
+        if (origWiring == null)
+            return Connections.Serialize(wiringsClone);
 
         foreach (var wireInfo in origWiring)
         {

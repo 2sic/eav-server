@@ -14,9 +14,9 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
     /// Returns a list of entities, optionally filtered by contentType.
     /// </summary>
     // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-    public List<EntityForPickerDto> GetForEntityPicker(int appId, string[] items, string contentTypeName, bool? withDrafts = default, bool allowFromAllScopes = default)
+    public List<EntityForPickerDto> GetForEntityPicker(int appId, ICollection<string> items, string contentTypeName, bool? withDrafts = default, bool allowFromAllScopes = default)
     {
-        var l = Log.Fn<List<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Length}, type:{contentTypeName}");
+        var l = Log.Fn<List<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Count}, type:{contentTypeName}");
 
         var appEnts = workEntities.New(appId, showDrafts: withDrafts);
         IContentType contentType = null;
@@ -49,9 +49,9 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
         }
 
         // optionally filter by IDs
-        if (items != null && items.Length > 0)
+        if (items != null && items.Count > 0)
         {
-            l.A($"filter by {items.Length} ids");
+            l.A($"filter by {items.Count} ids");
             var guids = items.Select(Guid.Parse);
             list = list.Where(e => guids.Contains(e.EntityGuid)).ToList();
         }
@@ -60,7 +60,8 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
 
         var languagePriorities = cultureResolver.SafeLanguagePriorityCodes();
 
-        var entities = list.Select(e => new EntityForPickerDto
+        var entities = list
+            .Select(e => new EntityForPickerDto
             {
                 Id = e.EntityId,
                 Value = e.EntityGuid,

@@ -5,10 +5,10 @@ namespace ToSic.Eav.Serialization;
 public class ODataSelectTests
 {
 
-    internal Dictionary<string, List<string>> GetFieldsByPrefixTac(List<string> fields)
+    internal Dictionary<string, ICollection<string>> GetFieldsByPrefixTac(List<string> fields)
         => ODataSelect.GetFieldsByPrefix(fields);
 
-    internal Dictionary<string, List<string>> GetFieldsByPrefixTac(string? fields)
+    internal Dictionary<string, ICollection<string>> GetFieldsByPrefixTac(string? fields)
         => ODataSelect.GetFieldsByPrefix(fields == null ? [] : [..fields.Split(',')]);
 
     [Theory]

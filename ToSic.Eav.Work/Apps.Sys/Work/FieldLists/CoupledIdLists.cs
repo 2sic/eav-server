@@ -1,4 +1,5 @@
-﻿using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
+﻿using ToSic.Sys.Performance;
+using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
 using DicNameObj = System.Collections.Generic.Dictionary<string, object>;
 
 namespace ToSic.Eav.Apps.Sys.Work;
@@ -36,8 +37,10 @@ public class CoupledIdLists: HelperBase
         Log.A($"add content/pres at order:{index}");
         var max = Lists.First().Value.Count; // max is at the end of the list
         index = index ?? max;
-        if (index > max) index = max;
-        if (index < 0) index = 0;
+        if (index > max)
+            index = max;
+        if (index < 0)
+            index = 0;
         var i = 0;
         Lists.ForEach(l => l.InsertOrAppend(index.Value, ids[i++]));
         return Lists.ToObject();
@@ -62,7 +65,7 @@ public class CoupledIdLists: HelperBase
     {
         var l = Log.Fn<DicNameObj>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
         var hasChanges = Lists.Values
-            .Aggregate(false, (prev, l) => l.Move(sourceIndex, targetIndex) || prev);
+            .Aggregate(false, (prev, lstItem) => lstItem.Move(sourceIndex, targetIndex) || prev);
         return hasChanges
             ? l.Return(Lists.ToObject(), "ok")
             : l.ReturnNull("outside of range, no changes");
@@ -86,7 +89,7 @@ public class CoupledIdLists: HelperBase
         const int usedMarker = int.MinValue;
         Lists.ForEach(lst =>
         {
-            var copy = lst.ToList();
+            var copy = lst.ToListOpt();
             lst.Clear();
             foreach (var index in newSequence)
             {

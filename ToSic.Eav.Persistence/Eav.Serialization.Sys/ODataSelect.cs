@@ -6,14 +6,14 @@
 /// <param name="rawFields">list of fields to select</param>
 /// <returns></returns>
 [PrivateApi]
-public class ODataSelect(List<string>? rawFields)
+public class ODataSelect(ICollection<string>? rawFields)
 {
     public const string Main = "main";
 
-    public Dictionary<string, List<string>> FieldsByName => field
+    public Dictionary<string, ICollection<string>> FieldsByName => field
         ??= GetFieldsByPrefix(rawFields);
 
-    public List<string> GetFieldsOrNull(string name)
+    public ICollection<string> GetFieldsOrNull(string name)
     {
         if (!FieldsByName.TryGetValue(name, out var myFields))
             return null;
@@ -22,12 +22,12 @@ public class ODataSelect(List<string>? rawFields)
         return myFields;
     }
 
-    internal static Dictionary<string, List<string>> GetFieldsByPrefix(List<string> fields)
+    internal static Dictionary<string, ICollection<string>> GetFieldsByPrefix(ICollection<string> fields)
     {
         var cleaned = fields?
                           .Select(f => f?.ToLowerInvariant()) //.Trim(Exclusive, Add, Remove))
                           .Where(f => !string.IsNullOrWhiteSpace(f))
-                          .ToList()
+                          .ToListOpt()
                       ?? [];
 
         return cleaned
@@ -45,7 +45,7 @@ public class ODataSelect(List<string>? rawFields)
             .GroupBy(f => f.Key)
             .ToDictionary(
                 g => g.Key,
-                g => g.Select(p => p.Value).ToList(),
+                ICollection<string> (g) => g.Select(p => p.Value).ToListOpt(),
                 StringComparer.OrdinalIgnoreCase
             );
     }

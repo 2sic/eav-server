@@ -170,17 +170,19 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         return l.Return(contentTypes, $"{contentTypes.Count}");
     }
 
-    public (IList<IContentType> ContentTypes, List<IEntity> Entities) ContentTypesWithEntities()
+    public (IList<IContentType> ContentTypes, IList<IEntity> Entities) ContentTypesWithEntities()
     {
-        var l = Log.Fn<(IList<IContentType> ContentTypes, List<IEntity> Entities)>($"ContentTypes in {AppId}", timer: true);
+        var l = Log.Fn<(IList<IContentType> ContentTypes, IList<IEntity> Entities)>($"ContentTypes in {AppId}", timer: true);
             
         // #1. check that folder exists
         var pathCt = ContentTypePath;
-        var contentTypes = new List<IContentType>();
+        List<IContentType> contentTypes;
         if (CheckPathExists(Path) && CheckPathExists(pathCt))
         {
             // #2 find all content-type files in folder
-            var jsonFiles = Directory.GetFiles(pathCt, "*" + Extension(Files.json)).OrderBy(f => f);
+            var jsonFiles = Directory
+                .GetFiles(pathCt, "*" + Extension(Files.json))
+                .OrderBy(f => f);
 
             // #3 load content-types from folder
             contentTypes = jsonFiles
@@ -189,7 +191,10 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
                 .ToList();
         }
         else
+        {
+            contentTypes = [];
             l.A("path doesn't exist");
+        }
 
         var entityCtCount = contentTypes.Count;
 
@@ -208,7 +213,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             .Where(e => e != null)
             .GroupBy(e => e.EntityGuid)
             .Select(g => g.First())
-            .ToList();
+            .ToListOpt();
 
         l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; after remove duplicates {bundleCtsWithoutDuplicates.Count}; total {contentTypes.Count}");
         return l.Return((contentTypes, entities), $"Content Types: {contentTypes.Count}; Entities: {entities.Count}");

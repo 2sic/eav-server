@@ -14,7 +14,7 @@ public class EditPrefetchDto
     /// Prefetched entities for entity picker
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<EntityForPickerDto> Entities { get; set; }
+    public ICollection<EntityForPickerDto> Entities { get; set; }
 
     /// <summary>
     /// Prefetched links for hyperlink fields

@@ -19,6 +19,11 @@ public static class SysPerfSettings
                 ? source.ToArray()
                 : source.ToList();
 
+    public static IImmutableList<T> ToImmutableOpt<T>(this IEnumerable<T> source)
+        => PreferArray
+                ? source.ToImmutableArray()
+                : source.ToImmutableList();
+
     public static IImmutableList<T> ToImmutableSafe<T>(this IEnumerable<T>? source)
         => source == null
             ? ImmutableList<T>.Empty

@@ -61,7 +61,8 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     private bool WithEditInfos { get; set; }
 
     // WIP v17
-    public void AddSelectFields(List<string> fields) => _presetFilters = new EntitySerializationDecoratorCreator(fields, WithGuid, Log).Generate();
+    public void AddSelectFields(ICollection<string> fields)
+        => _presetFilters = new EntitySerializationDecoratorCreator(fields, WithGuid, Log).Generate();
 
     protected EntitySerializationDecorator PresetFilters => _presetFilters ??= new EntitySerializationDecoratorCreator(null, WithGuid, Log).Generate();
     private EntitySerializationDecorator _presetFilters;
@@ -145,13 +146,13 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         var attributes = entity.Attributes
             .Select(d => d.Value)
             .Where(d => excludeAttributes?.Contains(d.Name) != true)
-            .ToList();
+            .ToListOpt();
 
         // If we have filter fields from $select, apply that (new ca. v17)
         if (rules.FilterFieldsEnabled == true)
             attributes = attributes
                 .Where(a => rules.FilterFields.Any(ff => ff.EqualsInsensitive(a.Name)))
-                .ToList();
+                .ToListOpt();
 
         var entityValues = attributes
             .ToEavLight(attribute => attribute.Name, attribute =>
@@ -253,18 +254,19 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
-    private List<string> ExcludeAttributesOfType(IEntity entity)
+    private ICollection<string> ExcludeAttributesOfType(IEntity entity)
     {
         // Check if the entity type is in the cache
         if (_excludeAttributesCache.TryGetValue(entity.Type, out var excludeAttributes))
             return excludeAttributes;
 
         // If it's not in the cache, compute the list of attributes and add it to the cache
-        excludeAttributes = entity.Type.Attributes?.ToList()
+        excludeAttributes = entity.Type.Attributes
+            ?.ToListOpt()
             .Where(a => a.Type == ValueTypes.Empty
                         || a.Metadata.GetBestValue<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
             .Select(a => a.Name)
-            .ToList();
+            .ToListOpt();
 
         // Cache and return
         _excludeAttributesCache[entity.Type] = excludeAttributes;
@@ -276,7 +278,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     // ATM we believe it's a concurrency issue, but we're not sure yet.
     // https://stackoverflow.com/questions/1320264/how-did-i-get-this-nullreferenceexception-error-here-right-after-the-constructor
     // So we changed it to a ConcurrentDictionary to see if that helps.
-    private readonly ConcurrentDictionary<object, List<string>> _excludeAttributesCache = [];
+    private readonly ConcurrentDictionary<object, ICollection<string>> _excludeAttributesCache = [];
 
     #endregion
 

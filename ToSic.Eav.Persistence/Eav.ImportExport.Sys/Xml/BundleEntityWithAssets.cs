@@ -6,5 +6,5 @@ namespace ToSic.Eav.ImportExport.Sys.Xml;
 public class BundleEntityWithAssets
 {
     public IEntity Entity;
-    public List<JsonAsset> Assets = [];
+    public ICollection<JsonAsset> Assets = [];
 }

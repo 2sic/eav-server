@@ -8,11 +8,12 @@ internal class QueryODataParams
     {
         if (config == null) return;
         var extraParams = config.Parse(ODataParams);
-        SelectFields = (extraParams[EavWebApiConstants.ODataSelectParamName]?.CsvToArrayWithoutEmpty() ?? []).ToList();
+        SelectFields = (extraParams[EavWebApiConstants.ODataSelectParamName]?.CsvToArrayWithoutEmpty() ?? [])
+            .ToListOpt();
 
     }
 
-    public List<string> SelectFields { get; set; }
+    public ICollection<string> SelectFields { get; set; }
 
     public static Dictionary<string, string> ODataParams =
         new(StringComparer.InvariantCultureIgnoreCase)

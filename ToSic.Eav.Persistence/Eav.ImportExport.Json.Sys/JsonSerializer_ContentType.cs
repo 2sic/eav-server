@@ -64,17 +64,17 @@ partial class JsonSerializer
                 attribMdsOfEntity
                     .SelectMany(a => a.Value.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>)
                     .Where(e => e != null) // filter out possible null items
-                    .ToList();
+                    .ToListOpt();
 
             // In some cases we may have references to the same entity, in which case we only need one
             var mdDeduplicated = mdParts
                 .DistinctBy(e => e.EntityId)
-                .ToList();
+                .ToListOpt();
 
             l.A($"Sub items: {mdParts.Count}; Deduplicated: {mdDeduplicated.Count}");
             package.Entities = mdDeduplicated
                 .Select(e => ToJson(e,  metadataDepth: 0))
-                .ToList();
+                .ToListOpt();
         }
         catch (Exception ex)
         {
@@ -118,7 +118,7 @@ partial class JsonSerializer
                 // #SharedFieldDefinition
                 var metadata = GetMetadataOrSkip(a, settings)?
                     .Select(md => ToJson(md, metadataDepth: 0)) /* important: must call with params, otherwise default param metadata = 1 instead of 0*/
-                    .ToList();
+                    .ToListOpt();
                 return new JsonAttributeDefinition
                 {
                     Name = a.Name,
@@ -132,13 +132,14 @@ partial class JsonSerializer
                     SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
                 };
             })
-            .ToList();
+            .ToListOpt();
 
         // clean up metadata info on this metadata list, as it's already packed inside something it's related to
-        attribs.Where(a => a.Metadata != null)
+        var attribMetadataToResetFor = attribs.Where(a => a.Metadata != null)
             .SelectMany(a => a.Metadata)
-            .ToList()
-            .ForEach(jsonEntity => jsonEntity.For = null);
+            .ToListOpt();
+        foreach (var jsonEntity in attribMetadataToResetFor)
+            jsonEntity.For = null;
 
         var ancestorDecorator = contentType.GetDecorator<IAncestor>();
         var isSharedNew = ancestorDecorator is { Id: not EavConstants.PresetContentTypeFakeParent };
@@ -167,7 +168,9 @@ partial class JsonSerializer
             Scope = contentType.Scope,
             Attributes = attribs,
             Sharing = jctShare,
-            Metadata = contentType.Metadata.Select(md => ToJson(md)).ToList()
+            Metadata = contentType.Metadata
+                .Select(md => ToJson(md))
+                .ToListOpt()
         };
         return package;
     }

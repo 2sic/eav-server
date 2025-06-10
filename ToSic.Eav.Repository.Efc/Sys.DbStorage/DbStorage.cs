@@ -12,6 +12,7 @@ using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Users;
 using ToSic.Sys.Utils.Compression;
 
@@ -327,7 +328,7 @@ public class DbStorage(
     {
         var pairs = entities
             .Select(IEntityPair<SaveOptions> (e) => new EntityPair<SaveOptions>(e, saveOptions))
-            .ToList();
+            .ToListOpt();
         return Save(pairs);
     }
 
@@ -336,7 +337,7 @@ public class DbStorage(
     /// </summary>
     /// <param name="entityOptionPairs"></param>
     /// <returns></returns>
-    public List<int> Save(List<IEntityPair<SaveOptions>> entityOptionPairs)
+    public List<int> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
         var l = Log.Fn<List<int>>(timer: true);
         logStore.Add("save-data", Log);

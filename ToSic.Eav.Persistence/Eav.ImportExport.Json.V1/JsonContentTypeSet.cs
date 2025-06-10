@@ -22,8 +22,11 @@ public class JsonContentTypeSet
     /// <summary>
     /// V1.2 - A list of entities - added in 2sxc 12 to support content-types with additional sub-entities like formulas
     /// </summary>
+    /// <remarks>
+    /// Minor change in v20, now `ICollection{JsonEntity}` instead of `List{JsonEntity}` to support serialization of empty lists.
+    /// </remarks>
     [JsonPropertyOrder(20)]
     [JsonIgnore(Condition = WhenWritingDefault)]
-    public List<JsonEntity> Entities;
+    public ICollection<JsonEntity> Entities;
 
 }

@@ -122,7 +122,7 @@ public abstract class QueryControllerBase<TImplementation>(
         var result = installedDataSources
             .Select(ds => new DataSourceDto(ds, ds.VisualQuery?.DynamicOut == true ? null : dsCat.GetOutStreamNames(ds)))
             .OrderBy(ds => ds.TypeNameForUi) // sort for better debugging in F12
-            .ToList();
+            .ToListOpt();
 
         return l.Return(result, result.Count.ToString());
     }
@@ -141,7 +141,7 @@ public abstract class QueryControllerBase<TImplementation>(
             .Select(d => d["EntityGuid"].ToString())
             .Where(g => g != "Out" && !g.StartsWith("unsaved"))
             .Select(Guid.Parse)
-            .ToList();
+            .ToListOpt();
 
         // Update Pipeline Entity with new Wirings etc.
         var wiringString = data.Pipeline[QueryConstants.QueryStreamWiringAttributeName]?.ToString() ?? "";
@@ -221,7 +221,7 @@ public abstract class QueryControllerBase<TImplementation>(
                         si.ErrorData = Services.EntToDicLazy.Value.Convert(errorEntity);
                     return si;
                 })
-                .ToList(),
+                .ToListOpt(),
             Sources = debugInfo.Sources,
             QueryTimer = new()
             {

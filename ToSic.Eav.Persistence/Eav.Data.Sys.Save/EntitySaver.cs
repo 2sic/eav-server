@@ -54,13 +54,15 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
         // Optionally remove original values not in the update - but only if no option prevents this
         if (originalWasSaved && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
-            origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull, newAttribs.Keys.ToList());
+            origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull, newAttribs.Keys.ToListOpt());
 
-        // Optionaly remove unknown - if possible - of both original and new
+        // Optionally remove unknown - if possible - of both original and new
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if (!ct.IsDynamic && !saveOptions.PreserveUnknownAttributes && ct.Attributes != null)
         {
-            var keys = ct.Attributes.Select(a => a.Name).ToList();
+            var keys = ct.Attributes
+                .Select(a => a.Name)
+                .ToList();
 
             keys.Add(AttributeNames.EntityFieldGuid);
             keys.Add(AttributeNames.EntityFieldIsPublished);
@@ -71,14 +73,18 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
             // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
             AddIsPublishedAttribute(newAttribs, update.IsPublished);
 
-            if (originalWasSaved) origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull, keys);
+            if (originalWasSaved)
+                origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull, keys);
             newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
         }
 
         // optionally remove new things which already exist
         if (originalWasSaved && saveOptions.SkipExistingAttributes)
-            newAttribs = KeepOnlyKnownKeys(newAttribs, newAttribs.Keys
-                .Where(k => !origAttribsOrNull.Keys.Any(k.EqualsInsensitive)).ToList());
+            newAttribs = KeepOnlyKnownKeys(newAttribs,
+                newAttribs.Keys
+                .Where(k => !origAttribsOrNull.Keys.Any(k.EqualsInsensitive))
+                .ToListOpt()
+            );
 
         #endregion
 
@@ -183,7 +189,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         var valuesWithPrimaryFirst = values
             .OrderBy(v =>
             {
-                if(v.Languages == null || !v.Languages.Any()) return 2; // possible primary as no language specified, but not certainly
+                if(v.Languages == null || !v.Languages.Any())
+                    return 2; // possible primary as no language specified, but not certainly
                 return v.Languages.Any(l => l.Key == saveOptions.PrimaryLanguage) ? 1 : 3; // really primary and marked as such, process this first
             });
 
@@ -197,7 +204,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                     .ToImmutableSafe();
                 return value.With(sortedLangs);
             })
-            .ToList();
+            .ToListOpt();
         return valsWithLanguagesSorted;
     }
 
@@ -229,7 +236,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
             }
 
             // nothing found to keep...
-            if (remainingLanguages.Count == 0) continue;
+            if (remainingLanguages.Count == 0)
+                continue;
 
             // Add the value with the remaining languages / relationships
             var val = dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableSafe());
@@ -240,10 +248,12 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         return l.Return(final);
     }
     
-    private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, List<string> keys)
+    private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, IEnumerable<string> keys)
     {
         var l = Log.Fn<IDictionary<string, IAttribute>>();
-        var lowerKeys = keys.Select(k => k.ToLowerInvariant()).ToList();
+        var lowerKeys = keys
+            .Select(k => k.ToLowerInvariant())
+            .ToListOpt();
         var result = orig
             .Where(a => lowerKeys.Contains(a.Key.ToLowerInvariant()))
             .ToDictionary(a => a.Key, a => a.Value);

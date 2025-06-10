@@ -37,12 +37,15 @@ partial class JsonSerializer
         var attributesInUse = entity.Attributes.Values
             .OrderBy(a => a.Name)
             .Where(a => a.Values.Any(v => v.SerializableObject != null))
-            .ToList();
+            .ToListOpt();
 
         var attribs = new JsonAttributes();
-        attributesInUse.GroupBy(a => a.Type, a => a).ToList().ForEach(g =>
+        var attribsGrouped = attributesInUse
+            .GroupBy(a => a.Type, a => a)
+            .ToListOpt();
+        foreach (var g in attribsGrouped)
         {
-            var gList = g.ToList();
+            var gList = g.ToListOpt();
             switch (g.Key)
             {
                 case ValueTypes.String:
@@ -78,14 +81,16 @@ partial class JsonSerializer
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        });
+        }
 
         // new: optionally include metadata
-        List<JsonEntity> itemMeta = null;
+        ICollection<JsonEntity> itemMeta = null;
         var metaList = ((entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity>)
-            .ToList();
+            .ToListOpt();
         if (metadataDepth > 0 && metaList.Any())
-            itemMeta = metaList.Select(m => ToJson(m, metadataDepth - 1)).ToList();
+            itemMeta = metaList
+                .Select(m => ToJson(m, metadataDepth - 1))
+                .ToListOpt();
 
         var jEnt = new JsonEntity
         {
@@ -105,7 +110,7 @@ partial class JsonSerializer
     /// this is a special helper to create typed entities-dictionaries
     /// </summary>
     /// <returns></returns>
-    private Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(List<IAttribute> gList)
+    private Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(ICollection<IAttribute> gList)
     {
         // the following is a bit complex for the following reason
         // 1. either the relationship is guid based, and in that case, 

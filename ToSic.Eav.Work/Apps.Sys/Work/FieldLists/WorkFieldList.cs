@@ -13,7 +13,8 @@ public class WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate)
         target = AppWorkCtx.AppReader.GetDraftOrKeep(target);
         var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
         var values = callback.Invoke(lists);
-        entityUpdate.New(AppWorkCtx).UpdatePartsFromValues(target, values, new() { ShouldPublish = !asDraft, ShouldBranchDrafts = asDraft});
+        entityUpdate.New(AppWorkCtx)
+            .UpdatePartsFromValues(target, values, new() { ShouldPublish = !asDraft, ShouldBranchDrafts = asDraft});
     }
 
     public void FieldListAdd(IEntity target, string[] fields, int index, int?[] values, bool asDraft, bool forceAddToEnd, bool padWithNulls = false)

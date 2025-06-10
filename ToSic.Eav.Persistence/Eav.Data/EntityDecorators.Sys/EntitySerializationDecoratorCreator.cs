@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.EntityDecorators.Sys;
 /// <param name="log">log to use in this static function</param>
 /// <returns></returns>
 [PrivateApi]
-public class EntitySerializationDecoratorCreator(List<string>? rawFields, bool withGuid, ILog log)
+public class EntitySerializationDecoratorCreator(ICollection<string>? rawFields, bool withGuid, ILog log)
 {
     public EntitySerializationDecorator Generate(string part = ODataSelect.Main, bool? defaultAdd = false)
     {
