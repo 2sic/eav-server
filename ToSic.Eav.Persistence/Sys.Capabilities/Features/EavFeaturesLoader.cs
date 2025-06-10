@@ -48,9 +48,8 @@ public class EavFeaturesLoader(
                 .ToListOpt();
             l.A($"entLic:{enterpriseLicenses.Count}");
 
-            licenseLoader
-                .Init(enterpriseLicenses)
-                .LoadLicenses();
+            licenseLoader.Init(enterpriseLicenses);
+            licenseLoader.LoadLicenses();
         }
         catch (Exception e)
         {
@@ -71,24 +70,24 @@ public class EavFeaturesLoader(
     internal bool ReloadFeatures()
     {
         var l = Log.Fn<bool>();
-        var stored = LoadFeaturesStored();
-        var status = SetFeaturesStored(stored);
+        var stored = LoadFeaturesStored() ?? new FeatureStatesPersisted();
+        var status = featuresSvc.UpdateFeatureList(stored, sysFeaturesService.States);
+
+        // Trigger any necessary feature state update code
+        foreach (var featureState in featuresSvc.All)
+            featureState.Feature.RunOnStateChange?.Invoke(featureState, l);
+
         return l.ReturnAndLog(status);
     }
-
-
-    private bool SetFeaturesStored(FeatureStatesPersisted stored = null) 
-        => featuresSvc.UpdateFeatureList(stored ?? new FeatureStatesPersisted(), sysFeaturesService.States);
-
 
     /// <summary>
     /// Load features stored from 'features.json'.
     /// When old format is detected, it is converted to new format.
     /// </summary>
     /// <returns></returns>
-    internal FeatureStatesPersisted LoadFeaturesStored()
+    internal FeatureStatesPersisted? LoadFeaturesStored()
     {
-        var l = Log.Fn<FeatureStatesPersisted>();
+        var l = Log.Fn<FeatureStatesPersisted?>();
         try
         {
             var (_, fileContent) = featuresIo.Load();

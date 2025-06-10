@@ -129,9 +129,17 @@ public class BuiltInLicenses
         Description = "Patrons with advanced needs in regards to automation, administration etc."
     };
 
+    public static readonly FeatureSet.FeatureSet PatronPerformance = new()
+    {
+        NameId = LicensePrefix + nameof(PatronPerformance), Priority = 502,
+        Name = "Patron Performance",
+        Guid = new("5f01ab2c-1e47-4f9e-9b77-276be428b6f3"),
+        Description = "Patrons wo wish for faster code and less CPU resources to save money and energy."
+    };
+
     public static readonly FeatureSet.FeatureSet PatronInfrastructure = new()
     {
-        NameId = LicensePrefix + nameof(PatronInfrastructure), Priority = 501,
+        NameId = LicensePrefix + nameof(PatronInfrastructure), Priority = 503,
         Name = "Patron Infrastructure",
         Guid = new("68b2c253-25b9-4b4f-b9d5-f95fd2ef9d75"),
         Description = "Patrons who wish to save cost by optimizing their infrastructure."

@@ -46,6 +46,9 @@ internal class RegisterBuiltInSysFeatures
             DataExportImportBundles, // v15.01
             AppExportAssetsAdvanced, // v18
 
+            // Patron Performance
+            CSharpLinqOptimizations, // v20
+
             // Patron Infrastructure
             SqlCompressDataTimeline, // v15
             SqlLoadPerformance, // v18

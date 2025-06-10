@@ -11,9 +11,10 @@ public record Feature: Aspect
     
     private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule>? licRules, string nameId, Guid guid)
     {
-        var newRules = licRules
-                           ?.ToListOpt()
-                       ?? [];
+        //var newRules = licRules
+        //                   ?.ToList()
+        //               ?? [];
+
         // Create virtual license rule, so it can be enabled by its own GUID
         var ownLicenseDefinition = new FeatureSet.FeatureSet
         {
@@ -24,8 +25,13 @@ public record Feature: Aspect
             Description = $"Feature {nameId} ({guid})"
         };
         var ownRule = new FeatureLicenseRule(ownLicenseDefinition, true);
-        newRules.Add(ownRule);
-        return newRules.ToImmutableSafe();
+        //newRules.Add(ownRule);
+        IEnumerable<FeatureLicenseRule> rules =
+        [
+            ..licRules ?? [],
+            ownRule
+        ];
+        return rules.ToImmutableOpt();
     }
 
 
@@ -112,4 +118,6 @@ public record Feature: Aspect
     public bool ScopedToModule { get; init; }
 
     public string? ConfigurationContentType { get; init; }
+
+    public Action<AspectState<Feature>, ILog>? RunOnStateChange { get; init; }
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2022 by 2sic internet solutions in Switzerland - www.2sic.com
+ * Copyright 2025 by 2sic internet solutions in Switzerland - www.2sic.com
  *
  * This file and the code IS COPYRIGHTED.
  * 1. You may not change it.
@@ -33,14 +33,13 @@ namespace ToSic.Sys.Capabilities.Licenses;
 public sealed class LicenseLoader(
     ILogStore logStore,
     LicenseCatalog licenseCatalog,
-    SystemFingerprint fingerprint,
+    SystemFingerprint sysFingerprint,
     LazySvc<IGlobalConfiguration> globalConfiguration)
-    : LoaderBase(logStore, $"{EavLogs.Eav}LicLdr", connect: [licenseCatalog, fingerprint, globalConfiguration])
+    : LoaderBase(logStore, $"{EavLogs.Eav}LicLdr", connect: [licenseCatalog, sysFingerprint, globalConfiguration])
 {
-    internal LicenseLoader Init(IList<EnterpriseFingerprint> entFingerprints)
+    internal void Init(IList<EnterpriseFingerprint> entFingerprints)
     {
-        fingerprint.LoadEnterpriseFingerprints(entFingerprints);
-        return this;
+        sysFingerprint.LoadEnterpriseFingerprints(entFingerprints);
     }
 
     /// <summary>
@@ -50,10 +49,10 @@ public sealed class LicenseLoader(
     internal void LoadLicenses()
     {
         var l = this.Log.Fn(message: "start", timer: true);
-        var fingerprint1 = fingerprint.GetFingerprint();
+        var fingerprint1 = sysFingerprint.GetFingerprint();
         l.A($"fingerprint:{fingerprint1?.Length}");
 
-        var validEntFps = fingerprint.EnterpriseFingerprints
+        var validEntFps = sysFingerprint.EnterpriseFingerprints
             .Where(e => e.Valid)
             .ToListOpt();
         l.A($"validEntFps:{validEntFps.Count}");
@@ -89,7 +88,8 @@ public sealed class LicenseLoader(
         Directory.CreateDirectory(configFolder);
         l.A($"{nameof(configFolder)}: {configFolder}");
 
-        var licensesStored = Directory.EnumerateFiles(configFolder, "*.license.json")
+        var licensesStored = Directory
+            .EnumerateFiles(configFolder, "*.license.json")
             .Select(File.ReadAllText)
             .Select(j => JsonSerializer.Deserialize<LicensesPersisted>(j)) // should NOT use common SxcJsonSerializerOptions
             .Where(licenses => licenses != null)

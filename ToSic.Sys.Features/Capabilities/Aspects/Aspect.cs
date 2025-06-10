@@ -20,9 +20,8 @@ public record Aspect(): IHasIdentityNameId
     }
 
     // ReSharper disable InconsistentNaming
-    public static Aspect Custom(string NameId, Guid Guid, string? Name = default, string? Description = default) =>
-        
-        new() { NameId = NameId, Guid = Guid, Name = Name ?? NameId, Description = Description ?? "" };
+    public static Aspect Custom(string NameId, Guid Guid, string? Name = default, string? Description = default)
+        => new() { NameId = NameId, Guid = Guid, Name = Name ?? NameId, Description = Description ?? "" };
     // ReSharper restore InconsistentNaming
 
     public static Aspect None = new() { NameId = "None", Guid = Guid.Empty, Name = "None" };

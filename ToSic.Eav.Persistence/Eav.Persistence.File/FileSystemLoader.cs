@@ -28,8 +28,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
     private JsonSerializer NewSerializer()
     {
-        var ser = serializerGenerator
-            .New();
+        var ser = serializerGenerator.New();
         ser.ConfigureLogging(Options.logSettings);
         return ser;
     }
@@ -51,7 +50,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
                 // ATM this doesn't matter, because we don't have any related entities in Content-Types
                 // if we ever need it, check out how it's done on the AppLoader
             };
-        ser.Initialize(Options.appId, new List<IContentType>(), entitySource);
+        ser.Initialize(Options.appId, [], entitySource);
         ser.AssumeUnknownTypesAreDynamic = true;
         return l.Return(ser);
     }
@@ -112,10 +111,6 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             .Where(entity => entity != null)
             .ToListOpt();
         l.A("found " + entities.Count + " entities in " + folder + " folder");
-
-        // #3.3 put all found entities into the source
-        //if (hasOwnRelationshipList)
-        //    relationships.AddRange(entities);
 
         return l.Return(entities, $"{entities.Count}");
     }

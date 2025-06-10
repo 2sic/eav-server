@@ -16,6 +16,7 @@ internal class RegisterEavLicenses
             PatronPerfectionist,
             PatronSentinel,
             PatronSuperAdmin,
+            PatronPerformance, // new v20
             PatronInfrastructure,
             WebFarmCache,
             EnterpriseCms,
