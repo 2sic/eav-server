@@ -12,7 +12,7 @@ partial class MetadataOf<T>
     /// All "normal" metadata entities - so it hides the system-entities
     /// like permissions. This is the default view of metadata given by an item
     /// </summary>
-    private List<IEntity> MetadataWithoutPermissions
+    private IList<IEntity> MetadataWithoutPermissions
     {
         get
         {
@@ -20,11 +20,11 @@ partial class MetadataOf<T>
             if (_metadataWithoutPermissions == null || UpStreamChanged())
                 _metadataWithoutPermissions = AllWithHidden
                     .Where(md => !Permission.IsPermission(md))
-                    .ToList();
+                    .ToListOpt();
             return _metadataWithoutPermissions;
         }
     }
-    private List<IEntity> _metadataWithoutPermissions;
+    private IList<IEntity> _metadataWithoutPermissions;
 
     /// <inheritdoc />
     public IEnumerable<IPermission> Permissions

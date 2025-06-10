@@ -33,7 +33,7 @@ public class ContentTypeMetadata : MetadataOf<string>
     /// Load / initialize - needed when building the cache.
     /// Must usually be called a bit later, because the data is initialized from a cache, which in case of ghosts may be loaded a bit later.
     /// </summary>
-    protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
+    protected override ICollection<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = null)
     {
         // add the guid metadata on entity if it has a real guid
         // this is kind of wrong, because it should use the type MetadataForContentType
@@ -43,7 +43,7 @@ public class ContentTypeMetadata : MetadataOf<string>
             ? null
             : GetMetadataSource()?
                 .GetMetadata(TargetTypes.Entity, ctGuid)
-                .ToList();
+                .ToListOpt();
 
         // combine with base string based metadata
         return base.LoadFromProviderInsideLock(mdUsingGuid);

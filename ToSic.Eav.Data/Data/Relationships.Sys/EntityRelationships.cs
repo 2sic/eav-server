@@ -147,13 +147,15 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
     #region Relationship-Navigation
 
     /// <inheritdoc />
-    public List<IEntity> FindChildren(string field = null, string type = null, ILog log = null) 
+    public IEnumerable<IEntity> FindChildren(string field = null, string type = null, ILog log = null) 
     {
-        var l = log.Fn<List<IEntity>>($"field:{field}; type:{type}");
+        var l = log.Fn<IEnumerable<IEntity>>($"field:{field}; type:{type}");
 
-        List<IEntity> rels;
+        ICollection<IEntity> rels;
         if (string.IsNullOrEmpty(field))
-            rels = ChildRelationships().Select(r => r.Child).ToList();
+            rels = ChildRelationships()
+                .Select(r => r.Child)
+                .ToListOpt();
         else
         {
             // If the field doesn't exist, return empty list
@@ -163,7 +165,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
             // if it does exist, still catch any situation where it's not a relationship field
             try
             {
-                rels = Children[field].ToList();
+                rels = Children[field].ToListOpt();
             }
             catch
             {
@@ -173,15 +175,15 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
 
         // Optionally filter by type
         if (!string.IsNullOrEmpty(type) && rels.Any())
-            rels = rels.OfType(type).ToList();
+            rels = rels.OfType(type).ToListOpt();
 
         return l.Return(rels, $"{rels.Count}");
     }
 
     /// <inheritdoc />
-    public List<IEntity> FindParents(string type = null, string field = null, ILog log = null) 
+    public IEnumerable<IEntity> FindParents(string type = null, string field = null, ILog log = null) 
     {
-        var l = log.Fn<List<IEntity>>($"type:{type}; field:{field}");
+        var l = log.Fn<IEnumerable<IEntity>>($"type:{type}; field:{field}");
 
         // Start with all parent relationships
         var allParents = ParentRelationships();
@@ -196,7 +198,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
         {
             var parents = afterType
                 .Select(r => r.Parent)
-                .ToList();
+                .ToListOpt();
             return l.Return(parents, $"{parents.Count}");
         }
 
@@ -210,7 +212,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
         // pick only the parents
         var parsAfterField = relsWithFieldFilter
             .Select(r => r.Parent)
-            .ToList();
+            .ToListOpt();
         return l.Return(parsAfterField, $"{parsAfterField.Count}");
     }
 

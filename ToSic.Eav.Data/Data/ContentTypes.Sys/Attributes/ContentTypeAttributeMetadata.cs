@@ -36,14 +36,14 @@ public class ContentTypeAttributeMetadata(
     /// <summary>
     /// This list is populated every time the metadata is loaded.
     /// </summary>
-    private List<IEntity> _directlyOwnedMd;
+    private ICollection<IEntity> _directlyOwnedMd;
 
     /// <summary>
     /// Override data loading.
     /// In some cases, the source Attribute has directly attached metadata (like loaded from JSON)
     /// so this handles that case.
     /// </summary>
-    protected override List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
+    protected override ICollection<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = null)
     {
         // If nothing to inherit, behave using standard key mechanisms
         var ownMd = _directlyOwnedMd = base.LoadFromProviderInsideLock();
@@ -70,7 +70,7 @@ public class ContentTypeAttributeMetadata(
         return final;
     }
 
-    private ICollection<IEntity> GetMdOfOneSource(Guid source, string filter, List<IEntity> ownEntities)
+    private ICollection<IEntity> GetMdOfOneSource(Guid source, string filter, ICollection<IEntity> ownEntities)
     {
         var entities = source == Guid.Empty
             ? ownEntities

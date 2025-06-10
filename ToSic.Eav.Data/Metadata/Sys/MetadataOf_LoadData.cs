@@ -12,7 +12,7 @@ partial class MetadataOf<T>
     /// including permissions-metadata
     /// </summary>
     [PrivateApi]
-    public List<IEntity> AllWithHidden
+    public ICollection<IEntity> AllWithHidden
     {
         get
         {
@@ -37,7 +37,7 @@ partial class MetadataOf<T>
     [PrivateApi]
     private bool UpStreamChanged() => Source.CacheChanged(CacheTimestamp);
 
-    private List<IEntity> LoadAndResetInLock()
+    private ICollection<IEntity> LoadAndResetInLock()
     {
         var result = LoadFromProviderInsideLock() ?? [];
             
@@ -55,7 +55,7 @@ partial class MetadataOf<T>
     /// </summary>
     /// <returns>The cached final list, for overloads which need to verify that something arrived.</returns>
     [PrivateApi]
-    protected virtual List<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
+    protected virtual ICollection<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
     {
         //_debugLoadFromProvider++;
         var mdProvider = GetMetadataSource();
@@ -63,7 +63,11 @@ partial class MetadataOf<T>
                       ?? mdProvider?.GetMetadata(_targetType, Key)
                       ?? [];
         //_debugUse++;
-        return (additions == null ? mdOfKey : mdOfKey.Concat(additions)).ToList();
+        return (additions == null
+                ? mdOfKey
+                : mdOfKey.Concat(additions)
+            )
+            .ToListOpt();
     }
 
     /// <summary>

@@ -22,9 +22,13 @@ partial class MetadataOf<T>
     /// <inheritdoc />
     public TVal GetBestValue<TVal>(string name, string typeName = null)
     {
-        var list = typeName == null ? MetadataWithoutPermissions : OfType(typeName);
+        var list = typeName == null
+            ? MetadataWithoutPermissions
+            : OfType(typeName);
         var found = list.FirstOrDefault(md => md.Attributes.ContainsKey(name));
-        return found == null ? default : found.Get<TVal>(name);
+        return found == null
+            ? default
+            : found.Get<TVal>(name);
     }
 
     /// <inheritdoc />
@@ -42,18 +46,22 @@ partial class MetadataOf<T>
 
     #region Type Specific Data
 
-    public bool HasType(string typeName) => this.Any(e => e.Type.Is(typeName));
+    public bool HasType(string typeName)
+        => this.Any(e => e.Type.Is(typeName));
 
-    public IEnumerable<IEntity> OfType(string typeName) => MetadataWithoutPermissions.OfType(typeName);
+    public IEnumerable<IEntity> OfType(string typeName)
+        => MetadataWithoutPermissions.OfType(typeName);
 
     #endregion
 
 
     #region enumerators
     [PrivateApi]
-    public IEnumerator<IEntity> GetEnumerator() => new EntityEnumerator(MetadataWithoutPermissions);
+    public IEnumerator<IEntity> GetEnumerator()
+        => new EntityEnumerator(MetadataWithoutPermissions);
 
     [PrivateApi]
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator();
     #endregion
 }

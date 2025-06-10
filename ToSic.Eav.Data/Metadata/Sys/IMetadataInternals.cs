@@ -15,7 +15,7 @@ public interface IMetadataInternals
     /// <summary>
     /// The complete list of metadata items, incl. the hidden ones
     /// </summary>
-    List<IEntity> AllWithHidden { get; }
+    ICollection<IEntity> AllWithHidden { get; }
 
     /// <summary>
     /// Context of metadata to be created.
@@ -26,5 +26,5 @@ public interface IMetadataInternals
     IAppIdentity Context(string type);
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    (int TargetType, List<IEntity> list, IHasMetadataSourceAndExpiring appSource, Func<IHasMetadataSourceAndExpiring> deferredSource) GetCloneSpecs();
+    (int TargetType, ICollection<IEntity> list, IHasMetadataSourceAndExpiring appSource, Func<IHasMetadataSourceAndExpiring> deferredSource) GetCloneSpecs();
 }

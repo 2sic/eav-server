@@ -93,8 +93,8 @@ public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamp
 
     public IAppIdentity Context(string type) => GetMetadataSource();
 
-    public (int TargetType, List<IEntity> list, IHasMetadataSourceAndExpiring appSource, Func<IHasMetadataSourceAndExpiring> deferredSource) GetCloneSpecs() 
-        => (_targetType, Source.SourceDirect?.List?.ToList(), Source.SourceApp, Source.SourceDeferred);
+    public (int TargetType, ICollection<IEntity> list, IHasMetadataSourceAndExpiring appSource, Func<IHasMetadataSourceAndExpiring> deferredSource) GetCloneSpecs() 
+        => (_targetType, Source.SourceDirect?.List?.ToListOpt(), Source.SourceApp, Source.SourceDeferred);
 
     #endregion
 }
