@@ -10,7 +10,7 @@ public record ScenarioBasic : TestScenario
 
     public override string GlobalDataCustomFolder => $"{ScenarioConstants.DevMaterialsRoot}ScenarioBasic\\{ScenarioConstants.DevMaterialsEnd}";
 
-    public override string AppsShared => ScenarioConstants.DefaultGlobalFolder;
+    //public override string AppsShared => ScenarioConstants.DefaultGlobalFolder;
 
     //public override string AppsSite => ScenarioConstants.TestAppsSite01Root;
 }

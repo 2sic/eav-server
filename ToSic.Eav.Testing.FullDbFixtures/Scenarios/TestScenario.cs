@@ -32,7 +32,7 @@ public record TestScenario
     /// </summary>
     public virtual /*required*/ string GlobalDataCustomFolder { get; init; } = "";
 
-    public virtual string AppsShared { get; init; }
+    public virtual string AppsShared { get; init; } = ScenarioConstants.DefaultGlobalFolder;
 
     public virtual string AppsSite { get; init; }
 }

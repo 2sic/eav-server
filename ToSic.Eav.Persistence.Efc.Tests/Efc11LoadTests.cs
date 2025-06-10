@@ -73,5 +73,6 @@ public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoaderService> load
         output.WriteLine($"Loading {max} times took {timer.ElapsedMilliseconds}ms");
     }
 
-    private IList<IContentType> TestLoadCts(int appId) => (Loader as IAppsAndZonesLoader).ContentTypes(appId, null);
+    private ICollection<IContentType> TestLoadCts(int appId)
+        => (Loader as IAppsAndZonesLoader).ContentTypes(appId, null);
 }

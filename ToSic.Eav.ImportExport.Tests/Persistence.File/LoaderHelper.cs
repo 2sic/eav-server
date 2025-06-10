@@ -25,7 +25,7 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         }
     }
 
-    internal IList<IContentType> LoadAllTypes(FileSystemLoader loaderRaw, ILog log)
+    internal ICollection<IContentType> LoadAllTypes(FileSystemLoader loaderRaw, ILog log)
     {
         // Log the root for debugging in case files are missing
         var testRoot = TestFiles.GetTestPath(scenarioDeep);
@@ -33,7 +33,7 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
 
         var loader = loaderRaw
             .Init(KnownAppsConstants.PresetAppId, testRoot, RepositoryTypes.TestingDoNotUse, true, null);
-        IList<IContentType> cts;
+        ICollection<IContentType> cts;
         try
         {
             cts = loader.ContentTypes();

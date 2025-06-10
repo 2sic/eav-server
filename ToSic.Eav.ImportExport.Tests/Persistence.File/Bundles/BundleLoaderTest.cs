@@ -45,7 +45,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
     private IList<IContentType> LoadAllTypesInBundles()
     {
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
-        var loader = loaderGenerator.New()// GetService<FileSystemLoader>()
+        var loader = loaderGenerator.New()
             .Init(
                 KnownAppsConstants.PresetAppId,
                 testStorageRoot,
@@ -68,7 +68,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         return cts;
     }
         
-    private IEnumerable<IEntity> LoadAllEntitiesInBundles()
+    private ICollection<IEntity> LoadAllEntitiesInBundles()
     {
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
         output.WriteLine($"path:'{testStorageRoot}'");

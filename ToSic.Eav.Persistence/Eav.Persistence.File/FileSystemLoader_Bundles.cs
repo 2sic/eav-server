@@ -107,9 +107,9 @@ partial class FileSystemLoader
 
 
 
-    public IEnumerable<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource)
+    public ICollection<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource)
     {
-        var l = Log.Fn<IEnumerable<IEntity>>($"Entities in bundles");
+        var l = Log.Fn<ICollection<IEntity>>($"Entities in bundles");
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities.SafeAny()) != true))
             return l.Return([], "no bundles have entities, return none");
 
