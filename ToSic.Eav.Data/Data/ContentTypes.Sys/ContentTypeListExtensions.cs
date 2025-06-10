@@ -22,7 +22,7 @@ public static class ContentTypeListExtensions
         var scopes = list
             .Select(ct => ct.Scope)
             .Distinct()
-            .ToList();
+            .ToListOpt();
 
         // Make sure the "Default" scope is always included, otherwise it's missing on new apps
         if (!scopes.Contains(ScopeConstants.Default))
@@ -34,7 +34,7 @@ public static class ContentTypeListExtensions
 
         return scopes
             .OrderBy(s => s)
-            .ToArray();
+            .ToListOpt();
     }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]

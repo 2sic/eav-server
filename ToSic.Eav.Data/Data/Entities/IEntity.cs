@@ -183,7 +183,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <param name="field">Optional field name to access</param>
     /// <param name="type">Optional type to filter for</param>
     /// <returns>List of children, or empty list if not found</returns>
-    List<IEntity> Children(string field = null, string type = null);
+    IEnumerable<IEntity> Children(string field = null, string type = null);
 
     /// <summary>
     /// Get all the parent <see cref="IEntity"/> items - optionally only of a specific type and/or referenced in a specific field
@@ -191,7 +191,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <param name="type">The type name to filter for</param>
     /// <param name="field">The field name where a parent references this item</param>
     /// <returns>List of children, or empty list if not found</returns>
-    List<IEntity> Parents(string type = null, string field = null);
+    IEnumerable<IEntity> Parents(string type = null, string field = null);
 
     /// <summary>
     /// Get the value of this field as an object.

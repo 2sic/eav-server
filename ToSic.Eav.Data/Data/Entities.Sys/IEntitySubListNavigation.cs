@@ -13,7 +13,7 @@ static class IEntitySubListNavigation
     /// <returns></returns>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static PropReqResult TryToNavigateToEntityInList(this IEntity entity, PropReqSpecs specs,
+    public static PropReqResult? TryToNavigateToEntityInList(this IEntity entity, PropReqSpecs specs,
         object parentDynEntity, PropertyLookupPath path) 
     {
         var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);

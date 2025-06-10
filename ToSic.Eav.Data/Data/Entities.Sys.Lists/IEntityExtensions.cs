@@ -104,7 +104,9 @@ public static class IEntityExtensions
 #endif            
         return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
             ? fastList.Fast.OfType(typeName)
-            : list.Where(e => e.Type.Is(typeName));
+            : list
+                .Where(e => e.Type.Is(typeName))
+                .ToListOpt();
     }
 
     public static IEntity IfOfType(this IEntity entity, string typeName) 

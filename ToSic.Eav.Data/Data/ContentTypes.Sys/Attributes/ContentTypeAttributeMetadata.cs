@@ -60,7 +60,7 @@ public class ContentTypeAttributeMetadata(
                     continue;
                 var ofNewTypes = fromCurrent
                     .Where(e => !final.Any(f => f.Type.Is(e.Type.NameId)))
-                    .ToList();
+                    .ToListOpt();
                 if (ofNewTypes.SafeAny())
                     final.AddRange(ofNewTypes);
             }
@@ -98,7 +98,7 @@ public class ContentTypeAttributeMetadata(
                 sourceMd.Source.SourceDirect?.List
                 ?? GetMetadataSource()?.GetMetadata((int)TargetTypes.Attribute, source.AttributeId)
             )
-            ?.ToList();
+            ?.ToListOpt();
 
         return md; // can be null
     }
@@ -126,7 +126,7 @@ public class ContentTypeAttributeMetadata(
             .SelectMany(ct => ct.Attributes);
         return appAttribs
             .Where(a => sourceKeys.Contains(a.Guid))
-            .ToList();
+            .ToListOpt();
     });
     private readonly GetOnce<ICollection<IContentTypeAttribute>?> _sourceAttributes = new();
 

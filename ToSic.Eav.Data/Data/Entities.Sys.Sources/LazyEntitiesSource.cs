@@ -66,7 +66,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     internal ICollection<int?> EntityIds 
         => _entityIds ??= this
             .Select(e => e?.EntityId)
-            .ToList();
+            .ToListOpt();
 
     /// <summary>
     /// Identifiers of the items in the list. Build with either the Guids or the Ids, depending on what was used.
@@ -103,13 +103,13 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
             return Guids;
 
         // if we have number-IDs, but no lookup system, we'll have to use this as lookup system
-        if (_entityIds != null && _entityIds.Count > 0 && _lookupList == null) // not set yet
+        if (_entityIds is { Count: > 0 } && _lookupList == null) // not set yet
             throw new("trying to resolve guids for this relationship, but can't, because the lookupList is not available");
 
-        return this.Select(e => e?.EntityGuid).ToList();
+        return this.Select(e => e?.EntityGuid).ToListOpt();
     }
 
-    private List<IEntity> _entities;
+    private IList<IEntity> _entities;
 
 
 
@@ -117,12 +117,13 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     // todo: unclear when this is actually needed / used? - maybe just for debug?
     [PrivateApi]
     public override string ToString()
-    {
-        return !_preferGuid
-            ? (EntityIds != null ? string.Join(",", EntityIds) : string.Empty)
-            : (Guids != null ? string.Join(",", Guids) : string.Empty);
-
-    }
+        => !_preferGuid
+            ? EntityIds != null
+                ? string.Join(",", EntityIds)
+                : string.Empty
+            : Guids != null
+                ? string.Join(",", Guids)
+                : string.Empty;
 
     [PrivateApi]
     public IEnumerator<IEntity> GetEnumerator()
@@ -138,7 +139,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 
-    private List<IEntity> LoadEntities()
+    private IList<IEntity> LoadEntities()
     {
         var result = _lookupList == null
             ? []
@@ -146,11 +147,15 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
                 ? Guids.Select(l => !l.HasValue
                     ? null
                     // special: in some cases, the entity cannot be found because it has been deleted or something
-                    : _lookupList.List.One(l.Value))
+                    : _lookupList.List.One(l.Value)
+                )
                 : EntityIds.Select(l => l.HasValue
                     ? _lookupList.List.FindRepoId(l.Value)
                     // special: in some cases, the entity cannot be found because it has been deleted or something
-                    : null)).ToList();
+                    : null
+                )
+            )
+            .ToListOpt();
 
         CacheTimestamp = _lookupList?.CacheTimestamp ?? 0;
         return result;

@@ -9,8 +9,8 @@ partial class ConvertToEavLight
     {
         try
         {
-            entityValues.Add("_Used", entity.Parents().Count);
-            entityValues.Add("_Uses", entity.Children().Count);
+            entityValues.Add("_Used", entity.Parents().Count());
+            entityValues.Add("_Uses", entity.Children().Count());
             entityValues.Add("_Permissions", new { Count = entity.Metadata.Permissions.Count() });
         }
         catch { /* ignore */ }

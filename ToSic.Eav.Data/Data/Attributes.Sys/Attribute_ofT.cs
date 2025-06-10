@@ -61,7 +61,7 @@ internal record Attribute<T> : AttributeBase, IAttribute<T>
 
     /// <inheritdoc/>
     public IEnumerable<IValue<T>> Typed
-        => ValuesImmutable.Cast<IValue<T>>().ToList();
+        => ValuesImmutable.Cast<IValue<T>>().ToListOpt();
 
     #region IAttribute Implementations
     [PrivateApi]

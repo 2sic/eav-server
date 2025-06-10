@@ -43,11 +43,14 @@ public record Value<T> : IValue<T>
         {
             var typedObject = TypedContents;
 
-            if (typedObject is not IEnumerable<IEntity> maybeRelationshipList) return typedObject;
+            if (typedObject is not IEnumerable<IEntity> maybeRelationshipList)
+                return typedObject;
 
             // special case with list of related entities - should return array of guids
-            var entityGuids = maybeRelationshipList.Select(e => e?.EntityGuid);
-            return entityGuids.ToList();
+            var entityGuids = maybeRelationshipList
+                .Select(e => e?.EntityGuid)
+                .ToListOpt();
+            return entityGuids;
         }
     }
 

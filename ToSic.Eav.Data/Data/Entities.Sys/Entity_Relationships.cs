@@ -3,20 +3,20 @@
 partial record Entity
 {
     /// <inheritdoc />
-    public List<IEntity> Children(string field = null, string type = null)
+    public IEnumerable<IEntity> Children(string field = null, string type = null)
     {
         var list = Relationships
             .FindChildren(field, type)
-            .ToList();
+            .ToListOpt();
         return list;
     }
 
     /// <inheritdoc />
-    public List<IEntity> Parents(string type = null, string field = null)
+    public IEnumerable<IEntity> Parents(string type = null, string field = null)
     {
         var list = Relationships
             .FindParents(type, field)
-            .ToList();
+            .ToListOpt();
         return list;
 
     }

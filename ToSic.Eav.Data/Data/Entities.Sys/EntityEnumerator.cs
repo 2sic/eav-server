@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.Entities.Sys;
 /// <inheritdoc />
 /// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>
 [PrivateApi]
-internal class EntityEnumerator(List<IEntity> entities) : IEnumerator<IEntity>
+internal class EntityEnumerator(IList<IEntity> entities) : IEnumerator<IEntity>
 {
     private int _position = -1;
 

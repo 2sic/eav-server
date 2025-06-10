@@ -157,7 +157,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
         else
         {
             // If the field doesn't exist, return empty list
-            if (!((IEntity)_entity).Attributes.ContainsKey(field))
+            if (!_entity.Attributes.ContainsKey(field))
                 return l.Return([], "empty list, field doesn't exist");
                 
             // if it does exist, still catch any situation where it's not a relationship field

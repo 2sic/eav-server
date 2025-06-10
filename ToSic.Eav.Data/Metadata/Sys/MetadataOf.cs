@@ -24,7 +24,7 @@ public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamp
     #region Constructors
 
     /// <summary>
-    /// Constructor that can take both a direct App-Source as well as a deferred source.
+    /// Constructor that can take both a direct App-Source and a deferred source.
     /// Note that both sources can be null!
     /// </summary>
     /// <param name="targetType"></param>
@@ -92,6 +92,7 @@ public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamp
     #region Context for data to be created
 
     public IAppIdentity Context(string type) => GetMetadataSource();
+
     public (int TargetType, List<IEntity> list, IHasMetadataSourceAndExpiring appSource, Func<IHasMetadataSourceAndExpiring> deferredSource) GetCloneSpecs() 
         => (_targetType, Source.SourceDirect?.List?.ToList(), Source.SourceApp, Source.SourceDeferred);
 
