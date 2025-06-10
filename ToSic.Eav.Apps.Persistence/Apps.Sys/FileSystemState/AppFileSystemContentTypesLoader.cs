@@ -10,7 +10,7 @@ using ToSic.Eav.Sys;
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
+public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppContentTypesLoader
 {
     public new IAppContentTypesLoader Init(IAppReader app, LogSettings logSettings)
@@ -41,7 +41,15 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
     {
         var l = Log.IfSummary(LogSettings).Fn<IEnumerable<IContentType>>(extensionPath);
-        var fsLoader = fslGenerator.New().Init(AppIdentity.AppId, extensionPath, RepositoryTypes.Folder, true, entitiesSource, LogSettings);
+        var fsLoader = fslGenerator.New(options: new()
+        {
+            appId = AppIdentity.AppId,
+            path = extensionPath,
+            repoType = RepositoryTypes.Folder,
+            ignoreMissing =true,
+            entitiesSource= entitiesSource,
+            logSettings= LogSettings,
+        });
         var types = fsLoader.ContentTypes();
         return l.Return(types, $"found: {types.Count}");
     }

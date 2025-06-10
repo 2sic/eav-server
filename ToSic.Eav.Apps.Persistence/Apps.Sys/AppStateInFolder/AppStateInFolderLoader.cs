@@ -13,7 +13,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 {
     #region Constructor and DI
 
-    public AppStateInFolderLoader(IServiceProvider sp, Generator<FileSystemLoader> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
+    public AppStateInFolderLoader(IServiceProvider sp, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
         : base("Eav.RunTme", connect: [/* sp (never) */ fslGenerator, stateBuilder])
     {
         _serviceProvider = sp;
@@ -30,7 +30,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 
     private readonly IServiceProvider _serviceProvider;
     private readonly Generator<IAppStateBuilder> _stateBuilder;
-    private readonly Generator<FileSystemLoader> _fslGenerator;
+    private readonly Generator<FileSystemLoader, FileSystemLoaderOptions> _fslGenerator;
 
     #endregion
 
@@ -74,8 +74,15 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
     private ICollection<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource, LogSettings logSettings)
         => Paths
             .Select(path => _fslGenerator
-                .New()
-                .Init(KnownAppsConstants.PresetAppId, path, Source, true, entitiesSource, logSettings)
+                .New(new()
+                {
+                    appId = KnownAppsConstants.PresetAppId,
+                    path = path,
+                    repoType = Source,
+                    ignoreMissing = true,
+                    entitiesSource = entitiesSource,
+                    logSettings = logSettings,
+                })
             )
             .ToListOpt();
 

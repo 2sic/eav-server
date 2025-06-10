@@ -26,11 +26,11 @@ partial class FileSystemLoader
     {
         var json = Serializer.Serialize(queryDef, FileSystemLoaderConstants.QueryMetadataDepth);
 
-        var cleanname = queryDef.EntityGuid.ToString()
+        var cleanName = queryDef.EntityGuid.ToString()
             .RemoveNonFilenameCharacters();
-        var queryPath = System.IO.Path.Combine(Path, AppDataFoldersConstants.QueriesFolder);
+        var queryPath = System.IO.Path.Combine(Options.path, AppDataFoldersConstants.QueriesFolder);
         System.IO.Directory.CreateDirectory(queryPath);
-        var fileName = System.IO.Path.Combine(queryPath, cleanname + ImpExpConstants.Extension(ImpExpConstants.Files.json));
+        var fileName = System.IO.Path.Combine(queryPath, cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json));
 
         System.IO.File.WriteAllText(fileName, json);
     }

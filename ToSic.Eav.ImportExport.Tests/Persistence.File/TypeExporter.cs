@@ -16,14 +16,21 @@ public class TypeExporter(ITestOutputHelper output, IAppsAndZonesLoaderWithRaw l
     {
         var test = new SpecsTestExportSerialize();
 
-        //var loader = GetService<IRepositoryLoader>();
         var app = loaderRaw.AppStateReaderRawTac(test.AppId);
 
         var cts = app.ContentTypes;
-        var sharedCts = cts/*.Where(ct => ct.IsGlobal)*/.ToList();
+        var sharedCts = cts.ToList();
         var exportStorageRoot =
-            TestFiles.GetTestPath($"{PersistenceTestConstants.ScenarioRoot}{PersistenceTestConstants.TestingPath3}");// PersistenceTestConstants.ExportStorageRoot(TestContext);
-        var fileSysLoader = fsLoader.Init(KnownAppsConstants.PresetAppId, exportStorageRoot, RepositoryTypes.TestingDoNotUse, true, null);
+            TestFiles.GetTestPath($"{PersistenceTestConstants.ScenarioRoot}{PersistenceTestConstants.TestingPath3}");
+        var fileSysLoader = fsLoader;
+        fileSysLoader.Setup(new()
+        {
+            appId = KnownAppsConstants.PresetAppId,
+            path = exportStorageRoot,
+            repoType = RepositoryTypes.TestingDoNotUse,
+            ignoreMissing = true,
+            entitiesSource = null
+        });
 
         var time = Stopwatch.StartNew();
         sharedCts.ForEach(fileSysLoader.SaveContentType);

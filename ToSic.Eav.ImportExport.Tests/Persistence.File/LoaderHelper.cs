@@ -9,11 +9,19 @@ namespace ToSic.Eav.ImportExport.Tests.Persistence.File;
 
 internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(parentLog, "Ldr.Helper")
 {
-    internal IList<IEntity> LoadAllQueryEntities(FileSystemLoader loaderRaw, ITestOutputHelper output)
+    internal IList<IEntity> LoadAllQueryEntities(Generator<FileSystemLoader, FileSystemLoaderOptions> loaderRaw, ITestOutputHelper output)
     {
         var testStorageRoot = TestFiles.GetTestPath(scenarioDeep);
         output.WriteLine($"path:'{testStorageRoot}'");
-        var loader = loaderRaw.Init(KnownAppsConstants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+        var loader = loaderRaw.New(new()
+        {
+            appId = KnownAppsConstants.PresetAppId,
+            path = testStorageRoot,
+            repoType = RepositoryTypes.TestingDoNotUse,
+            ignoreMissing = false,
+            entitiesSource = null
+        });
+        //var loader = loaderRaw;
         
         try
         {
@@ -31,8 +39,15 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         var testRoot = TestFiles.GetTestPath(scenarioDeep);
         Trace.WriteLine("Test folder: " + testRoot);
 
-        var loader = loaderRaw
-            .Init(KnownAppsConstants.PresetAppId, testRoot, RepositoryTypes.TestingDoNotUse, true, null);
+        var loader = loaderRaw;
+        loader.Setup(new()
+        {
+            appId = KnownAppsConstants.PresetAppId,
+            path = testRoot,
+            repoType = RepositoryTypes.TestingDoNotUse,
+            ignoreMissing = true,
+            entitiesSource = null
+        });
         ICollection<IContentType> cts;
         try
         {

@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File;
 
-public class CountQueriesInScenarioMini(ITestOutputHelper output, FileSystemLoader loaderRaw) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
+public class CountQueriesInScenarioMini(ITestOutputHelper output, Generator<FileSystemLoader, FileSystemLoaderOptions> loaderRaw) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
     [Fact]
     public void FLoader_LoadQueriesAndCount()
