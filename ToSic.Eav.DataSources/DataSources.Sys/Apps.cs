@@ -62,7 +62,7 @@ public sealed class Apps: CustomDataSource
             () => GetDefault(appsCatalog, appReaders),
             options: () => new()
             {
-                TitleField = AppType.Name.ToString(),
+                TitleField = nameof(AppType.Name),
                 TypeName = AppsContentTypeName
             }
         );
@@ -99,12 +99,12 @@ public sealed class Apps: CustomDataSource
                 // Assemble the entities
                 var appEnt = new Dictionary<string, object>
                 {
-                    { AppType.Id.ToString(), app.Key },
-                    { AppType.Name.ToString(), appSpecs?.Name ?? "error - can't lookup name" },
-                    { AppType.Folder.ToString(), appSpecs?.Folder ?? "" },
-                    { AppType.IsHidden.ToString(), appSpecs?.Configuration.IsHidden ?? false },
-                    { AppType.IsDefault.ToString(), app.Key == zone.DefaultAppId },
-                    { AppType.IsPrimary.ToString(), app.Key == zone.PrimaryAppId },
+                    { nameof(AppType.Id), app.Key },
+                    { nameof(AppType.Name), appSpecs?.Name ?? "error - can't lookup name" },
+                    { nameof(AppType.Folder), appSpecs?.Folder ?? "" },
+                    { nameof(AppType.IsHidden), appSpecs?.Configuration.IsHidden ?? false },
+                    { nameof(AppType.IsDefault), app.Key == zone.DefaultAppId },
+                    { nameof(AppType.IsPrimary), app.Key == zone.PrimaryAppId },
                 };
                 if (error != null)
                     appEnt["Error"] = error;

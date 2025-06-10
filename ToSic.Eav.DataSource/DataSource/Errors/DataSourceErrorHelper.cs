@@ -48,7 +48,7 @@ public class DataSourceErrorHelper(DataBuilder builder)
 
         // Construct the IEntity and return as Immutable
         var entity = CreateErrorEntity(source, streamName, title, message);
-        return new[] { entity }.ToImmutableList();
+        return new[] { entity }.ToImmutableOpt();
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public class DataSourceErrorHelper(DataBuilder builder)
                 message: $"This DataSource needs the stream '{streamName}' on the {partName} to work, but it couldn't find it.");
         if (stream == null)
             return Create(source: source, title: $"Stream '{streamName}' is Null", message: $"The Stream '{streamName}' was found on {partName}, but it's null");
-        var list = stream.List?.ToImmutableList();
+        var list = stream.List?.ToImmutableOpt();
         if (list == null)
             return Create(source: source, title: $"Stream '{streamName}' is Null",
                 message: $"The Stream '{streamName}' exists on {partName}, but the List is null");

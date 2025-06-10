@@ -57,7 +57,7 @@ public record Value<T> : IValue<T>
         get
         {
             var obj = SerializableObject;
-            if (obj is List<Guid?> list)
+            if (obj is ICollection<Guid?> list)
                 return string.Join(",", list.Select(y => y?.ToString() ?? EavConstants.EmptyRelationship));
 
             return (obj as DateTime?)?.ToString("yyyy-MM-ddTHH:mm:ss") 

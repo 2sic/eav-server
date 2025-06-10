@@ -50,7 +50,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
 
         var result = source
             .Distinct()
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(result, $"{result.Count}");
     }
@@ -73,7 +73,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
             .GroupBy(s => s)
             .Where(g => g.Count() > 1)
             .Select(g => g.Key)
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(result, $"{result.Count}");
     }

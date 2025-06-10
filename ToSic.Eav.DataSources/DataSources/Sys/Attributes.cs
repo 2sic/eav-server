@@ -72,7 +72,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
 
         var useStream = TypeNameFallbackToTryToUseInStream == ContentTypeName && In.ContainsKey(StreamDefaultName);
         var optionalList = useStream
-            ? In[StreamDefaultName]?.List.ToImmutableList()
+            ? In[StreamDefaultName]?.List.ToImmutableOpt()
             : null;
 
         var appReader = _appReaders.Get(this);
@@ -159,7 +159,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         });
         var data = list
             .Select(attribData => dataFactory.Create(attribData))
-            .ToImmutableList();
+            .ToImmutableOpt();
         return l.Return(data, $"{data.Count}");
     }
 

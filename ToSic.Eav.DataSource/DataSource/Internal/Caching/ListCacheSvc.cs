@@ -160,7 +160,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
 
     /// <inheritdoc />
     public void Set(IDataStream dataStream, int durationInSeconds = 0, bool slidingExpiration = true)
-        => Set(CacheKey(dataStream), dataStream.List.ToImmutableList(),
+        => Set(CacheKey(dataStream), dataStream.List.ToImmutableOpt(),
             dataStream.Caching.CacheTimestamp, dataStream.CacheRefreshOnSourceRefresh, durationInSeconds, slidingExpiration);
 
     #endregion

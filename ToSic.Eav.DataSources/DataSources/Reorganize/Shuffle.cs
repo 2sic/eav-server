@@ -70,7 +70,7 @@ public sealed class Shuffle: Eav.DataSource.DataSourceBase
         var l = Log.Fn<IImmutableList<T>>();
         // check if there is actually any data
         if (!sequence.Any())
-            return l.Return(sequence.ToImmutableList(), "0 items found to shuffle");
+            return l.Return(sequence.ToImmutableOpt(), "0 items found to shuffle");
 
         var retArray = sequence.ToArray();
         var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this
@@ -95,7 +95,7 @@ public sealed class Shuffle: Eav.DataSource.DataSourceBase
 
         var result = retArray
             .Take(maxTake)
-            .ToImmutableList();
+            .ToImmutableOpt();
         return l.Return(result, maxTake.ToString());
     }
     #endregion

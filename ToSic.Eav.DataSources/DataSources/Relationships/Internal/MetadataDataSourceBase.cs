@@ -34,7 +34,7 @@ public abstract class MetadataDataSourceBase : CustomDataSourceAdvanced
 
         var relationships = SpecificGet(source, typeName);
 
-        return l.ReturnAsOk(relationships.ToImmutableList());
+        return l.ReturnAsOk(relationships.ToImmutableOpt());
     }
 
     protected abstract IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName);

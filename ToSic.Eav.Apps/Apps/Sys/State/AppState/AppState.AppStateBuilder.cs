@@ -310,7 +310,7 @@ partial class AppState
         /// The second init-command
         /// Load content-types
         /// </summary>
-        public void InitContentTypes(IList<IContentType> contentTypes)
+        public void InitContentTypes(ICollection<IContentType> contentTypes)
         {
             var st = (AppState)AppState;
             var l = st.Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
@@ -362,14 +362,14 @@ partial class AppState
             return l.Return(appTypesByName);
         }
 
-        private static IImmutableList<IContentType> RemoveAliasesForGlobalTypes(AppState st, IList<IContentType> appTypes)
+        private static IImmutableList<IContentType> RemoveAliasesForGlobalTypes(AppState st, ICollection<IContentType> appTypes)
         {
             var globTypeNames = st.ParentApp.ContentTypes.Select(t => t.NameId);
             return appTypes.Where(t =>
                         !t.AlwaysShareConfiguration // keep all locally defined types
                         || !globTypeNames.Contains(t.NameId)    // for non-local: keep all which globally are not overwritten
                 )
-                .ToImmutableList();
+                .ToImmutableOpt();
         }
 
 

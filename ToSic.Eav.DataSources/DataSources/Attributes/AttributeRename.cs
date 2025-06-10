@@ -143,7 +143,7 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
                 var values = CreateDic(entity);
                 return _dataBuilder.Entity.CreateFrom(entity, attributes: _dataBuilder.Attribute.Create(values), type: newType);
             })
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(result, $"attrib filter names:[{string.Join(",", attributeNames)}] found:{result.Count}");
     }

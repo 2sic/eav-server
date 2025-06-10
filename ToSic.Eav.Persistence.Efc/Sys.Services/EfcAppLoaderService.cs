@@ -95,9 +95,10 @@ public class EfcAppLoaderService(
     /// Get all ContentTypes for specified AppId. 
     /// It uses temporary caching, so if called multiple times it loads from a private field.
     /// </summary>
-    IList<IContentType> IContentTypeLoader.ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
+    ICollection<IContentType> IContentTypeLoader.ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
         => new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, featuresSvc)
-            .LoadContentTypesFromDb(appId, source);
+            .LoadContentTypesFromDb(appId, source)
+            .ToListOpt(); // WIP
 
     #endregion
 
@@ -222,7 +223,7 @@ public class EfcAppLoaderService(
                 var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, featuresSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
                 var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge);
-                builder.InitContentTypes(dbTypes);
+                builder.InitContentTypes(dbTypes.ToListOpt());
                 typeTimer.Stop();
                 l.A($"timers types:{typeTimer.Elapsed}");
             }

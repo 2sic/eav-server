@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Apps.Sys.State.AppStateBuilder;
+﻿using System.Collections.Immutable;
+
+namespace ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 
 public interface IAppStateBuilder: IHasLog
 {
@@ -42,5 +44,5 @@ public interface IAppStateBuilder: IHasLog
     /// The second init-command
     /// Load content-types
     /// </summary>
-    void InitContentTypes(IList<IContentType> contentTypes);
+    void InitContentTypes(ICollection<IContentType> contentTypes);
 }

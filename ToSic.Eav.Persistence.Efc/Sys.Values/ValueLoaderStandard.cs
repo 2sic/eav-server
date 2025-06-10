@@ -15,9 +15,9 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
     private ValueQueries ValueQueries => field ??= new(AppLoader.Context, Log);
 
 
-    public virtual Dictionary<int, List<TempAttributeWithValues>> LoadValues()
+    public virtual Dictionary<int, ICollection<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>(timer: true);
+        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>(timer: true);
 
         var sqlTime = Stopwatch.StartNew();
         var result = Specs.IdsToLoadChunks
@@ -32,9 +32,9 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
         return l.Return(attributes, $"Found {attributes.Count} attributes");
     }
 
-    private Dictionary<int, List<TempAttributeWithValues>> GetValuesOfEntityChunk(List<int> entityIdsFound)
+    private Dictionary<int, ICollection<TempAttributeWithValues>> GetValuesOfEntityChunk(ICollection<int> entityIdsFound)
     {
-        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
+        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
 
         var attributesRaw = GetSqlValuesChunk(entityIdsFound);
 
@@ -45,7 +45,7 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
     /// <summary>
     /// Helper to convert LoadingValue list to TempAttributeWithValues dictionary.
     /// </summary>
-    internal Dictionary<int, List<TempAttributeWithValues>> ConvertToTempAttributes(List<LoadingValue> attributesRaw)
+    internal Dictionary<int, ICollection<TempAttributeWithValues>> ConvertToTempAttributes(ICollection<LoadingValue> attributesRaw)
     {
         var cnv = new ConvertValuesToAttributes(AppLoader.PrimaryLanguage, Log);
         return cnv.EavValuesToTempAttributesBeta(attributesRaw);
@@ -62,14 +62,14 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
     /// <remarks>
     /// Updated 2025-04-28 for v20 to really just get the values we need, seems to be ca. 50% faster.
     /// </remarks>
-    private List<LoadingValue> GetSqlValuesChunk(List<int> entityIdsFound)
+    private ICollection<LoadingValue> GetSqlValuesChunk(ICollection<int> entityIdsFound)
     {
-        var l = Log.Fn<List<LoadingValue>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
+        var l = Log.Fn<ICollection<LoadingValue>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
 
         var query = ValueQueries.ChunkValuesQuery(entityIdsFound);
         var attributesRaw = ToLoadingValues(query, null);
 
-        return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
+        return l.Return(attributesRaw, $"found {attributesRaw.Count} attributes");
     }
 
     /// <summary>
@@ -82,9 +82,8 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
     /// SQL isn't properly converted and we'll run into null exceptions! So don't use IEnumerable,
     /// at least not for EF 2.2 which is still in use for DNN.
     /// </remarks>
-    internal virtual List<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension> dimensions)
-    {
-        return values
+    internal virtual ICollection<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension> dimensions)
+        => values
             .ToList()
             .Select(v => new LoadingValue(
                 v.EntityId,
@@ -94,11 +93,9 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
                 v.TsDynDataValueDimensions
                     .Select(ILanguage (lng) =>
                         new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId))
-                    .ToImmutableList()
+                    .ToListOpt()
             ))
-            .ToList();
-    }
-
+            .ToListOpt();
 
     #endregion
 

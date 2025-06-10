@@ -52,7 +52,7 @@ public sealed class StreamMerge: DataSourceBase
         var l = Log.Fn<IImmutableList<IEntity>>();
         var result = ValidInStreams
             .SelectMany(stm => stm)
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(result, result.Count.ToString());
     }
@@ -75,7 +75,7 @@ public sealed class StreamMerge: DataSourceBase
     private IImmutableList<IEntity> GetDistinct()
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        var result = List.Distinct().ToImmutableList();
+        var result = List.Distinct().ToImmutableOpt();
         return l.Return(result, result.Count.ToString());
     }
 
@@ -92,7 +92,7 @@ public sealed class StreamMerge: DataSourceBase
 
         // if there is only 1 stream, return it
         if (streamCount == 1)
-            return l.Return(firstList.ToImmutableList(), "Just 1 In");
+            return l.Return(firstList.ToImmutableOpt(), "Just 1 In");
 
         var others = streams
             .Skip(1)
@@ -105,7 +105,7 @@ public sealed class StreamMerge: DataSourceBase
 
         var final = firstList
             .Where(e => itemsInOthers.Contains(e))
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(final, final.Count.ToString());
     }
@@ -117,7 +117,7 @@ public sealed class StreamMerge: DataSourceBase
             .GroupBy(e => e)
             .Where(g => g.Count() == 1)
             .Select(g => g.First())
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(result, result.Count.ToString());
     }

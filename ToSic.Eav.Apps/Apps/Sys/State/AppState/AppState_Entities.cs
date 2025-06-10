@@ -16,8 +16,8 @@ partial class AppState: IEntitiesSource
     {
         // todo: check if feature is enabled #SharedAppFeatureEnabled
         var buildFn = ((ParentAppState)ParentApp).InheritEntities
-            ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableList()
-            : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableList());
+            ? () => Index.Values.Concat(ParentApp.Entities).ToImmutableOpt()
+            : (Func<IImmutableList<IEntity>>)(() => Index.Values.ToImmutableOpt());
 
         var syncList = new SynchronizedEntityList(this, buildFn);
 

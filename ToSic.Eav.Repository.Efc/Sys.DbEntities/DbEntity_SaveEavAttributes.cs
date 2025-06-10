@@ -53,7 +53,7 @@ partial class DbEntity
                     return "attribute not found, will skip according to save-options";
                 }
 
-                if (attribDef.Type == ValueTypes.Entity.ToString())
+                if (attribDef.Type == nameof(ValueTypes.Entity))
                     return "type is entity, skip for now as relationships are processed later";
 
                 foreach (var value in attribute.Values)

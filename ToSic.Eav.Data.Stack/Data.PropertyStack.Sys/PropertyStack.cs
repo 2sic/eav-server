@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Lib.Data;
 
@@ -28,7 +27,7 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
                 var key = !string.IsNullOrWhiteSpace(ep.Key) ? ep.Key : $"auto-named-{++pairCount}";
                 return new KeyValuePair<string, IPropertyLookup>(key, ep.Value);
             })
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return this;
     }

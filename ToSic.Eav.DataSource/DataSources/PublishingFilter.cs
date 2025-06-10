@@ -74,15 +74,15 @@ public class PublishingFilter : DataSourceBase
         // Standard / old case: if the inputs already have the correct streams, use them.
         if (In.TryGetValue(inStreamName, out var inStream))
         {
-            var result = inStream.List.ToImmutableList();
+            var result = inStream.List.ToImmutableOpt();
             return l.Return(result, $"Show Draft setting:'{showDraftsSetting}'; final:{finalShowDrafts}; stream: {inStreamName}; count: {result.Count}");
         }
 
         if (In.TryGetValue(StreamDefaultName, out var inDefault))
         {
             var filtered = finalShowDrafts
-                ? inDefault.List.ToImmutableList()
-                : inDefault.List.Where(e => e.IsPublished).ToImmutableList();
+                ? inDefault.List.ToImmutableOpt()
+                : inDefault.List.Where(e => e.IsPublished).ToImmutableOpt();
             return l.Return(filtered, $"Refiltering the Default; setting:'{showDraftsSetting}'; final:{finalShowDrafts}; stream: {StreamDefaultName}; count: {filtered.Count}");
         }
 

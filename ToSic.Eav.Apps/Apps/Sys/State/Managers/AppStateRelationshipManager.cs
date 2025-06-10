@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Sys.State.Managers;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEntityRelationship>(upstream, () => Rebuild(upstream))
 {
-    private static ImmutableList<IEntityRelationship> Rebuild(AppState appState)
+    private static IImmutableList<IEntityRelationship> Rebuild(AppState appState)
     {
         // todo: could be optimized (minor)
         // atm guid-relationships (like in json-objects) 
@@ -37,7 +37,7 @@ internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEnti
                 Add(entity, childId.Value);
         }
 
-        return cache.ToImmutableList();
+        return cache.ToImmutableOpt();
 
 
 

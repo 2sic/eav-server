@@ -19,9 +19,9 @@ internal class EfcContentTypeLoaderService(
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
-    internal IList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IList<IContentType> dbTypes)
+    internal IImmutableList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes)
     {
-        var l = Log.Fn<IList<IContentType>>(timer: true);
+        var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
         try
         {
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
@@ -35,7 +35,7 @@ internal class EfcContentTypeLoaderService(
             l.A($"Will check {fileTypes.Count} items");
 
             // remove previous items with same name, as the "static files" have precedence
-            var typeToMerge = dbTypes.ToList();
+            var typeToMerge = dbTypes.ToImmutableOpt();
             var before = typeToMerge.Count;
             var comparer = new EqualityComparer_ContentType();
             typeToMerge.RemoveAll(t => fileTypes.Contains(t, comparer));
@@ -69,7 +69,7 @@ internal class EfcContentTypeLoaderService(
     /// <summary>
     /// Load DB content-types into loader-cache
     /// </summary>
-    internal ImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSourceAndExpiring source)
+    internal IImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSourceAndExpiring source)
     {
         // WARNING: 2022-01-18 2dm
         // I believe there is an issue which can pop up from time to time, but I'm not sure if it's only in dev setup
@@ -84,7 +84,7 @@ internal class EfcContentTypeLoaderService(
         // 1. Collect AppIds used in content-types and attributes here
         // 2. After loading the types, access the app-state of each of these IDs to ensure it's loaded already
 
-        var l = Log.Fn<ImmutableList<IContentType>>(timer: true);
+        var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
         var query = efcAppLoader.Context.TsDynDataContentTypes
@@ -95,7 +95,7 @@ internal class EfcContentTypeLoaderService(
             .Include(set => set.App)
             .Include(set => set.InheritContentTypeNavigation)
             .ThenInclude(master => master.App)
-            .ToList();
+            .ToListOpt();
 
         sqlTime.Stop();
 
@@ -132,7 +132,7 @@ internal class EfcContentTypeLoaderService(
                     set.InheritContentTypeNavigation?.IsGlobal ??
                     set.IsGlobal,
             })
-            .ToList();
+            .ToImmutableOpt();
 
         var optimize = featuresSvc.IsEnabled(BuiltInFeatures.SqlLoadPerformance);
 
@@ -174,7 +174,8 @@ internal class EfcContentTypeLoaderService(
         sqlTime.Stop();
 
         // Convert to ContentType-Model
-        var newTypes = contentTypes.Select(set =>
+        var newTypes = contentTypes
+            .Select(set =>
         {
             var notGhost = set.IsGhost == null;
 
@@ -205,7 +206,7 @@ internal class EfcContentTypeLoaderService(
         });
 
         efcAppLoader.AddSqlTime(sqlTime.Elapsed);
-        var final = newTypes.ToImmutableList();
+        var final = newTypes.ToImmutableOpt();
 
         return l.Return(final, $"{final.Count}");
     }

@@ -85,7 +85,7 @@ partial class App: IDataSourceReset
                     $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                 this,
                 typeName,
-                () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableList(),
+                () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableOpt(),
                 true,
                 contentType.Scope);
             _out.Add(typeName, deferredStream);

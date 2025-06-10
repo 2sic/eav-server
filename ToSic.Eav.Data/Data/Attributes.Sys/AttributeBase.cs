@@ -24,5 +24,5 @@ public record AttributeBase : IAttributeBase
     /// <summary>
     /// Empty values are always the same, and immutable, so create once only for speed & memory use.
     /// </summary>
-    internal static readonly IImmutableList<IValue> EmptyValues = new List<IValue>().ToImmutableList();
+    internal static readonly IImmutableList<IValue> EmptyValues = [];
 }

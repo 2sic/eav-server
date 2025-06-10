@@ -71,7 +71,7 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
             if (foundType != null) // maybe it doesn't find it!
             {
                 var result = source.OfType(foundType).ToList();
-                return l.Return(result.ToImmutableList(), "fast");
+                return l.Return(result.ToImmutableOpt(), "fast");
             }
         }
         catch (Exception ex)
@@ -86,7 +86,7 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
         //if (!GetRequiredInList(out var originals2))
         //    return (originals2, "error");
 
-        return l.Return(source.OfType(TypeName).ToImmutableList(), "slower");
+        return l.Return(source.OfType(TypeName).ToImmutableOpt(), "slower");
     }
 
 }

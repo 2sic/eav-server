@@ -7,7 +7,8 @@ namespace ToSic.Eav.Data.Entities.Sys.Sources;
 public class LookUpEntitiesSource<TKey>(IEnumerable<TKey> keys, ILookup<TKey, IEntity> lookup)
     : IEntitiesSource, IEnumerable<IEntity>
 {
-    public IImmutableList<TKey> Keys { get; } = keys?.ToImmutableList() ?? throw new ArgumentNullException(nameof(keys));
+    public IImmutableList<TKey> Keys { get; } = keys?.ToImmutableOpt()
+                                                ?? throw new ArgumentNullException(nameof(keys));
     public ILookup<TKey, IEntity> Lookup { get; } = lookup ?? throw new ArgumentNullException(nameof(lookup));
 
     public long CacheTimestamp { get; } = DateTime.Now.Ticks;

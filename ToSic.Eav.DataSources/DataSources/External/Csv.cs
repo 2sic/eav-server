@@ -243,6 +243,6 @@ public class Csv : CustomDataSourceAdvanced
             }
         }
 
-        return l.Return(entityList.ToImmutableList(), $"{entityList.Count}");
+        return l.Return(entityList.ToImmutableOpt(), $"{entityList.Count}");
     }
 }

@@ -68,7 +68,7 @@ public class ContentTypeBuilder
             NameId = nameId ?? name,
             Id = id,
             Scope = scope,
-            AttributesImmutable = attributes.ToImmutableList(),
+            AttributesImmutable = attributes.ToImmutableOpt(),
 
             AlwaysShareConfiguration = isAlwaysShared,
             RepositoryType = repositoryType,
@@ -76,7 +76,7 @@ public class ContentTypeBuilder
             IsDynamic = isDynamic,
 
             Metadata = metadata,
-            Decorators = decorators.ToImmutableList(),
+            Decorators = decorators.ToImmutableOpt(),
 
             // TODO: Remove this some day, or move to a decorator or something as it's only for temporary values/saving
             OnSaveSortAttributes = onSaveSortAttributes ?? false,

@@ -62,7 +62,7 @@ public class OwnerFilter : DataSourceBase
             ? l.ReturnAsError(Error.TryGetInFailed())
             : l.ReturnAsOk(source
                 .Where(e => e.Owner == identity)
-                .ToImmutableList()
+                .ToImmutableOpt()
             );
     }
 

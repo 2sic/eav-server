@@ -9,7 +9,7 @@ public static class ValueBuilderTestAccessors
     /// </summary>
     /// <returns></returns>
     public static IValue BuildTac(this ValueBuilder vBuilder, ValueTypes type, object value, IList<ILanguage> languages)
-        => vBuilder.Build(type, value, languages?.ToImmutableList());
+        => vBuilder.Build(type, value, languages?.ToImmutableOpt());
 
     public static IValue BuildTac(this ValueBuilder vBuilder, ValueTypes type, object value, IImmutableList<ILanguage> languages)
         => vBuilder.Build(type, value, languages);

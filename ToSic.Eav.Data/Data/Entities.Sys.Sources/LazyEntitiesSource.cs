@@ -23,35 +23,39 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     /// <param name="allEntities">DataSource to retrieve child entities</param>
     /// <param name="identifiers">List of IDs to initialize with</param>
     [PrivateApi]
-    internal LazyEntitiesSource(IEntitiesSource? allEntities, IList identifiers)
+    internal LazyEntitiesSource(IEntitiesSource? allEntities, IEnumerable identifiers)
     {
         _lookupList = allEntities;
         switch (identifiers)
         {
             case null:
                 _preferGuid = false;
-                _entityIds = EntityIdsEmpty;
+                _entityIds = [];
                 break;
             case List<int?> intList:
                 _preferGuid = false;
                 _entityIds = intList;
                 break;
+            case ICollection<int?> intCollection:
+                _preferGuid = false;
+                _entityIds = intCollection;
+                break;
             case List<Guid?> guids:
                 _preferGuid = true;
                 Guids = guids;
+                break;
+            case ICollection<Guid?> guidCollection:
+                _preferGuid = true;
+                Guids = guidCollection;
                 break;
             default:
                 throw new("relationship identifiers must be int? or guid?, anything else won't work");
         }
     }
 
-    /// <summary>
-    /// Blank value, just for marking the list as empty
-    /// </summary>
-    private static readonly List<int?> EntityIdsEmpty = [];
     private readonly IEntitiesSource? _lookupList;
     private readonly bool _preferGuid;
-    private List<int?> _entityIds;
+    private ICollection<int?> _entityIds;
 
     /// <summary>
     /// List of Child EntityIds - int-based.
@@ -59,15 +63,20 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     /// <remarks>
     /// Note that only the EntityIds <em>or</em> the Guids should be populated.
     /// </remarks>
-    internal List<int?> EntityIds 
-        => _entityIds ??= this.Select(e => e?.EntityId).ToList();
+    internal ICollection<int?> EntityIds 
+        => _entityIds ??= this
+            .Select(e => e?.EntityId)
+            .ToList();
 
     /// <summary>
     /// Identifiers of the items in the list. Build with either the Guids or the Ids, depending on what was used.
     /// Special mechanism to get identifiers to DB storage, without loading the entities themselves
     /// </summary>
-    public IList Identifiers => _preferGuid ? Guids as IList : EntityIds;
+    public IEnumerable Identifiers => _preferGuid
+        ? Guids
+        : EntityIds;
 
+    public int Count => _preferGuid ? Guids.Count : EntityIds.Count;
 
     /// <summary>
     /// List of Child EntityIds - int-based.
@@ -75,7 +84,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     /// <remarks>
     /// Note that only the EntityIds <em>or</em> the Guids should be populated.
     /// </remarks>
-    internal List<Guid?> Guids { get; }
+    internal ICollection<Guid?> Guids { get; }
 
     /// <summary>
     /// Lookup the guids of all relationships
@@ -88,9 +97,10 @@ public class LazyEntitiesSource : IEnumerable<IEntity>, ICacheDependent, IRelate
     /// and the serializer shouldn't have know about the internals of relationship management
     /// </remarks>
     [PrivateApi]
-    public List<Guid?> ResolveGuids()
+    public ICollection<Guid?> ResolveGuids()
     {
-        if (_preferGuid) return Guids;
+        if (_preferGuid)
+            return Guids;
 
         // if we have number-IDs, but no lookup system, we'll have to use this as lookup system
         if (_entityIds != null && _entityIds.Count > 0 && _lookupList == null) // not set yet

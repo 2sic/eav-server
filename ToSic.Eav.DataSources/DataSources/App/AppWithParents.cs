@@ -70,7 +70,7 @@ internal class AppWithParents: DataSourceBase
 
         var merge = _mergeGenerator.New(attach: initialLink);
 
-        var result = merge.Out.First().Value.List.ToImmutableList();
+        var result = merge.Out.First().Value.List.ToImmutableOpt();
         return l.Return(result, $"{result.Count}");
     }
 }

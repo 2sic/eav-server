@@ -102,7 +102,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         return res.Any()
             ? l.Return(res, "found")
             : In.HasStreamWithItems(StreamFallbackName)
-                ? l.Return(In[StreamFallbackName].List.ToImmutableList(), "fallback")
+                ? l.Return(In[StreamFallbackName].List.ToImmutableOpt(), "fallback")
                 : l.Return(res, "final");
     }
 
@@ -126,7 +126,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         if (op == CompareOperators.OpNone)
             return l.Return([], CompareOperators.OpNone);
         if (op == CompareOperators.OpAll)
-            return l.Return(ApplyTake(source).ToImmutableList(), CompareOperators.OpAll);
+            return l.Return(ApplyTake(source).ToImmutableOpt(), CompareOperators.OpAll);
 
         // Case 3: Real filter
         // Find first Entity which has this property being not null to detect type
@@ -166,7 +166,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         {
             var results = originals.Where(compare);
             results = ApplyTake(results);
-            return l.ReturnAsOk(results.ToImmutableList());
+            return l.ReturnAsOk(results.ToImmutableOpt());
         }
         catch (Exception ex)
         {

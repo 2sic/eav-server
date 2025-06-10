@@ -126,7 +126,7 @@ public class WorkEntitySave(
                 Attribute = a,
                 TypedContents = a.TypedContents as IRelatedEntitiesValue,
             })
-            .Where(set => set.TypedContents?.Identifiers?.Count > 0)
+            .Where(set => set.TypedContents?.Count > 0)
             .ToListOpt();
 
         // If none, exit early

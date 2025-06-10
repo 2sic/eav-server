@@ -110,7 +110,7 @@ partial class JsonSerializer
     /// this is a special helper to create typed entities-dictionaries
     /// </summary>
     /// <returns></returns>
-    private Dictionary<string, Dictionary<string, List<Guid?>>> ToTypedDictionaryEntity(ICollection<IAttribute> gList)
+    private Dictionary<string, Dictionary<string, ICollection<Guid?>>> ToTypedDictionaryEntity(ICollection<IAttribute> gList)
     {
         // the following is a bit complex for the following reason
         // 1. either the relationship is guid based, and in that case, 

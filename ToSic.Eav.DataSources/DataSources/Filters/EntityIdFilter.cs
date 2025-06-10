@@ -64,7 +64,9 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
         var source = TryGetIn();
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
-        var result = entityIds.Select(eid => source.One(eid)).Where(e => e != null).ToImmutableList();
+        var result = entityIds
+            .Select(eid => source.One(eid)).Where(e => e != null)
+            .ToImmutableOpt();
 
         l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Count}"));
         return l.ReturnAsOk(result);

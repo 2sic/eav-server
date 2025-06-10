@@ -62,7 +62,9 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
         if (_ofType.TryGetValue(name, out var found))
             return found;
 
-        var newEntry = _list.Where(e => e.Type.Is(name)).ToImmutableList();
+        var newEntry = _list
+            .Where(e => e.Type.Is(name))
+            .ToImmutableOpt();
         _ofType.TryAdd(name, newEntry);
         return newEntry;
     }

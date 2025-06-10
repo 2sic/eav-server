@@ -28,10 +28,9 @@ public class DataTypes
         if (value is bool)
             return ValueTypes.Boolean;
         // 2024-08-28 2bf disabled Guid because external DataSource may have Guids and 2sxc uses Guid only in lists
-        if (/* value is Guid || */ value is List<Guid> || value is List<Guid?> || value is List<int> ||
-            value is List<int?>)
+        if (value is ICollection<Guid> or ICollection<Guid?> or ICollection<int> or ICollection<int?>)
             return ValueTypes.Entity;
-        if (value is int[] || value is int?[])
+        if (value is int[] or int?[])
             throw new(
                 "Trying to provide an attribute with a value which is an int-array. This is not allowed - ask the iJungleboy.");
 

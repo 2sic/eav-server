@@ -72,7 +72,7 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
                     id: (int)set.TargetType
                 )
             )
-            .ToImmutableList();
+            .ToImmutableOpt();
             
         return l.Return(list, $"{list.Count} items");
     }

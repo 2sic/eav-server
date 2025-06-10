@@ -44,7 +44,7 @@ public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inh
             if (_entitiesCache != null)
                 return _entitiesCache.List;
             _entitiesCache = new(AppState,
-                () => AppState.List.Select(WrapUnwrappedEntity).ToImmutableList());
+                () => AppState.List.Select(WrapUnwrappedEntity).ToImmutableOpt());
             return _entitiesCache.List;
         }
     }

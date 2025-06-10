@@ -10,7 +10,7 @@ public class JsonAttributes
 
     [JsonIgnore(Condition = WhenWritingNull)] public Dictionary<string, Dictionary<string, string>> Json;
 
-    [JsonIgnore(Condition = WhenWritingNull)] public Dictionary<string, Dictionary<string, List<Guid?>>> Entity;
+    [JsonIgnore(Condition = WhenWritingNull)] public Dictionary<string, Dictionary<string, ICollection<Guid?>>> Entity;
 
     [JsonIgnore(Condition = WhenWritingNull)] public Dictionary<string, Dictionary<string, decimal?>> Number;
 

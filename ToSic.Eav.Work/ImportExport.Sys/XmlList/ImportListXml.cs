@@ -7,6 +7,7 @@ using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.Sys.Logging;
+using ToSic.Sys.Performance;
 using Entity = ToSic.Eav.Data.Entities.Sys.Entity;
 using IEntity = ToSic.Eav.Data.IEntity;
 
@@ -191,7 +192,7 @@ public partial class ImportListXml(
                     // 2023-02-28 2dm As of now we have to clone to update the languages, and replace on the values list
                     // In the future, we should move immutability "up" so this would go into a queue for values to create the final entity
                     var updatedValue = entityValue.Value.With(
-                        entityValue.Value.Languages.ToImmutableList()
+                        entityValue.Value.Languages.ToImmutableOpt()
                             .Add(new Language(nodeLang, valueReadOnly))
                     );
                     var newValues = builder.Value.Replace(entityValue.Attribute.Values,

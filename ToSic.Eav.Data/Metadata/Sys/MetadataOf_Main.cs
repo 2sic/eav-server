@@ -35,11 +35,11 @@ partial class MetadataOf<T>
                 _permissions = AllWithHidden
                     .Where(Permission.IsPermission)
                     .Select(IPermission (e) => new Permission(e))
-                    .ToImmutableList();
+                    .ToImmutableOpt();
             return _permissions;
         }
     }
-    private ImmutableList<IPermission> _permissions;
+    private IImmutableList<IPermission> _permissions;
 
 
 

@@ -45,7 +45,7 @@ public class DataStream(
         return () =>
         {
             var initialResult = original();
-            return initialResult as IImmutableList<IEntity> ?? initialResult.ToImmutableList();
+            return initialResult as IImmutableList<IEntity> ?? initialResult.ToImmutableOpt();
         };
     }
 
@@ -144,7 +144,7 @@ public class DataStream(
         // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
 
         IImmutableList<IEntity> CreateErr(string title, string message, Exception ex = default)
-            => Source.Error.Create(source: Source, title: title, message: message, exception: ex).ToImmutableList();
+            => Source.Error.Create(source: Source, title: title, message: message, exception: ex).ToImmutableOpt();
 
         if (listDelegate == null)
             return l.ReturnAsError(CreateErr("Error loading Stream",

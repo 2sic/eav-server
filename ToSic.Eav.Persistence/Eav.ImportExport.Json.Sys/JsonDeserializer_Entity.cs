@@ -180,14 +180,17 @@ partial class JsonSerializer
     private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource relationshipsSource = null)
     {
         var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>();
-        return l.ReturnAsOk(contentType.Attributes.ToImmutableDicSafe(
-            a => a.Name,
-            a =>
-            {
-                var values = GetValues(a, jAtts, relationshipsSource);
-                return Services.DataBuilder.Attribute.Create(a.Name, a.Type, values);
-            },
-            InvariantCultureIgnoreCase));
+        var result = contentType.Attributes
+            .ToImmutableDicSafe(
+                a => a.Name,
+                a =>
+                {
+                    var values = GetValues(a, jAtts, relationshipsSource);
+                    return Services.DataBuilder.Attribute.Create(a.Name, a.Type, values);
+                },
+                InvariantCultureIgnoreCase
+            );
+        return l.ReturnAsOk(result);
     }
 
     private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAtts, IEntitiesSource relationshipsSource = null)

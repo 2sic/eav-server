@@ -175,10 +175,10 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
         l.Done("done");
     }
 
-    private class RelationshipUpdatePackage(TsDynDataEntity entityStubWithChildren, int attributeId, List<int?> relationships)
+    private class RelationshipUpdatePackage(TsDynDataEntity entityStubWithChildren, int attributeId, ICollection<int?> relationships)
     {
         public readonly int AttributeId = attributeId;
-        public readonly List<int?> Targets = relationships;
+        public readonly ICollection<int?> Targets = relationships;
         /// <summary>
         /// This is just a stub with EntityId, but also MUST have the `RelationshipsWithThisAsParent` filled
         /// If future code needs it to be filled more, make sure it's constructed that way before.
@@ -186,7 +186,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
         public readonly TsDynDataEntity EntityStubWithChildren = entityStubWithChildren;
     }
 
-    internal void FlushChildrenRelationships(List<int> parentIds)
+    internal void FlushChildrenRelationships(ICollection<int> parentIds)
     {
         var l = Log.Fn($"will do full-flush for {parentIds?.Count} items", timer: true);
         // Delete all existing relationships - but not the target, just the relationship
@@ -218,14 +218,14 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
 
     private struct RelationshipToSave
     {
-        public int AttributeId { get; set; }
-        public List<Guid?> ChildEntityGuids { get; set; }
-        public List<int?> ChildEntityIds { get; set; }
+        public int AttributeId { get; init; }
+        public ICollection<Guid?> ChildEntityGuids { get; init; }
+        public ICollection<int?> ChildEntityIds { get; init; }
 
-        public int ParentEntityId { get; set; }
+        public int ParentEntityId { get; init; }
 
 
-        public bool FlushAllEntityRelationships { get; set; }
+        public bool FlushAllEntityRelationships { get; init; }
     }
 
     #endregion
@@ -245,7 +245,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                 // find attribute definition - will be null if the attribute cannot be found - in which case ignore
                 var attribDef = attributeDefs.SingleOrDefault(a =>
                     string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (attribDef == null || attribDef.Type != ValueTypes.Entity.ToString()) continue;
+                if (attribDef == null || attribDef.Type != nameof(ValueTypes.Entity)) continue;
 
                 // check if there is anything at all (type doesn't matter yet)
                 var valContents = attribute.Values?.FirstOrDefault()?.ObjectContents;

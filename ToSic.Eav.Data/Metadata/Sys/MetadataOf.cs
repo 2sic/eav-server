@@ -38,7 +38,7 @@ public partial class MetadataOf<T> : IMetadataOf, IMetadataInternals, ITimestamp
         _targetType = targetType;
         Key = key;
         _metadataTitle = title;
-        Source = new(items == null ? null : new ImmutableEntitiesSource(items.ToImmutableList()), appSource, deferredSource);
+        Source = new(items == null ? null : new ImmutableEntitiesSource(items.ToImmutableOpt()), appSource, deferredSource);
     }
 
     protected VariableSource<IHasMetadataSourceAndExpiring> Source { get; }

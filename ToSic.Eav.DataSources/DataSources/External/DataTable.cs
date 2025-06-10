@@ -149,7 +149,7 @@ public class DataTable : CustomDataSourceAdvanced
             result.Add(entity);
         }
 
-        var final = result.ToImmutableList();
+        var final = result.ToImmutableOpt();
         return l.Return(final, $"{final.Count}");
     }
 }

@@ -151,7 +151,7 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
             result.Add(modifiedEntity);
         }
 
-        var immutableResults = result.ToImmutableList();
+        var immutableResults = result.ToImmutableOpt();
         return l.Return(immutableResults, $"{immutableResults.Count}");
     }
 }

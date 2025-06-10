@@ -11,9 +11,9 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
 {
     private ValueQueriesPro ValueQueries => field ??= new(AppLoader.Context, Log);
 
-    public override Dictionary<int, List<TempAttributeWithValues>> LoadValues()
+    public override Dictionary<int, ICollection<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
+        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
 
         // Check if we should use the optimized code, which only works for loading everything
         if (!Specs.LoadAll)
@@ -36,9 +36,9 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
 
     #region Get All Entities
 
-    private Dictionary<int, List<TempAttributeWithValues>> GetValuesOfAllEntitiesInApp(int appId)
+    private Dictionary<int, ICollection<TempAttributeWithValues>> GetValuesOfAllEntitiesInApp(int appId)
     {
-        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>($"appId:{appId}", timer: true);
+        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"appId:{appId}", timer: true);
 
         var attributesRaw = GetSqlValuesAll(appId);
 
@@ -51,14 +51,14 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
     /// </summary>
     /// <param name="appId"></param>
     /// <returns></returns>
-    private List<LoadingValue> GetSqlValuesAll(int appId)
+    private ICollection<LoadingValue> GetSqlValuesAll(int appId)
     {
-        var l = Log.Fn<List<LoadingValue>>($"Attributes SQL for appId:{appId}", timer: true);
+        var l = Log.Fn<ICollection<LoadingValue>>($"Attributes SQL for appId:{appId}", timer: true);
 
         var query = ValueQueries.AllValuesQuery(appId);
         var attributesRaw = ToLoadingValues(query.Query, query.Dimensions);
 
-        return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
+        return l.Return(attributesRaw, $"found {attributesRaw.Count} attributes");
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
     /// SQL isn't properly converted and we'll run into null exceptions! So don't use IEnumerable,
     /// at least not for EF 2.2 which is still in use for DNN.
     /// </remarks>
-    internal override List<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension> dimensions)
+    internal override ICollection<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension> dimensions)
     {
         return values
             .Select(v => new LoadingValue(
@@ -80,11 +80,11 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
                 v.Attribute.StaticName,
                 v.Value,
                 v.TsDynDataValueDimensions
-                    .Select(lng =>
-                        new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId) as ILanguage)
-                    .ToList() // ToList is an important optimization, ask 2dm
+                    .Select(ILanguage (lng) =>
+                        new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId))
+                    .ToListOpt() // ToList is an important optimization, ask 2dm
             ))
-            .ToList();
+            .ToListOpt();
     }
 
     #endregion

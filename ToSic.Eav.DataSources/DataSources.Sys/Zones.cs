@@ -52,7 +52,7 @@ public sealed class Zones: CustomDataSourceAdvanced
         var dataFactory = DataFactory.SpawnNew(options: new()
         {
             AppId = 0,
-            TitleField = ZoneType.Name.ToString(),
+            TitleField = nameof(ZoneType.Name),
             TypeName = "Zone",
         });
         
@@ -67,19 +67,19 @@ public sealed class Zones: CustomDataSourceAdvanced
                 // Assemble the entities
                 var znData = new Dictionary<string, object>
                 {
-                    { ZoneType.Id.ToString(), zone.ZoneId },
-                    { ZoneType.Name.ToString(), $"Zone {zone.ZoneId}" },
-                    { ZoneType.TenantId.ToString(), site?.Id },
-                    { ZoneType.TenantName.ToString(), site?.Name },
-                    { ZoneType.DefaultAppId.ToString(), zone.DefaultAppId },
-                    { ZoneType.PrimaryAppId.ToString(), zone.PrimaryAppId },
-                    { ZoneType.IsCurrent.ToString(), zone.ZoneId == ZoneId },
-                    { ZoneType.AppCount.ToString(), zone.Apps.Count }
+                    { nameof(ZoneType.Id), zone.ZoneId },
+                    { nameof(ZoneType.Name), $"Zone {zone.ZoneId}" },
+                    { nameof(ZoneType.TenantId), site?.Id },
+                    { nameof(ZoneType.TenantName), site?.Name },
+                    { nameof(ZoneType.DefaultAppId), zone.DefaultAppId },
+                    { nameof(ZoneType.PrimaryAppId), zone.PrimaryAppId },
+                    { nameof(ZoneType.IsCurrent), zone.ZoneId == ZoneId },
+                    { nameof(ZoneType.AppCount), zone.Apps.Count }
                 };
 
                 return dataFactory.Create(znData, id: zone.ZoneId);
             })
-            .ToImmutableList();
+            .ToImmutableOpt();
         return l.Return(results, $"{results.Count}");
     }
 

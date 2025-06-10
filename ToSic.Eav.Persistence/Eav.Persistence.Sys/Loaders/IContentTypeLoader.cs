@@ -7,6 +7,6 @@ public interface IContentTypeLoader
     /// <summary>
     /// Get all ContentTypes for specified AppId.
     /// </summary>
-    IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source);
+    ICollection<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source);
 
 }

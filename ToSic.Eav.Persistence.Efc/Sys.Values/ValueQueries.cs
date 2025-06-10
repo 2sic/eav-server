@@ -34,7 +34,7 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
     /// <remarks>
     /// Improved 2025-04-28 for v20 to really just get the values we need, seems to be ca. 50% faster.
     /// </remarks>
-    internal IQueryable<TsDynDataValue> ChunkValuesQuery(List<int> entityIds)
+    internal IQueryable<TsDynDataValue> ChunkValuesQuery(ICollection<int> entityIds)
     {
         var l = Log.Fn<IQueryable<TsDynDataValue>>(timer: true);
 

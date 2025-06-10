@@ -86,7 +86,7 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
             RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, Options.RawConvertOptions);
 
         // Return entities as Immutable list
-        return l.Return(list.Select(set => set.Entity).ToImmutableList());
+        return l.Return(list.Select(set => set.Entity).ToImmutableOpt());
     }
 
     #endregion

@@ -15,7 +15,7 @@ internal class EfcAppsAndZonesLoader(DbStorage.DbStorage dbStorage) : IAppsAndZo
 
     public ILog Log => _dbStorage.Loader.Log;
 
-    public IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
+    public ICollection<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
         => _dbStorage.Loader.ContentTypes(appId, source);
 
     public IAppStateBuilder AppStateRawBuilder(int appId, CodeRefTrail codeRefTrail)

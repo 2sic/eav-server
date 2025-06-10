@@ -12,9 +12,9 @@ internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLo
 {
     internal RelationshipQueries RelationshipQueries => field ??= new(appLoader.Context, Log);
 
-    public Dictionary<int, List<TempRelationshipList>> LoadRelationships()
+    public Dictionary<int, ICollection<TempRelationshipList>> LoadRelationships()
     {
-        var l = Log.Fn<Dictionary<int, List<TempRelationshipList>>>(timer: true);
+        var l = Log.Fn<Dictionary<int, ICollection<TempRelationshipList>>>(timer: true);
 
         // Load relationships in batches / chunks
         var sqlTime = Stopwatch.StartNew();
@@ -87,9 +87,9 @@ internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLo
     //        );
     //    return l.ReturnAsOk(relatedEntities);
     //}
-    private Dictionary<int, List<TempRelationshipList>> GroupUniqueRelationshipsOptimized(IReadOnlyCollection<LoadingRelationship> relationships)
+    private Dictionary<int, ICollection<TempRelationshipList>> GroupUniqueRelationshipsOptimized(IReadOnlyCollection<LoadingRelationship> relationships)
     {
-        var l = Log.Fn<Dictionary<int, List<TempRelationshipList>>>($"items: {relationships.Count}", timer: true);
+        var l = Log.Fn<Dictionary<int, ICollection<TempRelationshipList>>>($"items: {relationships.Count}", timer: true);
 
         l.A("experiment!");
         // Filter out duplicates, as the relationship manager doesn't need/want to count them, just establish relationship
@@ -103,25 +103,19 @@ internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLo
             // First group by Parent ID
             .GroupBy(g => g.Rel.ParentEntityId)
             .ToDictionary(
-                g => g.Key,
-                g => g
+                g => g.Key, ICollection<TempRelationshipList> (g) => g
                     // Now group by the exact field - previously we grouped by AttributeId
                     .GroupBy(r => r.StaticName)
-                    .Select(loadGroup =>
+                    .Select(loadGroup => new TempRelationshipList
                     {
-                        var rg = loadGroup.Select(lg => lg.Rel);
-                        return new TempRelationshipList
-                        {
-                            StaticName = loadGroup.Key, //.First().StaticName,
-                            Children = loadGroup
-                                .Select(lg => lg.Rel)
-                                .OrderBy(c => c.SortOrder)
-                                .Select(c => c.ChildEntityId)
-                                .ToList()
-                        };
+                        StaticName = loadGroup.Key, //.First().StaticName,
+                        Children = loadGroup
+                            .Select(lg => lg.Rel)
+                            .OrderBy(c => c.SortOrder)
+                            .Select(c => c.ChildEntityId)
+                            .ToListOpt()
                     })
-                    .ToList()
-            );
+                    .ToListOpt());
         return l.Return(relatedEntities, $"count: {relatedEntities.Count}");
     }
 

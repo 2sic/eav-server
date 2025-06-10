@@ -80,7 +80,7 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
         var distinctList = result.ToList();
 #endif
 
-        return l.ReturnAsOk(result.ToImmutableList());
+        return l.ReturnAsOk(result.ToImmutableOpt());
         // ReSharper restore PossibleMultipleEnumeration
     }
 

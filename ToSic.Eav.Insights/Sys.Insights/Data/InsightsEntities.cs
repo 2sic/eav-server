@@ -3,6 +3,7 @@ using System.Globalization;
 using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
+using ToSic.Sys.Performance;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 
@@ -29,8 +30,8 @@ internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities) : Insigh
         {
             Log.A("getting content-type stats");
             var entities = Type == "all"
-                ? appEntities.All().ToImmutableList()
-                : appEntities.Get(Type).ToImmutableList();
+                ? appEntities.All().ToListOpt()
+                : appEntities.Get(Type).ToListOpt();
             msg += P($"entities: {entities.Count}\n");
             msg += "<table id='table'>"
                    + InsightsHtmlTable.HeadFields("#", "Id", AttributeNames.GuidNiceName, AttributeNames.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")

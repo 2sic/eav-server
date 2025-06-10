@@ -138,7 +138,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
         // Handle all is already converted to IEntity
         if (data.All(i => i is IEntity))
-            return l.Return(data.Cast<IEntity>().ToImmutableList(), "IEntities");
+            return l.Return(data.Cast<IEntity>().ToImmutableOpt(), "IEntities");
 
         // If all are Anonymous, convert to Raw
         if (data.All(d => d.IsAnonymous()))

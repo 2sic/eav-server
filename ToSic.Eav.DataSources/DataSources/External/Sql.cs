@@ -355,6 +355,6 @@ public class Sql : CustomDataSourceAdvanced
             }
         }
 
-        return l.Return(list.ToImmutableList(), $"found:{list.Count}");
+        return l.Return(list.ToImmutableOpt(), $"found:{list.Count}");
     }
 }

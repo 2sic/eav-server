@@ -274,7 +274,7 @@ public partial class Serialization : DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
-        var original = In[inStreamName].List.ToImmutableList();
+        var original = In[inStreamName].List.ToImmutableOpt();
         var enhanced = AddSerializationRules(original);
         return l.Return(enhanced, $"{enhanced.Count}");
     }
@@ -291,7 +291,7 @@ public partial class Serialization : DataSourceBase
 
         var result = before
             .Select(IEntity (e) => new EntityWithDecorator<EntitySerializationDecorator>(e, decorator))
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(result, "modified");
     }

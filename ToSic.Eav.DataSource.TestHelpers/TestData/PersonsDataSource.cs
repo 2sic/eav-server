@@ -30,6 +30,6 @@ public class PersonsDataSource: DataSourceBase
     {
         var persons = new PersonGenerator(_dataBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
         var list = new PersonGenerator(_dataBuilder).Person2Entity(persons, _multiLanguage);
-        return list.ToImmutableList();
+        return list.ToImmutableOpt();
     }
 }

@@ -38,7 +38,7 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
             list.Add(_wrapperDecorator);
         if (GetContents() is IHasDecorators<IContentType> hasDecors)
             list.AddRange(hasDecors.Decorators);
-        return list.ToImmutableList();
+        return list.ToImmutableOpt();
     });
     private readonly GetOnce<IImmutableList<IDecorator<IContentType>>> _decorators = new();
     private readonly IDecorator<IContentType> _wrapperDecorator;

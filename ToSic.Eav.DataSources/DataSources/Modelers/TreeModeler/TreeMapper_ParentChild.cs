@@ -55,7 +55,7 @@ partial class TreeMapper
         // Add list of "Needs:ParentId" so that the parents can find it
         lookup.Add(result.Select(pair => new KeyValuePair<object, IEntity>($"{PrefixForNeeds}{pair.Partner.RelatedId}", pair.Entity)));
 
-        return l.Return(result.Select(r => r.Entity).ToImmutableList());
+        return l.Return(result.Select(r => r.Entity).ToImmutableOpt());
     }
 
     /// <summary>

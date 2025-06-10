@@ -55,7 +55,7 @@ partial class DataSourceBase
     /// </remarks>
     [PublicApi]
     protected internal IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.StreamDefaultName)
-        => !In.ContainsKey(name) ? null : In[name]?.List?.ToImmutableList();
+        => !In.ContainsKey(name) ? null : In[name]?.List?.ToImmutableOpt();
 
     /// <summary>
     /// Try get an out-stream.
@@ -66,7 +66,7 @@ partial class DataSourceBase
     /// Introduced in 2sxc 16.01
     /// </remarks>
     protected internal IImmutableList<IEntity> TryGetOut(string name = DataSourceConstants.StreamDefaultName)
-        => !Out.ContainsKey(name) ? null : Out[name]?.List?.ToImmutableList();
+        => !Out.ContainsKey(name) ? null : Out[name]?.List?.ToImmutableOpt();
 
     /// <inheritdoc />
     [PublicApi]

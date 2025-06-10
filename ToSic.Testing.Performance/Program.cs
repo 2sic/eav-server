@@ -17,18 +17,19 @@ class Program
     public const bool RunGenerateJson = false;
     public const int RunLoadPresets = 25;
 
-    public const bool ModeBenchmark = true;
+    public static bool ModeBenchmark = false;
 
     static void Main(string[] args)
     {
         var serviceProvider = SetupServiceProvider();
         serviceProvider.Build<DoFixtureStartup<ScenarioBasic>>();
 
-
+        // When running in benchmark mode, we run the benchmarks and nothing else
         if (ModeBenchmark)
         {
             var summary = BenchmarkRunner.Run<BenchmarkPresetApp>();
         }
+        // Otherwise - usually when running with the performance profiler - we run the tests
         else
         {
             if (RunGenerateJson)
@@ -38,27 +39,9 @@ class Program
             {
                 var x = new BenchmarkPresetApp();
                 x.Setup();
-                x.RunManyTimes(false, false);
-                //SysPerfSettings.PreferArray = true;
-                //SysPerfSettings.PreferFrozen = true;
-
-                //var tester = serviceProvider.GetRequiredService<TestLoadPresetApp>();
-                //var timer = Stopwatch.StartNew();
-                //for (var i = 0; i < RunLoadPresets; i++)
-                //{
-                //    var runTimer = Stopwatch.StartNew();
-                //    var appState = tester.Run();
-                //    runTimer.Stop();
-                //    Console.WriteLine($@"Run {i + 1} done. Time taken: {runTimer.Elapsed}; found: ${appState.List.Count()} items");
-                //}
-                //timer.Stop();
-                //// calculate average time
-                //var averageTime = TimeSpan.FromTicks(timer.Elapsed.Ticks / RunLoadPresets);
-                //Console.WriteLine($@"Total time for {RunLoadPresets} runs: {timer.Elapsed}; Average: {averageTime}");
+                x.RunManyTimes(true, false);
             }
         }
-
-
 
         Console.WriteLine();
         //tester.LogItems.ToList().ForEach(Console.WriteLine);

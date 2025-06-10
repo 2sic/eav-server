@@ -45,9 +45,9 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
     //}
 
 
-    internal Dictionary<int, List<TempAttributeWithValues>> EavValuesToTempAttributesBeta(List<LoadingValue> allValues)
+    internal Dictionary<int, ICollection<TempAttributeWithValues>> EavValuesToTempAttributesBeta(ICollection<LoadingValue> allValues)
     {
-        var l = Log.Fn<Dictionary<int, List<TempAttributeWithValues>>>(timer: true);
+        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>(timer: true);
 
         var primaryLower = primaryLanguage.ToLowerInvariant();
 
@@ -56,8 +56,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
         var attributes = allValues
             .GroupBy(e => e.EntityId)
             .ToDictionary(
-                e => e.Key,
-                e => e
+                e => e.Key, ICollection<TempAttributeWithValues> (e) => e
                     .GroupBy(v => v.AttributeId)
                     .Select(valueGroup =>
                     {
@@ -72,8 +71,8 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
                             // any dimensions, then values with primary language
                             .OrderByDescending(v2 => !v2.Languages.Any())
                             .ThenByDescending(v2 => v2.Languages.Any(lng => lng.Key == primaryLower))
-                            .Select(v => new TempValueWithLanguage { Value = v.Value, Languages = v.Languages.ToImmutableList() })
-                            .ToList();
+                            .Select(v => new TempValueWithLanguage { Value = v.Value, Languages = v.Languages.ToImmutableOpt() })
+                            .ToListOpt();
 
 
 
@@ -83,8 +82,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog)
                             Values = values,
                         };
                     })
-                    .ToList()
-            );
+                    .ToListOpt());
 
         return l.Return(attributes);
     }

@@ -64,7 +64,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
     private IImmutableList<IEntityRelationship> GetChildrenUncached() =>
         AllRelationships
             .Where(r => ReferenceEquals(r.Parent, _entity))
-            .ToImmutableList();
+            .ToImmutableOpt();
 
 
     /// <inheritdoc />
@@ -108,7 +108,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
         var optimalCompare = SelfComparisonForParent();
         return AllRelationships
             .Where(r => optimalCompare(r.Child))
-            .ToImmutableList();
+            .ToImmutableOpt();
     }
 
 

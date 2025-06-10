@@ -4,5 +4,5 @@ internal class TempRelationshipList
 {
     public string StaticName;
 
-    public List<int?> Children;
+    public ICollection<int?> Children;
 }

@@ -82,7 +82,7 @@ public sealed class Paging: CustomDataSourceAdvanced
         var result = source
             .Skip(itemsToSkip)
             .Take(PageSize)
-            .ToImmutableList();
+            .ToImmutableOpt();
         return l.Return(result, $"page:{PageNumber}; size{PageSize}; found:{result.Count}");
     }
 
@@ -114,7 +114,7 @@ public sealed class Paging: CustomDataSourceAdvanced
 
         // Assemble list of this for the stream
         var list = new List<IEntity> { entity };
-        return l.ReturnAsOk(list.ToImmutableList());
+        return l.ReturnAsOk(list.ToImmutableOpt());
     }
 
 }

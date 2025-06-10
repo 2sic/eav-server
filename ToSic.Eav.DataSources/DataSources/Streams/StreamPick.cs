@@ -74,7 +74,7 @@ public sealed class StreamPick : DataSourceBase
         var foundStream = In.FirstOrDefault(pair => pair.Key.EqualsInsensitive(name));
 
         if (!string.IsNullOrEmpty(foundStream.Key))
-            return l.ReturnAsOk(foundStream.Value.List.ToImmutableList());
+            return l.ReturnAsOk(foundStream.Value.List.ToImmutableOpt());
 
         // Error not found
         var msg = $"StreamPick can't find stream by the name '{StreamName}'";

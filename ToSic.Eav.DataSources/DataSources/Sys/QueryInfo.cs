@@ -75,7 +75,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
 
         var dataFactory = DataFactory.SpawnNew(options: new()
         {
-            TitleField = StreamsType.Name.ToString(),
+            TitleField = nameof(StreamsType.Name),
             TypeName = QueryStreamsContentType
         });
 
@@ -84,9 +84,9 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
                          .Select(stream
                              => dataFactory.Create(new Dictionary<string, object>
                              {
-                                 { StreamsType.Name.ToString(), stream.Key }
+                                 { nameof(StreamsType.Name), stream.Key }
                              }))
-                         .ToImmutableList()
+                         .ToImmutableOpt()
                      ?? [];
         return l.Return(result, $"{result.Count}");
     }
@@ -128,7 +128,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
                 return attribInfo.List;
             })
             .DistinctBy(e => e.GetBestTitle())
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(results, $"{results.Count}");
     }

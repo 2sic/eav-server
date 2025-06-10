@@ -116,7 +116,7 @@ public class AttributeFilter : Eav.DataSource.DataSourceBase
                     .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
                 return _entityBuilder.CreateFrom(e, attributes: attributes);
             })
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(result, $"modified {result.Count}");
     }

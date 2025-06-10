@@ -79,7 +79,7 @@ public class QueryManager(
     {
         var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
         var appReader = appReaders.Value.GetOrKeep(appIdOrReader);
-        var queries = appReader.List.OfType(QueryConstants.QueryTypeName).ToImmutableList();
+        var queries = appReader.List.OfType(QueryConstants.QueryTypeName).ToImmutableOpt();
 
         if (recurseParents <= 0)
             return l.Return(queries, "ok, no recursions");

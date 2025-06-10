@@ -157,13 +157,13 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     public int EntityIdSeed = -1;
     public int TypeIdSeed = -1;
 
-    public IList<IContentType> ContentTypes() => ContentTypes(AppId, null);
+    public ICollection<IContentType> ContentTypes() => ContentTypes(AppId, null);
 
     /// <inheritdoc />
     /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
     /// <param name="source">this is not used ATM - just for interface compatibility</param>
     /// <returns></returns>
-    public IList<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
+    public ICollection<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
     {
         var l = Log.Fn<IList<IContentType>>($"ContentTypes in {appId}");
         var contentTypes = ContentTypesWithEntities().ContentTypes;

@@ -155,7 +155,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         var l = Log.Fn<IImmutableList<IEntity>>();
         var res = GetEntities();
         if (!res.Any() && In.HasStreamWithItems(StreamFallbackName))
-            return l.Return(In[StreamFallbackName].List.ToImmutableList(), "fallback");
+            return l.Return(In[StreamFallbackName].List.ToImmutableOpt(), "fallback");
 
         return l.Return(res, "ok");
     }
@@ -248,7 +248,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         {
             var selection = source.Where(finalCompare).ToList();
 
-            var results = selection.ToImmutableList();
+            var results = selection.ToImmutableOpt();
 
             return l.Return(results, $"{results.Count}");
         }

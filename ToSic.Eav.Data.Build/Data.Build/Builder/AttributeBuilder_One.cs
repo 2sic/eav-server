@@ -64,7 +64,7 @@ partial class AttributeBuilder
         var l = Log.Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
         var valueLanguages = languageBuilder.GetBestValueLanguages(language, languageReadOnly);
 
-        var valueWithLanguages = ValueBuilder.Build(type, value, valueLanguages.ToImmutableList());
+        var valueWithLanguages = ValueBuilder.Build(type, value, valueLanguages.ToImmutableOpt());
 
         // add or replace to the collection
         if (originalOrNull == null)

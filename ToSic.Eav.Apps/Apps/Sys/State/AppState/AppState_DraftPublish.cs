@@ -42,7 +42,7 @@ partial class AppState
     /// </summary>
     [PrivateApi("this is an optimization feature which shouldn't be used by others")]
     internal SynchronizedList<IEntity> ListPublished => _listPublished
-        ??= new(this, () => List.Where(e => e.IsPublished).ToImmutableList());
+        ??= new(this, () => List.Where(e => e.IsPublished).ToImmutableOpt());
 
     private SynchronizedEntityList _listPublished;
 
@@ -51,7 +51,7 @@ partial class AppState
     /// </summary>
     [PrivateApi("this is an optimization feature which shouldn't be used by others")]
     internal SynchronizedList<IEntity> ListNotHavingDrafts => _listNotHavingDrafts 
-        ??= new(this, () => List.Where(e => GetDraft(e) == null).ToImmutableList());
+        ??= new(this, () => List.Where(e => GetDraft(e) == null).ToImmutableOpt());
 
     private SynchronizedEntityList _listNotHavingDrafts;
 

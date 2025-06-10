@@ -16,7 +16,7 @@ partial class AppState
                            ?? (_appContentTypesShouldBeLoaded
                                ? throw new NullReferenceException($"Base list of {nameof(ContentTypes)} is empty, but loading is done.")
                                : []);
-                return list.Union(ParentApp.ContentTypes).ToImmutableList();
+                return list.Union(ParentApp.ContentTypes).ToImmutableOpt();
             });
     private SynchronizedList<IContentType> _contentTypesList;
 

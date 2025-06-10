@@ -9,19 +9,19 @@ namespace ToSic.Eav.Data.Build;
 
 partial class ValueBuilder
 {
-    public IValue Relationship(List<int?> references, IEntitiesSource app)
+    public IValue Relationship(ICollection<int?> references, IEntitiesSource app)
         => Relationship(new LazyEntitiesSource(app, references));
 
     public IValue Relationship(IEnumerable<IEntity> directList)
         => new Value<IEnumerable<IEntity>>(directList);
 
     public IImmutableList<IValue> Relationships(IEnumerable<IEntity> directList)
-        => new List<IValue> { new Value<IEnumerable<IEntity>>(directList) }.ToImmutableList();
+        => new List<IValue> { new Value<IEnumerable<IEntity>>(directList) }.ToImmutableOpt();
 
     public IImmutableList<IValue> Relationships(IRelatedEntitiesValue value, IEntitiesSource app)
         => Relationships(new LazyEntitiesSource(app, value.Identifiers));
 
-    public IValue Relationship(List<Guid?> guids, IEntitiesSource fullLookupList) => 
+    public IValue Relationship(ICollection<Guid?> guids, IEntitiesSource fullLookupList) => 
         new Value<IEnumerable<IEntity>>(new LazyEntitiesSource(fullLookupList, guids));
 
     public IValue RelationshipWip(object? value, IEntitiesSource? fullEntityListForLookup)
@@ -41,13 +41,13 @@ partial class ValueBuilder
             return new(fullLookupList, entityIds);
         if (value is IRelatedEntitiesValue relList)
             return new(fullLookupList, relList.Identifiers);
-        if (value is List<Guid?> guids)
+        if (value is ICollection<Guid?> guids)
             return new(fullLookupList, guids);
         return new(fullLookupList, GuidCsvToList(value));
     }
 
 
-    private static List<Guid?> GuidCsvToList(object? value)
+    private static ICollection<Guid?> GuidCsvToList(object? value)
     {
         var entityIdEnum = value as IEnumerable; // note: strings are also enum!
         if (value is string stringValue && stringValue.HasValue())
@@ -62,9 +62,11 @@ partial class ValueBuilder
                                   if (v is null or EavConstants.EmptyRelationship)
                                       return new();
                                   var guid = Guid.Parse(v);
-                                  return guid == Guid.Empty ? new Guid?() : guid;
+                                  return guid == Guid.Empty
+                                      ? new Guid?()
+                                      : guid;
                               })
-                              .ToList()
+                              .ToListOpt()
                           ?? [];
         return entityGuids;
     }
@@ -79,6 +81,6 @@ partial class ValueBuilder
     private Value<IEnumerable<IEntity>> NewEmptyRelationship
         => new(new LazyEntitiesSource(null, identifiers: null));
 
-    internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableList();
+    internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableOpt();
 
 }
