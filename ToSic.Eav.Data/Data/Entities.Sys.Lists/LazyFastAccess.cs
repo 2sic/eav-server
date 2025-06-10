@@ -11,8 +11,11 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 #if DEBUG
         IEntityExtensions.CountOneIdOpt++;
 #endif
+        // Check if ID was already cached
         if (_byInt.TryGetValue(id, out var result))
             return result;
+
+        // If not, search in the list and cache the result
         result = _list.FirstOrDefault(e => e.EntityId == id);
         _byInt.TryAdd(id, result);
         return result;
@@ -22,8 +25,10 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 #if DEBUG
         IEntityExtensions.CountOneRepoOpt++;
 #endif
+        // Check if RepositoryId was already cached
         if (_byRepoId.TryGetValue(id, out var result))
             return result;
+        // If not, search in the list and cache the result
         result = _list.FirstOrDefault(e => e.RepositoryId == id);
         _byRepoId.TryAdd(id, result);
         return result;
@@ -57,7 +62,7 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
     public IImmutableList<IEntity> OfType(string name)
     {
 #if DEBUG
-        IEntityExtensions.countOneOfContentTypeOpt++;
+        IEntityExtensions.CountOneOfContentTypeOpt++;
 #endif
         if (_ofType.TryGetValue(name, out var found))
             return found;

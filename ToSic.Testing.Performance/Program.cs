@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -7,6 +8,7 @@ using ToSic.Eav;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 using ToSic.Testing.Performance.json;
+using ToSic.Testing.Performance.LazyFastAccess;
 using ToSic.Testing.Performance.LoadPresetApp;
 
 namespace ToSic.Testing.Performance;
@@ -16,29 +18,62 @@ class Program
     public const bool RunGenerateJson = false;
     public const int RunLoadPresets = 25;
 
-    public static bool ModeBenchmark = true;
+    public static bool ModeBenchmark = false;
+
+    public static PerformanceTestTypes CurrentTest = PerformanceTestTypes.LazyFastAccessOfType;
 
     static void Main(string[] args)
     {
-        var serviceProvider = SetupServiceProvider();
-        serviceProvider.Build<DoFixtureStartup<ScenarioBasic>>();
-
         // When running in benchmark mode, we run the benchmarks and nothing else
         if (ModeBenchmark)
         {
-            var summary = BenchmarkRunner.Run<BenchmarkPresetApp>();
+            Summary summary = null;
+            switch (CurrentTest)
+            {
+                case PerformanceTestTypes.LazyFastAccessGetInt:
+                    summary = BenchmarkRunner.Run<BenchmarkLazyFastAccessGetInt>();
+                    return;
+                case PerformanceTestTypes.LazyFastAccessOfType:
+                    summary = BenchmarkRunner.Run<BenchmarkLazyFastAccessOfType>();
+                    return;
+                case PerformanceTestTypes.GenerateJson:
+                    // No benchmark for this, as it's just a json generation test
+                    return;
+                case PerformanceTestTypes.LoadPresetApp:
+                    // Benchmark for loading preset app
+                    summary = BenchmarkRunner.Run<BenchmarkPresetApp>();
+                    break;
+            }
+            Console.WriteLine(summary?.ToString());
         }
         // Otherwise - usually when running with the performance profiler - we run the tests
         else
         {
-            if (RunGenerateJson)
-                RunTestGenerateJson(serviceProvider);
 
-            if (RunLoadPresets > 0)
+            switch (CurrentTest)
             {
-                var x = new BenchmarkPresetApp();
-                x.Setup();
-                x.RunManyTimes(true, false);
+                case PerformanceTestTypes.LazyFastAccessGetInt:
+                    var lfaTest = new BenchmarkLazyFastAccessGetInt();
+                    lfaTest.Setup();
+                    lfaTest.RunWithSpecs(true, BenchmarkLazyFastAccessGetInt.Runs);
+                    lfaTest.RunWithSpecs(false, BenchmarkLazyFastAccessGetInt.Runs);
+                    break;
+                case PerformanceTestTypes.LazyFastAccessOfType:
+                    var lfaTypeTest = new BenchmarkLazyFastAccessOfType();
+                    lfaTypeTest.Setup();
+                    lfaTypeTest.RunWithSpecs(true, BenchmarkLazyFastAccessOfType.Runs);
+                    lfaTypeTest.RunWithSpecs(false, BenchmarkLazyFastAccessOfType.Runs);
+                    break;
+                case PerformanceTestTypes.GenerateJson:
+                    var serviceProvider = SetupServiceProvider();
+                    serviceProvider.Build<DoFixtureStartup<ScenarioBasic>>();
+                    RunTestGenerateJson(serviceProvider);
+                    break;
+                case PerformanceTestTypes.LoadPresetApp:
+                    var x = new BenchmarkPresetApp();
+                    x.Setup();
+                    x.RunManyTimes(true, false);
+                    break;
             }
         }
 
@@ -84,4 +119,12 @@ class Program
         var serviceProvider = sc.BuildServiceProvider();
         return serviceProvider;
     }
+}
+
+public enum PerformanceTestTypes
+{
+    GenerateJson,
+    LoadPresetApp,
+    LazyFastAccessGetInt,
+    LazyFastAccessOfType,
 }

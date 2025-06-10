@@ -7,17 +7,17 @@ namespace ToSic.Eav.Data.Entities.Sys.Lists;
 public static class IEntityExtensions
 {
 #if DEBUG
-    private static int countOneId;
-    private static int countOneGuid;
-    private static int countOneHas;
-    private static int countOneRepo;
-    private static int countOneOfContentType;
+    private static int _countOneId;
+    private static int _countOneGuid;
+    private static int _countOneHas;
+    private static int _countOneRepo;
+    private static int _countOneOfContentType;
 
     internal static int CountOneIdOpt;
     internal static int CountOneRepoOpt;
     internal static int CountOneHasOpt;
     internal static int CountOneGuidOpt;
-    internal static int countOneOfContentTypeOpt;
+    internal static int CountOneOfContentTypeOpt;
 #endif
     /// <summary>
     /// Get an entity with an entity-id - or null if not found
@@ -29,9 +29,9 @@ public static class IEntityExtensions
     public static IEntity One(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
-        countOneId++;
+        _countOneId++;
 #endif
-        return list is ImmutableSmartList fastList
+        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
             ? fastList.Fast.Get(id)
             : list.FirstOrDefault(e => e.EntityId == id);
     }
@@ -46,9 +46,9 @@ public static class IEntityExtensions
     public static IEntity One(this IEnumerable<IEntity> list, Guid guid)
     {
 #if DEBUG
-        countOneGuid++;
+        _countOneGuid++;
 #endif
-        return list is ImmutableSmartList fastList
+        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
             ? fastList.Fast.Get(guid)
             : list.FirstOrDefault(e => e.EntityGuid == guid);
     }
@@ -64,9 +64,9 @@ public static class IEntityExtensions
     public static IEntity FindRepoId(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
-        countOneRepo++;
+        _countOneRepo++;
 #endif
-        return list is ImmutableSmartList fastList
+        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
             ? fastList.Fast.GetRepo(id)
             : list.FirstOrDefault(e => e.RepositoryId == id);
     }
@@ -82,9 +82,9 @@ public static class IEntityExtensions
     public static bool Has(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
-        countOneHas++;
+        _countOneHas++;
 #endif
-        return list is ImmutableSmartList fastList
+        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
             ? fastList.Fast.Has(id)
             : list.Any(e => e.EntityId == id || e.RepositoryId == id);
     }
@@ -100,9 +100,9 @@ public static class IEntityExtensions
     public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, string typeName)
     {
 #if DEBUG
-        countOneOfContentType++;
+        _countOneOfContentType++;
 #endif            
-        return list is ImmutableSmartList fastList
+        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
             ? fastList.Fast.OfType(typeName)
             : list.Where(e => e.Type.Is(typeName));
     }

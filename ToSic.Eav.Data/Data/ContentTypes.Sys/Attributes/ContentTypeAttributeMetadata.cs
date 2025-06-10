@@ -58,7 +58,9 @@ public class ContentTypeAttributeMetadata(
                 var fromCurrent = GetMdOfOneSource(sourceDef.Key, sourceDef.Value, ownMd);
                 if (fromCurrent == null)
                     continue;
-                var ofNewTypes = fromCurrent.Where(e => !final.Any(f => f.Type.Is(e.Type.NameId))).ToList();
+                var ofNewTypes = fromCurrent
+                    .Where(e => !final.Any(f => f.Type.Is(e.Type.NameId)))
+                    .ToList();
                 if (ofNewTypes.SafeAny())
                     final.AddRange(ofNewTypes);
             }
@@ -68,15 +70,18 @@ public class ContentTypeAttributeMetadata(
         return final;
     }
 
-    private List<IEntity> GetMdOfOneSource(Guid source, string filter, List<IEntity> ownEntities)
+    private ICollection<IEntity> GetMdOfOneSource(Guid source, string filter, List<IEntity> ownEntities)
     {
-        var entities = source == Guid.Empty ? ownEntities : MetadataOfOneSource(source);
-        return !filter.HasValue()
+        var entities = source == Guid.Empty
+            ? ownEntities
+            : MetadataOfOneSource(source);
+        var list = !filter.HasValue()
             ? entities
-            : entities?.OfType(filter)?.ToList();
+            : entities?.OfType(filter)?.ToListOpt();
+        return list ?? [];
     }
 
-    private List<IEntity> MetadataOfOneSource(Guid guid)
+    private ICollection<IEntity>? MetadataOfOneSource(Guid guid)
     {
         // Empty refers to the own MD, should never get to here
         if (guid == Guid.Empty)
@@ -90,9 +95,10 @@ public class ContentTypeAttributeMetadata(
             return null;
 
         var md = (
-            sourceMd.Source.SourceDirect?.List
-            ?? GetMetadataSource()?.GetMetadata((int)TargetTypes.Attribute, source.AttributeId)
-        )?.ToList();
+                sourceMd.Source.SourceDirect?.List
+                ?? GetMetadataSource()?.GetMetadata((int)TargetTypes.Attribute, source.AttributeId)
+            )
+            ?.ToList();
 
         return md; // can be null
     }
@@ -101,7 +107,7 @@ public class ContentTypeAttributeMetadata(
     /// <summary>
     /// The Source Attribute (if any) which would provide the real metadata
     /// </summary>
-    private List<IContentTypeAttribute> SourceAttributes => _sourceAttributes.Get(() =>
+    private ICollection<IContentTypeAttribute>? SourceAttributes => _sourceAttributes.Get(() =>
     {
         // Check all the basics to ensure we can work
         if (!SysSettings.InheritMetadata)
@@ -116,9 +122,12 @@ public class ContentTypeAttributeMetadata(
             .ToArray();
 
         // Get all attributes in all content-types of the App and keep the ones we need
-        var appAttribs = appState.ContentTypes.SelectMany(ct => ct.Attributes);
-        return appAttribs.Where(a => sourceKeys.Contains(a.Guid)).ToList();
+        var appAttribs = appState.ContentTypes
+            .SelectMany(ct => ct.Attributes);
+        return appAttribs
+            .Where(a => sourceKeys.Contains(a.Guid))
+            .ToList();
     });
-    private readonly GetOnce<List<IContentTypeAttribute>> _sourceAttributes = new();
+    private readonly GetOnce<ICollection<IContentTypeAttribute>?> _sourceAttributes = new();
 
 }
