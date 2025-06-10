@@ -33,7 +33,7 @@ public class EfcAppLoaderService(
     IAppsCatalog appsCatalog,
     IAppStateCacheService appStates,
     ILogStore logStore,
-    ISysFeaturesService featuresSvc,
+    ISysFeaturesService sysFeaturesSvc,
     DataBuilder dataBuilder,
     Generator<IDataDeserializer> dataDeserializer,
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
@@ -41,7 +41,7 @@ public class EfcAppLoaderService(
     : ServiceBase("Db.Efc11",
         connect:
         [
-            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, featuresSvc, dataBuilder,
+            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, sysFeaturesSvc, dataBuilder,
             dataDeserializer, appFileContentTypesLoader, appStateBuilder
         ]), IAppsAndZonesLoaderWithRaw
 {
@@ -81,7 +81,7 @@ public class EfcAppLoaderService(
 
 
     public LogSettings LogSettings => field
-        ??= new AppLoaderLogSettings(featuresSvc).GetLogSettings();
+        ??= new AppLoaderLogSettings(sysFeaturesSvc).GetLogSettings();
     
     #endregion
 
@@ -96,7 +96,7 @@ public class EfcAppLoaderService(
     /// It uses temporary caching, so if called multiple times it loads from a private field.
     /// </summary>
     ICollection<IContentType> IContentTypeLoader.ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
-        => new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, featuresSvc)
+        => new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc)
             .LoadContentTypesFromDb(appId, source)
             .ToListOpt(); // WIP
 
@@ -130,17 +130,21 @@ public class EfcAppLoaderService(
 
         var builder = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere().AddMessage("First Build"));
 
+        var codeWasOptimized = sysFeaturesSvc.IsEnabled(BuiltInFeatures.CSharpLinqOptimizations)
+            ? "(optimized LINQ; Patrons)"
+            : "(standard LINQ; Patrons)";
+
         if (builder.Reader.Specs.IsContentApp())
-            return l.Return(builder.AppState, "default app, don't auto-init");
+            return l.Return(builder.AppState, $"default app, don't auto-init {codeWasOptimized}");
 
         var needsReload = initializedChecker
             .EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log);
 
         if (!needsReload)
-            return l.Return(builder.AppState, "with init check, no reload needed");
+            return l.Return(builder.AppState, $"with init check, no reload needed {codeWasOptimized}");
 
         var reloaded = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere()).AppState;
-        return l.Return(reloaded, "with init check; reloaded");
+        return l.Return(reloaded, $"with init check; reloaded {codeWasOptimized}");
     }
 
 
@@ -171,7 +175,7 @@ public class EfcAppLoaderService(
         if (ancestorAppId != 0)
         {
             // Check if feature is enabled #SharedAppFeatureEnabled
-            if (!featuresSvc.IsEnabled(BuiltInFeatures.SharedApps))
+            if (!sysFeaturesSvc.IsEnabled(BuiltInFeatures.SharedApps))
                 throw new FeaturesDisabledException(BuiltInFeatures.SharedApps.NameId,
                     $"This is required to load shared app states. " +
                     $"The App {appIdentity.Show()} has an ancestor {ancestorAppId}. " +
@@ -220,7 +224,7 @@ public class EfcAppLoaderService(
             if (startAt <= AppStateLoadSequence.ContentTypeLoad)
             {
                 var typeTimer = Stopwatch.StartNew();
-                var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, featuresSvc);
+                var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
                 var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge);
                 builder.InitContentTypes(dbTypes.ToListOpt());
@@ -282,7 +286,7 @@ public class EfcAppLoaderService(
         try
         {
             // Get all Entities in the 2SexyContent-App scope
-            var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, featuresSvc);
+            var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
             var dbEntity = entityLoader.LoadEntitiesFromDb(appId, [], AppLoadConstants.TypeAppConfig);
             if (dbEntity.Count == 0)
                 return l.Return(nullTuple, "not in db");
@@ -321,7 +325,7 @@ public class EfcAppLoaderService(
 
     internal void LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds)
     {
-        var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, featuresSvc);
+        var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
         var entitySqlTime = entityLoader.LoadEntities(builder, codeRefTrail, entityIds);
         AddSqlTime(entitySqlTime);
     }
