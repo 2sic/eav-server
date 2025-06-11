@@ -10,8 +10,6 @@
 
   <!--<Import Project="../SharedImports/CsProj.Props/Reference/RazorBlade.props" />-->
 
-  <!--<Import Project="../SharedImports/CsProj.Props/Nullable.props" />-->
-
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />

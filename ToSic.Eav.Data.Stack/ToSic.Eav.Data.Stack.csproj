@@ -4,8 +4,6 @@
 
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
-  <Import Project="../SharedImports/CsProj.Props/Nullable.props" />
-
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Data\ToSic.Eav.Data.csproj" />
   </ItemGroup>

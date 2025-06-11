@@ -17,5 +17,5 @@
   <Import Project="./IncludeCode/Compiler Features and API Hiding.props" />
 
   <!-- Nullable  not default for EAV -->
-  <!--<Import Project="./Nullable.props" />-->
+  <Import Project="./Nullable.props" />
 </Project>

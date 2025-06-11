@@ -4,8 +4,6 @@
 
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
-  <Import Project="../SharedImports/CsProj.Props/Nullable.props" />
-
   <!--<PropertyGroup Condition="$(TargetFramework) == 'net9.0'">
     <Nullable>enable</Nullable>
   </PropertyGroup>-->

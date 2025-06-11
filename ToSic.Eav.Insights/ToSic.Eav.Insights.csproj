@@ -6,8 +6,6 @@
 
   <Import Project="../SharedImports/CsProj.Props/Reference/RazorBlade.props" />
 
-  <!--<Import Project="../SharedImports/CsProj.Props/Nullable.props" />-->
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.2.3">
       <ExcludeAssets>runtime</ExcludeAssets>
