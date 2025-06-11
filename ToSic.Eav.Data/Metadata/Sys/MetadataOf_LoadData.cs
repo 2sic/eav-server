@@ -40,10 +40,10 @@ partial class MetadataOf<T>
     private ICollection<IEntity> LoadAndResetInLock()
     {
         var result = LoadFromProviderInsideLock() ?? [];
-            
+
         // Reset everything and possibly also the timestamp
-        _metadataWithoutPermissions = null;
-        _permissions = null;
+        MetadataWithoutPermissions = null;
+        Permissions = null;
         CacheTimestamp = GetMetadataSource()?.CacheTimestamp ?? CacheTimestamp;
 
         return result;

@@ -64,13 +64,28 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 #if DEBUG
         IEntityExtensions.CountOneOfContentTypeOpt++;
 #endif
-        if (_ofType.TryGetValue(name, out var found))
+        if (_ofTypeImmutable.TryGetValue(name, out var found))
             return found;
 
         var newEntry = _list
             .Where(e => e.Type.Is(name))
             .ToImmutableOpt();
-        _ofType.TryAdd(name, newEntry);
+        _ofTypeImmutable.TryAdd(name, newEntry);
+        return newEntry;
+    }
+
+    public ICollection<IEntity> OfTypeCol(string name)
+    {
+#if DEBUG
+        IEntityExtensions.CountOneOfContentTypeOpt++;
+#endif
+        if (_ofTypeCollection.TryGetValue(name, out var found))
+            return found;
+
+        var newEntry = _list
+            .Where(e => e.Type.Is(name))
+            .ToListOpt();
+        _ofTypeCollection.TryAdd(name, newEntry);
         return newEntry;
     }
 
@@ -81,6 +96,10 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
     private readonly ConcurrentDictionary<Guid, IEntity> _byGuid = new();
     private readonly ConcurrentDictionary<int, bool> _has = new();
 
-    private readonly ConcurrentDictionary<string, IImmutableList<IEntity>> _ofType =
+    private readonly ConcurrentDictionary<string, IImmutableList<IEntity>> _ofTypeImmutable =
         new(StringComparer.InvariantCultureIgnoreCase);
+
+    private readonly ConcurrentDictionary<string, ICollection<IEntity>> _ofTypeCollection =
+        new(StringComparer.InvariantCultureIgnoreCase);
+
 }

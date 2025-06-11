@@ -18,7 +18,7 @@ class Program
     public const bool RunGenerateJson = false;
     public const int RunLoadPresets = 25;
 
-    public static bool ModeBenchmark = false;
+    public static bool ModeBenchmark = true;
 
     public static PerformanceTestTypes CurrentTest = PerformanceTestTypes.LazyFastAccessOfType;
 

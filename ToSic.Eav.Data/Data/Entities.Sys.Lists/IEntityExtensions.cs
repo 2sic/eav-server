@@ -109,6 +109,19 @@ public static class IEntityExtensions
                 .ToListOpt();
     }
 
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public static IEnumerable<IEntity> OfTypeCol(this IEnumerable<IEntity> list, string typeName)
+    {
+#if DEBUG
+        _countOneOfContentType++;
+#endif            
+        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
+            ? fastList.Fast.OfTypeCol(typeName)
+            : list
+                .Where(e => e.Type.Is(typeName))
+                .ToListOpt();
+    }
+
     public static IEntity IfOfType(this IEntity entity, string typeName) 
         => entity.Type.Is(typeName) ? entity : null;
 

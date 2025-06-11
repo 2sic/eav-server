@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Metadata.Sys;
@@ -17,30 +16,28 @@ partial class MetadataOf<T>
         get
         {
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-            if (_metadataWithoutPermissions == null || UpStreamChanged())
-                _metadataWithoutPermissions = AllWithHidden
+            if (field == null || UpStreamChanged())
+                field = AllWithHidden
                     .Where(md => !Permission.IsPermission(md))
                     .ToListOpt();
-            return _metadataWithoutPermissions;
+            return field;
         }
+        set;
     }
-    private IList<IEntity> _metadataWithoutPermissions;
 
     /// <inheritdoc />
     public IEnumerable<IPermission> Permissions
     {
         get
         {
-            if (_permissions == null || UpStreamChanged())
-                _permissions = AllWithHidden
+            if (field == null || UpStreamChanged())
+                field = AllWithHidden
                     .Where(Permission.IsPermission)
                     .Select(IPermission (e) => new Permission(e))
                     .ToImmutableOpt();
-            return _permissions;
+            return field;
         }
+        set;
     }
-    private IImmutableList<IPermission> _permissions;
-
-
 
 }
