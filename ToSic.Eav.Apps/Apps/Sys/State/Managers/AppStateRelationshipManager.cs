@@ -33,8 +33,8 @@ internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEnti
                 .Where(tc => tc != null);
 
             foreach (var value in lazyEntityValues)
-            foreach (var childId in value.EntityIds.Where(e => e != null))
-                Add(entity, childId.Value);
+            foreach (var childId in value.ResolvedEntityIds.Where(id => id != null).Cast<int>())
+                Add(entity, childId);
         }
 
         return cache.ToImmutableOpt();
