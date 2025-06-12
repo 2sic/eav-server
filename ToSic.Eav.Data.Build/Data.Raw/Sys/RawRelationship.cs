@@ -22,8 +22,8 @@ public class RawRelationship : IRawRelationship
     /// <param name="keys">A list of keys, if you have many.</param>
     public RawRelationship(
         NoParamOrder noParamOrder = default,
-        object key = default,
-        IEnumerable<object> keys = default)
+        object? key = default,
+        IEnumerable<object>? keys = default)
     {
         Keys = keys?.ToList()
                ?? (key == null ? null : new List<object> { key })

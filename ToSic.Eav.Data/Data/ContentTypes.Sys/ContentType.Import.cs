@@ -9,6 +9,6 @@ partial record ContentType
     public required bool OnSaveSortAttributes { get; init; }
 
     [PrivateApi]
-    public required string OnSaveUseParentStaticName { get; init; }
+    public required string? OnSaveUseParentStaticName { get; init; }
 
 }

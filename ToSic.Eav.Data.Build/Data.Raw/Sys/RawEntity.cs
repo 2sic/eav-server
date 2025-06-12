@@ -20,25 +20,26 @@ public class RawEntity: RawEntityBase
     {
     }
 
-    public RawEntity(Dictionary<string, object> values)
+    public RawEntity(Dictionary<string, object?> values)
     {
-        _values = values;
+        Values = values;
     }
 
-    public IDictionary<string, object> Values
+    [field: AllowNull, MaybeNull]
+    public IDictionary<string, object?> Values
     {
             
-        get => _values ??= new Dictionary<string, object>(InvariantCultureIgnoreCase);
-        set => _values = value?.ToInvariant() ?? _values;
+        get => field ??= new Dictionary<string, object?>(InvariantCultureIgnoreCase);
+        set => field = value?.ToInvariant();
     }
-    private IDictionary<string, object> _values;
 
     /// <inheritdoc />
-    public override IDictionary<string, object> Attributes(RawConvertOptions options) => _values;
+    public override IDictionary<string, object?> Attributes(RawConvertOptions options)
+        => Values;
 
 
     /// <summary>
     /// WIP experimental v18.02 - trying to get content-type metadata into the raw entity
     /// </summary>
-    public IMetadataOf Metadata { get; set; }
+    public IMetadataOf? Metadata { get; set; }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Apps;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Ancestors.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
@@ -88,8 +87,8 @@ public class ContentTypeBuilder
         IContentType original,
         // Basic identifiers (5)
         int? appId = default,
-        string name = default,
-        string nameId = default,
+        string? name = default,
+        string? nameId = default,
         int? id = default,
         string? scope = default,
         // Contents (1)
@@ -117,7 +116,8 @@ public class ContentTypeBuilder
 
     )
     {
-        if (original == null) throw new ArgumentNullException(nameof(original));
+        if (original == null)
+            throw new ArgumentNullException(nameof(original));
 
         // If we are reconfiguring where it's from / shared, we must retrieve / update that
         if (parentTypeId != null)

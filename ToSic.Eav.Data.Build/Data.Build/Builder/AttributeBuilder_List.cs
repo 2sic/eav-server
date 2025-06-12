@@ -40,35 +40,39 @@ partial class AttributeBuilder
     public IReadOnlyDictionary<string, IAttribute> Create(IDictionary<string, IAttribute>? attributes)
         => attributes?.ToImmutableInvIgnoreCase() ?? Empty();
 
-    public IReadOnlyDictionary<string, IAttribute> Create(IDictionary<string, object>? attributes, IImmutableList<ILanguage>? languages = null) => 
-        attributes == null
+    public IReadOnlyDictionary<string, IAttribute> Create(IDictionary<string, object?>? attributes, IImmutableList<ILanguage>? languages = null)
+        => attributes == null
             ? Empty()
-            : CreateInternal(attributes, languages).ToImmutableInvIgnoreCase();
+            : CreateInternal(attributes, languages)
+                .ToImmutableInvIgnoreCase();
 
 
     /// <summary>
     /// Convert a NameValueCollection-Like List to a Dictionary of IAttributes
     /// </summary>
-    private Dictionary<string, IAttribute> CreateInternal(IDictionary<string, object> objAttributes, IImmutableList<ILanguage>? languages = null) =>
-        objAttributes.ToDictionary(pair => pair.Key, oAttrib =>
-        {
-            // in case the object is already an IAttribute, use that, don't rebuild it
-            if (oAttrib.Value is IAttribute typedValue)
-                return typedValue;
-
-            // Not yet a proper IAttribute, construct from value
-            var attributeType = DataTypes.GetAttributeTypeName(oAttrib.Value, _allowUnknownValueTypes);
-            var valuesModelList = new List<IValue>();
-            if (oAttrib.Value != null)
+    private Dictionary<string, IAttribute> CreateInternal(IDictionary<string, object?> objAttributes, IImmutableList<ILanguage>? languages = null)
+        => objAttributes.ToDictionary(
+            pair => pair.Key,
+            pair =>
             {
-                var valueModel = ValueBuilder.Build(attributeType, oAttrib.Value, languages);
-                valuesModelList.Add(valueModel);
-            }
+                // in case the object is already an IAttribute, use that, don't rebuild it
+                if (pair.Value is IAttribute typedValue)
+                    return typedValue;
 
-            var attributeModel = Create(oAttrib.Key, attributeType, valuesModelList);
+                // Not yet a proper IAttribute, construct from value
+                var attributeType = DataTypes.GetAttributeTypeName(pair.Value, _allowUnknownValueTypes);
+                var valuesModelList = new List<IValue>();
+                if (pair.Value != null)
+                {
+                    var valueModel = ValueBuilder.Build(attributeType, pair.Value, languages);
+                    valuesModelList.Add(valueModel);
+                }
 
-            return attributeModel;
-        }, InvariantCultureIgnoreCase);
+                var attributeModel = Create(pair.Key, attributeType, valuesModelList);
+
+                return attributeModel;
+            },
+            InvariantCultureIgnoreCase);
 
     #region Mutable operations - WIP
 

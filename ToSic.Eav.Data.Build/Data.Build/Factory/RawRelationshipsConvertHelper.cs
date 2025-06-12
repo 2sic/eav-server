@@ -12,9 +12,9 @@ internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog
     private LogFilter RelationshipsToAttributesLogFilter => field
         ??= new(Log, logFirstMax: 25, reLogIteration: 100);
 
-    internal Dictionary<string, object> RelationshipsToAttributes(IDictionary<string, object> values, ILookup<object, IEntity> relationships)
+    internal Dictionary<string, object?> RelationshipsToAttributes(IDictionary<string, object?> values, ILookup<object, IEntity> relationships)
     {
-        var l = RelationshipsToAttributesLogFilter.FnOrNull<Dictionary<string, object>>();
+        var l = RelationshipsToAttributesLogFilter.FnOrNull<Dictionary<string, object?>>();
         var valuesWithRelationships = values.ToDictionary(
             v => v.Key,
             v =>
@@ -28,7 +28,7 @@ internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog
         return l.Return(valuesWithRelationships, $"{valuesWithRelationships.Count}");
     }
 
-    internal void AddRelationshipsToLookup(List<ICanBeEntity> list, LazyLookup<object, IEntity> lazyRelationships, RawConvertOptions options)
+    internal void AddRelationshipsToLookup(IList<ICanBeEntity> list, LazyLookup<object, IEntity> lazyRelationships, RawConvertOptions options)
     {
         var l = Log.Fn();
         var itemsWithKeys = list
@@ -37,19 +37,20 @@ internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog
             .Select(pair =>
             {
                 var partner = pair.Partner as IHasRelationshipKeys;
-                var relKeys = partner?.RelationshipKeys(options)?.ToList();
+                var relKeys = partner?.RelationshipKeys(options)?.ToListOpt();
                 return relKeys.SafeAny()
-                    ? new EntityPair<List<object>>(pair.Entity, relKeys)
+                    ? new EntityPair<IList<object>>(pair.Entity, relKeys)
                     : null;
             })
             .Where(x => x != null)
-            .ToList();
+            .ToListOpt();
 
         var keyMap = itemsWithKeys
             .SelectMany(pair => pair!.Partner.Select(rk => new KeyValuePair<object, IEntity>(rk, pair.Entity)))
-            .ToList();
+            .ToListOpt();
 
-        if (keyMap.Any()) lazyRelationships.Add(keyMap);
+        if (keyMap.Any())
+            lazyRelationships.Add(keyMap);
 
         l.Done($"Added {keyMap.Count}");
     }

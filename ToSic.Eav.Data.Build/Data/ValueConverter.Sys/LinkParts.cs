@@ -7,13 +7,14 @@ public class LinkParts
 {
     public LinkParts(string link)
     {
-        var regularExpression = Regex.Match(link, RegExToDetectConvertable, RegexOptions.IgnoreCase);
+        var regularExpression = Regex.Match(link, RegExToDetectConvertible, RegexOptions.IgnoreCase);
         IsMatch = regularExpression.Success;
-        if (!IsMatch) return;
+        if (!IsMatch)
+            return;
 
         Type = regularExpression.Groups[RegExType].Value.ToLowerInvariant();
         Id = int.Parse(regularExpression.Groups[RegExId].Value);
-        Params = regularExpression.Groups[RegExParams].Value ?? "";
+        Params = regularExpression.Groups[RegExParams].Value;
         IsPage = Type == ValueConverterBase.PrefixPage;
 
     }
@@ -27,7 +28,8 @@ public class LinkParts
     {
         var regularExpression = Regex.Match(link, RegExToDetectName, RegexOptions.IgnoreCase);
         IsMatch = regularExpression.Success;
-        if (!IsMatch) return;
+        if (!IsMatch)
+            return;
 
         Type = regularExpression.Groups[RegExType].Value.ToLowerInvariant();
         Name = regularExpression.Groups[RegExName].Value;
@@ -37,14 +39,18 @@ public class LinkParts
 
     public readonly bool IsMatch;
     public readonly bool IsPage;
-    public readonly string Type;
+    public readonly string? Type;
     public readonly int Id;
-    public readonly string Name;
+
+    /// <summary>
+    /// File name, can be null if using the file:123 format instead of file:name.jpg
+    /// </summary>
+    public readonly string? Name;
     public bool UseName => Name != null;
-    public readonly string Params;
+    public readonly string? Params;
 
     // language=regex
-    private const string RegExToDetectConvertable = @"^(?<type>(file|page)):(?<id>[0-9]+)(?<params>(\?|\#).*)?$";
+    private const string RegExToDetectConvertible = @"^(?<type>(file|page)):(?<id>[0-9]+)(?<params>(\?|\#).*)?$";
     // language=regex
     private const string RegExToDetectName = @"^(?<type>(file|adam)):(?<name>[^\\^\/^?]+)(?<params>(\?|\#).*)?$";
     private const string RegExType = "type";

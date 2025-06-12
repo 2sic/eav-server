@@ -12,31 +12,28 @@ partial class ValueBuilder
     public IValue Relationship(ICollection<int?> references, IEntitiesSource app)
         => Relationship(new LazyEntitiesSource(app, references));
 
-    public IValue Relationship(IEnumerable<IEntity> directList)
-        => new Value<IEnumerable<IEntity>>(directList);
+    public IValue Relationship(IEnumerable<IEntity?> directList)
+        => new Value<IEnumerable<IEntity?>>(directList);
 
-    public IImmutableList<IValue> Relationships(IEnumerable<IEntity> directList)
-        => new List<IValue> { new Value<IEnumerable<IEntity>>(directList) }.ToImmutableOpt();
+    public IImmutableList<IValue> Relationships(IEnumerable<IEntity?> directList)
+        => new List<IValue> { new Value<IEnumerable<IEntity?>>(directList) }.ToImmutableOpt();
 
     public IImmutableList<IValue> Relationships(IRelatedEntitiesValue value, IEntitiesSource app)
         => Relationships(new LazyEntitiesSource(app, value.Identifiers));
 
     public IValue Relationship(ICollection<Guid?> guids, IEntitiesSource fullLookupList) => 
-        new Value<IEnumerable<IEntity>>(new LazyEntitiesSource(fullLookupList, guids));
+        new Value<IEnumerable<IEntity?>>(new LazyEntitiesSource(fullLookupList, guids));
 
     public IValue RelationshipWip(object? value, IEntitiesSource? fullEntityListForLookup)
     {
         var rel = GetLazyEntitiesForRelationship(value, fullEntityListForLookup);
-        return new Value<IEnumerable<IEntity>>(rel);
+        return new Value<IEnumerable<IEntity?>>(rel);
     }
 
     private LazyEntitiesSource GetLazyEntitiesForRelationship(object? value, IEntitiesSource? fullLookupList)
     {
-        var entityIds = (value as IEnumerable<int?>)
-                        ?.ToList()
-                        ?? (value as IEnumerable<int>)
-                        ?.Select(x => (int?)x)
-                        .ToList();
+        var entityIds = (value as IEnumerable<int?>)?.ToListOpt()
+                        ?? (value as IEnumerable<int>)?.Select(x => (int?)x).ToListOpt();
         if (entityIds != null)
             return new(fullLookupList, entityIds);
         if (value is IRelatedEntitiesValue relList)
@@ -57,7 +54,7 @@ partial class ValueBuilder
                               .Cast<object>()
                               .Select(x =>
                               {
-                                  var v = x?.ToString().Trim();
+                                  var v = x?.ToString()?.Trim();
                                   // this is the case when an export contains a list with nulls as a special code
                                   if (v is null or EavConstants.EmptyRelationship)
                                       return new();
@@ -78,8 +75,8 @@ partial class ValueBuilder
     /// ...and then it must be a new object every time, 
     /// because the object could be changed at runtime, and if it were shared, then it would be changed in many places
     /// </summary>
-    private Value<IEnumerable<IEntity>> NewEmptyRelationship
-        => new(new LazyEntitiesSource(null, identifiers: null));
+    private Value<IEnumerable<IEntity?>> NewEmptyRelationship
+        => new(new LazyEntitiesSource(null, identifiers: Array.Empty<int?>()));
 
     internal IImmutableList<IValue> NewEmptyRelationshipValues => new List<IValue> { NewEmptyRelationship }.ToImmutableOpt();
 

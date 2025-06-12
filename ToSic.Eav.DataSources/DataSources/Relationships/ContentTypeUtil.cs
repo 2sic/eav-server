@@ -22,7 +22,9 @@ internal class ContentTypeUtil
         // 2024-10-29 v18.03 2dm disabled, as deprecated, must see if something breaks, but don't really expect it...
         // noticed that it's actually used quite a bit in our internal fields, would have to change that first...
         // I must also assume that it may have been used elsewhere too, but I don't really think so...
+#pragma warning disable CS0618 // Type or member is obsolete
         { nameof(IContentType.StaticName), t.NameId },
+#pragma warning restore CS0618 // Type or member is obsolete
         { nameof(t.NameId), t.NameId },
         { nameof(IContentType.IsDynamic), t.IsDynamic },
 

@@ -41,7 +41,7 @@ public record ContentTypeAttribute : IContentTypeAttribute
     /// #SharedFieldDefinition
     /// </summary>
     [PrivateApi]
-    public required ContentTypeAttributeSysSettings SysSettings { get; init; }
+    public required ContentTypeAttributeSysSettings? SysSettings { get; init; }
 
 
     #region Metadata and Permissions

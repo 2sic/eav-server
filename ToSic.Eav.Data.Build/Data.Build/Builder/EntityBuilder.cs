@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Entities.Sys;
+﻿using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Relationships.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
@@ -46,8 +45,8 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
 
             Created = created ?? default,
             Modified = modified ?? default,
-            Owner = owner,
-            MetadataFor = metadataFor,
+            Owner = owner ?? "unknown",
+            MetadataFor = metadataFor ?? new Target(),
             // Prepare the Parts-builder in case it wasn't provided
             PartsLazy = partsBuilder ?? new(),
 

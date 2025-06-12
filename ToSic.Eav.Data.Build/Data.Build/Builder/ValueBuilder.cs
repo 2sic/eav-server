@@ -130,11 +130,13 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
     }
 
 
-    public IImmutableList<IValue> Replace(IEnumerable<IValue> values, IValue oldValue, IValue newValue)
+    public IImmutableList<IValue> Replace(IEnumerable<IValue> values, IValue? oldValueOrNullToAdd, IValue newValue)
     {
         var editable = values.ToListOpt();
         // note: should preserve order
-        var index = editable.IndexOf(oldValue);
+        var index = oldValueOrNullToAdd == null
+            ? -1
+            : editable.IndexOf(oldValueOrNullToAdd);
         if (index == -1)
             editable.Add(newValue);
         else

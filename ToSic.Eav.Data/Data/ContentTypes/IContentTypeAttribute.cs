@@ -51,8 +51,9 @@ public interface IContentTypeAttribute: /*IAttributeBase,*/ IHasPermissions, IAp
     /// #SharedFieldDefinition
     /// </summary>
     /// <remarks>
+    /// Can be null.
     /// Created ca. v16, releasing ca. v18.02
     /// </remarks>
     [PrivateApi]
-    ContentTypeAttributeSysSettings SysSettings { get; }
+    ContentTypeAttributeSysSettings? SysSettings { get; }
 }

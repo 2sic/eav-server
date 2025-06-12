@@ -74,7 +74,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             return l.ReturnNull("no description");
 
         // All props
-        var dic = new Dictionary<string, object> { { nameof(ContentTypes.Sys.ContentTypeDetails.Description), description } };
+        var dic = new Dictionary<string, object?> { { nameof(ContentTypes.Sys.ContentTypeDetails.Description), description } };
         var attributes = attributeBuilder.Create(dic);
 
         // Create a Description entity
@@ -113,7 +113,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         // Generate list of virtual attributes
         var gSystem = propsGrouped
             .FirstOrDefault(g => g.Key == "system")
-            ?.ToList();
+            ?.ToListOpt();
         var vAttributes = gSystem == null || !gSystem.Any()
             ? null
             : PropertiesToAttributes(gSystem, true);
@@ -173,7 +173,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             return l.ReturnNull("no description");
 
         // All props
-        var dic = new Dictionary<string, object>();
+        var dic = new Dictionary<string, object?>();
         if (description != null)
             dic.Add(AttributeMetadataConstants.DescriptionField, description);
         if (inputType != null)

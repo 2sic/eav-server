@@ -14,6 +14,7 @@ public class LookUpEntitiesSource<TKey>(IEnumerable<TKey> keys, ILookup<TKey, IE
     public long CacheTimestamp { get; } = DateTime.Now.Ticks;
     public bool CacheChanged(long dependentTimeStamp) => false; // TODO: MAY NEED TO CHANGE
 
+    [field: AllowNull, MaybeNull]
     public IEnumerable<IEntity> List => field
         ??= Keys
             .SelectMany(lookupId => Lookup[lookupId])

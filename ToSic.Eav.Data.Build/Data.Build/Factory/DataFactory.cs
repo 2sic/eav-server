@@ -81,7 +81,7 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
         var l = Log.Fn<IImmutableList<IEntity>>();
 
         // Pre-process relationship keys, so they are added to the lookup
-        var list = rawList.ToList();
+        var list = rawList.ToListOpt();
         if (Relationships is LazyLookup<object, IEntity> lazyRelationships)
             RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, Options.RawConvertOptions);
 
@@ -108,30 +108,47 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
 
     /// <inheritdoc />
     public IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasRawEntity<T>> data) where T: IRawEntity
-        => data.Select(Prepare).ToList();
+        => data.Select(Prepare).ToListOpt();
 
     /// <inheritdoc />
     public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : IRawEntity
     {
-        var all = list.Select(n =>
+        var all = list
+            .Select(raw =>
             {
-                IEntity? newEntity = null;
-
-                // Todo: improve this, so if anything fails, we have a clear info which item failed
                 try
                 {
-                    newEntity = Create(n);
-                    return new(newEntity, n);
+                    var newEntity = Create(raw);
+                    return new EntityPair<TNewEntity>(newEntity, raw);
                 }
                 catch
                 {
-                    /* ignore */
+                    // Add null to filter out later and report the indexes
+                    return null;
                 }
 
-                return new EntityPair<TNewEntity>(newEntity, n);
             })
-            .ToList();
-        return all;
+            .ToListOpt();
+
+        // if we have any nulls, take them out and remember the indexes
+        if (all.Any(p => p == null))
+        {
+            var indexes = all
+                .Select((pair, index) => (pair, index))
+                .Where(p => p.pair == null)
+                .Select(p => p.index)
+                .ToListOpt();
+            var msg = string.Join(",", indexes);
+            Log.A($"Error preparing: {indexes.Count} items failed to create, indexes: {msg}");
+            return all
+                .Where(p => p != null)
+                .Cast<EntityPair<TNewEntity>>()
+                .ToListOpt();
+        }
+
+        return all
+            .Cast<EntityPair<TNewEntity>>()
+            .ToListOpt();
     }
 
     #endregion
@@ -140,7 +157,7 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
 
     /// <inheritdoc />
     public IEntity Create(
-        IDictionary<string, object>? values,
+        IDictionary<string, object?> values,
         int id = 0,
         Guid guid = default,
         DateTime created = default,
@@ -149,7 +166,7 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
         EntityPartsLazy? partsBuilder = default)
     {
         // pre-process RawRelationships
-        values ??= new Dictionary<string, object>();
+        values ??= new Dictionary<string, object?>();
         var valuesWithRelationships = RelsConvertHelper.RelationshipsToAttributes(values, Relationships);
 
         // ID can be created in 3 ways
@@ -184,8 +201,8 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     /// <returns></returns>
     public IEntity Create(IRawEntity rawEntity)
     {
-        var partsBuilder = Options.WithMetadata
-            ? new EntityPartsLazy(null, (_, _) => (rawEntity as RawEntity)?.Metadata)
+        var partsBuilder = Options.WithMetadata && rawEntity is RawEntity { Metadata: not null } typed
+            ? new EntityPartsLazy(null, (_, _) => typed.Metadata)
             : null;
         return Create(
             rawEntity.Attributes(Options.RawConvertOptions),

@@ -41,7 +41,8 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// Create a single entity based on values passed in.
     /// </summary>
     /// <returns></returns>
-    IEntity Create(IDictionary<string, object> values,
+    IEntity Create(
+        IDictionary<string, object?> values,
         int id = default,
         Guid guid = default,
         DateTime created = default,

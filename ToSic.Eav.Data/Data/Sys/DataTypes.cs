@@ -19,7 +19,7 @@ public class DataTypes
 
     // TODO: Also look for other code which does very similar stuff, and try to de-duplicate
     // helper to get text-name of the type
-    public static ValueTypes GetAttributeTypeName(object value, bool allowUnknownValueTypes)
+    public static ValueTypes GetAttributeTypeName(object? value, bool allowUnknownValueTypes)
     {
         if (value is DateTime)
             return ValueTypes.DateTime;

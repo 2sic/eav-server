@@ -16,7 +16,7 @@ public class RawConvertOptions
 {
     public RawConvertOptions(
         NoParamOrder noParamOrder = default,
-        IEnumerable<string> addKeys = default
+        IEnumerable<string>? addKeys = default
     )
     {
         KeysToAdd = (addKeys ?? [])

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Metadata.Sys;
 public class Permission(IEntity entity) : EntityBasedType(entity), IPermission
 {
     public const string TypeName = "PermissionConfiguration";
-
+    public const string FieldOwner = "Owner";
     /// <inheritdoc />
 
     [field: AllowNull, MaybeNull]
