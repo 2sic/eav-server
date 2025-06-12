@@ -16,6 +16,6 @@
   <!-- Include C# files which contain the Assembly Info and some classes so that C# latest is supported (such as init-properties) -->
   <Import Project="./IncludeCode/Compiler Features and API Hiding.props" />
 
-  <!-- Nullable  not default for EAV -->
+  <!-- Nullable -->
   <Import Project="./Nullable.props" />
 </Project>

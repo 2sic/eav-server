@@ -7,7 +7,7 @@ namespace ToSic.Eav.Metadata.Sys;
 
 partial class MetadataOf<T>
 {
-    /// <summary>
+      /// <summary>
     /// All entities is internal - because it contains everything
     /// including permissions-metadata
     /// </summary>
@@ -18,17 +18,44 @@ partial class MetadataOf<T>
         {
             //_debugAllEntry++;
             // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
-            field = _loadAllInLock.Call(
-                    conditionToGenerate: () => field == null || UpStreamChanged(),
+            _allWithHidden = _loadAllInLock.Call(
+                    //conditionToGenerate: () => field == null || UpStreamChanged(),
+                    conditionToGenerate: () => _allWithHidden == null || UpStreamChanged(),
                     generator: LoadAndResetInLock,
-                    cacheOrFallback: () => field ?? []
+                    //cacheOrFallback: () => field ?? []
+                    cacheOrFallback: () => _allWithHidden ?? []
                 )
                 .Result;
 
             //_debugAllReturn++;
-            return field;
+            return _allWithHidden;
         }
     }
+    // ReSharper disable once ReplaceWithFieldKeyword - will break the CSC / Roslyn analyzer, since it's used in inner lambda expressions
+    private ICollection<IEntity>? _allWithHidden;
+
+    // /// <summary>
+    // /// All entities is internal - because it contains everything
+    // /// including permissions-metadata
+    // /// </summary>
+    // [PrivateApi]
+    // public ICollection<IEntity> AllWithHidden
+    // {
+    //     get
+    //     {
+    //         //_debugAllEntry++;
+    //         // If necessary, initialize first. Note that it will only add Ids which really exist in the source (the source should be the cache)
+    //         field = _loadAllInLock.Call(
+    //                 conditionToGenerate: () => field == null || UpStreamChanged(),
+    //                 generator: LoadAndResetInLock,
+    //                 cacheOrFallback: () => field ?? []
+    //             )
+    //             .Result;
+
+    //         //_debugAllReturn++;
+    //         return field;
+    //     }
+    // }
 
     private readonly TryLockTryDo _loadAllInLock = new();
         
