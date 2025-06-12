@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data.Entities.Sys.Lists;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyFastAccess(IImmutableList<IEntity> list)
 {
-    public IEntity Get(int id)
+    public IEntity? Get(int id)
     {
 #if DEBUG
         IEntityExtensions.CountOneIdOpt++;
@@ -20,7 +20,7 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
         _byInt.TryAdd(id, result);
         return result;
     }
-    public IEntity GetRepo(int id)
+    public IEntity? GetRepo(int id)
     {
 #if DEBUG
         IEntityExtensions.CountOneRepoOpt++;
@@ -47,7 +47,7 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
         return status;
     }
 
-    public IEntity Get(Guid id)
+    public IEntity? Get(Guid id)
     {
 #if DEBUG
         IEntityExtensions.CountOneGuidOpt++;
@@ -91,9 +91,9 @@ public class LazyFastAccess(IImmutableList<IEntity> list)
 
     private readonly IEnumerable<IEntity> _list = list;
 
-    private readonly ConcurrentDictionary<int, IEntity> _byInt = new();
-    private readonly ConcurrentDictionary<int, IEntity> _byRepoId = new();
-    private readonly ConcurrentDictionary<Guid, IEntity> _byGuid = new();
+    private readonly ConcurrentDictionary<int, IEntity?> _byInt = new();
+    private readonly ConcurrentDictionary<int, IEntity?> _byRepoId = new();
+    private readonly ConcurrentDictionary<Guid, IEntity?> _byGuid = new();
     private readonly ConcurrentDictionary<int, bool> _has = new();
 
     private readonly ConcurrentDictionary<string, IImmutableList<IEntity>> _ofTypeImmutable =

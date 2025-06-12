@@ -66,11 +66,11 @@ partial class MetadataOf<T>
 
     private ICollection<IEntity> LoadAndResetInLock()
     {
-        var result = LoadFromProviderInsideLock() ?? [];
+        var result = LoadFromProviderInsideLock();
 
         // Reset everything and possibly also the timestamp
-        MetadataWithoutPermissions = null;
-        Permissions = null;
+        MetadataWithoutPermissions = null!;
+        Permissions = null!;
         CacheTimestamp = GetMetadataSource()?.CacheTimestamp ?? CacheTimestamp;
 
         return result;
@@ -82,7 +82,7 @@ partial class MetadataOf<T>
     /// </summary>
     /// <returns>The cached final list, for overloads which need to verify that something arrived.</returns>
     [PrivateApi]
-    protected virtual ICollection<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = default)
+    protected virtual ICollection<IEntity> LoadFromProviderInsideLock(IList<IEntity>? additions = null)
     {
         //_debugLoadFromProvider++;
         var mdProvider = GetMetadataSource();
@@ -102,7 +102,7 @@ partial class MetadataOf<T>
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
-    protected IMetadataSource GetMetadataSource() => _mdsGetOnce.Get(() => Source.MainSource?.MetadataSource);
-    private readonly GetOnce<IMetadataSource> _mdsGetOnce = new();
+    protected IMetadataSource? GetMetadataSource() => _mdsGetOnce.Get(() => Source.MainSource?.MetadataSource);
+    private readonly GetOnce<IMetadataSource?> _mdsGetOnce = new();
 
 }

@@ -26,7 +26,7 @@ public static class IEntityExtensions
     /// <param name="id"></param>
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity One(this IEnumerable<IEntity> list, int id)
+    public static IEntity? One(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
         _countOneId++;
@@ -43,7 +43,7 @@ public static class IEntityExtensions
     /// <param name="guid"></param>
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity One(this IEnumerable<IEntity> list, Guid guid)
+    public static IEntity? One(this IEnumerable<IEntity> list, Guid guid)
     {
 #if DEBUG
         _countOneGuid++;
@@ -61,7 +61,7 @@ public static class IEntityExtensions
     /// <param name="id"></param>
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity FindRepoId(this IEnumerable<IEntity> list, int id)
+    public static IEntity? FindRepoId(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
         _countOneRepo++;
@@ -122,7 +122,7 @@ public static class IEntityExtensions
                 .ToListOpt();
     }
 
-    public static IEntity IfOfType(this IEntity entity, string typeName) 
+    public static IEntity? IfOfType(this IEntity entity, string typeName) 
         => entity.Type.Is(typeName) ? entity : null;
 
 
@@ -139,7 +139,7 @@ public static class IEntityExtensions
     }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity KeepOrThrowIfInvalid(this IEntity item, string contentType, object identifier)
+    public static IEntity KeepOrThrowIfInvalid(this IEntity? item, string? contentType, object identifier)
     {
         if (item == null || contentType != null && !item.Type.Is(contentType))
             throw new KeyNotFoundException($"Can't find {identifier} of type '{contentType}'");

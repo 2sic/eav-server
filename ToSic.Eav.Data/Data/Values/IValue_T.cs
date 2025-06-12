@@ -10,5 +10,5 @@ public interface IValue<out T> : IValue
     /// <summary>
     /// Typed contents of the value
     /// </summary>
-    T TypedContents { get; }
+    T? TypedContents { get; }
 }

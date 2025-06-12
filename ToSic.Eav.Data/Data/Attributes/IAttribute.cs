@@ -26,7 +26,7 @@ public interface IAttribute : IAttributeBase
     /// <param name="languageId">the language id (number)</param>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    object this[int languageId] { get; }
+    object? this[int languageId] { get; }
 
     /// <summary>
     /// Get the best/first matching value for the specified language key - untyped
@@ -34,7 +34,7 @@ public interface IAttribute : IAttributeBase
     /// <param name="languageKey">The language key (string) to look for</param>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    object this[string languageKey] { get; }
+    object? this[string languageKey] { get; }
 
 
     #endregion
@@ -44,11 +44,10 @@ public interface IAttribute : IAttributeBase
     /// Get the value and internal object result.
     /// Note that the language keys MUST be lower-cased and everything.
     /// </summary>
-    /// <param name="languageKeys"></param>
     /// <returns></returns>
     [PrivateApi("experimental in 12.05")]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    (IValue ValueField, object Result) GetTypedValue(string[] languageKeys, bool fallbackToAny);
+    (IValue? ValueField, object? Result) GetTypedValue(string[]? languageKeys, bool fallbackToAny);
 
     [PrivateApi("internal only")]
     [ShowApiWhenReleased(ShowApiMode.Never)]

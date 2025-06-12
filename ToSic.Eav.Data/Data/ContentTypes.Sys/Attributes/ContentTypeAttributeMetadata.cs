@@ -16,10 +16,10 @@ public class ContentTypeAttributeMetadata(
     int key,
     string name,
     ValueTypes type,
-    ContentTypeAttributeSysSettings sysSettings = default,
-    IEnumerable<IEntity> items = default,
-    IHasMetadataSourceAndExpiring appSource = default,
-    Func<IHasMetadataSourceAndExpiring> deferredSource = default)
+    ContentTypeAttributeSysSettings? sysSettings = null,
+    IEnumerable<IEntity>? items = null,
+    IHasMetadataSourceAndExpiring? appSource = null,
+    Func<IHasMetadataSourceAndExpiring>? deferredSource = null)
     : MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", items: items,
         appSource: appSource, deferredSource: deferredSource)
 {
@@ -36,27 +36,28 @@ public class ContentTypeAttributeMetadata(
     /// <summary>
     /// This list is populated every time the metadata is loaded.
     /// </summary>
-    private ICollection<IEntity> _directlyOwnedMd;
+    private ICollection<IEntity>? _directlyOwnedMd;
 
     /// <summary>
     /// Override data loading.
     /// In some cases, the source Attribute has directly attached metadata (like loaded from JSON)
     /// so this handles that case.
     /// </summary>
-    protected override ICollection<IEntity> LoadFromProviderInsideLock(IList<IEntity> additions = null)
+    protected override ICollection<IEntity> LoadFromProviderInsideLock(IList<IEntity>? additions = null)
     {
         // If nothing to inherit, behave using standard key mechanisms
-        var ownMd = _directlyOwnedMd = base.LoadFromProviderInsideLock();
-        if (!SysSettings.InheritMetadata) return ownMd;
+        var ownMd = _directlyOwnedMd = base.LoadFromProviderInsideLock(null);
+        if (!SysSettings.InheritMetadata)
+            return ownMd;
 
         // Assemble all the pieces from the sources it inherits from
         var final = new List<IEntity>();
         try
         {
-            foreach (var sourceDef in SysSettings.InheritMetadataOf)
+            foreach (var sourceDef in SysSettings.InheritMetadataOf!)
             {
                 var fromCurrent = GetMdOfOneSource(sourceDef.Key, sourceDef.Value, ownMd);
-                if (fromCurrent == null)
+                if (fromCurrent.Count == 0)
                     continue;
                 var ofNewTypes = fromCurrent
                     .Where(e => !final.Any(f => f.Type.Is(e.Type.NameId)))
@@ -77,7 +78,7 @@ public class ContentTypeAttributeMetadata(
             : MetadataOfOneSource(source);
         var list = !filter.HasValue()
             ? entities
-            : entities?.OfType(filter)?.ToListOpt();
+            : entities?.OfType(filter).ToListOpt();
         return list ?? [];
     }
 
@@ -116,7 +117,7 @@ public class ContentTypeAttributeMetadata(
             return null;
 
         // Get all the keys in the source-list except Empty (self-reference)
-        var sourceKeys = SysSettings.InheritMetadataOf.Keys
+        var sourceKeys = SysSettings.InheritMetadataOf!.Keys
             .Where(guid => guid != Guid.Empty)
             .Cast<Guid?>()
             .ToArray();

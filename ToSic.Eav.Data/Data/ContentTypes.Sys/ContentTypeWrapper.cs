@@ -13,7 +13,7 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
     public ContentTypeWrapper(IContentType contentType) : base((contentType as ContentTypeWrapper)?.GetContents() ?? contentType)
     { }
 
-    public ContentTypeWrapper(IContentType contentType, IDecorator<IContentType> wrapperDecorator = null) : this(contentType)
+    public ContentTypeWrapper(IContentType contentType, IDecorator<IContentType>? wrapperDecorator = null) : this(contentType)
     {
         _wrapperDecorator = wrapperDecorator;
     }
@@ -39,9 +39,9 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
         if (GetContents() is IHasDecorators<IContentType> hasDecors)
             list.AddRange(hasDecors.Decorators);
         return list.ToImmutableOpt();
-    });
+    })!;
     private readonly GetOnce<IImmutableList<IDecorator<IContentType>>> _decorators = new();
-    private readonly IDecorator<IContentType> _wrapperDecorator;
+    private readonly IDecorator<IContentType>? _wrapperDecorator;
 
 
 
@@ -63,7 +63,7 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
 
     public IEnumerable<IContentTypeAttribute> Attributes => GetContents()!.Attributes;
 
-    public IContentTypeAttribute this[string fieldName] => GetContents()![fieldName];
+    public IContentTypeAttribute? this[string fieldName] => GetContents()![fieldName];
 
     public RepositoryTypes RepositoryType => GetContents()!.RepositoryType;
 
@@ -76,12 +76,12 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
     public bool Is(string name) => GetContents()!.Is(name);
 
 
-    public string TitleFieldName => GetContents()!.TitleFieldName;
+    public string? TitleFieldName => GetContents()!.TitleFieldName;
 
     [PrivateApi] // #SharedFieldDefinition
-    public ContentTypeSysSettings SysSettings => GetContents()!.SysSettings;
+    public ContentTypeSysSettings? SysSettings => GetContents()!.SysSettings;
 
-    public string DynamicChildrenField => GetContents()!.DynamicChildrenField;
+    public string? DynamicChildrenField => GetContents()!.DynamicChildrenField;
 
     public bool AlwaysShareConfiguration => GetContents()!.AlwaysShareConfiguration;
 

@@ -4,7 +4,7 @@ public static class IEntityListExtensions
 {
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity FirstOrDefaultOfType(this IEnumerable<IEntity> list, string typeName)
+    public static IEntity? FirstOrDefaultOfType(this IEnumerable<IEntity> list, string typeName)
         => list.FirstOrDefault(e => e.Type.Is(typeName));
 
     [ShowApiWhenReleased(ShowApiMode.Never)]

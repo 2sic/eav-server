@@ -75,19 +75,19 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     [JsonIgnore]
     [PrivateApi("new 15.04")]
     [ContentTypeAttributeIgnore]
-    public string TitleFieldName
+    public string? TitleFieldName
         => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
-    private readonly GetOnce<string> _titleFieldName = new();
+    private readonly GetOnce<string?> _titleFieldName = new();
 
     /// <summary>
     /// For future use, like if this type is SQL based etc.
     /// </summary>
     [PrivateApi]
     [ContentTypeAttributeIgnore]
-    public ContentTypeSysSettings SysSettings => null;
+    public ContentTypeSysSettings? SysSettings => null;
 
     /// <inheritdoc />
-    public IContentTypeAttribute this[string fieldName]
+    public IContentTypeAttribute? this[string fieldName]
         => Attributes.FirstOrDefault(a => a.Name.EqualsInsensitive(fieldName));
 
 
@@ -96,8 +96,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     /// <inheritdoc />
     [PrivateApi("WIP 12.03")]
     // Don't cache the result, as it could change during runtime
-    // TODO: probably remove and use the DetailsOrNull2() instead
-    public string DynamicChildrenField => this.DetailsOrNull()?.DynamicChildrenField;
+    public string? DynamicChildrenField => this.DetailsOrNull()?.DynamicChildrenField;
 
     #endregion
 
@@ -126,5 +125,6 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     /// </summary>
     public override string ToString() => $"{this.Name}/{NameId} - {base.ToString()}";
 
+    [field: AllowNull, MaybeNull]
     public PiggyBack PiggyBack => field ??= new();
 }

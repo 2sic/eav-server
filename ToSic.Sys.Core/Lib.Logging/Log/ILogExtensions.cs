@@ -19,7 +19,7 @@ public static partial class ILogExtensions
     /// <returns></returns>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static ILog? SubLogOrNull(this ILog log, string name, bool enabled = true)
+    public static ILog? SubLogOrNull(this ILog? log, string name, bool enabled = true)
     {
         if (!enabled)
             return null;

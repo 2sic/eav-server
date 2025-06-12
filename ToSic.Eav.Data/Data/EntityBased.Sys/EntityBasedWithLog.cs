@@ -13,7 +13,8 @@ public abstract class EntityBasedWithLog: EntityBasedType, IHasLog
     /// <param name="entity">entity which will be the foundation of this type</param>
     /// <param name="parentLog">parent log to chain</param>
     /// <param name="logName">Name for the logger</param>
-    protected EntityBasedWithLog(IEntity entity, ILog parentLog, string logName) : base(entity) => Log = new Log(logName, parentLog);
+    protected EntityBasedWithLog(IEntity entity, ILog? parentLog, string logName) : base(entity)
+        => Log = new Log(logName, parentLog);
 
     /// <summary>
     /// An entity based type which also logs what it does
@@ -22,7 +23,8 @@ public abstract class EntityBasedWithLog: EntityBasedType, IHasLog
     /// <param name="languageCodes">languages to prefer in value lookups</param>
     /// <param name="parentLog">parent log to chain</param>
     /// <param name="logName">Name for the logger</param>
-    protected EntityBasedWithLog(IEntity entity, string[] languageCodes, ILog parentLog, string logName) : base(entity, languageCodes) => Log = new Log(logName, parentLog);
+    protected EntityBasedWithLog(IEntity entity, string[] languageCodes, ILog? parentLog, string logName) : base(entity, languageCodes)
+        => Log = new Log(logName, parentLog);
 
     /// <summary>
     /// An entity based type which also logs what it does
@@ -31,7 +33,11 @@ public abstract class EntityBasedWithLog: EntityBasedType, IHasLog
     /// <param name="languageCode">language to prefer in value lookups</param>
     /// <param name="parentLog">parent log to chain</param>
     /// <param name="logName">Name for the logger</param>
-    protected EntityBasedWithLog(IEntity entity, string languageCode, ILog parentLog, string logName) : base(entity, languageCode) => Log = new Log(logName, parentLog);
+    protected EntityBasedWithLog(IEntity entity, string? languageCode, ILog parentLog, string logName)
+        : base(entity, languageCode != null
+            ? [languageCode]
+            : [])
+        => Log = new Log(logName, parentLog);
 
     /// <inheritdoc/>
     public ILog Log { get; }

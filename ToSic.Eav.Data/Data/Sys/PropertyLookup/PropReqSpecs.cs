@@ -4,7 +4,7 @@
 /// Property Request Specifications - to ask an object such as an IEntity for a property with additional specs such as languages.
 /// </summary>
 /// <param name="Field"></param>
-/// <param name="dimensions"></param>
+/// <param name="Dimensions"></param>
 /// <param name="LogOrNull">Log is null if no logging should happen, or a real logger if it's in use</param>
 /// <param name="TreatEmptyAsDefault">If the result returns something empty but non-null, treat as final.</param>
 /// <param name="DimsAreFinal">
@@ -12,18 +12,18 @@
 /// This is to prevent unnecessary lower-casing and extending dimensions with the default null-entry, when it has already been done before.
 /// </param>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record PropReqSpecs(string Field, string[] dimensions, bool DimsAreFinal, ILog LogOrNull = null, bool TreatEmptyAsDefault = true)
+public record PropReqSpecs(string Field, string?[]? Dimensions, bool DimsAreFinal, ILog? LogOrNull = null, bool TreatEmptyAsDefault = true)
     : ICanDump
 {
-    public static string[] EmptyDimensions = [default];
+    public static string?[] EmptyDimensions = [null];
 
     public PropReqSpecs(string field): this(field, EmptyDimensions, DimsAreFinal: true)
     { }
 
-    public readonly string[] Dimensions = dimensions != null
+    public readonly string?[] Dimensions = Dimensions != null
         ? DimsAreFinal
-            ? dimensions
-            : ExtendDimsWithDefault(dimensions)
+            ? Dimensions
+            : ExtendDimsWithDefault(Dimensions)
         : EmptyDimensions;
     
     /// <summary>
@@ -41,9 +41,9 @@ public record PropReqSpecs(string Field, string[] dimensions, bool DimsAreFinal,
         => this with { LogOrNull = LogOrNull.SubLogOrNull(title, enabled), DimsAreFinal = true };
 
     public string Dump() => _dump ??= $"{nameof(PropReqSpecs)} {{ {nameof(Field)}:{Field}, {nameof(Dimensions)}:{string.Join(",", Dimensions)} }}";
-    private string _dump;
+    private string? _dump;
 
-    internal static string[] ExtendDimsWithDefault(string[] dimensions)
+    internal static string?[] ExtendDimsWithDefault(string?[]? dimensions)
     {
         // empty list - add the default dimension
         if (dimensions == null || dimensions.Length == 0)

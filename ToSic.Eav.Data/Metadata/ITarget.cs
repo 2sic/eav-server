@@ -38,7 +38,7 @@ public interface ITarget
     /// <returns>The string key of the target. Null if the identifier is not a string.</returns>
     [JsonPropertyName("String")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    string KeyString { get; }
+    string? KeyString { get; }
 
     /// <summary>
     /// A number (int) key identifying a target. 
@@ -57,7 +57,8 @@ public interface ITarget
     Guid? KeyGuid { get; }
 
     [JsonIgnore]
-    [PrivateApi("WIP v13")] string Title { get; set; }
+    [PrivateApi("WIP v13")]
+    string Title { get; }
 
     [PrivateApi("WIP for v14")]
     string[] Recommendations { get; set; }

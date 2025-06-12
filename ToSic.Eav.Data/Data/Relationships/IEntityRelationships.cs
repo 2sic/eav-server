@@ -32,7 +32,7 @@ public interface IEntityRelationships
     /// <param name="type">Restrict the results to a specific ContentType</param>
     /// <param name="log">Optional logger, to debug what happens internally</param>
     /// <returns>Always returns a list - empty or containing results</returns>
-    IEnumerable<IEntity> FindChildren(string field = null, string type = null, ILog log = null);
+    IEnumerable<IEntity> FindChildren(string? field = null, string? type = null, ILog? log = null);
 
     /// <summary>
     /// Find the parents with optional criteria.
@@ -41,7 +41,7 @@ public interface IEntityRelationships
     /// <param name="field">Get only the children of a specific field</param>
     /// <param name="log">Optional logger, to debug what happens internally</param>
     /// <returns>Always returns a list - empty or containing results</returns>
-    IEnumerable<IEntity> FindParents(string type = null, string field = null, ILog log = null);
+    IEnumerable<IEntity> FindParents(string? type = null, string? field = null, ILog? log = null);
 
     ///// <summary>
     ///// Note 2dm - this actually just contained the stream of all relationships of the App

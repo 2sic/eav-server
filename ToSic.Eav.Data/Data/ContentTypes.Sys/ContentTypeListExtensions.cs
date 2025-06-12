@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 public static class ContentTypeListExtensions
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEnumerable<IContentType> OfScope(this IEnumerable<IContentType> list, string scope = null, bool includeAttributeTypes = false)
+    public static IEnumerable<IContentType> OfScope(this IEnumerable<IContentType> list, string? scope = null, bool includeAttributeTypes = false)
     {
         var set = list
             .Where(c => includeAttributeTypes || !c.Name.StartsWith("@"));

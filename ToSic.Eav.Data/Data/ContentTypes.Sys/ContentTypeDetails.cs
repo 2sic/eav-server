@@ -29,11 +29,11 @@ public class ContentTypeDetails(IEntity entity) : EntityBasedType(entity)
         }
     }
 
-    public string Icon => GetThis<string>(null);
+    public string? Icon => GetThis<string>(null);
 
-    public string DynamicChildrenField => GetThis<string>(null);
+    public string? DynamicChildrenField => GetThis<string>(null);
 
-    public string Description => GetThis<string>(null);
+    public string? Description => GetThis<string>(null);
 
-    public string AdditionalSettings => GetThis<string>(null);
+    public string? AdditionalSettings => GetThis<string>(null);
 }

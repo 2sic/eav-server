@@ -38,11 +38,11 @@ public class ContentTypeAttributeSysSettings
     /// </summary>
     public bool InheritMetadataOfPrimary { get; init; }
 
-    public Dictionary<Guid, string> InheritMetadataOf { get; init; }
+    public Dictionary<Guid, string>? InheritMetadataOf { get; init; }
 
-    public bool InheritMetadata => InheritMetadataOf?.Any() == true || (Inherit != null && InheritMetadataOfPrimary);
+    public bool InheritMetadata => InheritMetadataOf.SafeAny() || (Inherit != null && InheritMetadataOfPrimary);
 
-    public Guid? InheritMetadataMainGuid => InheritMetadataOf?.Any() == true 
+    public Guid? InheritMetadataMainGuid => InheritMetadataOf.SafeAny()
         ? InheritMetadataOf.FirstOrDefault().Key 
         : InheritMetadataOfPrimary
             ? Inherit

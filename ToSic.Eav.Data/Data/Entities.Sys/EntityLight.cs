@@ -28,7 +28,7 @@ public abstract record EntityLight //: IEntityLight
 
     [JsonIgnore]
     [PrivateApi]
-    internal /*required*/ string TitleFieldName
+    internal /*required*/ string? TitleFieldName
     {
         get => field ?? Type.TitleFieldName;
         init;

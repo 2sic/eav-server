@@ -20,7 +20,7 @@ public static class MultiWrapperEquality
     /// <param name="a"></param>
     /// <param name="b"></param>
     /// <returns></returns>
-    public static bool EqualsWrapper<T>(IMultiWrapper<T> a, IMultiWrapper<T> b) where T : class
+    public static bool EqualsWrapper<T>(IMultiWrapper<T>? a, IMultiWrapper<T>? b) where T : class
     {
         // Check the root objects first and independently
         // Since if either is null and the other is not, then they can't be equal
@@ -45,12 +45,15 @@ public static class MultiWrapperEquality
     /// <param name="a"></param>
     /// <param name="b"></param>
     /// <returns></returns>
-    public static bool EqualsObj<T>(IMultiWrapper<T> a, object b) where T : class
+    public static bool EqualsObj<T>(IMultiWrapper<T>? a, object? b) where T : class
     {
-        if (b is null) return a is null; // 2023-08-08 previously returned false every time, which caused problems on null-checks;
-        if (ReferenceEquals(a, b)) return true;
+        if (b is null)
+            return a is null; // 2023-08-08 previously returned false every time, which caused problems on null-checks;
+        if (ReferenceEquals(a, b))
+            return true;
         // This is a check if it's exactly that type, but it could be an inherited type, so false must fall to the next check
-        if (b is T && a.RootContentsForEqualityCheck.Equals(b)) return true;
+        if (b is T && a.RootContentsForEqualityCheck.Equals(b))
+            return true;
         return b is IMultiWrapper<T> wrapper && EqualsWrapper(a, wrapper);
     }
 
@@ -64,7 +67,7 @@ public static class MultiWrapperEquality
     /// But we can't use != null, because that would call the != operator and be recursive.
     /// </remarks>
     /// <returns></returns>
-    public static bool IsEqual<T>(IMultiWrapper<T> a, IMultiWrapper<T> b) where T : class
+    public static bool IsEqual<T>(IMultiWrapper<T>? a, IMultiWrapper<T>? b) where T : class
     {
         // 2023-08-08 previously returned false if d1 was null (without comparing d2)
         if (a is null) return b is null;

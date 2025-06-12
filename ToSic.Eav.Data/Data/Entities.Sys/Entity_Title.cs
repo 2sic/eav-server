@@ -5,19 +5,18 @@ namespace ToSic.Eav.Data.Entities.Sys;
 partial record Entity
 {
     /// <inheritdoc />
-    public IAttribute Title => TitleFieldName == null
+    public IAttribute? Title => TitleFieldName == null
         ? null
-        : Attributes?.ContainsKey(TitleFieldName) ?? false ? Attributes[TitleFieldName] : null;
+        : this[TitleFieldName];
 
 
     /// <inheritdoc />
-    public string GetBestTitle() => GetBestTitle(null, 0);
+    public string? GetBestTitle() => GetBestTitle(null, 0);
 
     /// <inheritdoc />
-    public string GetBestTitle(string[] dimensions) => GetBestTitle(dimensions, 0);
+    public string? GetBestTitle(string[] dimensions) => GetBestTitle(dimensions, 0);
 
-    /// <inheritdoc />
-    internal string GetBestTitle(string[] dimensions, int recursionCount)
+    internal string? GetBestTitle(string[]? dimensions, int recursionCount)
     {
         // wrap it try-catch, because in rare cases the title may not be set or something else could break
         try
@@ -26,13 +25,16 @@ partial record Entity
 
             // in case the title is an entity-picker and has items, try to ask it for the title
             // note that we're counting recursions, just to be sure it won't loop forever
-            if (bestTitle is IEnumerable<IEntity> titleRelationship && titleRelationship.Any())
-                if (recursionCount < 3) // && (maybeRelationship?.Any() ?? false))
-                    bestTitle = (titleRelationship.FirstOrDefault() as Entity)?
-                                .GetBestTitle(dimensions, recursionCount + 1)
-                                ?? bestTitle;
+            if (bestTitle is not IEnumerable<IEntity> titleRelationship)
+                return bestTitle?.ToString();
 
-            return bestTitle?.ToString();
+            var relsList = titleRelationship.ToListOpt();
+            if (relsList.Any() && recursionCount < 3)
+                bestTitle = (relsList.FirstOrDefault() as Entity)
+                            ?.GetBestTitle(dimensions, recursionCount + 1)
+                            ?? bestTitle;
+
+            return bestTitle.ToString();
         }
         catch
         {

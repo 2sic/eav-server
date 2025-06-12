@@ -16,10 +16,10 @@ public interface IGlobalDataService
     /// </summary>
     /// <param name="name">the name, either the normal name or the NameId which looks like a GUID</param>
     /// <returns>a type object or null if not found</returns>
-    IContentType GetContentType(string name);
+    IContentType? GetContentType(string name);
 
     /// <returns>a type object or null if not found</returns>
-    IContentType GetContentTypeIfAlreadyLoaded(string name);
+    IContentType? GetContentTypeIfAlreadyLoaded(string name);
 
     IImmutableList<IEntity> ListRequired { get; }
 }

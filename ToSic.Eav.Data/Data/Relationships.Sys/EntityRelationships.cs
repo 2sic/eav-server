@@ -16,22 +16,22 @@ namespace ToSic.Eav.Data.Relationships.Sys;
 /// which I wasn't able to track down, probably because of record specific equality checks.
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnumerable<IEntityRelationship> fallbackRels = null)
+internal class EntityRelationships(IEntity entity, IRelationshipSource? app, IEnumerable<IEntityRelationship>? fallbackRels = null)
     : IEntityRelationships
 {
-    private readonly IEntity _entity = entity as IEntity;
-    private readonly IRelationshipSource _appSource = app;
-    private readonly IEnumerable<IEntityRelationship> _fallbackRels = fallbackRels;
+    private readonly IRelationshipSource? _appSource = app;
+    private readonly IEnumerable<IEntityRelationship>? _fallbackRels = fallbackRels;
 
     /// <summary>
     /// Special constructor for cloning, where we attach the manager of the original
     /// </summary>
-    internal static EntityRelationships ForClone(IEntity entity, EntityRelationships original)
+    internal static EntityRelationships ForClone(IEntity entity, EntityRelationships? original)
         => new(entity, original?._appSource, original?._fallbackRels);
 
     /// <summary>
     /// This should be reworked, it often contains all relationships of the entire app
     /// </summary>
+    [field: AllowNull, MaybeNull]
     private IEnumerable<IEntityRelationship> AllRelationships => field ??= _appSource?.Relationships ?? _fallbackRels ?? [];
 
     /// <inheritdoc />
@@ -56,14 +56,14 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
 
     }
 
-    private SynchronizedList<IEntityRelationship> _childRelationships;
+    private SynchronizedList<IEntityRelationship>? _childRelationships;
 
     /// <summary>
     /// Directly retrieve the children - should only be called by the caching mechanism
     /// </summary>
     private IImmutableList<IEntityRelationship> GetChildrenUncached() =>
         AllRelationships
-            .Where(r => ReferenceEquals(r.Parent, _entity))
+            .Where(r => ReferenceEquals(r.Parent, entity))
             .ToImmutableOpt();
 
 
@@ -90,7 +90,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
         return _parentRelationships.List;
 
     }
-    private SynchronizedList<IEntityRelationship> _parentRelationships;
+    private SynchronizedList<IEntityRelationship>? _parentRelationships;
 
     #region Special Comparison
 
@@ -125,41 +125,42 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
     /// <returns></returns>
     private Func<IEntity, bool> SelfComparisonForParent()
     {
-        var isCase3WithDraft = _entity is Entity realEntity && realEntity.EntityId != realEntity.RepositoryId;
-        var myId = _entity.EntityId;
+        var isCase3WithDraft = entity is Entity realEntity && realEntity.EntityId != realEntity.RepositoryId;
+        var myId = entity.EntityId;
         return _selfComparisonForParent ??= isCase3WithDraft
             ? other => myId == other.EntityId
-            : other => ReferenceEquals(_entity, other);
+            : other => ReferenceEquals(entity, other);
     }
 
-    private Func<IEntity, bool> _selfComparisonForParent;
+    private Func<IEntity, bool>? _selfComparisonForParent;
 
     #endregion
 
 
     /// <inheritdoc />
-    public IRelationshipChildren Children => _entity is IEntity entity1
-        ? new RelationshipChildren(entity1.Attributes)
-        : null;
+    public IRelationshipChildren Children
+        => entity != null
+            ? new RelationshipChildren(entity.Attributes)
+            : null;
 
 
 
     #region Relationship-Navigation
 
     /// <inheritdoc />
-    public IEnumerable<IEntity> FindChildren(string field = null, string type = null, ILog log = null) 
+    public IEnumerable<IEntity> FindChildren(string? field = null, string? type = null, ILog? log = null) 
     {
         var l = log.Fn<IEnumerable<IEntity>>($"field:{field}; type:{type}");
 
         ICollection<IEntity> rels;
-        if (string.IsNullOrEmpty(field))
+        if (field == null || string.IsNullOrEmpty(field))
             rels = ChildRelationships()
                 .Select(r => r.Child)
                 .ToListOpt();
         else
         {
             // If the field doesn't exist, return empty list
-            if (!_entity.Attributes.ContainsKey(field))
+            if (!entity.Attributes.ContainsKey(field))
                 return l.Return([], "empty list, field doesn't exist");
                 
             // if it does exist, still catch any situation where it's not a relationship field
@@ -175,13 +176,13 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource app, IEnu
 
         // Optionally filter by type
         if (!string.IsNullOrEmpty(type) && rels.Any())
-            rels = rels.OfType(type).ToListOpt();
+            rels = rels.OfType(type!).ToListOpt();
 
         return l.Return(rels, $"{rels.Count}");
     }
 
     /// <inheritdoc />
-    public IEnumerable<IEntity> FindParents(string type = null, string field = null, ILog log = null) 
+    public IEnumerable<IEntity> FindParents(string? type = null, string? field = null, ILog? log = null) 
     {
         var l = log.Fn<IEnumerable<IEntity>>($"type:{type}; field:{field}");
 

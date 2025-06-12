@@ -5,20 +5,22 @@ namespace ToSic.Eav.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavSystemInfo
 {
-    public static Version Version => field ??= Assembly.GetExecutingAssembly().GetName().Version;
+    [field: AllowNull, MaybeNull]
+    public static Version Version => field ??= Assembly.GetExecutingAssembly().GetName().Version ?? new Version();
 
-    public static string VersionString { get; }= VersionToNiceFormat(Version);
+    public static string VersionString { get; } = VersionToNiceFormat(Version);
 
     // Todo: probably move to plumbing or extension method?
-    public static string VersionToNiceFormat(Version version)
-        => $"{version.Major:00}.{version.Minor:00}.{version.Build:00}";
+    public static string VersionToNiceFormat(Version? version)
+        => version == null
+            ? "00.00.00"
+            : $"{version.Major:00}.{version.Minor:00}.{version.Build:00}";
 
 
     // Version is used also as cache-break for js assets.
     // In past build revision was good cache-break value, but since assemblies are deterministic 
     // we use application start unix time as slow changing revision value for cache-break purpose. 
-    public static string VersionWithStartUpBuild { get; }=
-        VersionWithFakeBuildNumber(Assembly.GetExecutingAssembly().GetName().Version).ToString();
+    public static string VersionWithStartUpBuild { get; } = VersionWithFakeBuildNumber(Version).ToString();
 
     /// <summary>
     /// application start unix time as slow changing revision value

@@ -38,7 +38,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     /// </summary>
     /// <param name="baseEntity"></param>
     /// <param name="decorator">Additional wrapper to add</param>
-    public EntityWrapper(IEntity baseEntity, IDecorator<IEntity> decorator) : this(baseEntity)
+    public EntityWrapper(IEntity baseEntity, IDecorator<IEntity>? decorator) : this(baseEntity)
     {
         if (decorator != null)
             Decorators = [..Decorators, decorator];
@@ -69,7 +69,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public IContentType Type => Entity.Type;
 
     /// <inheritdoc />
-    public IAttribute Title => Entity.Title;
+    public IAttribute? Title => Entity.Title;
 
     /// <inheritdoc />
     public DateTime Modified => Entity.Modified;
@@ -77,7 +77,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public DateTime Created => Entity.Created;
 
     /// <inheritdoc />
-    public IAttribute this[string attributeName] => Entity[attributeName];
+    public IAttribute? this[string attributeName] => Entity[attributeName];
 
     /// <inheritdoc />
     public IEntityRelationships Relationships => Entity.Relationships;
@@ -97,7 +97,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
         => Entity.GetBestValue(attributeName, languages);
 
     [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
-    public T GetBestValue<T>(string attributeName, string[] languages)
+    public T? GetBestValue<T>(string attributeName, string[] languages)
         => Entity.GetBestValue<T>(attributeName, languages);
 
     /// <inheritdoc />
@@ -122,40 +122,38 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     #region support for LINQ enhancements
 
     /// <inheritdoc />
-    public IEnumerable<IEntity> Children(string field = null, string type = null)
+    public IEnumerable<IEntity> Children(string? field = null, string? type = null)
         => Entity.Children(field, type);
 
     /// <inheritdoc />
-    public IEnumerable<IEntity> Parents(string type = null, string field = null)
+    public IEnumerable<IEntity> Parents(string? type = null, string? field = null)
         => Entity.Parents(type, field);
 
     #endregion
 
     /// <inheritdoc />
     [Obsolete]
-    public object Value(string field) => Entity.Value(field);
+    public object? Value(string field) => Entity.Value(field);
 
     /// <inheritdoc />
     [Obsolete]
-    public T Value<T>(string field) => Entity.Value<T>(field);
+    public T? Value<T>(string field) => Entity.Value<T>(field);
 
     /// <inheritdoc />
-    public object Get(string name) => Entity.Get(name);
-
-    /// <inheritdoc />
-    // ReSharper disable once MethodOverloadWithOptionalParameter
-    public object Get(string name, NoParamOrder noParamOrder = default, string language = default,
-        string[] languages = default) =>
-        Entity.Get(name, noParamOrder, language, languages);
-
-    /// <inheritdoc />
-    public TValue Get<TValue>(string name) => Entity.Get<TValue>(name);
+    public object? Get(string name) => Entity.Get(name);
 
     /// <inheritdoc />
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default,
-        string language = default, string[] languages = default) =>
-        Entity.Get(name, noParamOrder, fallback, language, languages);
+    public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string[]? languages = default)
+        => Entity.Get(name, noParamOrder, language, languages);
+
+    /// <inheritdoc />
+    public TValue? Get<TValue>(string name) => Entity.Get<TValue>(name);
+
+    /// <inheritdoc />
+    // ReSharper disable once MethodOverloadWithOptionalParameter
+    public TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default)
+        => Entity.Get(name, noParamOrder, fallback, language, languages);
 
 
     [PrivateApi("Internal")]

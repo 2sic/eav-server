@@ -20,7 +20,7 @@ partial class MetadataOf<T>
     #region GetBestValue
 
     /// <inheritdoc />
-    public TVal GetBestValue<TVal>(string name, string typeName = null)
+    public TVal? GetBestValue<TVal>(string name, string? typeName = null)
     {
         var list = typeName == null
             ? MetadataWithoutPermissions
@@ -32,12 +32,12 @@ partial class MetadataOf<T>
     }
 
     /// <inheritdoc />
-    public TVal GetBestValue<TVal>(string name, string[] typeNames)
+    public TVal? GetBestValue<TVal>(string name, string[] typeNames)
     {
         foreach (var type in typeNames)
         {
             var result = GetBestValue<TVal>(name, type);
-            if (!EqualityComparer<TVal>.Default.Equals(result, default))
+            if (!EqualityComparer<TVal>.Default.Equals(result!, default!))
                 return result;
         }
         return default;

@@ -6,6 +6,6 @@ partial record Entity
     public required IReadOnlyDictionary<string, IAttribute> Attributes { get; init; }
 
     /// <inheritdoc />
-    public IAttribute this[string attributeName] => Attributes.TryGetValue(attributeName, out var result) ? result : null; 
+    public IAttribute? this[string attributeName] => Attributes.TryGetValue(attributeName, out var result) ? result : null; 
 
 }

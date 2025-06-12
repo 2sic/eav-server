@@ -16,9 +16,10 @@ public abstract class EntityBasedType : IEntityBasedType
     /// <inheritdoc cref="IEntityWrapper.Entity" />
     public IEntity Entity { get; protected set; }
 
-    [PrivateApi] public IEntity RootContentsForEqualityCheck
+    [PrivateApi] public IEntity? RootContentsForEqualityCheck
         => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
 
+    [field: AllowNull, MaybeNull]
     public IEnumerable<IDecorator<IEntity>> Decorators
         => field ??= (Entity as IEntityWrapper)?.Decorators ?? [];
 
@@ -32,10 +33,13 @@ public abstract class EntityBasedType : IEntityBasedType
     protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
         => LookupLanguages = languageCodes ?? [];
 
-    protected EntityBasedType(IEntity entity, string languageCode) : this(entity)
-        => LookupLanguages = languageCode != null ? [languageCode] : [];
+    //protected EntityBasedType(IEntity entity, string? languageCode) : this(entity)
+    //    => LookupLanguages = languageCode != null
+    //        ? [languageCode]
+    //        : [];
 
     /// <inheritdoc />
+    [field: AllowNull, MaybeNull]
     public virtual string Title => field
         ??= Entity?.GetBestTitle() ?? "";
 
@@ -59,6 +63,7 @@ public abstract class EntityBasedType : IEntityBasedType
     /// <param name="fieldName">field name</param>
     /// <param name="fallback">fallback value</param>
     /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
+    [return: NotNullIfNotNull(nameof(fallback))]
     protected T Get<T>(string fieldName, T fallback)
         => Entity == null
             ? fallback
@@ -72,9 +77,11 @@ public abstract class EntityBasedType : IEntityBasedType
     /// <param name="fallback">Value to provide if nothing was found - required</param>
     /// <param name="propertyName">The property name - will be auto-filled by the compiler</param>
     /// <returns>The typed value</returns>
-    protected T GetThis<T>(T fallback, [CallerMemberName] string propertyName = default)
-        => Get(propertyName, fallback);
+    [return: NotNullIfNotNull(nameof(fallback))]
+    protected T? GetThis<T>(T? fallback, [CallerMemberName] string? propertyName = default)
+        => Get(propertyName!, fallback);
 
-    protected T GetThisIfEntity<T>(T fallback, [CallerMemberName] string propertyName = default)
+    [return: NotNullIfNotNull(nameof(fallback))]
+    protected T GetThisIfEntity<T>(T fallback, [CallerMemberName] string? propertyName = default)
         => Entity == null ? fallback : GetThis(fallback, propertyName);
 }

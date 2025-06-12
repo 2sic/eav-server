@@ -6,10 +6,10 @@ using ToSic.Lib.Services;
 namespace ToSic.Eav.Data.Global.Sys;
 internal class GlobalDataServiceUnknown(WarnUseOfUnknown<GlobalDataServiceUnknown> _): IGlobalDataService
 {
-    public IContentType GetContentType(string name)
+    public IContentType? GetContentType(string name)
         => null;
 
-    public IContentType GetContentTypeIfAlreadyLoaded(string name)
+    public IContentType? GetContentTypeIfAlreadyLoaded(string name)
         => null;
 
     public IImmutableList<IEntity> ListRequired

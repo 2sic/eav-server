@@ -25,7 +25,7 @@ public class Target : ITarget
     public Guid? KeyGuid { get; set; }
 
     /// <inheritdoc/>
-    public string KeyString { get; set; }
+    public string? KeyString { get; set; }
 
 
     /// <summary>
@@ -37,7 +37,7 @@ public class Target : ITarget
     /// Constructor for a new MetadataTarget, which is empty.
     /// </summary>
     [PrivateApi]
-    public Target(int targetType, string identifier, string keyString = default, int? keyNumber = default, Guid? keyGuid = default)
+    public Target(int targetType, string identifier, string? keyString = default, int? keyNumber = default, Guid? keyGuid = default)
     {
         TargetType = targetType;
         Title = identifier;
@@ -56,7 +56,6 @@ public class Target : ITarget
     /// <summary>
     /// Constructor to copy an existing MetadataFor object. 
     /// </summary>
-    /// <param name="originalToCopy"></param>
     [PrivateApi("not sure if this should be public, since we don't have a proper cloning standard")]
     public Target(ITarget originalToCopy, Guid? keyGuid = default)
     {
@@ -68,7 +67,9 @@ public class Target : ITarget
     }
 
     [JsonIgnore]
-    [PrivateApi("WIP v13")] public string Title { get; set; }
+    [PrivateApi("WIP v13")]
+    public string Title { get; init; } = "";
+
     public string[] Recommendations { get; set; } = [];
 
     public override string ToString() => 

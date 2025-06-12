@@ -48,7 +48,7 @@ public static partial class ObjectExtensions
     /// </remarks>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static T? ConvertOrDefault<T>(this object value, bool numeric = false, bool truthy = false) 
+    public static T? ConvertOrDefault<T>(this object? value, bool numeric = false, bool truthy = false) 
         => value.TryConvert<T>(numeric: numeric, truthy: truthy).Value;
 
     [ShowApiWhenReleased(ShowApiMode.Never)]

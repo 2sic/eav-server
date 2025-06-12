@@ -10,7 +10,8 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
         // Because of changes in EF 3.x we had to split where part on server and client.
         return DbContext.SqlDb.TsDynDataDimensions
             .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
-            .ToList().Where(d =>
+            .ToList()
+            .Where(d =>
                 d.Matches(externalKey)
                 && d.Key.ToLower() == systemKey.ToLower())// This is evaluated on the client
             .Select(d => d.DimensionId)

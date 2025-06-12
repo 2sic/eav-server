@@ -47,9 +47,9 @@ internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBa
         ??= TargetTypes
             .DistinctBy(pair => pair.Value) // Filter out duplicate names, keeping the first one
             .ToDictionary(pair => pair.Value, pair => pair.Key);
-    private static Dictionary<string, int> _targetTypesByName;
+    private static Dictionary<string, int>? _targetTypesByName;
 
     public ImmutableDictionary<int, string> TargetTypes => _targetTypesStatic ??= loader.Value.GetTargetTypes();
-    private static ImmutableDictionary<int, string> _targetTypesStatic;
+    private static ImmutableDictionary<int, string>? _targetTypesStatic;
 
 }

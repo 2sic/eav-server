@@ -14,7 +14,7 @@ static class IEntitySubListNavigation
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static PropReqResult? TryToNavigateToEntityInList(this IEntity entity, PropReqSpecs specs,
-        object parentDynEntity, PropertyLookupPath path) 
+        object parentDynEntity, PropertyLookupPath? path) 
     {
         var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
         var field = specs.Field;
@@ -24,7 +24,9 @@ static class IEntitySubListNavigation
             return l.ReturnNull("no dyn-child");
 
         // Check if the children are in any way relevant
-        var children = entity.Children(dynChildField);
+        var children = entity
+            .Children(dynChildField!)
+            ?.ToListOpt();
         if (children == null)
             return l.ReturnNull("no child");
         if (!children.Any())

@@ -21,12 +21,16 @@ public class ImmutableSmartList: IImmutableList<IEntity>
     /// </summary>
     protected IImmutableList<IEntity> Contents;
 
-    private ImmutableSmartList(IImmutableList<IEntity> contents) => Contents = contents;
+    private ImmutableSmartList(IImmutableList<IEntity> contents)
+    {
+        Contents = contents;
+    }
 
     #endregion
 
     #region Smart bits / performance
 
+    [field: AllowNull, MaybeNull]
     internal LazyFastAccess Fast => field ??= new(Contents);
 
     #endregion
@@ -45,10 +49,10 @@ public class ImmutableSmartList: IImmutableList<IEntity>
 
     public IImmutableList<IEntity> Clear() => Contents.Clear();
 
-    public int IndexOf(IEntity item, int index, int count, IEqualityComparer<IEntity> equalityComparer)
+    public int IndexOf(IEntity item, int index, int count, IEqualityComparer<IEntity>? equalityComparer)
         => Contents.IndexOf(item, index, count, equalityComparer);
 
-    public int LastIndexOf(IEntity item, int index, int count, IEqualityComparer<IEntity> equalityComparer)
+    public int LastIndexOf(IEntity item, int index, int count, IEqualityComparer<IEntity>? equalityComparer)
         => Contents.LastIndexOf(item, index, count, equalityComparer);
 
     public IImmutableList<IEntity> Add(IEntity value)
@@ -63,13 +67,13 @@ public class ImmutableSmartList: IImmutableList<IEntity>
     public IImmutableList<IEntity> InsertRange(int index, IEnumerable<IEntity> items)
         => Contents.InsertRange(index, items);
 
-    public IImmutableList<IEntity> Remove(IEntity value, IEqualityComparer<IEntity> equalityComparer)
+    public IImmutableList<IEntity> Remove(IEntity value, IEqualityComparer<IEntity>? equalityComparer)
         => Contents.Remove(value, equalityComparer);
 
     public IImmutableList<IEntity> RemoveAll(Predicate<IEntity> match)
         => Contents.RemoveAll(match);
 
-    public IImmutableList<IEntity> RemoveRange(IEnumerable<IEntity> items, IEqualityComparer<IEntity> equalityComparer)
+    public IImmutableList<IEntity> RemoveRange(IEnumerable<IEntity> items, IEqualityComparer<IEntity>? equalityComparer)
         => Contents.RemoveRange(items, equalityComparer);
 
     public IImmutableList<IEntity> RemoveRange(int index, int count)
@@ -81,7 +85,7 @@ public class ImmutableSmartList: IImmutableList<IEntity>
     public IImmutableList<IEntity> SetItem(int index, IEntity value)
         => Contents.SetItem(index, value);
 
-    public IImmutableList<IEntity> Replace(IEntity oldValue, IEntity newValue, IEqualityComparer<IEntity> equalityComparer)
+    public IImmutableList<IEntity> Replace(IEntity oldValue, IEntity newValue, IEqualityComparer<IEntity>? equalityComparer)
         => Contents.Replace(oldValue, newValue, equalityComparer);
 
     #endregion

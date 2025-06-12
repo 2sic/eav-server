@@ -17,7 +17,7 @@ partial class XmlImportWithFiles
             .Element(XmlConstants.Header)?
             .Element(XmlConstants.DimensionDefinition)?
             .Elements(XmlConstants.DimensionDefElement)
-            .Select(p => new DimensionDefinition()
+            .Select(p => new DimensionDefinition
             {
                 DimensionId = int.Parse(p.Attribute(XmlConstants.DimId).Value),
                 Name = p.Attribute(XmlConstants.Name).Value,

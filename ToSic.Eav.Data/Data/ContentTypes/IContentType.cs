@@ -60,7 +60,7 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// </summary>
     /// <param name="fieldName"></param>
     /// <returns>The <see cref="IContentTypeAttribute"/> of the field name or `null` if not found</returns>
-    IContentTypeAttribute this[string fieldName] { get; }
+    IContentTypeAttribute? this[string fieldName] { get; }
 
     /// <summary>
     /// Information where the Content-Type was stored (file system, DB, etc.)
@@ -102,7 +102,7 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// should be used for DynamicChildren, enabling Content.Lightbox.xyz instead of Content.Items.Lightbox.xyz
     /// </summary>
     [PrivateApi("WIP 12.03")] 
-    string DynamicChildrenField { get; }
+    string? DynamicChildrenField { get; }
 
     #endregion
 
@@ -117,12 +117,12 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// Find the title field of the current content type.
     /// In edge cases it can happen that there is no field
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The string name or `null` if the data is not available</returns>
     [JsonIgnore]
     [PrivateApi("new 15.04")]
-    string TitleFieldName { get; }
+    string? TitleFieldName { get; }
 
 
     [PrivateApi] // #SharedFieldDefinition
-    ContentTypeSysSettings SysSettings { get; }
+    ContentTypeSysSettings? SysSettings { get; }
 }

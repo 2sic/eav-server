@@ -6,22 +6,22 @@
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class PropReqResult(object result, ValueTypesWithState valueType, PropertyLookupPath path)
+public class PropReqResult(object? result, ValueTypesWithState valueType, PropertyLookupPath? path)
 {
     /// <summary>
     /// The result of the request - null if not found
     /// </summary>
-    public object Result = result;
+    public object? Result = result;
 
     /// <summary>
     /// Debug property to see if a result was wrapped to create something else
     /// </summary>
-    public object ResultOriginal;
+    public object? ResultOriginal;
 
     /// <summary>
     /// The IValue object, in case we need to use its cache
     /// </summary>
-    public IValue Value { get; init; }
+    public IValue? Value { get; init; }
         
     /// <summary>
     /// A field type, like "Hyperlink" or "Entity" etc.
@@ -31,14 +31,14 @@ public class PropReqResult(object result, ValueTypesWithState valueType, Propert
     /// <summary>
     /// The entity which returned this property
     /// </summary>
-    public object Source { get; init; }
+    public object? Source { get; init; }
 
     /// <summary>
     /// An optional name
     /// </summary>
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    public readonly PropertyLookupPath Path = path;
+    public readonly PropertyLookupPath? Path = path;
 
     public int SourceIndex { get; set; } = -1;
 

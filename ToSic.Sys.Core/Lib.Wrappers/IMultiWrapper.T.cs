@@ -14,6 +14,6 @@ public interface IMultiWrapper<out T>
     /// in which case the various wrappers would think they point
     /// to something different
     /// </summary>
-    T RootContentsForEqualityCheck { get; }
+    T? RootContentsForEqualityCheck { get; }
 
 }

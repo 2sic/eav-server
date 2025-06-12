@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.EntityBased.Sys;
 [PrivateApi("WIP v15")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class EntityBasedService<T>(string logName)
-    : EntityBasedWithLog(null, null, logName ?? $"{EavLogs.Eav}.EntSrv")
+    : EntityBasedWithLog(null, null, logName)
     where T : EntityBasedService<T>
 {
     public T Init(IEntity entity)

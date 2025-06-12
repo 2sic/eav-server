@@ -14,13 +14,17 @@ public class Permission(IEntity entity) : EntityBasedType(entity), IPermission
     public const string TypeName = "PermissionConfiguration";
 
     /// <inheritdoc />
-    public string Condition => field ??= GetThis<string>(null);
+
+    [field: AllowNull, MaybeNull]
+    public string Condition => field ??= GetThis("");
 
     /// <inheritdoc />
-    public string Identity => field ??= GetThis<string>(null);
+    [field: AllowNull, MaybeNull]
+    public string Identity => field ??= GetThis<string>("");
 
     /// <inheritdoc />
-    public string Grant => field ??= GetThis<string>(null);
+    [field: AllowNull, MaybeNull]
+    public string Grant => field ??= GetThis<string>("");
 
     /// <inheritdoc />
     public string Owner => Entity.Owner;

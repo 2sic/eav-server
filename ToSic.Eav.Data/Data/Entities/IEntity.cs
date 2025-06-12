@@ -99,7 +99,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </returns>
     [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
     [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
-    object GetBestValue(string attributeName, string[] languages);
+    object? GetBestValue(string attributeName, string[] languages);
 
     /// <summary>
     /// Retrieves the best possible value for an attribute or virtual attribute (like EntityTitle)
@@ -114,7 +114,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </returns>
     [PrivateApi("Hidden in v17 as devs should prefer simple Get(...)")]
     [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
-    T GetBestValue<T>(string attributeName, string[] languages);
+    T? GetBestValue<T>(string attributeName, string[] languages);
 
     /// <summary>
     /// Best way to get the current entities title.
@@ -124,7 +124,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <returns>
     /// The entity title as a string.
     /// </returns>
-    string GetBestTitle();
+    string? GetBestTitle();
 
 
     /// <summary>
@@ -132,7 +132,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </summary>
     /// <param name="dimensions">Array of dimensions/languages to use in the lookup</param>
     /// <returns>The entity title as a string</returns>
-    string GetBestTitle(string[] dimensions);
+    string? GetBestTitle(string[] dimensions);
 
     /// <summary>
     /// All the attributes of the current Entity.
@@ -147,14 +147,14 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// The field used is determined in the <see cref="IContentType"/>.
     /// If you need a string, use GetBestTitle() instead.
     /// </returns>
-    IAttribute Title { get; }
+    IAttribute? Title { get; }
 
     /// <summary>
     /// Gets an Attribute using its StaticName
     /// </summary>
     /// <param name="attributeName">StaticName of the Attribute</param>
     /// <returns>A typed Attribute Object</returns>
-    IAttribute this[string attributeName] { get; }
+    IAttribute? this[string attributeName] { get; }
 
     /// <summary>
     /// version of this entity in the repository
@@ -182,7 +182,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <param name="field">Optional field name to access</param>
     /// <param name="type">Optional type to filter for</param>
     /// <returns>List of children, or empty list if not found</returns>
-    IEnumerable<IEntity> Children(string field = null, string type = null);
+    IEnumerable<IEntity> Children(string? field = null, string? type = null);
 
     /// <summary>
     /// Get all the parent <see cref="IEntity"/> items - optionally only of a specific type and/or referenced in a specific field
@@ -190,7 +190,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <param name="type">The type name to filter for</param>
     /// <param name="field">The field name where a parent references this item</param>
     /// <returns>List of children, or empty list if not found</returns>
-    IEnumerable<IEntity> Parents(string type = null, string field = null);
+    IEnumerable<IEntity> Parents(string? type = null, string? field = null);
 
     /// <summary>
     /// Get the value of this field as an object.
@@ -205,7 +205,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <returns>The value or null if not found</returns>
     [PrivateApi("Hidden in v20 as devs should prefer simple Get(...)")]
     [Obsolete("Should not be used anymore, use Get<T> instead. Planned for removal ca. v24 (2 years later)")]
-    object Value(string fieldName);
+    object? Value(string fieldName);
 
     /// <summary>
     /// Get the value of this field in a type-safe way.
@@ -221,7 +221,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <returns>The typed value or the (default) value - so a null for strings, false for boolean etc.</returns>
     [PrivateApi("Hidden in v20 as devs should prefer simple Get(...)")]
     [Obsolete("Should not be used anymore, use Get<T> instead. Planned for removal ca. v24 (2 years later)")]
-    T Value<T>(string fieldName);
+    T? Value<T>(string fieldName);
 
     #endregion
 
@@ -236,7 +236,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// * If you want to supply a `fallback` it will automatically use the generic version of this method
     /// </remarks>
     [PublicApi]
-    object Get(string name);
+    object? Get(string name);
 
     /// <summary>
     /// Get a value typed as object from this entity.
@@ -252,7 +252,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </remarks>
     [PublicApi]
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    object Get(string name, NoParamOrder noParamOrder = default, string language = default, string[] languages = default);
+    object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string[]? languages = default);
 
     /// <summary>
     /// Get a value in the expected type from this entity.
@@ -265,7 +265,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// * If you want to supply a `fallback` it will automatically use the other version of this method
     /// </remarks>
     [PublicApi]
-    TValue Get<TValue>(string name);
+    TValue? Get<TValue>(string name);
 
     /// <summary>
     /// Get a value in the expected type from this entity - or a fallback value instead.
@@ -282,8 +282,9 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// * If you want to supply a `fallback` it will automatically use the generic version of this method
     /// </remarks>
     [PublicApi]
+    [return: NotNullIfNotNull(nameof(fallback))]
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default, string language = default, string[] languages = default);
+    TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default);
 
     #endregion
 

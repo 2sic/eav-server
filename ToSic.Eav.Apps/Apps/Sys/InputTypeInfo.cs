@@ -19,7 +19,8 @@ public class InputTypeInfo(string type, string label, string description, string
     public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source, IMetadataOf metadata = null)
         : this(type, label, description, assets, disableI18N, ngAssets, useAdam, source)
     {
-        if (metadata == null) return;
+        if (metadata == null)
+            return;
 
         Metadata = metadata;
 
@@ -28,12 +29,15 @@ public class InputTypeInfo(string type, string label, string description, string
             IsObsolete = true;
             ObsoleteMessage = metadata.GetBestValue<string>(MessageField, IsObsoleteDecoratorId);
         }
-        if (metadata.HasType(RecommendedDecoratorId)) IsRecommended = true;
+        if (metadata.HasType(RecommendedDecoratorId))
+            IsRecommended = true;
 
-        if (metadata.HasType(IsDefaultDecorator)) IsDefault = true;
+        if (metadata.HasType(IsDefaultDecorator))
+            IsDefault = true;
 
         var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypeDefinition.TypeForInputTypeDefinition);
-        if (typeInputTypeDef != null) ConfigTypes = new InputTypeDefinition(typeInputTypeDef).ConfigTypes;
+        if (typeInputTypeDef != null)
+            ConfigTypes = new InputTypeDefinition(typeInputTypeDef).ConfigTypes;
     }
 
     /// <summary>

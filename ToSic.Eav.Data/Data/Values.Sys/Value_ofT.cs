@@ -18,18 +18,19 @@ public record Value<T> : IValue<T>
     /// <remarks>
     /// * completely #immutable since v15.04
     /// </remarks>
-    internal Value(T? typedContents, IImmutableList<ILanguage> languages = null)
+    internal Value(T? typedContents, IImmutableList<ILanguage>? languages = null)
     {
         TypedContents = typedContents;
         LanguagesImmutable = languages ?? DataConstants.NoLanguages;
     }
 
-    public T TypedContents { get; }
+    public T? TypedContents { get; }
 
 
     /// <inheritdoc />
     public IEnumerable<ILanguage> Languages => LanguagesImmutable;
 
+    [field: AllowNull, MaybeNull]
     public IImmutableList<ILanguage> LanguagesImmutable
     {
         get => field ??= DataConstants.NoLanguages;
@@ -37,14 +38,12 @@ public record Value<T> : IValue<T>
     }
 
     /// <inheritdoc />
-    public object SerializableObject
+    public object? SerializableObject
     {
         get
         {
-            var typedObject = TypedContents;
-
-            if (typedObject is not IEnumerable<IEntity> maybeRelationshipList)
-                return typedObject;
+            if (TypedContents is not IEnumerable<IEntity> maybeRelationshipList)
+                return TypedContents;
 
             // special case with list of related entities - should return array of guids
             var entityGuids = maybeRelationshipList
@@ -55,7 +54,7 @@ public record Value<T> : IValue<T>
     }
 
     [PrivateApi("used only for xml-serialization, does very specific date-to-string conversions")]
-    public string Serialized
+    public string? Serialized
     {
         get
         {
