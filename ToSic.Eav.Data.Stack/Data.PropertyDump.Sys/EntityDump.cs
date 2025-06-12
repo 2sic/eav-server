@@ -15,8 +15,8 @@ public class EntityDump : IPropertyDumper
             _ => 0
         };
 
-    public List<PropertyDumpItem> Dump(object entity, PropReqSpecs specs, string path, IPropertyDumpService dumpService)
-        => DumpTyped(entity as IEntity, specs, path, dumpService);
+    public List<PropertyDumpItem> Dump(object target, PropReqSpecs specs, string path, IPropertyDumpService dumpService)
+        => DumpTyped(target as IEntity ?? throw new ArgumentException("should be an IEntity", nameof(target)), specs, path, dumpService);
 
     private List<PropertyDumpItem> DumpTyped(IEntity entity, PropReqSpecs specs, string path, IPropertyDumpService dumpService)
     {
@@ -32,12 +32,12 @@ public class EntityDump : IPropertyDumper
             : path + PropertyDumpItem.Separator;
 
         // Check if we have dynamic children
-        IEnumerable<PropertyDumpItem> resultDynChildren = null;
+        IEnumerable<PropertyDumpItem>? resultDynChildren = null;
         var dynChildField = entity.Type?.DynamicChildrenField;
         if (dynChildField != null)
             resultDynChildren = entity.Children(dynChildField)
                 .Where(child => child != null)
-                .SelectMany(inner => dumpService?.Dump(inner, specs, pathRoot + inner.GetBestTitle(specs.Dimensions))
+                .SelectMany(inner => dumpService.Dump(inner, specs, pathRoot + inner.GetBestTitle(specs.Dimensions))
                 // #DropUseOfDumpProperties
                 // ?? inner._DumpNameWipDroppingMostCases(specs, pathRoot + inner.GetBestTitle(specs.Dimensions))
                 );
@@ -46,13 +46,14 @@ public class EntityDump : IPropertyDumper
         var childAttributes = entity.Attributes
             .Where(att =>
                 att.Value.Type == ValueTypes.Entity
-                && (dynChildField == null || !att.Key.Equals(dynChildField, StringComparison.InvariantCultureIgnoreCase)));
+                && (dynChildField == null || !att.Key.Equals(dynChildField, StringComparison.InvariantCultureIgnoreCase))
+            );
 
         var resultProperties = childAttributes
             .SelectMany(att => entity
                 .Children(att.Key)
                 .Where(child => child != null) // apparently sometimes the entities inside seem to be non-existent on Resources
-                .SelectMany(inner => dumpService?.Dump(inner, specs, pathRoot + att.Key)
+                .SelectMany(inner => dumpService.Dump(inner, specs, pathRoot + att.Key)
                 // #DropUseOfDumpProperties
                 // ?? inner._DumpNameWipDroppingMostCases(specs, pathRoot + att.Key)
                 )

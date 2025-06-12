@@ -9,8 +9,10 @@ public class SystemStackHelpers
     public static string GetStackNameOrNull(string part)
     {
         // Ensure name is known
-        if (RootNameSettings.EqualsInsensitive(part)) return RootNameSettings;
-        if (RootNameResources.EqualsInsensitive(part)) return RootNameResources;
+        if (RootNameSettings.EqualsInsensitive(part))
+            return RootNameSettings;
+        if (RootNameResources.EqualsInsensitive(part))
+            return RootNameResources;
         return null;
     }
 
@@ -18,15 +20,20 @@ public class SystemStackHelpers
 
     public static List<PropertyDumpItem> ApplyKeysFilter(List<PropertyDumpItem> results, string key)
     {
-        if (string.IsNullOrEmpty(key)) return results;
+        if (string.IsNullOrEmpty(key))
+            return results;
 
         var keyList = key.CsvToArrayWithoutEmpty();
-        if (!keyList.Any()) return results;
+        if (!keyList.Any())
+            return results;
 
         var relevant = results
             .Where(r => keyList.Any(k => r.Path.EqualsInsensitive(k)))
             .ToList();
-        return relevant.SelectMany(r => r.AllOptions).ToList();
+
+        return relevant
+            .SelectMany(r => r.AllOptions ?? [])
+            .ToList();
     }
 
     public static IEnumerable<PropertyDumpItem> ReducePropertiesToRelevantOnes(List<PropertyDumpItem> results)

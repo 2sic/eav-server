@@ -5,9 +5,10 @@ namespace ToSic.Eav.Data.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PropReqResultExtensions
 {
-    public static IEntity GetFirstResultEntity(this PropReqResult resultSet)
+    public static IEntity? GetFirstResultEntity(this PropReqResult resultSet)
     {
-        if (resultSet?.Result is not IEnumerable enumResult) return null;
+        if (resultSet.Result is not IEnumerable enumResult)
+            return null;
         var x = enumResult.Cast<object>();
         return x.FirstOrDefault() is ICanBeEntity canBeEntity 
             ? canBeEntity.Entity 

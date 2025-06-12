@@ -4,7 +4,7 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 
 partial class PropertyStackNavigator
 {
-    private PropReqResult GetResultOfAncestors(PropReqSpecs specs, ILog logOrNull, PropertyLookupPath path)
+    private PropReqResult GetResultOfAncestors(PropReqSpecs specs, ILog? logOrNull, PropertyLookupPath path)
     {
         var l = logOrNull.Fn<PropReqResult>(specs.Dump());
         l.A("No sibling result found, will check grand parent");

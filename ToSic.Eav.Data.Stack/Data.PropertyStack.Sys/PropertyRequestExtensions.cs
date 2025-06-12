@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.PropertyStack.Sys;
@@ -11,12 +12,15 @@ public static class PropertyRequestExtensions
     /// Also optionally log the decision process. 
     /// </summary>
     /// <returns></returns>
-    public static PropReqResult MarkAsFinalOrNot(this PropReqResult result, string sourceName, int sourceIndex, ILog logOrNull, bool treatEmptyAsFinal)
+    [return: NotNullIfNotNull(nameof(result))]
+    public static PropReqResult? MarkAsFinalOrNot(this PropReqResult? result, string? sourceName, int sourceIndex, ILog? logOrNull, bool treatEmptyAsFinal)
     {
         var l = logOrNull.Fn<PropReqResult>();
         // Check nulls and prevent multiple executions
-        if (result == null) return l.ReturnNull("null");
-        if (result.IsFinal) return l.Return(result, "already final");
+        if (result == null)
+            return l.ReturnNull("null");
+        if (result.IsFinal)
+            return l.Return(result, "already final");
 
         result.Name = sourceName ?? result.Name;
 

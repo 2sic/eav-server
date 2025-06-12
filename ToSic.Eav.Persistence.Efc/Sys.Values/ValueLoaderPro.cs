@@ -68,7 +68,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
     /// <param name="dimensions"></param>
     /// <remarks>
     /// It's really important that we use an IQueryable here, because otherwise the
-    /// SQL isn't properly converted and we'll run into null exceptions! So don't use IEnumerable,
+    /// SQL isn't properly converted, and we'll run into null exceptions! So don't use IEnumerable,
     /// at least not for EF 2.2 which is still in use for DNN.
     /// </remarks>
     internal override ICollection<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension> dimensions)

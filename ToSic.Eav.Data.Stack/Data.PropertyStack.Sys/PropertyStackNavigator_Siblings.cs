@@ -4,7 +4,7 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 
 partial class PropertyStackNavigator
 {
-    private PropReqResult GetResultOfSibling(PropReqSpecs specs, ILog logOrNull, PropertyLookupPath path)
+    private PropReqResult GetResultOfSibling(PropReqSpecs specs, ILog? logOrNull, PropertyLookupPath path)
     {
         var l = logOrNull.Fn<PropReqResult>(specs.Dump());
         var earliestNextSibling = StackAddress.Index + 1;

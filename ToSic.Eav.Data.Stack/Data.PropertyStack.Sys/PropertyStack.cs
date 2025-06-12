@@ -9,9 +9,10 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
 {
     public PropertyStack Init(string name, IEnumerable<IPropertyLookup> sources)
-        => Init(name,
-            sources?.Select(s => new KeyValuePair<string, IPropertyLookup>((s as IHasIdentityNameId)?.NameId, s)).ToArray()
-            ?? []);
+        => Init(name, sources
+            .Select(s => new KeyValuePair<string, IPropertyLookup>((s as IHasIdentityNameId)?.NameId ?? "unknown", s))
+            .ToArray()
+        );
 
     public PropertyStack Init(string name, IReadOnlyCollection<KeyValuePair<string, IPropertyLookup>> sources)
         => Init(name, sources.ToArray());
@@ -32,7 +33,7 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
         return this;
     }
 
-    public string NameId { get; private set; }
+    public string NameId { get; private set; } = "awaiting-init";
 
 
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
@@ -51,10 +52,12 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
 
             path = path.Add($"PropertyStack[{sourceIndex}]", source.Key, specs.Field);
             var propInfo = source.Value.FindPropertyInternal(specs, path);
-            if (propInfo?.Result == null) continue;
+            if (propInfo?.Result == null)
+                continue;
 
             result = propInfo.MarkAsFinalOrNot(source.Key, sourceIndex, specs.LogOrNull, specs.TreatEmptyAsDefault);
-            if (!result.IsFinal) continue;
+            if (result.IsFinal != true)
+                continue;
 
             var parentRefForNewChildren = new StackAddress(this, specs.Field, sourceIndex, null);
             var wrapper = new StackReWrapper(parentRefForNewChildren, specs.LogOrNull);

@@ -5,9 +5,10 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 partial class PropertyStack
 {
 
-    public IPropertyStack GetStack(params string[] names) => GetStack(null, names);
+    public IPropertyStack GetStack(params string[] names)
+        => GetStack(null, names);
 
-    public IPropertyStack GetStack(ILog log, params string[] names)
+    public IPropertyStack GetStack(ILog? log, params string[] names)
     {
         var l = log.Fn<IPropertyStack>();
         // Get all required names in the order they were requested

@@ -17,7 +17,7 @@ partial record Entity
         => GetPropertyInternal(new(name), null).Result;
 
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string[]? languages = default) 
+    public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string?[]? languages = default) 
         => GetPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result;
 
     public TValue? Get<TValue>(string name)
@@ -29,7 +29,7 @@ partial record Entity
         => GetPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result
             .ConvertOrFallback(fallback);
 
-    private static string?[] HandleLanguageParams(string? language, string[]? languages) 
+    private static string?[] HandleLanguageParams(string? language, string?[]? languages) 
         => languages.SafeAny()
             ? PropReqSpecs.ExtendDimsWithDefault(languages)
             : language.HasValue()

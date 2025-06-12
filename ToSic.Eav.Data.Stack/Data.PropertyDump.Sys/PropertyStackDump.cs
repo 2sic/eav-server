@@ -61,14 +61,14 @@ public class PropertyStackDump: IPropertyDumper
 
         // Remove settings-internal keys which are not useful
         // use Blacklist to find these
-        result = result.Where(r =>
-                !BlacklistKeys.Any(blk => r.Path.EndsWith(PropertyDumpItem.Separator + blk)))
+        result = result
+            .Where(r => !BlacklistKeys.Any(blk => r.Path.EndsWith(PropertyDumpItem.Separator + blk)))
             .ToArray();
 
         // V13 - drop null values
-        // Edge case where a inherited content-type got more fields but the data hasn't been edited yet
+        // Edge case where an inherited content-type got more fields but the data hasn't been edited yet
         result = result
-            .Where(r => r.Property.Value != null)
+            .Where(r => r.Property?.Value != null)
             .ToArray();
 
         var grouped = result

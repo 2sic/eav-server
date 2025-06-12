@@ -18,7 +18,7 @@ public class PropertyLookupDictionary(string nameId, IDictionary<string, object>
 
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {
-        path = path?.Add(SourceTypeId, NameId, specs.Field);
+        path = path.Add(SourceTypeId, NameId, specs.Field);
         return Values.TryGetValue(specs.Field, out var result)
             ? new(result: result /* I believe this would only be used for certain follow up work */, valueType: ValueTypesWithState.Dynamic, path: path)
             {

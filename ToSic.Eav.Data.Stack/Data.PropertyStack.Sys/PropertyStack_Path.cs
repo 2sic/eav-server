@@ -4,7 +4,7 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 
 partial class PropertyStack
 {
-    public PropReqResult InternalGetPath(string path, ILog logOrNull = null)
+    public PropReqResult InternalGetPath(string path, ILog? logOrNull = null)
         => InternalGetPath(new(path, PropReqSpecs.EmptyDimensions, true, logOrNull), new PropertyLookupPath());
 
     public PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path)
@@ -12,9 +12,10 @@ partial class PropertyStack
 
     public const char PathSeparator = '.';
 
-    public static string[] SplitPathIntoParts(string path, string prefixToIgnore = default)
+    public static string[] SplitPathIntoParts(string path, string? prefixToIgnore = default)
     {
-        if (path == null) return [];
+        if (path == null)
+            return [];
         var parts = path.Split(PathSeparator);
         return prefixToIgnore != default && parts.Any() && prefixToIgnore.EqualsInsensitive(parts.First())
             ? parts.Skip(1).ToArray()
@@ -23,11 +24,11 @@ partial class PropertyStack
 
     [PrivateApi]
     public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path,
-        IPropertyLookup initialSource, string prefixToIgnore = null)
+        IPropertyLookup initialSource, string? prefixToIgnore = null)
     {
         var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
         var fields = SplitPathIntoParts(specs.Field, prefixToIgnore);
-        PropReqResult result = null;
+        PropReqResult? result = null;
         var currentSource = initialSource;
 
         for (var i = 0; i < fields.Length; i++)
@@ -72,6 +73,6 @@ partial class PropertyStack
                 return l.Return(PropReqResult.NullFinal(result.Path), "stop, nothing to find");
         }
 
-        return l.Return(result ?? PropReqResult.NullFinal(null), "stop");
+        return l.Return(result ?? PropReqResult.NullFinal(new()), "stop");
     }
 }

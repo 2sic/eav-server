@@ -9,7 +9,7 @@ public interface IPropertyDumpService
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    (IPropertyDumper Dumper, int Ranking) GetBestDumper(object source);
+    (IPropertyDumper? Dumper, int Ranking) GetBestDumper(object? source);
 
     List<PropertyDumpItem> Dump(object target, PropReqSpecs specs, string path);
 }

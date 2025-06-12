@@ -4,11 +4,12 @@ namespace ToSic.Eav.Data.PropertyDump.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class PropertyDumpItem
+public class PropertyDumpItem()
 {
     public const string Separator = ".";
 
-    public static bool ShouldStop(string path) => path?.Length > 200;
+    public static bool ShouldStop(string path)
+        => path?.Length > 200;
 
     public static PropertyDumpItem DummyErrorShouldStop(string path)
     {
@@ -26,7 +27,7 @@ public class PropertyDumpItem
     /// <summary>
     /// The source of this item
     /// </summary>
-    public string SourceName { get; set; }
+    public string SourceName { get; set; } = "undefined";
 
     /// <summary>
     /// The priority of this source - for proper sorting / priorities
@@ -36,12 +37,12 @@ public class PropertyDumpItem
     /// <summary>
     /// Path to this property
     /// </summary>
-    public string Path { get; set; }
+    public required string Path { get; set; }
 
     /// <summary>
     /// Result data of the property
     /// </summary>
-    public PropReqResult Property { get; set; }
+    public PropReqResult? Property { get; set; }
 
-    public List<PropertyDumpItem> AllOptions { get; set; }
+    public List<PropertyDumpItem>? AllOptions { get; set; }
 }

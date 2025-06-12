@@ -14,9 +14,9 @@ partial record Entity
     public string? GetBestTitle() => GetBestTitle(null, 0);
 
     /// <inheritdoc />
-    public string? GetBestTitle(string[] dimensions) => GetBestTitle(dimensions, 0);
+    public string? GetBestTitle(string?[] dimensions) => GetBestTitle(dimensions, 0);
 
-    internal string? GetBestTitle(string[]? dimensions, int recursionCount)
+    internal string? GetBestTitle(string?[]? dimensions, int recursionCount)
     {
         // wrap it try-catch, because in rare cases the title may not be set or something else could break
         try

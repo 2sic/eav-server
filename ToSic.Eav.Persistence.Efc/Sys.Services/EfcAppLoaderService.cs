@@ -130,21 +130,27 @@ public class EfcAppLoaderService(
 
         var builder = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere().AddMessage("First Build"));
 
-        var codeWasOptimized = sysFeaturesSvc.IsEnabled(BuiltInFeatures.CSharpLinqOptimizations)
-            ? "(optimized LINQ; Patrons)"
-            : "(standard LINQ; Patrons)";
 
         if (builder.Reader.Specs.IsContentApp())
-            return l.Return(builder.AppState, $"default app, don't auto-init {codeWasOptimized}");
+            return l.Return(builder.AppState, $"default app, no auto-init {MessageSuffix(builder.AppState)}");
 
         var needsReload = initializedChecker
             .EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log);
 
         if (!needsReload)
-            return l.Return(builder.AppState, $"with init check, no reload needed {codeWasOptimized}");
+            return l.Return(builder.AppState, $"init checked, no reload {MessageSuffix(builder.AppState)}");
 
         var reloaded = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere()).AppState;
-        return l.Return(reloaded, $"with init check; reloaded {codeWasOptimized}");
+        return l.Return(reloaded, $"init checked & reloaded {MessageSuffix(builder.AppState)}");
+
+        // minor message suffix w/optimization and count info
+        string MessageSuffix(IAppStateCache appState)
+        {
+            var codeWasOptimized = sysFeaturesSvc.IsEnabled(BuiltInFeatures.CSharpLinqOptimizations)
+                ? "(optimized LINQ; Patrons)"
+                : "(standard LINQ; Patrons)";
+            return $"{codeWasOptimized}; {appState.List.Count()} items";
+        }
     }
 
 

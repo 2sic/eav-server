@@ -6,7 +6,7 @@
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class PropReqResult(object? result, ValueTypesWithState valueType, PropertyLookupPath? path)
+public class PropReqResult(object? result, ValueTypesWithState valueType, PropertyLookupPath path)
 {
     /// <summary>
     /// The result of the request - null if not found
@@ -38,7 +38,8 @@ public class PropReqResult(object? result, ValueTypesWithState valueType, Proper
     /// </summary>
     public string? Name { get; set; }
 
-    public readonly PropertyLookupPath? Path = path;
+    [field: AllowNull, MaybeNull]
+    public PropertyLookupPath Path => field ??= path;
 
     public int SourceIndex { get; set; } = -1;
 

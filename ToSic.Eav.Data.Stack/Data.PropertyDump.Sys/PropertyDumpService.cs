@@ -9,7 +9,7 @@ public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceB
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public (IPropertyDumper? Dumper, int Ranking) GetBestDumper(object source)
+    public (IPropertyDumper? Dumper, int Ranking) GetBestDumper(object? source)
     {
         var l = Log.Fn<(IPropertyDumper? Dumper, int Ranking)>("bestDumper");
         if (source == null || !dumpers.Any())

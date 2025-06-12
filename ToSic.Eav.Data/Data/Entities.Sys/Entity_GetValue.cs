@@ -22,9 +22,9 @@ partial record Entity
         => GetPropertyInternal(specs, path);
 
     [PrivateApi("Internal")]
-    public PropReqResult GetPropertyInternal(PropReqSpecs specs, PropertyLookupPath? path)
+    public PropReqResult GetPropertyInternal(PropReqSpecs specs, PropertyLookupPath? pathOrNull)
     {
-        path = path?.Add("Entity", EntityId.ToString(), specs.Field);
+        var path = pathOrNull.KeepOrNew().Add("Entity", EntityId.ToString(), specs.Field);
 
         // the languages are "safe" - meaning they are already all lower-cased and have the optional null-fallback key
         var languages = specs.Dimensions;
@@ -34,7 +34,10 @@ partial record Entity
         {
             var (valueField, result) = attribute.GetTypedValue(languages, false);
             return new(result: result, valueType: (ValueTypesWithState)attribute.Type, path: path)
-                { Value = valueField, Source = this };
+            {
+                Value = valueField,
+                Source = this
+            };
         }
             
         if (fieldLower == EntityFieldTitle)
@@ -42,26 +45,39 @@ partial record Entity
             attribute = Title;
             if (attribute == null)
                 return new(result: null, valueType: ValueTypesWithState.NotFound, path: path)
-                    { Value = null, Source = this };
+                {
+                    Value = null,
+                    Source = this
+                };
             var (valueField, result) = attribute.GetTypedValue(languages, false);
             return new(result: result, valueType: (ValueTypesWithState)attribute.Type, path: path)
-                { Value = valueField, Source = this };
+            {
+                Value = valueField,
+                Source = this
+            };
         }
 
         // directly return internal properties, mark as virtual to not cause further Link resolution
         var valueFromInternalProperty = GetInternalPropertyByName(fieldLower);
         if (valueFromInternalProperty != null)
-            return new(result: valueFromInternalProperty, valueType: ValueTypesWithState.Virtual, path: path) { Source = this };
+            return new(result: valueFromInternalProperty, valueType: ValueTypesWithState.Virtual, path: path)
+            {
+                Source = this
+            };
 
         // New Feature in 12.03 - Sub-Item Navigation if the data contains information what the sub-entity identifiers are
         try
         {
             specs.LogOrNull.A("Nothing found in properties, will try Sub-Item navigation");
             var subItem = this.TryToNavigateToEntityInList(specs, this, path.Add("SubEntity", fieldLower));
-            if (subItem != null) return subItem;
+            if (subItem != null)
+                return subItem;
         } catch { /* ignore */ }
 
-        return new(result: null, valueType: ValueTypesWithState.NotFound, path: path) { Source = this };
+        return new(result: null, valueType: ValueTypesWithState.NotFound, path: path)
+        {
+            Source = this
+        };
     }
 
     protected override object? GetInternalPropertyByName(string attributeNameLowerInvariant)

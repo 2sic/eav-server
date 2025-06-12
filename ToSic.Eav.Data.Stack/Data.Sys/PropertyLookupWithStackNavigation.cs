@@ -16,7 +16,7 @@ public class PropertyLookupWithStackNavigation(PropertyLookupDictionary current,
 
 
     public PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
-        => FindPropertyInternalOfStackWrapper(this, specs, path, EavLogs.Eav + ".PrpNav", $"Source: {GetContents().NameId}");
+        => FindPropertyInternalOfStackWrapper(this, specs, path, EavLogs.Eav + ".PrpNav", $"Source: {GetContents()?.NameId}");
 
     public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path) 
         => Navigator.GetNextInStack(specs, startAtSource, path);

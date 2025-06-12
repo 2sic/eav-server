@@ -105,7 +105,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
         => Entity.GetBestTitle();
 
     /// <inheritdoc />
-    public string? GetBestTitle(string[] dimensions)
+    public string? GetBestTitle(string?[] dimensions)
         => Entity.GetBestTitle(dimensions);
 
     /// <inheritdoc />

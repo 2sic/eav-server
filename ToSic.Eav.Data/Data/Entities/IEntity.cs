@@ -132,7 +132,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </summary>
     /// <param name="dimensions">Array of dimensions/languages to use in the lookup</param>
     /// <returns>The entity title as a string</returns>
-    string? GetBestTitle(string[] dimensions);
+    string? GetBestTitle(string?[] dimensions);
 
     /// <summary>
     /// All the attributes of the current Entity.

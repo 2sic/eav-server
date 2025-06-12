@@ -3,7 +3,7 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class StackAddress
 {
-    internal StackAddress(IPropertyStackLookup source, string field, int index, StackAddress ancestor)
+    internal StackAddress(IPropertyStackLookup source, string field, int index, StackAddress? ancestor)
     {
         Source = source;
         Field = field;
@@ -23,9 +23,11 @@ public class StackAddress
 
     public readonly int Index;
 
-    public readonly StackAddress Ancestor;
+    public readonly StackAddress? Ancestor;
 
-    public StackAddress NewWithOtherIndex(int index) => new(Source, Field, index, Ancestor);
+    public StackAddress NewWithOtherIndex(int index)
+        => new(Source, Field, index, Ancestor);
 
-    public StackAddress Child(IPropertyStackLookup source, string field, int index) => new(source, field, index, this);
+    public StackAddress Child(IPropertyStackLookup source, string field, int index)
+        => new(source, field, index, this);
 }

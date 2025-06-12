@@ -13,7 +13,7 @@ public interface IPropertyStack: IPropertyLookup, IPropertyStackLookup, IHasIden
 {
     IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources { get; }
         
-    IPropertyLookup GetSource(string name);
+    IPropertyLookup? GetSource(string name);
         
     IPropertyStack GetStack(params string[] names);
     IPropertyStack GetStack(ILog log, params string[] names);

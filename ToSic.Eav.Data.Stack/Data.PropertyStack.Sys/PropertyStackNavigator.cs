@@ -57,7 +57,7 @@ public partial class PropertyStackNavigator(IPropertyLookup child, StackAddress 
         {
             path = path.Add("StackOwnItem", specs.Field);
             var resultOfOwn = GetResultOfOwnItem(specs, logOrNull, path);
-            if (resultOfOwn != null && resultOfOwn.IsFinal) 
+            if (resultOfOwn is { IsFinal: true }) 
                 return l.Return(resultOfOwn, "final");
         }
 
@@ -88,7 +88,7 @@ public partial class PropertyStackNavigator(IPropertyLookup child, StackAddress 
     /// Just get the result of the child which we're wrapping. 
     /// </summary>
     /// <returns></returns>
-    private PropReqResult GetResultOfOwnItem(PropReqSpecs specs, ILog logOrNull, PropertyLookupPath path)
+    private PropReqResult? GetResultOfOwnItem(PropReqSpecs specs, ILog? logOrNull, PropertyLookupPath path)
     {
         var l = logOrNull.Fn<PropReqResult>();
         // 2022-05-02 2dm - there seem to be cases where this wrapper is created without an own entity.
@@ -97,7 +97,7 @@ public partial class PropertyStackNavigator(IPropertyLookup child, StackAddress 
             return l.ReturnNull("no entity/contents");
 
         path = path.Add("OwnItem", specs.Field);
-        var childResult = GetContents().FindPropertyInternal(specs, path);
+        var childResult = GetContents()!.FindPropertyInternal(specs, path);
         if (childResult == null)
             return l.ReturnNull("null");
             

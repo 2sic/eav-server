@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 /// <summary>
 /// Code to re-wrap stuff inside a stack, so it could navigate through stacks again if necessary
 /// </summary>
-internal class StackReWrapper(StackAddress stackAddress, ILog parentLog) : HelperBase(parentLog, "Eav.StkWrp")
+internal class StackReWrapper(StackAddress stackAddress, ILog? parentLog) : HelperBase(parentLog, "Eav.StkWrp")
 {
     public StackAddress StackAddress { get; } = stackAddress;
 
@@ -65,7 +65,7 @@ internal class StackReWrapper(StackAddress stackAddress, ILog parentLog) : Helpe
 
         var children = dicChildren.ToArray();
         var newStackForTheChildren =
-            new PropertyStack().Init($"ContentsOf-{StackAddress.Field}", children as IPropertyLookup[]);
+            new PropertyStack().Init($"ContentsOf-{StackAddress.Field}", children as IPropertyLookup[] ?? []);
         var childrenStackAddress = StackAddress.Child(newStackForTheChildren, newStackForTheChildren.NameId, 0);
 
         reqResult.Result = children
