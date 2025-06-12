@@ -11,8 +11,18 @@ namespace ToSic.Eav.Data;
 /// > We recommend you read about the [](xref:Basics.Data.Index)
 /// </remarks>
 [PublicApi]
-public interface IAttribute : IAttributeBase
+public interface IAttribute // : IAttributeBase
 {
+    /// <summary>
+    /// Name of the Attribute
+    /// </summary>
+    string Name { get; }
+
+    /// <summary>
+    /// The official type, as a controlled (enum) value.
+    /// </summary>
+    ValueTypes Type { get; }
+
     /// <summary>
     /// Gets a list of all <see cref="IValue"/>s of this Entity's Attribute. To get the typed objects, use the <see cref="IAttribute{T}.Typed"/>
     /// </summary>

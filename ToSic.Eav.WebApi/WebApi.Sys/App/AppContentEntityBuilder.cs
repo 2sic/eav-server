@@ -82,8 +82,9 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
     // add "PublishState" in "values" (before it can be removed when there is no "PublishState" attribute)
     private void AddPublishState(IDictionary<string, object> values, IDictionary<string, object> cleaned)
     {
-        if (!values.ContainsKey(SaveApiAttributes.SavePublishingState)) return;
-        cleaned.Add(SaveApiAttributes.SavePublishingState, values[SaveApiAttributes.SavePublishingState]);
+        if (!values.TryGetValue(SaveApiAttributes.SavePublishingState, out var value))
+            return;
+        cleaned.Add(SaveApiAttributes.SavePublishingState, value);
     }
 
     /// <summary>
@@ -91,7 +92,7 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
     /// </summary>
     /// <param name="attributeDefinition"></param>
     /// <param name="foundValue"></param>
-    private static Exception ValueMappingError(IAttributeBase attributeDefinition, object foundValue)
+    private static Exception ValueMappingError(IContentTypeAttribute attributeDefinition, object foundValue)
         => new(
             $"Tried to create {attributeDefinition.Name} and couldn't convert to correct {attributeDefinition.Type}: '{foundValue}'");
 

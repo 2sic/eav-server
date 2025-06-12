@@ -1,4 +1,3 @@
-using ToSic.Eav.Data.Attributes.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Security.Permissions;
 
@@ -14,8 +13,14 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 /// </remarks>
 [PrivateApi("2021-09-30 changed to private, before was internal-this is just fyi, always use the interface")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record ContentTypeAttribute : AttributeBase, IContentTypeAttribute
+public record ContentTypeAttribute : IContentTypeAttribute
 {
+    /// <inheritdoc />
+    public required string Name { get; init; }
+
+    /// <inheritdoc />
+    public required ValueTypes Type { get; init; }
+
     /// <inheritdoc />
     public required int AppId { get; init; }
 

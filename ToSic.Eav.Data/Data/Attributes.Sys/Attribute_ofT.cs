@@ -13,8 +13,14 @@ namespace ToSic.Eav.Data.Attributes.Sys;
 /// <typeparam name="T">Type of the Value</typeparam>
 [PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal record Attribute<T> : AttributeBase, IAttribute<T>
+internal record Attribute<T> : IAttribute<T>
 {
+    /// <inheritdoc />
+    public required string Name { get; init; }
+
+    /// <inheritdoc />
+    public required ValueTypes Type { get; init; }
+
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public IAttribute With(IImmutableList<IValue> newValues)
