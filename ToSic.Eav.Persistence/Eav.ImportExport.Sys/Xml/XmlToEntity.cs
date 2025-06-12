@@ -16,7 +16,7 @@ namespace ToSic.Eav.ImportExport.Sys.Xml;
 public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
     : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, globalData])
 {
-    private class TargetLanguageToSourceLanguage: DimensionDefinition
+    private record TargetLanguageToSourceLanguage: DimensionDefinition
     {
         public ICollection<DimensionDefinition> PrioritizedDimensions = [];
     }
@@ -49,6 +49,8 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
                 .Select(el => new TargetLanguageToSourceLanguage
                 {
                     Active = el.Active,
+                    Key = el.Key,
+                    Name = el.Name,
                     EnvironmentKey = el.EnvironmentKey,
                     DimensionId = el.DimensionId,
                     PrioritizedDimensions = FindPriorizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang)
@@ -57,21 +59,24 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
         }
         else
         {
-            var tempDimension = new DimensionDefinition()
+            var tempDimension = new DimensionDefinition
             {
                 Active = true,
                 DimensionId = 0,
                 EnvironmentKey = envDefLang,
+                Key = "dummy-not-used",
                 Name = "Default"
             };
+            var prioritized = FindPriorizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang);
             result =
             [
                 new()
                 {
                     Active = true,
                     EnvironmentKey = envDefLang,
-                    PrioritizedDimensions =
-                        FindPriorizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang)
+                    PrioritizedDimensions = prioritized,
+                    Name = tempDimension.Name,
+                    Key = tempDimension.Key,
                 }
             ];
         }
@@ -84,24 +89,29 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
         var languageMap = new List<DimensionDefinition>();
             
         // Add exact match source language, if exists
-        var exactMatchSourceDimension = srcLangs.FirstOrDefault(p => targetLang.Matches(p.EnvironmentKey));
+        var exactMatchSourceDimension = srcLangs
+            .FirstOrDefault(p => targetLang.Matches(p.EnvironmentKey));
         if (exactMatchSourceDimension != null)
             languageMap.Add(exactMatchSourceDimension);
 
         // Add non-exact match language
-        var unExactMatchSourceDimensions = srcLangs.Where(
-                sd =>
-                    !targetLang.Matches(sd.EnvironmentKey) &&
-                    sd.EnvironmentKey.StartsWith(targetLang.EnvironmentKey.ToLowerInvariant().Substring(0, 2)))
+        var unExactMatchSourceDimensions = srcLangs
+            .Where(sd =>
+                !targetLang.Matches(sd.EnvironmentKey) &&
+                sd.EnvironmentKey.StartsWith(targetLang.EnvironmentKey.ToLowerInvariant().Substring(0, 2))
+            )
             .OrderByDescending(p => p.EnvironmentKey == envDefLang)
-            .ThenByDescending(p => p.EnvironmentKey.Length == 2 || p.EnvironmentKey.Length == 5 && p.EnvironmentKey.Substring(0, 2) == p.EnvironmentKey.Substring(3, 2))
+            .ThenByDescending(p => p.EnvironmentKey.Length == 2 || p.EnvironmentKey.Length == 5 &&
+                p.EnvironmentKey.Substring(0, 2) == p.EnvironmentKey.Substring(3, 2)
+            )
             .ThenBy(p => p.EnvironmentKey);
         languageMap.AddRange(unExactMatchSourceDimensions);
 
         // Add primary language, if current target is primary
         if (targetLang.Matches(envDefLang) && srcDefLang.HasValue)
         {
-            var sourcePrimaryLanguage = srcLangs.FirstOrDefault(p => p.DimensionId == srcDefLang);
+            var sourcePrimaryLanguage = srcLangs
+                .FirstOrDefault(p => p.DimensionId == srcDefLang);
             if (sourcePrimaryLanguage != null && !languageMap.Contains(sourcePrimaryLanguage))
                 languageMap.Add(sourcePrimaryLanguage);
         }

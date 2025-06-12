@@ -90,10 +90,10 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     private static Language langDeCh = new("de-CH", false, 39);//{DimensionId = 39, Key = "de-CH"};
     private static Language langFr = new("fr-FR", false, 99);//{DimensionId = 99, Key = "fr-FR"};
 
-    private static DimensionDefinition langEnDef = new() { DimensionId = 1, EnvironmentKey = "en-US" };
-    private static DimensionDefinition langDeDeDef = new() { DimensionId = 42, EnvironmentKey = "de-DE" };
-    private static DimensionDefinition langDeChDef = new() { DimensionId = 39, EnvironmentKey = "de-CH" };
-    private static DimensionDefinition langFrDef = new() { DimensionId = 99, EnvironmentKey = "fr-FR" };
+    private static DimensionDefinition langEnDef = new() { DimensionId = 1, EnvironmentKey = "en-US", Name = "", Key = "en-us" };
+    private static DimensionDefinition langDeDeDef = new() {DimensionId = 42, EnvironmentKey = "de-DE", Name = "", Key = "de-de" };
+    private static DimensionDefinition langDeChDef = new() {DimensionId = 39, EnvironmentKey = "de-CH", Name = "", Key = "de-ch" };
+    private static DimensionDefinition langFrDef = new() {DimensionId = 99, EnvironmentKey = "fr-FR", Name = "", Key = "fr-fr" };
     private static List<DimensionDefinition> activeLangs = [langEnDef, langDeDeDef, langDeChDef];
 
     #endregion

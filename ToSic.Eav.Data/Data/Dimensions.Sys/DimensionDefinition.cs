@@ -5,7 +5,7 @@
 /// </summary>
 [PrivateApi("hidden 2021-09-30, previously visible as internal don't use")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class DimensionDefinition
+public record DimensionDefinition
 {
     [PrivateApi("might be changed to just 'id' or something")]
     public int DimensionId { get; set; }
@@ -16,19 +16,19 @@ public class DimensionDefinition
     /// <summary>
     /// The name - in case of a language this would be something like "English"
     /// </summary>
-    public string Name { get; set; }
+    public required string Name { get; init; }
 
     /// <summary>
     /// The key/id, in case of a language this would be something like "en" or "en-us".
     /// </summary>
     /// <remarks>It's always lower case</remarks>
-    public string Key { get; set; }
+    public required string Key { get; init; }
 
     /// <summary>
     /// The id / marker in the environment, which can deviate from the key through casing or other aspects.
     /// </summary>
     [PrivateApi]
-    public string EnvironmentKey { get; set; }
+    public required string EnvironmentKey { get; init; }
 
     /// <summary>
     /// Compares two keys to see if they are the same.
