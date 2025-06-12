@@ -82,7 +82,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
                 v.TsDynDataValueDimensions
                     .Select(ILanguage (lng) =>
                         new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId))
-                    .ToListOpt() // ToList is an important optimization, ask 2dm
+                    .ToList() // ToList is an important optimization, ask 2dm. Do NOT change to ToListOpt (which is an EAV extension, not EF Core compatible!),
             ))
             .ToListOpt();
     }
