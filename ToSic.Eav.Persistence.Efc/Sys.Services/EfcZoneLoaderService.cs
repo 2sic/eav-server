@@ -39,7 +39,7 @@ internal class EfcZoneLoaderService(EfcAppLoaderService appLoader): HelperBase(a
 
                     var languages = z.TsDynDataDimensions
                         .Where(d => d.ParentNavigation?.Key == EavConstants.CultureSystemKey)
-                        .Cast<DimensionDefinition>()
+                        .Select(d => d.AsDimensionDefinition)
                         .ToList();
 
                     return new Zone(z.ZoneId, primary, content, appDictionary, languages);

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Persistence.Efc.Sys.DbModels;
 
-public partial class TsDynDataDimension : DimensionDefinition
+public partial class TsDynDataDimension
 {
     /// <summary>
     /// Compares two keys to see if they are the same.
@@ -12,4 +12,14 @@ public partial class TsDynDataDimension : DimensionDefinition
     public bool Matches(string environmentKey)
         => string.Equals(EnvironmentKey, environmentKey, StringComparison.InvariantCultureIgnoreCase);
 
+    public DimensionDefinition AsDimensionDefinition
+        => new()
+        {
+            DimensionId = DimensionId,
+            Parent = Parent,
+            Name = Name,
+            Key = Key,
+            EnvironmentKey = EnvironmentKey,
+            Active = Active,
+        };
 }

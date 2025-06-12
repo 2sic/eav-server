@@ -13,7 +13,7 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
             .ToList()
             .Where(d =>
                 d.Matches(externalKey)
-                && d.Key.ToLower() == systemKey.ToLower())// This is evaluated on the client
+                && string.Equals(d.Key, systemKey, StringComparison.CurrentCultureIgnoreCase))// This is evaluated on the client
             .Select(d => d.DimensionId)
             .FirstOrDefault();
     }
@@ -41,7 +41,8 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// <param name="active"></param>
     internal void AddOrUpdateLanguage(string cultureCode, string cultureText, bool active)
     {
-        var eavLanguage = GetLanguages(true).FirstOrDefault(l => l.Matches(cultureCode));
+        var eavLanguage = GetLanguages(true)
+            .FirstOrDefault(l => l.Matches(cultureCode));
         // If the language exists in EAV, set the active state, else add it
         if (eavLanguage != null)
             UpdateDimension(eavLanguage.DimensionId, active);
@@ -61,7 +62,8 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
             Key = systemKey,
             Name = name,
             Zone = zone,
-            ParentNavigation = null
+            ParentNavigation = null,
+            Active = true,
         };
         DbContext.SqlDb.Add(newDimension);
         DbContext.SqlDb.SaveChanges();
@@ -72,15 +74,17 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// <summary>
     /// Get all Languages of current Zone and App
     /// </summary>
-    private List<DimensionDefinition> GetLanguages(bool includeInactive = false)
-    {
-        return DbContext.SqlDb.TsDynDataDimensions.ToList().Where(d =>
-            d.Parent.HasValue
-            && d.ParentNavigation.Key == EavConstants.CultureSystemKey
-            && d.ZoneId == DbContext.ZoneId
-            && (includeInactive || d.Active)
-        ).Cast<DimensionDefinition>().ToList();
-    }
+    private List<DimensionDefinition> GetLanguages(bool includeInactive = false) =>
+        DbContext.SqlDb.TsDynDataDimensions
+            .ToList()
+            .Where(d =>
+                d.Parent.HasValue
+                && d.ParentNavigation.Key == EavConstants.CultureSystemKey
+                && d.ZoneId == DbContext.ZoneId
+                && (includeInactive || d.Active)
+            )
+            .Select(d => d.AsDimensionDefinition)
+            .ToList();
 
     /// <summary>
     /// Add a new Language to current Zone

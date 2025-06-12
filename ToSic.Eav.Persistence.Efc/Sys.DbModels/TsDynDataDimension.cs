@@ -3,24 +3,19 @@
 namespace ToSic.Eav.Persistence.Efc.Sys.DbModels;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class TsDynDataDimension : DimensionDefinition
+public partial class TsDynDataDimension
 {
-    public TsDynDataDimension()
-    {
-        Active = true;
-    }
+    public int DimensionId { get; set; }
 
-    //public int DimensionId { get; set; }
+    public int? Parent { get; set; }
 
-    //public int? Parent { get; set; }
+    public string Name { get; set; }
 
-    //public string Name { get; set; }
+    public string Key { get; set; }
 
-    //public string Key { get; set; }
+    public string EnvironmentKey { get; set; }
 
-    //public string EnvironmentKey { get; set; }
-
-    //public bool Active { get; set; }
+    public bool Active { get; set; }
 
     public int ZoneId { get; set; }
 
