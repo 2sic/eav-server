@@ -74,17 +74,17 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// <summary>
     /// Get all Languages of current Zone and App
     /// </summary>
-    private List<DimensionDefinition> GetLanguages(bool includeInactive = false) =>
+    private ICollection<DimensionDefinition> GetLanguages(bool includeInactive = false) =>
         DbContext.SqlDb.TsDynDataDimensions
+            .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
             .ToList()
             .Where(d =>
                 d.Parent.HasValue
                 && d.ParentNavigation.Key == EavConstants.CultureSystemKey
-                && d.ZoneId == DbContext.ZoneId
                 && (includeInactive || d.Active)
             )
             .Select(d => d.AsDimensionDefinition)
-            .ToList();
+            .ToListOpt();
 
     /// <summary>
     /// Add a new Language to current Zone
