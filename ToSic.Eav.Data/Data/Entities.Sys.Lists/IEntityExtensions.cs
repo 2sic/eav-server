@@ -7,11 +7,13 @@ namespace ToSic.Eav.Data.Entities.Sys.Lists;
 public static class IEntityExtensions
 {
 #if DEBUG
+    // ReSharper disable NotAccessedField.Local
     private static int _countOneId;
     private static int _countOneGuid;
     private static int _countOneHas;
     private static int _countOneRepo;
     private static int _countOneOfContentType;
+    // ReSharper restore NotAccessedField.Local
 
     internal static int CountOneIdOpt;
     internal static int CountOneRepoOpt;
@@ -127,7 +129,7 @@ public static class IEntityExtensions
 
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static Dictionary<string, object> AsDictionary(this IEntity entity)
+    public static Dictionary<string, object?> AsDictionary(this IEntity entity)
     {
         var attributes = entity.Attributes.ToDictionary(
             k => k.Value.Name,

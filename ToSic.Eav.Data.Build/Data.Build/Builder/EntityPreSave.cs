@@ -14,7 +14,7 @@ public static class EntityPreSave
         => entity.PublishedEntityId;
 
     public static List<ILanguage> GetUsedLanguages(this IEntity entity)
-        => entity.Attributes?.Values
+        => entity.Attributes.Values
             .SelectMany(v => v.Values)
             .SelectMany(vl => vl.Languages)
             .GroupBy(l => l.Key)

@@ -120,15 +120,23 @@ partial class JsonSerializer
         //    but only to the items directly
         // so it tries to get the guids first, and otherwise uses the items
         var entities = ToTypedDictionary<IEnumerable<IEntity>>(gList)
-            .ToDictionary(a => a.Key, a => a.Value
-                .ToDictionary(b => b.Key, b => ((LazyEntitiesSource)b.Value).ResolveGuids()));
+            .ToDictionary(
+                a => a.Key,
+                a => a.Value.ToDictionary(
+                    b => b.Key,
+                    b => ((LazyEntitiesSource)b.Value).ResolveGuids()
+                )
+            );
         return entities;
     }
 
-    private static string LanguageKey(IValue v) =>
-        string.Join(",", v.Languages
-                .OrderBy(l => l.ReadOnly)
-                .Select(l => (l.ReadOnly ? ReadOnlyMarker : "") + l.Key)
-                .ToArray())
+    private static string LanguageKey(IValue v)
+    {
+        var langs = v.Languages
+            .OrderBy(l => l.ReadOnly)
+            .Select(l => (l.ReadOnly ? ReadOnlyMarker : "") + l.Key)
+            .ToArray();
+        return string.Join(",", langs)
             .UseFallbackIfNoValue(NoLanguage);
+    }
 }

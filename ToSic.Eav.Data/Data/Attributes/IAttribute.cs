@@ -16,7 +16,7 @@ public interface IAttribute : IAttributeBase
     /// <summary>
     /// Gets a list of all <see cref="IValue"/>s of this Entity's Attribute. To get the typed objects, use the <see cref="IAttribute{T}.Typed"/>
     /// </summary>
-    IEnumerable<IValue> Values { get; } 
+    IEnumerable<IValue> Values { get; }
 
     #region get-value eaccessors
 

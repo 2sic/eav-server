@@ -245,10 +245,11 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                 // find attribute definition - will be null if the attribute cannot be found - in which case ignore
                 var attribDef = attributeDefs.SingleOrDefault(a =>
                     string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (attribDef == null || attribDef.Type != nameof(ValueTypes.Entity)) continue;
+                if (attribDef is not { Type: nameof(ValueTypes.Entity) })
+                    continue;
 
                 // check if there is anything at all (type doesn't matter yet)
-                var valContents = attribute.Values?.FirstOrDefault()?.ObjectContents;
+                var valContents = attribute.Values.FirstOrDefault()?.ObjectContents;
                 switch (valContents)
                 {
                     case null:

@@ -6,5 +6,5 @@
 /// this is an immutable list.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ImmutableEntitiesSource(IReadOnlyCollection<IEntity> entities = null)
+public class ImmutableEntitiesSource(IReadOnlyCollection<IEntity>? entities = null)
     : DirectEntitiesSource(entities ?? []);
