@@ -80,9 +80,9 @@ internal record Attribute<T> : IAttribute<T>
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public (IValue? ValueField, object? Result) GetTypedValue(string[]? languageKeys, bool fallbackToAny)
+    public (IValue? ValueField, object? Result) GetTypedValue(string?[]? languageKeys, bool fallbackToAny)
     {
-        var iVal = GetInternalValue(languageKeys, IsDefault, FindHavingDimensionsLowerCase, fallbackToAny: fallbackToAny);
+        var iVal = GetInternalValue(languageKeys ?? [], IsDefault, FindHavingDimensionsLowerCase, fallbackToAny: fallbackToAny);
         return (iVal, iVal == null ? default : iVal.TypedContents);
     }
 
@@ -98,7 +98,7 @@ internal record Attribute<T> : IAttribute<T>
         return valT == null ? default : valT.TypedContents;
     }
     
-    private IValue<T>? GetInternalValue<TKey>(TKey[]? keys, Func<TKey, bool> isDefault, Func<TKey[], IValue?> lookupCallback, bool fallbackToAny)
+    private IValue<T>? GetInternalValue<TKey>(TKey[] keys, Func<TKey, bool> isDefault, Func<TKey[], IValue?> lookupCallback, bool fallbackToAny)
     {
         // no values, exit early, return default
         if (ValuesImmutable.Count == 0)
@@ -130,15 +130,10 @@ internal record Attribute<T> : IAttribute<T>
                 continue;
 
             // stop at first non-null match
-            //try
-            //{
-                return valueHavingSpecifiedLanguages as IValue<T>;
-            //}
-            //catch (InvalidCastException) { /* ignore, may occur for nullable types */ }
-            //break;
+            return valueHavingSpecifiedLanguages as IValue<T>;
         }
 
-        // Fallback to use Default
+        // There was no match so far, Fallback to use Default
         return fallbackToAny ? GetTypedValue() : default;
     }
 
@@ -160,9 +155,10 @@ internal record Attribute<T> : IAttribute<T>
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    private IValue? FindHavingDimensionsLowerCase(string[] keys)
+    private IValue? FindHavingDimensionsLowerCase(string?[] keys)
     {
-        // ensure language Keys in lookup-list are lowered
+        // Note: all language Keys in lookup-list are lowered
+        // Find the value which has all the specified languages
         var valuesHavingDimensions = ValuesImmutable
             .FirstOrDefault(va => keys.All(lng => va.Languages.Select(d => d.Key).Contains(lng)));
         return valuesHavingDimensions;

@@ -197,7 +197,8 @@ partial class JsonSerializer
     {
         switch (a.Type)
         {
-            case ValueTypes.Boolean: return BuildValues(jAtts.Boolean, a);
+            case ValueTypes.Boolean:
+                return BuildValues(jAtts.Boolean, a);
             case ValueTypes.DateTime:
                 return BuildValues(jAtts.DateTime, a);
             case ValueTypes.Entity:
@@ -208,11 +209,16 @@ partial class JsonSerializer
                         v.Value,
                         relationshipsSource ?? LazyRelationshipLookupList))
                     .ToListOpt();
-            case ValueTypes.Hyperlink: return BuildValues(jAtts.Hyperlink, a);
-            case ValueTypes.Number: return BuildValues(jAtts.Number, a);
-            case ValueTypes.String: return BuildValues(jAtts.String, a);
-            case ValueTypes.Custom: return BuildValues(jAtts.Custom, a);
-            case ValueTypes.Json: return BuildValues(jAtts.Json, a);
+            case ValueTypes.Hyperlink:
+                return BuildValues(jAtts.Hyperlink, a);
+            case ValueTypes.Number:
+                return BuildValues(jAtts.Number, a);
+            case ValueTypes.String:
+                return BuildValues(jAtts.String, a);
+            case ValueTypes.Custom:
+                return BuildValues(jAtts.Custom, a);
+            case ValueTypes.Json:
+                return BuildValues(jAtts.Json, a);
             // ReSharper disable RedundantCaseLabel
             case ValueTypes.Empty:
             case ValueTypes.Undefined:
@@ -225,7 +231,8 @@ partial class JsonSerializer
 
     private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef)
     {
-        if (!list?.ContainsKey(attrDef.Name) ?? true) return new List<IValue>();
+        if (!list?.ContainsKey(attrDef.Name) ?? true)
+            return new List<IValue>();
         return list[attrDef.Name]
             .Select(IValue (v) => Services.DataBuilder.Value.Create(v.Value, RecreateLanguageList(v.Key)))
             .ToListOpt();

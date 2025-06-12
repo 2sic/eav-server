@@ -23,8 +23,8 @@ public interface IMetadataInternals
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    IAppIdentity Context(string type);
+    IAppIdentity? Context(string type);
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    (int TargetType, ICollection<IEntity> list, IHasMetadataSourceAndExpiring appSource, Func<IHasMetadataSourceAndExpiring> deferredSource) GetCloneSpecs();
+    (int TargetType, ICollection<IEntity>? list, IHasMetadataSourceAndExpiring? appSource, Func<IHasMetadataSourceAndExpiring>? deferredSource) GetCloneSpecs();
 }

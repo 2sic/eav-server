@@ -7,25 +7,16 @@ namespace ToSic.Eav.Data.Values.Sys;
 /// <summary>
 /// Represents a typed Value object in the memory model
 /// </summary>
+/// <remarks>
+/// * completely #immutable since v15.04
+/// </remarks>
 /// <typeparam name="T">Type of the actual Value</typeparam>
 [PrivateApi("this is just fyi, always work with interface IValue<T>")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record Value<T> : IValue<T>
+internal record Value<T>(T? TypedContents, IImmutableList<ILanguage>? LanguagesImmutable = null) : IValue<T>
 {
-    /// <summary>
-    /// The default constructor to create a value object. Used internally to build the memory model. 
-    /// </summary>
-    /// <remarks>
-    /// * completely #immutable since v15.04
-    /// </remarks>
-    internal Value(T? typedContents, IImmutableList<ILanguage>? languages = null)
-    {
-        TypedContents = typedContents;
-        LanguagesImmutable = languages ?? DataConstants.NoLanguages;
-    }
-
-    public T? TypedContents { get; }
-
+    /// <inheritdoc />
+    public T? TypedContents { get; } = TypedContents;
 
     /// <inheritdoc />
     public IEnumerable<ILanguage> Languages => LanguagesImmutable;
@@ -35,7 +26,7 @@ public record Value<T> : IValue<T>
     {
         get => field ??= DataConstants.NoLanguages;
         init;
-    }
+    } = LanguagesImmutable;
 
     /// <inheritdoc />
     public object? SerializableObject
@@ -74,5 +65,5 @@ public record Value<T> : IValue<T>
         => this with { LanguagesImmutable = newLanguages };
 
     [PrivateApi]
-    public object ObjectContents => TypedContents;
+    public object? ObjectContents => TypedContents;
 }

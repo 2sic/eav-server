@@ -8,19 +8,8 @@ namespace ToSic.Eav.Data.Relationships.Sys;
 /// </summary>
 [PrivateApi("this is for the Relationship.Children API, not recommended for others")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class RelationshipChildren : IRelationshipChildren
+internal class RelationshipChildren(IReadOnlyDictionary<string, IAttribute> attributes) : IRelationshipChildren
 {
-    private readonly IReadOnlyDictionary<string, IAttribute> _attributes;
-
-    /// <summary>
-    /// Initializes a new instance of the Children class.
-    /// </summary>
-    /// <param name="attributes"></param>
-    internal RelationshipChildren(IReadOnlyDictionary<string, IAttribute> attributes)
-    {
-        _attributes = attributes;
-    }
-
     /// <inheritdoc />
     /// <summary>
     /// Get Children of a specified Attribute Name
@@ -30,10 +19,15 @@ public class RelationshipChildren : IRelationshipChildren
     {
         get
         {
-            if (_attributes == null) return new List<IEntity>();
-            return _attributes.TryGetValue(attributeName, out var attribute) 
-                ? (attribute as Attribute<IEnumerable<IEntity>>)?.TypedContents 
-                : new List<IEntity>();
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (attributes == null)
+                return [];
+
+            var list = attributes.TryGetValue(attributeName, out var attribute)
+                ? (attribute as Attribute<IEnumerable<IEntity>>)?.TypedContents
+                : null;
+
+            return list ?? [];
         }
     }
 }

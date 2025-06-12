@@ -49,9 +49,8 @@ public class Target : ITarget
     /// Constructor for a new MetadataTarget, which is empty.
     /// </summary>
     [PrivateApi]
-    public Target(int targetType, string identifier, object key): this(targetType, identifier, key as string, key as int?, key as Guid?)
-    {
-    }
+    public Target(int targetType, string identifier, object? key): this(targetType, identifier, key as string, key as int?, key as Guid?)
+    { }
 
     /// <summary>
     /// Constructor to copy an existing MetadataFor object. 

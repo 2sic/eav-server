@@ -22,7 +22,7 @@ public interface IValue
     /// </summary>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    object ObjectContents { get; }
+    object? ObjectContents { get; }
 
     /// <summary>
     /// Returns the inner value in a form that can be serialized, for JSON serialization etc.

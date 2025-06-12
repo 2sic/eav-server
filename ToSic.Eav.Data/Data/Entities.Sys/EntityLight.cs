@@ -47,10 +47,12 @@ public abstract record EntityLight //: IEntityLight
 
     /// <inheritdoc />
     [JsonIgnore]
+    [field: AllowNull, MaybeNull]
     public IEntityRelationships Relationships => field ??= PartsLazy.GetRelationshipDelegate((IEntity)this);
 
 
     /// <inheritdoc />
+    [field: AllowNull, MaybeNull]
     public required ITarget MetadataFor
     {
         get => field ??= new Target();
@@ -76,8 +78,8 @@ public abstract record EntityLight //: IEntityLight
     /// <param name="attributeNameLowerInvariant"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected virtual object GetInternalPropertyByName(string attributeNameLowerInvariant) =>
-        attributeNameLowerInvariant switch
+    protected virtual object? GetInternalPropertyByName(string attributeNameLowerInvariant)
+        => attributeNameLowerInvariant switch
         {
             AttributeNames.EntityFieldId => EntityId,
             AttributeNames.EntityFieldGuid => EntityGuid,

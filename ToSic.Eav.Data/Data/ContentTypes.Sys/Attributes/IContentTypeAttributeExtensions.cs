@@ -20,7 +20,8 @@ public static class IContentTypeAttributeExtensions
     {
         // Preferred storage and available in all fields defined after 2sxc ca. 6 or 7
         var inputType = definition.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeGeneral);
-        if (inputType.HasValue()) return inputType;
+        if (inputType.HasValue())
+            return inputType;
             
         // if not available, check older metadata, where it was on the @String
         inputType = definition.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeString);
@@ -51,13 +52,15 @@ public static class IContentTypeAttributeExtensions
     public static bool HasFormulas(this IContentTypeAttribute attribute, ILog log)
     {
         var l = log.Fn<bool>(attribute.Name);
-        var allMd = attribute.Metadata.FirstOrDefaultOfType(AttributeMetadataConstants.TypeGeneral);
-        if (allMd == null) return l.ReturnFalse("no @All");
+        var allMd = attribute.Metadata.FirstOrDefaultOfType(TypeGeneral);
+        if (allMd == null)
+            return l.ReturnFalse("no @All");
 
-        var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == AttributeMetadataConstants.MetadataFieldAllFormulas);
-        if (calculationsAttr == null) return l.ReturnFalse("no calc property");
+        var calculationsAttr = allMd.Attributes.Values.FirstOrDefault(a => a.Name == MetadataFieldAllFormulas);
+        if (calculationsAttr == null)
+            return l.ReturnFalse("no calc property");
 
-        var calculations = calculationsAttr.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;
+        var calculations = calculationsAttr.Values.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>;
         return l.Return(calculations?.Any() ?? false);
     }
 

@@ -32,7 +32,8 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource? app, IEn
     /// This should be reworked, it often contains all relationships of the entire app
     /// </summary>
     [field: AllowNull, MaybeNull]
-    private IEnumerable<IEntityRelationship> AllRelationships => field ??= _appSource?.Relationships ?? _fallbackRels ?? [];
+    private IEnumerable<IEntityRelationship> AllRelationships
+        => field ??= _appSource?.Relationships ?? _fallbackRels ?? [];
 
     /// <inheritdoc />
     public IEnumerable<IEntity> AllChildren
@@ -61,8 +62,8 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource? app, IEn
     /// <summary>
     /// Directly retrieve the children - should only be called by the caching mechanism
     /// </summary>
-    private IImmutableList<IEntityRelationship> GetChildrenUncached() =>
-        AllRelationships
+    private IImmutableList<IEntityRelationship> GetChildrenUncached()
+        => AllRelationships
             .Where(r => ReferenceEquals(r.Parent, entity))
             .ToImmutableOpt();
 
@@ -139,9 +140,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource? app, IEn
 
     /// <inheritdoc />
     public IRelationshipChildren Children
-        => entity != null
-            ? new RelationshipChildren(entity.Attributes)
-            : null;
+        => new RelationshipChildren(entity.Attributes);
 
 
 

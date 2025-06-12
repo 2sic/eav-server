@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data.Entities.Sys;
 partial record Entity
 {
     /// <inheritdoc />
-    public IMetadataOf Metadata => _metadataOf.Get(() => PartsLazy.GetMetadataOfDelegate(EntityGuid, GetBestTitle() ?? "entity with unknown title"));
+    public IMetadataOf Metadata => _metadataOf.Get(() => PartsLazy.GetMetadataOfDelegate(EntityGuid, GetBestTitle() ?? "entity with unknown title"))!;
     private readonly GetOnce<IMetadataOf> _metadataOf = new();
 
     /// <inheritdoc />

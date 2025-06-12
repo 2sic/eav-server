@@ -57,7 +57,7 @@ public interface IAttribute // : IAttributeBase
     /// <returns></returns>
     [PrivateApi("experimental in 12.05")]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    (IValue? ValueField, object? Result) GetTypedValue(string[]? languageKeys, bool fallbackToAny);
+    (IValue? ValueField, object? Result) GetTypedValue(string?[]? languageKeys, bool fallbackToAny);
 
     [PrivateApi("internal only")]
     [ShowApiWhenReleased(ShowApiMode.Never)]

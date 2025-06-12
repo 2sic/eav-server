@@ -10,6 +10,7 @@ namespace ToSic.Eav.Data.Entities.Sys.Sources;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyLookup<TKey, TValue> : ILookup<TKey, TValue>
 {
+    [field: AllowNull, MaybeNull]
     public ILookup<TKey, TValue> Source
     {
         get => field ??= Raw.ToLookup(r => r.Key, r => r.Value);
@@ -21,7 +22,7 @@ public class LazyLookup<TKey, TValue> : ILookup<TKey, TValue>
     public void Add(IEnumerable<KeyValuePair<TKey, TValue>> values)
     {
         Raw.AddRange(values);
-        Source = null;
+        Source = null!; // Reset the source so it will be recalculated
     }
 
     #region IEnumerable

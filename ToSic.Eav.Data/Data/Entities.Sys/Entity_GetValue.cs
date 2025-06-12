@@ -64,7 +64,7 @@ partial record Entity
         return new(result: null, valueType: ValueTypesWithState.NotFound, path: path) { Source = this };
     }
 
-    protected override object GetInternalPropertyByName(string attributeNameLowerInvariant)
+    protected override object? GetInternalPropertyByName(string attributeNameLowerInvariant)
         => attributeNameLowerInvariant == EntityFieldIsPublished
             // first check a field which doesn't exist on EntityLight
             ? IsPublished

@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using ToSic.Eav.Data.Entities.Sys.Wrappers;
 using ToSic.Eav.Metadata;
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+// ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
 namespace ToSic.Eav.Data.EntityBased.Sys;
 
@@ -50,7 +52,9 @@ public abstract class EntityBasedType : IEntityBasedType
     public Guid Guid => Entity?.EntityGuid ?? Guid.Empty;
 
     /// <inheritdoc />
+#pragma warning disable CS8603 // Possible null reference return.
     public IMetadataOf Metadata => Entity?.Metadata;
+#pragma warning restore CS8603 // Possible null reference return.
 
     [PrivateApi]
     protected string[] LookupLanguages { get; } = [];
@@ -64,7 +68,7 @@ public abstract class EntityBasedType : IEntityBasedType
     /// <param name="fallback">fallback value</param>
     /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
     [return: NotNullIfNotNull(nameof(fallback))]
-    protected T Get<T>(string fieldName, T fallback)
+    protected T? Get<T>(string fieldName, T fallback)
         => Entity == null
             ? fallback
             : Entity.Get(fieldName, fallback: fallback, languages: LookupLanguages);
@@ -82,6 +86,6 @@ public abstract class EntityBasedType : IEntityBasedType
         => Get(propertyName!, fallback);
 
     [return: NotNullIfNotNull(nameof(fallback))]
-    protected T GetThisIfEntity<T>(T fallback, [CallerMemberName] string? propertyName = default)
+    protected T? GetThisIfEntity<T>(T fallback, [CallerMemberName] string? propertyName = default)
         => Entity == null ? fallback : GetThis(fallback, propertyName);
 }
