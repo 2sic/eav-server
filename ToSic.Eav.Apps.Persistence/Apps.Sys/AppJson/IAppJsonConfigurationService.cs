@@ -19,7 +19,7 @@ public interface IAppJsonConfigurationService
     /// <param name="appId"></param>
     /// <param name="useShared"></param>
     /// <returns>The AppJson object, or null</returns>
-    AppJsonConfiguration GetAppJson(int appId, bool useShared = false);
+    AppJsonConfiguration? GetAppJson(int appId, bool useShared = false);
 
     /// <summary>
     /// Generate a unique cache key for this specific app.json, so that it can be watched for changes.

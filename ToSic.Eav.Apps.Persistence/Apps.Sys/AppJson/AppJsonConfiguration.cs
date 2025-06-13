@@ -15,8 +15,8 @@ namespace ToSic.Eav.Apps.Sys.AppJson;
 public class AppJsonConfiguration
 {
     public bool IsConfigured { get; set; }
-    public ExportConfig Export { get; set; }
-    public DotNetConfig DotNet { get; set; }
+    public ExportConfig? Export { get; set; }
+    public DotNetConfig? DotNet { get; set; }
     public Dictionary<string, EditionInfo> Editions { get; set; } = [];
 
     /// <summary>
@@ -24,7 +24,7 @@ public class AppJsonConfiguration
     /// </summary>
     public class ExportConfig
     {
-        public List<string> Exclude { get; set; }
+        public List<string>? Exclude { get; set; }
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class AppJsonConfiguration
         /// The compiler to use for Razor and C# classes.
         /// ATM not applied to DataSources and WebApi, as they should be moved to AppCode anyhow
         /// </summary>
-        public string Compiler { get; set; }
+        public string? Compiler { get; set; }
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class AppJsonConfiguration
     /// </summary>
     public class EditionInfo
     {
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public bool IsDefault { get; set; }
     }
 }

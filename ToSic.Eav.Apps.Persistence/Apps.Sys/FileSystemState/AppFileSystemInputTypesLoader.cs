@@ -11,7 +11,10 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppInputTypesLoader
 {
     public new IAppInputTypesLoader Init(IAppReader reader, LogSettings logSettings)
-        => base.Init(reader, logSettings) as IAppInputTypesLoader;
+    {
+        base.Init(reader, logSettings);
+        return this;
+    }
 
     /// <inheritdoc />
     public ICollection<InputTypeInfo> InputTypes()
@@ -23,7 +26,6 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
             .ToListOpt();
         return l.Return(types, $"{types.Count}");
     }
-
 
 
     #region Helpers

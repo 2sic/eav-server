@@ -7,9 +7,9 @@ internal sealed class AppInputTypesLoaderUnknown(WarnUseOfUnknown<AppInputTypesL
     // do nothing
     public IAppInputTypesLoader Init(IAppReader reader, LogSettings logSettings) => this;
 
-    public string Path { get; set; }
+    public string Path { get; set; } = "";
 
-    public string PathShared { get; set; }
+    public string PathShared { get; set; } = "";
 
     // do nothing
     public ICollection<InputTypeInfo> InputTypes() => [];

@@ -37,9 +37,9 @@ public class AppJsonConfigurationService(
     }
 
     /// <inheritdoc />
-    public AppJsonConfiguration GetAppJson(int appId, bool useShared = false)
+    public AppJsonConfiguration? GetAppJson(int appId, bool useShared = false)
     {
-        var l = Log.Fn<AppJsonConfiguration>($"{nameof(appId)}: '{appId}'");
+        var l = Log.Fn<AppJsonConfiguration?>($"{nameof(appId)}: '{appId}'");
 
         var cacheKey = AppJsonCacheKey(appId, useShared);
         l.A($"cache key: {cacheKey}");
@@ -94,7 +94,7 @@ public class AppJsonConfigurationService(
     }
     private readonly Dictionary<int, IAppPaths> _appPathsCache = [];
 
-    private AppJsonConfiguration GetAppJsonInternal(string pathToAppJson)
+    private AppJsonConfiguration? GetAppJsonInternal(string pathToAppJson)
     {
         var l = Log.Fn<AppJsonConfiguration>($"{nameof(pathToAppJson)}:'{pathToAppJson}'");
 

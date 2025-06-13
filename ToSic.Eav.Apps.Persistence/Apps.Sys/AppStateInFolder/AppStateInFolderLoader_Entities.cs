@@ -93,7 +93,7 @@ partial class AppStateInFolderLoader
         
     internal class EntitySetsToLoad
     {
-        public string Folder;
-        public ICollection<IEntity> Entities;
+        public required string Folder;
+        public required ICollection<IEntity> Entities;
     }
 }

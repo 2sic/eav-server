@@ -14,7 +14,10 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppContentTypesLoader
 {
     public new IAppContentTypesLoader Init(IAppReader app, LogSettings logSettings)
-        => base.Init(app, logSettings) as IAppContentTypesLoader;
+    {
+        base.Init(app, logSettings);
+        return this;
+    }
 
     /// <inheritdoc />
     public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource)

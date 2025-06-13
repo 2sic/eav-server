@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.ContentTypes.Sys;
-using ToSic.Sys.Utils;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
@@ -10,7 +9,7 @@ namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 /// Basically the idea is that all generated Entities only have a wrapper ContentType,
 /// which will retrieve its data from this source once they are completely generated. 
 /// </summary>
-internal class DeferredContentTypeProvider(ILog parentLog)
+internal class DeferredContentTypeProvider(ILog? parentLog)
     : HelperBase(parentLog, "Eav.LdrCTP"), IDeferredContentTypeProvider
 {
     /// <summary>
@@ -20,7 +19,7 @@ internal class DeferredContentTypeProvider(ILog parentLog)
 
     protected IDictionary<string, IContentType> Lookup => _lookup
         ??= Source.ToDictionary(t => t.NameId, t => t, InvariantCultureIgnoreCase);
-    private IDictionary<string, IContentType> _lookup;
+    private IDictionary<string, IContentType>? _lookup;
 
     /// <summary>
     /// This will be called by the serializer to generate a delayed/lazy IContentType.
