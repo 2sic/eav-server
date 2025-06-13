@@ -46,12 +46,12 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
         var l = Log.IfSummary(LogSettings).Fn<IEnumerable<IContentType>>(extensionPath);
         var fsLoader = fslGenerator.New(options: new()
         {
-            appId = AppIdentity.AppId,
-            path = extensionPath,
-            repoType = RepositoryTypes.Folder,
-            ignoreMissing =true,
-            entitiesSource= entitiesSource,
-            logSettings= LogSettings,
+            AppId = AppIdentity.AppId,
+            Path = extensionPath,
+            RepoType = RepositoryTypes.Folder,
+            IgnoreMissing =true,
+            EntitiesSource= entitiesSource,
+            LogSettings= LogSettings,
         });
         var types = fsLoader.ContentTypes();
         return l.Return(types, $"found: {types.Count}");

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Persistence.File;
 
 partial class FileSystemLoader
 {
-    private string BundlesPath => System.IO.Path.Combine(Options.path, AppDataFoldersConstants.BundlesFolder);
+    private string BundlesPath => System.IO.Path.Combine(Options.Path, AppDataFoldersConstants.BundlesFolder);
 
 
     public Dictionary<string, JsonFormat> JsonBundleBundles => field ??= GetJsonBundleBundles();
@@ -17,7 +17,7 @@ partial class FileSystemLoader
     {
         var l = Log.Fn<Dictionary<string, JsonFormat>>();
         // #1. check that folder exists
-        if (!CheckPathExists(Options.path) || !CheckPathExists(BundlesPath))
+        if (!CheckPathExists(Options.Path) || !CheckPathExists(BundlesPath))
             return l.Return([], "path doesn't exist");
 
         const string infoIfError = "couldn't read bundle-file";
@@ -88,7 +88,7 @@ partial class FileSystemLoader
                     var typeWithOrigin = dataBuilder.ContentType.CreateFrom(
                         ct.ContentType,
                         id: ++TypeIdSeed,
-                        repoType: Options.repoType,
+                        repoType: Options.RepoType,
                         repoAddress: path,
                         parentTypeId: EavConstants.PresetContentTypeFakeParent,
                         configZoneId: KnownAppsConstants.PresetZoneId,

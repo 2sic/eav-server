@@ -47,11 +47,11 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
         var loader = loaderGenerator.New(new()
         {
-            appId = KnownAppsConstants.PresetAppId,
-            path = testStorageRoot,
-            repoType = RepositoryTypes.TestingDoNotUse,
-            ignoreMissing = false,
-            entitiesSource = null,
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = testStorageRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = false,
+            EntitiesSource = null,
         });
 
         IList<IContentType> cts;
@@ -74,11 +74,11 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         output.WriteLine($"path:'{testStorageRoot}'");
         var loader = loaderGenerator.New(new()
         {
-            appId = KnownAppsConstants.PresetAppId,
-            path = testStorageRoot,
-            repoType = RepositoryTypes.TestingDoNotUse,
-            ignoreMissing = false,
-            entitiesSource = null
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = testStorageRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = false,
+            EntitiesSource = null
         });
         var relationshipsSource = new ImmutableEntitiesSource();
         try

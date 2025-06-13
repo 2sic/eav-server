@@ -15,11 +15,11 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         output.WriteLine($"path:'{testStorageRoot}'");
         var loader = loaderRaw.New(new()
         {
-            appId = KnownAppsConstants.PresetAppId,
-            path = testStorageRoot,
-            repoType = RepositoryTypes.TestingDoNotUse,
-            ignoreMissing = false,
-            entitiesSource = null
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = testStorageRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = false,
+            EntitiesSource = null
         });
         //var loader = loaderRaw;
         
@@ -42,11 +42,11 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         var loader = loaderRaw;
         loader.Setup(new()
         {
-            appId = KnownAppsConstants.PresetAppId,
-            path = testRoot,
-            repoType = RepositoryTypes.TestingDoNotUse,
-            ignoreMissing = true,
-            entitiesSource = null
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = testRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = true,
+            EntitiesSource = null
         });
         ICollection<IContentType> cts;
         try

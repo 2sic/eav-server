@@ -31,7 +31,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     private JsonSerializer NewSerializer()
     {
         var ser = serializerGenerator.New();
-        ser.ConfigureLogging(Options.logSettings);
+        ser.ConfigureLogging(Options.LogSettings);
         return ser;
     }
 
@@ -39,7 +39,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     {
         var ser = NewSerializer();
 
-        var entitySource = Options.entitiesSource;
+        var entitySource = Options.EntitiesSource;
         var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
         // #SharedFieldDefinition
         // Also provide AppState if possible, for new #SharedFieldDefinition
@@ -52,7 +52,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
                 // ATM this doesn't matter, because we don't have any related entities in Content-Types
                 // if we ever need it, check out how it's done on the AppLoader
             };
-        ser.Initialize(Options.appId, [], entitySource);
+        ser.Initialize(Options.AppId, [], entitySource);
         ser.AssumeUnknownTypesAreDynamic = true;
         return l.Return(ser);
     }
@@ -63,7 +63,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     internal void ResetSerializer(ICollection<IContentType> types)
     {
         var serializer = NewSerializer();
-        serializer.Initialize(Options.appId, types, null);
+        serializer.Initialize(Options.AppId, types, null);
         Serializer = serializer;
     }
 
@@ -76,8 +76,8 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{EntityIdSeed}", timer: true);
             
         // #1. check that folder exists
-        var subPath = Path.Combine(Options.path, folder);
-        if (!CheckPathExists(Options.path) || !CheckPathExists(subPath))
+        var subPath = Path.Combine(Options.Path, folder);
+        if (!CheckPathExists(Options.Path) || !CheckPathExists(subPath))
             return l.Return([], "Path doesn't exist, return none");
 
         // #2. WIP - Allow relationships between loaded items
@@ -127,7 +127,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     public int TypeIdSeed = -1;
 
     public ICollection<IContentType> ContentTypes()
-        => ContentTypes(Options.appId, null! /* unused */);
+        => ContentTypes(Options.AppId, null! /* unused */);
 
     /// <inheritdoc />
     /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
@@ -142,12 +142,12 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
     public (IList<IContentType> ContentTypes, IList<IEntity> Entities) ContentTypesWithEntities()
     {
-        var l = Log.Fn<(IList<IContentType> ContentTypes, IList<IEntity> Entities)>($"ContentTypes in {Options.appId}", timer: true);
+        var l = Log.Fn<(IList<IContentType> ContentTypes, IList<IEntity> Entities)>($"ContentTypes in {Options.AppId}", timer: true);
             
         // #1. check that folder exists
         var pathCt = ContentTypePath;
         List<IContentType> contentTypes;
-        if (CheckPathExists(Options.path) && CheckPathExists(pathCt))
+        if (CheckPathExists(Options.Path) && CheckPathExists(pathCt))
         {
             // #2 find all content-type files in folder
             var jsonFiles = Directory
@@ -190,7 +190,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         return l.Return((contentTypes, entities), $"Content Types: {contentTypes.Count}; Entities: {entities.Count}");
     }
 
-    private string ContentTypePath => Path.Combine(Options.path, AppDataFoldersConstants.TypesFolder);
+    private string ContentTypePath => Path.Combine(Options.Path, AppDataFoldersConstants.TypesFolder);
 
     /// <summary>
     /// Try to load a content-type file, but if anything fails, just return a null
@@ -208,7 +208,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             var ct = ser.DeserializeContentType(json);
 
             infoIfError = "couldn't set source/parent";
-            ct = dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: Options.repoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
+            ct = dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
             return l.Return(ct, $"file size was: {json.Length}");
         }
         catch (IOException e)
@@ -264,7 +264,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     {
         var l = Log.Fn<bool>($"Check path exists: {path}");
         if (Directory.Exists(path)) return l.ReturnTrue("ok");
-        if (!Options.ignoreMissing)
+        if (!Options.IgnoreMissing)
             throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");
         l.A("path: doesn't exist, but ignore");
         return l.ReturnFalse("not found");

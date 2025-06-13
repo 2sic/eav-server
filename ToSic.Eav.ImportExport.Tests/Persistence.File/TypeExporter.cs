@@ -25,11 +25,11 @@ public class TypeExporter(ITestOutputHelper output, IAppsAndZonesLoaderWithRaw l
         var fileSysLoader = fsLoader;
         fileSysLoader.Setup(new()
         {
-            appId = KnownAppsConstants.PresetAppId,
-            path = exportStorageRoot,
-            repoType = RepositoryTypes.TestingDoNotUse,
-            ignoreMissing = true,
-            entitiesSource = null
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = exportStorageRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = true,
+            EntitiesSource = null
         });
 
         var time = Stopwatch.StartNew();

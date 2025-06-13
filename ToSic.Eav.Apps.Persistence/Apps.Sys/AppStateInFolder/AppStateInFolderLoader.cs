@@ -37,6 +37,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
     public RepositoryTypes Source => RepositoryTypes.Folder;
 
     // 1 - find the current path to the .data folder
+    [field: AllowNull, MaybeNull]
     public List<string> Paths => field ??= GeneratePaths();
 
     private List<string> GeneratePaths()
@@ -68,20 +69,22 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         return l.Return(all, $"{all.Count} paths");
     }
 
+    [field: AllowNull, MaybeNull]
     public ICollection<FileSystemLoader> Loaders => field ??= BuildLoaders(null, LogSettings);
-    private LogSettings LogSettings { get; set; }
 
-    private ICollection<FileSystemLoader> BuildLoaders(IEntitiesSource entitiesSource, LogSettings logSettings)
+    private LogSettings LogSettings { get; set; } = new();
+
+    private ICollection<FileSystemLoader> BuildLoaders(IEntitiesSource? entitiesSource, LogSettings logSettings)
         => Paths
             .Select(path => _fslGenerator
                 .New(new()
                 {
-                    appId = KnownAppsConstants.PresetAppId,
-                    path = path,
-                    repoType = Source,
-                    ignoreMissing = true,
-                    entitiesSource = entitiesSource,
-                    logSettings = logSettings,
+                    AppId = KnownAppsConstants.PresetAppId,
+                    Path = path,
+                    RepoType = Source,
+                    IgnoreMissing = true,
+                    EntitiesSource = entitiesSource,
+                    LogSettings = logSettings,
                 })
             )
             .ToListOpt();
@@ -89,7 +92,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 
     public IAppStateBuilder LoadFullAppState(LogSettings logSettings)
     {
-        LogSettings = logSettings ?? new();
+        LogSettings = logSettings;
 
         // Get BootLog to make sure it's part of that too
         var bl = BootLog.Log.Fn("Load Full AppState", timer: true);
@@ -100,7 +103,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 
         var builder = _stateBuilder.New().InitForPreset();
 
-        var logDetails = LogSettings.Enabled && LogSettings.Details;
+        var logDetails = LogSettings is { Enabled: true, Details: true };
         builder.Load("get app data package", appState =>
         {
             var l = Log.Fn("load app data package");
@@ -113,8 +116,10 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
                 var (contentTypes, entities) = LoadGlobalContentTypes(appState);
                 // Just attach all global content-types to this app, as they belong here
                 builder.InitContentTypes(contentTypes);
-                foreach (var entity in entities)
-                    builder.Add((Entity)entity, null, logDetails);
+
+                // Note: all must be Entity, but this setup just ensures the compiler sees it that way
+                foreach (var entity in entities.Where(e => e is Entity).Cast<Entity>())
+                    builder.Add(entity, null, logDetails);
                 return "types loaded";
             });
 
@@ -138,7 +143,9 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 
                 var entities = LoadGlobalEntities(builder.Reader);
                 l.A($"Load entity {entities.Count} items");
-                foreach (var entity in entities) 
+                
+                // Note: all must be Entity, but this setup just ensures the compiler sees it that way
+                foreach (var entity in entities.Where(e => e is Entity).Cast<Entity>()) 
                     builder.Add(entity as Entity, null, logDetails);
             }
             catch (Exception ex)

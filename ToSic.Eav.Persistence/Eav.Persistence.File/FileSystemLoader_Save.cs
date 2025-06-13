@@ -28,7 +28,7 @@ partial class FileSystemLoader
 
         var cleanName = queryDef.EntityGuid.ToString()
             .RemoveNonFilenameCharacters();
-        var queryPath = System.IO.Path.Combine(Options.path, AppDataFoldersConstants.QueriesFolder);
+        var queryPath = System.IO.Path.Combine(Options.Path, AppDataFoldersConstants.QueriesFolder);
         System.IO.Directory.CreateDirectory(queryPath);
         var fileName = System.IO.Path.Combine(queryPath, cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json));
 
