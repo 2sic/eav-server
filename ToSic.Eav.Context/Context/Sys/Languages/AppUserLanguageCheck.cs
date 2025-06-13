@@ -50,7 +50,7 @@ public class AppUserLanguageCheck(
     /// </summary>
     /// <param name="appReaderOrNull"></param>
     /// <returns></returns>
-    public List<AppUserLanguageState> LanguagesWithPermissions(IAppReader appReaderOrNull)
+    public List<AppUserLanguageState> LanguagesWithPermissions(IAppReader? appReaderOrNull)
     {
         var l = Log.Fn<List<AppUserLanguageState>>();
         // to solves the issue with globals settings languages that can not be saved if 
@@ -61,7 +61,7 @@ public class AppUserLanguageCheck(
         var site = appReaderOrNull != null
             ? zoneMapper.SiteOfZone(appReaderOrNull.ZoneId)
             : ctx.Site;
-        if (site == null)
+        if (site == null!) // probably not necessary, but just to be sure
             return l.Return([], "null site");
 
         var languages = zoneMapper.CulturesWithState(site);
@@ -88,7 +88,7 @@ public class AppUserLanguageCheck(
         if (!hasPermissions && !readerSafe.Specs.IsSiteSettingsApp())
         {
             l.A("No permissions, and not primary app - will try that");
-            var primaryAppReader = appReadersLazy.Value.GetZonePrimary(readerSafe.ZoneId);
+            var primaryAppReader = appReadersLazy.Value.GetZonePrimary(readerSafe.ZoneId)!;
             set = GetLanguagePermissions(primaryAppReader.Metadata, languages);
             hasPermissions = set.Any(s => s.Permissions.Any());
         }
@@ -146,7 +146,7 @@ public class AppUserLanguageCheck(
     /// </summary>
     private class LanguagePermission
     {
-        public ISiteLanguageState Language;
-        public IEnumerable<IEntity> Permissions;
+        public required ISiteLanguageState Language;
+        public required IEnumerable<IEntity> Permissions;
     }
 }

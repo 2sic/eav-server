@@ -8,5 +8,5 @@ public interface IMultiPermissionCheck
 {
     bool UserMayOnAll(List<Grants> grants);
 
-    bool EnsureAll(List<Grants> grants, out string error);
+    bool EnsureAll(List<Grants> grants, out string? error);
 }

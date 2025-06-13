@@ -25,7 +25,7 @@ internal class SiteUnknown(WarnUseOfUnknown<SiteUnknown> _) : ISite, IIsUnknown
 
     public string DefaultCultureCode => "en-us";
 
-    public ISite Init(int siteId, ILog parentLog)
+    public ISite Init(int siteId, ILog? parentLogOrNull)
     {
         Id = siteId;
         ZoneId = siteId;

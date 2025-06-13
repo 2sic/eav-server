@@ -7,7 +7,7 @@ using ToSic.Sys.Users;
 namespace ToSic.Eav.Environment.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class EnvironmentPermission(string logPrefix, object[] connect = default)
+public abstract class EnvironmentPermission(string logPrefix, object[]? connect = default)
     : ServiceBase($"{logPrefix}.EnvPrm", connect: connect), IEnvironmentPermission, IEnvironmentPermissionSetup
 {
     // Constant keys for security, historic from Dnn
@@ -19,19 +19,20 @@ public abstract class EnvironmentPermission(string logPrefix, object[] connect =
     protected const string SalSystemUser = SalPrefix + ".Host";
 
 
-    public IEnvironmentPermission Init<TContext>(IContextOfSite context, IAppIdentity appIdentityOrNull)
+    public IEnvironmentPermission Init<TContext>(IContextOfSite context, IAppIdentity? appIdentityOrNull)
     {
-        var siteCtx = context as IContextOfSite ?? throw new ArgumentException($"Must be an {nameof(IContextOfSite)}", nameof(context));
+        var siteCtx = context ?? throw new ArgumentException($@"Must be an {nameof(IContextOfSite)}", nameof(context));
         Context = siteCtx;
         UserOrNull = siteCtx.User;
         SiteOrNull = siteCtx.Site;
         AppIdentityOrNull = appIdentityOrNull;
         return this;
     }
-    protected IContextOfSite Context { get; private set; }
+
+    protected IContextOfSite Context { get; private set; } = null!;
     private IUser? UserOrNull { get; set; }
     private ISite? SiteOrNull { get; set; }
-    protected IAppIdentity AppIdentityOrNull { get; private set; }
+    protected IAppIdentity? AppIdentityOrNull { get; private set; }
 
     /// <summary>
     /// This should evaluate the grants and decide if the environment approves any of these grants.

@@ -52,12 +52,12 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     /// <returns></returns>
     public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity)
     {
-        var l = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity?.Show()}");
+        var l = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity.Show()}");
         Init(ctx, appIdentity, includeApp: true);
         return l.Return(this);
     }
 
-    public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType targetType, IEntity targetItem)
+    public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType? targetType, IEntity? targetItem)
     {
         var l = Log.Fn<AppPermissionCheck>($"ctx, app: {app.Show()}, type: {targetType?.NameId}, item: {targetItem?.EntityId}");
         Init(ctx, app, targetType, targetItem, includeApp: true);
@@ -72,12 +72,12 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     private void Init(
         IContextOfSite ctx,
         IAppIdentity appIdentity,
-        IContentType targetType = null, // optional type to check
-        IEntity targetItem = null, // optional entity to check
-        IEnumerable<IPermission> permissions = null,
+        IContentType? targetType = null, // optional type to check
+        IEntity? targetItem = null, // optional entity to check
+        IEnumerable<IPermission>? permissions = null,
         bool includeApp = false)
     {
-        var l = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity?.Show()}, {nameof(includeApp)}: {includeApp}");
+        var l = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity.Show()}, {nameof(includeApp)}: {includeApp}");
 
         // New 2025-03-26 option to include App
         // ATM all cases where App Permissions are included will not have permissions passed in
@@ -101,7 +101,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     /// <param name="targetItem">optional entity to check</param>
     /// <param name="permissions"></param>
     /// 
-    private void LoadTargets(IContentType targetType = default, IEntity targetItem = default, IEnumerable<IPermission> permissions = default)
+    private void LoadTargets(IContentType? targetType = default, IEntity? targetItem = default, IEnumerable<IPermission>? permissions = default)
     {
         var l = Log.Fn($"type:{targetType?.NameId}, itm:{targetItem?.EntityGuid} ({targetItem?.EntityId})");
 
@@ -114,17 +114,17 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     /// </summary>
     /// <param name="appIdentity"></param>
     /// <returns></returns>
-    private List<IPermission> FindPermissionsOfApp(IAppIdentity appIdentity)
+    private List<IPermission>? FindPermissionsOfApp(IAppIdentity? appIdentity)
     {
-        var l = Log.Fn<List<IPermission>>();
+        var l = Log.Fn<List<IPermission>?>();
         var permissions = appIdentity == null
             ? null
-            : appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();
+            : appReaders.GetOrKeep(appIdentity)!.Specs.Metadata.Permissions.ToList();
         return l.Return(permissions, $"found: {permissions?.Count}");
     }
 
 
-    protected IContextOfSite Context { get; private set; }
+    protected IContextOfSite Context { get; private set; } = null!;
 
     #endregion
 

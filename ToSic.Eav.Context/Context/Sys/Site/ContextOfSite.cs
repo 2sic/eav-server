@@ -28,11 +28,11 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     /// <param name="services"></param>
     public ContextOfSite(MyServices services) : this(services, null) { }
 
-    protected ContextOfSite(MyServices services, string logName) : base(services, logName ?? "Eav.CtxSte")
+    protected ContextOfSite(MyServices services, string? logName) : base(services, logName ?? "Eav.CtxSte")
     {
         Site = Services.Site;
     }
-    protected ContextOfSite(MyServicesBase<MyServices> services, string logName, object[] connect)
+    protected ContextOfSite(MyServicesBase<MyServices> services, string? logName, object[] connect)
         : base(services, logName ?? "Eav.CtxSte", connect: connect)
     {
         Site = Services.Site;
@@ -51,13 +51,15 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     {
         var u = User;
         // Note: I'm not sure if the user could ever be null, but maybe in search scenarios?
-        if (u == null) return false;
+        if (u == null)
+            return false;
         return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
     });
 
     private bool IsContentAdmin => User?.IsContentAdmin ?? false;
     private bool IsContentEditor => User?.IsContentEditor ?? false;
 
+    [field: AllowNull, MaybeNull]
     EffectivePermissions ICurrentContextUserPermissions.Permissions => field
         ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(
             IsSiteAdmin: mayAdmin,

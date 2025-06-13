@@ -14,6 +14,6 @@ public interface IEnvironmentPermissionSetup : IEnvironmentPermission
     /// <param name="context"></param>
     /// <param name="appIdentityOrNull"></param>
     /// <returns></returns>
-    IEnvironmentPermission Init<TContext>(IContextOfSite context, IAppIdentity appIdentityOrNull);
+    IEnvironmentPermission Init<TContext>(IContextOfSite context, IAppIdentity? appIdentityOrNull);
 
 }

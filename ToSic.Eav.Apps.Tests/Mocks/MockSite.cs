@@ -5,14 +5,14 @@ namespace ToSic.Eav.Apps.Tests.Mocks;
 
 public class MockSite : ISite
 {
-    public ISite Init(int siteId, ILog parentLog)
+    public ISite Init(int siteId, ILog? parentLogOrNull)
     {
         return this;
     }
 
     public int Id => -999;
 
-    public string DefaultLanguage => null;
+    public string? DefaultLanguage => null;
 
     public string Name => "MockTenant";
     public string Url => "https://ock.org/root";

@@ -17,7 +17,7 @@ public interface ISite: IZoneIdentity, IZoneCultureResolver, ILogShouldNeverConn
     /// This is a special constructor where the tenant object is re-initialized with a specific tenant id
     /// </summary>
     /// <returns></returns>
-    ISite Init(int siteId, ILog parentLog);
+    ISite Init(int siteId, ILog? parentLogOrNull);
 
     #endregion
 

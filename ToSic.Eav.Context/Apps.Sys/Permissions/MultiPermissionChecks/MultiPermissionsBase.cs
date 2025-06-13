@@ -14,6 +14,7 @@ public abstract class MultiPermissionsBase<TServices>(TServices services, string
     /// <summary>
     /// All the permission checks that will be used
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public Dictionary<string, IPermissionCheck> PermissionCheckers
         => field ??= InitializePermissionChecks();
 
@@ -37,7 +38,7 @@ public abstract class MultiPermissionsBase<TServices>(TServices services, string
     /// <param name="grants"></param>
     /// <param name="error">Out error message to use to throw upstream</param>
     /// <returns>True if all pass, false if any one fails</returns>
-    public bool EnsureAll(List<Grants> grants, out string error)
+    public bool EnsureAll(List<Grants> grants, out string? error)
     {
         var l = Log.Fn<bool>($"Doing {nameof(EnsureAll)} for {GetType().Name}");
 

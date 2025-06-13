@@ -9,15 +9,16 @@ namespace ToSic.Eav.Context.Sys.Site;
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class Site<T>(string logPrefix) : ServiceBase($"{logPrefix}.Site"), ISite, IWrapper<T>
+    where T : class
 {
     /// <inheritdoc />
-    public abstract ISite Init(int siteId, ILog parentLog);
+    public abstract ISite Init(int siteId, ILog? parentLogOrNull);
 
     public virtual T GetContents() => UnwrappedSite;
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    protected virtual T UnwrappedSite { get; set; }
+    protected virtual T UnwrappedSite { get; set; } = null!;
 
     /// <inheritdoc />
     public abstract string CurrentCultureCode { get; }

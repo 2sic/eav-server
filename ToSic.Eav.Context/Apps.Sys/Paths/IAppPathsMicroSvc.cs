@@ -7,5 +7,5 @@ public interface IAppPathsMicroSvc
 {
     IAppPaths Get(IAppReader appReader);
 
-    IAppPaths Get(IAppReader appReader, ISite site = default);
+    IAppPaths Get(IAppReader appReader, ISite? siteOrNull);
 }

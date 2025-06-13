@@ -8,16 +8,19 @@ public class MultiPermissionsTypes(MultiPermissionsApp.MyServices services, Lazy
     : MultiPermissionsApp(services, LogName, connect: [appReaderFactory])
 {
     private const string LogName = "Sec.MPTyps";
-    protected IEnumerable<string> ContentTypes;
+
+    // Will be initialized in Init / InitTypesAfterInit;
+    private IEnumerable<string> ContentTypes { get; set; } = null!;
 
     // Note: AppState must be public, as we have some extension methods that need it
-    public IAppReader AppState => field ??= appReaderFactory.Value.GetOrKeep(App);
+    [field: AllowNull, MaybeNull]
+    public IAppReader AppState => field ??= appReaderFactory.Value.GetOrKeep(App)!;
 
     public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
     {
         var l = Log.Fn<MultiPermissionsTypes>($"..., appId: {app.AppId}, contentType: '{contentType}'");
         Init(context, app);
-        InitTypesAfterInit([contentType]);
+        ContentTypes = [contentType];
         return l.Return(this);
     }
 
@@ -32,13 +35,6 @@ public class MultiPermissionsTypes(MultiPermissionsApp.MyServices services, Lazy
         return this;
     }
 
-    //public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, List<ItemIdentifier> items, ILog parentLog)
-    //{
-    //    Init(context, app, parentLog, LogName);
-    //    ContentTypes = ExtractTypeNamesFromItems(items);
-    //    return this;
-    //}
-
 
     protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
         => InitPermissionChecksForType(ContentTypes);
@@ -46,21 +42,9 @@ public class MultiPermissionsTypes(MultiPermissionsApp.MyServices services, Lazy
     protected Dictionary<string, IPermissionCheck> InitPermissionChecksForType(IEnumerable<string> contentTypes)
         => contentTypes.Distinct().ToDictionary(t => t, BuildTypePermissionChecker);
 
-    //private IEnumerable<string> ExtractTypeNamesFromItems(IEnumerable<ItemIdentifier> items)
-    //{
-    //    var appData = AppState.List;
-    //    // build list of type names
-    //    var typeNames = items.Select(item =>
-    //        !string.IsNullOrEmpty(item.ContentTypeName) || item.EntityId == 0
-    //            ? item.ContentTypeName
-    //            : appData.FindRepoId(item.EntityId).Type.NameId);
-
-    //    return typeNames;
-    //}
-
 
     /// <summary>
-    /// Creates a permission checker for an type in this app
+    /// Creates a permission checker for a type in this app
     /// </summary>
     /// <param name="typeName"></param>
     /// <returns></returns>

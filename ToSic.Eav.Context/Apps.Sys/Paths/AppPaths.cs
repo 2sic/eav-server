@@ -25,10 +25,12 @@ namespace ToSic.Eav.Apps.Sys.Paths;
 /// * Future: We should find a way to scope some DI to a module, so it doesn't bleed to others
 ///   But that is a bit difficult, because there are also some services like the IPage which should be shared across modules
 /// </remarks>
-internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config, LazySvc<ISite> siteLazy, ISite siteOrNull, IAppReader appReader)
+internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config, LazySvc<ISite> siteLazy, ISite? siteOrNull, IAppReader appReader)
     : ServiceBase($"{EavLogs.Eav}.AppPth", connect: [serverPaths, config]), IAppPaths
 {
     private const bool Debug = true;
+
+    [field: AllowNull, MaybeNull]
     private ISite Site => field ??= siteOrNull ?? siteLazy.Value;
     private readonly IAppSpecs _appSpecs = appReader.Specs;
 
@@ -36,12 +38,14 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     /// We are having some difficulties that the App is caching the wrong path, so temporarily we'll log
     /// when we are actually picking up the value to put into the AppState
     /// </summary>
-    private void LogAppPathDetails(string property, string result) => Log.Do(l =>
+    private void LogAppPathDetails(string property, string result)
     {
+        var l = Log.Fn();
         l.A($"App State: {appReader.Show()}");
         l.A($"Site: {Site.Id}; Zone: {Site.ZoneId};");
         l.A($"{property}: {result}");
-    });
+        l.Done();
+    }
 
     private string GetInternal(string name, Func<string> callIfNotFound)
     {

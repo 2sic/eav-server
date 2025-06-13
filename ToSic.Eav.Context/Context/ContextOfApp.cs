@@ -45,12 +45,18 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// </summary>
     /// <param name="services"></param>
     public ContextOfApp(MyServices services) : this(services, "Sxc.CtxApp", [])
-    {
-    }
+    { }
+
+    // 2025-06-13 2dm - sometimes AppIdentity is null, but I'm not sure if this is something that should be kept this way
+    // For now, the code works, but we should continuously optimize and review again.
+    // Also with the AppReaderOrNull which is null if AppIdentity is null
+#pragma warning disable CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
     protected ContextOfApp(MyServices services, string logName, object[] connect) : base(services, logName, connect: connect)
     {
         AppServices = services;
     }
+#pragma warning restore CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
+
     protected readonly MyServices AppServices;
 
     #endregion
@@ -58,7 +64,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     public void ResetApp(IAppIdentity appIdentity)
     {
         var l = Log.Fn(appIdentity.Show());
-        if (AppIdentity == null || AppIdentity.AppId != appIdentity.AppId)
+        if (AppIdentity?.AppId != appIdentity.AppId)
             AppIdentity = appIdentity;
         l.Done();
     }
@@ -69,7 +75,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         set
         {
             field = value;
-            _appReader.Reset();
+            _appReaderOrNull.Reset();
             _appSettingsStack.Reset();
             _settings.Reset();
             _resources.Reset();
@@ -79,7 +85,9 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     #region User Permissions / May Edit
 
-    EffectivePermissions ICurrentContextUserPermissions.Permissions => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
+    [field: AllowNull, MaybeNull]
+    EffectivePermissions ICurrentContextUserPermissions.Permissions
+        => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
 
     private bool UserMayEdit => _userMayEditGet.Get(GetUserMayEdit);
     private readonly GetOnce<bool> _userMayEditGet = new();
@@ -92,7 +100,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
             return l.ReturnTrue("super");
 
         // Case 2: No App-State
-        if (AppReader == null)
+        if (AppReaderOrNull == null)
         {
             if (UserMayAdmin)
                 return l.ReturnTrue("no app, use UserMayAdmin checks");
@@ -109,32 +117,33 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
         // Case 3: From App
         var fromApp = Services.AppPermissionCheck.New()
-            .ForAppInInstance(this, AppReader)
+            .ForAppInInstance(this, AppReaderRequired)
             .UserMay(GrantSets.WriteSomething)
             .Allowed;
 
         // Check if language permissions may alter / remove edit permissions
         if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReader) ?? true;
+            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReaderRequired) ?? true;
 
         return l.Return(fromApp, $"{fromApp}");
     }
 
     #endregion
 
+    public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : AppServices.AppReaders.Get(AppIdentity));
+    private readonly GetOnce<IAppReader?> _appReaderOrNull = new();
 
-    public IAppReader AppReader => _appReader.Get(() => AppIdentity == null ? null : AppServices.AppReaders.Get(AppIdentity));
-    private readonly GetOnce<IAppReader> _appReader = new();
+    public IAppReader AppReaderRequired => AppReaderOrNull ?? throw new NullReferenceException($"Trying to get AppReader but AppIdentity is null");
 
     #region Settings and Resources
 
-    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppReader));
-    private readonly GetOnce<AppDataStackService> _appSettingsStack = new();
-
-    public PropertyStack AppSettings => _settings.Get(() => AppDataStackService.GetStack(RootNameSettings));
+    public PropertyStack AppSettings => _settings.Get(() => AppDataStackService.GetStack(RootNameSettings))!;
     private readonly GetOnce<PropertyStack> _settings = new();
-    public PropertyStack AppResources => _resources.Get(() => AppDataStackService.GetStack(RootNameResources));
+    public PropertyStack AppResources => _resources.Get(() => AppDataStackService.GetStack(RootNameResources))!;
     private readonly GetOnce<PropertyStack> _resources = new();
+
+    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppReaderRequired))!;
+    private readonly GetOnce<AppDataStackService> _appSettingsStack = new();
 
     #endregion
 }

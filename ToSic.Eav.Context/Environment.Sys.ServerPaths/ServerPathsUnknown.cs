@@ -1,4 +1,5 @@
-﻿namespace ToSic.Eav.Environment.Sys.ServerPaths;
+﻿#pragma warning disable CS9113 // Parameter is unread.
+namespace ToSic.Eav.Environment.Sys.ServerPaths;
 
 public sealed class ServerPathsUnknown(WarnUseOfUnknown<ServerPathsUnknown> _): ServerPathsBase, IIsUnknown
 {

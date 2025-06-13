@@ -52,9 +52,9 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
     /// <summary>
     /// The current app which will be used and can be re-used externally
     /// </summary>
-    protected IAppIdentity App { get; private set; }
-    public IContextOfSite Context { get; private set; }
-    protected ISite SiteForSecurityCheck { get; private set; }
+    protected IAppIdentity App { get; private set; } = null!;
+    public IContextOfSite Context { get; private set; } = null!;
+    protected ISite SiteForSecurityCheck { get; private set; } = null!;
     protected bool SamePortal { get; private set; }
     public ISysFeaturesService FeaturesInternal => Services.FeatIntGen.New();
 
@@ -63,11 +63,13 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
     protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
         => new() { { "App", BuildPermissionChecker() } };
         
-    public bool ZoneIsOfCurrentContextOrUserIsSuper(out string error)
+    public bool ZoneIsOfCurrentContextOrUserIsSuper(out string? error)
     {
         var l = Log.Fn<bool>();
         var zoneSameOrSuperUser = SamePortal || Context.User.IsSystemAdmin;
-        error = zoneSameOrSuperUser ? null: $"accessing app {App.AppId} in zone {App.ZoneId} is not allowed for this user";
+        error = zoneSameOrSuperUser
+            ? null
+            : $"accessing app {App.AppId} in zone {App.ZoneId} is not allowed for this user";
         return l.Return(zoneSameOrSuperUser, zoneSameOrSuperUser ? $"SamePortal:{SamePortal} - ok": "not ok, generate error");
     }
 
@@ -79,7 +81,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
     /// included in the permission check
     /// </summary>
     /// <returns></returns>
-    protected IPermissionCheck BuildPermissionChecker(IContentType type = null, IEntity item = null)
+    protected IPermissionCheck BuildPermissionChecker(IContentType? type = null, IEntity? item = null)
     {
         var l = Log.Fn<IPermissionCheck>($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 

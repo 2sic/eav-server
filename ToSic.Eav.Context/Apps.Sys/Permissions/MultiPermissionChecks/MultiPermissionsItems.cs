@@ -10,18 +10,19 @@ public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
 {
     public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
     {
-        var l = Log.Fn<MultiPermissionsItems>($"..., appId: {app.AppId}, entityId: {item?.EntityId}");
+        var l = Log.Fn<MultiPermissionsItems>($"..., appId: {app.AppId}, entityId: {item.EntityId}");
         Init(context, app);
         _items = [item];
         return l.Return(this);
     }
-    private List<IEntity> _items;
+
+    private List<IEntity> _items = [];
 
     protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
         => _items.ToDictionary(i => i.EntityId.ToString(), BuildItemPermissionChecker);
 
     /// <summary>
-    /// Creates a permission checker for an type in this app
+    /// Creates a permission checker for an entity in this app
     /// </summary>
     /// <returns></returns>
     private IPermissionCheck BuildItemPermissionChecker(IEntity item)

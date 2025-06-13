@@ -27,6 +27,6 @@ internal class AppPathsMicroSvc(LazySvc<IServerPaths> serverPaths, LazySvc<IGlob
     public IAppPaths Get(IAppReader appReader)
         => new AppPaths(serverPaths, config, siteLazy, null, appReader);
 
-    public IAppPaths Get(IAppReader appReader, ISite site)
-        => new AppPaths(serverPaths, config, siteLazy, site, appReader);
+    public IAppPaths Get(IAppReader appReader, ISite? siteOrNull)
+        => new AppPaths(serverPaths, config, siteLazy, siteOrNull, appReader);
 }
