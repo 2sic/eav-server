@@ -192,36 +192,38 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// <returns>List of children, or empty list if not found</returns>
     IEnumerable<IEntity> Parents(string? type = null, string? field = null);
 
-    /// <summary>
-    /// Get the value of this field as an object.
-    /// This overload without languages will always return the first value it finds,
-    /// so if the data is multi-lingual, it's not reliable. This is preferred for internal work
-    /// for configuration objects and similar which are not multi-language. 
-    /// </summary>
-    /// <remarks>
-    /// In addition to the fields this Entity has (like FirstName, etc.) you can also use known terms like EntityId, Modified etc.
-    /// </remarks>
-    /// <param name="fieldName"></param>
-    /// <returns>The value or null if not found</returns>
-    [PrivateApi("Hidden in v20 as devs should prefer simple Get(...)")]
-    [Obsolete("Should not be used anymore, use Get<T> instead. Planned for removal ca. v24 (2 years later)")]
-    object? Value(string fieldName);
+    // #DropOldIEntityValue
+    ///// <summary>
+    ///// Get the value of this field as an object.
+    ///// This overload without languages will always return the first value it finds,
+    ///// so if the data is multi-lingual, it's not reliable. This is preferred for internal work
+    ///// for configuration objects and similar which are not multi-language. 
+    ///// </summary>
+    ///// <remarks>
+    ///// In addition to the fields this Entity has (like FirstName, etc.) you can also use known terms like EntityId, Modified etc.
+    ///// </remarks>
+    ///// <param name="fieldName"></param>
+    ///// <returns>The value or null if not found</returns>
+    //[PrivateApi("Hidden in v20 as devs should prefer simple Get(...)")]
+    //[Obsolete("Should not be used anymore, use Get<T> instead. Planned for removal ca. v24 (2 years later)")]
+    //object? Value(string fieldName);
 
-    /// <summary>
-    /// Get the value of this field in a type-safe way.
-    /// This overload without languages will always return the first value it finds,
-    /// so if the data is multi-lingual, it's not reliable. This is preferred for internal work
-    /// for configuration objects and similar which are not multi-language. 
-    /// </summary>
-    /// <remarks>
-    /// In addition to the fields this Entity has (like FirstName, etc.) you can also use known terms like EntityId, Modified etc.
-    /// </remarks>
-    /// <typeparam name="T">The type, usually string, int, bool, etc.</typeparam>
-    /// <param name="fieldName"></param>
-    /// <returns>The typed value or the (default) value - so a null for strings, false for boolean etc.</returns>
-    [PrivateApi("Hidden in v20 as devs should prefer simple Get(...)")]
-    [Obsolete("Should not be used anymore, use Get<T> instead. Planned for removal ca. v24 (2 years later)")]
-    T? Value<T>(string fieldName);
+    // #DropOldIEntityValue
+    ///// <summary>
+    ///// Get the value of this field in a type-safe way.
+    ///// This overload without languages will always return the first value it finds,
+    ///// so if the data is multi-lingual, it's not reliable. This is preferred for internal work
+    ///// for configuration objects and similar which are not multi-language. 
+    ///// </summary>
+    ///// <remarks>
+    ///// In addition to the fields this Entity has (like FirstName, etc.) you can also use known terms like EntityId, Modified etc.
+    ///// </remarks>
+    ///// <typeparam name="T">The type, usually string, int, bool, etc.</typeparam>
+    ///// <param name="fieldName"></param>
+    ///// <returns>The typed value or the (default) value - so a null for strings, false for boolean etc.</returns>
+    //[PrivateApi("Hidden in v20 as devs should prefer simple Get(...)")]
+    //[Obsolete("Should not be used anymore, use Get<T> instead. Planned for removal ca. v24 (2 years later)")]
+    //T? Value<T>(string fieldName);
 
     #endregion
 
@@ -254,37 +256,39 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     // ReSharper disable once MethodOverloadWithOptionalParameter
     object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string[]? languages = default);
 
-    /// <summary>
-    /// Get a value in the expected type from this entity.
-    /// </summary>
-    /// <typeparam name="TValue">The type to try-convert the result to</typeparam>
-    /// <param name="name">the field/attribute name</param>
-    /// <returns></returns>
-    /// <remarks>
-    /// * Introduced as beta in 15.06, published in v17
-    /// * If you want to supply a `fallback` it will automatically use the other version of this method
-    /// </remarks>
-    [PublicApi]
-    TValue? Get<TValue>(string name);
+    // 2025-06-13 #MoveIEntityTypedGetToExtension
+    ///// <summary>
+    ///// Get a value in the expected type from this entity.
+    ///// </summary>
+    ///// <typeparam name="TValue">The type to try-convert the result to</typeparam>
+    ///// <param name="name">the field/attribute name</param>
+    ///// <returns></returns>
+    ///// <remarks>
+    ///// * Introduced as beta in 15.06, published in v17
+    ///// * If you want to supply a `fallback` it will automatically use the other version of this method
+    ///// </remarks>
+    //[PublicApi]
+    //TValue? Get<TValue>(string name);
 
-    /// <summary>
-    /// Get a value in the expected type from this entity - or a fallback value instead.
-    /// </summary>
-    /// <typeparam name="TValue">The type to try-convert the result to</typeparam>
-    /// <param name="name">the field/attribute name</param>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="fallback">value to be returned if finding or conversion it didn't succeed</param>
-    /// <param name="language">optional language like `en-us`</param>
-    /// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
-    /// <returns></returns>
-    /// <remarks>
-    /// * Introduced as beta in 15.06, published in v17
-    /// * If you want to supply a `fallback` it will automatically use the generic version of this method
-    /// </remarks>
-    [PublicApi]
-    [return: NotNullIfNotNull(nameof(fallback))]
-    // ReSharper disable once MethodOverloadWithOptionalParameter
-    TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default);
+    // 2025-06-13 #MoveIEntityTypedGetToExtension
+    ///// <summary>
+    ///// Get a value in the expected type from this entity - or a fallback value instead.
+    ///// </summary>
+    ///// <typeparam name="TValue">The type to try-convert the result to</typeparam>
+    ///// <param name="name">the field/attribute name</param>
+    ///// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    ///// <param name="fallback">value to be returned if finding or conversion it didn't succeed</param>
+    ///// <param name="language">optional language like `en-us`</param>
+    ///// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
+    ///// <returns></returns>
+    ///// <remarks>
+    ///// * Introduced as beta in 15.06, published in v17
+    ///// * If you want to supply a `fallback` it will automatically use the generic version of this method
+    ///// </remarks>
+    //[PublicApi]
+    //[return: NotNullIfNotNull(nameof(fallback))]
+    //// ReSharper disable once MethodOverloadWithOptionalParameter
+    //TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default);
 
     #endregion
 

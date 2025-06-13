@@ -131,13 +131,15 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
 
     #endregion
 
-    /// <inheritdoc />
-    [Obsolete]
-    public object? Value(string field) => Entity.Value(field);
+    // #DropOldIEntityValue
+    ///// <inheritdoc />
+    //[Obsolete]
+    //public object? Value(string field) => Entity.Value(field);
 
-    /// <inheritdoc />
-    [Obsolete]
-    public T? Value<T>(string field) => Entity.Value<T>(field);
+    // #DropOldIEntityValue
+    ///// <inheritdoc />
+    //[Obsolete]
+    //public T? Value<T>(string field) => Entity.Value<T>(field);
 
     /// <inheritdoc />
     public object? Get(string name) => Entity.Get(name);
@@ -147,13 +149,15 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string[]? languages = default)
         => Entity.Get(name, noParamOrder, language, languages);
 
-    /// <inheritdoc />
-    public TValue? Get<TValue>(string name) => Entity.Get<TValue>(name);
+    // 2025-06-13 #MoveIEntityTypedGetToExtension
+    ///// <inheritdoc />
+    //public TValue? Get<TValue>(string name) => Entity.GetExt<TValue>(name);
 
-    /// <inheritdoc />
-    // ReSharper disable once MethodOverloadWithOptionalParameter
-    public TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default)
-        => Entity.Get(name, noParamOrder, fallback, language, languages);
+    // 2025-06-13 #MoveIEntityTypedGetToExtension
+    ///// <inheritdoc />
+    //// ReSharper disable once MethodOverloadWithOptionalParameter
+    //public TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default)
+    //    => Entity.GetExt(name, noParamOrder, fallback, language, languages);
 
 
     [PrivateApi("Internal")]
