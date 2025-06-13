@@ -36,11 +36,12 @@ partial class JsonSerializer
         var l = LogDsDetails.Fn<JsonFormat>();
 
         if (string.IsNullOrWhiteSpace(serialized))
-            throw LogException(new ArgumentNullException(nameof(serialized), "cannot deserialize json - empty or null string"));
+            throw LogException(new ArgumentNullException(nameof(serialized), @"cannot deserialize json - empty or null string"));
 
         JsonFormat jsonObj;
         try
         {
+            // ReSharper disable once RedundantSuppressNullableWarningExpression
             jsonObj = System.Text.Json.JsonSerializer.Deserialize<JsonFormat>(serialized!, JsonOptions.UnsafeJsonWithoutEncodingHtml)!;
         }
         catch (Exception ex)
@@ -118,7 +119,7 @@ partial class JsonSerializer
         );  
 
 
-        return l.Return(newEntity, l.Try(() => $"'{newEntity?.GetBestTitle()}'", "can't get title"));
+        return l.Return(newEntity, l.Try(() => $"'{newEntity.GetBestTitle()}'", "can't get title"));
     }
 
     private Target DeserializeEntityTarget(JsonEntity jEnt)
@@ -212,7 +213,7 @@ partial class JsonSerializer
         {
             ValueTypes.Boolean => BuildValues(jAttribs.Boolean, a),
             ValueTypes.DateTime => BuildValues(jAttribs.DateTime, a),
-            ValueTypes.Entity => !jAttribs.Entity?.ContainsKey(a.Name) ?? true
+            ValueTypes.Entity => jAttribs.Entity == null || !jAttribs.Entity.ContainsKey(a.Name)
                 ? new List<IValue>() // just keep the empty definition, as that's fine
                 : jAttribs.Entity[a.Name]
                     .Select(v => Services.DataBuilder.Value.Relationship(
@@ -230,11 +231,11 @@ partial class JsonSerializer
             _ => throw new ArgumentOutOfRangeException()
         };
 
-    private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>>? list, IContentTypeAttribute attrDef)
+    private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>>? dic, IContentTypeAttribute attrDef)
     {
-        if (!list?.ContainsKey(attrDef.Name) ?? true)
+        if (dic == null || !dic.ContainsKey(attrDef.Name))
             return new List<IValue>();
-        return list[attrDef.Name]
+        return dic[attrDef.Name]
             .Select(IValue (v) => Services.DataBuilder.Value.Create(v.Value, RecreateLanguageList(v.Key)))
             .ToListOpt();
     }

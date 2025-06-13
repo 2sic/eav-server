@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Lib.Coding;
 using static System.StringComparer;
 
@@ -12,7 +13,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     /// modifications. 
     /// </summary>
     /// <returns></returns>
-    public IEntity CreateMergedForSaving(
+    public IEntityPair<SaveOptions> CreateMergedForSaving(
         IEntity original,
         IEntity update,
         SaveOptions saveOptions,
@@ -22,7 +23,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         bool logDetails = true
     )
     {
-        var l = (logDetails ? Log : null).Fn<IEntity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
+        var l = (logDetails ? Log : null)
+            .Fn<EntityPair<SaveOptions>>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
         
         if (saveOptions == null)
             throw new ArgumentNullException(nameof(saveOptions));
@@ -35,7 +37,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
             throw new("can't prepare entities for saving, no new item with attributes provided");
 
         var ct = (original ?? update).Type;
-        if (ct == null) throw new("unknown content-type");
+        if (ct == null)
+            throw new("unknown content-type");
 
         #endregion
 
@@ -65,7 +68,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
         // Optionally remove unknown - if possible - of both original and new
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-        if (!ct.IsDynamic && !saveOptions.PreserveUnknownAttributes && ct.Attributes != null)
+        if (!ct.IsDynamic && !saveOptions.PreserveUnknownAttributes)
         {
             var keys = ct.Attributes
                 .Select(a => a.Name)
@@ -76,22 +79,26 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
             // TODO: NOTE this looks wrong - as it would null-error if origAttributes were null
             // tmp store original IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
-            AddIsPublishedAttribute(origAttribsOrNull, original?.IsPublished);
+            if (origAttribsOrNull != null)
+                AddIsPublishedAttribute(origAttribsOrNull, original?.IsPublished);
             // tmp store update IsPublished attribute, will be removed in CorrectPublishedAndGuidImports
             AddIsPublishedAttribute(newAttribs, update.IsPublished);
 
-            if (originalWasSaved)
+            if (originalWasSaved && origAttribsOrNull != null)
                 origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull, keys);
             newAttribs = KeepOnlyKnownKeys(newAttribs, keys);
         }
 
         // optionally remove new things which already exist
         if (originalWasSaved && saveOptions.SkipExistingAttributes && origAttribsOrNull != null)
+        {
+            var @null = origAttribsOrNull;
             newAttribs = KeepOnlyKnownKeys(newAttribs,
                 newAttribs.Keys
-                .Where(k => !origAttribsOrNull.Keys.Any(k.EqualsInsensitive))
-                .ToListOpt()
+                    .Where(k => !@null.Keys.Any(k.EqualsInsensitive))
+                    .ToListOpt()
             );
+        }
 
         #endregion
 
@@ -101,7 +108,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
         // pre-check if languages are properly available for clean-up or merge
         if (hasLanguages && !saveOptions.PreserveUnknownLanguages)
-            if ((!saveOptions.Languages?.Any() ?? true)
+            if (!saveOptions.Languages.Any()
                 || string.IsNullOrWhiteSpace(saveOptions.PrimaryLanguage)
                 || saveOptions.Languages.All(lang => !lang.Matches(saveOptions.PrimaryLanguage)))
                 throw new(
@@ -136,7 +143,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
             type: newType,
             attributes: dataBuilder.Attribute.Create(preCleaned.Attributes),
             isPublished: preCleaned.NewIsPublished);
-        return l.ReturnAsOk(clone);
+        return l.ReturnAsOk(new EntityPair<SaveOptions>(clone, saveOptions));
     }
 
     private void AddIsPublishedAttribute(IDictionary<string, IAttribute> attributes, bool? isPublished) 
@@ -243,11 +250,13 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
             {
                 // se if this language has already been set, in that case just leave it
                 var valInResults = result.FirstOrDefault(rv => rv.Languages.Any(rvl => rvl.Key == valLang.Key));
-                if (valInResults == null)
-                    // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
-                    // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
-                    if (!(valLang.Key == saveOptions.PrimaryLanguage && result.Any(v => v.Languages?.Count() == 0)))
-                        remainingLanguages.Add(valLang);
+                if (valInResults != null)
+                    continue;
+
+                // special case: if the original set had named languages, and the new set has no language set (undefined = primary)
+                // to detect this, we must check if we're on primary, and there may be a "undefined" language assignment
+                if (!(valLang.Key == saveOptions.PrimaryLanguage && result.Any(v => v.Languages?.Count() == 0)))
+                    remainingLanguages.Add(valLang);
             }
 
             // nothing found to keep...

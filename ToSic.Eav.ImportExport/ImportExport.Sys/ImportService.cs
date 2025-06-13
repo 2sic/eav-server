@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
@@ -198,7 +199,8 @@ public class ImportService(
         {
             // must ensure that attribute Metadata is officially seen as new
             // but the import data could have an Id, so we must reset it here.
-            var newAttributes = contentType.Attributes.Select(a =>
+            var newAttributes = contentType.Attributes
+                .Select(a =>
                 {
                     var attributeMetadata = MetadataWithResetIds(a.Metadata);
                     return dataBuilder.TypeAttributeBuilder.CreateFrom(a, metadataItems: attributeMetadata);
@@ -226,7 +228,7 @@ public class ImportService(
                 }
 
                 var newMetaList = newAttribute.Metadata
-                    .Select(impMd => MergeOneMd(appReader.Metadata, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd))
+                    .Select(impMd => MergeOneMetadata(appReader.Metadata, (int)TargetTypes.Attribute, oldAttr.AttributeId, impMd).Entity)
                     .ToList();
 
                 if (newAttribute.Metadata.Permissions.Any())
@@ -237,7 +239,7 @@ public class ImportService(
 
         // check if the content-type has metadata, which needs merging
         var merged = contentType.Metadata
-            .Select(impMd => MergeOneMd(appReader.Metadata, (int)TargetTypes.ContentType, contentType.NameId, impMd))
+            .Select(impMd => MergeOneMetadata(appReader.Metadata, (int)TargetTypes.ContentType, contentType.NameId, impMd).Entity)
             .ToList();
         merged.AddRange(contentType.Metadata.Permissions
             .Select(p => ((ICanBeEntity)p).Entity)
@@ -249,12 +251,12 @@ public class ImportService(
         return l.Return(newContentType, "done");
     }
 
-    private IEntity MergeOneMd<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
+    private IEntityPair<SaveOptions> MergeOneMetadata<T>(IMetadataSource appState, int mdType, T key, IEntity newMd)
     {
         var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.NameId).FirstOrDefault();
         if (existingMetadata == null)
             // Must Reset guid, reset, otherwise the save process assumes it already exists in the DB; NOTE: clone would be ok
-            return dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0);
+            return new EntityPair<SaveOptions>(dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0), SaveOptions);
 
         return entitySaverLazy.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
     }
@@ -263,10 +265,10 @@ public class ImportService(
     /// <summary>
     /// Import an Entity with all values
     /// </summary>
-    private IEntity CreateMergedForSaving<T>(IEntity update, T appState, SaveOptions saveOptions)
+    private IEntityPair<SaveOptions> CreateMergedForSaving<T>(IEntity update, T appState, SaveOptions saveOptions)
         where T : IAppReadEntities, IAppReadContentTypes
     {
-        var l = Log.Fn<IEntity>();
+        var l = Log.Fn<IEntityPair<SaveOptions>>();
         _mergeCountToStopLogging++;
         var logDetails = _mergeCountToStopLogging <= LogMaxMerges;
         if (_mergeCountToStopLogging == LogMaxMerges)
@@ -278,7 +280,7 @@ public class ImportService(
 
         if (contentType == null) // not Found
         {
-            Storage.ImportLogToBeRefactored.Add(new((string)$"ContentType not found for {update.Type.NameId}", (Message.MessageTypes)Message.MessageTypes.Error));
+            Storage.ImportLogToBeRefactored.Add(new($"ContentType not found for {update.Type.NameId}", Message.MessageTypes.Error));
             return l.ReturnNull("error");
         }
 
@@ -296,7 +298,10 @@ public class ImportService(
 
         // Simplest case - nothing existing to update: return update-entity unchanged
         if (existingEntities == null || !existingEntities.Any())
-            return l.Return(dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
+        {
+            var toCreate = dataBuilder.Entity.CreateFrom(update, type: typeReset);
+            return l.Return(new EntityPair<SaveOptions>(toCreate, saveOptions) , "is new, nothing to merge, just set type to be sure");
+        }
 
         Storage.ImportLogToBeRefactored.Add(new($"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}", Message.MessageTypes.Information));
 

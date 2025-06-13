@@ -69,7 +69,7 @@ public class WorkEntityUpdate(
 
         var saveEnt = entitySaverLazy.Value.CreateMergedForSaving(orig, partialEntity, saveOptions);
 
-        entSaver.Save(saveEnt, saveOptions);
+        entSaver.Save(saveEnt.Entity, saveEnt.Partner);
         return l.ReturnTrue("ok");
     }
 
