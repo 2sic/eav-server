@@ -23,7 +23,7 @@ public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(
         return this;
     }
 
-    public XElement ToXml(int entityId) => ToXml(Lookup(entityId));
+    public XElement ToXml(int entityId) => ToXml(Lookup(entityId) ?? throw new NullReferenceException($"Tried to convert entity {entityId} to XML but could not find entity"));
 
 
     public override string Serialize(IEntity entity) => ToXml(entity).ToString();
