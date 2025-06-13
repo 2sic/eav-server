@@ -14,4 +14,4 @@
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Internal DTO objects are documented for better understanding, but can change with time. You usually will not need them in your code. ")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EavLightEntity() : Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+public class EavLightEntity() : Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);

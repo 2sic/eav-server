@@ -2,5 +2,5 @@
 
 public interface IJsonWithAssets
 {
-    ICollection<JsonAsset> Assets { get; set; }
+    ICollection<JsonAsset>? Assets { get; set; }
 }

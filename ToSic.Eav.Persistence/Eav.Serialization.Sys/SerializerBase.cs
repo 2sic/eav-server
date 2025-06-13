@@ -15,7 +15,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 {
     #region MyServices
 
-    public class MyServices(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IGlobalDataService globalData, object[] connect = default)
+    public class MyServices(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IGlobalDataService globalData, object[]? connect = default)
         : MyServicesBase(connect: [metadataTargets, dataBuilder, globalData, ..connect ?? []])
     {
         public DataBuilder DataBuilder { get; } = dataBuilder;
@@ -38,8 +38,8 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
     }
 
     protected int AppId;
-    private IEnumerable<IContentType> _types;
-    public void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource allEntities)
+    private IEnumerable<IContentType>? _types;
+    public void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource? allEntities)
     {
         AppId = appId;
         _types = types;
@@ -64,20 +64,20 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
     /// Logger for the details of the deserialization process.
     /// Goal is that it can be enabled/disabled as needed.
     /// </summary>
-    internal ILog LogDsDetails => _disableLogDetails ? null : Log;
-    private bool _disableLogDetails = false;
+    internal ILog? LogDsDetails => _disableLogDetails ? null : Log;
+    private bool _disableLogDetails;
 
-    internal ILog LogDsSummary => _disableLogSummary ? null : Log;
-    private bool _disableLogSummary = false;
+    internal ILog? LogDsSummary => _disableLogSummary ? null : Log;
+    private bool _disableLogSummary;
 
     #endregion
 
     public IAppReader AppReaderOrError => AppReaderOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
-    protected IAppReader AppReaderOrNull { get; private set; }
+    protected IAppReader? AppReaderOrNull { get; private set; }
 
     public bool PreferLocalAppTypes = false;
 
-    protected IContentType GetContentType(string staticName)
+    protected IContentType? GetContentType(string staticName)
     {
         var l = LogDsDetails.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", timer: true);
         // There is a complex lookup we must protocol to better detect issues, which is why we assemble a message
@@ -125,19 +125,21 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
     /// Ability to inject a different TransientContentTypeGenerator and other parameters
     /// just for deserialization
     /// </summary>
-    internal JsonDeSerializationSettings DeserializationSettings { get; set; } = null;
+    internal JsonDeSerializationSettings? DeserializationSettings { get; set; } = null;
 
-    protected IEntity Lookup(int entityId) => AppReaderOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
+    protected IEntity? Lookup(int entityId) => AppReaderOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 
     public abstract string Serialize(IEntity entity);
 
     public string Serialize(int entityId) => Serialize(Lookup(entityId));
 
-    public Dictionary<int, string> Serialize(List<int> entities) => entities.ToDictionary(x => x, Serialize);
+    public Dictionary<int, string> Serialize(List<int> entities)
+        => entities.ToDictionary(x => x, Serialize);
 
-    public Dictionary<int, string> Serialize(List<IEntity> entities) => entities.ToDictionary(e => e.EntityId, Serialize);
+    public Dictionary<int, string> Serialize(List<IEntity> entities)
+        => entities.ToDictionary(e => e.EntityId, Serialize);
 
     protected IEntitiesSource LazyRelationshipLookupList => _relList ??= AppReaderOrError.AppState;
-    private IEntitiesSource _relList;
+    private IEntitiesSource? _relList;
 
 }

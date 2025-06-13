@@ -17,7 +17,7 @@ partial class JsonSerializer
     public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
         => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType);
 
-    internal IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource dynRelationshipsSource = null)
+    internal IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource? dynRelationshipsSource = null)
     {
         var jsonEntity = UnpackAndTestGenericJsonV1(serialized).Entity;
         jsonEntity.Id = id;
@@ -25,29 +25,40 @@ partial class JsonSerializer
         return entity;
     }
 
-    public JsonFormat UnpackAndTestGenericJsonV1(string serialized)
+    public JsonFormat UnpackAndTestGenericJsonV1(string? serialized)
     {
         var l = LogDsDetails.Fn<JsonFormat>();
+
+        if (string.IsNullOrWhiteSpace(serialized))
+            throw LogException(new ArgumentNullException(nameof(serialized), "cannot deserialize json - empty or null string"));
+
         JsonFormat jsonObj;
         try
         {
-            jsonObj = System.Text.Json.JsonSerializer.Deserialize<JsonFormat>(serialized, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+            jsonObj = System.Text.Json.JsonSerializer.Deserialize<JsonFormat>(serialized, JsonOptions.UnsafeJsonWithoutEncodingHtml)!;
         }
         catch (Exception ex)
         {
-            // In case of an error, do make sure that we do actually log it.
-            throw (l ?? Log.Fn<JsonFormat>()).Done(new FormatException("cannot deserialize json - bad format", ex));
+            throw LogException(new FormatException("cannot deserialize json - bad format", ex));
         }
 
         if (jsonObj._.V != 1)
-            throw new ArgumentOutOfRangeException(nameof(serialized), $"unexpected format version: '{jsonObj._.V}'");
+            throw LogException(new ArgumentOutOfRangeException(nameof(serialized), $@"unexpected format version: '{jsonObj._.V}'"));
+
         return l.Return(jsonObj);
+
+        Exception LogException(Exception ex)
+        {
+            // In case of an error, do make sure that we do actually log it - even if the log-details was null
+            var errLogger = l ?? Log.Fn<JsonFormat>();
+            return errLogger.Done(ex);
+        }
     }
 
     public IEntity Deserialize(JsonEntity jEnt,
         bool allowDynamic,
         bool skipUnknownType,
-        IEntitiesSource dynRelationshipsSource = default)
+        IEntitiesSource? dynRelationshipsSource = default)
     {
         var l = LogDsDetails.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", timer: true);
         // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
@@ -73,7 +84,7 @@ partial class JsonSerializer
         if (contentType.IsDynamic)
         {
             if (allowDynamic)
-                attributes = BuildAttribsOfUnknownContentType(jEnt.Attributes, null, dynRelationshipsSource);
+                attributes = BuildAttribsOfUnknownContentType(jEnt.Attributes, dynRelationshipsSource);
             else
                 l.A("will not resolve attributes because dynamic not allowed, but skip was ok");
         }
@@ -131,20 +142,20 @@ partial class JsonSerializer
         return l.Return(target, $"this is metadata; will construct 'For' object. Type: {mdFor.Target} ({mdFor.TargetType})");
     }
 
-    private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAtts, Entity newEntity, IEntitiesSource relationshipsSource = null)
+    private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAttributes, IEntitiesSource? relationshipsSource = null)
     {
         var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>(timer: true);
         var bld = Services.DataBuilder.Value;
         var attribs = new[]
         {
-            BuildAttrib(jAtts.DateTime, ValueTypes.DateTime, bld.DateTime),
-            BuildAttrib(jAtts.Boolean, ValueTypes.Boolean, bld.Bool),
-            BuildAttrib(jAtts.Custom, ValueTypes.Custom, bld.String),
-            BuildAttrib(jAtts.Json, ValueTypes.Json, bld.String),
-            BuildAttrib(jAtts.Entity, ValueTypes.Entity, (v, _) => bld.Relationship(v, relationshipsSource)),
-            BuildAttrib(jAtts.Hyperlink, ValueTypes.Hyperlink, bld.String),
-            BuildAttrib(jAtts.Number, ValueTypes.Number, bld.Number),
-            BuildAttrib(jAtts.String, ValueTypes.String, bld.String)
+            BuildAttrib(jAttributes.DateTime, ValueTypes.DateTime, bld.DateTime),
+            BuildAttrib(jAttributes.Boolean, ValueTypes.Boolean, bld.Bool),
+            BuildAttrib(jAttributes.Custom, ValueTypes.Custom, bld.String),
+            BuildAttrib(jAttributes.Json, ValueTypes.Json, bld.String),
+            BuildAttrib(jAttributes.Entity, ValueTypes.Entity, (v, _) => bld.Relationship(v, relationshipsSource)),
+            BuildAttrib(jAttributes.Hyperlink, ValueTypes.Hyperlink, bld.String),
+            BuildAttrib(jAttributes.Number, ValueTypes.Number, bld.Number),
+            BuildAttrib(jAttributes.String, ValueTypes.String, bld.String)
         };
         var final = attribs
             .Where(dic => dic != null)
@@ -177,7 +188,7 @@ partial class JsonSerializer
         return newAttributes;
     }
 
-    private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource relationshipsSource = null)
+    private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource? relationshipsSource = null)
     {
         var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>();
         var result = contentType.Attributes
@@ -193,7 +204,7 @@ partial class JsonSerializer
         return l.ReturnAsOk(result);
     }
 
-    private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAtts, IEntitiesSource relationshipsSource = null)
+    private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAtts, IEntitiesSource? relationshipsSource = null)
     {
         switch (a.Type)
         {

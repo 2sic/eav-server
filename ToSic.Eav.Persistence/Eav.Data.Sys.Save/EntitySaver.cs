@@ -18,12 +18,15 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         SaveOptions saveOptions,
         NoParamOrder noParamOrder = default,
         int? newId = default,
-        IContentType newType = default,
+        IContentType? newType = default,
         bool logDetails = true
     )
     {
         var l = (logDetails ? Log : null).Fn<IEntity>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
-        if (saveOptions == null) throw new ArgumentNullException(nameof(saveOptions));
+        
+        if (saveOptions == null)
+            throw new ArgumentNullException(nameof(saveOptions));
+
         l.A(l.Try(() => "opts " + saveOptions));
 
         #region Step 0: initial error checks / content-type
@@ -40,21 +43,25 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
         // only accept original if it's a real object with a valid GUID, otherwise it's not an existing entity
         var hasOriginal = original != null;
-        var originalWasSaved = hasOriginal && !(original.EntityId == 0 && original.EntityGuid == Guid.Empty);
-        var idProvidingEntity = originalWasSaved ? original : update;
+        var originalWasSaved = hasOriginal && !(original!.EntityId == 0 && original.EntityGuid == Guid.Empty);
+        var idProvidingEntity = originalWasSaved && original != null // re-check original != null so compiler knows that idProvidingEntity is not null
+            ? original
+            : update;
 
         #endregion
 
         #region Step 2: clean up unwanted attributes from both lists
 
-        var origAttribsOrNull = original == null ? null : dataBuilder.Attribute.Mutable(original.Attributes);
+        var origAttribsOrNull = original != null
+            ? dataBuilder.Attribute.Mutable(original.Attributes)
+            : null;
         var newAttribs = dataBuilder.Attribute.Mutable(update.Attributes);
 
         l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribsOrNull?.Count}, newAtts⋮{newAttribs.Count}");
 
         // Optionally remove original values not in the update - but only if no option prevents this
-        if (originalWasSaved && !saveOptions.PreserveUntouchedAttributes && !saveOptions.SkipExistingAttributes)
-            origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull, newAttribs.Keys.ToListOpt());
+        if (originalWasSaved && saveOptions is { PreserveUntouchedAttributes: false, SkipExistingAttributes: false })
+            origAttribsOrNull = KeepOnlyKnownKeys(origAttribsOrNull! /* call only happens when original != null */, newAttribs.Keys.ToListOpt());
 
         // Optionally remove unknown - if possible - of both original and new
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
@@ -79,7 +86,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         }
 
         // optionally remove new things which already exist
-        if (originalWasSaved && saveOptions.SkipExistingAttributes)
+        if (originalWasSaved && saveOptions.SkipExistingAttributes && origAttribsOrNull != null)
             newAttribs = KeepOnlyKnownKeys(newAttribs,
                 newAttribs.Keys
                 .Where(k => !origAttribsOrNull.Keys.Any(k.EqualsInsensitive))
@@ -92,7 +99,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
         var hasLanguages = update.GetUsedLanguages().Count + original?.GetUsedLanguages().Count > 0;
 
-        // pre check if languages are properly available for clean-up or merge
+        // pre-check if languages are properly available for clean-up or merge
         if (hasLanguages && !saveOptions.PreserveUnknownLanguages)
             if ((!saveOptions.Languages?.Any() ?? true)
                 || string.IsNullOrWhiteSpace(saveOptions.PrimaryLanguage)
@@ -103,7 +110,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
         if (hasLanguages && !saveOptions.PreserveUnknownLanguages && saveOptions.Languages.SafeAny())
         {
-            if (originalWasSaved) origAttribsOrNull = StripUnknownLanguages(origAttribsOrNull, saveOptions);
+            if (originalWasSaved)
+                origAttribsOrNull = StripUnknownLanguages(origAttribsOrNull!, saveOptions);
             newAttribs = StripUnknownLanguages(newAttribs, saveOptions);
         }
 
@@ -113,13 +121,16 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         var mergedAttribs = origAttribsOrNull ?? newAttribs;
         if (original != null)
             foreach (var newAttrib in newAttribs)
+            {
                 mergedAttribs[newAttrib.Key] = saveOptions.PreserveExistingLanguages &&
-                                               mergedAttribs.TryGetValue(newAttrib.Key, out var oldAttribute)
+                                            mergedAttribs.TryGetValue(newAttrib.Key, out var oldAttribute)
                     ? MergeAttribute(oldAttribute, newAttrib.Value, saveOptions)
                     : newAttrib.Value;
+            }
 
         var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs, logDetails);
-        var clone = dataBuilder.Entity.CreateFrom(idProvidingEntity,
+        var clone = dataBuilder.Entity.CreateFrom(
+            idProvidingEntity,
             id: newId,
             guid: preCleaned.NewGuid,
             type: newType,
@@ -156,30 +167,34 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         var l = Log.Fn<IDictionary<string, IAttribute>>();
         var languages = saveOptions.Languages;
 
-        var modified = allFields.ToDictionary(
-            pair => pair.Key,
-            field =>
-            {
-                var values = new List<IValue>(); // new empty values list
-
-                // when we go through the values, we should always take the primary language first
-                // this is detectable by having either no language, or having the primary language
-                var orderedValues = ValuesOrderedForProcessing(field.Value.Values, saveOptions);
-                foreach (var value in orderedValues)
+        var modified = allFields
+            .ToDictionary(
+                pair => pair.Key,
+                pair =>
                 {
-                    // create filtered list of languages
-                    var newLangs = value.Languages?
-                        .Where(l => languages.Any(sysLang => sysLang.Matches(l.Key)))
-                        .ToImmutableSafe();
-                    // only keep this value, if it is either the first (so contains primary or null-language)
-                    // ...or that it still has a remaining language assignment
-                    if (values.Any() && !(newLangs?.Any() ?? false)) continue;
-                    values.Add(value.With(newLangs));
-                }
+                    var values = new List<IValue>(); // new empty values list
 
-                //field.Value.Values = values;
-                return dataBuilder.Attribute.CreateFrom(field.Value, values.ToImmutableSafe());
-            }, InvariantCultureIgnoreCase);
+                    // when we go through the values, we should always take the primary language first
+                    // this is detectable by having either no language, or having the primary language
+                    var orderedValues = ValuesOrderedForProcessing(pair.Value.Values, saveOptions);
+                    foreach (var value in orderedValues)
+                    {
+                        // create filtered list of languages
+                        var newLangs = value.Languages?
+                            .Where(l => languages.Any(sysLang => sysLang.Matches(l.Key)))
+                            .ToImmutableSafe();
+                        // only keep this value, if it is either the first (so contains primary or null-language)
+                        // ...or that it still has a remaining language assignment
+                        if (values.Any() && !(newLangs?.Any() ?? false))
+                            continue;
+                        values.Add(value.With(newLangs!));
+                    }
+
+                    //field.Value.Values = values;
+                    return dataBuilder.Attribute.CreateFrom(pair.Value, values.ToImmutableSafe());
+                },
+                InvariantCultureIgnoreCase
+            );
 
         return l.Return(modified);
     }

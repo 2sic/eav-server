@@ -15,20 +15,20 @@ public class JsonType
     /// Should kind of be NameId, but was created a long time ago, and a rename would cause too much trouble.
     /// </remarks>
     [JsonPropertyOrder(1)]
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     /// <summary>
     /// Nice name, string
     /// </summary>
     [JsonPropertyOrder(2)]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Map for attribute name to long-term-guid (if given)
     /// </summary>
     [JsonIgnore(Condition = WhenWritingNull)]
     [JsonPropertyOrder(100)]
-    public IDictionary<string, Guid> AttributeMap { get; set; }
+    public IDictionary<string, Guid>? AttributeMap { get; set; }
 
     // #RemoveContentTypeDescription #2974 - #remove ca. Feb 2023 if all works
     /// <summary>
@@ -37,7 +37,7 @@ public class JsonType
     /// ATM only used for Metadata
     /// </summary>
     [JsonIgnore(Condition = WhenWritingNull)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// Additional description for the type, usually not included.
@@ -46,7 +46,7 @@ public class JsonType
     /// </summary>
     /// <remarks>Added in v13.02</remarks>
     [JsonIgnore(Condition = WhenWritingNull)]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     /// <summary>
     /// Empty constructor is important for de-serializing

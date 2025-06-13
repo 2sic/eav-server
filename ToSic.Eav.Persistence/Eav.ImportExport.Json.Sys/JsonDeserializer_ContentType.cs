@@ -32,7 +32,7 @@ partial class JsonSerializer
         var lMain = LogDsDetails.Fn<ContentTypeWithEntities>(timer: true);
         var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
-            IEntitiesSource preferredSource = AppReaderOrNull?.AppState;
+            IEntitiesSource? preferredSource = AppReaderOrNull?.AppState;
             var sharedEntSource = DeserializationSettings?.RelationshipsSource;
             var relationshipsSource = preferredSource
                                       ?? sharedEntSource
@@ -137,6 +137,6 @@ partial class JsonSerializer
         return lMain.ReturnAsOk(contentTypeSet);
     }
 
-    public ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string name, string json)
+    public ContentTypeAttributeSysSettings? DeserializeAttributeSysSettings(string name, string json)
         => JsonDeserializeAttribute.SysSettings(name, json, LogDsDetails);
 }

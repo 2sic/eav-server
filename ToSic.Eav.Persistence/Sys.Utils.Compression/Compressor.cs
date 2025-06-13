@@ -3,7 +3,7 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Sys.Utils.Compression;
 
-public class Compressor(ISysFeaturesService features = null)
+public class Compressor(ISysFeaturesService? features = null)
 {
     private ICompressor _compressor = CompressorFactory(CompressorType.GZip);
 

@@ -9,9 +9,9 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EavLightEntityReference
 {
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public int? Id;
+    [JsonIgnore(Condition = WhenWritingNull)] public int? Id;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string Title;
+    [JsonIgnore(Condition = WhenWritingNull)] public string? Title;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public Guid? Guid;
+    [JsonIgnore(Condition = WhenWritingNull)] public Guid? Guid;
 }

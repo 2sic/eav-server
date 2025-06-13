@@ -16,18 +16,20 @@ public class JsonAsset
     /// <summary>
     /// The file name, required.
     /// </summary>
-    public string Name;
+    public required string Name;
 
     /// <summary>
     /// The folder the file is in. Default is blank / null. Should always start with a folder name, not "/" or ".."
     /// </summary>
-    [JsonIgnore(Condition = WhenWritingNull)] public string Folder;
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public required string? Folder;
 
     /// <summary>
     /// The file encoding - base64 or none for text/code files.
     /// Optional, defaults to none.
     /// </summary>
-    [JsonIgnore(Condition = WhenWritingNull)] public string Encoding; // = "none";
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public string? Encoding; // = "none";
 
     public const string EncodingNone = "none";
     public const string EncodingBase64 = "base64";
@@ -36,10 +38,12 @@ public class JsonAsset
     /// <summary>
     /// The file contents.
     /// </summary>
-    [JsonIgnore(Condition = WhenWritingNull)] public string File;
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public required string? File;
 
     /// <summary>
     /// File Metadata, if available
     /// </summary>
-    [JsonIgnore(Condition = WhenWritingNull)] public List<JsonEntity> Metadata;
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public List<JsonEntity>? Metadata;
 }

@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Xml.Linq;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Dimensions.Sys;
 using ToSic.Eav.Data.Entities.Sys;
@@ -28,8 +29,8 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
             .OrderByDescending(p => p.Matches(envDefLang))
             .ThenBy(p => p.EnvironmentKey)
             .ToListOpt();
-        _envLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
-        _envDefLang = envDefLang;
+        EnvLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
+        EnvDefLang = envDefLang;
         // seems unused 2025-06-10 2dm
         //_srcDefLang = srcDefLang?.ToString();
         return this;
@@ -120,8 +121,19 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
     }
 
     //private readonly List<string> _relevantSrcLangsByPriority;
-    private ICollection<TargetLanguageToSourceLanguage> _envLangs;
-    private string _envDefLang;
+    [field: AllowNull, MaybeNull]
+    private ICollection<TargetLanguageToSourceLanguage> EnvLangs
+    {
+        get => field ?? throw new NullReferenceException("XmlToEntity not initialized, call Init() first");
+        set;
+    }
+
+    [field: AllowNull, MaybeNull]
+    private string EnvDefLang
+    {
+        get => field ?? throw new NullReferenceException("XmlToEntity not initialized, call Init() first");
+        set;
+    }
     //private string _srcDefLang;
         
     /// <summary>
@@ -142,8 +154,8 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
             );
 
 
-        var envLangsSortedByPriority = _envLangs
-            .OrderByDescending(p => p.Matches(_envDefLang))
+        var envLangsSortedByPriority = EnvLangs
+            .OrderByDescending(p => p.Matches(EnvDefLang))
             .ThenBy(p => p.EnvironmentKey)
             .ToListOpt();
 
@@ -157,15 +169,15 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
             foreach (var envLang in envLangsSortedByPriority)
             {
                 var maybeExactMatch = FindAttribWithLanguageMatch(envLang, xmlValuesOfAttrib);
-                var sourceValueNode = maybeExactMatch.Item1;
-                var readOnly = maybeExactMatch.Item2;
+                var sourceValueNode = maybeExactMatch.Element;
+                var readOnly = maybeExactMatch.ReadOnly;
 
                 // Take first value if there is only one value without a dimension (default / fallback value), but only in primary language
-                if (sourceValueNode == null && xmlValuesOfAttrib.Count > 0 && envLang.Matches(_envDefLang))
+                if (sourceValueNode == null && xmlValuesOfAttrib.Count > 0 && envLang.Matches(EnvDefLang))
                     sourceValueNode = GetFallbackAttributeInXml(xmlValuesOfAttrib);
 
                 // Override ReadOnly for primary target language
-                if (envLang.Matches(_envDefLang))
+                if (envLang.Matches(EnvDefLang))
                     readOnly = false;
 
                 // Process found value
@@ -247,7 +259,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
     {
         var logText = "";
         var dimensionsToAdd = new List<ILanguage>();
-        if (_envLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
+        if (EnvLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
         {
             dimensionsToAdd.Add(new Language(envLang.EnvironmentKey, readOnly));
             logText += "built dimension-list";
@@ -307,10 +319,10 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
         return wrap.Return(sourceValueNode, (sourceValueNode != null).ToString());
     }
 
-    private (XElement Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, ICollection<XElement> xmlValuesOfAttrib)
+    private (XElement? Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, ICollection<XElement> xmlValuesOfAttrib)
     {
-        var l = Log.Fn<(XElement Element, bool ReadOnly)>(envLang.EnvironmentKey);
-        XElement sourceValueNode = null;
+        var l = Log.Fn<(XElement? Element, bool ReadOnly)>(envLang.EnvironmentKey);
+        XElement? sourceValueNode = null;
         var readOnly = false;
 
         // find the xml-node which best matches the language we want to fill in
@@ -318,13 +330,17 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
         {
             var dimensionId = sourceLanguage.DimensionId.ToString();
             // find a possible match for exactly this language
-            sourceValueNode = xmlValuesOfAttrib.FirstOrDefault(p =>
-                p.Elements(XmlConstants.ValueDimNode)
-                    .Any(d => d.Attribute(XmlConstants.DimId)?.Value == dimensionId));
-            if (sourceValueNode == null) continue;
+            sourceValueNode = xmlValuesOfAttrib
+                .FirstOrDefault(p =>
+                    p.Elements(XmlConstants.ValueDimNode)
+                        .Any(d => d.Attribute(XmlConstants.DimId)?.Value == dimensionId)
+                );
+            if (sourceValueNode == null)
+                continue;
 
             // if match found, check what the read/write should be
-            var textVal = sourceValueNode.Elements(XmlConstants.ValueDimNode)
+            var textVal = sourceValueNode
+                .Elements(XmlConstants.ValueDimNode)
                 .FirstOrDefault(p => p.Attribute(XmlConstants.DimId)?.Value == dimensionId)?
                 .Attribute("ReadOnly")?.Value ?? "false";
 
@@ -340,7 +356,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
 
     private class ImportValue
     {
-        public XElement XmlValue;
-        public List<ILanguage> Dimensions;
+        public required XElement XmlValue;
+        public required List<ILanguage> Dimensions;
     }
 }

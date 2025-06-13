@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Xml.Linq;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Serialization.Sys;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -8,12 +9,17 @@ namespace ToSic.Eav.ImportExport.Sys.Xml;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(services, "IEx.XmlSer")
 {
-    private Dictionary<string, int> _dimensions;
+    [field: AllowNull, MaybeNull]
+    private Dictionary<string, int> Dimensions
+    {
+        get => field ?? throw new ArgumentNullException(nameof(Dimensions));
+        set;
+    }
 
     public XmlSerializer Init(Dictionary<string, int> dimensionMapping, IAppReader appReader)
     {
         Initialize(appReader);
-        _dimensions = dimensionMapping;
+        Dimensions = dimensionMapping;
         return this;
     }
 
@@ -53,7 +59,7 @@ public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(
         if (entity.MetadataFor.KeyNumber.HasValue)
             entityXElement.Add(new XAttribute(XmlConstants.KeyNumber, entity.MetadataFor.KeyNumber));
         if (!string.IsNullOrEmpty(entity.MetadataFor.KeyString))
-            entityXElement.Add(new XAttribute(XmlConstants.KeyString, entity.MetadataFor.KeyString));
+            entityXElement.Add(new XAttribute(XmlConstants.KeyString, entity.MetadataFor.KeyString!));
 
 
         return entityXElement;
@@ -79,7 +85,7 @@ public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(
                 .OrderBy(l => l.Key)
                 .Select(p => new XElement(XmlConstants.ValueDimNode,
                     // because JSON-Entities do not contain valid dimension ids, lookup id
-                    new XAttribute(XmlConstants.DimId, p.DimensionId == 0 ? (_dimensions.ContainsKey(p.Key.ToLowerInvariant()) ? _dimensions[p.Key] : 0) : p.DimensionId),
+                    new XAttribute(XmlConstants.DimId, p.DimensionId == 0 ? (Dimensions.ContainsKey(p.Key.ToLowerInvariant()) ? Dimensions[p.Key] : 0) : p.DimensionId),
                     new XAttribute(XmlConstants.ValueDimRoAttr, p.ReadOnly)
                 ))
         );

@@ -11,7 +11,7 @@ public static class GlobalConfigSysFolders
     /// </summary>
     /// <returns>The folder. Will be generated if it was never set</returns>
     public static string DataFolder(this IGlobalConfiguration config)
-        => config.GetThisOrSet(() => Path.Combine(config.GlobalFolder(), FolderConstants.AppDataProtectedFolder, FolderConstants.FolderSystem));
+        => config.GetThisOrSet(() => Path.Combine(config.GlobalFolder(), FolderConstants.AppDataProtectedFolder, FolderConstants.FolderSystem))!;
 
     /// <summary>
     /// The absolute folder where the data is stored, usually ends in "App_Data\system" (or ".data")

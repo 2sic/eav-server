@@ -56,7 +56,7 @@ public interface IDataDeserializer: IHasLog
     /// De-serialize ContentTypeAttributeSysSettings from SysSettings string field in ToSicEavAttributes and Content-Types (EF/DB)
     /// </summary>
     /// <returns>ContentTypeAttributeSysSettings or null</returns>
-    ContentTypeAttributeSysSettings DeserializeAttributeSysSettings(string name, string json);
+    ContentTypeAttributeSysSettings? DeserializeAttributeSysSettings(string name, string json);
 
 
     /// <summary>
@@ -64,5 +64,5 @@ public interface IDataDeserializer: IHasLog
     /// </summary>
     /// <param name="sysSettings"></param>
     /// <returns>string or null</returns>
-    string Serialize(ContentTypeAttributeSysSettings sysSettings);
+    string? Serialize(ContentTypeAttributeSysSettings sysSettings);
 }

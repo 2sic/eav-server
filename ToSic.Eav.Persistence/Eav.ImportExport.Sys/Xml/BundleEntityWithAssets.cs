@@ -5,6 +5,6 @@ namespace ToSic.Eav.ImportExport.Sys.Xml;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class BundleEntityWithAssets
 {
-    public IEntity Entity;
+    public required IEntity Entity;
     public ICollection<JsonAsset> Assets = [];
 }

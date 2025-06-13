@@ -23,7 +23,7 @@ public class MetadataForSerialization
 
     public static MetadataForSerialization Stabilize(
         MetadataForSerialization original,
-        MetadataForSerialization addition = null,
+        MetadataForSerialization? addition = null,
         bool serialize = false, bool key = false, bool type = false) =>
         new()
         {

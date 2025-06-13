@@ -8,8 +8,13 @@ partial class JsonSerializer
     {
         var l = LogDsDetails.Fn<BundleEntityWithAssets>();
         var package = UnpackAndTestGenericJsonV1(serialized);
-        var entity = Deserialize(package.Entity, allowDynamic, skipUnknownType);
-        var result = new BundleEntityWithAssets { Entity = entity, Assets = package.Entity.Assets };
+        var jsonEntity = package.Entity ?? throw new("No entity found in the package.");
+        var entity = Deserialize(jsonEntity, allowDynamic, skipUnknownType);
+        var result = new BundleEntityWithAssets
+        {
+            Entity = entity,
+            Assets = jsonEntity.Assets ?? []
+        };
         return l.ReturnAsOk(result);
     }
 }

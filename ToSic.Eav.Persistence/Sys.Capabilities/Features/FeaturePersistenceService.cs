@@ -42,11 +42,14 @@ public class FeaturePersistenceService(
             fileContent ??= JsonSerializer.Serialize(new FeatureStatesPersisted(), JsonOptions.FeaturesJson);
             var fileJson = JsonToObject(fileContent);
 
-            var featureArray = fileJson["features"]
+            // Note: this is not good code, since it just magically assumes the structure to be correct
+            // TODO: improve this, probably by modifying the typed structure instead of the json
+            var featureArray = fileJson["features"]!
                 .AsArray();
             foreach (var change in changes)
             {
-                var feature = featureArray.FirstOrDefault(f => (Guid)f["id"] == change.FeatureGuid);
+                // TODO: improve this, probably by modifying the typed structure instead of the json
+                var feature = featureArray.FirstOrDefault(f => (Guid)f!["id"]! == change.FeatureGuid);
                 // Insert (not yet configured)
                 if (feature == null)
                 {

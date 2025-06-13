@@ -2,20 +2,26 @@
 
 public class JsonAssets
 {
-    public JsonAsset Get(string realPath, string relativeName, string storage = null)
+    public JsonAsset Get(string realPath, string relativeName, string? storage = null)
     {
         var name = Path.GetFileName(relativeName);
         var folder = Path.GetDirectoryName(relativeName);
-        var ast = new JsonAsset {Name = name, Folder = folder, File = null};
-        if(storage != null)
+        var ast = new JsonAsset
+        {
+            Name = name,
+            Folder = folder,
+            File = null
+        };
+        if (storage != null)
         {
             if (JsonAsset.Storages.Contains(storage))
                 ast.Storage = storage;
             else
-                throw new ArgumentException($"'{storage}' not a known value", nameof(storage));
+                throw new ArgumentException($@"'{storage}' not a known value", nameof(storage));
         }
 
-        if (!File.Exists(realPath)) return ast;
+        if (!File.Exists(realPath))
+            return ast;
 
         // Is it binary? Check for 2 consecutive nulls..
         var content = File.ReadAllBytes(realPath);
@@ -35,7 +41,8 @@ public class JsonAssets
     public bool Create(string realPath, JsonAsset asset, bool overwrite = false)
     {
         // 1. check if target file exists
-        if (File.Exists(realPath) && !overwrite) return false;
+        if (File.Exists(realPath) && !overwrite)
+            return false;
 
             
         // try to restore it

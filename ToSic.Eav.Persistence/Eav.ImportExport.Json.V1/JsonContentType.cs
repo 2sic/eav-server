@@ -3,36 +3,36 @@
 public class JsonContentType: IJsonWithAssets
 {
     /// <remarks>V 1.0</remarks>
-    [JsonPropertyOrder(-100)]   // use negative indexes to ensure that all without Prop-order come afterwards
-    public string Id;
+    [JsonPropertyOrder(-100)]   // use negative indexes to ensure that all without Prop-order come afterward
+    public required string Id;
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-90)]
-    public string Name;
+    public required string Name;
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-80)]
-    public string Scope;
+    public required string Scope;
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-70)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public JsonContentTypeShareable Sharing;
+    public JsonContentTypeShareable? Sharing;
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-60)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ICollection<JsonEntity> Metadata;
+    public ICollection<JsonEntity>? Metadata;
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-50)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ICollection<JsonAttributeDefinition> Attributes;
+    public ICollection<JsonAttributeDefinition>? Attributes;
 
     /// <remarks>V 1.1</remarks>
     [JsonPropertyOrder(-40)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ICollection<JsonAsset> Assets { get; set; }
+    public ICollection<JsonAsset>? Assets { get; set; }
 }
 
 public class JsonContentTypeWithTitleWip: JsonContentType
@@ -45,5 +45,5 @@ public class JsonContentTypeWithTitleWip: JsonContentType
     /// </summary>
     [JsonPropertyOrder(-10)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public string Title;
+    public string? Title;
 }

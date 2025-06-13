@@ -9,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer
 {
-    public string Serialize(IContentType contentType, JsonSerializationSettings settings = default)
+    public string Serialize(IContentType contentType, JsonSerializationSettings? settings = default)
     {
         var package = ToPackage(contentType, settings ?? new JsonSerializationSettings
         {
@@ -58,13 +58,13 @@ partial class JsonSerializer
                 )
                 .ToArray();
 
-            var mdParts =
+            var mdParts = attribMdsOfEntity
                 // On Dynamically Typed Entities, the Children()-Call won't work, because the Relationship-Manager doesn't know the children.
                 // So we must go the hard way and look at each ObjectContents
-                attribMdsOfEntity
-                    .SelectMany(a => a.Value.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity>)
-                    .Where(e => e != null) // filter out possible null items
-                    .ToListOpt();
+                .SelectMany(a => a.Value.Values?.FirstOrDefault()?.ObjectContents as IEnumerable<IEntity?> ?? [])
+                .Where(e => e != null) // filter out possible null items
+                .Cast<IEntity>()
+                .ToListOpt();
 
             // In some cases we may have references to the same entity, in which case we only need one
             var mdDeduplicated = mdParts
@@ -72,9 +72,11 @@ partial class JsonSerializer
                 .ToListOpt();
 
             l.A($"Sub items: {mdParts.Count}; Deduplicated: {mdDeduplicated.Count}");
-            package.Entities = mdDeduplicated
-                .Select(e => ToJson(e,  metadataDepth: 0))
-                .ToListOpt();
+            package.Entities = ToJsonListWithoutNulls(mdDeduplicated, metadataDepth: 0);
+                //.Select(e => ToJson(e,  metadataDepth: 0))
+                //.Where(md => md != null) // filter out possible null items
+                //.Cast<JsonEntity>()
+                //.ToListOpt();
         }
         catch (Exception ex)
         {
@@ -92,11 +94,13 @@ partial class JsonSerializer
     /// <param name="a"></param>
     /// <param name="settings"></param>
     /// <returns></returns>
-    private static IMetadataOf GetMetadataOrSkip(IContentTypeAttribute a, JsonSerializationSettings settings)
+    private static IMetadataOf? GetMetadataOrSkip(IContentTypeAttribute a, JsonSerializationSettings settings)
     {
         var inheritsMetadata = a.SysSettings?.InheritMetadata == true;
         var skipMetadata = inheritsMetadata && !settings.CtAttributeIncludeInheritedMetadata;
-        return skipMetadata ? null : a.Metadata;
+        return skipMetadata
+            ? null
+            : a.Metadata;
     }
 
     // Note: only seems to be used in a test...
@@ -109,16 +113,17 @@ partial class JsonSerializer
 
     private JsonContentType ToJson(IContentType contentType, JsonSerializationSettings settings)
     {
-        JsonContentTypeShareable jctShare = null;
+        JsonContentTypeShareable? jctShare = null;
 
         var attribs = contentType.Attributes
             .OrderBy(a => a.SortOrder)
             .Select(a =>
             {
                 // #SharedFieldDefinition
-                var metadata = GetMetadataOrSkip(a, settings)?
-                    .Select(md => ToJson(md, metadataDepth: 0)) /* important: must call with params, otherwise default param metadata = 1 instead of 0*/
-                    .ToListOpt();
+                var mdEntities = GetMetadataOrSkip(a, settings)?.ToListOpt();
+                var metadata = mdEntities == null
+                    ? null
+                    : ToJsonListWithoutNulls(mdEntities, 0);
                 return new JsonAttributeDefinition
                 {
                     Name = a.Name,
@@ -136,7 +141,7 @@ partial class JsonSerializer
 
         // clean up metadata info on this metadata list, as it's already packed inside something it's related to
         var attribMetadataToResetFor = attribs.Where(a => a.Metadata != null)
-            .SelectMany(a => a.Metadata)
+            .SelectMany(a => a.Metadata!)
             .ToListOpt();
         foreach (var jsonEntity in attribMetadataToResetFor)
             jsonEntity.For = null;
@@ -148,7 +153,7 @@ partial class JsonSerializer
         if (isSharedNew && !settings.CtIncludeInherited)
         {
             // if it's a shared type, flush definition as we won't include it
-            if (ancestorDecorator.Id != 0)
+            if (ancestorDecorator!.Id != 0)
                 attribs = null;
 
             var sharableCt = (IContentTypeShared)contentType;
@@ -168,19 +173,19 @@ partial class JsonSerializer
             Scope = contentType.Scope,
             Attributes = attribs,
             Sharing = jctShare,
-            Metadata = contentType.Metadata
-                .Select(md => ToJson(md))
-                .ToListOpt()
+            Metadata = ToJsonListWithoutNulls(contentType.Metadata.ToListOpt())
         };
         return package;
     }
 
-    public string Serialize(ContentTypeAttributeSysSettings sysSettings) => Serialize(sysSettings, Log);
+    public string? Serialize(ContentTypeAttributeSysSettings? sysSettings)
+        => Serialize(sysSettings, Log);
 
-    internal static string Serialize(ContentTypeAttributeSysSettings sysSettings, ILog log)
+    internal static string? Serialize(ContentTypeAttributeSysSettings? sysSettings, ILog log)
     {
-        var l = log.Fn<string>($"serialize {sysSettings} to json string");
-        if (sysSettings == null) return l.Return(null, "null sysSettings");
+        var l = log.Fn<string?>($"serialize {sysSettings} to json string");
+        if (sysSettings == null)
+            return l.Return(null, "null sysSettings");
         try
         {
             var json = JsonAttributeSysSettings.FromSysSettings(sysSettings);

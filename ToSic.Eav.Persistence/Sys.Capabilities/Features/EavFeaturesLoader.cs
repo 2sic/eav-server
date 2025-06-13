@@ -95,7 +95,7 @@ public class EavFeaturesLoader(
                 return l.ReturnNull("ok, but 'features.json' is missing");
 
             // return features stored
-            var newState = JsonSerializer.Deserialize<FeatureStatesPersisted>(fileContent, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+            var newState = JsonSerializer.Deserialize<FeatureStatesPersisted>(fileContent!, JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
             return l.Return(newState, "ok, features loaded");
         }
@@ -113,7 +113,7 @@ public class EavFeaturesLoader(
     [PrivateApi]
     public bool UpdateFeatures(List<FeatureStateChange> changes)
     {
-        var l = Log.Fn<bool>($"c:{changes?.Count ?? -1}");
+        var l = Log.Fn<bool>($"c:{changes.Count}");
         var saved = featurePersistenceService.ApplyUpdatesAndSave(changes);
         var ok = ReloadFeatures();
         return l.ReturnAndLog(saved && ok, "ok, updated");

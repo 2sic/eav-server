@@ -13,7 +13,7 @@ public class ImportErrorLog(ILog parentLog) : HelperBase(parentLog, "Imp.ErrLog"
 
     public bool HasErrors => Errors.Any();
 
-    public void Add(ImportErrorCode errorCode, string errorDetail = null, int? lineNumber = null, string lineDetail = null)
+    public void Add(ImportErrorCode errorCode, string? errorDetail = null, int? lineNumber = null, string? lineDetail = null)
     {
         Errors.Add(new(errorCode, errorDetail, lineNumber, lineDetail));
         Log.A($"Imp-Err {errorCode} on line {lineDetail} details {lineDetail} msg: {errorDetail}");

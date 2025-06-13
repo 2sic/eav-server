@@ -5,7 +5,7 @@ public class JsonMetadataFor
     /// <summary>
     /// The target type as a name - should be deprecated soon!
     /// </summary>
-    public string Target;
+    public string? Target;
 
     // #TargetTypeIdInsteadOfTarget
     /// <summary>
@@ -13,7 +13,7 @@ public class JsonMetadataFor
     /// </summary>
     public int TargetType;
 
-    [JsonIgnore(Condition = WhenWritingNull)] public string String;
+    [JsonIgnore(Condition = WhenWritingNull)] public string? String;
     [JsonIgnore(Condition = WhenWritingNull)] public Guid? Guid;
     [JsonIgnore(Condition = WhenWritingNull)] public int? Number;
         
@@ -22,5 +22,5 @@ public class JsonMetadataFor
 
 
     [PrivateApi("only used internally for now")]
-    [JsonIgnore(Condition = WhenWritingNull)] public string Title;
+    [JsonIgnore(Condition = WhenWritingNull)] public string? Title;
 }

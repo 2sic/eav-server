@@ -16,7 +16,7 @@ public class JsonContentTypeSet
     /// </summary>
     [JsonPropertyOrder(10)]
     [JsonIgnore(Condition = WhenWritingNull)] 
-    public JsonContentType ContentType;
+    public JsonContentType? ContentType;
 
 
     /// <summary>
@@ -27,6 +27,6 @@ public class JsonContentTypeSet
     /// </remarks>
     [JsonPropertyOrder(20)]
     [JsonIgnore(Condition = WhenWritingDefault)]
-    public ICollection<JsonEntity> Entities;
+    public ICollection<JsonEntity>? Entities;
 
 }

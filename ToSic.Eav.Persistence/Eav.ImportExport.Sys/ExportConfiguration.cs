@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.EntityBased.Sys;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Data.EntityBased.Sys;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.ImportExport.Sys;
@@ -40,22 +41,24 @@ public class ExportConfiguration(IEntity entity) : EntityBasedType(entity)
         .Parents(ExportDecorator.TypeNameId)
         .Select(e => new ExportDecorator(e))
         .ToListOpt()
-    );
+    )!;
     private readonly GetOnce<ICollection<ExportDecorator>> _exportMarkers = new();
 
     /// <summary>
     /// Content Types to Export
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public ICollection<string> ContentTypes => field ??= ExportMarkers
         .Where(e => e.IsContentType && !string.IsNullOrEmpty(e.KeyString))
-        .Select(et => et.KeyString)
+        .Select(et => et.KeyString!)
         .ToListOpt();
         
     /// <summary>
     /// Entities to Export
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public ICollection<Guid> Entities => field ??= ExportMarkers
         .Where(e => e.IsEntity && e.KeyGuid.HasValue)
-        .Select(et => et.KeyGuid.Value)
+        .Select(et => et.KeyGuid!.Value)
         .ToListOpt();
 }

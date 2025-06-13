@@ -12,7 +12,7 @@ public class ExportDecorator(IEntity entity) : EntityBasedType(entity)
 
     public bool IsEntity => Entity.MetadataFor.TargetType == (int)TargetTypes.Entity;
 
-    public string KeyString => Entity.MetadataFor.KeyString;
+    public string? KeyString => Entity.MetadataFor.KeyString;
 
     public Guid? KeyGuid => Entity.MetadataFor.KeyGuid;
 

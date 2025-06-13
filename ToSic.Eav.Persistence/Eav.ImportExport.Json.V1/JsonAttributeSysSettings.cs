@@ -31,7 +31,7 @@ public class JsonAttributeSysSettings
     public bool InheritMetadata { get; set; }
 
     [JsonIgnore(Condition = WhenWritingDefault)]
-    public string InheritMetadataOf { get; set; }
+    public string? InheritMetadataOf { get; set; }
 
     /// <summary>
     /// Mark this Attribute that it shares itself / its properties
@@ -42,8 +42,8 @@ public class JsonAttributeSysSettings
     // future
     //public bool ShareHidden { get; set; }
 
-    public static JsonAttributeSysSettings FromSysSettings(ContentTypeAttributeSysSettings sysSettings) =>
-        sysSettings == null 
+    public static JsonAttributeSysSettings? FromSysSettings(ContentTypeAttributeSysSettings? sysSettings)
+        => sysSettings == null 
             ? null 
             : new JsonAttributeSysSettings
             {
@@ -66,19 +66,26 @@ public class JsonAttributeSysSettings
             InheritMetadataOf = ConvertInheritMetadataStringToDicOrNull(),
         };
 
-    private Dictionary<Guid, string> ConvertInheritMetadataStringToDicOrNull()
+    private Dictionary<Guid, string?>? ConvertInheritMetadataStringToDicOrNull()
     {
-        if (InheritMetadataOf == null) return null;
-        var inheritDic = InheritMetadataOf.Trim().Split(',')
+        if (InheritMetadataOf == null)
+            return null;
+        var inheritDic = InheritMetadataOf
+            .Trim()
+            .Split(',')
             .Select(s =>
             {
                 var parts = s.Split('/');
                 return parts.Length > 0 && Guid.TryParse(parts[0], out var key)
-                    ? new { key, value = parts.Length > 1 ? parts[1] : null }
+                    ? new
+                    {
+                        key,
+                        value = parts.Length > 1 ? parts[1] : null
+                    }
                     : null;
             })
             .Where(p => p != null)
-            .ToDictionary(p => p.key, p => p.value);
+            .ToDictionary(p => p!.key, p => p!.value);
         return inheritDic;
     }
 }

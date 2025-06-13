@@ -12,6 +12,6 @@ public class FileSystemLoaderOptions
     }
     public required RepositoryTypes repoType { get; init; }
     public bool ignoreMissing { get; init; }
-    public IEntitiesSource entitiesSource { get; init; }
+    public IEntitiesSource? entitiesSource { get; init; }
     public LogSettings logSettings { get; init; } = new();
 }

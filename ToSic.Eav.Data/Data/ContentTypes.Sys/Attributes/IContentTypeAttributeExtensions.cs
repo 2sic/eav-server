@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Attributes.Sys;
-using ToSic.Eav.Data.Entities.Sys.Lists;
+﻿using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Data.Sys;
 using static ToSic.Eav.Data.Attributes.Sys.AttributeMetadataConstants;
 
@@ -16,7 +15,7 @@ public static class IContentTypeAttributeExtensions
     /// <remarks>
     /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
     /// </remarks>
-    public static string? InputType(this IContentTypeAttribute definition)
+    public static string InputType(this IContentTypeAttribute definition)
     {
         // Preferred storage and available in all fields defined after 2sxc ca. 6 or 7
         var inputType = definition.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeGeneral);
@@ -31,7 +30,8 @@ public static class IContentTypeAttributeExtensions
             return $"{prefix}{inputType}";
 
         // if still not found, assemble from known type
-        if (inputType.HasValue()) return inputType;
+        if (inputType.HasValue())
+            return inputType;
             
         return definition.Type.ToString().ToLowerInvariant() + "-default";
     }

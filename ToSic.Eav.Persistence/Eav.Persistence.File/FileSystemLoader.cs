@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Sys.Loaders;
@@ -14,12 +15,13 @@ namespace ToSic.Eav.Persistence.File;
 public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataBuilder dataBuilder)
     : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataBuilder]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
 {
-    private FileSystemLoaderOptions Options { get; set; }
+    private FileSystemLoaderOptions Options { get; set; } = null!;
 
     public void Setup(FileSystemLoaderOptions options) => Options = options;
 
     #region json serializer
 
+    [field: AllowNull, MaybeNull]
     public JsonSerializer Serializer
     {
         get => field ??= GenerateSerializer();
@@ -109,6 +111,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         var entities = jsons
             .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++EntityIdSeed, relationshipsSource))
             .Where(entity => entity != null)
+            .Cast<IEntity>()
             .ToListOpt();
         l.A("found " + entities.Count + " entities in " + folder + " folder");
 
@@ -124,7 +127,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     public int TypeIdSeed = -1;
 
     public ICollection<IContentType> ContentTypes()
-        => ContentTypes(Options.appId, null);
+        => ContentTypes(Options.appId, null! /* unused */);
 
     /// <inheritdoc />
     /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
@@ -155,7 +158,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             contentTypes = jsonFiles
                 .Select(json => LoadAndBuildCt(Serializer, json))
                 .Where(ct => ct != null)
-                .ToList();
+                .ToList()!;
         }
         else
         {
@@ -177,6 +180,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
         var entities = bundlesCtAndEntities
             .SelectMany(set => set.Entities)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             .Where(e => e != null)
             .GroupBy(e => e.EntityGuid)
             .Select(g => g.First())
@@ -192,9 +196,9 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// Try to load a content-type file, but if anything fails, just return a null
     /// </summary>
     /// <returns></returns>
-    private IContentType LoadAndBuildCt(JsonSerializer ser, string path)
+    private IContentType? LoadAndBuildCt(JsonSerializer ser, string path)
     {
-        var l = Log.Fn<IContentType>($"Path: {path}", timer: true);
+        var l = Log.Fn<IContentType?>($"Path: {path}", timer: true);
         var infoIfError = "couldn't read type-file";
         try
         {
@@ -228,7 +232,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// If anything fails, just return a null
     /// </summary>
     /// <returns></returns>
-    private IEntity LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource relationshipSource = null)
+    private IEntity? LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource? relationshipSource = null)
     {
         var l = Log.Fn<IEntity>($"Loading {path}");
         try

@@ -298,7 +298,7 @@ public class ImportService(
         if (existingEntities == null || !existingEntities.Any())
             return l.Return(dataBuilder.Entity.CreateFrom(update, type: typeReset), "is new, nothing to merge, just set type to be sure");
 
-        Storage.ImportLogToBeRefactored.Add(new((string)$"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}", (Message.MessageTypes)Message.MessageTypes.Information));
+        Storage.ImportLogToBeRefactored.Add(new($"FYI: Entity {update.EntityId} already exists for guid {update.EntityGuid}", Message.MessageTypes.Information));
 
         // now update (main) entity id from existing - since it already exists
         var original = existingEntities.First();

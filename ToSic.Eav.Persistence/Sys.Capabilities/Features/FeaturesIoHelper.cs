@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Configuration;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Sys.Configuration;
 
 namespace ToSic.Sys.Capabilities.Features;
 
@@ -9,7 +10,7 @@ public class FeaturesIoHelper(IGlobalConfiguration globalConfiguration) : Servic
     /// Also return full path to 'features.json'.
     /// </summary>
     /// <returns>file path and content as string</returns>
-    internal (string filePath, string fileContent) Load()
+    internal (string filePath, string? fileContent) Load()
     {
         if (!File.Exists(FeatureFilePath))
             return (FeatureFilePath, null);
@@ -18,6 +19,7 @@ public class FeaturesIoHelper(IGlobalConfiguration globalConfiguration) : Servic
         return (FeatureFilePath, body);
     }
 
+    [field: AllowNull, MaybeNull]
     private string FeatureFilePath => field ??= GetFeaturesFilePath();
 
     private string GetFeaturesFilePath()

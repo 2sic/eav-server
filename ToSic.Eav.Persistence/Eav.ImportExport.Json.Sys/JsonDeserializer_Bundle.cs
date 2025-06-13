@@ -43,7 +43,7 @@ public partial class JsonSerializer
         return l.Return(result, $"{result.Count}");
     }
 
-    public IList<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource relationshipSource = null)
+    public IList<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource? relationshipSource = null)
     {
         var l = LogDsDetails.Fn<IList<IEntity>>();
         if (package.Bundles.SafeNone())

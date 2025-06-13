@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Json.V1;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Serialization.Sys.Json;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -15,14 +16,22 @@ partial class JsonSerializer
             JsonOptions.UnsafeJsonWithoutEncodingHtml
         );
 
-    public JsonEntity ToJson(IEntity entity, int metadataDepth = 0)
+    private IList<JsonEntity> ToJsonListWithoutNulls(IList<IEntity> entities, int metadataDepth = 0)
+        => entities
+            .Select(e => ToJson(e, metadataDepth))
+            .Where(e => e != null)
+            .Cast<JsonEntity>()
+            .ToListOpt();
+
+    [return: NotNullIfNotNull(nameof(entity))]
+    public JsonEntity? ToJson(IEntity? entity, int metadataDepth = 0)
     {
         var l = Log.Fn<JsonEntity>($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
         // do a null-check, because sometimes code could ask to serialize not-yet existing entities
         if (entity == null)
             return l.ReturnNull("is null");
 
-        JsonMetadataFor jsonFor = null;
+        JsonMetadataFor? jsonFor = null;
         if (entity.MetadataFor.IsMetadata)
             jsonFor = new()
             {
@@ -84,13 +93,11 @@ partial class JsonSerializer
         }
 
         // new: optionally include metadata
-        ICollection<JsonEntity> itemMeta = null;
-        var metaList = ((entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity>)
+        ICollection<JsonEntity>? itemMeta = null;
+        var metaList = ((entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity?>)
             .ToListOpt();
         if (metadataDepth > 0 && metaList.Any())
-            itemMeta = metaList
-                .Select(m => ToJson(m, metadataDepth - 1))
-                .ToListOpt();
+            itemMeta = ToJsonListWithoutNulls(metaList, metadataDepth - 1);
 
         var jEnt = new JsonEntity
         {

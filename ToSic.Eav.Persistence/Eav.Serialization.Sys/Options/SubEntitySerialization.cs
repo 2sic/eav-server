@@ -37,7 +37,7 @@ public class SubEntitySerialization: ISubEntitySerialization
 
     public static ISubEntitySerialization Stabilize(
         ISubEntitySerialization original,
-        ISubEntitySerialization addition = null,
+        ISubEntitySerialization? addition = null,
         bool serialize = false,
         bool id = false,
         bool guid = false,

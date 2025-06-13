@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Serialization.Sys;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ToSic.Eav.Serialization.Sys;
 
 /// <summary>
 /// Create a new EntitySerializationDecorator based on the $select parameters in the URL to filter the fields
@@ -10,10 +12,11 @@ public class ODataSelect(ICollection<string>? rawFields)
 {
     public const string Main = "main";
 
+    [field: AllowNull, MaybeNull]
     public Dictionary<string, ICollection<string>> FieldsByName => field
         ??= GetFieldsByPrefix(rawFields);
 
-    public ICollection<string> GetFieldsOrNull(string name)
+    public ICollection<string>? GetFieldsOrNull(string name)
     {
         if (!FieldsByName.TryGetValue(name, out var myFields))
             return null;
@@ -22,7 +25,7 @@ public class ODataSelect(ICollection<string>? rawFields)
         return myFields;
     }
 
-    internal static Dictionary<string, ICollection<string>> GetFieldsByPrefix(ICollection<string> fields)
+    internal static Dictionary<string, ICollection<string>> GetFieldsByPrefix(ICollection<string>? fields)
     {
         var cleaned = fields?
                           .Select(f => f?.ToLowerInvariant()) //.Trim(Exclusive, Add, Remove))

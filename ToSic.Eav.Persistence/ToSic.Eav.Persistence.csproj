@@ -5,6 +5,10 @@
   <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
 
   <!--<Import Project="../SharedImports/CsProj.Props/Reference/RazorBlade.props" />-->
+  
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
   <PropertyGroup>
     <RootNamespace>ToSic</RootNamespace>

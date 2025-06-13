@@ -17,14 +17,14 @@ public class JsonFormat: JsonContentTypeSet
     /// </summary>
     [JsonIgnore(Condition = WhenWritingDefault)]
     [JsonPropertyOrder(10)]
-    public List<JsonBundle> Bundles { get; set; }
+    public List<JsonBundle>? Bundles { get; set; }
 
     /// <summary>
     /// V1 - a single Entity
     /// </summary>
     [JsonPropertyOrder(20)]
     [JsonIgnore(Condition = WhenWritingNull)] 
-    public JsonEntity Entity;
+    public JsonEntity? Entity;
 
     ///// <summary>
     ///// V1 - a single Content-Type

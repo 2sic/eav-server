@@ -21,8 +21,8 @@ partial class ValueBuilder
     public IImmutableList<IValue> Relationships(IRelatedEntitiesValue value, IEntitiesSource app)
         => Relationships(new LazyEntitiesSource(app, value.Identifiers));
 
-    public IValue Relationship(ICollection<Guid?> guids, IEntitiesSource fullLookupList) => 
-        new Value<IEnumerable<IEntity?>>(new LazyEntitiesSource(fullLookupList, guids));
+    public IValue Relationship(ICollection<Guid?> guids, IEntitiesSource? fullLookupList)
+        => new Value<IEnumerable<IEntity?>>(new LazyEntitiesSource(fullLookupList, guids));
 
     public IValue RelationshipWip(object? value, IEntitiesSource? fullEntityListForLookup)
     {
@@ -54,6 +54,7 @@ partial class ValueBuilder
                               .Cast<object>()
                               .Select(x =>
                               {
+                                  // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                                   var v = x?.ToString()?.Trim();
                                   // this is the case when an export contains a list with nulls as a special code
                                   if (v is null or EavConstants.EmptyRelationship)

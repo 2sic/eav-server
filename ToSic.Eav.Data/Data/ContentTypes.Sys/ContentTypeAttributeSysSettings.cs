@@ -38,7 +38,7 @@ public class ContentTypeAttributeSysSettings
     /// </summary>
     public bool InheritMetadataOfPrimary { get; init; }
 
-    public Dictionary<Guid, string>? InheritMetadataOf { get; init; }
+    public Dictionary<Guid, string?>? InheritMetadataOf { get; init; }
 
     public bool InheritMetadata => InheritMetadataOf.SafeAny() || (Inherit != null && InheritMetadataOfPrimary);
 

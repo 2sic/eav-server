@@ -5,6 +5,6 @@
 /// </summary>
 public class ContentTypeWithEntities
 {
-    public IContentType ContentType { get; set; }
-    public List<IEntity> Entities { get; set; }
+    public required IContentType ContentType { get; set; }
+    public required List<IEntity> Entities { get; set; }
 }

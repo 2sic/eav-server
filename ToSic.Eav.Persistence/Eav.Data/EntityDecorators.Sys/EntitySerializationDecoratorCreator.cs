@@ -35,7 +35,7 @@ public class EntitySerializationDecoratorCreator(ICollection<string>? rawFields,
         bool forceAddTitle;
 
         // If we have a custom title field, we should use that instead of the default title
-        string customTitleFieldName = null;
+        string? customTitleFieldName = null;
 
         // Force adding the title as it's a special case
         // First check for "EntityTitle" - as that would mean we should add it, but rename it

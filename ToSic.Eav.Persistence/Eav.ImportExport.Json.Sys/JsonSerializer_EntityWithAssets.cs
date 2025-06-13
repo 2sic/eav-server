@@ -11,7 +11,8 @@ partial class JsonSerializer
         var l = Log.Fn<string>($"metadataDepth:{metadataDepth}");
         // new in 11.07 - try to add assets
         var ent = ToJson(bundle.Entity, metadataDepth);
-        if (bundle.Assets != null && bundle.Assets.Any()) ent.Assets = bundle.Assets;
+        if (bundle.Assets is { Count: > 0 })
+            ent.Assets = bundle.Assets;
         return l.ReturnAsOk(System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Entity = ent }, JsonOptions.UnsafeJsonWithoutEncodingHtml));
     }
 }

@@ -28,7 +28,6 @@ namespace ToSic.Eav.Serialization.Sys.Json;
 /// - Array to JsonArray
 /// - Everything else to JsonElement
 ///  </summary>
-/// <param name="original"></param>
 /// <returns></returns>
 /// <remarks>
 /// More info:
@@ -39,7 +38,7 @@ namespace ToSic.Eav.Serialization.Sys.Json;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ObjectToInferredTypesConverter : JsonConverter<object>
 {
-    public override object Read(
+    public override object? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
         JsonSerializerOptions options)
@@ -76,7 +75,7 @@ public class ObjectToInferredTypesConverter : JsonConverter<object>
         }
     }
 
-    protected virtual IDictionary<string, object> CreateDictionary() => new ExpandoObject();
+    protected virtual IDictionary<string, object?> CreateDictionary() => new ExpandoObject();
 
     public override void Write(
         Utf8JsonWriter writer,

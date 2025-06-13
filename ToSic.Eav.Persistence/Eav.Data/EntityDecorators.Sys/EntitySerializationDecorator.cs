@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data.EntityDecorators.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSerialization
 {
-    public EntitySerializationDecorator(EntitySerializationDecorator priority, EntitySerializationDecorator mixin)
+    public EntitySerializationDecorator(EntitySerializationDecorator priority, EntitySerializationDecorator? mixin)
         : this(original: mixin,
             serializeId: priority.SerializeId,
             serializeAppId: priority.SerializeAppId,
@@ -36,26 +36,26 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
             serializeType: priority.SerializeType) { }
 
     public EntitySerializationDecorator(
-        EntitySerializationDecorator original,
+        EntitySerializationDecorator? original,
         bool? serializeId = null,
         bool? serializeAppId = null,
         bool? serializeZoneId = null,
         bool? serializeGuid = null,
         bool? serializeTitle = null,
         bool? serializeTitleForce = null,
-        string customTitleName = null,
+        string? customTitleName = null,
         bool? serializeModified = null,
         bool? serializeCreated = null,
         bool? removeEmptyStringValues = null,
         bool? removeBoolFalseValues = null,
         bool? removeNullValues = null,
         bool? removeZeroValues = null,
-        IList<string> filterFields = null,
+        IList<string>? filterFields = null,
         bool? filterFieldsEnabled = null,
-        MetadataForSerialization serializeMetadataFor = null,
-        ISubEntitySerialization serializeMetadata = null,
-        ISubEntitySerialization serializeRelationships = null,
-        TypeSerializationOptions serializeType = default): this()
+        MetadataForSerialization? serializeMetadataFor = null,
+        ISubEntitySerialization? serializeMetadata = null,
+        ISubEntitySerialization? serializeRelationships = null,
+        TypeSerializationOptions? serializeType = default): this()
     {
         SerializeId = serializeId ?? original?.SerializeId;
         SerializeAppId = serializeAppId ?? original?.SerializeAppId;
@@ -81,31 +81,31 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// <summary>
     /// Include ID - if not set, is included.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? SerializeId { get; init; }
 
     /// <summary>
     /// Include AppId - not included by default.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? SerializeAppId { get; init; }
 
     /// <summary>
     /// Include ZoneId - not included by default.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? SerializeZoneId { get; init; }
 
     /// <summary>
     /// Include GUID - if not set, is not included.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? SerializeGuid { get; init; }
 
     /// <summary>
     /// Add standard "Title" property - default is ???.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? SerializeTitle { get; init; }
     public const bool DefaultSerializeTitle = true;
 
@@ -114,23 +114,23 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// This is important, because of different ways a "Title" field can be "Title" or something else.
     /// So in rare cases, there is a "Title" field but the title itself is a "Name" or "TitleInternal".
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? SerializeTitleForce { get; init; }
     public const bool DefaultSerializeTitleForce = false;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string CustomTitleName { get; init; }
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public string? CustomTitleName { get; init; }
 
     /// <summary>
     /// Include Modified date - default is false.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? SerializeModified { get; init; }
 
     /// <summary>
     /// Include Created date - default is false.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? SerializeCreated { get; init; }
 
     /// <summary>
@@ -156,29 +156,29 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
     /// <summary>
     /// WIP v17.04 - not in the entity config, but ATM added manually from the $select
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = WhenWritingNull)]
     public bool? FilterFieldsEnabled { get; init; }
 
     /// <summary>
     /// WIP v17.04 - Fields to include in the result. Will only take effect if <see cref="FilterFieldsEnabled"/>.
     /// Note: not in the entity config, but ATM added manually from the $select
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IList<string> FilterFields { get; init; }
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public IList<string>? FilterFields { get; init; }
 
     #region Metadata & Relationships
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public MetadataForSerialization SerializeMetadataFor { get; init; }
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public MetadataForSerialization? SerializeMetadataFor { get; init; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public ISubEntitySerialization SerializeMetadata { get; init; }
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public ISubEntitySerialization? SerializeMetadata { get; init; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public ISubEntitySerialization SerializeRelationships { get; init; }
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public ISubEntitySerialization? SerializeRelationships { get; init; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public TypeSerializationOptions SerializeType { get; init; }
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public TypeSerializationOptions? SerializeType { get; init; }
 
     #endregion
 
