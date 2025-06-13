@@ -123,11 +123,11 @@ partial class XmlImportWithFiles
             }
         }
 
-        var metadata = new Target(targetType: targetType, identifier: null, keyString: keyString, keyGuid: keyGuid, keyNumber: keyNumber);
+        var mdTarget = new Target(targetType: targetType, title: "to be looked up later", keyString: keyString, keyGuid: keyGuid, keyNumber: keyNumber);
 
-        l.A($"Metadata ({metadata.IsMetadata}) - type:{metadata.TargetType}, #:{metadata.KeyNumber} guid:{metadata.KeyGuid}, $:{metadata.KeyString}");
+        l.A($"Metadata ({mdTarget.IsMetadata}) - type:{mdTarget.TargetType}, #:{mdTarget.KeyNumber} guid:{mdTarget.KeyGuid}, $:{mdTarget.KeyString}");
 
-        var importEntity = XmlBuilder.BuildEntityFromXml(entityNode, metadata);
+        var importEntity = XmlBuilder.BuildEntityFromXml(entityNode, mdTarget);
 
         return l.Return(importEntity, "got it");
     }

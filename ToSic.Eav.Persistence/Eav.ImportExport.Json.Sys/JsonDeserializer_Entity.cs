@@ -15,14 +15,20 @@ partial class JsonSerializer
 {
 
     public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
-        => Deserialize(UnpackAndTestGenericJsonV1(serialized).Entity, allowDynamic, skipUnknownType);
+        => Deserialize(UnpackEntityAndTestGenericJsonV1(serialized), allowDynamic, skipUnknownType);
 
     internal IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource? dynRelationshipsSource = null)
     {
-        var jsonEntity = UnpackAndTestGenericJsonV1(serialized).Entity;
+        var jsonEntity = UnpackEntityAndTestGenericJsonV1(serialized);
         jsonEntity.Id = id;
         var entity = Deserialize(jsonEntity, allowDynamic, skipUnknownType, dynRelationshipsSource);
         return entity;
+    }
+
+    public JsonEntity UnpackEntityAndTestGenericJsonV1(string? serialized)
+    {
+        var format = UnpackAndTestGenericJsonV1(serialized);
+        return format.Entity ?? throw new("No entity found in the package.");
     }
 
     public JsonFormat UnpackAndTestGenericJsonV1(string? serialized)
@@ -35,7 +41,7 @@ partial class JsonSerializer
         JsonFormat jsonObj;
         try
         {
-            jsonObj = System.Text.Json.JsonSerializer.Deserialize<JsonFormat>(serialized, JsonOptions.UnsafeJsonWithoutEncodingHtml)!;
+            jsonObj = System.Text.Json.JsonSerializer.Deserialize<JsonFormat>(serialized!, JsonOptions.UnsafeJsonWithoutEncodingHtml)!;
         }
         catch (Exception ex)
         {
@@ -55,18 +61,14 @@ partial class JsonSerializer
         }
     }
 
-    public IEntity Deserialize(JsonEntity jEnt,
-        bool allowDynamic,
-        bool skipUnknownType,
-        IEntitiesSource? dynRelationshipsSource = default)
+    public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType, IEntitiesSource? dynRelationshipsSource = default)
     {
         var l = LogDsDetails.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", timer: true);
         // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
         var contentType = GetContentType(jEnt.Type.Id)
                           ?? (allowDynamic || skipUnknownType
                               ? GetTransientContentType(jEnt.Type.Name, jEnt.Type.Id)
-                              : throw new FormatException($"type not found for deserialization and dynamic not allowed - cannot continue with {jEnt.Type.Id}")
-                          );
+                              : throw new FormatException($"type not found for deserialization and dynamic not allowed - cannot continue with {jEnt.Type.Id}"));
 
         // Metadata Target
         var target = DeserializeEntityTarget(jEnt);
@@ -129,11 +131,11 @@ partial class JsonSerializer
 
         var targetType = mdFor.TargetType != 0
             ? mdFor.TargetType
-            : MetadataTargets.GetId(mdFor.Target); // #TargetTypeIdInsteadOfTarget
+            : MetadataTargets.GetId(mdFor.Target ?? ""); // #TargetTypeIdInsteadOfTarget, should be deprecated soon
 
         var target = new Target(
             targetType: targetType,
-            identifier: null,
+            title: "target not looked up yet", // not-null field, but normally the target will be looked up later
             keyString: mdFor.String,
             keyNumber: mdFor.Number,
             keyGuid: mdFor.Guid
@@ -145,32 +147,33 @@ partial class JsonSerializer
     private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAttributes, IEntitiesSource? relationshipsSource = null)
     {
         var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>(timer: true);
-        var bld = Services.DataBuilder.Value;
+        var valBuilder = Services.DataBuilder.Value;
         var attribs = new[]
         {
-            BuildAttrib(jAttributes.DateTime, ValueTypes.DateTime, bld.DateTime),
-            BuildAttrib(jAttributes.Boolean, ValueTypes.Boolean, bld.Bool),
-            BuildAttrib(jAttributes.Custom, ValueTypes.Custom, bld.String),
-            BuildAttrib(jAttributes.Json, ValueTypes.Json, bld.String),
-            BuildAttrib(jAttributes.Entity, ValueTypes.Entity, (v, _) => bld.Relationship(v, relationshipsSource)),
-            BuildAttrib(jAttributes.Hyperlink, ValueTypes.Hyperlink, bld.String),
-            BuildAttrib(jAttributes.Number, ValueTypes.Number, bld.Number),
-            BuildAttrib(jAttributes.String, ValueTypes.String, bld.String)
+            BuildAttrib(jAttributes.DateTime, ValueTypes.DateTime, valBuilder.DateTime),
+            BuildAttrib(jAttributes.Boolean, ValueTypes.Boolean, valBuilder.Bool),
+            BuildAttrib(jAttributes.Custom, ValueTypes.Custom, valBuilder.String),
+            BuildAttrib(jAttributes.Json, ValueTypes.Json, valBuilder.String),
+            BuildAttrib(jAttributes.Entity, ValueTypes.Entity, (v, _) => valBuilder.Relationship(v, relationshipsSource)),
+            BuildAttrib(jAttributes.Hyperlink, ValueTypes.Hyperlink, valBuilder.String),
+            BuildAttrib(jAttributes.Number, ValueTypes.Number, valBuilder.Number),
+            BuildAttrib(jAttributes.String, ValueTypes.String, valBuilder.String)
         };
         var final = attribs
             .Where(dic => dic != null)
-            .SelectMany(pair => pair)
+            .SelectMany(dic => dic!)
             .ToImmutableDicSafe(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
 
         return l.ReturnAsOk(final);
     }
 
-    private Dictionary<string, IAttribute> BuildAttrib<T>(
-        Dictionary<string, Dictionary<string, T>> list,
+    private Dictionary<string, IAttribute>? BuildAttrib<T>(
+        Dictionary<string, Dictionary<string, T>>? list,
         ValueTypes type,
         Func<T, IImmutableList<ILanguage>, IValue> valueBuilder)
     {
-        if (list == null) return null;
+        if (list == null)
+            return null;
 
         var builder = Services.DataBuilder;
         var newAttributes = list.ToDictionary(
@@ -188,7 +191,7 @@ partial class JsonSerializer
         return newAttributes;
     }
 
-    private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAtts, IContentType contentType, IEntitiesSource? relationshipsSource = null)
+    private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAttributes, IContentType contentType, IEntitiesSource? relationshipsSource = null)
     {
         var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>();
         var result = contentType.Attributes
@@ -196,7 +199,7 @@ partial class JsonSerializer
                 a => a.Name,
                 a =>
                 {
-                    var values = GetValues(a, jAtts, relationshipsSource);
+                    var values = GetValues(a, jAttributes, relationshipsSource);
                     return Services.DataBuilder.Attribute.Create(a.Name, a.Type, values);
                 },
                 InvariantCultureIgnoreCase
@@ -204,43 +207,30 @@ partial class JsonSerializer
         return l.ReturnAsOk(result);
     }
 
-    private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAtts, IEntitiesSource? relationshipsSource = null)
-    {
-        switch (a.Type)
+    private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAttribs, IEntitiesSource? relationshipsSource)
+        => a.Type switch
         {
-            case ValueTypes.Boolean:
-                return BuildValues(jAtts.Boolean, a);
-            case ValueTypes.DateTime:
-                return BuildValues(jAtts.DateTime, a);
-            case ValueTypes.Entity:
-                if (!jAtts.Entity?.ContainsKey(a.Name) ?? true)
-                    return new List<IValue>(); // just keep the empty definition, as that's fine
-                return jAtts.Entity[a.Name]
+            ValueTypes.Boolean => BuildValues(jAttribs.Boolean, a),
+            ValueTypes.DateTime => BuildValues(jAttribs.DateTime, a),
+            ValueTypes.Entity => !jAttribs.Entity?.ContainsKey(a.Name) ?? true
+                ? new List<IValue>() // just keep the empty definition, as that's fine
+                : jAttribs.Entity[a.Name]
                     .Select(v => Services.DataBuilder.Value.Relationship(
-                        v.Value,
-                        relationshipsSource ?? LazyRelationshipLookupList))
-                    .ToListOpt();
-            case ValueTypes.Hyperlink:
-                return BuildValues(jAtts.Hyperlink, a);
-            case ValueTypes.Number:
-                return BuildValues(jAtts.Number, a);
-            case ValueTypes.String:
-                return BuildValues(jAtts.String, a);
-            case ValueTypes.Custom:
-                return BuildValues(jAtts.Custom, a);
-            case ValueTypes.Json:
-                return BuildValues(jAtts.Json, a);
+                        v.Value, relationshipsSource ?? LazyRelationshipLookupList))
+                    .ToListOpt(),
+            ValueTypes.Hyperlink => BuildValues(jAttribs.Hyperlink, a),
+            ValueTypes.Number => BuildValues(jAttribs.Number, a),
+            ValueTypes.String => BuildValues(jAttribs.String, a),
+            ValueTypes.Custom => BuildValues(jAttribs.Custom, a),
+            ValueTypes.Json => BuildValues(jAttribs.Json, a),
             // ReSharper disable RedundantCaseLabel
-            case ValueTypes.Empty:
-            case ValueTypes.Undefined:
+            ValueTypes.Empty or ValueTypes.Undefined =>
                 // ReSharper restore RedundantCaseLabel
-                return new List<IValue>();
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
+                new List<IValue>(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
-    private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>> list, IContentTypeAttribute attrDef)
+    private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>>? list, IContentTypeAttribute attrDef)
     {
         if (!list?.ContainsKey(attrDef.Name) ?? true)
             return new List<IValue>();
@@ -257,9 +247,9 @@ partial class JsonSerializer
                 .ToImmutableSafe();
 
 
-    private Dictionary<string, Dictionary<string, string>> ConvertReferences(Dictionary<string, Dictionary<string, string>> links, Guid entityGuid)
+    private Dictionary<string, Dictionary<string, string?>> ConvertReferences(Dictionary<string, Dictionary<string, string?>> links, Guid entityGuid)
     {
-        var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, string>>>();
+        var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, string?>>>();
         try
         {
             var converter = ((MyServices)Services).ValueConverter.Value;
@@ -280,28 +270,34 @@ partial class JsonSerializer
         }
     }
 
-    private Dictionary<string, Dictionary<string, T>> ToTypedDictionary<T>(IEnumerable<IAttribute> attribs)
+    /// <summary>
+    /// Create a dictionary with each field, containing another dictionary with the language keys and the values of type T.
+    /// </summary>
+    /// <typeparam name="T">The underlying value in all these attributes, such as string, int or IEnumerable{IEntity}</typeparam>
+    /// <param name="attribs"></param>
+    /// <returns></returns>
+    private Dictionary<string, Dictionary<string, T?>> ToTypedDictionary<T>(IEnumerable<IAttribute> attribs)
     {
-        var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, T>>>();
-        var result = new Dictionary<string, Dictionary<string, T>>();
-        var attribsGeneric = attribs
+        var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, T?>>>();
+        var result = new Dictionary<string, Dictionary<string, T?>>();
+        var attribsTyped = attribs
             .Cast<IAttribute<T>>()
             .ToListOpt();
 
-        foreach (var a in attribsGeneric)
+        foreach (var a in attribsTyped)
         {
 
-            Dictionary<string, T> dimensions;
+            Dictionary<string, T?> dimensions;
             try
             {
-                dimensions = a.Typed.ToDictionary(LanguageKey, v => v.TypedContents);
+                dimensions = a.Typed.ToDictionary(LanguageKeyOfValue, v => v.TypedContents);
             }
             catch (Exception ex)
             {
-                string langList = null;
+                string? langList = null;
                 try
                 {
-                    langList = string.Join(",", a.Typed.Select(LanguageKey));
+                    langList = string.Join(",", a.Typed.Select(LanguageKeyOfValue));
                 }
                 catch
                 {

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Lib.DI;
 using ToSic.Lib.Services;
-#if NETFRAMEWORK
-#endif
 
 namespace ToSic.Eav.Metadata.Targets;
 internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBase("MDa.TTSvc", connect: [loader]), ITargetTypeService

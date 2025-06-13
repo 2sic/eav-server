@@ -72,14 +72,16 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
 
     #endregion
 
-    public IAppReader AppReaderOrError => AppReaderOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+    public IAppReader AppReaderOrError
+        => AppReaderOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)");
+
     protected IAppReader? AppReaderOrNull { get; private set; }
 
     public bool PreferLocalAppTypes = false;
 
     protected IContentType? GetContentType(string staticName)
     {
-        var l = LogDsDetails.Fn<IContentType>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", timer: true);
+        var l = LogDsDetails.Fn<IContentType?>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", timer: true);
         // There is a complex lookup we must protocol to better detect issues, which is why we assemble a message
         var msg = "";
 
@@ -127,14 +129,18 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
     /// </summary>
     internal JsonDeSerializationSettings? DeserializationSettings { get; set; } = null;
 
-    protected IEntity? Lookup(int entityId) => AppReaderOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
+    protected IEntity? Lookup(int entityId)
+        => AppReaderOrError.List.FindRepoId(entityId); // should use repo, as we're often serializing unpublished entities, and then the ID is the Repo-ID
 
     public abstract string Serialize(IEntity entity);
 
-    public string Serialize(int entityId) => Serialize(Lookup(entityId));
+    // NOTE: ONLY SEEMS TO BE USED IN TESTS
+    public string Serialize(int entityId)
+        => Serialize(Lookup(entityId) ?? throw new NullReferenceException($"Entity {entityId} not found, can't serialize"));
 
-    public Dictionary<int, string> Serialize(List<int> entities)
-        => entities.ToDictionary(x => x, Serialize);
+    // 2025-06-13 2dm disabled, doesn't seem to be in use
+    //public Dictionary<int, string> Serialize(List<int> entities)
+    //    => entities.ToDictionary(x => x, Serialize);
 
     public Dictionary<int, string> Serialize(List<IEntity> entities)
         => entities.ToDictionary(e => e.EntityId, Serialize);

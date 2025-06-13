@@ -16,7 +16,8 @@ public abstract class ValueConverterBase(string logName) : ServiceBase(logName),
 
     public virtual string ToReference(string value) => value;
 
-    public virtual string ToValue(string reference, Guid itemGuid = default) => reference;
+    public virtual string? ToValue(string? reference, Guid itemGuid = default)
+        => reference;
 
     protected abstract string ResolveFileLink(int linkId, Guid itemGuid);
 
@@ -27,27 +28,33 @@ public abstract class ValueConverterBase(string logName) : ServiceBase(logName),
     /// </summary>
     protected virtual void LogConversionExceptions(string originalValue, Exception e) { }
 
-    public static bool CouldBeReference(string reference)
+    public static bool CouldBeReference(string? reference)
     {
-        if (string.IsNullOrWhiteSpace(reference)) return false;
+        if (string.IsNullOrWhiteSpace(reference))
+            return false;
         // must contain ":"
-        if (!reference.Contains(Separator)) return false;
+        if (!reference!.Contains(Separator))
+            return false;
         // Avoid false positives on full paths
-        if (reference.Contains("/") || reference.Contains("\\")) return false;
+        if (reference.Contains("/") || reference.Contains("\\"))
+            return false;
         // minimum "page:#" or "file:#"
-        if (reference.Length < 6) return false; 
+        if (reference.Length < 6)
+            return false; 
         return true;
     }
 
-    protected string TryToResolveCodeToLink(Guid itemGuid, string originalValue)
+    protected string? TryToResolveCodeToLink(Guid itemGuid, string? originalValue)
     {
         try
         {
-            if (string.IsNullOrEmpty(originalValue)) return originalValue;
+            if (string.IsNullOrEmpty(originalValue))
+                return originalValue;
 
-            var parts = new LinkParts(originalValue);
+            var parts = new LinkParts(originalValue!);
 
-            if (!parts.IsMatch) return originalValue;
+            if (!parts.IsMatch)
+                return originalValue;
 
             var result = (parts.IsPage
                              ? ResolvePageLink(parts.Id)
@@ -58,7 +65,7 @@ public abstract class ValueConverterBase(string logName) : ServiceBase(logName),
         }
         catch (Exception e)
         {
-            LogConversionExceptions(originalValue, e);
+            LogConversionExceptions(originalValue!, e);
             return originalValue;
         }
     }

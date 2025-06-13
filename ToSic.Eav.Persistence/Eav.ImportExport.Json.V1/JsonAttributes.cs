@@ -1,17 +1,17 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
-public class JsonAttributes
+public class JsonAttributes()
 {
     [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, string>>? String;
+    public Dictionary<string, Dictionary<string, string?>>? String;
 
-    [JsonIgnore(Condition = WhenWritingNull)] public Dictionary<string, Dictionary<string, string>>? Hyperlink;
-
-    [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, string>>? Custom;
+    [JsonIgnore(Condition = WhenWritingNull)] public Dictionary<string, Dictionary<string, string?>>? Hyperlink;
 
     [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, string>>? Json;
+    public Dictionary<string, Dictionary<string, string?>>? Custom;
+
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public Dictionary<string, Dictionary<string, string?>>? Json;
 
     [JsonIgnore(Condition = WhenWritingNull)]
     public Dictionary<string, Dictionary<string, ICollection<Guid?>>>? Entity;

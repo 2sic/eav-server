@@ -50,7 +50,7 @@ public sealed class LicenseLoader(
     {
         var l = this.Log.Fn(message: "start", timer: true);
         var fingerprint1 = sysFingerprint.GetFingerprint();
-        l.A($"fingerprint:{fingerprint1?.Length}");
+        l.A($"fingerprint:{fingerprint1.Length}");
 
         var validEntFps = sysFingerprint.EnterpriseFingerprints
             .Where(e => e.Valid)
@@ -93,12 +93,13 @@ public sealed class LicenseLoader(
             .Select(File.ReadAllText)
             .Select(j => JsonSerializer.Deserialize<LicensesPersisted>(j)) // should NOT use common SxcJsonSerializerOptions
             .Where(licenses => licenses != null)
+            .Cast<LicensesPersisted>()
             .ToListOpt();
 
         return l.Return(licensesStored, $"licensesStored: {licensesStored.Count}");
     }
 
-    private IList<FeatureSetState> LicensesStateBuilder(LicensesPersisted licensesPersisted, string fingerprint, IList<EnterpriseFingerprint> validEntFps)
+    private IList<FeatureSetState> LicensesStateBuilder(LicensesPersisted? licensesPersisted, string fingerprint, IList<EnterpriseFingerprint> validEntFps)
     {
         var l = Log.Fn<IList<FeatureSetState>>();
         if (licensesPersisted == null)
@@ -135,7 +136,7 @@ public sealed class LicenseLoader(
         var validDate = DateTime.Now.CompareTo(licensesPersisted.Expires) <= 0;
         l.A($"Expired: {validDate}");
 
-        var licenses = licensesPersisted?.Licenses ?? [];
+        var licenses = licensesPersisted.Licenses ?? [];
         l.A($"Licenses: {licenses.Count}");
 
 
@@ -158,14 +159,13 @@ public sealed class LicenseLoader(
                         Description = $"Feature: {storedDetails.Comments} ({storedDetails.Id})",
                         FeatureLicense = true
                     };
-                    l.A(
-                        $"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");
+                    l.A($"Virtual/Feature license detected. Add virtual license to enable activation for {licDef.NameId} - {licDef.Guid}");
                     licenseCatalog.Register(licDef);
                 }
 
                 return new FeatureSetState(licDef)
                 {
-                    Title = licensesPersisted.Title,
+                    Title = licensesPersisted.Title ?? "no title",
                     EntityGuid = licensesPersisted.GuidSalt,
                     LicenseKey = licensesPersisted.Key ?? LicenseKeyDescription,
                     Expiration = storedDetails.Expires ?? licensesPersisted.Expires,

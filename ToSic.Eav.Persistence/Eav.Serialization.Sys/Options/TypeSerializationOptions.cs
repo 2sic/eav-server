@@ -19,17 +19,17 @@ public class TypeSerializationOptions
 
     /// <summary>
     /// WIP, values probably
-    /// - (empty) / "default" don't include
+    /// - (empty) / (null) / "default" don't include
     /// - "object" - the object model
     /// - "flat" = TypeId = "guid"; TypeName = "";
     /// </summary>
-    public string SerializeAs { get; set; }
+    public string? SerializeAs { get; init; }
 
     /// <summary>
     /// Single name - would be used as prefix and add "Id", "Name", "Description" etc.
     /// CSV - would be used exactly as is for only those variations
     /// </summary>
-    public string PropertyNames { get; set; }
+    public string? PropertyNames { get; init; }
 
     public bool? SerializeId { get; set; }
 

@@ -18,5 +18,5 @@ public interface ISubEntitySerialization : IEntityIdSerialization
     /// * Created v15.03 and was originally a bool? called SerializesAsCsv
     /// * Modified in v18 to be a string, to allow more formats
     /// </remarks>
-    public string SerializeFormat { get; init; }
+    public string? SerializeFormat { get; init; }
 }

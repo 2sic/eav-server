@@ -8,7 +8,7 @@ public class SubEntitySerialization: ISubEntitySerialization
     /// <summary>
     /// Expected values "csv", "array", "object" (default)
     /// </summary>
-    public string SerializeFormat { get; init; }
+    public string? SerializeFormat { get; init; }
 
     public bool? SerializeId { get; init; }
 
@@ -20,7 +20,7 @@ public class SubEntitySerialization: ISubEntitySerialization
         => Stabilize(null, false, "object", true, true, true);
 
     public static ISubEntitySerialization Stabilize(
-        ISubEntitySerialization original,
+        ISubEntitySerialization? original,
         bool serialize,
         string format,
         bool id,

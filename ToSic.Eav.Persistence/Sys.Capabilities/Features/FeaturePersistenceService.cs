@@ -15,7 +15,7 @@ public class FeaturePersistenceService(
     #region JSON serialization
 
     private static JsonObject JsonToObject(string json)
-        => JsonNode.Parse(json ?? "{}", JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions)
+        => JsonNode.Parse(json ?? "{}", JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions)!
             .AsObject();
 
     private static string FeatToJson(object obj)

@@ -48,7 +48,7 @@ public class JsonAssets
         // try to restore it
         if (asset.Encoding == JsonAsset.EncodingBase64)
         {
-            var contents = Convert.FromBase64String(asset.File);
+            var contents = Convert.FromBase64String(asset.File ?? "");
             File.WriteAllBytes(realPath, contents);
             return true;
         }

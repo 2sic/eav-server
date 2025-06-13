@@ -30,6 +30,7 @@ public class ODataSelect(ICollection<string>? rawFields)
         var cleaned = fields?
                           .Select(f => f?.ToLowerInvariant()) //.Trim(Exclusive, Add, Remove))
                           .Where(f => !string.IsNullOrWhiteSpace(f))
+                          .Cast<string>() // tell compiler it's not null
                           .ToListOpt()
                       ?? [];
 

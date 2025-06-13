@@ -11,6 +11,7 @@ partial class JsonSerializer
 
     public IContentType DeserializeContentType(string serialized)
     {
+        // ReSharper disable once ReplaceSubstringWithRangeIndexer
         var l = LogDsSummary.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...", timer: true);
         try
         {
@@ -43,7 +44,7 @@ partial class JsonSerializer
                 : sharedEntSource != null
                     ? "Shared Entities"
                     : "Standalone List";
-            lMain.A($"Will use relationship source {preferredSourceMsg}; current size: {relationshipsSource.List?.Count()}");
+            lMain.A($"Will use relationship source {preferredSourceMsg}; current size: {relationshipsSource.List.Count()}");
 
             IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
 
@@ -54,7 +55,7 @@ partial class JsonSerializer
                                          ?.Select(ConvertPart)
                                          .ToListOpt()
                                      ?? [];
-                relationships.List?.AddRange(directEntities);
+                relationships.List.AddRange(directEntities);
 
                 // Verify that it has a Json ContentType
                 var jsonType = json.ContentType ?? throw new(
@@ -62,7 +63,7 @@ partial class JsonSerializer
 
                 // Prepare ContentType Attributes
                 l.A("deserialize attributes");
-                var attribs = jsonType.Attributes
+                var attribs = (jsonType.Attributes ?? [])
                     .Select((jsonAttr, pos) =>
                     {
                         var valType = ValueTypeHelpers.Get(jsonAttr.Type);
@@ -97,7 +98,7 @@ partial class JsonSerializer
 
                         // #SharedFieldDefinition
                         if (mdEntities != null)
-                            relationships.List?.AddRange(mdEntities);
+                            relationships.List.AddRange(mdEntities);
                         return attDef;
                     })
                     .ToListOpt();
@@ -108,7 +109,7 @@ partial class JsonSerializer
                                  ?.Select(ConvertPart)
                                  .ToListOpt()
                              ?? [];
-                relationships.List?.AddRange(ctMeta);
+                relationships.List.AddRange(ctMeta);
 
                 // Create the Content Type
                 var type = Services.DataBuilder.ContentType.Create(
@@ -125,8 +126,8 @@ partial class JsonSerializer
                 );
 
                 // new in 1.2 2sxc v12 - build relation relationships manager
-                return l.Return(new() { ContentType = type, Entities = relationships.List ?? [] },
-                    $"converted {type.Name} with {attribs.Count} attributes and {relationships.List?.Count} Relationships");
+                return l.Return(new() { ContentType = type, Entities = relationships.List},
+                    $"converted {type.Name} with {attribs.Count} attributes and {relationships.List.Count} Relationships");
             }
             catch (Exception e)
             {

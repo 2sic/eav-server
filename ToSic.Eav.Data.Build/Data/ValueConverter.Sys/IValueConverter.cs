@@ -25,5 +25,6 @@ public interface IValueConverter
     ///     If you use Guid.Empty or don't supply it, it will usually work, except on systems where the security has been extra-hardened. 
     /// </param>
     /// <returns>The value, like the url.</returns>
-    string ToValue(string reference, Guid itemGuid = default);
+    [return: NotNullIfNotNull(nameof(reference))]
+    string? ToValue(string? reference, Guid itemGuid = default);
 }

@@ -83,7 +83,7 @@ internal class SerializationSourceToDecorator
         return decorator;
     }
 
-    private static string GetOutputFormat(string includeRelationshipsAsCsv)
+    private static string? GetOutputFormat(string includeRelationshipsAsCsv)
     {
         if (includeRelationshipsAsCsv.IsEmptyOrWs())
             return null;

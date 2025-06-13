@@ -32,7 +32,7 @@ public partial class JsonSerializer
             .Where(b => b.ContentTypes.SafeAny())
             .ToListOpt();
         var types = bundlesWithTypes
-            .SelectMany(b => b.ContentTypes)
+            .SelectMany(b => b.ContentTypes ?? [])
             .ToListOpt();
         l.A($"Bundles: {package.Bundles.Count}; with Types {bundlesWithTypes.Count}; Types: {types.Count}");
 
@@ -54,7 +54,7 @@ public partial class JsonSerializer
             .Where(b => b.Entities.SafeAny())
             .ToListOpt();
         var jsonEntities = bundlesWithEntities
-            .SelectMany(b => b.Entities)
+            .SelectMany(b => b.Entities ?? [])
             .ToListOpt();
         l.A($"Bundles: {package.Bundles.Count}; with Entities {bundlesWithEntities.Count}; Entities: {jsonEntities.Count}");
 

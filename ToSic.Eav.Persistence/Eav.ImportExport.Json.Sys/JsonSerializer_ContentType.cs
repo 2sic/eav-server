@@ -73,10 +73,6 @@ partial class JsonSerializer
 
             l.A($"Sub items: {mdParts.Count}; Deduplicated: {mdDeduplicated.Count}");
             package.Entities = ToJsonListWithoutNulls(mdDeduplicated, metadataDepth: 0);
-                //.Select(e => ToJson(e,  metadataDepth: 0))
-                //.Where(md => md != null) // filter out possible null items
-                //.Cast<JsonEntity>()
-                //.ToListOpt();
         }
         catch (Exception ex)
         {

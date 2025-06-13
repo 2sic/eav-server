@@ -12,7 +12,9 @@ public class ValueTypeHelpers
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static ValueTypes Get(string typeName) 
-        => Enum.TryParse<ValueTypes>(typeName ?? "", true, out var code) ? code : ValueTypes.Undefined;
+        => Enum.TryParse<ValueTypes>(typeName ?? "", true, out var code)
+            ? code
+            : ValueTypes.Undefined;
 
     //public static Type GetType(ValueTypes type) => TypeMap[type];
 

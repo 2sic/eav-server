@@ -9,8 +9,6 @@ global using ToSic.Eav.Data.Entities.Sys.Sources;
 global using ToSic.Eav.Metadata;
 global using ToSic.Eav.Serialization;
 global using ToSic.Lib.Documentation;
-global using ToSic.Lib.Documentation;
-global using ToSic.Lib.Logging;
 global using ToSic.Lib.Logging;
 global using ToSic.Lib.Services;
 global using ToSic.Sys.Utils;

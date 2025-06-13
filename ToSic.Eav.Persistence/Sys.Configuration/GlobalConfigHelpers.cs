@@ -12,6 +12,6 @@ public class GlobalConfigHelpers
 
     public static string GetDataRoot(string? dataFolder) =>
         dataFolder?.EndsWith(FolderConstants.FolderSystem) ?? false
-            ? dataFolder.Substring(0, dataFolder.Length - FolderConstants.FolderSystem.Length).TrimLastSlash()
+            ? dataFolder.Substring(0, dataFolder.Length - FolderConstants.FolderSystem.Length).TrimLastSlash()!
             : dataFolder ?? string.Empty;
 }

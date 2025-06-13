@@ -10,18 +10,19 @@ public interface IDataSerializer
     void Initialize(IAppReader appReader);
 
     /// <summary>
-    /// Serialize an entity to a string
+    /// Serialize an entity to a string - NOTE: ONLY SEEMS TO BE USED IN TESTS
     /// </summary>
     /// <param name="entityId">ID - the serializer will look for this in the app</param>
     /// <returns>a serialized entity as string</returns>
     string Serialize(int entityId);
 
-    /// <summary>
-    /// Batch-serialize a bunch of entities
-    /// </summary>
-    /// <param name="entities">list of the entities</param>
-    /// <returns>A string-dictionary containing all the serialized entities</returns>
-    Dictionary<int, string> Serialize(List<int> entities);
+    // 2025-06-13 2dm disabled, doesn't seem to be in use
+    ///// <summary>
+    ///// Batch-serialize a bunch of entities
+    ///// </summary>
+    ///// <param name="entities">list of the entities</param>
+    ///// <returns>A string-dictionary containing all the serialized entities</returns>
+    //Dictionary<int, string> Serialize(List<int> entities);
 
     /// <summary>
     /// Serialize an entity to a string

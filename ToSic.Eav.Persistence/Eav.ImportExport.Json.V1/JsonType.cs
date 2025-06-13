@@ -12,16 +12,16 @@ public class JsonType
     /// Main static identifier, usually a guid, in rare cases a string such as "@string-dropdown"
     /// </summary>
     /// <remarks>
-    /// Should kind of be NameId, but was created a long time ago, and a rename would cause too much trouble.
+    /// Should be NameId, but was created a long time ago, and a rename would cause too much trouble.
     /// </remarks>
     [JsonPropertyOrder(1)]
-    public string? Id { get; set; }
+    public string Id { get; init; } = null!;    // is always set by constructors or de-serialization
 
     /// <summary>
     /// Nice name, string
     /// </summary>
     [JsonPropertyOrder(2)]
-    public string? Name { get; set; }
+    public string Name { get; init; } = null!;  // is always set by constructors or de-serialization
 
     /// <summary>
     /// Map for attribute name to long-term-guid (if given)
@@ -53,27 +53,14 @@ public class JsonType
     /// </summary>
     public JsonType() { }
 
+    /// <summary>
+    /// Constructor to create a JsonType from an IEntity, with options to include description and attribute map.
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="withDescription"></param>
+    /// <param name="withMap"></param>
     public JsonType(IEntity entity, bool withDescription = false, bool withMap = false)
         : this(entity.Type, withDescription, withMap) { }
-    //{
-    //    var type = entity.Type;
-    //    Name = type.Name;
-    //    Id = type.NameId;
-    //    if (withDescription)
-    //    {
-    //        var description = type.Metadata.DetailsOrNull;
-    //        Title = description?.Title ?? type.NameId;
-    //        Description = description?.Description ?? "";
-    //    }
-    //    if (withMap)
-    //    {
-    //        var withGuid = type.Attributes
-    //            .Where(a => a.Guid != null && a.Guid != Guid.Empty)
-    //            .ToDictionary(a => a.Name, a => a.Guid ?? Guid.Empty);
-    //        if (withGuid.Any())
-    //            AttributeMap = withGuid;
-    //    }
-    //}
 
     public JsonType(IContentType type, bool withDescription = false, bool withMap = false)
     {

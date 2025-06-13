@@ -119,5 +119,5 @@ public record Feature: Aspect
 
     public string? ConfigurationContentType { get; init; }
 
-    public Action<AspectState<Feature>, ILog>? RunOnStateChange { get; init; }
+    public Action<AspectState<Feature>, ILog?>? RunOnStateChange { get; init; }
 }

@@ -18,7 +18,7 @@ public class JsonEntity: IJsonWithAssets
     public required JsonType Type;
 
     /// <remarks>V 1.0</remarks>
-    public JsonAttributes? Attributes;
+    public required JsonAttributes Attributes;
 
     /// <remarks>V 1.0</remarks>
     [JsonIgnore(Condition = WhenWritingNull)]

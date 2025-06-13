@@ -19,8 +19,8 @@ partial class JsonSerializer
     private IList<JsonEntity> ToJsonListWithoutNulls(IList<IEntity> entities, int metadataDepth = 0)
         => entities
             .Select(e => ToJson(e, metadataDepth))
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             .Where(e => e != null)
-            .Cast<JsonEntity>()
             .ToListOpt();
 
     [return: NotNullIfNotNull(nameof(entity))]
@@ -94,7 +94,7 @@ partial class JsonSerializer
 
         // new: optionally include metadata
         ICollection<JsonEntity>? itemMeta = null;
-        var metaList = ((entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity?>)
+        var metaList = ((entity.Metadata as MetadataOf<Guid>)?.AllWithHidden ?? entity.Metadata as IEnumerable<IEntity>)
             .ToListOpt();
         if (metadataDepth > 0 && metaList.Any())
             itemMeta = ToJsonListWithoutNulls(metaList, metadataDepth - 1);
@@ -114,7 +114,7 @@ partial class JsonSerializer
     }
 
     /// <summary>
-    /// this is a special helper to create typed entities-dictionaries
+    /// This is a special helper to create attribute dictionaries (name, language-key, entities-list)
     /// </summary>
     /// <returns></returns>
     private Dictionary<string, Dictionary<string, ICollection<Guid?>>> ToTypedDictionaryEntity(ICollection<IAttribute> gList)
@@ -128,16 +128,16 @@ partial class JsonSerializer
         // so it tries to get the guids first, and otherwise uses the items
         var entities = ToTypedDictionary<IEnumerable<IEntity>>(gList)
             .ToDictionary(
-                a => a.Key,
-                a => a.Value.ToDictionary(
-                    b => b.Key,
-                    b => ((LazyEntitiesSource)b.Value).ResolveGuids()
+                attributePair => attributePair.Key,
+                attributePair => attributePair.Value.ToDictionary(
+                    langListPair => langListPair.Key,
+                    langListPair => ((LazyEntitiesSource)langListPair.Value!)?.ResolveGuids() ?? []
                 )
             );
         return entities;
     }
 
-    private static string LanguageKey(IValue v)
+    private static string LanguageKeyOfValue(IValue v)
     {
         var langs = v.Languages
             .OrderBy(l => l.ReadOnly)

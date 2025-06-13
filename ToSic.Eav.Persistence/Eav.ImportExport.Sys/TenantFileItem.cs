@@ -6,7 +6,7 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class TenantFileItem
 {
-    public int Id;
-    public string Path;
-    public string RelativePath;
+    public required int Id;
+    public required string? Path;
+    public required string? RelativePath;
 }

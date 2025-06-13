@@ -9,7 +9,7 @@ namespace ToSic.Eav.Serialization.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class Base64
 {
-    public static string Encode(string plainText)
+    public static string? Encode(string? plainText)
     {
         if (plainText == null)
             return null;
@@ -17,7 +17,7 @@ public class Base64
         return Convert.ToBase64String(plainTextBytes);
     }
 
-    public static string Decode(string base64EncodedData)
+    public static string? Decode(string? base64EncodedData)
     {
         if (base64EncodedData == null)
             return null;

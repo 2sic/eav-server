@@ -37,10 +37,10 @@ public class Target : ITarget
     /// Constructor for a new MetadataTarget, which is empty.
     /// </summary>
     [PrivateApi]
-    public Target(int targetType, string identifier, string? keyString = default, int? keyNumber = default, Guid? keyGuid = default)
+    public Target(int targetType, string title, string? keyString = default, int? keyNumber = default, Guid? keyGuid = default)
     {
         TargetType = targetType;
-        Title = identifier;
+        Title = title;
         KeyString = keyString;
         KeyNumber = keyNumber;
         KeyGuid = keyGuid;
@@ -49,7 +49,7 @@ public class Target : ITarget
     /// Constructor for a new MetadataTarget, which is empty.
     /// </summary>
     [PrivateApi]
-    public Target(int targetType, string identifier, object? key): this(targetType, identifier, key as string, key as int?, key as Guid?)
+    public Target(int targetType, string title, object? key): this(targetType, title, key as string, key as int?, key as Guid?)
     { }
 
     /// <summary>

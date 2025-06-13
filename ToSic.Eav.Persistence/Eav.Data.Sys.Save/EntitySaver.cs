@@ -181,7 +181,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                     {
                         // create filtered list of languages
                         var newLangs = value.Languages?
-                            .Where(l => languages.Any(sysLang => sysLang.Matches(l.Key)))
+                            .Where(lng => languages.Any(sysLang => sysLang.Matches(lng.Key)))
                             .ToImmutableSafe();
                         // only keep this value, if it is either the first (so contains primary or null-language)
                         // ...or that it still has a remaining language assignment
