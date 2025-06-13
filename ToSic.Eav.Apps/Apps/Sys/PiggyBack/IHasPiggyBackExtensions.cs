@@ -22,10 +22,10 @@ public static class IHasPiggyBackExtensions
     /// <returns></returns>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static TData GetOrCreateInPiggyBack<TData>(this IPropertyLookup entryPoint, string field, Func<string, TData> factory, ILog logOrNull) where TData : class
+    public static TData? GetOrCreateInPiggyBack<TData>(this IPropertyLookup entryPoint, string field, Func<string, TData> factory, ILog logOrNull) where TData : class
     {
         var l = logOrNull.Fn<TData>();
-        var advProperty = entryPoint.FindPropertyInternal(new(field), null);
+        var advProperty = entryPoint.FindPropertyInternal(new(field), new());
 
         // Skip if nothing to process
         if (advProperty?.Result is not string valString || string.IsNullOrWhiteSpace(valString))
@@ -66,7 +66,7 @@ public static class IHasPiggyBackExtensions
     /// <param name="cName">auto</param>
     /// <returns></returns>
     public static (TData Value, bool IsCached) GetPiggyBackPropExpiring<TData>(this IAppReader parent, Func<TData> create,
-        [CallerFilePath] string cPath = default, [CallerMemberName] string cName = default)
+        [CallerFilePath] string? cPath = default, [CallerMemberName] string? cName = default)
     {
         var appState = parent.GetCache();
         return appState.PiggyBack.GetOrGenerate(appState, $"autokey:{cPath};{cName}()", create);

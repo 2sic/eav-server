@@ -12,18 +12,28 @@ partial class AppState
         ??= new(CacheTimestampDelegate,
             () =>
             {
-                var list = _appContentTypesFromRepository as IEnumerable<IContentType>
+                var list = AppContentTypesFromRepository as IEnumerable<IContentType>
                            ?? (_appContentTypesShouldBeLoaded
                                ? throw new NullReferenceException($"Base list of {nameof(ContentTypes)} is empty, but loading is done.")
                                : []);
                 return list.Union(ParentApp.ContentTypes).ToImmutableOpt();
             });
-    private SynchronizedList<IContentType> _contentTypesList;
+    private SynchronizedList<IContentType>? _contentTypesList;
 
-    private IDictionary<string, IContentType> _appTypesByName;
-    private IImmutableList<IContentType> _appContentTypesFromRepository;
+    private IDictionary<string, IContentType> AppTypesByName
+    {
+        get => field ?? throw new NullReferenceException($"Can't use {nameof(AppTypesByName)} until it's been initialized");
+        set;
+    }
+
+    private IImmutableList<IContentType>? AppContentTypesFromRepository { get; set; }
+
+    private ImmutableDictionary<int, string> AppTypeMap
+    {
+        get => field ?? throw new NullReferenceException($"Can't use {nameof(AppTypeMap)} until it's been initialized");
+        set;
+    }
     private bool _appContentTypesShouldBeLoaded;
-    private ImmutableDictionary<int, string> _appTypeMap;
 
     /// <summary>
     /// Get a content-type by name. Will also check global types if needed.
@@ -32,9 +42,9 @@ partial class AppState
     /// <returns>a type object or null if not found</returns>
     [PrivateApi("was public till 16.09, but only used on IApp where we now have a similar API")]
     public IContentType? GetContentType(string name) =>
-        _appTypesByName.TryGetValue(name, out var type)
+        AppTypesByName.TryGetValue(name, out var type)
             ? type
-            : ((ParentAppState)ParentApp).GetContentType(name);
+            : ParentApp.GetContentType(name);
 
     /// <summary>
     /// Get a content-type by number / id. Will also check global types if needed.
@@ -44,17 +54,20 @@ partial class AppState
     [PrivateApi("was PublicApi till 16.09 but then it was used on IApp")]
     internal IContentType? GetContentType(int contentTypeId)
     {
-        var found = _appContentTypesFromRepository.FirstOrDefault(c => c.Id == contentTypeId);
+        var found = AppContentTypesFromRepository
+            .FirstOrDefault(c => c.Id == contentTypeId);
         if (found != null)
             return found;
 
-        var name = _appTypeMap.FirstOrDefault(x => x.Key == contentTypeId).Value;
+        var name = AppTypeMap
+            .FirstOrDefault(x => x.Key == contentTypeId).Value;
         if (name != null)
             return GetContentType(name);
 
         // TODO: ONLY do this if #SharedAppFeatureEnabled
         // Try to find in parent
-        var parentType = ParentApp.ContentTypes.FirstOrDefault(t => t.Id == contentTypeId);
+        var parentType = ParentApp.ContentTypes
+            .FirstOrDefault(t => t.Id == contentTypeId);
         return parentType;
     }
 }

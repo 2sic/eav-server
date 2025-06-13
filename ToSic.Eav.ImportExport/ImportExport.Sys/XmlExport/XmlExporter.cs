@@ -125,12 +125,10 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
             Indent = true
         };
 
-        using (var stringWriter = new Utf8StringWriter())
-        {
-            using (var writer = XmlWriter.Create(stringWriter, xmlSettings))
-                doc.Save(writer);
-            return stringWriter.ToString();
-        }
+        using var stringWriter = new Utf8StringWriter();
+        using (var writer = XmlWriter.Create(stringWriter, xmlSettings))
+            doc.Save(writer);
+        return stringWriter.ToString();
     }
 
     private XDocument _exportDocument;

@@ -18,16 +18,10 @@ public class SynchronizedEntityList(ICacheExpiring upstream, Func<IImmutableList
     /// </summary>
     [PrivateApi("Experimental")]
     public override IImmutableList<IEntity> List
-    {
-        get
-        {
-            if (_entityList != null && !CacheChanged())
-                return _entityList;
-            _entityList = ImmutableSmartList.Wrap(base.List);
-            return _entityList;
-        }
-    }
+        => _entityList != null && !CacheChanged()
+            ? _entityList
+            : _entityList = ImmutableSmartList.Wrap(base.List);
 
-    private ImmutableSmartList _entityList;
+    private ImmutableSmartList? _entityList;
 
 }

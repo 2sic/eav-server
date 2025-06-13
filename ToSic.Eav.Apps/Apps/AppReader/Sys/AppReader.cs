@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Metadata.Sys;
@@ -8,13 +7,14 @@ namespace ToSic.Eav.Apps.AppReader.Sys;
 
 public class AppReader() : ServiceBase("App.Reader"), IAppReader
 {
-    internal AppReader Init(IAppStateCache appState, ILog parentLog)
+    internal AppReader Init(AppState appState, ILog? parentLog)
     {
-        _appState = appState as AppState;
+        _appState = appState;
         this.LinkLog(parentLog);
         return this;
     }
-    private AppState _appState;
+
+    private AppState _appState = null!;
 
     /// <summary>
     /// internal, but in some cases it will be given out by hidden extension methods

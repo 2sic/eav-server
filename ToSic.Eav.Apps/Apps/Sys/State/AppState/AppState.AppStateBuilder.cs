@@ -2,7 +2,6 @@
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
-using ToSic.Eav.Metadata;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Utils;
 
@@ -19,31 +18,35 @@ partial class AppState
 
         public IAppStateBuilder Init(IAppStateCache appState)
         {
-            AppState = appState;
+            AppStateTyped = (AppState)appState;
             return this;
         }
 
         public IAppStateBuilder InitForPreset()
         {
-            AppState = new AppState(new(null, false, false), KnownAppsConstants.PresetIdentity, KnownAppsConstants.PresetName, Log);
-            MemoryCacheService.Notify(AppState);
+            AppStateTyped = new(new(null, false, false), KnownAppsConstants.PresetIdentity, KnownAppsConstants.PresetName, Log);
+            MemoryCacheService.Notify(AppStateTyped);
             return this;
         }
 
-        public IAppStateBuilder InitForNewApp(IParentAppState? parentApp, IAppIdentity identity, string nameId, ILog parentLog)
+        public IAppStateBuilder InitForNewApp(IParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog)
         {
-            AppState = new AppState((ParentAppState)parentApp, identity, nameId, parentLog);
-            MemoryCacheService.Notify(AppState);
+            AppStateTyped = new((ParentAppState)parentApp, identity, nameId, parentLog);
+            MemoryCacheService.Notify(AppStateTyped);
             return this;
         }
 
-        public IAppStateCache AppState
+        IAppStateCache IAppStateBuilder.AppState => AppStateTyped;
+
+        [field: AllowNull, MaybeNull]
+        private AppState AppStateTyped
         {
             get => field ?? throw new("Can't use before calling some init");
-            private set;
+            set;
         }
 
-        public IAppReader Reader => field ??= appReaderFactory.ToReader(AppState);
+        [field: AllowNull, MaybeNull]
+        public IAppReader Reader => field ??= appReaderFactory.ToReader(AppStateTyped)!;
 
         #endregion
 
@@ -54,7 +57,7 @@ partial class AppState
 
         public void Load(string message, Action<IAppStateCache> loader)
         {
-            var st = (AppState)AppState;
+            var st = AppStateTyped;
             var msg = $"zone/app:{st.Show()} - Hash: {st.GetHashCode()}";
             var l = Log.Fn($"{msg} {message}", timer: true);
             var bl = _loggedLoadToBootLog ? null : BootLog.Log.Fn($"{msg} {message}", timer: true);
@@ -101,14 +104,14 @@ partial class AppState
 
         public void SetNameAndFolder(string name, string folder)
         {
-            var st = (AppState)AppState;
+            var st = AppStateTyped;
             st.Name = name;
             st.Folder = folder;
         }
 
         private bool EnsureNameAndFolderInitialized()
         {
-            var st = (AppState)AppState;
+            var st = AppStateTyped;
             var l = st.Log.Fn<bool>();
             // Before we do anything, check primary App
             // Otherwise other checks (like is name empty) will fail, because it's not empty
@@ -163,7 +166,7 @@ partial class AppState
         /// <param name="log">To optionally disable logging, in case it would overfill what we're seeing!</param>
         private bool RemoveObsoleteDraft(IEntity newEntity, bool log)
         {
-            var st = (AppState)AppState;
+            var st = AppStateTyped;
             var l = log ? st.Log.Fn<bool>() : null;
             var previous = st.Index.TryGetValue(newEntity.EntityId, out var prev) ? prev : null;
             var draftEnt = st.GetDraft(previous);
@@ -196,10 +199,11 @@ partial class AppState
         /// </summary>
         private bool MapDraftToPublished(Entity newEntity, int? publishedId, bool log)
         {
-            var st = AppState;
+            var st = AppStateTyped;
             var l = log ? st.Log.Fn<bool>() : null;
             // fix: #3070, publishedId sometimes has value 0, but that one should not be used
-            if (newEntity.IsPublished || !publishedId.HasValue || publishedId.Value == 0) return l.ReturnFalse();
+            if (newEntity.IsPublished || !publishedId.HasValue || publishedId.Value == 0)
+                return l.ReturnFalse();
 
             l.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 
@@ -218,13 +222,13 @@ partial class AppState
         /// </summary>
         public void RemoveAllItems()
         {
-            var st = (AppState)AppState;
+            var st = AppStateTyped;
             var l = Log.Fn($"for a#{st.AppId}");
             if (!st.Loading)
                 throw new("trying to init metadata, but not in loading state. set that first!");
             st.Log.A("remove all items");
             st.Index.Clear();
-            st._metadataManager.Reset();
+            st.MetadataManager.Reset();
             l.Done();
         }
 
@@ -249,7 +253,7 @@ partial class AppState
                 {
                     // Remove any drafts that are related if necessary
                     if (st.Index.TryGetValue(id, out var oldEntity))
-                        st._metadataManager.Register(oldEntity, false);
+                        st.MetadataManager.Register(oldEntity, false);
 
                     st.Index.Remove(id);
 
@@ -263,7 +267,7 @@ partial class AppState
         /// </summary>
         public void Add(IEntity newEntity, int? publishedId, bool log)
         {
-            var st = (AppState)AppState;
+            var st = AppStateTyped;
             if (!st.Loading)
                 throw new("trying to add entity, but not in loading state. set that first!");
 
@@ -273,7 +277,7 @@ partial class AppState
             RemoveObsoleteDraft(newEntity, log);
             _ = MapDraftToPublished(newEntity as Entity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
             st.Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
-            st._metadataManager.Register(newEntity, true);
+            st.MetadataManager.Register(newEntity, true);
 
             if (st.FirstLoadCompleted)
                 st.DynamicUpdatesCount++;
@@ -292,14 +296,15 @@ partial class AppState
         /// </summary>
         public void InitMetadata()
         {
-            var st = (AppState)AppState;
-            if (!st.Loading)
-                throw new("Trying to init metadata, but App is not in loading state.");
-            if (st._appContentTypesFromRepository != null)
-                throw new("Can't init metadata if content-types are already set");
-            st._metadataManager = new(st, st);
+            //var state = AppStateTyped;
+            //if (!state.Loading)
+            //    throw new("Trying to init metadata, but App is not in loading state.");
+            //if (state.AppContentTypesFromRepository != null)
+            //    throw new("Can't init metadata if content-types are already set");
 
-            st.Metadata = st.GetMetadataOf(TargetTypes.App, st.AppId, "App (" + st.AppId + ") " + st.Name + " (" + st.Folder + ")");
+            // Access the Metadata to ensure it is initialized
+            if (AppStateTyped.Metadata == null)
+                throw new NullReferenceException("Accessed Metadata to init it, but an error occured");
         }
 
         #endregion
@@ -312,20 +317,20 @@ partial class AppState
         /// </summary>
         public void InitContentTypes(ICollection<IContentType> contentTypes)
         {
-            var st = (AppState)AppState;
+            var st = AppStateTyped;
             var l = st.Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
 
             if (!st.Loading)
                 throw new("trying to set content-types, but not in loading state. set that first!");
 
-            if (st._metadataManager == null || st.Index.Any())
+            if (st.MetadataManager == null || st.Index.Any())
                 throw new(
                     "can't set content types before setting Metadata manager, or after entities-list already exists");
 
             if (contentTypes == null)
                 throw new ArgumentException(@"contentTypes must always be non-null", nameof(contentTypes));
 
-            st._appTypeMap = contentTypes
+            st.AppTypeMap = contentTypes
                 // temp V11.01 - all the local content-types in the /system/ folder have id=0
                 // will filter out for now, because otherwise we get duplicate keys-errors
                 // believe this shouldn't be an issue, as it only seems to be used in fairly edge-case export/import
@@ -333,12 +338,12 @@ partial class AppState
                 .Where(x => x.Id != 0 && x.Id < GlobalAppIdConstants.GlobalContentTypeMin)
                 .ToImmutableDictionary(x => x.Id, x => x.NameId);
             
-            st._appContentTypesFromRepository = RemoveAliasesForGlobalTypes(st, contentTypes);
+            st.AppContentTypesFromRepository = RemoveAliasesForGlobalTypes(st, contentTypes);
             // Set flag that content types have been loaded, enabling certain null-checks
             st._appContentTypesShouldBeLoaded = true;
             
             // build types by name
-            st._appTypesByName = BuildCacheForTypesByName(st._appContentTypesFromRepository, st.Log);
+            st.AppTypesByName = BuildCacheForTypesByName(st.AppContentTypesFromRepository, st.Log);
 
             l.Done();
         }

@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source)
 {
-    public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source, IMetadataOf metadata = null)
+    public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source, IMetadataOf? metadata = null)
         : this(type, label, description, assets, disableI18N, ngAssets, useAdam, source)
     {
         if (metadata == null)
@@ -126,7 +126,7 @@ public class InputTypeInfo(string type, string label, string description, string
     /// </summary>
     /// <param name="log">Optional log to record what it does</param>
     /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
-    public IDictionary<string, bool> ConfigTypesDic(ILog log = null)
+    public IDictionary<string, bool> ConfigTypesDic(ILog? log = null)
     {
         if (_configTypesDic != null) return _configTypesDic;
 

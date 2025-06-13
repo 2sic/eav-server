@@ -23,7 +23,7 @@ partial class AppState
         }
         finally
         {
+            l.Done();
         }
-        l.Done();
     }
 }

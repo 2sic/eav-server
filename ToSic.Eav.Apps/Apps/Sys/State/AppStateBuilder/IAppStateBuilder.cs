@@ -1,12 +1,10 @@
-﻿using System.Collections.Immutable;
-
-namespace ToSic.Eav.Apps.Sys.State.AppStateBuilder;
+﻿namespace ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 
 public interface IAppStateBuilder: IHasLog
 {
     IAppStateBuilder Init(IAppStateCache appState);
     IAppStateBuilder InitForPreset();
-    IAppStateBuilder InitForNewApp(IParentAppState? parentApp, IAppIdentity identity, string nameId, ILog parentLog);
+    IAppStateBuilder InitForNewApp(IParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog);
     IAppStateCache AppState { get; }
     IAppReader Reader { get; }
 

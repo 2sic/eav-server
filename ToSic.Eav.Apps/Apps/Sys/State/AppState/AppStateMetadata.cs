@@ -22,18 +22,18 @@ public class AppStateMetadata : IAppStateMetadata
     private AppThingsIdentifiers Target { get; }
 
 
-    public IEntity AppConfiguration => (_appConfigSynced ??= BuildSyncedMetadata(Owner, AppLoadConstants.TypeAppConfig)).Value;
-    private SynchronizedObject<IEntity> _appConfigSynced;
+    public IEntity? AppConfiguration => (_appConfigSynced ??= BuildSyncedMetadata(Owner, AppLoadConstants.TypeAppConfig)).Value;
+    private SynchronizedObject<IEntity?>? _appConfigSynced;
 
-    private static SynchronizedObject<IEntity> BuildSyncedMetadata(IAppStateCache parent, string staticName)
+    private static SynchronizedObject<IEntity?> BuildSyncedMetadata(IAppStateCache parent, string staticName)
     {
-        var synced = new SynchronizedObject<IEntity>(parent, () => parent.Metadata.FirstOrDefaultOfType(staticName));
+        var synced = new SynchronizedObject<IEntity?>(parent, () => parent.Metadata.FirstOrDefaultOfType(staticName));
         return synced;
     }
 
-    private static SynchronizedObject<IEntity> BuildSyncedItem(IEntitiesSource parent, string staticName)
+    private static SynchronizedObject<IEntity?> BuildSyncedItem(IEntitiesSource parent, string staticName)
     {
-        var synced = new SynchronizedObject<IEntity>(parent, () => parent.List.FirstOrDefaultOfType(staticName));
+        var synced = new SynchronizedObject<IEntity?>(parent, () => parent.List.FirstOrDefaultOfType(staticName));
         return synced;
     }
 
@@ -41,13 +41,13 @@ public class AppStateMetadata : IAppStateMetadata
     /// <summary>
     /// The App-Settings or App-Resources
     /// </summary>
-    public IEntity MetadataItem => (_appItemSynced ??= BuildSyncedMetadata(Owner, Target.AppType)).Value;
-    private SynchronizedObject<IEntity> _appItemSynced;
+    public IEntity? MetadataItem => (_appItemSynced ??= BuildSyncedMetadata(Owner, Target.AppType)).Value;
+    private SynchronizedObject<IEntity?>? _appItemSynced;
 
-    public IEntity SystemItem => (_appSystemSynched ??= BuildSyncedItem(Owner, Target.SystemType)).Value;
-    private SynchronizedObject<IEntity> _appSystemSynched;
+    public IEntity? SystemItem => (_appSystemSynced ??= BuildSyncedItem(Owner, Target.SystemType)).Value;
+    private SynchronizedObject<IEntity?>? _appSystemSynced;
 
-    public IEntity CustomItem => (_appCustomSynced ??= BuildSyncedItem(Owner, Target.CustomType)).Value;
-    private SynchronizedObject<IEntity> _appCustomSynced;
+    public IEntity? CustomItem => (_appCustomSynced ??= BuildSyncedItem(Owner, Target.CustomType)).Value;
+    private SynchronizedObject<IEntity?>? _appCustomSynced;
 
 }

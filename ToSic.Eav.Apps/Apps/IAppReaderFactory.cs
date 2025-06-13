@@ -58,5 +58,5 @@ public interface IAppReaderFactory
     /// <see cref="IAppsCatalog.AppIdentity"/>
     IAppIdentityPure AppIdentity(int appId);
 
-    IAppReader ToReader(IAppStateCache state);
+    IAppReader? ToReader(IAppStateCache state);
 }

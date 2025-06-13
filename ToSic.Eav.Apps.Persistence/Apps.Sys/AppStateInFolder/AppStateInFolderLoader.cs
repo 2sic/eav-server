@@ -110,11 +110,11 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 
             l.Do(timer: true, action: () =>
             {
-                var types = LoadGlobalContentTypes(appState);
+                var (contentTypes, entities) = LoadGlobalContentTypes(appState);
                 // Just attach all global content-types to this app, as they belong here
-                builder.InitContentTypes(types.ContentTypes);
-                foreach (var entity in types.Entities)
-                    builder.Add(entity as Entity, null, logDetails);
+                builder.InitContentTypes(contentTypes);
+                foreach (var entity in entities)
+                    builder.Add((Entity)entity, null, logDetails);
                 return "types loaded";
             });
 

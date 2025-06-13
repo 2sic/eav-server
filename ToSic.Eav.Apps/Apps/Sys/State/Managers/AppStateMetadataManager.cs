@@ -8,44 +8,36 @@ using IEntity = ToSic.Eav.Data.IEntity;
 namespace ToSic.Eav.Apps.Sys.State.Managers;
 
 [PrivateApi("internal use only")]
-internal class AppMetadataManager: IMetadataSource, IHasMetadataSourceAndExpiring
+internal class AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cacheExpiry)
+    : IMetadataSource, IHasMetadataSourceAndExpiring
 {
     #region cache value objects: Types, _guid, _number, _string
 
     /// <summary>
     /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyGuid
     /// </summary>
-    private Dictionary<int, Dictionary<Guid, List<IEntity>>> _guid;
+    private Dictionary<int, Dictionary<Guid, List<IEntity>>> _guid = [];
 
     /// <summary>
     /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyNumber
     /// </summary>
-    private Dictionary<int, Dictionary<int, List<IEntity>>> _number;
+    private Dictionary<int, Dictionary<int, List<IEntity>>> _number = [];
 
     /// <summary>
     /// Gets a Dictionary of AssignmentObjectTypes and assigned Entities having a KeyString
     /// </summary>
-    private Dictionary<int, Dictionary<string, List<IEntity>>> _string;
+    private Dictionary<int, Dictionary<string, List<IEntity>>> _string = [];
 
     #endregion
 
     #region IAppIdentity
 
-    private readonly IAppIdentity _appIdentity;
-    public int ZoneId => _appIdentity.ZoneId;
+    public int ZoneId => appIdentity.ZoneId;
 
-    public int AppId => _appIdentity.AppId;
+    public int AppId => appIdentity.AppId;
 
 
     #endregion
-
-    public AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cacheExpiry)
-    {
-        _appIdentity = appIdentity;
-        _appCacheInfo = cacheExpiry;
-        // make sure the lists have a sub-list for each known relationship type
-        Reset();
-    }
 
     /// <summary>
     /// Reset all indexes
@@ -59,10 +51,8 @@ internal class AppMetadataManager: IMetadataSource, IHasMetadataSourceAndExpirin
 
     #region Cache Timestamp & Invalidation
 
-    private readonly ICacheExpiring _appCacheInfo;
-
-    public long CacheTimestamp => _appCacheInfo.CacheTimestamp;
-    public bool CacheChanged(long dependentTimeStamp) => _appCacheInfo.CacheChanged(dependentTimeStamp);
+    public long CacheTimestamp => cacheExpiry.CacheTimestamp;
+    public bool CacheChanged(long dependentTimeStamp) => cacheExpiry.CacheChanged(dependentTimeStamp);
 
     #endregion
 
@@ -83,11 +73,14 @@ internal class AppMetadataManager: IMetadataSource, IHasMetadataSourceAndExpirin
         if (md.KeyNumber.HasValue)
             AddToMetaDic(_number, md.TargetType, md.KeyNumber.Value, entity, add);
         if (!string.IsNullOrEmpty(md.KeyString))
+#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
             AddToMetaDic(_string, md.TargetType, md.KeyString, entity, add);
+#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
     }
 
         
     private static void AddToMetaDic<T>(IDictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, IEntity entity, bool add)
+        where T : notnull
     {
         // Get or create the metadata index on this targetType
         if (!metadataIndex.TryGetValue(mdTargetType, out var indexOfType))
@@ -107,9 +100,10 @@ internal class AppMetadataManager: IMetadataSource, IHasMetadataSourceAndExpirin
     }
 
     /// <inheritdoc />
-    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null)
+    public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string? contentTypeName = null)
     {
-        if(key == null) return Array.Empty<IEntity>();
+        if(key == null)
+            return [];
         var type = typeof(TMetadataKey);
         type = Nullable.GetUnderlyingType(type) ?? type;
 
@@ -119,15 +113,20 @@ internal class AppMetadataManager: IMetadataSource, IHasMetadataSourceAndExpirin
         return Type.GetTypeCode(type) switch
         {
             TypeCode.Int32 => Lookup(_number, targetType, key as int? ?? 0, contentTypeName),
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
             TypeCode.String => Lookup(_string, targetType, key as string, contentTypeName),
             _ => Lookup(_string, targetType, key.ToString(), contentTypeName)
+#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
         };
     }
 
-    public IEnumerable<IEntity> GetMetadata<T>(TargetTypes targetType, T key, string contentTypeName = null) 
+    public IEnumerable<IEntity> GetMetadata<T>(TargetTypes targetType, T key, string? contentTypeName = null) 
         => GetMetadata((int)targetType, key, contentTypeName);
 
-    private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, List<IEntity>>> list, int targetType, T key, string contentTypeName)
+    private static IEnumerable<IEntity> Lookup<T>(IDictionary<int, Dictionary<T, List<IEntity>>> list, int targetType, T key, string? contentTypeName)
+        where T : notnull
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         if (list.TryGetValue(targetType, out var keyDict)
@@ -140,6 +139,6 @@ internal class AppMetadataManager: IMetadataSource, IHasMetadataSourceAndExpirin
 
     public IMetadataSource MetadataSource => this;
 
-    public IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder protector, string title = null)
-        => new MetadataOf<T>((int)targetType, key, title, appSource: this);
+    public IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder protector, string? title = null)
+        => new MetadataOf<T>((int)targetType, key, title ?? "title not known", appSource: this);
 }

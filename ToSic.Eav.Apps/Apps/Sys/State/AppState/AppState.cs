@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Sys.State;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
 {
-    private static bool _loggedToBootLog = false;
+    private static bool _loggedToBootLog;
 
     [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
     private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new(), $"App.St-{id.AppId}", connect: [])

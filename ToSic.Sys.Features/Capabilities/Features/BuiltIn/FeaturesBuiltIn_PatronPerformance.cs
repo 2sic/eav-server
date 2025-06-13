@@ -21,7 +21,9 @@ public partial class BuiltInFeatures
         // depending on the state of this feature, we will activate some static code enhancements
         RunOnStateChange = (state, log) =>
         {
-            SysPerfSettings.PreferArray = state.IsEnabled;
+            var isEnabled = state.IsEnabled;
+            SysPerfSettings.PreferArray = isEnabled;
+            SysPerfSettings.OptimizeParentApp = isEnabled;
             log.A($"Set {nameof(SysPerfSettings.PreferArray)} = {SysPerfSettings.PreferArray}");
         }
     };

@@ -195,9 +195,7 @@ public class EfcAppLoaderService(
         {
             // New v13 - use global app by default to share content-types
             var globalApp = appStates.Get(KnownAppsConstants.PresetIdentity);
-            parent = new(globalApp ?? throw new("Can't find global app - which is required to build any other apps. "),
-                true,
-                false);
+            parent = new(globalApp, true, false);
         }
 
         var builder = appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);

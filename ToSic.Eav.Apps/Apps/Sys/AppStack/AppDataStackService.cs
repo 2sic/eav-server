@@ -24,14 +24,14 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
 
     private IAppReader AppSpecs { get; set; }
 
-    public PropertyStack GetStack(string part, IEntity viewPart = null)
+    public PropertyStack GetStack(string part, IEntity? viewPart = null)
     {
         var partId = part == RootNameSettings ? Settings : Resources;
         var sources = GetStack(partId, viewPart);
         return new PropertyStack().Init(part, sources);
     }
 
-    public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity viewPart = default)
+    public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity? viewPart = default)
     {
         var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(
             $"target: {target.Target}, Has View: {viewPart != null}");

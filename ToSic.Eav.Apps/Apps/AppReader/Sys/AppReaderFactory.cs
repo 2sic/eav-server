@@ -41,8 +41,8 @@ internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCach
         return Get(PresetIdentity);
     }
 
-    public IAppReader ToReader(IAppStateCache state) =>
-        state == null
+    public IAppReader? ToReader(IAppStateCache state)
+        => state is not AppState typed
             ? null
-            : readerGenerator.New().Init(state, parentLog: null);
+            : readerGenerator.New().Init(typed, parentLog: null);
 }

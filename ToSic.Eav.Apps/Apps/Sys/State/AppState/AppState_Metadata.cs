@@ -8,24 +8,34 @@ partial class AppState:
     IHasMetadata,
     IHasMetadataSourceAndExpiring
 {
-    ///// <inheritdoc />
-    //public IEnumerable<IEntity> GetMetadata<TMetadataKey>(int targetType, TMetadataKey key, string contentTypeName = null) 
-    //    => _metadataManager.GetMetadata(targetType, key, contentTypeName);
-
-    ///// <inheritdoc />
-    //public IEnumerable<IEntity> GetMetadata<TKey>(TargetTypes targetType, TKey key, string contentTypeName = null)
-    //    => _metadataManager.GetMetadata(targetType, key, contentTypeName);
-        
     [PrivateApi]
-    internal IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, string title = null)
-        => new MetadataOf<T>((int)targetType, key, title, appSource: _metadataManager);
+    internal IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, string title)
+        => new MetadataOf<T>((int)targetType, key, title, appSource: MetadataManager);
 
-    private AppMetadataManager _metadataManager;
+    [field: AllowNull, MaybeNull]
+    private AppMetadataManager MetadataManager => field ??= CreateMetadataManager();
 
-    /// <summary>Metadata describing this App</summary>
-    public IMetadataOf Metadata { get; private set; }
+    private AppMetadataManager CreateMetadataManager()
+    {
+        if (!Loading)
+            throw new("Trying to init metadata, but App is not in loading state.");
+        if (AppContentTypesFromRepository != null)
+            throw new("Can't init metadata if content-types are already set");
+
+        return new(this, this);
+    }
+
+    /// <summary>
+    /// Metadata describing this App
+    /// </summary>
+    /// <remarks>
+    /// On first access, various objects are created, which may only be created during loading but before ContentTypes are created.
+    /// This is coordinated by the AppStateBuilder.
+    /// </remarks>
+    [field: AllowNull, MaybeNull]
+    public IMetadataOf Metadata => field ??= GetMetadataOf(TargetTypes.App, AppId, $"App ({AppId}) {Name} ({Folder})");
 
     /// <inheritdoc />
-    public IMetadataSource MetadataSource => _metadataManager;
+    public IMetadataSource MetadataSource => MetadataManager;
 
 }

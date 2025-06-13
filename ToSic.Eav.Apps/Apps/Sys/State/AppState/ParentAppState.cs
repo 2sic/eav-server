@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Ancestors.Sys;
+﻿using ToSic.Eav.Data.Ancestors.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Wrappers;
@@ -10,12 +9,10 @@ namespace ToSic.Eav.Apps.Sys.State;
 /// WIP v13 - should wrap a parent-app for re-use in a child-app
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inheritEntities) : IParentAppState
+public class ParentAppState(IAppStateCache? appState, bool inheritTypes, bool inheritEntities) : IParentAppState
 {
-    /// <summary>
-    /// The parent App
-    /// </summary>
-    public IAppStateCache AppState { get; } = appState;
+    /// <inheritdoc />
+    public IAppStateCache? AppState { get; } = appState;
 
     /// <summary>
     /// Determine if we should inherit ContentTypes or not
@@ -30,7 +27,9 @@ public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inh
     /// <summary>
     /// The inherited content-types
     /// </summary>
-    public IEnumerable<IContentType> ContentTypes => field ??= GetInheritedTypes();
+    [field: AllowNull, MaybeNull]
+    public IEnumerable<IContentType> ContentTypes
+        => field ??= GetInheritedTypes();
 
     /// <summary>
     /// The inherited entities
@@ -39,44 +38,55 @@ public class ParentAppState(IAppStateCache appState, bool inheritTypes, bool inh
     {
         get
         {
-            if (!InheritEntities || AppState == null)
-                return new List<IEntity>(0);
+            if (!InheritEntities || appState == null)
+                return [];
             if (_entitiesCache != null)
                 return _entitiesCache.List;
-            _entitiesCache = new(AppState,
-                () => AppState.List.Select(WrapUnwrappedEntity).ToImmutableOpt());
+            _entitiesCache = new(appState,
+                () => appState.List
+                    .Select(WrapUnwrappedEntity)
+                    .Where(e => e != null)
+                    .Cast<IEntity>()
+                    .ToImmutableOpt()
+                );
             return _entitiesCache.List;
         }
     }
-    private SynchronizedEntityList _entitiesCache;
+    private SynchronizedEntityList? _entitiesCache;
 
 
-    internal IContentType GetContentType(string name)
-        => InheritContentTypes
-            ? WrapUnwrappedContentType(AppState.GetContentType(name))
+    public IContentType? GetContentType(string name)
+        => InheritContentTypes && appState != null
+            ? WrapUnwrappedContentType(appState.GetContentType(name))
             : null;
 
     private IEnumerable<IContentType> GetInheritedTypes()
     {
-        if (!InheritContentTypes || AppState == null)
+        if (!InheritContentTypes || appState == null)
             return new List<IContentType>(0);
 
-        var types = AppState.ContentTypes.Select(WrapUnwrappedContentType);
+        var types = appState.ContentTypes
+            .Select(WrapUnwrappedContentType)
+            .Where(ct => ct != null)
+            .Cast<IContentType>();
 
-        return types;
+        return SysPerfSettings.OptimizeParentApp
+            ? types.ToListOpt()
+            : types;
     }
 
-    private IContentType WrapUnwrappedContentType(IContentType t)
+    private IContentType? WrapUnwrappedContentType(IContentType? t)
     {
-        if (t == null || t.HasAncestor())
+        if (t == null || t.HasAncestor() || appState == null)
             return t;
-        return new ContentTypeWrapper(t, new Ancestor<IContentType>(new AppIdentity(AppState), t.Id));
+        return new ContentTypeWrapper(t, new Ancestor<IContentType>(new AppIdentity(appState), t.Id));
     }
-    private IEntity WrapUnwrappedEntity(IEntity e)
+
+    private IEntity? WrapUnwrappedEntity(IEntity? e)
     {
-        if (e == null || e.HasAncestor())
+        if (e == null || e.HasAncestor() || appState == null)
             return e;
-        return new EntityWrapper(e, new Ancestor<IEntity>(new AppIdentity(AppState), e.EntityId));
+        return new EntityWrapper(e, new Ancestor<IEntity>(new AppIdentity(appState), e.EntityId));
     }
 
     // TODO:

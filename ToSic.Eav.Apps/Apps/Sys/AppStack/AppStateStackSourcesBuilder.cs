@@ -86,7 +86,7 @@ internal class AppStateStackSourcesBuilder(
     }
 
 
-    private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(AppThingsToStack thingType, ILog buildLog = null)
+    private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(AppThingsToStack thingType, ILog? buildLog = null)
     {
         var l = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
         void LogSource(string name, IAppStateMetadata state)

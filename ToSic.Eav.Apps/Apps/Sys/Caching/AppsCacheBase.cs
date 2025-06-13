@@ -117,7 +117,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
         => GetOrBuild(tools, app, primaryLanguage);
 
 
-    private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string primaryLanguage = null)
+    private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string? primaryLanguage = null)
     {
         if (appIdentity.ZoneId == 0 || appIdentity.AppId == KnownAppsConstants.AppIdEmpty)
             return null;

@@ -10,7 +10,7 @@ partial class AppState: IEntitiesSource
     /// The simple list of <em>all</em> entities, used everywhere
     /// </summary>
     public IImmutableList<IEntity> List => (ListCache ??= BuildList()).List;
-    internal SynchronizedEntityList ListCache;
+    internal SynchronizedEntityList? ListCache;
 
     private SynchronizedEntityList BuildList()
     {
