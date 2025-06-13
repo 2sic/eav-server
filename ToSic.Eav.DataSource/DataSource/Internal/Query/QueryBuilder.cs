@@ -234,7 +234,7 @@ public class QueryBuilder(
     }
 
 
-    public QueryResult GetDataSourceForTesting(QueryDefinition queryDef, ILookUpEngine lookUps = null)
+    public QueryResult GetDataSourceForTesting(QueryDefinition queryDef, ILookUpEngine? lookUps = null)
     {
         var l = Log.Fn<QueryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId})");
         var testValueProviders = queryDef.TestParameterLookUps;

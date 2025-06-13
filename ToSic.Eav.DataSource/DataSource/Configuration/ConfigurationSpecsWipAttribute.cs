@@ -15,6 +15,6 @@ public class ConfigurationSpecsWipAttribute : Attribute
     /// </summary>
     public ConfigurationSpecsWipAttribute() { }
 
-    public Type SpecsType { get; set; }
+    public Type? SpecsType { get; set; }
 
 }

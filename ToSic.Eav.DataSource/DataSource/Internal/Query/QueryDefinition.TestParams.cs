@@ -20,7 +20,7 @@ partial class QueryDefinition
     /// <summary>
     /// The test parameters as stored in the IEntity
     /// </summary>
-    public string TestParameters => Get<string>(FieldTestParams, null);
+    public string? TestParameters => Get<string>(FieldTestParams, null);
 
     [PrivateApi]
     public List<ILookUp> TestParameterLookUps => GenerateTestValueLookUps();

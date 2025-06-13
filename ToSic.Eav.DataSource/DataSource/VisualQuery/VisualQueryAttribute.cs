@@ -55,6 +55,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// <remarks>
     /// Experimental ca. v20
     /// </remarks>
+    [field: AllowNull, MaybeNull]
     public string OutMode
     {
         get => field ??= DynamicOut ? OutModeDynamic : OutModeStatic;
@@ -63,19 +64,18 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
 
     public bool DynamicIn
     {
-        get => _dynamicIn;
-        set 
+        get;
+        set
         {
-            _dynamicIn = value;
+            field = value;
             _DynamicInWasSet = true;
         }
-    }
+    } = false;
 
     // ReSharper disable once InconsistentNaming
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public bool _DynamicInWasSet;
-    private bool _dynamicIn = false;
 
     /// <summary>
     /// The help-link to get help for this data source. The UI will offer a help-button if provided. 

@@ -49,14 +49,14 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     /// </summary>
     /// <param name="dataStream"></param>
     /// <returns></returns>
-    private ListCacheItem GetValidCacheItemOrNull(IDataStream dataStream)
+    private ListCacheItem? GetValidCacheItemOrNull(IDataStream dataStream)
     {
         var key = CacheKey(dataStream);
-        var l = Log.Fn<ListCacheItem>($"key: {key}");
+        var l = Log.Fn<ListCacheItem?>($"key: {key}");
         // Check if it's in the cache, and if it requires re-loading
         var itemInCache = Get(key);
         if (itemInCache == null) 
-            return l.Return(null, "not in cache");
+            return l.ReturnNull("not in cache");
         var valid = !dataStream.CacheRefreshOnSourceRefresh || !itemInCache.CacheChanged(dataStream.Caching.CacheTimestamp);
         l.A($"ListCache found:{true}; valid:{valid}; timestamp:{dataStream.Caching.CacheTimestamp} = {dataStream.Caching.CacheTimestamp.ToReadable()}");
         return l.Return(valid ? itemInCache : null, valid.ToString());
@@ -107,35 +107,39 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
                     : (int)(watch.ElapsedMilliseconds / 1000) * CacheErrorDelayMultipleOfGenerationTime;
 
                 Set(key, entities, stream.Caching.CacheTimestamp, false, cacheErrorTime, false);
-                return l.Return(Get(key), $"generated with error, cached for {cacheErrorTime} seconds");
+                return l.Return(Get(key)!, $"generated with error, cached for {cacheErrorTime} seconds");
             }
 
             // If we listen to the source for updates, then use sliding expiration
             var useSlidingExpiration = stream.CacheRefreshOnSourceRefresh;
             Set(key, entities, stream.Caching.CacheTimestamp, stream.CacheRefreshOnSourceRefresh, durationInSeconds, useSlidingExpiration);
 
-            return l.Return(Get(key), $"generated and cached for {durationInSeconds} seconds");
+            return l.Return(Get(key)!, $"generated and cached for {durationInSeconds} seconds");
         }
     }
 
     /// <inheritdoc />
-    public ListCacheItem Get(string key) => memoryCacheService.Get<ListCacheItem>(key);
+    public ListCacheItem? Get(string key)
+        => memoryCacheService.Get<ListCacheItem>(key);
 
     /// <inheritdoc />
-    public ListCacheItem Get(IDataStream dataStream) => Get(CacheKey(dataStream));
+    public ListCacheItem? Get(IDataStream dataStream)
+        => Get(CacheKey(dataStream));
 
-    public bool HasStream(string key) => memoryCacheService.Contains(key);
+    public bool HasStream(string key)
+        => memoryCacheService.Contains(key);
 
-    public bool HasStream(IDataStream stream) => HasStream(CacheKey(stream));
+    public bool HasStream(IDataStream stream)
+        => HasStream(CacheKey(stream));
 
     /// <summary>
     /// Internal remove to clean up after a test
     /// </summary>
-    internal ListCacheItem Remove(IDataStream stream)
+    internal ListCacheItem? Remove(IDataStream stream)
     {
         var key = CacheKey(stream);
         var hasStream = HasStream(stream);
-        var l = Log.Fn<ListCacheItem>($"key: {key}; has: {hasStream}");
+        var l = Log.Fn<ListCacheItem?>($"key: {key}; has: {hasStream}");
         var old = memoryCacheService.Remove(key) as ListCacheItem;
         return l.Return(old);
     }

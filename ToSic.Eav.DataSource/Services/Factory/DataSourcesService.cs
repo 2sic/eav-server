@@ -14,7 +14,7 @@ internal class DataSourcesService(
     #region GetDataSource
 
     /// <inheritdoc />
-    public IDataSource Create(Type type, IDataSourceLinkable attach = default, IDataSourceOptions options = default)
+    public IDataSource Create(Type type, IDataSourceLinkable? attach = default, IDataSourceOptions? options = default)
     {
         var l = Log.Fn<IDataSource>();
         var newDs = serviceProvider.Build<IDataSource>(type, Log);
@@ -35,7 +35,7 @@ internal class DataSourcesService(
     /// <param name="options"></param>
     /// <returns></returns>
     [PrivateApi("internal, experimental, only used in tests ATM")]
-    public TDataSource Create<TDataSource>(IDataStream stream, IDataSourceOptions options = default) where TDataSource : IDataSource
+    public TDataSource Create<TDataSource>(IDataStream stream, IDataSourceOptions? options = default) where TDataSource : IDataSource
     {
         if (stream.Source == null)
             throw new("Unexpected source - stream without a real source. can't process; wip");
@@ -50,7 +50,7 @@ internal class DataSourcesService(
     }
 
     /// <inheritdoc />
-    public TDataSource Create<TDataSource>(IDataSourceLinkable attach = default, IDataSourceOptions options = default) where TDataSource : IDataSource
+    public TDataSource Create<TDataSource>(IDataSourceLinkable? attach = default, IDataSourceOptions? options = default) where TDataSource : IDataSource
     {
         var l = Log.Fn<TDataSource>($"{typeof(TDataSource).Name}, attach:{attach?.Link?.DataSource?.Show()}");
 
@@ -89,7 +89,7 @@ internal class DataSourcesService(
         return l.Return(publishingFilter, "ok");
     }
 
-    private DataSourceOptions OptionsWithLookUp(IDataSourceOptions optionsOrNull) =>
+    private DataSourceOptions OptionsWithLookUp(IDataSourceOptions? optionsOrNull) =>
         optionsOrNull is not DataSourceOptions typed
             ? new() { LookUp = lookupResolveLazy.Value.GetLookUpEngine(0) }
             : typed.LookUp == null

@@ -38,7 +38,7 @@ public class QueryManager(
     internal IEntity GetQueryEntity(int entityId, IAppIdentity appReaderOrId)
     {
         var l = Log.Fn<IEntity>($"{entityId}");
-        var app = appReaders.Value.GetOrKeep(appReaderOrId);
+        var app = appReaders.Value.GetOrKeep(appReaderOrId)!;
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
@@ -78,7 +78,7 @@ public class QueryManager(
     internal IImmutableList<IEntity> AllQueryItems(IAppIdentity appIdOrReader, int recurseParents = 0)
     {
         var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
-        var appReader = appReaders.Value.GetOrKeep(appIdOrReader);
+        var appReader = appReaders.Value.GetOrKeep(appIdOrReader)!;
         var queries = appReader.List.OfType(QueryConstants.QueryTypeName).ToImmutableOpt();
 
         if (recurseParents <= 0)

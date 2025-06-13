@@ -9,11 +9,11 @@ namespace ToSic.Eav.DataSource.Streams.Internal;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal class ConnectionStream(
     LazySvc<IDataSourceCacheService> cache,
-    DataSourceConnection connection,
-    DataSourceErrorHelper errorHandler = null)
+    DataSourceConnection? connection,
+    DataSourceErrorHelper? errorHandler = null)
     : IDataStream, IWrapper<IDataStream>
 {
-    public DataSourceConnection Connection = connection;
+    public DataSourceConnection? Connection = connection;
 
     private IDataStream LoadStream()
     {
@@ -44,7 +44,7 @@ internal class ConnectionStream(
         return stream;
     }
 
-    private IDataStream CreateErrorStream(string title, string message, IDataSource intendedSource = null)
+    private IDataStream CreateErrorStream(string title, string message, IDataSource? intendedSource = null)
     {
         var errors = errorHandler.Create(title: title, message: message);
         return new DataStream(cache, intendedSource, "ConnectionStreamError", () => errors);

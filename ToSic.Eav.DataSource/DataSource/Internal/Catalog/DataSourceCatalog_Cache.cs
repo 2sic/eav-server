@@ -24,7 +24,8 @@ partial class DataSourceCatalog
     {
         var list = GlobalCache;
         var inGlobal = FindInCachedList(name, list, false);
-        if (inGlobal != null) return inGlobal;
+        if (inGlobal != null)
+            return inGlobal;
 
         // New v15.04 - also support app level data sources
         var appCache = Get(appId);
@@ -33,11 +34,11 @@ partial class DataSourceCatalog
             : FindInCachedList(name, appCache, true);
     }
 
-    private static DataSourceInfo FindInCachedList(string name, List<DataSourceInfo> list, bool isLocal) =>
-        // First check for normal type name
-        list.FirstOrDefault(dst => dst.NameId.EqualsInsensitive(name))
-        ?? (isLocal ? list.FirstOrDefault(dst => dst.TypeName.EqualsInsensitive(name)) : null)
-        // Otherwise check for historical names in the VisualQuery Attribute
-        ?? list.FirstOrDefault(dst =>
-            dst.VisualQuery?.NameIds.Any(pn => pn.EqualsInsensitive(name)) ?? false);
+    private static DataSourceInfo? FindInCachedList(string name, List<DataSourceInfo> list, bool isLocal)
+        => // First check for normal type name
+            list.FirstOrDefault(dst => dst.NameId.EqualsInsensitive(name))
+            ?? (isLocal ? list.FirstOrDefault(dst => dst.TypeName.EqualsInsensitive(name)) : null)
+            // Otherwise check for historical names in the VisualQuery Attribute
+            ?? list.FirstOrDefault(dst =>
+                dst.VisualQuery?.NameIds.Any(pn => pn.EqualsInsensitive(name)) ?? false);
 }

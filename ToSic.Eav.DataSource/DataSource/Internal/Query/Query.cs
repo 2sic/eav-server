@@ -78,7 +78,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
-    public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine configSource, IDataSource source = null)
+    public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine configSource, IDataSource? source = null)
     {
         ZoneId = zoneId;
         AppId = appId;

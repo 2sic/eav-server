@@ -18,9 +18,9 @@ public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
     /// <summary>
     /// Error object WIP
     /// </summary>
-    public DataSourceInfoError ErrorOrNull { get; }
+    public DataSourceInfoError? ErrorOrNull { get; }
 
-    public DataSourceInfo(Type dsType, bool isGlobal, string overrideTypeName = default, VisualQueryAttribute overrideVisualQuery = null, DataSourceInfoError error = default) : base(dsType)
+    public DataSourceInfo(Type dsType, bool isGlobal, string? overrideTypeName = default, VisualQueryAttribute? overrideVisualQuery = null, DataSourceInfoError? error = default) : base(dsType)
     {
         IsGlobal = isGlobal;
         TypeName = overrideTypeName ?? dsType.Name;

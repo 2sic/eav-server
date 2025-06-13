@@ -61,7 +61,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// </summary>
     /// <returns>an <see cref="IDataStream"/> of the desired name</returns>
     /// <exception cref="NullReferenceException">if the stream does not exist</exception>
-    IDataStream this[string outName] { get; }
+    IDataStream? this[string outName] { get; }
 
     /// <summary>
     /// Gets the Out-Stream with specified Name and allowing some error handling if not found.
@@ -76,7 +76,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// 1. Added in 2sxc 12.05
     /// 1. for more in-depth checking if a stream exists, you can access the <see cref="Out"/> which is an IDictionary
     /// </remarks>
-    IDataStream GetStream(string name = null, NoParamOrder noParamOrder = default, bool nullIfNotFound = false, bool emptyIfNotFound = false);
+    IDataStream? GetStream(string? name = null, NoParamOrder noParamOrder = default, bool nullIfNotFound = false, bool emptyIfNotFound = false);
 
     /// <summary>
     /// The items in the data-source - to be exact, the ones in the Default stream.

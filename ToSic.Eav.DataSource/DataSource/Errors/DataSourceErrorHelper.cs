@@ -22,7 +22,7 @@ public class DataSourceErrorHelper(DataBuilder builder)
         return this;
     }
 
-    private IDataSource _source;
+    private IDataSource _source = null!;
 
 
     /// <summary>
@@ -37,10 +37,10 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// <returns></returns>
     public IImmutableList<IEntity> Create(
         NoParamOrder noParamOrder = default,
-        string title = default, 
-        string message = default,
-        Exception exception = default,
-        IDataSource source = default, 
+        string? title = default, 
+        string? message = default,
+        Exception? exception = default,
+        IDataSource? source = default, 
         string streamName = DataSourceConstants.StreamDefaultName
     )
     {
@@ -61,7 +61,7 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// <remarks>
     /// Added v16.00
     /// </remarks>
-    public IImmutableList<IEntity> TryGetInFailed(NoParamOrder noParamOrder = default, IDataSource source = default, string name = DataSourceConstants.StreamDefaultName) 
+    public IImmutableList<IEntity> TryGetInFailed(NoParamOrder noParamOrder = default, IDataSource? source = default, string name = DataSourceConstants.StreamDefaultName) 
         => TryGetFailed(source, true, name);
 
     /// <summary>
@@ -74,13 +74,13 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// <remarks>
     /// Added v16.01
     /// </remarks>
-    public IImmutableList<IEntity> TryGetOutFailed(NoParamOrder noParamOrder = default, IDataSource source = default, string name = DataSourceConstants.StreamDefaultName) 
+    public IImmutableList<IEntity> TryGetOutFailed(NoParamOrder noParamOrder = default, IDataSource? source = default, string name = DataSourceConstants.StreamDefaultName) 
         => TryGetFailed(source, false, name);
 
     [PrivateApi]
-    private IImmutableList<IEntity> TryGetFailed(IDataSource source, bool inStreams, string streamName)
+    private IImmutableList<IEntity> TryGetFailed(IDataSource? source, bool inStreams, string streamName)
     {
-        source = source ?? _source;
+        source ??= _source;
         var inOrOut = inStreams ? source.In : source.Out;
         var partName = inStreams ? "In" : "Out";
         if (!inOrOut.TryGetValue(streamName, out var stream))
@@ -92,15 +92,15 @@ public class DataSourceErrorHelper(DataBuilder builder)
         if (list == null)
             return Create(source: source, title: $"Stream '{streamName}' is Null",
                 message: $"The Stream '{streamName}' exists on {partName}, but the List is null");
-        return null;
+        return [];
     }
 
 
     [PrivateApi("usually not needed externally")]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    private IEntity CreateErrorEntity(IDataSource source, string stream, string title, string message)
+    private IEntity CreateErrorEntity(IDataSource? source, string stream, string? title, string? message)
     {
-        var values = new Dictionary<string, object>
+        var values = new Dictionary<string, object?>
         {
             { DataConstants.ErrorFieldTitle, GenerateTitle(title) },
             { "SourceName", source?.Name },
@@ -132,6 +132,6 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// This must be internal so it can be used/verified in testing
     /// </summary>
     [PrivateApi("only internal for testing")]
-    internal static string GenerateTitle(string title) => "Error: " + title;
+    internal static string GenerateTitle(string? title) => "Error: " + title;
 
 }

@@ -20,9 +20,9 @@ public class DataStream(
     LazySvc<IDataSourceCacheService> cache,
     IDataSource source,
     string name,
-    Func<IImmutableList<IEntity>> listDelegate = null,
+    Func<IImmutableList<IEntity>>? listDelegate = null,
     bool enableAutoCaching = false,
-    string scope = default
+    string? scope = default
     ) : IDataStream
 {
 
@@ -36,12 +36,13 @@ public class DataStream(
     /// <param name="name">Name of this Stream</param>
     /// <param name="listDelegate">Function which gets Entities</param>
     /// <param name="enableAutoCaching"></param>
-    public DataStream(LazySvc<IDataSourceCacheService> cache, IDataSource source, string name, Func<IEnumerable<IEntity>> listDelegate = null, bool enableAutoCaching = false)
+    public DataStream(LazySvc<IDataSourceCacheService> cache, IDataSource source, string name, Func<IEnumerable<IEntity>>? listDelegate = null, bool enableAutoCaching = false)
         : this(cache, source, name, ConvertDelegate(listDelegate), enableAutoCaching) { }
 
-    private static Func<IImmutableList<IEntity>> ConvertDelegate(Func<IEnumerable<IEntity>> original)
+    private static Func<IImmutableList<IEntity>>? ConvertDelegate(Func<IEnumerable<IEntity>>? original)
     {
-        if (original == null) return null;
+        if (original == null)
+            return null;
         return () =>
         {
             var initialResult = original();
@@ -99,16 +100,6 @@ public class DataStream(
 
     /// <inheritdoc />
     public IEnumerable<IEntity> List => _list.Get(GetList);
-        
-    //    _list.GetM(Log, parameters: $"{nameof(Name)}:{Name}", timer: true, generator: _ =>
-    //{
-    //    // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
-    //    if (!AutoCaching)
-    //        return (ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
-
-    //    var cacheItem = cache.Value.ListCache.GetOrBuild(this, ReadUnderlyingList, CacheDurationInSeconds, CacheErrorDurationInSeconds);
-    //    return (cacheItem.List, $"with {nameof(AutoCaching)}");
-    //});
 
     private IImmutableList<IEntity> GetList()
     {
@@ -143,7 +134,7 @@ public class DataStream(
         var l = Log.Fn<IImmutableList<IEntity>>();
         // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
 
-        IImmutableList<IEntity> CreateErr(string title, string message, Exception ex = default)
+        IImmutableList<IEntity> CreateErr(string title, string message, Exception? ex = default)
             => Source.Error.Create(source: Source, title: title, message: message, exception: ex).ToImmutableOpt();
 
         if (listDelegate == null)

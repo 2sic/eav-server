@@ -33,7 +33,7 @@ public class DataSourceOptionConverter
         //    showDrafts: secondDs.ShowDrafts);}
     }
 
-    public DataSourceOptions Convert(object original, bool throwIfNull, bool throwIfNoMatch)
+    public DataSourceOptions? Convert(object original, bool throwIfNull, bool throwIfNoMatch)
     {
         switch (original)
         {
@@ -41,13 +41,13 @@ public class DataSourceOptionConverter
             case null: return null;
             case DataSourceOptions dss: return dss;
             //case IDataSourceOptions ds: return ds;
-            case ILookUpEngine lu: return new DataSourceOptions { LookUp = lu };
+            case ILookUpEngine lu: return new() { LookUp = lu };
         }
 
         // Check if it's a possible value
         var values = Values(original, throwIfNull: false, throwIfNoMatch: false);
         if (values != null)
-            return new DataSourceOptions { Values = values };
+            return new() { Values = values };
 
         if (!throwIfNoMatch) return null;
         throw new ArgumentException(
@@ -59,7 +59,7 @@ public class DataSourceOptionConverter
     //public IDataSourceOptions ConvertLookUpEngine(ILookUpEngine lookUp)
     //    => new DataSourceOptions { LookUp = lookUp };
 
-    public IImmutableDictionary<string, string> Values(object original, bool throwIfNull = false, bool throwIfNoMatch = true)
+    public IImmutableDictionary<string, string>? Values(object original, bool throwIfNull = false, bool throwIfNoMatch = true)
     {
         switch (original)
         {
@@ -68,7 +68,7 @@ public class DataSourceOptionConverter
             case IImmutableDictionary<string, string> immutable: return immutable;
             case IDictionary<string, string> dicString: return ValuesFromDictionary(dicString);
             case IDictionary<string, object> dicObj: return ValuesFromDictionary(dicObj);
-            case Array arr when arr.Length == 0: return null;
+            case Array { Length: 0 }: return null;
             case Array arr2 when arr2.GetType() == typeof(string[]): return ValuesFromStringArray(arr2 as string[]);
             default:
                 var values = original.IsAnonymous()
@@ -81,23 +81,32 @@ public class DataSourceOptionConverter
                     $"{nameof(Convert)} only accepts object types as specified by the conversion methods of {nameof(DataSourceOptionConverter)}");
         }
     }
-    public IImmutableDictionary<string, string> ValuesFromAnonymous(object original)
+
+    public IImmutableDictionary<string, string>? ValuesFromAnonymous(object? original)
     {
-        if (original == null || !original.IsAnonymous()) return null;
+        if (original == null || !original.IsAnonymous())
+            return null;
         return ValuesFromDictionary(original.ToDicInvariantInsensitive());
     }
 
-    public IImmutableDictionary<string, string> ValuesFromDictionary(IDictionary<string, string> original)
+    public IImmutableDictionary<string, string>? ValuesFromDictionary(IDictionary<string, string>? original)
         => original?.ToImmutableInvIgnoreCase();
 
-    public IImmutableDictionary<string, string> ValuesFromDictionary(IDictionary<string, object> original)
-        => original?.ToImmutableDictionary(pair => pair.Key, pair => pair.Value?.ToString(),
-            InvariantCultureIgnoreCase);
+    public IImmutableDictionary<string, string?>? ValuesFromDictionary(IDictionary<string, object>? original)
+        => original?.ToImmutableDictionary(
+            pair => pair.Key,
+            pair => pair.Value?.ToString(),
+            InvariantCultureIgnoreCase
+        );
 
-    public IImmutableDictionary<string, string> ValuesFromStringArray(params string[] values)
+    public IImmutableDictionary<string, string>? ValuesFromStringArray(params string[]? values)
     {
-        var cleaned = values?.Where(v => v.HasValue()).ToList() ?? [];
-        if (cleaned.SafeNone()) return null;
+        var cleaned = values
+                          ?.Where(v => v.HasValue())
+                          .ToList()
+                      ?? [];
+        if (cleaned.SafeNone())
+            return null;
         var valDic = cleaned
             .Select(v => v.Split('='))
             .Where(pair => pair.Length == 2)

@@ -37,7 +37,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// </summary>
     /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
     /// <param name="logName">Optional name for logging such as `My.JsonDS`</param>
-    protected internal CustomDataSource(MyServices services, string logName = null) : base(services, logName ?? "Ds.CustLt")
+    protected internal CustomDataSource(MyServices services, string? logName = null) : base(services, logName ?? "Ds.CustLt")
     {
         // Provide a default out, in case the overriding class doesn't
         base.ProvideOut(() => GetRaw(GetDefault, null));
@@ -48,6 +48,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// </summary>
     public override bool Immutable => true;
 
+    [field: AllowNull, MaybeNull]
     private DataFactoryOptions Options
     {
         get => field ??= new() { TypeName = "Custom" };
@@ -76,7 +77,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         Func<object> data,
         NoParamOrder noParamOrder = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions> options = default) =>
+        Func<DataFactoryOptions>? options = default) =>
         base.ProvideOut(() => GetAny(data, options), name);
 
     [PrivateApi]
@@ -84,7 +85,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         Func<IEnumerable<IHasRawEntity<T>>> data,
         NoParamOrder noParamOrder = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions> options = default) where T : IRawEntity =>
+        Func<DataFactoryOptions>? options = default) where T : IRawEntity =>
         base.ProvideOut(() => GetHasRaw(data, options), name);
 
     [PrivateApi]
@@ -92,16 +93,16 @@ public class CustomDataSource: CustomDataSourceAdvanced
         Func<IEnumerable<T>> data,
         NoParamOrder noParamOrder = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions> options = default) where T : IRawEntity =>
+        Func<DataFactoryOptions>? options = default) where T : IRawEntity =>
         base.ProvideOut(() => GetRaw(data, options), name);
 
-    private IImmutableList<IEntity> GetAny(Func<object> source, Func<DataFactoryOptions> options)
+    private IImmutableList<IEntity> GetAny(Func<object>? source, Func<DataFactoryOptions>? options)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         // Call the Generator and handle errors/null
-        object funcResult;
+        object? funcResult;
         try
         {
             funcResult = source?.Invoke();
@@ -172,9 +173,11 @@ public class CustomDataSource: CustomDataSourceAdvanced
         return l.ReturnAsError(err);
     }
 
-    private DataFactoryOptions GetBest(Func<DataFactoryOptions> options) => options?.Invoke() ?? Options;
+    private DataFactoryOptions GetBest(Func<DataFactoryOptions>? options)
+        => options?.Invoke() ?? Options;
 
-    private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>> source, Func<DataFactoryOptions> options) where T: IRawEntity
+    private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>>? source, Func<DataFactoryOptions>? options)
+        where T: IRawEntity
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
@@ -191,7 +194,8 @@ public class CustomDataSource: CustomDataSourceAdvanced
         return l.Return(result, $"Got {result.Count} items");
     }
 
-    private IImmutableList<IEntity> GetHasRaw<T>(Func<IEnumerable<IHasRawEntity<T>>> source, Func<DataFactoryOptions> options) where T: IRawEntity
+    private IImmutableList<IEntity> GetHasRaw<T>(Func<IEnumerable<IHasRawEntity<T>>>? source, Func<DataFactoryOptions>? options)
+        where T: IRawEntity
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();

@@ -15,8 +15,8 @@ partial class DataSourceBase
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public ICacheKeyManager CacheKey => _cacheKey ??= new(this);
-    private CacheKey _cacheKey;
+    [field: AllowNull, MaybeNull]
+    public ICacheKeyManager CacheKey => field ??= new CacheKey(this);
 
     /// <inheritdoc />
     [PrivateApi]

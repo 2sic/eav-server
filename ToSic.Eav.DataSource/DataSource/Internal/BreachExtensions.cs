@@ -15,7 +15,7 @@ public static class BreachExtensions
     public static CustomDataSource CustomDataSourceLight(CustomDataSource.MyServices services,
         IDataSource wrapper,
         NoParamOrder noParamOrder = default,
-        string logName = null)
+        string? logName = null)
     {
         var ds = new CustomDataSource(services, logName);
         ds.Error.ConnectToParent(wrapper);
@@ -23,10 +23,10 @@ public static class BreachExtensions
         return ds;
     }
 
-    public static IImmutableList<IEntity> TryGetIn(this CustomDataSource ds, string name = StreamDefaultName)
+    public static IImmutableList<IEntity>? TryGetIn(this CustomDataSource ds, string name = StreamDefaultName)
         => ds.TryGetIn(name);
 
-    public static IImmutableList<IEntity> TryGetOut(this CustomDataSource ds, string name = StreamDefaultName)
+    public static IImmutableList<IEntity>? TryGetOut(this CustomDataSource ds, string name = StreamDefaultName)
         => ds.TryGetOut(name);
 
     public static void BreachProvideOut(
@@ -34,6 +34,6 @@ public static class BreachExtensions
         Func<object> source,
         NoParamOrder noParamOrder = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions> options = default) =>
+        Func<DataFactoryOptions>? options = default) =>
         ds.ProvideOut(source, options: options, name: name);
 }

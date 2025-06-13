@@ -34,13 +34,13 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     }
 
 
-    internal DataSourceBase DataSourceForIn;
+    internal DataSourceBase DataSourceForIn = null!;
 
     #endregion
 
     private const string ConfigNotFoundMessage = "Trying to get a configuration by name of {0} but it doesn't exist. Did you forget to add to ConfigMask?";
 
-    public string GetThis([CallerMemberName] string name = default)
+    public string? GetThis([CallerMemberName] string? name = default)
     {
         if (name == null || name.IsEmptyOrWs())
             return null;
@@ -62,25 +62,26 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     /// <param name="name"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    private string GetRaw(string name = default) => _values.TryGetValue(name, out var result) 
+    private string? GetRaw(string name) => _values.TryGetValue(name, out var result) 
         ? result
         : throw new ArgumentException(string.Format(ConfigNotFoundMessage, name));
 
-    public T GetThis<T>(T fallback, [CallerMemberName] string name = default) => Get(name, fallback: fallback);
+    public T GetThis<T>(T fallback, [CallerMemberName] string? name = default)
+        => Get(name!, fallback: fallback);
 
     // ReSharper disable once AssignNullToNotNullAttribute
     [Obsolete("This is necessary for older DataSources which hat configuration setters. We will not support that any more, do not use.")]
-    internal void SetThisObsolete<T>(T value, [CallerMemberName] string name = default)
+    internal void SetThisObsolete<T>(T value, [CallerMemberName] string? name = default)
     {
         // Set the value in the dictionary
-        _values[name] = value?.ToString();
+        _values[name!] = value?.ToString() ?? "";
 
         // Flush the quick get-this cache, otherwise it will still return the old value
         _getThisCache.Clear();
     }
 
     [PrivateApi]
-    public IReadOnlyDictionary<string, string> Values => _values as IReadOnlyDictionary<string, string>;
+    public IReadOnlyDictionary<string, string> Values => (IReadOnlyDictionary<string, string>)_values;
     private IDictionary<string, string> _values = new Dictionary<string, string>(InvariantCultureIgnoreCase);
 
     public ILookUpEngine LookUpEngine { get; protected internal set; }
@@ -95,7 +96,8 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     [PrivateApi]
     public void Parse()
     {
-        if (IsParsed) return;
+        if (IsParsed)
+            return;
         _values = Parse(_values);
         IsParsed = true;
     }
@@ -115,10 +117,12 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
         return LookUpEngine.LookUp(values, overrides: OverrideLookUps);
     }
 
-    private string Parse(string name)
+    private string? Parse(string? name)
     {
-        if (name == null) return null;
-        if (!Values.TryGetValue(name, out var token) || !token.HasValue()) return token;
+        if (name == null)
+            return null;
+        if (!Values.TryGetValue(name, out var token) || !token.HasValue())
+            return token;
         return ParseToken(token);
     }
 
@@ -133,29 +137,36 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     /// An internally created lookup to give access to the In-streams if there are any
     /// </summary>
     [PrivateApi]
-    private IEnumerable<ILookUp> OverrideLookUps => field ??=
-    [
-        new LookUpInDataSource(DataSourceForIn, Services.ZoneCultureResolverLazy.Value)
-    ];
+    [field: AllowNull, MaybeNull]
+    private IEnumerable<ILookUp> OverrideLookUps
+        => field ??=
+        [
+            new LookUpInDataSource(DataSourceForIn, Services.ZoneCultureResolverLazy.Value)
+        ];
 
 
-    public string Get(string name) => Parse(name);
+    public string? Get(string name)
+        => Parse(name);
 
-    public TValue Get<TValue>(string name) => Parse(name).ConvertOrDefault<TValue>();
+    public TValue? Get<TValue>(string name)
+        => Parse(name).ConvertOrDefault<TValue>();
 
-    public TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default) =>
-        Parse(name).ConvertOrFallback(fallback);
+    // ReSharper disable once MethodOverloadWithOptionalParameter
+    public TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default)
+        => Parse(name).ConvertOrFallback(fallback);
 
 
     internal void AddIfMissing(string name, string value)
     {
-        if (_values.ContainsKey(name)) return;
+        if (_values.ContainsKey(name))
+            return;
         _values[name] = value;
     }
 
-    internal void AddMany(IDictionary<string, string> values)
+    internal void AddMany(IDictionary<string, string>? values)
     {
-        if (values == null) return;
+        if (values == null)
+            return;
         foreach (var pair in values) _values[pair.Key] = pair.Value;
     }
 }

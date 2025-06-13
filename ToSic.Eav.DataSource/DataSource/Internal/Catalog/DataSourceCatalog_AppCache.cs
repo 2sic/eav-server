@@ -17,7 +17,7 @@ partial class DataSourceCatalog
 
         memoryCacheService.Set(AppCacheKey(appId), data, p => p
             .SetSlidingExpiration(slidingExpiration)
-            .WatchFolders(folderPaths?.ToDictionary(p => p, p => true))
+            .WatchFolders(folderPaths?.ToDictionary(p => p, _ => true))
             .WatchCacheKeys(cacheKeys));
 
         return data;

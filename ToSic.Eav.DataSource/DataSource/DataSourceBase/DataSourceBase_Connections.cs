@@ -18,7 +18,7 @@ partial class DataSourceBase
     /// <inheritdoc />
     [PublicApi]
     public virtual IReadOnlyDictionary<string, IDataStream> In
-        => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw));
+        => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw))!;
     private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new();
     private readonly IDictionary<string, IDataStream> _inRw
         = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
@@ -54,8 +54,10 @@ partial class DataSourceBase
     /// Introduced in 2sxc 15.04
     /// </remarks>
     [PublicApi]
-    protected internal IImmutableList<IEntity> TryGetIn(string name = DataSourceConstants.StreamDefaultName)
-        => !In.ContainsKey(name) ? null : In[name]?.List?.ToImmutableOpt();
+    protected internal IImmutableList<IEntity>? TryGetIn(string name = DataSourceConstants.StreamDefaultName)
+        => !In.ContainsKey(name)
+            ? null
+            : In[name]?.List?.ToImmutableOpt();
 
     /// <summary>
     /// Try get an out-stream.
@@ -65,21 +67,24 @@ partial class DataSourceBase
     /// <remarks>
     /// Introduced in 2sxc 16.01
     /// </remarks>
-    protected internal IImmutableList<IEntity> TryGetOut(string name = DataSourceConstants.StreamDefaultName)
-        => !Out.ContainsKey(name) ? null : Out[name]?.List?.ToImmutableOpt();
+    protected internal IImmutableList<IEntity>? TryGetOut(string name = DataSourceConstants.StreamDefaultName)
+        => !Out.ContainsKey(name)
+            ? null
+            : Out[name]?.List?.ToImmutableOpt();
 
     /// <inheritdoc />
     [PublicApi]
     public virtual IReadOnlyDictionary<string, IDataStream> Out => OutWritable.AsReadOnly();
 
+    [field: AllowNull, MaybeNull]
     private StreamDictionary OutWritable => field ??= new(Services.CacheService);
 
     /// <inheritdoc />
-    public IDataStream this[string outName] => GetStream(outName);
+    public IDataStream? this[string outName] => GetStream(outName);
 
     /// <inheritdoc />
     [PublicApi]
-    public IDataStream GetStream(string name = null, NoParamOrder noParamOrder = default, bool nullIfNotFound = false, bool emptyIfNotFound = false)
+    public IDataStream? GetStream(string? name = null, NoParamOrder noParamOrder = default, bool nullIfNotFound = false, bool emptyIfNotFound = false)
     {
         var l = Log.Fn<IDataStream>($"{nameof(name)}: {name}; {nameof(nullIfNotFound)}: {nullIfNotFound}; {nameof(emptyIfNotFound)}: {emptyIfNotFound}");
 
@@ -88,7 +93,7 @@ partial class DataSourceBase
             name = DataSourceConstants.StreamDefaultName;
 
         // Simple case - just get it
-        if (Out.TryGetValue(name, out var foundStream))
+        if (Out.TryGetValue(name!, out var foundStream))
             return l.Return(foundStream, $"found stream {name}");
 
         if (nullIfNotFound && emptyIfNotFound)
@@ -100,7 +105,7 @@ partial class DataSourceBase
 
         // If empty is preferred to an error, return this
         if (emptyIfNotFound)
-            return l.Return(new DataStream(Services.CacheService, this, name, () => []), "create empty");
+            return l.Return(new DataStream(Services.CacheService, this, name!, () => []), "create empty");
 
         // Not found and no rule to handle it, throw error
         throw l.Done(new KeyNotFoundException(

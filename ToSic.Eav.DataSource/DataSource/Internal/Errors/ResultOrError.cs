@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.DataSource.Internal.Errors;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ResultOrError<T>(bool isOk, T result, IImmutableList<IEntity> errors = null)
+public class ResultOrError<T>(bool isOk, T result, IImmutableList<IEntity>? errors = null)
 {
     public bool IsOk { get; } = isOk;
     public bool IsError => !IsOk;

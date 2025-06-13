@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching.Keys;
 
@@ -26,7 +25,7 @@ public class AppRoot : DataSourceBase, IAppRoot
 
     public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
         .AddStream(name: DataSourceConstantsInternal.StreamPublishedName)
-        .AddStream(name: DataSourceConstantsInternal.StreamDraftsName));
+        .AddStream(name: DataSourceConstantsInternal.StreamDraftsName))!;
 
     private readonly GetOnce<IDataSourceLink> _link = new();
 
@@ -35,13 +34,14 @@ public class AppRoot : DataSourceBase, IAppRoot
     /// </summary>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public new ICacheKeyManager CacheKey => _cacheKey ??= new AppRootCacheKey(this);
-    private CacheKey _cacheKey;
+    [field: AllowNull, MaybeNull]
+    public new ICacheKeyManager CacheKey => field ??= new AppRootCacheKey(this);
 
     /// <summary>
     /// Get the <see cref="AppReader"/> of this app from the cache.
     /// </summary>
-    private IAppReader AppReader => field ??= _appReaders.Get(this);
+    [field: AllowNull, MaybeNull]
+    private IAppReader AppReader => field ??= _appReaders.Get(this)!;
 
     #region Cache-Chain
 

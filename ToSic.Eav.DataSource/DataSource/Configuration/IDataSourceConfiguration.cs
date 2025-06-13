@@ -19,7 +19,7 @@ public interface IDataSourceConfiguration
     /// <param name="name">The configuration key. Do not set this; it's auto-added by the compiler.</param>
     /// <returns></returns>
     /// <remarks>Added in v15.04</remarks>
-    string GetThis([CallerMemberName] string name = default);
+    string? GetThis([CallerMemberName] string? name = default);
 
     /// <summary>
     /// Get a configuration value for a specific property, or the fallback.
@@ -30,7 +30,7 @@ public interface IDataSourceConfiguration
     /// <param name="name">The configuration key. Do not set this; it's auto-added by the compiler.</param>
     /// <returns>The configuration value or the fallback.</returns>
     /// <remarks>Added in v15.04</remarks>
-    T GetThis<T>(T fallback, [CallerMemberName] string name = default);
+    T GetThis<T>(T fallback, [CallerMemberName] string? name = default);
 
     /// <summary>
     /// Tell us if the values have already been parsed or not.
@@ -68,7 +68,7 @@ public interface IDataSourceConfiguration
 
     #region Getters - new v15.04
 
-    string Get(string name);
+    string? Get(string name);
 
     /// <summary>
     /// Get a configuration as a typed (converted) value.
@@ -77,7 +77,7 @@ public interface IDataSourceConfiguration
     /// <typeparam name="TValue"></typeparam>
     /// <param name="name"></param>
     /// <returns></returns>
-    TValue Get<TValue>(string name);
+    TValue? Get<TValue>(string name);
 
     /// <summary>
     /// Get a typed value but return the fallback if not found or if the conversion fails.
@@ -88,7 +88,7 @@ public interface IDataSourceConfiguration
     /// <param name="fallback">Fallback value if the configuration is missing or can't be parsed into the expected data format.</param>
     /// <returns></returns>
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    TValue Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue fallback = default);
+    TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default);
 
 
     #endregion
@@ -111,7 +111,7 @@ public static class DataSourceConfigurationObsoleteExtensions
 #pragma warning disable CS0618
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    internal static void SetThisObsolete<T>(this IDataSourceConfiguration config, T value, [CallerMemberName] string name = default)
+    internal static void SetThisObsolete<T>(this IDataSourceConfiguration config, T value, [CallerMemberName] string? name = default)
         => ((DataSourceConfiguration)config).SetThisObsolete(value, name);
 #pragma warning restore CS0618
 }

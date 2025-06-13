@@ -16,7 +16,7 @@ public interface IConvertDataSource<T>
     /// </summary>
     /// <param name="source">the source</param>
     /// <param name="streams">names of streams to publish. if null, will return all streams</param>
-    IDictionary<string, IEnumerable<T>> Convert(IDataSource source, IEnumerable<string> streams = null);
+    IDictionary<string, IEnumerable<T>> Convert(IDataSource source, IEnumerable<string>? streams = null);
 
     /// <summary>
     /// Returns a converted IDataSource, but is serializable.

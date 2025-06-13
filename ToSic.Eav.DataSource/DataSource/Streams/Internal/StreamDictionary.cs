@@ -23,7 +23,7 @@ public class StreamDictionary
     /// </summary>
     /// <param name="source"></param>
     /// <param name="streams"></param>
-    public StreamDictionary(IDataSource source, IReadOnlyDictionary<string, IDataStream> streams = default)
+    public StreamDictionary(IDataSource source, IReadOnlyDictionary<string, IDataStream>? streams = default)
     {
         Source = source;
         if (streams == null) return;
@@ -34,7 +34,9 @@ public class StreamDictionary
 
     public void Add(string name, IDataStream stream)
     {
-        _inner[name] = Source == null ? stream : WrapStream(name, stream);
+        _inner[name] = Source == null
+            ? stream
+            : WrapStream(name, stream);
         _ro.Reset();
     }
 
@@ -45,6 +47,6 @@ public class StreamDictionary
     private IDataStream WrapStream(string name, IDataStream stream) =>
         new DataStream(_cache, Source, name, () => stream.List) { Scope = stream.Scope };
 
-    public IReadOnlyDictionary<string, IDataStream> AsReadOnly() => _ro.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inner));
+    public IReadOnlyDictionary<string, IDataStream> AsReadOnly() => _ro.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inner))!;
     protected GetOnce<IReadOnlyDictionary<string, IDataStream>> _ro = new();
 }

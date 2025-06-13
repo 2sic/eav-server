@@ -33,11 +33,11 @@ public interface IDataSourceLink : IDataSourceLinkable
     /// <param name="outName">Rename the out-stream - rarely used since you would usually get the link from the correct Out by default</param>
     /// <param name="inName">Rename the in-stream</param>
     /// <returns></returns>
-    IDataSourceLink Rename(string name = default, string outName = default, string inName = default);
+    IDataSourceLink Rename(string? name = default, string? outName = default, string? inName = default);
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    IDataSourceLink AddStream(string name = default, string outName = default, string inName = default);
+    IDataSourceLink AddStream(string? name = default, string? outName = default, string? inName = default);
 
     /// <summary>
     /// Add one or more Links to this link for use when attaching to this and more sources in one step.

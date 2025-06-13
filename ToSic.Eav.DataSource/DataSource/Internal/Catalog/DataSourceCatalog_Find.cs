@@ -12,8 +12,9 @@ partial class DataSourceCatalog
 
         // Old mechanism which checks real types etc but probably is never needed any more
         var type = FindDataSourceInfo(name, appId)?.Type;
-        if (type == null) return name;
-        var longName = type.AssemblyQualifiedName;
+        if (type == null)
+            return name;
+        var longName = type.AssemblyQualifiedName!;
         var first = longName.IndexOf(',');
         var second = longName.IndexOf(',', first + 2);
         var newName = longName.Substring(0, second);

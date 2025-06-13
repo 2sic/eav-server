@@ -4,16 +4,17 @@ namespace ToSic.Eav.DataSource;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class DataSourceLink(IDataSourceLink original,
+internal class DataSourceLink(
+    IDataSourceLink? original,
 #pragma warning disable CS9113 // Parameter is unread.
     NoParamOrder protect = default,
 #pragma warning restore CS9113 // Parameter is unread.
-    IDataSource dataSource = default,
-    IDataStream stream = default,
-    string name = default,
-    string outName = default,
-    string inName = default,
-    IEnumerable<IDataSourceLink> more = default) : IDataSourceLink
+    IDataSource? dataSource = default,
+    IDataStream? stream = default,
+    string? name = default,
+    string? outName = default,
+    string? inName = default,
+    IEnumerable<IDataSourceLink>? more = default) : IDataSourceLink
 {
     public IDataSource DataSource { get; } = dataSource ?? original?.DataSource;
     public string OutName { get; } = name ?? outName ?? original?.OutName ?? DataSourceConstants.StreamDefaultName;
@@ -21,11 +22,11 @@ internal class DataSourceLink(IDataSourceLink original,
     public IDataStream Stream { get; } = stream ?? original?.Stream;
     public IEnumerable<IDataSourceLink> More { get; } = more ?? original?.More;
 
-    public IDataSourceLink Rename(string name = default, string outName = default, string inName = default) =>
+    public IDataSourceLink Rename(string? name = default, string? outName = default, string? inName = default) =>
         // Check if no names provided
         !$"{name}{outName}{inName}".HasValue() ? this : new(this, name: name, outName: outName, inName: inName);
 
-    public IDataSourceLink AddStream(string name = default, string outName = default, string inName = default) =>
+    public IDataSourceLink AddStream(string? name = default, string? outName = default, string? inName = default) =>
         Add(new DataSourceLink(null, dataSource: DataSource, name: name, inName: inName, outName: outName));
 
     public IDataSourceLink Add(params IDataSourceLinkable[] more)

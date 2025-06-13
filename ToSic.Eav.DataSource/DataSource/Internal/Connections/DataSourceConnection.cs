@@ -41,8 +41,8 @@ public class DataSourceConnection(IDataSource source, string sourceStream, IData
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class QuickSourceInfo(IDataSource data, string streamName)
 {
-    public string Label { get; } = data?.Label;
+    public string? Label { get; } = data?.Label;
     public Guid? Guid { get; } = data?.Guid;
-    public string Name { get; } = data?.Name;
-    public string Stream { get; } = streamName;
+    public string? Name { get; } = data?.Name;
+    public string? Stream { get; } = streamName;
 }

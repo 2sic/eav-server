@@ -32,7 +32,7 @@ public class InspectStream
         try
         {
             Stream = stream;
-            Target = (target as IDataSource)?.Guid ?? Guid.Empty;
+            Target = target?.Guid ?? Guid.Empty;
             Source = stream.Source.Guid;
             TargetIn = inName;
             if (stream is ConnectionStream conStream1) SourceOut = conStream1.Connection.SourceStream;

@@ -18,15 +18,15 @@ namespace ToSic.Eav.DataSource;
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Just FYI for people who need to know more about the internal APIs")]
 public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServices>, IDataSource, IAppIdentitySync
 {
-
     /// <summary>
     /// Default Constructor, _protected_.
     /// To inherit this, make sure your new class also gets the `MyServices` in its constructor and passes it to here.
     /// </summary>
     /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
     /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
+    /// <param name="connect"></param>
     [PrivateApi]
-    protected DataSourceBase(MyServices services, string logName, object[] connect = default) : base(services, logName, connect: connect)
+    protected DataSourceBase(MyServices services, string logName, object[]? connect = default) : base(services, logName, connect: connect)
     {
         AutoLoadAllConfigMasks(GetType());
     }
@@ -99,7 +99,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     #region Error Handling
 
     [PublicApi]
-    public DataSourceErrorHelper Error => _errorHandler.Get(() => Services.ErrorHandler.Value.ConnectToParent(this));
+    public DataSourceErrorHelper Error => _errorHandler.Get(() => Services.ErrorHandler.Value.ConnectToParent(this))!;
     private readonly GetOnce<DataSourceErrorHelper> _errorHandler = new();
 
     #endregion

@@ -21,5 +21,5 @@ public interface IDataSourceGenerator<out T> where T : IDataSource
     /// <param name="attach">optional source to attach as `in` on the newly created data source. If provided, it can also provide `appIdentity` and `configSource`</param>
     /// <param name="options">optional configuration</param>
     /// <returns></returns>
-    T New(IDataSourceLinkable attach = default, IDataSourceOptions options = default);
+    T New(IDataSourceLinkable? attach = default, IDataSourceOptions? options = default);
 }

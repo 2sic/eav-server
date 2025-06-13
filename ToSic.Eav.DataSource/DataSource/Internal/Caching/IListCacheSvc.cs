@@ -16,14 +16,14 @@ public interface IListCacheSvc
     /// </summary>
     /// <param name="key">the identifier in the cache</param>
     /// <returns>the cached list</returns>
-    ListCacheItem Get(string key);
+    ListCacheItem? Get(string key);
 
     /// <summary>
     /// Get a list from the cache using a configured dataStream. The stream won't be queried, it serves as an identifier for the cache item. 
     /// </summary>
     /// <param name="dataStream">the data stream, which can provide it's cache-key</param>
     /// <returns>the cached list</returns>
-    ListCacheItem Get(IDataStream dataStream);
+    ListCacheItem? Get(IDataStream dataStream);
 
     /// <summary>
     /// Get cached item if available and valid, or rebuild cache using a mutual lock

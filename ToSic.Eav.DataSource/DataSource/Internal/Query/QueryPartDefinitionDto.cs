@@ -14,7 +14,9 @@ public static class QueryPartDefExtTemp
     {
         var attributes = part.Entity.AsDictionary();
 
-        attributes[QueryConstants.VisualDesignerData] = JsonNode.Parse(part.VisualDesignerData, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions).AsObject();
+        attributes[QueryConstants.VisualDesignerData] = JsonNode
+            .Parse(part.VisualDesignerData, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions)!
+            .AsObject();
 
         // Replace ToSic.Eav with ToSic.Eav.DataSources because they moved to a different DLL
         attributes[QueryConstants.PartAssemblyAndType] = part.DataSourceTypeIdentifier;

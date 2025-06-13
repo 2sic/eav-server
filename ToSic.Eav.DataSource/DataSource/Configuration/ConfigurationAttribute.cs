@@ -38,20 +38,20 @@ public class ConfigurationAttribute: Attribute
     /// * `[Source:Key||[SubSource:SubKey||FinalFallback]]`
     /// * etc.
     /// </summary>
-    public string Token { get; set; }
+    public string? Token { get; set; }
 
     /// <summary>
     /// Optional field name to use, if you must override the default.
     /// The default is that it uses the same name as the property, and this is highly recommended.
     /// You should only set the field, if you are renaming the property and it must still get data from old configurations.
     /// </summary>
-    public string Field { get; set; }
+    public string? Field { get; set; }
 
     /// <summary>
     /// The fallback value to use, if code/configuration don't give this another value.
     /// Note that internally it will be converted to a string, because Tokens work that way. 
     /// </summary>
-    public object Fallback { get; set; }
+    public object? Fallback { get; set; }
 
     /// <summary>
     /// Determine if the configuration is cache relevant.
