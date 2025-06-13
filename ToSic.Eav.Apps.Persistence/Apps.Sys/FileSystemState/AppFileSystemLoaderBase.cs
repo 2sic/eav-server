@@ -6,7 +6,7 @@ using ToSic.Eav.Sys;
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper, object[] connect = default)
+public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper, object[]? connect = default)
     : ServiceBase(EavLogs.Eav + ".AppFSL", connect: [..connect ?? [], siteDraft, appPathsLazy, zoneMapper])
 {
     #region Constants
@@ -16,32 +16,32 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
 
     #endregion
 
-    public string Path { get; set; }
-    public string PathShared { get; set; }
+    public string Path { get; set; } = null!;
+    public string PathShared { get; set; } = null!;
 
     /// <summary>
     /// The site to use. This should be used instead of Services.Site,
     /// since in some cases (e.g. DNN Search) the initial site is not available.
     /// So in that case it overrides the implementation to get the real site just-in-time.
     /// </summary>
+    [field: AllowNull, MaybeNull]
     protected ISite Site => field ??= zoneMapper.SiteOfAppIfSiteInvalid(siteDraft, AppIdentity.AppId);
 
-    protected IAppIdentity AppIdentity { get; private set; }
-    private IAppPaths _appPaths;
+    protected IAppIdentity AppIdentity { get; private set; } = null!;
+    private IAppPaths _appPaths = null!;
+    protected LogSettings LogSettings { get; private set; } = new();
 
     #region Inits
 
     public AppFileSystemLoaderBase Init(IAppReader appReader, LogSettings logSettings)
     {
-        LogSettings = logSettings ?? new();
+        LogSettings = logSettings;
         var l = Log.Fn<AppFileSystemLoaderBase>($"{appReader.AppId}, {appReader.Specs.Folder}, ...");
         AppIdentity = appReader.PureIdentity();
         _appPaths = appPathsLazy.Value.Get(appReader, Site);
         InitPathAfterAppId();
         return l.Return(this);
     }
-    protected LogSettings LogSettings { get; private set; }
-
 
     /// <summary>
     /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this.

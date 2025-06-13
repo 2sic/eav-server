@@ -1,5 +1,4 @@
-﻿using ToSic.Sys.Capabilities.Aspects;
-using ToSic.Sys.Capabilities.Features;
+﻿using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
@@ -23,7 +22,7 @@ internal class EavFeaturesLogSettingsHelper(EavFeaturesLoader featuresLoader, IL
             return l.Return(new(Details: false), "no configuration");
 
         // temp check if optimized patching works
-        var stateLinqOptimized = features.FirstOrDefault(f => f.Id == BuiltInFeatures.CSharpLinqOptimizations.Guid);
+        var stateLinqOptimized = features?.FirstOrDefault(f => f.Id == BuiltInFeatures.CSharpLinqOptimizations.Guid);
 
         if (stateLinqOptimized?.Enabled == true)
         {
