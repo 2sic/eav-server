@@ -33,7 +33,7 @@ internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEnti
                 .Where(tc => tc != null);
 
             foreach (var value in lazyEntityValues)
-            foreach (var childId in value.ResolvedEntityIds.Where(id => id != null).Cast<int>())
+            foreach (var childId in value?.ResolvedEntityIds.Where(id => id != null).Cast<int>() ?? [])
                 Add(entity, childId);
         }
 

@@ -52,7 +52,7 @@ partial class AppState
 
         #region Loading
 
-        private static bool _loggedLoadToBootLog = false;
+        private static bool _loggedLoadToBootLog;
 
 
         public void Load(string message, Action<IAppStateCache> loader)
@@ -245,7 +245,8 @@ partial class AppState
         public void RemoveEntities(int[] repositoryIds, bool log)
         {
             //AppState.Remove(repositoryIds, log);
-            if (repositoryIds == null || repositoryIds.Length == 0) return;
+            if (repositoryIds.Length == 0)
+                return;
             Load("", appState =>
             {
                 var st = (AppState)appState;
@@ -275,7 +276,7 @@ partial class AppState
                 throw new("Entities without real ID not supported yet");
 
             RemoveObsoleteDraft(newEntity, log);
-            _ = MapDraftToPublished(newEntity as Entity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
+            _ = MapDraftToPublished((Entity)newEntity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
             st.Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
             st.MetadataManager.Register(newEntity, true);
 

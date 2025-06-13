@@ -20,6 +20,14 @@ public interface IAppsAndZonesLoader: IHasLog, IContentTypeLoader
     /// <returns></returns>
     IAppStateCache AppState(int appId, CodeRefTrail codeRefTrail);
 
+    /// <summary>
+    /// Update an AppState with partial upload of entities to reload.
+    /// </summary>
+    /// <param name="app"></param>
+    /// <param name="startAt"></param>
+    /// <param name="codeRefTrail"></param>
+    /// <param name="entityIds"></param>
+    /// <returns></returns>
     IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[]? entityIds = null);
 
 

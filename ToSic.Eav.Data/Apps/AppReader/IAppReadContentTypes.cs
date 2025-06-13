@@ -16,6 +16,6 @@ public interface IAppReadContentTypes
     /// <returns></returns>
     IContentType? GetContentType(string name);
 
-    IContentType GetContentType(int contentTypeId);
+    IContentType? GetContentType(int contentTypeId);
 
 }

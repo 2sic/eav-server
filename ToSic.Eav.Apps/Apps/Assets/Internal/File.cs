@@ -8,13 +8,13 @@ public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
 {
     /// <inheritdoc />
     [JsonIgnore]
-    public TFileId SysId { get; set; }
+    public required TFileId SysId { get; init; }
 
     /// <inheritdoc />
     [JsonIgnore]
-    public TFolderId ParentSysId {get; set; }
+    public required TFolderId ParentSysId {get; init; }
 
-    public string Folder { get; set; }
+    public required string Folder { get; init; }
 
     #region Old Interface, where IDs were always ints
 
@@ -24,25 +24,25 @@ public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
 
     #endregion
 
-    public string FullName { get; set; }
-    public string Extension { get; set; }
+    public required string FullName { get; init; }
+    public required string Extension { get; init; }
 
-    public string Path { get; set; }
+    public required string Path { get; init; }
 
-    public DateTime Created { get; set; }
+    public required DateTime Created { get; init; }
 
 
-    public DateTime Modified { get; set; }
+    public required DateTime Modified { get; init; }
 
-    public string Name { get; set; }
+    public required string Name { get; init; }
 
-    public int Size { get; set; }
+    public int Size { get; init; }
 
-    public ISizeInfo SizeInfo => _sizeInfo.Get(() => new SizeInfo(Size));
+    public ISizeInfo SizeInfo => _sizeInfo.Get(() => new SizeInfo(Size))!;
     private readonly GetOnce<ISizeInfo> _sizeInfo = new();
 
     [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
-    public string PhysicalPath { get; set; }
+    public required string PhysicalPath { get; init; }
 
     #region not available properties which existed on the previous DNN interface
     // These commented out fields are what DNN would have and they have problems

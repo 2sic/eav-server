@@ -28,7 +28,7 @@ public class AppsCacheSwitch(
 
     #region Main Value Handling (access static presolved value, optionally reset)
 
-    public new IAppsCacheSwitchable Value => _value.Get(GetOnceDuringCurrentRequest);
+    public new IAppsCacheSwitchable Value => _value.Get(GetOnceDuringCurrentRequest)!;
     private readonly GetOnce<IAppsCacheSwitchable> _value = new();
 
     public void Purge(IAppIdentity app)
@@ -43,12 +43,11 @@ public class AppsCacheSwitch(
 
         // Otherwise reset the previously Singleton result and force new retrieve
         Reset();
-        _cacheTimestamp = featuresService.CacheTimestamp;
+        CacheTimestamp = featuresService.CacheTimestamp;
         return base.Value;
     }
 
-    public long CacheTimestamp => _cacheTimestamp;
-    private static long _cacheTimestamp;
+    public long CacheTimestamp { get; private set; }
 
     /// <summary>
     /// Regard the cache as having changed, if the feature service changes.

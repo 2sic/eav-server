@@ -66,9 +66,9 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
 
     /// <summary>
     /// The app-folder, which is pre-initialized very early on.
-    /// Needed to pre-load file based content-types
+    /// Needed to preload file based content-types
     /// </summary>
-    public string Folder
+    public string? Folder
     {
         get;
         private set => field = ValueOrExceptionIfNotInLoadingState(value, nameof(Folder));
@@ -77,15 +77,15 @@ internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnec
 
     /// <summary>
     /// The app-folder, which is pre-initialized very early on.
-    /// Needed to pre-load file based content-types
+    /// Needed to preload file based content-types
     /// </summary>
-    public string Name
+    public string? Name
     {
         get;
         private set => field = ValueOrExceptionIfNotInLoadingState(value, nameof(Name));
     }
 
-    private string ValueOrExceptionIfNotInLoadingState(string value, string property)
+    private string? ValueOrExceptionIfNotInLoadingState(string? value, string property)
         => Loading ? value : throw new($"Can't set AppState.{property} when not in loading state");
 
     public bool IsHealthy { get; internal set; } = true;

@@ -12,7 +12,9 @@ namespace ToSic.Eav.Apps.Sys.State;
 public class ParentAppState(IAppStateCache? appState, bool inheritTypes, bool inheritEntities) : IParentAppState
 {
     /// <inheritdoc />
+#pragma warning disable CS9124 // Parameter is captured into the state of the enclosing type and its value is also used to initialize a field, property, or event.
     public IAppStateCache? AppState { get; } = appState;
+#pragma warning restore CS9124 // Parameter is captured into the state of the enclosing type and its value is also used to initialize a field, property, or event.
 
     /// <summary>
     /// Determine if we should inherit ContentTypes or not

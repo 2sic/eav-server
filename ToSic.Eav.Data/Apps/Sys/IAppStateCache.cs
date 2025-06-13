@@ -24,7 +24,7 @@ public interface IAppStateCache: ICacheExpiring,
     IRelationshipSource
 {
 
-    string Folder { get; }
+    string? Folder { get; }
 
     IAppStateMetadata ThingInApp(AppThingsToStack target);
 

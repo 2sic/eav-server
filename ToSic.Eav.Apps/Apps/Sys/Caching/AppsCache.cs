@@ -22,10 +22,12 @@ internal class AppsCache: AppsCacheBase, IAppsCacheSwitchable
 
     public override IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools)
     {
-        if (ZoneAppCache != null) return ZoneAppCache;
+        if (ZoneAppCache != null)
+            return ZoneAppCache;
 
         // ensure it's only loaded once, even if multiple threads are trying this at the same time
         lock (ZoneAppLoadLock)
+            // ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
             if (ZoneAppCache == null)
                 ZoneAppCache = LoadZones(tools);
         return ZoneAppCache;
@@ -33,7 +35,7 @@ internal class AppsCache: AppsCacheBase, IAppsCacheSwitchable
 
 
     // note: this object must be volatile!
-    [PrivateApi] protected static volatile IReadOnlyDictionary<int, Zone> ZoneAppCache;
+    [PrivateApi] protected static volatile IReadOnlyDictionary<int, Zone>? ZoneAppCache;
     [PrivateApi] protected static readonly object ZoneAppLoadLock = new();
 
 
@@ -60,7 +62,7 @@ internal class AppsCache: AppsCacheBase, IAppsCacheSwitchable
         {
             // unclear why this pops up sometime...if it would also hit on live, so I'm adding some more info
             throw new("issue with setting cache item - key is '" + key + "' and cache is null =" +
-                      (Caches == null) + " and item is null=" + (item == null), ex);
+                      (Caches == null!) + " and item is null=" + (item == null!), ex);
         }
     }
 

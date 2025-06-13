@@ -12,30 +12,30 @@ public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFileId>
     int IAsset.ParentId => ParentSysId as int? ?? 0;
 
     [JsonIgnore]
-    public TFolderId ParentSysId { get; set; }
+    public required TFolderId ParentSysId { get; init; }
 
     [JsonIgnore]
-    public TFolderId SysId { get; set; }
+    public required TFolderId SysId { get; init; }
 
 
     /// <inheritdoc/>
-    public virtual bool HasChildren { get; set; }
+    public virtual bool HasChildren { get; init; }
 
     /// <inheritdoc/>
-    public DateTime Created { get; set; }
+    public required DateTime Created { get; init; }
 
     /// <inheritdoc/>
-    public DateTime Modified { get; set; }
+    public required DateTime Modified { get; init; }
 
     /// <inheritdoc/>
-    public string Path { get; set; }
+    public required string Path { get; init; }
         
     /// <inheritdoc/>
-    public string Name { get; set; }
+    public required string Name { get; init; }
 
     /// <inheritdoc/>
     [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
-    public string PhysicalPath { get; set; }
+    public required string PhysicalPath { get; init; }
 
     #region not available properties which existed on the previous DNN interface
 
@@ -44,21 +44,21 @@ public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFileId>
     // 2. they probably don't exist in a similer model a non-dnn system
     // 3. They often have inconsistent naming, like "ID" instead of "Id"
 
-    //public string DisplayPath { get; internal set; }
-    //public string DisplayName { get; internal set; }
-    //public int StorageLocation { get; internal set; }
-    //public int FolderMappingID { get; internal set; }
-    //public int PortalID { get; internal set; }
-    //public int ParentID { get; internal set; }
-    //public int WorkflowID { get; internal set; }
-    //public string MappedPath { get; internal set; }
-    //public bool IsVersioned { get; internal set; }
-    //public bool IsCached { get; internal set; }
+    //public string DisplayPath { get; internal init; }
+    //public string DisplayName { get; internal init; }
+    //public int StorageLocation { get; internal init; }
+    //public int FolderMappingID { get; internal init; }
+    //public int PortalID { get; internal init; }
+    //public int ParentID { get; internal init; }
+    //public int WorkflowID { get; internal init; }
+    //public string MappedPath { get; internal init; }
+    //public bool IsVersioned { get; internal init; }
+    //public bool IsCached { get; internal init; }
 
-    //public Guid VersionGuid { get; internal set; }
-    //public Guid UniqueId { get; internal set; }
-    //public bool IsProtected { get; internal set; }
-    //public int KeyID { get; internal set; }
+    //public Guid VersionGuid { get; internal init; }
+    //public Guid UniqueId { get; internal init; }
+    //public bool IsProtected { get; internal init; }
+    //public int KeyID { get; internal init; }
 
     #endregion
 }

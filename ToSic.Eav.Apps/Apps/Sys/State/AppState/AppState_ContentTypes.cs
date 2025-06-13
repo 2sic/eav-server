@@ -54,6 +54,8 @@ partial class AppState
     [PrivateApi("was PublicApi till 16.09 but then it was used on IApp")]
     internal IContentType? GetContentType(int contentTypeId)
     {
+        if (AppContentTypesFromRepository == null)
+            throw new NullReferenceException($"Error accessing content types for this app, list not initialized.");
         var found = AppContentTypesFromRepository
             .FirstOrDefault(c => c.Id == contentTypeId);
         if (found != null)

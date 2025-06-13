@@ -13,7 +13,7 @@ public static class AppStateExtensions
     public static bool HasCustomParentApp(this IAppReader reader)
     {
         var parentAppGuid = reader?.GetParentCache()?.NameId;
-        return !string.IsNullOrEmpty(parentAppGuid) && !AppGuidIsAPreset(parentAppGuid);
+        return !string.IsNullOrEmpty(parentAppGuid) && !AppGuidIsAPreset(parentAppGuid!);
     }
 
     public static bool AppGuidIsAPreset(string parentAppGuid)
@@ -26,7 +26,7 @@ public static class AppStateExtensions
         => hasAppSpecs.AppId == KnownAppsConstants.MetaDataAppId;
 
 
-    public static IEntity? GetDraftOrKeep(this IAppReader appReader, IEntity entity)
+    public static IEntity? GetDraftOrKeep(this IAppReader appReader, IEntity? entity)
         => appReader.GetDraft(entity) ?? entity;
 
     public static IEntity? GetDraftOrPublished(this IAppReader appReader, Guid guid)

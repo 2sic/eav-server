@@ -15,8 +15,8 @@ public interface IAppReadEntities
     /// </remarks>
     IImmutableList<IEntity> List { get; }
 
-    IEntity? GetDraft(IEntity entity);
+    IEntity? GetDraft(IEntity? entity);
 
-    IEntity? GetPublished(IEntity entity);
+    IEntity? GetPublished(IEntity? entity);
 
 }

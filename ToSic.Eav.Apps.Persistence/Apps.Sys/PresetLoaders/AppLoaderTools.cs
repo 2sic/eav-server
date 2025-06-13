@@ -13,6 +13,6 @@ namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 internal class AppLoaderTools(Generator<IAppsAndZonesLoader> repoFactory)
     : ServiceBase("Eav.LodTls", connect: [repoFactory]), IAppLoaderTools
 {
-    public IAppsAndZonesLoader RepositoryLoader(ILog parentLog)
+    public IAppsAndZonesLoader RepositoryLoader(ILog? parentLog)
         => repoFactory.New().LinkLog(parentLog ?? Log);
 }

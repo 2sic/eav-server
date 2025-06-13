@@ -22,21 +22,21 @@ public interface IAppReaderFactory
     /// </summary>
     /// <param name="appOrReader"></param>
     /// <returns></returns>
-    IAppReader GetOrKeep(IAppIdentity appOrReader);
+    IAppReader? GetOrKeep(IAppIdentity appOrReader);
 
     /// <summary>
     /// Get a reader for the specified app.
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
-    IAppReader Get(IAppIdentity app);
+    IAppReader? Get(IAppIdentity app);
 
     /// <summary>
     /// Get a reader for the specified app.
     /// </summary>
     /// <param name="appId"></param>
     /// <returns></returns>
-    IAppReader Get(int appId);
+    IAppReader? Get(int appId);
 
     /// <summary>
     /// Get a reader of the zone's primary app.
@@ -44,7 +44,7 @@ public interface IAppReaderFactory
     /// </summary>
     /// <param name="zoneId"></param>
     /// <returns></returns>
-    IAppReader GetZonePrimary(int zoneId);
+    IAppReader? GetZonePrimary(int zoneId);
 
     /// <summary>
     /// Get the preset App of the system.
@@ -53,7 +53,7 @@ public interface IAppReaderFactory
     /// <param name="protector"></param>
     /// <param name="nullIfNotLoaded"></param>
     /// <returns></returns>
-    IAppReader GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false);
+    IAppReader? GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false);
 
     /// <see cref="IAppsCatalog.AppIdentity"/>
     IAppIdentityPure AppIdentity(int appId);

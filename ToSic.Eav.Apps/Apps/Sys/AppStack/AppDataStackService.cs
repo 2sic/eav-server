@@ -18,11 +18,11 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
 
     public AppDataStackService InitForPrimaryAppOfZone(int zoneId)
     {
-        AppSpecs = appReaders.GetZonePrimary(zoneId);
+        AppSpecs = appReaders.GetZonePrimary(zoneId) ?? throw new NullReferenceException($"Error building stack, can't find zone {zoneId}");
         return this;
     }
 
-    private IAppReader AppSpecs { get; set; }
+    private IAppReader AppSpecs { get; set; } = null!;
 
     public PropertyStack GetStack(string part, IEntity? viewPart = null)
     {
@@ -31,12 +31,12 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
         return new PropertyStack().Init(part, sources);
     }
 
-    public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity? viewPart = default)
+    public List<KeyValuePair<string, IPropertyLookup?>> GetStack(AppThingsIdentifiers target, IEntity? viewPart = default)
     {
-        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(
+        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup?>>>(
             $"target: {target.Target}, Has View: {viewPart != null}");
         // "View" Settings/Resources - always add, no matter if null, so the key always exists
-        var sources = new List<KeyValuePair<string, IPropertyLookup>>
+        var sources = new List<KeyValuePair<string, IPropertyLookup?>>
         {
             new(PartView, viewPart)
         };
@@ -49,9 +49,9 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
 
     public const string PiggyBackId = "app-stack-";
 
-    private List<KeyValuePair<string, IPropertyLookup>> GetOrGenerate(AppThingsIdentifiers target)
+    private List<KeyValuePair<string, IPropertyLookup?>> GetOrGenerate(AppThingsIdentifiers target)
     {
-        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
+        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup?>>>(target.Target.ToString());
         var sourcesBuilder = AppSpecs.GetCache().PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target).FullStack(Log));
         return l.ReturnAndLog(sourcesBuilder);
     }
@@ -83,8 +83,8 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
             appState,
             ancestorIfNotPreset,
             siteAppReader?.GetCache(),
-            global?.GetCache(),
-            preset?.GetCache()
+            global?.GetCache()!, // added ! because it always worked, but it's unclear why we have a ? in the first place
+            preset?.GetCache()!  // added ! because it always worked, but it's unclear why we have a ? in the first place
         );
 
         return l.ReturnAndLog(stackCache, "created");

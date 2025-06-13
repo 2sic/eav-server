@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IPropertyStack: IPropertyLookup, IPropertyStackLookup, IHasIdentityNameId
 {
-    IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources { get; }
+    IImmutableList<KeyValuePair<string, IPropertyLookup?>> Sources { get; }
         
     IPropertyLookup? GetSource(string name);
         

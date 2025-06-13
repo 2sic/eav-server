@@ -8,16 +8,16 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
 {
-    public PropertyStack Init(string name, IEnumerable<IPropertyLookup> sources)
+    public PropertyStack Init(string name, IEnumerable<IPropertyLookup?> sources)
         => Init(name, sources
-            .Select(s => new KeyValuePair<string, IPropertyLookup>((s as IHasIdentityNameId)?.NameId ?? "unknown", s))
+            .Select(s => new KeyValuePair<string, IPropertyLookup?>((s as IHasIdentityNameId)?.NameId ?? "unknown", s))
             .ToArray()
         );
 
-    public PropertyStack Init(string name, IReadOnlyCollection<KeyValuePair<string, IPropertyLookup>> sources)
+    public PropertyStack Init(string name, IReadOnlyCollection<KeyValuePair<string, IPropertyLookup?>> sources)
         => Init(name, sources.ToArray());
 
-    public PropertyStack Init(string name, params KeyValuePair<string, IPropertyLookup>[] sources)
+    public PropertyStack Init(string name, params KeyValuePair<string, IPropertyLookup?>[] sources)
     {
         NameId = name;
         var pairCount = 0;
@@ -26,7 +26,7 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
             .Select(selector: ep =>
             {
                 var key = !string.IsNullOrWhiteSpace(ep.Key) ? ep.Key : $"auto-named-{++pairCount}";
-                return new KeyValuePair<string, IPropertyLookup>(key, ep.Value);
+                return new KeyValuePair<string, IPropertyLookup?>(key, ep.Value);
             })
             .ToImmutableOpt();
 

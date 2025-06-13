@@ -94,7 +94,7 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     /// Get CacheItem with specified CacheKey
     /// </summary>
     [PrivateApi("only important for developers, and they have intellisense")]
-    protected abstract IAppStateCache Get(string key);
+    protected abstract IAppStateCache? Get(string key);
 
     /// <summary>
     /// Remove the CacheItem with specified CacheKey
@@ -120,12 +120,13 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string? primaryLanguage = null)
     {
         if (appIdentity.ZoneId == 0 || appIdentity.AppId == KnownAppsConstants.AppIdEmpty)
-            return null;
+            return null!;
 
         var cacheKey = CacheKey(appIdentity);
 
-        IAppStateCache appState = null;
-        if (Has(cacheKey)) appState = Get(cacheKey);
+        IAppStateCache? appState = null;
+        if (Has(cacheKey))
+            appState = Get(cacheKey);
         if (appState != null)
             return appState;
 
@@ -174,11 +175,16 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     /// <inheritdoc />
     public virtual IAppStateCache Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
     {
-        var l = log.Fn<IAppStateCache>($"{appIdentity}, {entities.Count()} entities");
+        var entityIds = entities.ToArray();
+        var l = log.Fn<IAppStateCache>($"{appIdentity}, {entityIds.Length} entities");
         // if it's not cached yet, ignore the request as partial update won't be necessary
-        if (!Has(appIdentity)) return l.ReturnNull("not cached, won't update");
+        if (!Has(appIdentity))
+            //return l.ReturnNull("not cached, won't update");
+            throw new NullReferenceException($"Trying to update an app which doesn't exist in the cache. This should never happen.");
         var appState = Get(appIdentity, tools);
-        tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, new(), entities.ToArray());
+        if (appState == null)
+            throw new NullReferenceException($"AppState was returned null. This should never happen.");
+        tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, new(), entityIds.ToArray());
         return l.ReturnAsOk(appState);
     }
 

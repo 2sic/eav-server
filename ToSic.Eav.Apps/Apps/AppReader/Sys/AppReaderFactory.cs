@@ -9,32 +9,33 @@ namespace ToSic.Eav.Apps.AppReader.Sys;
 internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCacheService appStates, Generator<AppReader> readerGenerator)
     : ServiceBase("Eav.AppRds"), IAppReaderFactory
 {
-    public IAppReader GetOrKeep(IAppIdentity appOrReader)
+    public IAppReader? GetOrKeep(IAppIdentity appOrReader)
         => appOrReader as IAppReader ?? Get(appOrReader);
 
-    public IAppReader Get(IAppIdentity app)
+    public IAppReader? Get(IAppIdentity app)
     {
-        var l = Log.Fn<IAppReader>(app.Show());
+        var l = Log.Fn<IAppReader?>(app.Show());
         var state = appStates.Get(app);
         return l.ReturnAndLogIfNull(ToReader(state));
     }
 
-    public IAppReader Get(int appId)
+    public IAppReader? Get(int appId)
     {
-        var l = Log.Fn<IAppReader>($"{appId}");
+        var l = Log.Fn<IAppReader?>($"{appId}");
         var state = appStates.Get(appId);
         return l.ReturnAndLogIfNull(ToReader(state));
     }
 
-    public IAppReader GetZonePrimary(int zoneId)
+    public IAppReader? GetZonePrimary(int zoneId)
     {
         var primaryAppId = appsCatalog.Value.PrimaryAppIdentity(zoneId);
         return Get(primaryAppId);
     }
 
-    public IAppIdentityPure AppIdentity(int appId) => appsCatalog.Value.AppIdentity(appId);
+    public IAppIdentityPure AppIdentity(int appId)
+        => appsCatalog.Value.AppIdentity(appId);
 
-    public IAppReader GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false)
+    public IAppReader? GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false)
     {
         if (nullIfNotLoaded && !((AppStateCacheService)appStates).AppsCacheSwitch.Value.Has(PresetIdentity)) 
             return null;

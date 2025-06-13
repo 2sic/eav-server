@@ -51,7 +51,7 @@ public class InputTypeInfo(string type, string label, string description, string
 
     public string Assets => assets;
 
-    public IMetadataOf Metadata { get; }
+    public IMetadataOf? Metadata { get; }
 
     #region new in 2sxc 10 / eav 5
 
@@ -78,7 +78,7 @@ public class InputTypeInfo(string type, string label, string description, string
     /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string ObsoleteMessage { get; set; }
+    public string? ObsoleteMessage { get; set; }
 
     /// <summary>
     /// WIP 12.10 Recommendation status
@@ -108,7 +108,7 @@ public class InputTypeInfo(string type, string label, string description, string
     /// </summary>
     /// <remarks>WIP/BETA v16.08</remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string ConfigTypes { get; }
+    public string? ConfigTypes { get; }
 
     /// <summary>
     /// Create a fresh dictionary with the minimum config-types
@@ -128,7 +128,8 @@ public class InputTypeInfo(string type, string label, string description, string
     /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
     public IDictionary<string, bool> ConfigTypesDic(ILog? log = null)
     {
-        if (_configTypesDic != null) return _configTypesDic;
+        if (_configTypesDic != null)
+            return _configTypesDic;
 
         var l = log.Fn<IDictionary<string, bool>>();
 
@@ -170,7 +171,7 @@ public class InputTypeInfo(string type, string label, string description, string
 
         return l.Return(_configTypesDic = newDic, $"{newDic.Count}");
     }
-    private IDictionary<string, bool> _configTypesDic;
+    private IDictionary<string, bool>? _configTypesDic;
 
     #endregion
 

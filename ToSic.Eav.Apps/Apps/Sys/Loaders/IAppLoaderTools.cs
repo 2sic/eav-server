@@ -3,5 +3,5 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppLoaderTools
 {
-    IAppsAndZonesLoader RepositoryLoader(ILog parentLog);
+    IAppsAndZonesLoader RepositoryLoader(ILog? parentLog);
 }

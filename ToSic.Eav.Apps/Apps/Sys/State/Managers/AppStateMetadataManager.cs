@@ -73,12 +73,14 @@ internal class AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cache
         if (md.KeyNumber.HasValue)
             AddToMetaDic(_number, md.TargetType, md.KeyNumber.Value, entity, add);
         if (!string.IsNullOrEmpty(md.KeyString))
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
             AddToMetaDic(_string, md.TargetType, md.KeyString, entity, add);
 #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
     }
 
-        
+
     private static void AddToMetaDic<T>(IDictionary<int, Dictionary<T, List<IEntity>>> metadataIndex, int mdTargetType, T mdValue, IEntity entity, bool add)
         where T : notnull
     {

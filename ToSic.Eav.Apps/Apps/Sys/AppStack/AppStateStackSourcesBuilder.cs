@@ -17,8 +17,8 @@ namespace ToSic.Eav.Apps.Sys.AppStack;
 internal class AppStateStackSourcesBuilder(
     AppThingsIdentifiers target,
     IAppStateCache owner,
-    IAppStateCache ancestorOrNull,
-    IAppStateCache siteOrNull,
+    IAppStateCache? ancestorOrNull,
+    IAppStateCache? siteOrNull,
     IAppStateCache global,
     IAppStateCache preset
 )
@@ -28,12 +28,12 @@ internal class AppStateStackSourcesBuilder(
     /// <summary>
     /// Ancestor can be null, as many apps don't have an own ancestor.
     /// </summary>
-    private IAppStateCache AncestorOrNull { get; } = ancestorOrNull;
+    private IAppStateCache? AncestorOrNull { get; } = ancestorOrNull;
 
     /// <summary>
     /// Site can be null, if we're getting the stack of the global App, which doesn't have a site-app.
     /// </summary>
-    private IAppStateCache SiteOrNull { get; } = siteOrNull;
+    private IAppStateCache? SiteOrNull { get; } = siteOrNull;
 
     private IAppStateCache Global { get; } = global;
     private IAppStateCache Preset { get; } = preset;
@@ -45,32 +45,32 @@ internal class AppStateStackSourcesBuilder(
     /// Get the stack of Settings which applies to this app
     /// </summary>
     /// <returns></returns>
-    internal List<KeyValuePair<string, IPropertyLookup>> FullStack(ILog buildLog)
+    internal List<KeyValuePair<string, IPropertyLookup?>> FullStack(ILog buildLog)
     {
-        var l = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
-        if (_fullStackSynched != null)
+        var l = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup?>>>();
+        if (_fullStackSynced != null)
         {
-            if (!_fullStackSynched.CacheChanged())
-                return l.Return(_fullStackSynched.Value, "existing");
+            if (!_fullStackSynced.CacheChanged())
+                return l.Return(_fullStackSynced.Value, "existing");
             l.A("Cache changed, will rebuild");
         }
 
-        _fullStackSynched = BuildCachedStack(buildLog);
-        return l.Return(_fullStackSynched.Value, "created");
+        _fullStackSynced = BuildCachedStack(buildLog);
+        return l.Return(_fullStackSynced.Value, "created");
     }
 
-    private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> _fullStackSynched;
+    private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup?>>>? _fullStackSynced;
 
-    private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(ILog buildLog)
+    private SynchronizedObject<List<KeyValuePair<string, IPropertyLookup?>>> BuildCachedStack(ILog buildLog)
     {
-        var l = buildLog.Fn<SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>>();
+        var l = buildLog.Fn<SynchronizedObject<List<KeyValuePair<string, IPropertyLookup?>>>>();
 
         var cacheExpiry = GetMultiSourceCacheExpiry();
         // 2022-03-11 2dm - we're currently including the build log
         // we assume it won't remain in memory, but there is a small risk of a memory leak here
         // Since this was bug, we will leave it in 13.03 to better debug
-        // But we should probably null it afterwards
-        var cachedStack = new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup>>>(cacheExpiry,
+        // But we should probably set it to null it afterward
+        var cachedStack = new SynchronizedObject<List<KeyValuePair<string, IPropertyLookup?>>>(cacheExpiry,
             () => RebuildStack(Target.Target, buildLog));
 
         return l.Return(cachedStack, "built");
@@ -86,13 +86,13 @@ internal class AppStateStackSourcesBuilder(
     }
 
 
-    private List<KeyValuePair<string, IPropertyLookup>> RebuildStack(AppThingsToStack thingType, ILog? buildLog = null)
+    private List<KeyValuePair<string, IPropertyLookup?>> RebuildStack(AppThingsToStack thingType, ILog? buildLog = null)
     {
-        var l = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup>>>();
-        void LogSource(string name, IAppStateMetadata state)
+        var l = buildLog.Fn<List<KeyValuePair<string, IPropertyLookup?>>>();
+        void LogSource(string name, IAppStateMetadata? state)
             => l.A($"{name}: {state != null}; MD: {state?.MetadataItem?.EntityId}; CustomItem: {state?.CustomItem?.EntityId}; ScopeAny: {state?.SystemItem?.EntityId};");
 
-        var parts = new List<(string Name, IAppStateCache Source, string KeyCustom, string KeySystem)>()
+        var parts = new List<(string Name, IAppStateCache? Source, string? KeyCustom, string KeySystem)>
         {
             ("Owner", Owner, PartApp, PartAppSystem),
             ("Ancestor", AncestorOrNull, PartAncestor, PartAncestorSystem),
@@ -102,7 +102,7 @@ internal class AppStateStackSourcesBuilder(
         };
 
         // Build sources
-        var sources = new List<KeyValuePair<string, IPropertyLookup>>();
+        var sources = new List<KeyValuePair<string, IPropertyLookup?>>();
 
         foreach (var (name, source, keyCustom, keySystem) in parts)
         {
@@ -112,7 +112,7 @@ internal class AppStateStackSourcesBuilder(
                 continue;
             if (keyCustom != null)
                 sources.Add(new(keyCustom, stateMetadata.MetadataItem));
-            if (keySystem != null)
+            if (keySystem != null!)
                 sources.Add(new(keySystem, stateMetadata.SystemItem));
         }
 

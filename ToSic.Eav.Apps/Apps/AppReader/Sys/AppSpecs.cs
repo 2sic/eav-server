@@ -17,9 +17,9 @@ internal class AppSpecs(AppState appState): IAppSpecs
 
     public string NameId => appState.NameId;
 
-    public string Name => appState.Name;
+    public string Name => appState.Name ?? "error";
 
-    public string Folder => appState.Folder;
+    public string Folder => appState.Folder ?? "error";
 
     public PiggyBack PiggyBack => appState.PiggyBack;
     
@@ -27,7 +27,7 @@ internal class AppSpecs(AppState appState): IAppSpecs
     /// <summary>
     /// Create the configuration reader on demand, since the underlying Entity could change.
     /// </summary>
-    public IAppConfiguration Configuration => new AppConfiguration(appState.SettingsInApp.AppConfiguration);
+    public IAppConfiguration Configuration => new AppConfiguration(appState.SettingsInApp.AppConfiguration!);
 
     public IMetadataOf Metadata => appState.Metadata;
 

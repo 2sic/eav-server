@@ -23,7 +23,8 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
-    public IAppSpecs Specs => field ??= new AppSpecs(_appState);
+    public IAppSpecs Specs
+        => field ??= new AppSpecs(_appState);
 
     #region Identity
 
@@ -43,21 +44,27 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     #region Normal Data / Entities / List / Draft / Publish
 
-    public IImmutableList<IEntity> List => _appState.List;
+    public IImmutableList<IEntity> List
+        => _appState.List;
 
-    public IEntity? GetDraft(IEntity entity) => _appState.GetDraft(entity);
+    public IEntity? GetDraft(IEntity? entity)
+        => _appState.GetDraft(entity);
 
-    public IEntity? GetPublished(IEntity entity) => _appState.GetPublished(entity);
+    public IEntity? GetPublished(IEntity? entity)
+        => _appState.GetPublished(entity);
 
     #endregion
 
     #region Content Types
 
-    public IEnumerable<IContentType> ContentTypes => _appState.ContentTypes;
+    public IEnumerable<IContentType> ContentTypes
+        => _appState.ContentTypes;
 
-    public IContentType GetContentType(string name) => _appState.GetContentType(name);
+    public IContentType? GetContentType(string name)
+        => _appState.GetContentType(name);
 
-    public IContentType GetContentType(int contentTypeId) => _appState.GetContentType(contentTypeId);
+    public IContentType? GetContentType(int contentTypeId)
+        => _appState.GetContentType(contentTypeId);
 
     #endregion
 
